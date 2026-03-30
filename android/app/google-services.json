@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "620923930909",
+    "project_id": "avenirdz-7305d",
+    "storage_bucket": "avenirdz-7305d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:620923930909:android:f7c813939eb36050e9f9f4",
+        "android_client_info": {
+          "package_name": "com.ymama.avenirdz"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "620923930909-8v9530q91jtt54aq2ait14p7vri1qqhs.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ymama.avenirdz",
+            "certificate_hash": "451e08bbdb5c4e4197557194789a10249856d7a5"
+          }
+        },
+        {
+          "client_id": "620923930909-fjgicjfe2ftr5khlslq0fj2m3e3s6bh5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCfBGGkSbr2Wd1hkYbZEOe4SzGHxJG4NbE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "620923930909-fjgicjfe2ftr5khlslq0fj2m3e3s6bh5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

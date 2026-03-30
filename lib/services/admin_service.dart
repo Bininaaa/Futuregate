@@ -1,0 +1,683 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import '../models/admin_chart_data.dart';
+import '../models/admin_activity_model.dart';
+import '../models/admin_application_item_model.dart';
+import '../models/application_model.dart';
+import '../models/training_model.dart';
+import '../models/user_model.dart';
+import '../models/project_idea_model.dart';
+import 'notification_worker_service.dart';
+
+class AdminService {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final NotificationWorkerService _notificationWorker =
+      NotificationWorkerService();
+
+  Future<Map<String, dynamic>> getDashboardStats() async {
+    final usersSnapshot = await _firestore.collection('users').get();
+    final opportunitiesSnapshot = await _firestore
+        .collection('opportunities')
+        .get();
+    final trainingsSnapshot = await _firestore.collection('trainings').get();
+    final scholarshipsSnapshot = await _firestore
+        .collection('scholarships')
+        .get();
+    final applicationsSnapshot = await _firestore
+        .collection('applications')
+        .get();
+    final projectIdeasSnapshot = await _firestore
+        .collection('projectIdeas')
+        .get();
+    final cvsSnapshot = await _firestore.collection('cvs').get();
+    final savedSnapshot = await _firestore
+        .collection('savedOpportunities')
+        .get();
+    final conversationsSnapshot = await _firestore
+        .collection('conversations')
+        .where('status', isEqualTo: 'active')
+        .get();
+
+    int totalUsers = usersSnapshot.docs.length;
+    int studentsCount = 0;
+    int bacCount = 0;
+    int licenceCount = 0;
+    int masterCount = 0;
+    int doctoratCount = 0;
+    int companyCount = 0;
+    int adminCount = 0;
+    int activeUsersCount = 0;
+    int inactiveUsersCount = 0;
+
+    final Map<String, int> monthlyMap = {
+      'Jan': 0,
+      'Feb': 0,
+      'Mar': 0,
+      'Apr': 0,
+      'May': 0,
+      'Jun': 0,
+      'Jul': 0,
+      'Aug': 0,
+      'Sep': 0,
+      'Oct': 0,
+      'Nov': 0,
+      'Dec': 0,
+    };
+
+    for (final doc in usersSnapshot.docs) {
+      final data = doc.data();
+      final role = data['role'] ?? '';
+      final academicLevel = data['academicLevel'] ?? '';
+      final isActive = data['isActive'] ?? true;
+      final createdAt = data['createdAt'];
+
+      if (role == 'student') {
+        studentsCount++;
+        if (academicLevel == 'bac') {
+          bacCount++;
+        } else if (academicLevel == 'licence') {
+          licenceCount++;
+        } else if (academicLevel == 'master') {
+          masterCount++;
+        } else if (academicLevel == 'doctorat') {
+          doctoratCount++;
+        }
+      } else if (role == 'company') {
+        companyCount++;
+      } else if (role == 'admin') {
+        adminCount++;
+      }
+
+      if (isActive == true) {
+        activeUsersCount++;
+      } else {
+        inactiveUsersCount++;
+      }
+
+      if (createdAt is Timestamp) {
+        final date = createdAt.toDate();
+        final monthLabel = _monthLabel(date.month);
+        monthlyMap[monthLabel] = (monthlyMap[monthLabel] ?? 0) + 1;
+      }
+    }
+
+    final int totalApplications = applicationsSnapshot.docs.length;
+    final int totalOpportunities = opportunitiesSnapshot.docs.length;
+    final double applicationRate = totalOpportunities > 0
+        ? (totalApplications / totalOpportunities)
+        : 0.0;
+
+    final int totalCvs = cvsSnapshot.docs.length;
+    final double cvCompletionRate = studentsCount > 0
+        ? (totalCvs / studentsCount) * 100
+        : 0.0;
+
+    final Map<String, int> applicationCounts = {};
+    final Map<String, String> opportunityTitles = {};
+    for (final doc in opportunitiesSnapshot.docs) {
+      final data = doc.data();
+      opportunityTitles[doc.id] = data['title'] ?? 'Untitled';
+    }
+    for (final doc in applicationsSnapshot.docs) {
+      final data = doc.data();
+      final oppId = data['opportunityId'] ?? '';
+      applicationCounts[oppId] = (applicationCounts[oppId] ?? 0) + 1;
+    }
+
+    final Map<String, int> saveCounts = {};
+    for (final doc in savedSnapshot.docs) {
+      final data = doc.data();
+      final oppId = data['opportunityId'] ?? '';
+      saveCounts[oppId] = (saveCounts[oppId] ?? 0) + 1;
+    }
+
+    final sortedByApplications = applicationCounts.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+    final topApplied = sortedByApplications.take(3).map((e) {
+      return {
+        'id': e.key,
+        'title': opportunityTitles[e.key] ?? 'Unknown',
+        'count': e.value,
+      };
+    }).toList();
+
+    final sortedBySaves = saveCounts.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+    final topSaved = sortedBySaves.take(3).map((e) {
+      return {
+        'id': e.key,
+        'title': opportunityTitles[e.key] ?? 'Unknown',
+        'count': e.value,
+      };
+    }).toList();
+
+    int pendingIdeas = 0;
+    int approvedIdeas = 0;
+    for (final doc in projectIdeasSnapshot.docs) {
+      final status = doc.data()['status'] ?? 'pending';
+      if (status == 'pending') {
+        pendingIdeas++;
+      } else if (status == 'approved') {
+        approvedIdeas++;
+      }
+    }
+
+    final monthlyRegistrations = monthlyMap.entries
+        .map((entry) => {'month': entry.key, 'count': entry.value})
+        .toList();
+
+    return {
+      'totalUsers': totalUsers,
+      'students': studentsCount,
+      'bac': bacCount,
+      'licence': licenceCount,
+      'master': masterCount,
+      'companies': companyCount,
+      'doctorat': doctoratCount,
+      'admins': adminCount,
+      'activeUsers': activeUsersCount,
+      'inactiveUsers': inactiveUsersCount,
+      'opportunities': totalOpportunities,
+      'trainings': trainingsSnapshot.docs.length,
+      'scholarships': scholarshipsSnapshot.docs.length,
+      'applications': totalApplications,
+      'projectIdeas': projectIdeasSnapshot.docs.length,
+      'pendingIdeas': pendingIdeas,
+      'approvedIdeas': approvedIdeas,
+      'applicationRate': applicationRate,
+      'totalCvs': totalCvs,
+      'cvCompletionRate': cvCompletionRate,
+      'conversations': conversationsSnapshot.docs.length,
+      'totalSaved': savedSnapshot.docs.length,
+      'topApplied': topApplied,
+      'topSaved': topSaved,
+      'monthlyRegistrations': monthlyRegistrations,
+    };
+  }
+
+  Future<AdminChartData> getAdminChartData() async {
+    final usersSnapshot = await _firestore.collection('users').get();
+    final opportunitiesSnapshot = await _firestore
+        .collection('opportunities')
+        .get();
+    final applicationsSnapshot = await _firestore
+        .collection('applications')
+        .get();
+
+    int totalUsers = usersSnapshot.docs.length;
+    int totalStudents = 0;
+    int totalCompanies = 0;
+    int bacCount = 0;
+    int licenceCount = 0;
+    int masterCount = 0;
+    int doctoratCount = 0;
+
+    final Map<String, int> monthlyMap = {
+      'Jan': 0,
+      'Feb': 0,
+      'Mar': 0,
+      'Apr': 0,
+      'May': 0,
+      'Jun': 0,
+      'Jul': 0,
+      'Aug': 0,
+      'Sep': 0,
+      'Oct': 0,
+      'Nov': 0,
+      'Dec': 0,
+    };
+
+    for (final doc in usersSnapshot.docs) {
+      final data = doc.data();
+
+      final role = (data['role'] ?? '').toString().toLowerCase();
+      final academicLevel = (data['academicLevel'] ?? '')
+          .toString()
+          .toLowerCase();
+      final createdAt = data['createdAt'];
+
+      if (role == 'student') {
+        totalStudents++;
+      } else if (role == 'company') {
+        totalCompanies++;
+      }
+
+      if (academicLevel == 'bac') {
+        bacCount++;
+      } else if (academicLevel == 'licence') {
+        licenceCount++;
+      } else if (academicLevel == 'master') {
+        masterCount++;
+      } else if (academicLevel == 'doctorat') {
+        doctoratCount++;
+      }
+
+      if (createdAt is Timestamp) {
+        final date = createdAt.toDate();
+        final monthLabel = _monthLabel(date.month);
+        monthlyMap[monthLabel] = (monthlyMap[monthLabel] ?? 0) + 1;
+      }
+    }
+
+    final monthlyRegistrations = monthlyMap.entries
+        .map((entry) => MonthlyStat(month: entry.key, count: entry.value))
+        .toList();
+
+    return AdminChartData(
+      totalUsers: totalUsers,
+      totalStudents: totalStudents,
+      totalCompanies: totalCompanies,
+      totalOpportunities: opportunitiesSnapshot.docs.length,
+      totalApplications: applicationsSnapshot.docs.length,
+      bacCount: bacCount,
+      licenceCount: licenceCount,
+      masterCount: masterCount,
+      doctoratCount: doctoratCount,
+      monthlyRegistrations: monthlyRegistrations,
+    );
+  }
+
+  String _monthLabel(int month) {
+    switch (month) {
+      case 1:
+        return 'Jan';
+      case 2:
+        return 'Feb';
+      case 3:
+        return 'Mar';
+      case 4:
+        return 'Apr';
+      case 5:
+        return 'May';
+      case 6:
+        return 'Jun';
+      case 7:
+        return 'Jul';
+      case 8:
+        return 'Aug';
+      case 9:
+        return 'Sep';
+      case 10:
+        return 'Oct';
+      case 11:
+        return 'Nov';
+      case 12:
+        return 'Dec';
+      default:
+        return '';
+    }
+  }
+
+  Future<List<UserModel>> getRecentUsers() async {
+    final snapshot = await _firestore
+        .collection('users')
+        .orderBy('createdAt', descending: true)
+        .limit(5)
+        .get();
+
+    return snapshot.docs.map((doc) => UserModel.fromMap(doc.data())).toList();
+  }
+
+  Future<List<Map<String, dynamic>>> getRecentOpportunities() async {
+    final snapshot = await _firestore
+        .collection('opportunities')
+        .orderBy('createdAt', descending: true)
+        .limit(5)
+        .get();
+
+    return snapshot.docs.map((doc) => {...doc.data(), 'id': doc.id}).toList();
+  }
+
+  Future<List<AdminActivityModel>> getAdminActivities({
+    int perCollectionLimit = 4,
+  }) async {
+    final safeLimit = perCollectionLimit < 1 ? 1 : perCollectionLimit;
+
+    final results = await Future.wait([
+      _firestore
+          .collection('applications')
+          .orderBy('appliedAt', descending: true)
+          .limit(safeLimit)
+          .get(),
+      _firestore
+          .collection('opportunities')
+          .orderBy('createdAt', descending: true)
+          .limit(safeLimit)
+          .get(),
+      _firestore
+          .collection('scholarships')
+          .orderBy('createdAt', descending: true)
+          .limit(safeLimit)
+          .get(),
+      _firestore
+          .collection('trainings')
+          .orderBy('createdAt', descending: true)
+          .limit(safeLimit)
+          .get(),
+      _firestore
+          .collection('projectIdeas')
+          .orderBy('createdAt', descending: true)
+          .limit(safeLimit)
+          .get(),
+    ]);
+
+    final applicationSnapshot = results[0];
+    final opportunitySnapshot = results[1];
+    final scholarshipSnapshot = results[2];
+    final trainingSnapshot = results[3];
+    final projectIdeaSnapshot = results[4];
+
+    final applicationOpportunityIds = applicationSnapshot.docs
+        .map((doc) => (doc.data()['opportunityId'] ?? '').toString())
+        .where((id) => id.isNotEmpty)
+        .toSet();
+    final opportunityInfo = await _fetchOpportunityInfo(
+      applicationOpportunityIds,
+    );
+
+    final projectIdeaOwnerIds = projectIdeaSnapshot.docs
+        .map((doc) => (doc.data()['submittedBy'] ?? '').toString())
+        .where((id) => id.isNotEmpty)
+        .toSet();
+    final ownerNames = await _fetchUserDisplayNames(projectIdeaOwnerIds);
+
+    final activities = <AdminActivityModel>[
+      ...applicationSnapshot.docs.map((doc) {
+        final data = doc.data();
+        final opportunityId = (data['opportunityId'] ?? '').toString();
+        final opportunityMeta = opportunityInfo[opportunityId];
+        final opportunityTitle = (opportunityMeta?['title'] ?? '')
+            .toString()
+            .trim();
+        final companyName = (opportunityMeta?['companyName'] ?? '')
+            .toString()
+            .trim();
+
+        return AdminActivityModel(
+          id: 'application_${doc.id}',
+          type: 'application',
+          relatedId: doc.id,
+          relatedCollection: 'applications',
+          title: opportunityTitle.isNotEmpty
+              ? opportunityTitle
+              : 'New application submitted',
+          description: companyName.isNotEmpty
+              ? 'Application submitted to $companyName'
+              : 'A student submitted a new application',
+          actorId: (data['studentId'] ?? '').toString(),
+          actorName: (data['studentName'] ?? 'Student').toString(),
+          status: (data['status'] ?? '').toString(),
+          createdAt: data['appliedAt'] as Timestamp?,
+        );
+      }),
+      ...opportunitySnapshot.docs.map((doc) {
+        final data = doc.data();
+        return AdminActivityModel(
+          id: 'opportunity_${doc.id}',
+          type: 'opportunity',
+          relatedId: doc.id,
+          relatedCollection: 'opportunities',
+          title: (data['title'] ?? 'Untitled opportunity').toString(),
+          description: 'New opportunity created',
+          actorId: (data['companyId'] ?? '').toString(),
+          actorName: (data['companyName'] ?? 'Company').toString(),
+          status: (data['status'] ?? '').toString(),
+          createdAt: data['createdAt'] as Timestamp?,
+        );
+      }),
+      ...scholarshipSnapshot.docs.map((doc) {
+        final data = doc.data();
+        return AdminActivityModel(
+          id: 'scholarship_${doc.id}',
+          type: 'scholarship',
+          relatedId: doc.id,
+          relatedCollection: 'scholarships',
+          title: (data['title'] ?? 'Untitled scholarship').toString(),
+          description: 'New scholarship published',
+          actorId: (data['createdBy'] ?? '').toString(),
+          actorName: (data['provider'] ?? 'Provider').toString(),
+          createdAt: data['createdAt'] as Timestamp?,
+        );
+      }),
+      ...trainingSnapshot.docs.map((doc) {
+        final data = doc.data();
+        return AdminActivityModel(
+          id: 'training_${doc.id}',
+          type: 'training',
+          relatedId: doc.id,
+          relatedCollection: 'trainings',
+          title: (data['title'] ?? 'Untitled training').toString(),
+          description: 'New training published',
+          actorId: (data['createdBy'] ?? '').toString(),
+          actorName: (data['provider'] ?? 'Provider').toString(),
+          status: (data['isFeatured'] == true) ? 'featured' : '',
+          createdAt: data['createdAt'] as Timestamp?,
+        );
+      }),
+      ...projectIdeaSnapshot.docs.map((doc) {
+        final data = doc.data();
+        final ownerId = (data['submittedBy'] ?? '').toString();
+        final ownerName = (data['submittedByName'] ?? '').toString().trim();
+        return AdminActivityModel(
+          id: 'project_idea_${doc.id}',
+          type: 'project_idea',
+          relatedId: doc.id,
+          relatedCollection: 'projectIdeas',
+          title: (data['title'] ?? 'Untitled project idea').toString(),
+          description: 'New project idea submitted for review',
+          actorId: ownerId,
+          actorName: ownerName.isNotEmpty
+              ? ownerName
+              : (ownerNames[ownerId] ?? 'Student'),
+          status: (data['status'] ?? '').toString(),
+          createdAt: data['createdAt'] as Timestamp?,
+        );
+      }),
+    ];
+
+    activities.sort(_compareByTimestampDesc);
+    return activities;
+  }
+
+  Future<List<UserModel>> getAllUsers() async {
+    final snapshot = await _firestore
+        .collection('users')
+        .orderBy('createdAt', descending: true)
+        .get();
+
+    return snapshot.docs.map((doc) => UserModel.fromMap(doc.data())).toList();
+  }
+
+  Future<void> toggleUserActive(String uid, bool isActive) async {
+    await _firestore.collection('users').doc(uid).update({
+      'isActive': isActive,
+    });
+  }
+
+  Future<List<ProjectIdeaModel>> getAllProjectIdeas() async {
+    final snapshot = await _firestore
+        .collection('projectIdeas')
+        .orderBy('createdAt', descending: true)
+        .get();
+
+    final ownerNames = await _fetchUserDisplayNames(
+      snapshot.docs
+          .map((doc) => (doc.data()['submittedBy'] ?? '').toString())
+          .where((uid) => uid.isNotEmpty)
+          .toSet(),
+    );
+
+    return snapshot.docs.map((doc) {
+      final data = doc.data();
+      final ownerId = (data['submittedBy'] ?? '').toString();
+      return ProjectIdeaModel.fromMap({
+        ...data,
+        'id': doc.id,
+        'submittedByName':
+            (data['submittedByName'] ?? '').toString().trim().isNotEmpty
+            ? data['submittedByName']
+            : (ownerNames[ownerId] ?? ''),
+      });
+    }).toList();
+  }
+
+  Future<List<AdminApplicationItemModel>> getAllApplications() async {
+    final snapshot = await _firestore
+        .collection('applications')
+        .orderBy('appliedAt', descending: true)
+        .get();
+
+    final opportunityInfo = await _fetchOpportunityInfo(
+      snapshot.docs
+          .map((doc) => (doc.data()['opportunityId'] ?? '').toString())
+          .where((id) => id.isNotEmpty)
+          .toSet(),
+    );
+
+    return snapshot.docs.map((doc) {
+      final data = doc.data();
+      final opportunityMeta =
+          opportunityInfo[(data['opportunityId'] ?? '').toString()];
+
+      return AdminApplicationItemModel(
+        application: ApplicationModel.fromMap({...data, 'id': doc.id}),
+        opportunityTitle: (opportunityMeta?['title'] ?? '').toString(),
+        companyName: (opportunityMeta?['companyName'] ?? '').toString(),
+        companyId: (opportunityMeta?['companyId'] ?? '').toString(),
+        opportunityCreatedAt: opportunityMeta?['createdAt'] as Timestamp?,
+      );
+    }).toList();
+  }
+
+  Future<bool> updateProjectIdeaStatus(String id, String status) async {
+    final ideaRef = _firestore.collection('projectIdeas').doc(id);
+    var didUpdate = false;
+    var shouldNotify = false;
+
+    await _firestore.runTransaction((transaction) async {
+      final ideaDoc = await transaction.get(ideaRef);
+      if (!ideaDoc.exists) {
+        return;
+      }
+
+      final currentStatus = (ideaDoc.data()?['status'] ?? '').toString();
+      if (currentStatus == status) {
+        return;
+      }
+
+      transaction.update(ideaRef, {'status': status});
+      didUpdate = true;
+      shouldNotify =
+          currentStatus == 'pending' &&
+          (status == 'approved' || status == 'rejected');
+    });
+
+    if (shouldNotify) {
+      await _notificationWorker.notifyProjectIdeaStatusChanged(id);
+    }
+
+    return didUpdate;
+  }
+
+  Future<void> deleteOpportunity(String id) async {
+    await _firestore.collection('opportunities').doc(id).delete();
+  }
+
+  Future<void> deleteScholarship(String id) async {
+    await _firestore.collection('scholarships').doc(id).delete();
+  }
+
+  Future<List<Map<String, dynamic>>> getAllOpportunities() async {
+    final snapshot = await _firestore
+        .collection('opportunities')
+        .orderBy('createdAt', descending: true)
+        .get();
+
+    return snapshot.docs.map((doc) => {...doc.data(), 'id': doc.id}).toList();
+  }
+
+  Future<List<Map<String, dynamic>>> getAllScholarships() async {
+    final snapshot = await _firestore
+        .collection('scholarships')
+        .orderBy('createdAt', descending: true)
+        .get();
+
+    return snapshot.docs.map((doc) => {...doc.data(), 'id': doc.id}).toList();
+  }
+
+  Future<List<TrainingModel>> getAllTrainings() async {
+    final snapshot = await _firestore
+        .collection('trainings')
+        .orderBy('createdAt', descending: true)
+        .get();
+
+    return snapshot.docs
+        .map((doc) => TrainingModel.fromMap({...doc.data(), 'id': doc.id}))
+        .toList();
+  }
+
+  Future<Map<String, String>> _fetchUserDisplayNames(
+    Set<String> userIds,
+  ) async {
+    if (userIds.isEmpty) {
+      return {};
+    }
+
+    final results = await Future.wait(
+      userIds.map((uid) async {
+        final doc = await _firestore.collection('users').doc(uid).get();
+        if (!doc.exists) {
+          return MapEntry(uid, '');
+        }
+
+        final data = doc.data() ?? {};
+        return MapEntry(
+          uid,
+          (data['fullName'] ?? data['companyName'] ?? data['email'] ?? '')
+              .toString(),
+        );
+      }),
+    );
+
+    return Map<String, String>.fromEntries(results);
+  }
+
+  Future<Map<String, Map<String, dynamic>>> _fetchOpportunityInfo(
+    Set<String> opportunityIds,
+  ) async {
+    if (opportunityIds.isEmpty) {
+      return {};
+    }
+
+    final results = await Future.wait(
+      opportunityIds.map((opportunityId) async {
+        final doc = await _firestore
+            .collection('opportunities')
+            .doc(opportunityId)
+            .get();
+        return MapEntry(
+          opportunityId,
+          doc.data() == null
+              ? <String, dynamic>{}
+              : <String, dynamic>{...doc.data()!, 'id': doc.id},
+        );
+      }),
+    );
+
+    return Map<String, Map<String, dynamic>>.fromEntries(results);
+  }
+
+  int _compareByTimestampDesc(AdminActivityModel a, AdminActivityModel b) {
+    final aTime = a.createdAt;
+    final bTime = b.createdAt;
+    if (aTime == null && bTime == null) {
+      return 0;
+    }
+    if (aTime == null) {
+      return 1;
+    }
+    if (bTime == null) {
+      return -1;
+    }
+    return bTime.compareTo(aTime);
+  }
+}

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AvenirDZ Admin - Notifications</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div id="auth-gate" class="auth-gate">
+    <div class="spinner"></div>
+    <p>Verifying session...</p>
+  </div>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-brand">
+          <div class="sidebar-brand-icon">&#x1F6E1;&#xFE0F;</div>
+          <div class="sidebar-brand-text"><h2>Admin Panel</h2><p>AvenirDZ Management</p></div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="index.html" class="nav-item"><span class="icon">&#x1F4CA;</span> Dashboard</a>
+        <a href="users.html" class="nav-item"><span class="icon">&#x1F465;</span> Users</a>
+        <a href="moderation.html" class="nav-item"><span class="icon">&#x2696;&#xFE0F;</span> Moderation</a>
+        <a href="activity.html" class="nav-item"><span class="icon">&#x23F1;&#xFE0F;</span> Activity</a>
+        <a href="notifications.html" class="nav-item"><span class="icon">&#x1F514;</span> Notifications <span class="nav-badge" data-notification-badge hidden>0</span></a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="admin-info">
+          <div class="admin-avatar" id="admin-avatar">A</div>
+          <div><div class="admin-name" id="admin-name">Admin</div><div class="admin-email" id="admin-email"></div></div>
+        </div>
+        <button class="btn-logout" id="btn-logout">&#x1F6AA; Logout</button>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <h1 class="page-title">Notification Center</h1>
+      <p class="page-subtitle">Review admin notifications, keep unread counts accurate, and jump directly into the related moderation item.</p>
+
+      <div class="page-toolbar">
+        <div class="filter-chips" id="notification-filters" style="margin:0">
+          <button class="chip active" data-filter="all">All</button>
+          <button class="chip" data-filter="unread">Unread</button>
+        </div>
+        <div class="page-actions">
+          <span class="results-summary" id="notification-summary">Loading notifications...</span>
+          <button class="btn-secondary" id="mark-visible-read">Mark Visible as Read</button>
+        </div>
+      </div>
+
+      <div id="notification-list">
+        <div class="loading"><div class="spinner"></div></div>
+      </div>
+      <div class="load-more-row">
+        <button class="load-more-button" id="load-more-notifications" hidden>Load More Notifications</button>
+      </div>
+    </main>
+  </div>
+
+  <script type="module">
+    import { checkAuth, esc, showToast } from './js/auth.js';
+    import { adminTargetUrl, formatFullTimestamp, typeColor, typeIcon } from './js/admin-utils.js';
+    import {
+      loadNotificationsPage,
+      markNotificationRead,
+      markNotificationsRead,
+    } from './js/notification-service.js';
+
+    const notificationState = {
+      userId: '',
+      items: [],
+      cursor: null,
+      hasMore: true,
+      filter: 'all',
+      isLoading: false,
+      busyIds: new Set(),
+    };
+
+    document.getElementById('notification-filters').addEventListener('click', (event) => {
+      const chip = event.target.closest('.chip');
+      if (!chip) {
+        return;
+      }
+
+      notificationState.filter = chip.dataset.filter || 'all';
+      document.querySelectorAll('#notification-filters .chip').forEach((item) => {
+        item.classList.toggle('active', item === chip);
+      });
+      renderNotifications();
+    });
+
+    document.getElementById('load-more-notifications').addEventListener('click', async () => {
+      await loadMoreNotifications();
+    });
+
+    document.getElementById('mark-visible-read').addEventListener('click', async () => {
+      const visibleUnreadIds = filteredNotifications()
+        .filter((item) => item.isRead !== true)
+        .map((item) => item.id);
+
+      if (visibleUnreadIds.length === 0) {
+        showToast('There are no unread notifications in the current view', 'success');
+        return;
+      }
+
+      try {
+        await markNotificationsRead(visibleUnreadIds);
+        notificationState.items = notificationState.items.map((item) => (
+          visibleUnreadIds.includes(item.id)
+            ? { ...item, isRead: true }
+            : item
+        ));
+        renderNotifications();
+        showToast('Visible notifications marked as read', 'success');
+      } catch (error) {
+        console.error('Failed to mark visible notifications as read:', error);
+        showToast('Failed to update notification state', 'error');
+      }
+    });
+
+    document.getElementById('notification-list').addEventListener('click', async (event) => {
+      const actionButton = event.target.closest('[data-action]');
+      if (!actionButton) {
+        return;
+      }
+
+      const notificationId = actionButton.dataset.id || '';
+      const type = actionButton.dataset.type || '';
+      const targetId = actionButton.dataset.targetId || '';
+
+      if (actionButton.dataset.action === 'read') {
+        await markSingleNotificationRead(notificationId);
+        return;
+      }
+
+      if (actionButton.dataset.action === 'open') {
+        await markSingleNotificationRead(notificationId);
+        window.location.href = adminTargetUrl(type, targetId);
+      }
+    });
+
+    checkAuth(async (user) => {
+      notificationState.userId = user?.uid || '';
+      await loadMoreNotifications();
+    });
+
+    function filteredNotifications() {
+      if (notificationState.filter === 'unread') {
+        return notificationState.items.filter((item) => item.isRead !== true);
+      }
+
+      return notificationState.items;
+    }
+
+    function renderNotifications() {
+      const items = filteredNotifications();
+      const list = document.getElementById('notification-list');
+      const summary = document.getElementById('notification-summary');
+      const loadMoreButton = document.getElementById('load-more-notifications');
+      const unreadVisible = items.filter((item) => item.isRead !== true).length;
+
+      summary.textContent = `${items.length} loaded item${items.length === 1 ? '' : 's'} • ${unreadVisible} unread`;
+      loadMoreButton.hidden = !notificationState.hasMore;
+      loadMoreButton.disabled = notificationState.isLoading;
+      loadMoreButton.textContent = notificationState.isLoading ? 'Loading...' : 'Load More Notifications';
+
+      if (notificationState.isLoading && notificationState.items.length === 0) {
+        list.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+        return;
+      }
+
+      if (items.length === 0) {
+        list.innerHTML = '<div class="empty-card">No notifications to show right now.</div>';
+        return;
+      }
+
+      list.innerHTML = items.map((item) => {
+        const accent = typeColor(item.type);
+        const isBusy = notificationState.busyIds.has(item.id);
+
+        return `
+          <div class="notification-card ${item.isRead === true ? '' : 'is-unread'}">
+            <div class="notification-card-header">
+              <div class="notification-card-main">
+                <div class="notification-type-icon" style="background:${accent}22;color:${accent}">${esc(typeIcon(item.type || 'project_idea'))}</div>
+                <div>
+                  <div class="notification-title">${esc(item.title || 'Notification')}</div>
+                  <div class="notification-body">${esc(item.body || item.message || '')}</div>
+                  <div class="notification-meta">
+                    <span class="meta-pill" style="background:${accent}1f;color:${accent}">${esc(item.type || 'notification')}</span>
+                    <span class="meta-pill ${item.isRead === true ? 'meta-pill-read' : 'meta-pill-unread'}">${item.isRead === true ? 'Read' : 'Unread'}</span>
+                    <span class="meta-pill">${esc(formatFullTimestamp(item.createdAt) || 'Unknown time')}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="notification-actions">
+              <button class="btn-open" data-action="open" data-id="${esc(item.id)}" data-type="${esc(item.type)}" data-target-id="${esc(item.targetId)}" ${isBusy ? 'disabled' : ''}>Open Item</button>
+              ${
+                item.isRead === true
+                  ? '<span class="inline-status">Already read</span>'
+                  : `<button class="btn-secondary" data-action="read" data-id="${esc(item.id)}" ${isBusy ? 'disabled' : ''}>${isBusy ? 'Saving...' : 'Mark Read'}</button>`
+              }
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function markSingleNotificationRead(notificationId) {
+      if (!notificationId || notificationState.busyIds.has(notificationId)) {
+        return;
+      }
+
+      const target = notificationState.items.find((item) => item.id === notificationId);
+      if (!target || target.isRead === true) {
+        return;
+      }
+
+      notificationState.busyIds.add(notificationId);
+      renderNotifications();
+
+      try {
+        await markNotificationRead(notificationId);
+        target.isRead = true;
+      } catch (error) {
+        console.error('Failed to mark notification as read:', error);
+        showToast('Failed to update notification state', 'error');
+      } finally {
+        notificationState.busyIds.delete(notificationId);
+        renderNotifications();
+      }
+    }
+
+    async function loadMoreNotifications() {
+      if (!notificationState.userId || notificationState.isLoading || notificationState.hasMore === false) {
+        return;
+      }
+
+      notificationState.isLoading = true;
+      renderNotifications();
+
+      try {
+        const result = await loadNotificationsPage({
+          userId: notificationState.userId,
+          pageSize: 20,
+          cursor: notificationState.cursor,
+        });
+
+        notificationState.items.push(...result.items);
+        notificationState.cursor = result.cursor;
+        notificationState.hasMore = result.hasMore;
+      } catch (error) {
+        console.error('Failed to load notifications:', error);
+        showToast('Failed to load notifications', 'error');
+      } finally {
+        notificationState.isLoading = false;
+        renderNotifications();
+      }
+    }
+  </script>
+</body>
+</html>

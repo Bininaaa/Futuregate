@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "338222905825",
+    "project_id": "avenirdz-7a419",
+    "storage_bucket": "avenirdz-7a419.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:338222905825:android:671805b324014f00b87aa0",
+        "android_client_info": {
+          "package_name": "com.ymama.avenirdz"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDhT6BXyfSXZlKkOHGYTpLSyWAqDrTMMbE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

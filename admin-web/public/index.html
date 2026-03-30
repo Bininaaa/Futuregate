@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AvenirDZ Admin - Dashboard</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <div id="auth-gate" class="auth-gate">
+    <div class="spinner"></div>
+    <p>Verifying session...</p>
+  </div>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-brand">
+          <div class="sidebar-brand-icon">&#x1F6E1;&#xFE0F;</div>
+          <div class="sidebar-brand-text">
+            <h2>Admin Panel</h2>
+            <p>AvenirDZ Management</p>
+          </div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="index.html" class="nav-item"><span class="icon">&#x1F4CA;</span> Dashboard</a>
+        <a href="users.html" class="nav-item"><span class="icon">&#x1F465;</span> Users</a>
+        <a href="moderation.html" class="nav-item"><span class="icon">&#x2696;&#xFE0F;</span> Moderation</a>
+        <a href="activity.html" class="nav-item"><span class="icon">&#x23F1;&#xFE0F;</span> Activity</a>
+        <a href="notifications.html" class="nav-item"><span class="icon">&#x1F514;</span> Notifications <span class="nav-badge" data-notification-badge hidden>0</span></a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="admin-info">
+          <div class="admin-avatar" id="admin-avatar">A</div>
+          <div>
+            <div class="admin-name" id="admin-name">Admin</div>
+            <div class="admin-email" id="admin-email"></div>
+          </div>
+        </div>
+        <button class="btn-logout" id="btn-logout">&#x1F6AA; Logout</button>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <h1 class="page-title">Dashboard</h1>
+      <div id="loading" class="loading"><div class="spinner"></div></div>
+      <div id="content" style="display:none">
+        <h3 class="section-title" style="margin-top:0">Overview</h3>
+        <div class="stats-grid" id="overview-stats"></div>
+
+        <h3 class="section-title">Students by Level</h3>
+        <div class="stats-grid" id="level-stats"></div>
+
+        <div class="charts-grid">
+          <div class="chart-card"><h3>Users by Level</h3><canvas id="levelChart"></canvas></div>
+          <div class="chart-card"><h3>Users by Role</h3><canvas id="roleChart"></canvas></div>
+        </div>
+        <div class="chart-card" style="margin-bottom:16px"><h3>Monthly Registrations</h3><canvas id="monthlyChart"></canvas></div>
+
+        <h3 class="section-title">Content</h3>
+        <div class="stats-grid" id="content-stats"></div>
+
+        <h3 class="section-title">Quick Access</h3>
+        <div class="quick-access-grid">
+          <a class="quick-link-card" href="moderation.html?tab=applications">
+            <div class="quick-link-icon" style="background:rgba(123,31,162,0.12);color:#7B1FA2">AP</div>
+            <div class="quick-link-title">Applications</div>
+            <div class="quick-link-copy">Review submitted applications and jump straight into the related opportunity.</div>
+          </a>
+          <a class="quick-link-card" href="moderation.html?tab=opportunities">
+            <div class="quick-link-icon" style="background:rgba(255,140,0,0.12);color:#FF8C00">OP</div>
+            <div class="quick-link-title">Opportunities</div>
+            <div class="quick-link-copy">Manage opportunities, featured status, and the latest company postings.</div>
+          </a>
+          <a class="quick-link-card" href="moderation.html?tab=scholarships">
+            <div class="quick-link-icon" style="background:rgba(233,30,99,0.12);color:#E91E63">SC</div>
+            <div class="quick-link-title">Scholarships</div>
+            <div class="quick-link-copy">Create, notify, and review scholarship content from one admin flow.</div>
+          </a>
+          <a class="quick-link-card" href="moderation.html?tab=trainings">
+            <div class="quick-link-icon" style="background:rgba(0,188,212,0.12);color:#00BCD4">TR</div>
+            <div class="quick-link-title">Trainings</div>
+            <div class="quick-link-copy">Browse learning resources and keep featured training content updated.</div>
+          </a>
+          <a class="quick-link-card" href="moderation.html?tab=ideas">
+            <div class="quick-link-icon" style="background:rgba(255,193,7,0.18);color:#8A5A00">PI</div>
+            <div class="quick-link-title">Project Ideas</div>
+            <div class="quick-link-copy">Moderate student project ideas and follow pending submissions.</div>
+          </a>
+          <a class="quick-link-card" href="activity.html">
+            <div class="quick-link-icon" style="background:rgba(45,27,78,0.1);color:#2D1B4E">AC</div>
+            <div class="quick-link-title">Recent Activity</div>
+            <div class="quick-link-copy">See the newest platform activity across applications and content publishing.</div>
+          </a>
+          <a class="quick-link-card" href="notifications.html">
+            <div class="quick-link-icon" style="background:rgba(76,175,80,0.12);color:#2E7D32">NT</div>
+            <div class="quick-link-title">Notification Center</div>
+            <div class="quick-link-copy">Track admin notifications and unread counts without losing context.</div>
+            <span class="quick-link-badge" data-notification-badge hidden>0</span>
+          </a>
+        </div>
+
+        <h3 class="section-title">Engagement Analytics</h3>
+        <div id="engagement-cards"></div>
+
+        <div class="charts-grid" style="margin-top:16px">
+          <div id="top-applied"></div>
+          <div id="top-saved"></div>
+        </div>
+
+        <div class="section-card-header">
+          <h3 class="section-title" style="margin:0">Recent Activity</h3>
+          <a class="section-link" href="activity.html">View All Activity</a>
+        </div>
+        <div class="card" id="activity-feed"></div>
+
+        <h3 class="section-title">Recent Users</h3>
+        <div id="recent-users"></div>
+
+        <h3 class="section-title">Recent Opportunities</h3>
+        <div id="recent-opps"></div>
+      </div>
+    </main>
+  </div>
+
+  <script type="module">
+    import { checkAuth, formatTimestamp, roleColor, esc } from './js/auth.js';
+    import { db, collection, getDocs, query, orderBy, limit, where } from './js/firebase-config.js';
+    import { createActivityState, loadRecentActivitiesPage } from './js/activity-service.js';
+    import { activityTypeLabel, adminTargetUrl, typeColor, typeIcon } from './js/admin-utils.js';
+
+    const dashboardActivityState = createActivityState();
+
+    const avatarEmojis = {
+      avatar_1: '🙂', avatar_2: '😊', avatar_3: '😀', avatar_4: '😄',
+      avatar_5: '😎', avatar_6: '🤗', avatar_7: '😃', avatar_8: '😁',
+    };
+    const avatarColors = {
+      avatar_1: '#1565C0', avatar_2: '#AD1457', avatar_3: '#2E7D32', avatar_4: '#E65100',
+      avatar_5: '#6A1B9A', avatar_6: '#00838F', avatar_7: '#FF8F00', avatar_8: '#4E342E',
+    };
+
+    function buildDashAvatarHtml(user) {
+      const color = roleColor(user.role);
+      const photoUrl = user.role === 'company' ? user.logo : user.profileImage;
+      const initial = esc((user.fullName || '?')[0].toUpperCase());
+      if (user.photoType === 'upload' && photoUrl) {
+        return `<div class="user-avatar" style="background:${color}22;color:${color}"><img src="${esc(photoUrl)}" alt="${initial}" onerror="this.remove();this.parentNode.textContent='${initial}'"></div>`;
+      }
+      if (user.photoType === 'avatar' && user.avatarId && avatarEmojis[user.avatarId]) {
+        return `<div class="user-avatar" style="background:${avatarColors[user.avatarId]}22">${avatarEmojis[user.avatarId]}</div>`;
+      }
+      if (photoUrl) {
+        return `<div class="user-avatar" style="background:${color}22;color:${color}"><img src="${esc(photoUrl)}" alt="${initial}" onerror="this.remove();this.parentNode.textContent='${initial}'"></div>`;
+      }
+      return `<div class="user-avatar" style="background:${color}22;color:${color}">${initial}</div>`;
+    }
+
+    checkAuth(async () => {
+      await loadDashboard();
+    });
+
+    async function loadDashboard() {
+      try {
+        const [usersSnap, oppsSnap, appsSnap, scholarSnap, trainSnap, ideasSnap, cvsSnap, savedSnap, convosSnap] = await Promise.all([
+          getDocs(collection(db, 'users')),
+          getDocs(collection(db, 'opportunities')),
+          getDocs(collection(db, 'applications')),
+          getDocs(collection(db, 'scholarships')),
+          getDocs(collection(db, 'trainings')),
+          getDocs(collection(db, 'projectIdeas')),
+          getDocs(collection(db, 'cvs')),
+          getDocs(collection(db, 'savedOpportunities')),
+          getDocs(query(collection(db, 'conversations'), where('status', '==', 'active'))),
+        ]);
+
+        let total = 0;
+        let students = 0;
+        let companies = 0;
+        let admins = 0;
+        let active = 0;
+        let inactive = 0;
+        let bac = 0;
+        let licence = 0;
+        let master = 0;
+        let doctorat = 0;
+        const monthlyMap = { Jan: 0, Feb: 0, Mar: 0, Apr: 0, May: 0, Jun: 0, Jul: 0, Aug: 0, Sep: 0, Oct: 0, Nov: 0, Dec: 0 };
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+        usersSnap.forEach((snapshot) => {
+          const data = snapshot.data();
+          total += 1;
+
+          if (data.role === 'student') {
+            students += 1;
+            if (data.academicLevel === 'bac') bac += 1;
+            else if (data.academicLevel === 'licence') licence += 1;
+            else if (data.academicLevel === 'master') master += 1;
+            else if (data.academicLevel === 'doctorat') doctorat += 1;
+          } else if (data.role === 'company') {
+            companies += 1;
+          } else if (data.role === 'admin') {
+            admins += 1;
+          }
+
+          if (data.isActive !== false) active += 1;
+          else inactive += 1;
+
+          if (data.createdAt) {
+            const date = data.createdAt.toDate ? data.createdAt.toDate() : new Date(data.createdAt.seconds * 1000);
+            monthlyMap[months[date.getMonth()]] = (monthlyMap[months[date.getMonth()]] || 0) + 1;
+          }
+        });
+
+        const totalApps = appsSnap.size;
+        const totalOpps = oppsSnap.size;
+        const appRate = totalOpps > 0 ? totalApps / totalOpps : 0;
+        const totalCvs = cvsSnap.size;
+        const cvRate = students > 0 ? (totalCvs / students) * 100 : 0;
+
+        let pendingIdeas = 0;
+        let approvedIdeas = 0;
+        ideasSnap.forEach((snapshot) => {
+          const status = snapshot.data().status || 'pending';
+          if (status === 'pending') pendingIdeas += 1;
+          else if (status === 'approved') approvedIdeas += 1;
+        });
+
+        const oppTitles = {};
+        oppsSnap.forEach((snapshot) => {
+          oppTitles[snapshot.id] = snapshot.data().title || 'Untitled';
+        });
+
+        const appCounts = {};
+        appsSnap.forEach((snapshot) => {
+          const id = snapshot.data().opportunityId || '';
+          appCounts[id] = (appCounts[id] || 0) + 1;
+        });
+
+        const saveCounts = {};
+        savedSnap.forEach((snapshot) => {
+          const id = snapshot.data().opportunityId || '';
+          saveCounts[id] = (saveCounts[id] || 0) + 1;
+        });
+
+        const topApplied = Object.entries(appCounts)
+          .sort((left, right) => right[1] - left[1])
+          .slice(0, 3)
+          .map(([id, count]) => ({ title: oppTitles[id] || 'Unknown', count }));
+        const topSaved = Object.entries(saveCounts)
+          .sort((left, right) => right[1] - left[1])
+          .slice(0, 3)
+          .map(([id, count]) => ({ title: oppTitles[id] || 'Unknown', count }));
+
+        renderOverview({ total, active, inactive, students, companies });
+        renderLevels({ bac, licence, master, doctorat });
+        renderContentStats({
+          opps: totalOpps,
+          apps: totalApps,
+          scholarships: scholarSnap.size,
+          trainings: trainSnap.size,
+          ideas: ideasSnap.size,
+          convos: convosSnap.size,
+        });
+        renderEngagement({ appRate, cvRate, totalCvs, students, pendingIdeas, approvedIdeas });
+        renderTopList('top-applied', 'Most Applied Opportunities', topApplied, 'applications', '#7B1FA2');
+        renderTopList('top-saved', 'Most Saved Opportunities', topSaved, 'saves', '#FF8C00');
+        renderCharts({ bac, licence, master, doctorat, students, companies, admins, monthlyMap, months });
+        await renderActivity();
+        await renderRecentUsers();
+        await renderRecentOpps();
+
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('content').style.display = 'block';
+      } catch (error) {
+        console.error('Dashboard load error:', error);
+        document.getElementById('loading').innerHTML = '<p style="color:#c33">Failed to load dashboard data.</p>';
+      }
+    }
+
+    function statCard(title, value, label, color) {
+      return `<div class="stat-card">
+        <div class="stat-icon" style="background:${color}22;color:${color}">${label}</div>
+        <div class="stat-info"><h4>${title}</h4><div class="value">${value}</div></div>
+      </div>`;
+    }
+
+    function renderOverview(stats) {
+      document.getElementById('overview-stats').innerHTML =
+        statCard('Total Users', stats.total, 'US', '#2D1B4E') +
+        statCard('Active Users', stats.active, 'OK', '#4CAF50') +
+        statCard('Inactive Users', stats.inactive, 'NO', '#f44336') +
+        statCard('Students', stats.students, 'ST', '#2196F3') +
+        statCard('Companies', stats.companies, 'CO', '#009688');
+    }
+
+    function renderLevels(stats) {
+      document.getElementById('level-stats').innerHTML =
+        statCard('Bac', stats.bac, 'BA', '#FF9800') +
+        statCard('Licence', stats.licence, 'LI', '#3F51B5') +
+        statCard('Master', stats.master, 'MA', '#9C27B0') +
+        statCard('Doctorat', stats.doctorat, 'DR', '#009688');
+    }
+
+    function renderContentStats(stats) {
+      document.getElementById('content-stats').innerHTML =
+        statCard('Opportunities', stats.opps, 'OP', '#FF8C00') +
+        statCard('Applications', stats.apps, 'AP', '#7B1FA2') +
+        statCard('Scholarships', stats.scholarships, 'SC', '#E91E63') +
+        statCard('Trainings', stats.trainings, 'TR', '#00BCD4') +
+        statCard('Project Ideas', stats.ideas, 'PI', '#FFC107') +
+        statCard('Conversations', stats.convos, 'CH', '#4CAF50');
+    }
+
+    function renderEngagement(stats) {
+      document.getElementById('engagement-cards').innerHTML = `
+        <div class="engagement-card">
+          <div class="engagement-icon" style="background:rgba(33,150,243,0.12);color:#2196F3">AR</div>
+          <div class="engagement-info"><h4>Application Rate</h4><div class="value">${stats.appRate.toFixed(1)} apps/opportunity</div></div>
+        </div>
+        <div class="engagement-card">
+          <div class="engagement-icon" style="background:rgba(76,175,80,0.12);color:#4CAF50">CV</div>
+          <div class="engagement-info"><h4>CV Completion Rate</h4><div class="value">${stats.cvRate.toFixed(0)}% (${stats.totalCvs} of ${stats.students} students)</div></div>
+        </div>
+        <div class="engagement-card">
+          <div class="engagement-icon" style="background:rgba(255,152,0,0.12);color:#FF9800">PI</div>
+          <div class="engagement-info"><h4>Pending Project Ideas</h4><div class="value">${stats.pendingIdeas} pending, ${stats.approvedIdeas} approved</div></div>
+        </div>`;
+    }
+
+    function renderTopList(containerId, title, items, label, color) {
+      const el = document.getElementById(containerId);
+      let html = `<div class="top-list"><h3>${title}</h3>`;
+      if (items.length === 0) {
+        html += '<p style="color:#999;font-size:14px">No data yet</p>';
+      }
+      items.forEach((item, index) => {
+        html += `<div class="top-item">
+          <div class="top-rank" style="background:${color}22;color:${color}">#${index + 1}</div>
+          <div class="top-title">${esc(item.title)}</div>
+          <div class="top-count" style="background:${color}1a;color:${color}">${item.count} ${label}</div>
+        </div>`;
+      });
+      html += '</div>';
+      el.innerHTML = html;
+    }
+
+    function renderCharts(stats) {
+      new Chart(document.getElementById('levelChart'), {
+        type: 'bar',
+        data: {
+          labels: ['Bac', 'Licence', 'Master', 'Doctorat'],
+          datasets: [{
+            label: 'Students',
+            data: [stats.bac, stats.licence, stats.master, stats.doctorat],
+            backgroundColor: ['#FF9800', '#3F51B5', '#9C27B0', '#009688'],
+            borderRadius: 8,
+          }],
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { display: false } },
+          scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } },
+        },
+      });
+
+      new Chart(document.getElementById('roleChart'), {
+        type: 'doughnut',
+        data: {
+          labels: ['Students', 'Companies', 'Admins'],
+          datasets: [{
+            data: [stats.students, stats.companies, stats.admins],
+            backgroundColor: ['#2196F3', '#009688', '#FF8C00'],
+          }],
+        },
+        options: { responsive: true, plugins: { legend: { position: 'bottom' } } },
+      });
+
+      new Chart(document.getElementById('monthlyChart'), {
+        type: 'line',
+        data: {
+          labels: stats.months,
+          datasets: [{
+            label: 'Registrations',
+            data: stats.months.map((month) => stats.monthlyMap[month] || 0),
+            borderColor: '#FF8C00',
+            backgroundColor: 'rgba(255,140,0,0.1)',
+            fill: true,
+            tension: 0.3,
+            pointRadius: 4,
+          }],
+        },
+        options: {
+          responsive: true,
+          scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } },
+        },
+      });
+    }
+
+    async function renderActivity() {
+      const el = document.getElementById('activity-feed');
+
+      try {
+        const result = await loadRecentActivitiesPage(dashboardActivityState, {
+          pageSize: 3,
+          maxItems: 8,
+        });
+        const activities = result.items.slice(0, 8);
+
+        if (activities.length === 0) {
+          el.innerHTML = '<p style="color:#999">No recent activity</p>';
+          return;
+        }
+
+        el.innerHTML = activities.map((item) => `
+          <div class="activity-item">
+            <div class="activity-icon" style="background:${typeColor(item.type)}22;color:${typeColor(item.type)}">${esc(typeIcon(item.type))}</div>
+            <div style="flex:1">
+              <div class="activity-text"><strong>${esc(item.title || 'Untitled')}</strong> • ${esc(item.description || '')}</div>
+              <div class="activity-time">${esc(item.actorName || 'Unknown actor')} • ${esc(activityTypeLabel(item.type))} • ${formatTimestamp(item.timestamp)}</div>
+            </div>
+            <a class="btn-open" href="${adminTargetUrl(item.type, item.targetId)}">Open</a>
+          </div>`).join('');
+      } catch (error) {
+        console.error('Failed to load dashboard activity:', error);
+        el.innerHTML = '<p style="color:#c33">Failed to load recent activity.</p>';
+      }
+    }
+
+    async function renderRecentUsers() {
+      try {
+        const snap = await getDocs(query(collection(db, 'users'), orderBy('createdAt', 'desc'), limit(5)));
+        const el = document.getElementById('recent-users');
+        let html = '';
+        snap.forEach((snapshot) => {
+          const user = snapshot.data();
+          html += `<div class="user-card" style="cursor:default">
+            ${buildDashAvatarHtml(user)}
+            <div class="user-info">
+              <div class="user-name">${esc(user.fullName || 'Unknown')}</div>
+              <div class="user-email">${esc(user.email || '')}</div>
+              <div class="user-badges"><span class="badge badge-${esc(user.role)}">${esc(user.role)}</span></div>
+            </div>
+            <div class="user-actions"><span class="status-dot ${user.isActive !== false ? 'active' : 'inactive'}"></span></div>
+          </div>`;
+        });
+        el.innerHTML = html || '<p style="color:#999">No users yet</p>';
+      } catch (error) {
+        console.error('Failed to load recent users:', error);
+        document.getElementById('recent-users').innerHTML = '<p style="color:#c33">Failed to load recent users.</p>';
+      }
+    }
+
+    async function renderRecentOpps() {
+      try {
+        const snap = await getDocs(query(collection(db, 'opportunities'), orderBy('createdAt', 'desc'), limit(5)));
+        const el = document.getElementById('recent-opps');
+        let html = '';
+        snap.forEach((snapshot) => {
+          const opportunity = snapshot.data();
+          html += `<div class="opp-card">
+            <div class="opp-icon" style="background:rgba(255,140,0,0.12);color:#FF8C00">OP</div>
+            <div class="opp-info">
+              <div class="opp-title">${esc(opportunity.title || 'No title')}</div>
+              <div class="opp-company">${esc(opportunity.companyName || 'Unknown')}</div>
+              <div class="opp-badges">
+                <span class="badge badge-${opportunity.type === 'job' ? 'job' : 'internship'}">${esc(opportunity.type || '')}</span>
+                <span class="badge badge-${opportunity.status === 'open' ? 'open' : 'closed'}">${esc(opportunity.status || '')}</span>
+              </div>
+            </div>
+          </div>`;
+        });
+        el.innerHTML = html || '<p style="color:#999">No opportunities yet</p>';
+      } catch (error) {
+        console.error('Failed to load recent opportunities:', error);
+        document.getElementById('recent-opps').innerHTML = '<p style="color:#c33">Failed to load recent opportunities.</p>';
+      }
+    }
+  </script>
+</body>
+</html>

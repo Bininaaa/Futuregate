@@ -1,0 +1,28 @@
+{
+  "$schema": "./.vscode/schemas/package.schema.json",
+  "name": "avenirdz",
+  "version": "1.0.0",
+  "description": "A new Flutter project.",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "scripts": {
+    "seed:firebase": "node firebase_seed/seed.js",
+    "seed:firebase:admin": "node firebase_seed/seed.js --admin-only",
+    "test": "node -e \"console.log('No root Node tests configured. Run npm run verify:flutter for the Flutter checks.')\"",
+    "verify:flutter": "flutter analyze && flutter test",
+    "build:web": "flutter build web"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "firebase-admin": "^13.7.0"
+  },
+  "devDependencies": {
+    "wrangler": "^4.78.0"
+  }
+}

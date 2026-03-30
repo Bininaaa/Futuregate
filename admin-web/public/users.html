@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AvenirDZ Admin - Users</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div id="auth-gate" class="auth-gate">
+    <div class="spinner"></div>
+    <p>Verifying session...</p>
+  </div>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-brand">
+          <div class="sidebar-brand-icon">&#x1F6E1;&#xFE0F;</div>
+          <div class="sidebar-brand-text"><h2>Admin Panel</h2><p>AvenirDZ Management</p></div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="index.html" class="nav-item"><span class="icon">&#x1F4CA;</span> Dashboard</a>
+        <a href="users.html" class="nav-item"><span class="icon">&#x1F465;</span> Users</a>
+        <a href="moderation.html" class="nav-item"><span class="icon">&#x2696;&#xFE0F;</span> Moderation</a>
+        <a href="activity.html" class="nav-item"><span class="icon">&#x23F1;&#xFE0F;</span> Activity</a>
+        <a href="notifications.html" class="nav-item"><span class="icon">&#x1F514;</span> Notifications <span class="nav-badge" data-notification-badge hidden>0</span></a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="admin-info">
+          <div class="admin-avatar" id="admin-avatar">A</div>
+          <div><div class="admin-name" id="admin-name">Admin</div><div class="admin-email" id="admin-email"></div></div>
+        </div>
+        <button class="btn-logout" id="btn-logout">&#x1F6AA; Logout</button>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <h1 class="page-title">User Management</h1>
+      <div class="search-bar">
+        <span class="search-icon">&#x1F50D;</span>
+        <input type="text" id="search-input" placeholder="Search by name or email...">
+      </div>
+      <div class="filter-chips" id="role-filters">
+        <button class="chip active" data-role="all">All</button>
+        <button class="chip" data-role="student">Students</button>
+        <button class="chip" data-role="company">Companies</button>
+        <button class="chip" data-role="admin">Admins</button>
+      </div>
+      <div class="level-filters" id="level-filters" style="display:none">
+        <span>Level:</span>
+        <button class="chip chip-small active" data-level="all">All</button>
+        <button class="chip chip-small" data-level="bac">Bac</button>
+        <button class="chip chip-small" data-level="licence">Licence</button>
+        <button class="chip chip-small" data-level="master">Master</button>
+        <button class="chip chip-small" data-level="doctorat">Doctorat</button>
+      </div>
+      <div id="loading" class="loading"><div class="spinner"></div></div>
+      <div id="users-list"></div>
+    </main>
+  </div>
+
+  <div class="modal-overlay" id="user-modal">
+    <div class="modal">
+      <button class="modal-close" id="modal-close">&times;</button>
+      <div class="modal-avatar" id="modal-avatar"></div>
+      <div class="modal-name" id="modal-name"></div>
+      <div class="modal-badges" id="modal-badges"></div>
+      <div id="modal-details"></div>
+    </div>
+  </div>
+
+  <div class="modal-overlay confirm-modal" id="confirm-modal">
+    <div class="modal">
+      <h3 id="confirm-title"></h3>
+      <p id="confirm-msg"></p>
+      <div class="confirm-actions">
+        <button class="btn-cancel" id="confirm-cancel">Cancel</button>
+        <button class="btn-confirm" id="confirm-ok"></button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { checkAuth, showToast, roleColor, esc } from './js/auth.js';
+    import { db, collection, getDocs, doc, updateDoc, query, orderBy } from './js/firebase-config.js';
+    import {
+      friendlyDocumentErrorMessage,
+      getUserCvDocument,
+      loadStudentCvSummary,
+      openDocumentUrl,
+      parseTimestampMs,
+    } from './js/document-access.js';
+
+    let allUsers = [];
+    let roleFilter = 'all';
+    let levelFilter = 'all';
+    let searchQuery = '';
+    let currentModalUid = '';
+    const userCvSummaryCache = new Map();
+
+    const avatarEmojis = {
+      avatar_1: '🙂', avatar_2: '😊', avatar_3: '😀', avatar_4: '😄',
+      avatar_5: '😎', avatar_6: '🤗', avatar_7: '😃', avatar_8: '😁',
+    };
+    const avatarColors = {
+      avatar_1: '#1565C0', avatar_2: '#AD1457', avatar_3: '#2E7D32', avatar_4: '#E65100',
+      avatar_5: '#6A1B9A', avatar_6: '#00838F', avatar_7: '#FF8F00', avatar_8: '#4E342E',
+    };
+
+    function buildAvatarContent(user) {
+      const photoUrl = user.role === 'company' ? user.logo : user.profileImage;
+      if (user.photoType === 'upload' && photoUrl) {
+        return { type: 'img', url: photoUrl };
+      }
+      if (user.photoType === 'avatar' && user.avatarId && avatarEmojis[user.avatarId]) {
+        return { type: 'emoji', emoji: avatarEmojis[user.avatarId], color: avatarColors[user.avatarId] };
+      }
+      if (photoUrl) {
+        return { type: 'img', url: photoUrl };
+      }
+      return { type: 'initial' };
+    }
+
+    function renderAvatarHtml(user, { color: roleCol }) {
+      const content = buildAvatarContent(user);
+      if (content.type === 'img') {
+        const initial = esc((user.fullName || '?')[0].toUpperCase());
+        return `style="background:${roleCol}22;color:${roleCol}"><img src="${esc(content.url)}" alt="${initial}" onerror="this.remove();this.parentNode.textContent='${initial}'">`;
+      }
+      if (content.type === 'emoji') {
+        return `style="background:${content.color}22;font-size:inherit">${content.emoji}`;
+      }
+      const initial = esc((user.fullName || '?')[0].toUpperCase());
+      return `style="background:${roleCol}22;color:${roleCol}">${initial}`;
+    }
+
+    checkAuth(async () => {
+      await loadUsers();
+    });
+
+    async function loadUsers() {
+      try {
+        const snap = await getDocs(query(collection(db, 'users'), orderBy('createdAt', 'desc')));
+        allUsers = [];
+        snap.forEach((item) => allUsers.push({ ...item.data(), uid: item.id }));
+        document.getElementById('loading').style.display = 'none';
+        renderUsers();
+      } catch (error) {
+        console.error('Load users error:', error);
+        document.getElementById('loading').innerHTML = '<p style="color:#c33">Failed to load users.</p>';
+      }
+    }
+
+    function filterUsers() {
+      return allUsers.filter((user) => {
+        if (roleFilter !== 'all' && user.role !== roleFilter) return false;
+        if (levelFilter !== 'all' && (user.academicLevel || '') !== levelFilter) return false;
+        if (searchQuery) {
+          const normalized = searchQuery.toLowerCase();
+          return (user.fullName || '').toLowerCase().includes(normalized) || (user.email || '').toLowerCase().includes(normalized);
+        }
+        return true;
+      });
+    }
+
+    function renderUsers() {
+      const users = filterUsers();
+      const el = document.getElementById('users-list');
+      if (users.length === 0) {
+        el.innerHTML = '<div class="empty-state"><div class="icon">&#x1F465;</div><p>No users found</p></div>';
+        return;
+      }
+
+      el.innerHTML = users.map((user) => {
+        const color = roleColor(user.role);
+        return `<div class="user-card" data-uid="${esc(user.uid)}">
+          <div class="user-avatar" ${renderAvatarHtml(user, { color })}</div>
+          <div class="user-info">
+            <div class="user-name">${esc(user.fullName || 'Unknown')}</div>
+            <div class="user-email">${esc(user.email || '')}</div>
+            <div class="user-badges">
+              <span class="badge badge-${esc(user.role)}">${esc(user.role)}</span>
+              ${user.role === 'student' && user.academicLevel ? `<span class="badge badge-level">${esc(user.academicLevel)}</span>` : ''}
+            </div>
+          </div>
+          <div class="user-actions">
+            <span class="status-dot ${user.isActive !== false ? 'active' : 'inactive'}"></span>
+            <button class="btn-action btn-details" data-action="details" data-uid="${esc(user.uid)}">Details</button>
+            <button class="btn-action ${user.isActive !== false ? 'btn-block' : 'btn-unblock'}" data-action="toggle" data-uid="${esc(user.uid)}">${user.isActive !== false ? 'Block' : 'Unblock'}</button>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    document.getElementById('search-input').addEventListener('input', (event) => {
+      searchQuery = event.target.value;
+      renderUsers();
+    });
+
+    document.getElementById('role-filters').addEventListener('click', (event) => {
+      const chip = event.target.closest('.chip');
+      if (!chip) return;
+      roleFilter = chip.dataset.role;
+      document.querySelectorAll('#role-filters .chip').forEach((item) => item.classList.remove('active'));
+      chip.classList.add('active');
+      const levelFilters = document.getElementById('level-filters');
+      levelFilters.style.display = (roleFilter === 'student' || roleFilter === 'all') ? 'flex' : 'none';
+      if (roleFilter !== 'student') {
+        levelFilter = 'all';
+        document.querySelectorAll('#level-filters .chip').forEach((item) => {
+          item.classList.toggle('active', item.dataset.level === 'all');
+        });
+      }
+      renderUsers();
+    });
+
+    document.getElementById('level-filters').addEventListener('click', (event) => {
+      const chip = event.target.closest('.chip');
+      if (!chip) return;
+      levelFilter = chip.dataset.level;
+      document.querySelectorAll('#level-filters .chip').forEach((item) => item.classList.remove('active'));
+      chip.classList.add('active');
+      renderUsers();
+    });
+
+    document.getElementById('users-list').addEventListener('click', (event) => {
+      const button = event.target.closest('[data-action]');
+      if (!button) return;
+      event.stopPropagation();
+      const uid = button.dataset.uid;
+      if (button.dataset.action === 'details') showUserDetails(uid);
+      else if (button.dataset.action === 'toggle') confirmToggle(uid);
+    });
+
+    function documentDateLabel(value) {
+      const timestampMs = parseTimestampMs(value);
+      if (!timestampMs) {
+        return 'Not available';
+      }
+
+      return new Date(timestampMs).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      });
+    }
+
+    function renderCvTagRow(items) {
+      if (!Array.isArray(items) || items.length === 0) {
+        return '';
+      }
+
+      return `
+        <div class="document-tag-row">
+          ${items.map((item) => `<span class="document-tag">${esc(item)}</span>`).join('')}
+        </div>
+      `;
+    }
+
+    function renderStudentCvSection(user, summary, { loading = false, error = '' } = {}) {
+      const primaryAvailable = summary?.primary?.isAvailable === true;
+      const builtAvailable = summary?.built?.isAvailable === true;
+      const hasBuiltInfo = summary?.built?.hasBuilderContent === true;
+
+      let primaryBody = `
+        <div class="document-card-meta">No uploaded primary CV file is available for this student.</div>
+      `;
+      if (primaryAvailable) {
+        primaryBody = `
+          <div class="document-card-meta">
+            Uploaded CV: ${esc(summary.primary.fileName || 'primary_cv.pdf')}
+          </div>
+          <div class="document-card-meta">
+            Uploaded: ${esc(documentDateLabel(summary.primary.uploadedAt))}
+          </div>
+          <div class="document-actions">
+            <button
+              class="btn-open"
+              data-document-action="user-cv"
+              data-user-id="${esc(user.uid)}"
+              data-variant="primary"
+              data-mode="view"
+            >
+              View CV
+            </button>
+            <button
+              class="btn-secondary"
+              data-document-action="user-cv"
+              data-user-id="${esc(user.uid)}"
+              data-variant="primary"
+              data-mode="download"
+            >
+              Download CV
+            </button>
+          </div>
+          ${
+            summary.primary.isPdf
+              ? ''
+              : '<div class="document-feedback is-warning">This file is not a PDF. Viewing may download it instead of previewing in the browser.</div>'
+          }
+        `;
+      }
+
+      let builtBody = `
+        <div class="document-card-meta">No built CV information is available for this student.</div>
+      `;
+      if (hasBuiltInfo || builtAvailable) {
+        const builtSummary = summary?.built?.summary
+          ? `<div class="document-card-copy">${esc(summary.built.summary)}</div>`
+          : '';
+        const builtContact = [
+          summary?.built?.email,
+          summary?.built?.phone,
+        ].filter(Boolean).map((item) => esc(item)).join(' | ');
+
+        builtBody = `
+          <div class="document-card-meta">
+            ${
+              builtAvailable
+                ? `Built CV PDF: ${esc(summary.built.fileName || 'cv_builder.pdf')}`
+                : 'Built CV information is available, but no exported PDF was found.'
+            }
+          </div>
+          ${
+            builtContact
+              ? `<div class="document-card-meta">${builtContact}</div>`
+              : ''
+          }
+          ${builtSummary}
+          ${renderCvTagRow(summary?.built?.skills || [])}
+          ${renderCvTagRow(summary?.built?.languages || [])}
+          ${
+            builtAvailable
+              ? `
+                <div class="document-actions">
+                  <button
+                    class="btn-open"
+                    data-document-action="user-cv"
+                    data-user-id="${esc(user.uid)}"
+                    data-variant="built"
+                    data-mode="view"
+                  >
+                    View Built CV
+                  </button>
+                  <button
+                    class="btn-secondary"
+                    data-document-action="user-cv"
+                    data-user-id="${esc(user.uid)}"
+                    data-variant="built"
+                    data-mode="download"
+                  >
+                    Download Built CV
+                  </button>
+                </div>
+              `
+              : ''
+          }
+        `;
+      }
+
+      return `
+        <div class="document-section" id="student-cv-section">
+          <div class="document-section-header">
+            <div>
+              <div class="document-section-title">CV</div>
+              <div class="document-section-subtitle">
+                Review uploaded files and built CV information for this student.
+              </div>
+            </div>
+          </div>
+          ${
+            loading
+              ? '<div class="document-feedback is-loading">Loading CV details...</div>'
+              : error
+              ? `<div class="document-feedback is-error">${esc(error)}</div>`
+              : `
+                <div class="document-card document-card-accent">
+                  <div class="document-card-head">
+                    <div class="document-card-title">Uploaded CV</div>
+                    <span class="document-badge ${primaryAvailable ? 'is-success' : 'is-muted'}">
+                      ${primaryAvailable ? 'Available' : 'Not uploaded'}
+                    </span>
+                  </div>
+                  ${primaryBody}
+                </div>
+                <div class="document-card">
+                  <div class="document-card-head">
+                    <div class="document-card-title">Built CV</div>
+                    <span class="document-badge ${builtAvailable ? 'is-success' : hasBuiltInfo ? 'is-warning' : 'is-muted'}">
+                      ${builtAvailable ? 'PDF available' : hasBuiltInfo ? 'Info only' : 'Not available'}
+                    </span>
+                  </div>
+                  ${builtBody}
+                </div>
+              `
+          }
+          <div class="document-feedback" id="student-cv-feedback" aria-live="polite"></div>
+        </div>
+      `;
+    }
+
+    function setStudentCvFeedback(message, type = '') {
+      const feedback = document.getElementById('student-cv-feedback');
+      if (!feedback) {
+        return;
+      }
+
+      feedback.className = type ? `document-feedback is-${type}` : 'document-feedback';
+      feedback.textContent = message || '';
+    }
+
+    function updateStudentCvSection(user, summary, options = {}) {
+      const section = document.getElementById('student-cv-section');
+      if (!section || currentModalUid !== user.uid) {
+        return;
+      }
+
+      section.outerHTML = renderStudentCvSection(user, summary, options);
+    }
+
+    async function loadAndRenderStudentCvSection(user) {
+      try {
+        const summary = await loadStudentCvSummary(user.uid);
+        userCvSummaryCache.set(user.uid, summary);
+        updateStudentCvSection(user, summary);
+      } catch (error) {
+        console.error('Load student CV summary error:', error);
+        if (userCvSummaryCache.has(user.uid)) {
+          setStudentCvFeedback('Could not refresh CV details right now.', 'error');
+          return;
+        }
+
+        updateStudentCvSection(user, null, {
+          error: 'Could not load CV details right now.',
+        });
+      }
+    }
+
+    async function handleUserCvAction(button) {
+      const userId = button.dataset.userId || '';
+      const variant = button.dataset.variant || 'primary';
+      const mode = button.dataset.mode || 'view';
+      const originalLabel = button.textContent;
+      const isDownload = mode === 'download';
+
+      button.disabled = true;
+      button.textContent = isDownload ? 'Preparing...' : 'Opening...';
+      setStudentCvFeedback('Preparing a secure CV link...', 'loading');
+
+      try {
+        const documentLink = await getUserCvDocument(userId, { variant });
+        openDocumentUrl(
+          isDownload ? documentLink?.downloadUrl : documentLink?.viewUrl,
+          {
+            download: isDownload,
+            fileName: documentLink?.fileName || '',
+          },
+        );
+        setStudentCvFeedback(
+          isDownload ? 'Download started.' : 'Opening document in a new tab...',
+          'success',
+        );
+      } catch (error) {
+        const message = friendlyDocumentErrorMessage(error);
+        setStudentCvFeedback(message, 'error');
+        showToast(message, 'error');
+      } finally {
+        button.disabled = false;
+        button.textContent = originalLabel;
+      }
+    }
+
+    function showUserDetails(uid) {
+      const user = allUsers.find((item) => item.uid === uid);
+      if (!user) return;
+
+      currentModalUid = uid;
+      const color = roleColor(user.role);
+      const modalAvatarEl = document.getElementById('modal-avatar');
+      const avatarContent = buildAvatarContent(user);
+      if (avatarContent.type === 'img') {
+        const initial = esc((user.fullName || '?')[0].toUpperCase());
+        modalAvatarEl.style.background = `${color}22`;
+        modalAvatarEl.style.color = color;
+        modalAvatarEl.innerHTML = `<img src="${esc(avatarContent.url)}" alt="${initial}" onerror="this.remove();this.parentNode.textContent='${initial}'">`;
+      } else if (avatarContent.type === 'emoji') {
+        modalAvatarEl.style.background = `${avatarContent.color}22`;
+        modalAvatarEl.style.color = '';
+        modalAvatarEl.textContent = avatarContent.emoji;
+      } else {
+        modalAvatarEl.style.background = `${color}22`;
+        modalAvatarEl.style.color = color;
+        modalAvatarEl.textContent = (user.fullName || '?')[0].toUpperCase();
+      }
+      document.getElementById('modal-name').textContent = user.fullName || 'Unknown';
+      document.getElementById('modal-badges').innerHTML = `
+        <span class="badge badge-${esc(user.role)}">${esc(user.role)}</span>
+        <span class="badge-status ${user.isActive !== false ? 'badge-active' : 'badge-blocked'}">${user.isActive !== false ? 'Active' : 'Blocked'}</span>`;
+
+      let details = '';
+      const row = (icon, label, value) => `<div class="detail-row"><span class="detail-icon">${icon}</span><span class="detail-label">${esc(label)}</span><span class="detail-value">${esc(value) || 'Not provided'}</span></div>`;
+      details += row('&#x1F4E7;', 'Email', user.email);
+      details += row('&#x1F4DE;', 'Phone', user.phone);
+      details += row('&#x1F4CD;', 'Location', user.location);
+      if (user.role === 'student') {
+        details += row('&#x1F393;', 'Level', user.academicLevel);
+        details += row('&#x1F3EB;', 'University', user.university);
+        details += row('&#x1F4DA;', 'Field', user.fieldOfStudy);
+        details += row('&#x1F4DD;', 'Bio', user.bio);
+        if (user.academicLevel === 'doctorat') {
+          details += row('&#x1F52C;', 'Research', user.researchTopic);
+          details += row('&#x1F9EA;', 'Lab', user.laboratory);
+          details += row('&#x1F468;&#x200D;&#x1F3EB;', 'Supervisor', user.supervisor);
+          details += row('&#x1F50D;', 'Domain', user.researchDomain);
+        }
+        details += renderStudentCvSection(
+          user,
+          userCvSummaryCache.get(user.uid),
+          { loading: !userCvSummaryCache.has(user.uid) },
+        );
+      } else if (user.role === 'company') {
+        details += row('&#x1F3E2;', 'Company', user.companyName);
+        details += row('&#x1F3ED;', 'Sector', user.sector);
+        details += row('&#x1F4C4;', 'Description', user.description);
+        details += row('&#x1F310;', 'Website', user.website);
+      }
+      document.getElementById('modal-details').innerHTML = details;
+      document.getElementById('user-modal').classList.add('show');
+
+      if (user.role === 'student') {
+        loadAndRenderStudentCvSection(user);
+      }
+    }
+
+    document.getElementById('modal-close').onclick = () => {
+      currentModalUid = '';
+      document.getElementById('user-modal').classList.remove('show');
+    };
+    document.getElementById('user-modal').onclick = (event) => {
+      if (event.target === event.currentTarget) {
+        currentModalUid = '';
+        event.currentTarget.classList.remove('show');
+      }
+    };
+
+    document.getElementById('modal-details').addEventListener('click', async (event) => {
+      const button = event.target.closest('[data-document-action="user-cv"]');
+      if (!button) {
+        return;
+      }
+
+      await handleUserCvAction(button);
+    });
+
+    function confirmToggle(uid) {
+      const user = allUsers.find((item) => item.uid === uid);
+      if (!user) return;
+      const action = user.isActive !== false ? 'Block' : 'Unblock';
+      document.getElementById('confirm-title').textContent = `${action} User`;
+      document.getElementById('confirm-msg').textContent = `Are you sure you want to ${action.toLowerCase()} ${user.fullName}?`;
+      const okBtn = document.getElementById('confirm-ok');
+      okBtn.textContent = action;
+      okBtn.className = `btn-confirm ${user.isActive !== false ? 'danger' : 'success'}`;
+      okBtn.onclick = async () => {
+        document.getElementById('confirm-modal').classList.remove('show');
+        try {
+          const newStatus = user.isActive === false;
+          await updateDoc(doc(db, 'users', uid), { isActive: newStatus });
+          user.isActive = newStatus;
+          renderUsers();
+          showToast(`User ${action.toLowerCase()}ed successfully`, 'success');
+        } catch (error) {
+          console.error('Failed to update user status:', error);
+          showToast('Failed to update user status', 'error');
+        }
+      };
+      document.getElementById('confirm-cancel').onclick = () => {
+        document.getElementById('confirm-modal').classList.remove('show');
+      };
+      document.getElementById('confirm-modal').classList.add('show');
+    }
+
+    document.getElementById('confirm-modal').onclick = (event) => {
+      if (event.target === event.currentTarget) event.currentTarget.classList.remove('show');
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -i \"\\\\.dart$\")",
+      "Bash(grep -r \"file_picker\\\\|image_picker\" /c/Users/Yasser/Desktop/AvenirDZ/V3/Avenirdz-main --include=*.dart)"
+    ]
+  }
+}

@@ -1,0 +1,14 @@
+name = "avenirdz-storage-api"
+main = "src/index.js"
+compatibility_date = "2026-03-28"
+workers_dev = true
+
+[[r2_buckets]]
+binding = "FILES_BUCKET"
+bucket_name = "avenirdz-files"
+
+[vars]
+ALLOWED_ORIGINS = ""
+
+# Secrets to configure with `wrangler secret put`:
+# FILE_ACCESS_SECRET

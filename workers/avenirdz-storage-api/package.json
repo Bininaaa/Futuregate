@@ -1,0 +1,8 @@
+{
+  "name": "avenirdz-storage-api",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --check src/index.js"
+  }
+}

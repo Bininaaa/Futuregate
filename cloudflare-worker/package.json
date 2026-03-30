@@ -1,0 +1,15 @@
+{
+  "name": "avenirdz-api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AvenirDZ Cloudflare Worker backend",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "deploy:production": "wrangler deploy --env production"
+  },
+  "devDependencies": {
+    "wrangler": "^4.78.0"
+  }
+}

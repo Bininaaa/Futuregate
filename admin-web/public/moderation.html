@@ -1,0 +1,2276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AvenirDZ Admin - Moderation</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div id="auth-gate" class="auth-gate">
+    <div class="spinner"></div>
+    <p>Verifying session...</p>
+  </div>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-brand">
+          <div class="sidebar-brand-icon">&#x1F6E1;&#xFE0F;</div>
+          <div class="sidebar-brand-text"><h2>Admin Panel</h2><p>AvenirDZ Management</p></div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="index.html" class="nav-item"><span class="icon">&#x1F4CA;</span> Dashboard</a>
+        <a href="users.html" class="nav-item"><span class="icon">&#x1F465;</span> Users</a>
+        <a href="moderation.html" class="nav-item"><span class="icon">&#x2696;&#xFE0F;</span> Moderation</a>
+        <a href="activity.html" class="nav-item"><span class="icon">&#x23F1;&#xFE0F;</span> Activity</a>
+        <a href="notifications.html" class="nav-item"><span class="icon">&#x1F514;</span> Notifications <span class="nav-badge" data-notification-badge hidden>0</span></a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="admin-info">
+          <div class="admin-avatar" id="admin-avatar">A</div>
+          <div><div class="admin-name" id="admin-name">Admin</div><div class="admin-email" id="admin-email"></div></div>
+        </div>
+        <button class="btn-logout" id="btn-logout">&#x1F6AA; Logout</button>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <h1 class="page-title">Moderation</h1>
+      <p class="page-subtitle">Manage the main platform content types, review new submissions, and jump into linked items from activity and notifications.</p>
+      <div class="search-bar">
+        <span class="search-icon">&#x1F50D;</span>
+        <input type="text" id="content-search" placeholder="Search the current tab by title, actor, status, or provider...">
+      </div>
+      <div class="tabs" id="tabs">
+        <button class="tab active" data-tab="ideas">
+          Ideas
+          <span class="count-badge" id="pending-count" style="display:none">0</span>
+        </button>
+        <button class="tab" data-tab="applications">Applications</button>
+        <button class="tab" data-tab="opportunities">Offers</button>
+        <button class="tab" data-tab="scholarships">Scholarships</button>
+        <button class="tab" data-tab="trainings">Training</button>
+      </div>
+      <div id="loading" class="loading"><div class="spinner"></div></div>
+
+      <div id="ideas-tab" class="tab-content active">
+        <div class="filter-row">
+          <span class="filter-label" id="ideas-label">Pending Ideas (0)</span>
+          <button class="btn-toggle-filter" id="toggle-pending">Show All</button>
+        </div>
+        <div id="ideas-list"></div>
+      </div>
+
+      <div id="applications-tab" class="tab-content">
+        <div class="filter-row">
+          <span class="filter-label" id="applications-label">Applications (0)</span>
+        </div>
+        <div id="applications-list"></div>
+      </div>
+
+      <div id="opportunities-tab" class="tab-content">
+        <div id="opps-list"></div>
+      </div>
+
+      <div id="scholarships-tab" class="tab-content">
+        <div class="card training-section-card">
+          <div class="training-toolbar">
+            <div>
+              <div class="filter-label">Create Scholarship</div>
+              <p class="training-helper">
+                Publish scholarships from the admin website so the Worker can
+                create in-app notifications and send device push right after the
+                Firestore write succeeds.
+              </p>
+            </div>
+          </div>
+          <div class="training-form-grid">
+            <div class="form-group">
+              <label for="scholarship-title">Title</label>
+              <input type="text" id="scholarship-title" placeholder="For example: Excellence Scholarship 2026">
+            </div>
+            <div class="form-group">
+              <label for="scholarship-provider">Provider</label>
+              <input type="text" id="scholarship-provider" placeholder="For example: Ministry of Higher Education">
+            </div>
+            <div class="form-group">
+              <label for="scholarship-amount">Amount (DZD)</label>
+              <input type="number" id="scholarship-amount" min="1" step="1" placeholder="For example: 50000">
+            </div>
+            <div class="form-group">
+              <label for="scholarship-deadline">Deadline</label>
+              <input type="date" id="scholarship-deadline">
+            </div>
+            <div class="form-group">
+              <label for="scholarship-link">Application Link</label>
+              <input type="url" id="scholarship-link" placeholder="https://example.org/apply">
+            </div>
+          </div>
+          <div class="training-form-grid">
+            <div class="form-group">
+              <label for="scholarship-description">Description</label>
+              <textarea id="scholarship-description" rows="4" placeholder="Summarize the scholarship, what it covers, and who it is for."></textarea>
+            </div>
+            <div class="form-group">
+              <label for="scholarship-eligibility">Eligibility</label>
+              <textarea id="scholarship-eligibility" rows="4" placeholder="List the key eligibility requirements for applicants."></textarea>
+            </div>
+          </div>
+          <div class="training-form-actions">
+            <span class="training-helper">
+              Existing scholarships can also be notified later from the list below.
+            </span>
+            <button class="btn-primary btn-inline" id="scholarship-create-btn">
+              Create Scholarship
+            </button>
+          </div>
+          <div id="scholarship-status" class="training-status" aria-live="polite"></div>
+        </div>
+        <div class="filter-row">
+          <span class="filter-label" id="scholarships-label">Scholarships (0)</span>
+        </div>
+        <div id="scholarships-list"></div>
+      </div>
+
+      <div id="trainings-tab" class="tab-content">
+        <div class="card training-section-card">
+          <div class="training-toolbar">
+            <div>
+              <div class="filter-label">Import Google Books</div>
+              <p class="training-helper">
+                Search Google Books directly from the admin website and import
+                selected books into the existing trainings collection.
+              </p>
+            </div>
+          </div>
+          <div class="training-form-grid">
+            <div class="form-group">
+              <label for="training-query">Search</label>
+              <input type="text" id="training-query" placeholder="For example: python, algorithms, mathematics">
+            </div>
+            <div class="form-group">
+              <label for="training-domain">Domain</label>
+              <select id="training-domain">
+                <option value="Informatique">Informatique</option>
+                <option value="Mathematiques">Mathematiques</option>
+                <option value="Medecine">Medecine</option>
+                <option value="Droit">Droit</option>
+                <option value="Commerce">Commerce</option>
+                <option value="Architecture">Architecture</option>
+                <option value="Biologie">Biologie</option>
+                <option value="Physique">Physique</option>
+                <option value="Chimie">Chimie</option>
+                <option value="Langues">Langues</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="training-level">Level</label>
+              <select id="training-level">
+                <option value="bac">bac</option>
+                <option value="licence" selected>licence</option>
+                <option value="master">master</option>
+                <option value="doctorat">doctorat</option>
+                <option value="general">general</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="training-language">Language</label>
+              <select id="training-language">
+                <option value="" selected>Any</option>
+                <option value="en">en</option>
+                <option value="fr">fr</option>
+                <option value="ar">ar</option>
+              </select>
+            </div>
+          </div>
+          <div class="training-form-actions">
+            <label class="checkbox-row" for="training-featured">
+              <input type="checkbox" id="training-featured">
+              <span>Mark imported book as featured</span>
+            </label>
+            <button class="btn-primary btn-inline" id="training-search-btn">
+              Search Books
+            </button>
+          </div>
+          <div id="training-status" class="training-status" aria-live="polite"></div>
+        </div>
+
+        <div class="filter-row">
+          <span class="filter-label" id="book-results-label">Google Books Results</span>
+        </div>
+        <div id="book-results"></div>
+
+        <div class="card training-section-card">
+          <div class="training-toolbar">
+            <div>
+              <div class="filter-label">Import YouTube Videos</div>
+              <p class="training-helper">
+                Search YouTube directly from the admin website and import
+                selected videos into the existing trainings collection.
+              </p>
+            </div>
+          </div>
+          <div class="training-form-grid">
+            <div class="form-group">
+              <label for="youtube-query">Search</label>
+              <input type="text" id="youtube-query" placeholder="For example: python, algorithms, mathematics">
+            </div>
+            <div class="form-group">
+              <label for="youtube-domain">Domain</label>
+              <select id="youtube-domain">
+                <option value="Informatique">Informatique</option>
+                <option value="Mathematiques">Mathematiques</option>
+                <option value="Medecine">Medecine</option>
+                <option value="Droit">Droit</option>
+                <option value="Commerce">Commerce</option>
+                <option value="Architecture">Architecture</option>
+                <option value="Biologie">Biologie</option>
+                <option value="Physique">Physique</option>
+                <option value="Chimie">Chimie</option>
+                <option value="Langues">Langues</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="youtube-level">Level</label>
+              <select id="youtube-level">
+                <option value="bac">bac</option>
+                <option value="licence" selected>licence</option>
+                <option value="master">master</option>
+                <option value="doctorat">doctorat</option>
+                <option value="general">general</option>
+              </select>
+            </div>
+          </div>
+          <div class="training-form-actions">
+            <label class="checkbox-row" for="youtube-featured">
+              <input type="checkbox" id="youtube-featured">
+              <span>Mark imported video as featured</span>
+            </label>
+            <button class="btn-primary btn-inline" id="youtube-search-btn">
+              Search Videos
+            </button>
+          </div>
+          <div id="youtube-status" class="training-status" aria-live="polite"></div>
+        </div>
+
+        <div class="filter-row">
+          <span class="filter-label" id="youtube-results-label">YouTube Results</span>
+        </div>
+        <div id="youtube-results"></div>
+
+        <div class="filter-row">
+          <span class="filter-label" id="trainings-label">Training Resources (0)</span>
+          <button class="btn-toggle-filter" id="reload-trainings">Refresh</button>
+        </div>
+        <div id="trainings-list"></div>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-overlay confirm-modal" id="confirm-modal">
+    <div class="modal">
+      <h3 id="confirm-title"></h3>
+      <p id="confirm-msg"></p>
+      <div class="confirm-actions">
+        <button class="btn-cancel" id="confirm-cancel">Cancel</button>
+        <button class="btn-confirm" id="confirm-ok"></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="cv-review-modal">
+    <div class="modal modal-large">
+      <button class="modal-close" id="cv-review-close">&times;</button>
+      <div id="cv-review-content"></div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { checkAuth, showToast, esc } from './js/auth.js';
+    import {
+      auth,
+      db,
+      collection,
+      collectionGroup,
+      getDocs,
+      getDoc,
+      setDoc,
+      doc,
+      updateDoc,
+      deleteDoc,
+      query,
+      orderBy,
+      where,
+      writeBatch,
+      serverTimestamp
+    } from './js/firebase-config.js';
+    import {
+      getQueryParam,
+      matchesSearch,
+      updateUrlParams,
+    } from './js/admin-utils.js';
+    import { WORKER_BASE_URL } from './js/google-books-config.js';
+    import {
+      friendlyDocumentErrorMessage,
+      getApplicationCv,
+      getApplicationCvDocument,
+      hasBuilderContent,
+      openDocumentUrl,
+      parseTimestampMs,
+      resolveBuiltDocumentFields,
+      resolvePrimaryDocumentFields,
+    } from './js/document-access.js';
+    import {
+      searchBooksViaWorker as searchBooksRequest
+    } from './js/google-books-service.js';
+    import {
+      searchYoutubeVideos as searchYoutubeVideosRequest
+    } from './js/youtube-service.js';
+
+    async function getAuthToken() {
+      const user = auth.currentUser;
+      if (!user) throw new Error('Not authenticated');
+      return user.getIdToken();
+    }
+
+    async function workerFetch(path, options = {}) {
+      const token = await getAuthToken();
+      const response = await fetch(`${WORKER_BASE_URL}${path}`, {
+        ...options,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+          ...(options.headers || {}),
+        },
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || `Request failed: ${response.status}`);
+      }
+      return data;
+    }
+
+    let allIdeas = [];
+    let allApplications = [];
+    let allOpps = [];
+    let allScholarships = [];
+    let allTrainings = [];
+    let showPendingOnly = true;
+    let currentAdminUid = '';
+    let moderationSearchQuery = '';
+    let activeTab = getQueryParam('tab') || 'ideas';
+    let focusedTargetId = '';
+    let activeApplicationCvId = '';
+    const ideaBusyIds = new Set();
+
+    const trainingState = {
+      results: [],
+      hasSearched: false,
+      isSearching: false,
+      importingBookId: '',
+      busyTrainingIds: new Set(),
+      searchError: '',
+    };
+
+    const youtubeState = {
+      results: [],
+      hasSearched: false,
+      isSearching: false,
+      importingVideoId: '',
+      searchError: '',
+    };
+
+    const scholarshipState = {
+      isSaving: false,
+      busyScholarshipIds: new Set(),
+      statusMessage: '',
+      statusKind: 'info',
+    };
+
+    function resolveFocusedTargetId(tabName) {
+      const mapping = {
+        ideas: 'ideaId',
+        applications: 'applicationId',
+        opportunities: 'opportunityId',
+        scholarships: 'scholarshipId',
+        trainings: 'trainingId',
+      };
+
+      return getQueryParam(mapping[tabName] || '');
+    }
+
+    function applyTabState(nextTab, { syncUrl = true, resetFocus = false } = {}) {
+      const validTabs = new Set(['ideas', 'applications', 'opportunities', 'scholarships', 'trainings']);
+      activeTab = validTabs.has(nextTab) ? nextTab : 'ideas';
+      if (resetFocus) {
+        focusedTargetId = '';
+      } else {
+        focusedTargetId = resolveFocusedTargetId(activeTab);
+      }
+
+      document.querySelectorAll('.tab').forEach((item) => {
+        item.classList.toggle('active', item.dataset.tab === activeTab);
+      });
+
+      document.querySelectorAll('.tab-content').forEach((item) => {
+        item.classList.toggle('active', item.id === `${activeTab}-tab`);
+      });
+
+      if (syncUrl) {
+        updateUrlParams({
+          tab: activeTab,
+          ideaId: activeTab === 'ideas' ? focusedTargetId : '',
+          applicationId: activeTab === 'applications' ? focusedTargetId : '',
+          opportunityId: activeTab === 'opportunities' ? focusedTargetId : '',
+          scholarshipId: activeTab === 'scholarships' ? focusedTargetId : '',
+          trainingId: activeTab === 'trainings' ? focusedTargetId : '',
+        });
+      }
+    }
+
+    function itemMatchesFocus(id) {
+      return focusedTargetId && id === focusedTargetId;
+    }
+
+    function currentSearch() {
+      return moderationSearchQuery.trim();
+    }
+
+    attachStaticEventHandlers();
+    renderBookResults();
+    renderYoutubeResults();
+    renderScholarshipStatus();
+    renderTrainings();
+
+    checkAuth(async (user) => {
+      currentAdminUid = user?.uid || '';
+      applyTabState(activeTab, { syncUrl: false });
+      await loadData();
+    });
+
+    async function loadData() {
+      try {
+        const [ideasSnap, appsSnap, oppsSnap, scholSnap, trainingsSnap] = await Promise.all([
+          getDocs(query(collection(db, 'projectIdeas'), orderBy('createdAt', 'desc'))),
+          getDocs(query(collection(db, 'applications'), orderBy('appliedAt', 'desc'))),
+          getDocs(query(collection(db, 'opportunities'), orderBy('createdAt', 'desc'))),
+          getDocs(query(collection(db, 'scholarships'), orderBy('createdAt', 'desc'))),
+          getDocs(collection(db, 'trainings')),
+        ]);
+
+        allIdeas = [];
+        ideasSnap.forEach((item) => allIdeas.push({ ...item.data(), id: item.id }));
+
+        allOpps = [];
+        oppsSnap.forEach((item) => allOpps.push({ ...item.data(), id: item.id }));
+
+        const opportunitiesById = new Map(
+          allOpps.map((item) => [item.id, item]),
+        );
+
+        allApplications = [];
+        appsSnap.forEach((item) => {
+          const data = { ...item.data(), id: item.id };
+          const relatedOpportunity = opportunitiesById.get(data.opportunityId) || {};
+          allApplications.push({
+            ...data,
+            opportunityTitle: relatedOpportunity.title || 'Untitled opportunity',
+            companyName: relatedOpportunity.companyName || data.companyId || 'Unknown company',
+          });
+        });
+
+        allScholarships = [];
+        scholSnap.forEach((item) => allScholarships.push({ ...item.data(), id: item.id }));
+
+        allTrainings = [];
+        trainingsSnap.forEach((item) =>
+          allTrainings.push({ ...item.data(), id: item.id }),
+        );
+        sortByTimestampDesc(allTrainings, 'createdAt');
+
+        document.getElementById('loading').style.display = 'none';
+        renderIdeas();
+        renderApplications();
+        renderOpps();
+        renderScholarships();
+        renderTrainings();
+        updatePendingCount();
+        applyTabState(activeTab, { syncUrl: true });
+      } catch (error) {
+        console.error('Load moderation error:', error);
+        document.getElementById('loading').innerHTML =
+          '<p style="color:#c33">Failed to load moderation data.</p>';
+      }
+    }
+
+    function attachStaticEventHandlers() {
+      document.getElementById('content-search').addEventListener('input', (event) => {
+        moderationSearchQuery = event.target.value || '';
+        renderIdeas();
+        renderApplications();
+        renderOpps();
+        renderScholarships();
+        renderTrainings();
+      });
+
+      document.getElementById('toggle-pending').addEventListener('click', () => {
+        showPendingOnly = !showPendingOnly;
+        document.getElementById('toggle-pending').textContent = showPendingOnly
+          ? 'Show All'
+          : 'Pending Only';
+        renderIdeas();
+      });
+
+      document.getElementById('ideas-list').addEventListener('click', (event) => {
+        const button = event.target.closest('[data-action]');
+        if (!button) {
+          return;
+        }
+
+        const id = button.dataset.id;
+        if (button.dataset.action === 'approve') {
+          approveIdea(id);
+        } else if (button.dataset.action === 'reject') {
+          rejectIdea(id);
+        }
+      });
+
+    document.getElementById('applications-list').addEventListener('click', async (event) => {
+      const button = event.target.closest('[data-action]');
+      if (!button) {
+        return;
+      }
+
+        if (button.dataset.action === 'open-cv') {
+          await openApplicationCv(button.dataset.id);
+          return;
+        }
+
+        if (button.dataset.action === 'open-opportunity') {
+          focusedTargetId = button.dataset.opportunityId || '';
+          applyTabState('opportunities', { syncUrl: true });
+          renderOpps();
+        }
+      });
+
+      document.getElementById('cv-review-content').addEventListener('click', async (event) => {
+        const button = event.target.closest('[data-document-action="application-cv"]');
+        if (!button) {
+          return;
+        }
+
+        await handleApplicationCvAction(button);
+      });
+
+      document.getElementById('cv-review-close').onclick = closeApplicationCvModal;
+      document.getElementById('cv-review-modal').onclick = (event) => {
+        if (event.target === event.currentTarget) {
+          closeApplicationCvModal();
+        }
+      };
+
+      document.getElementById('opps-list').addEventListener('click', async (event) => {
+        const featureButton = event.target.closest('[data-action="toggle-featured"]');
+        if (featureButton) {
+          const id = featureButton.dataset.id;
+          const opp = allOpps.find((item) => item.id === id);
+          if (!opp) {
+            return;
+          }
+
+          const nextValue = !(opp.isFeatured === true);
+          try {
+            await updateDoc(doc(db, 'opportunities', id), { isFeatured: nextValue });
+            opp.isFeatured = nextValue;
+            renderOpps();
+            showToast(
+              nextValue ? 'Added to featured opportunities' : 'Removed from featured opportunities',
+              'success',
+            );
+          } catch (error) {
+            console.error('Toggle opportunity featured error:', error);
+            showToast('Failed to update featured status', 'error');
+          }
+          return;
+        }
+
+        const deleteButton = event.target.closest('[data-action="delete-opp"]');
+        if (!deleteButton) {
+          return;
+        }
+
+        const id = deleteButton.dataset.id;
+        const opp = allOpps.find((item) => item.id === id);
+        const title = opp ? opp.title : 'this opportunity';
+
+        showConfirm(
+          'Delete Opportunity',
+          `Are you sure you want to delete "${title}"?`,
+          'Delete',
+          'danger',
+          async () => {
+            try {
+              await deleteDoc(doc(db, 'opportunities', id));
+              allOpps = allOpps.filter((item) => item.id !== id);
+              renderOpps();
+              showToast('Opportunity deleted', 'success');
+            } catch (error) {
+              console.error('Delete opportunity error:', error);
+              showToast('Failed to delete opportunity', 'error');
+            }
+          },
+        );
+      });
+
+      document
+        .getElementById('scholarships-list')
+        .addEventListener('click', (event) => {
+          const notifyButton = event.target.closest('[data-action="notify-scholarship"]');
+          if (notifyButton) {
+            notifyScholarship(notifyButton.dataset.id);
+            return;
+          }
+
+          const deleteButton = event.target.closest('[data-action="delete-schol"]');
+          if (!deleteButton) {
+            return;
+          }
+
+          const id = deleteButton.dataset.id;
+          const scholarship = allScholarships.find((item) => item.id === id);
+          const title = scholarship ? scholarship.title : 'this scholarship';
+
+          showConfirm(
+            'Delete Scholarship',
+            `Are you sure you want to delete "${title}"?`,
+            'Delete',
+            'danger',
+            async () => {
+              try {
+                await deleteDoc(doc(db, 'scholarships', id));
+                allScholarships = allScholarships.filter((item) => item.id !== id);
+                renderScholarships();
+                showToast('Scholarship deleted', 'success');
+              } catch (error) {
+                console.error('Delete scholarship error:', error);
+                showToast('Failed to delete scholarship', 'error');
+              }
+            },
+          );
+        });
+
+      document.getElementById('tabs').addEventListener('click', (event) => {
+        const tab = event.target.closest('.tab');
+        if (!tab) {
+          return;
+        }
+
+        applyTabState(tab.dataset.tab, { syncUrl: true, resetFocus: true });
+      });
+
+      document.getElementById('confirm-modal').addEventListener('click', (event) => {
+        if (event.target === event.currentTarget) {
+          event.currentTarget.classList.remove('show');
+        }
+      });
+
+      document.getElementById('training-search-btn').addEventListener('click', () => {
+        runGoogleBooksSearch();
+      });
+
+      document.getElementById('training-query').addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          runGoogleBooksSearch();
+        }
+      });
+
+      document.getElementById('scholarship-create-btn').addEventListener('click', () => {
+        createScholarship();
+      });
+
+      document.getElementById('youtube-search-btn').addEventListener('click', () => {
+        searchYoutubeVideos();
+      });
+
+      document.getElementById('youtube-query').addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          searchYoutubeVideos();
+        }
+      });
+
+      document.getElementById('reload-trainings').addEventListener('click', async () => {
+        await refreshTrainings(true);
+      });
+
+      document.getElementById('book-results').addEventListener('click', async (event) => {
+        const button = event.target.closest('[data-action="import-book"]');
+        if (!button) {
+          return;
+        }
+
+        await importSelectedBook(button.dataset.bookId);
+      });
+
+      document.getElementById('youtube-results').addEventListener('click', async (event) => {
+        const button = event.target.closest('[data-action="import-video"]');
+        if (!button) {
+          return;
+        }
+
+        await importSelectedYoutubeVideo(button.dataset.videoId);
+      });
+
+      document.getElementById('trainings-list').addEventListener('click', async (event) => {
+        const featureButton = event.target.closest('[data-action="toggle-training-featured"]');
+        if (featureButton) {
+          await updateTrainingFeaturedState(featureButton.dataset.id);
+          return;
+        }
+
+        const deleteButton = event.target.closest('[data-action="delete-training"]');
+        if (deleteButton) {
+          await confirmDeleteTraining(deleteButton.dataset.id);
+        }
+      });
+    }
+
+    function updatePendingCount() {
+      const count = allIdeas.filter((item) => (item.status || 'pending') === 'pending').length;
+      const badge = document.getElementById('pending-count');
+
+      if (count > 0) {
+        badge.textContent = count;
+        badge.style.display = 'inline';
+      } else {
+        badge.style.display = 'none';
+      }
+    }
+
+    function renderIdeas() {
+      const ideas = (showPendingOnly
+        ? allIdeas.filter((item) => (item.status || 'pending') === 'pending')
+        : allIdeas)
+        .filter((idea) => matchesSearch([
+          idea.title,
+          idea.description,
+          idea.domain,
+          idea.level,
+          idea.tools,
+          idea.submittedByName,
+          idea.submittedBy,
+          idea.status,
+        ], currentSearch()));
+      const label = document.getElementById('ideas-label');
+      label.textContent = showPendingOnly
+        ? `Pending Ideas (${ideas.length})`
+        : `All Ideas (${ideas.length})`;
+
+      const container = document.getElementById('ideas-list');
+      if (ideas.length === 0) {
+        container.innerHTML =
+          `<div class="empty-state"><div class="icon">?</div><p>${
+            showPendingOnly ? 'No pending ideas' : 'No project ideas yet'
+          }</p></div>`;
+        return;
+      }
+
+      container.innerHTML = ideas
+        .map((idea) => {
+          const status = idea.status || 'pending';
+          const isBusy = ideaBusyIds.has(idea.id);
+          const statusClass =
+            status === 'approved'
+              ? 'status-approved'
+              : status === 'rejected'
+              ? 'status-rejected'
+              : 'status-pending';
+
+          return `
+            <div class="idea-card ${itemMatchesFocus(idea.id) ? 'card-highlight' : ''}">
+              <div class="idea-header">
+                <div class="idea-title">${esc(idea.title || 'Untitled')}</div>
+                <div class="status-badge ${statusClass}">${esc(status)}</div>
+              </div>
+              <div class="idea-desc">${esc(idea.description || '')}</div>
+              <div class="idea-tags">
+                ${idea.domain ? `<span class="tag tag-domain">${esc(idea.domain)}</span>` : ''}
+                ${idea.level ? `<span class="tag tag-level">${esc(idea.level)}</span>` : ''}
+                ${idea.tools ? `<span class="tag tag-tools">${esc(idea.tools)}</span>` : ''}
+              </div>
+              <div class="idea-submitter">Submitted by: ${esc(idea.submittedByName || idea.submittedBy || 'Unknown')}</div>
+              ${
+                status === 'pending'
+                  ? `<div class="idea-actions">
+                      <button class="btn-approve" data-action="approve" data-id="${esc(idea.id)}" ${isBusy ? 'disabled' : ''}>
+                        ${isBusy ? 'Working...' : 'Approve'}
+                      </button>
+                      <button class="btn-reject" data-action="reject" data-id="${esc(idea.id)}" ${isBusy ? 'disabled' : ''}>
+                        ${isBusy ? 'Working...' : 'Reject'}
+                      </button>
+                    </div>`
+                  : ''
+              }
+            </div>
+          `;
+        })
+        .join('');
+    }
+
+    function renderApplications() {
+      const filtered = allApplications.filter((application) => matchesSearch([
+        application.studentName,
+        application.opportunityTitle,
+        application.companyName,
+        application.status,
+        application.cvId,
+      ], currentSearch()));
+
+      document.getElementById('applications-label').textContent =
+        `Applications (${filtered.length})`;
+
+      const container = document.getElementById('applications-list');
+      if (filtered.length === 0) {
+        container.innerHTML =
+          '<div class="empty-state"><div class="icon">AP</div><p>No applications match the current filters</p></div>';
+        return;
+      }
+
+      container.innerHTML = filtered.map((application) => `
+        <div class="list-card ${itemMatchesFocus(application.id) ? 'card-highlight' : ''}">
+          <div class="list-card-header">
+            <div>
+              <div class="list-card-title">${esc(application.opportunityTitle || 'Untitled opportunity')}</div>
+              <div class="list-card-subtitle">${esc(application.studentName || 'Unknown student')} applied to ${esc(application.companyName || 'Unknown company')}</div>
+            </div>
+            <span class="status-badge ${String(application.status || '').trim().toLowerCase() === 'accepted' ? 'status-approved' : String(application.status || '').trim().toLowerCase() === 'rejected' ? 'status-rejected' : 'status-pending'}">${esc(application.status || 'submitted')}</span>
+          </div>
+          <div class="list-card-meta">
+            <span class="meta-pill meta-pill-application">Application</span>
+            <span class="meta-pill">${esc(application.companyName || 'Unknown company')}</span>
+            <span class="meta-pill">${esc(timestampLabel(application.appliedAt) || 'Unknown time')}</span>
+          </div>
+          <div class="list-card-actions">
+            <button class="btn-open" data-action="open-opportunity" data-id="${esc(application.id)}" data-opportunity-id="${esc(application.opportunityId || '')}">Open Opportunity</button>
+            <button class="btn-secondary" data-action="open-cv" data-id="${esc(application.id)}">Review CV</button>
+            ${
+              application.cvId
+                ? '<span class="inline-status">Linked CV record available</span>'
+                : '<span class="inline-status">Checking the latest student CV if no linked record exists</span>'
+            }
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function syncIdeaStatusLocally(id, status) {
+      const item = allIdeas.find((idea) => idea.id === id);
+      if (item) {
+        item.status = status;
+      }
+    }
+
+    async function updateIdeaStatus(id, status) {
+      if (!id || ideaBusyIds.has(id)) {
+        return;
+      }
+
+      ideaBusyIds.add(id);
+      renderIdeas();
+
+      try {
+        const ideaRef = doc(db, 'projectIdeas', id);
+        const ideaSnap = await getDoc(ideaRef);
+        if (!ideaSnap.exists()) {
+          showToast('Idea could not be found', 'error');
+          return;
+        }
+
+        const currentStatus = ideaSnap.data()?.status || 'pending';
+        if (currentStatus !== 'pending') {
+          syncIdeaStatusLocally(id, currentStatus);
+          renderIdeas();
+          updatePendingCount();
+          showToast('Idea was already reviewed', 'success');
+          return;
+        }
+
+        await updateDoc(ideaRef, { status });
+        await workerFetch('/api/notify/idea-status-changed', {
+          method: 'POST',
+          body: JSON.stringify({ ideaId: id }),
+        }).catch((error) => {
+          console.error('Idea status notification error:', error);
+        });
+        syncIdeaStatusLocally(id, status);
+        renderIdeas();
+        updatePendingCount();
+        showToast(
+          status === 'approved' ? 'Idea approved' : 'Idea rejected',
+          'success',
+        );
+      } catch (error) {
+        console.error('Update idea status error:', error);
+        showToast(
+          status === 'approved'
+            ? 'Failed to approve idea'
+            : 'Failed to reject idea',
+          'error',
+        );
+      } finally {
+        ideaBusyIds.delete(id);
+        renderIdeas();
+      }
+    }
+
+    async function approveIdea(id) {
+      await updateIdeaStatus(id, 'approved');
+    }
+
+    async function rejectIdea(id) {
+      await updateIdeaStatus(id, 'rejected');
+    }
+
+    function renderOpps() {
+      const filteredOpps = allOpps.filter((opp) => matchesSearch([
+        opp.title,
+        opp.companyName,
+        opp.type,
+        opp.status,
+        opp.location,
+      ], currentSearch()));
+      const container = document.getElementById('opps-list');
+      if (filteredOpps.length === 0) {
+        container.innerHTML =
+          '<div class="empty-state"><div class="icon">!</div><p>No opportunities yet</p></div>';
+        return;
+      }
+
+      container.innerHTML = filteredOpps
+        .map((opp) => {
+          const isFeatured = opp.isFeatured === true;
+          return `
+            <div class="opp-card ${itemMatchesFocus(opp.id) ? 'card-highlight' : ''}">
+              <div class="opp-icon" style="background:rgba(255,140,0,0.12);color:#FF8C00">OF</div>
+              <div class="opp-info">
+                <div class="opp-title">${esc(opp.title || 'No title')}</div>
+                <div class="opp-company">${esc(opp.companyName || 'Unknown company')}</div>
+                <div class="opp-badges">
+                  <span class="badge badge-${opp.type === 'job' ? 'job' : 'internship'}">${esc(opp.type || '')}</span>
+                  <span class="badge badge-${opp.status === 'open' ? 'open' : 'closed'}">${esc(opp.status || '')}</span>
+                  ${isFeatured ? '<span class="badge training-badge training-badge-featured">Featured</span>' : ''}
+                </div>
+              </div>
+              <button
+                class="btn-feature"
+                data-action="toggle-featured"
+                data-id="${esc(opp.id)}"
+                title="${isFeatured ? 'Remove from featured' : 'Add to featured'}"
+              >
+                ${isFeatured ? 'On' : 'Off'}
+              </button>
+              <button class="btn-delete" data-action="delete-opp" data-id="${esc(opp.id)}">
+                Delete
+              </button>
+            </div>
+          `;
+        })
+        .join('');
+    }
+
+    function renderScholarships() {
+      const filteredScholarships = allScholarships.filter((scholarship) => matchesSearch([
+        scholarship.title,
+        scholarship.provider,
+        scholarship.description,
+        scholarship.eligibility,
+        scholarship.deadline,
+      ], currentSearch()));
+      document.getElementById('scholarships-label').textContent =
+        `Scholarships (${filteredScholarships.length})`;
+      const container = document.getElementById('scholarships-list');
+      if (filteredScholarships.length === 0) {
+        container.innerHTML =
+          '<div class="empty-state"><div class="icon">$</div><p>No scholarships yet</p></div>';
+        return;
+      }
+
+      container.innerHTML = filteredScholarships
+        .map((scholarship) => {
+          const isBusy = scholarshipState.busyScholarshipIds.has(scholarship.id);
+          return `
+            <div class="opp-card ${itemMatchesFocus(scholarship.id) ? 'card-highlight' : ''}">
+              <div class="opp-icon" style="background:rgba(233,30,99,0.12);color:#E91E63">SC</div>
+              <div class="opp-info">
+                <div class="opp-title">${esc(scholarship.title || 'No title')}</div>
+                <div class="opp-company">${esc(scholarship.provider || 'Unknown provider')}</div>
+                <div class="opp-badges">
+                  ${
+                    scholarship.amount
+                      ? `<span class="badge badge-job">${esc(scholarship.amount)} DZD</span>`
+                      : ''
+                  }
+                  ${
+                    scholarship.deadline
+                      ? `<span class="badge badge-level">Due: ${esc(scholarship.deadline)}</span>`
+                      : ''
+                  }
+                </div>
+              </div>
+              <button
+                class="btn-feature"
+                data-action="notify-scholarship"
+                data-id="${esc(scholarship.id)}"
+                ${isBusy ? 'disabled' : ''}
+              >
+                ${isBusy ? 'Notifying...' : 'Notify'}
+              </button>
+              <button
+                class="btn-delete"
+                data-action="delete-schol"
+                data-id="${esc(scholarship.id)}"
+                ${isBusy ? 'disabled' : ''}
+              >
+                ${isBusy ? 'Working...' : 'Delete'}
+              </button>
+            </div>
+          `;
+        })
+        .join('');
+    }
+
+    function scholarshipFormValues() {
+      return {
+        title: document.getElementById('scholarship-title').value.trim(),
+        provider: document.getElementById('scholarship-provider').value.trim(),
+        amount: document.getElementById('scholarship-amount').value.trim(),
+        deadline: document.getElementById('scholarship-deadline').value,
+        link: document.getElementById('scholarship-link').value.trim(),
+        description: document.getElementById('scholarship-description').value.trim(),
+        eligibility: document.getElementById('scholarship-eligibility').value.trim(),
+      };
+    }
+
+    function resetScholarshipForm() {
+      document.getElementById('scholarship-title').value = '';
+      document.getElementById('scholarship-provider').value = '';
+      document.getElementById('scholarship-amount').value = '';
+      document.getElementById('scholarship-deadline').value = '';
+      document.getElementById('scholarship-link').value = '';
+      document.getElementById('scholarship-description').value = '';
+      document.getElementById('scholarship-eligibility').value = '';
+    }
+
+    function setScholarshipStatus(message, kind = 'info') {
+      scholarshipState.statusMessage = String(message || '').trim();
+      scholarshipState.statusKind = kind;
+      renderScholarshipStatus();
+    }
+
+    function renderScholarshipStatus() {
+      const element = document.getElementById('scholarship-status');
+      if (!element) {
+        return;
+      }
+
+      element.textContent = scholarshipState.statusMessage
+        || 'Creating a scholarship here writes it to Firestore first, then triggers the Cloudflare Worker notification flow.';
+      element.classList.toggle('training-status-error', scholarshipState.statusKind === 'error');
+    }
+
+    function trainingOptions() {
+      return {
+        query: document.getElementById('training-query').value.trim(),
+        domain: document.getElementById('training-domain').value,
+        level: document.getElementById('training-level').value,
+        language: document.getElementById('training-language').value,
+        isFeatured: document.getElementById('training-featured').checked,
+      };
+    }
+
+    function youtubeTrainingOptions() {
+      return {
+        query: document.getElementById('youtube-query').value.trim(),
+        domain: document.getElementById('youtube-domain').value,
+        level: document.getElementById('youtube-level').value,
+        isFeatured: document.getElementById('youtube-featured').checked,
+      };
+    }
+
+    function renderTrainingThumb({
+      thumbnail,
+      title,
+      placeholderLabel,
+      isVideo = false,
+    }) {
+      const safeTitle = esc(title || placeholderLabel || 'Training');
+      const className = `training-thumb${isVideo ? ' training-thumb-video' : ''}`;
+
+      if (thumbnail) {
+        return `<img class="${className}" src="${esc(thumbnail)}" alt="${safeTitle}">`;
+      }
+
+      return `<div class="${className} training-thumb-placeholder">${esc(placeholderLabel || 'Training')}</div>`;
+    }
+
+    function renderBookResults() {
+      const container = document.getElementById('book-results');
+      const label = document.getElementById('book-results-label');
+      const status = document.getElementById('training-status');
+      if (!container || !label || !status) {
+        return;
+      }
+
+      if (trainingState.isSearching) {
+        label.textContent = 'Google Books Results (searching...)';
+      } else if (trainingState.hasSearched) {
+        label.textContent = `Google Books Results (${trainingState.results.length})`;
+      } else {
+        label.textContent = 'Google Books Results';
+      }
+
+      if (trainingState.isSearching) {
+        status.className = 'training-status';
+        status.textContent = 'Searching Google Books directly from the admin website...';
+      } else if (trainingState.searchError) {
+        status.className = 'training-status training-status-error';
+        status.textContent = trainingState.searchError;
+      } else if (trainingState.hasSearched) {
+        status.className = 'training-status';
+        status.textContent =
+          trainingState.results.length > 0
+            ? `${trainingState.results.length} Google Books result${trainingState.results.length === 1 ? '' : 's'} found.`
+            : 'No Google Books matches found for this search.';
+      } else {
+        status.className = 'training-status';
+        status.textContent =
+          'Search runs directly against Google Books from the admin website for now.';
+      }
+
+      if (trainingState.isSearching && trainingState.results.length === 0) {
+        container.innerHTML =
+          '<div class="card"><div class="loading"><div class="spinner"></div></div></div>';
+        return;
+      }
+
+      if (!trainingState.hasSearched) {
+        container.innerHTML =
+          '<div class="empty-state"><div class="icon">GB</div><p>Search for a Google Book to start importing.</p></div>';
+        return;
+      }
+
+      if (trainingState.searchError) {
+        container.innerHTML =
+          '<div class="empty-state"><div class="icon">!</div><p>Search failed. Check the message above and the browser console.</p></div>';
+        return;
+      }
+
+      if (trainingState.results.length === 0) {
+        container.innerHTML =
+          '<div class="empty-state"><div class="icon">0</div><p>No Google Books results found for that search.</p></div>';
+        return;
+      }
+
+      container.innerHTML = trainingState.results
+        .map((book) => {
+          const isImporting = trainingState.importingBookId === book.googleBookId;
+          const subtitle = book.authors && book.authors.length > 0
+            ? esc(book.authors.join(', '))
+            : esc(book.provider || 'Google Books');
+          const description = truncateText(book.description || '', 220);
+          const thumb = book.thumbnail
+            ? `<img class="training-thumb" src="${esc(book.thumbnail)}" alt="${esc(book.title)}">`
+            : '<div class="training-thumb training-thumb-placeholder">Book</div>';
+
+          return `
+            <div class="training-item-card">
+              ${thumb}
+              <div class="training-item-content">
+                <div class="training-item-title">${esc(book.title || 'Untitled Book')}</div>
+                <div class="training-item-subtitle">${subtitle}</div>
+                ${
+                  description
+                    ? `<div class="training-item-description">${esc(description)}</div>`
+                    : ''
+                }
+                <div class="training-item-tags">
+                  ${
+                    book.language
+                      ? `<span class="training-badge training-badge-language">${esc(book.language.toUpperCase())}</span>`
+                      : ''
+                  }
+                  ${
+                    book.pageCount
+                      ? `<span class="training-badge training-badge-pages">${esc(String(book.pageCount))} pages</span>`
+                      : ''
+                  }
+                  ${
+                    book.publishedDate
+                      ? `<span class="training-badge training-badge-source">${esc(book.publishedDate)}</span>`
+                      : ''
+                  }
+                </div>
+                <div class="training-item-actions">
+                  ${
+                    book.infoLink || book.previewLink
+                      ? `<a class="resource-link" href="${esc(book.infoLink || book.previewLink)}" target="_blank" rel="noreferrer">Open</a>`
+                      : ''
+                  }
+                  <button
+                    class="btn-action btn-import-book"
+                    data-action="import-book"
+                    data-book-id="${esc(book.googleBookId)}"
+                    ${isImporting ? 'disabled' : ''}
+                  >
+                    ${isImporting ? 'Importing...' : 'Import'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+        })
+        .join('');
+    }
+
+    function renderYoutubeResults() {
+      const container = document.getElementById('youtube-results');
+      const label = document.getElementById('youtube-results-label');
+      const status = document.getElementById('youtube-status');
+      if (!container || !label || !status) {
+        return;
+      }
+
+      if (youtubeState.isSearching) {
+        label.textContent = 'YouTube Results (searching...)';
+      } else if (youtubeState.hasSearched) {
+        label.textContent = `YouTube Results (${youtubeState.results.length})`;
+      } else {
+        label.textContent = 'YouTube Results';
+      }
+
+      if (youtubeState.isSearching) {
+        status.className = 'training-status';
+        status.textContent = 'Searching YouTube directly from the admin website...';
+      } else if (youtubeState.searchError) {
+        status.className = 'training-status training-status-error';
+        status.textContent = youtubeState.searchError;
+      } else if (youtubeState.hasSearched) {
+        status.className = 'training-status';
+        status.textContent =
+          youtubeState.results.length > 0
+            ? `${youtubeState.results.length} YouTube result${youtubeState.results.length === 1 ? '' : 's'} found.`
+            : 'No YouTube matches found for this search.';
+      } else {
+        status.className = 'training-status';
+        status.textContent =
+          'Search runs directly against YouTube from the admin website for now.';
+      }
+
+      if (youtubeState.isSearching && youtubeState.results.length === 0) {
+        container.innerHTML =
+          '<div class="card"><div class="loading"><div class="spinner"></div></div></div>';
+        return;
+      }
+
+      if (!youtubeState.hasSearched) {
+        container.innerHTML =
+          '<div class="empty-state"><div class="icon">YT</div><p>Search for a YouTube video to start importing.</p></div>';
+        return;
+      }
+
+      if (youtubeState.searchError) {
+        container.innerHTML =
+          '<div class="empty-state"><div class="icon">!</div><p>Search failed. Check the message above and the browser console.</p></div>';
+        return;
+      }
+
+      if (youtubeState.results.length === 0) {
+        container.innerHTML =
+          '<div class="empty-state"><div class="icon">0</div><p>No YouTube results found for that search.</p></div>';
+        return;
+      }
+
+      container.innerHTML = youtubeState.results
+        .map((video) => {
+          const isImporting = youtubeState.importingVideoId === video.youtubeVideoId;
+          const description = truncateText(video.description || '', 220);
+          const thumb = renderTrainingThumb({
+            thumbnail: video.thumbnail,
+            title: video.title,
+            placeholderLabel: 'Video',
+            isVideo: true,
+          });
+
+          return `
+            <div class="training-item-card training-item-card-video">
+              ${thumb}
+              <div class="training-item-content">
+                <div class="training-item-title">${esc(video.title || 'Untitled Video')}</div>
+                <div class="training-item-subtitle">${esc(video.provider || 'YouTube')}</div>
+                ${
+                  description
+                    ? `<div class="training-item-description">${esc(description)}</div>`
+                    : ''
+                }
+                <div class="training-item-tags">
+                  <span class="training-badge training-badge-type">VIDEO</span>
+                  <span class="training-badge training-badge-source">youtube</span>
+                  ${
+                    video.publishedAtSource
+                      ? `<span class="training-badge training-badge-source">${esc(video.publishedAtSource.slice(0, 10))}</span>`
+                      : ''
+                  }
+                </div>
+                <div class="training-item-actions">
+                  ${
+                    video.link
+                      ? `<a class="resource-link" href="${esc(video.link)}" target="_blank" rel="noreferrer">Open</a>`
+                      : ''
+                  }
+                  <button
+                    class="btn-action btn-import-book"
+                    data-action="import-video"
+                    data-video-id="${esc(video.youtubeVideoId)}"
+                    ${isImporting ? 'disabled' : ''}
+                  >
+                    ${isImporting ? 'Importing...' : 'Import'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+        })
+        .join('');
+    }
+
+    function renderTrainings() {
+      const container = document.getElementById('trainings-list');
+      const label = document.getElementById('trainings-label');
+      if (!container || !label) {
+        return;
+      }
+
+      const filteredTrainings = allTrainings.filter((training) => matchesSearch([
+        training.title,
+        training.provider,
+        training.description,
+        training.domain,
+        training.level,
+        training.source,
+        training.type,
+      ], currentSearch()));
+
+      label.textContent = `Training Resources (${filteredTrainings.length})`;
+
+      if (filteredTrainings.length === 0) {
+        container.innerHTML =
+          '<div class="empty-state"><div class="icon">TR</div><p>No training resources found yet.</p></div>';
+        return;
+      }
+
+      container.innerHTML = filteredTrainings
+        .map((training) => {
+          const isBusy = trainingState.busyTrainingIds.has(training.id);
+          const isVideo = (training.type || '').toLowerCase() === 'video';
+          const subtitle =
+            Array.isArray(training.authors) && training.authors.length > 0
+              ? esc(training.authors.join(', '))
+              : esc(training.provider || 'Unknown provider');
+          const link = training.link || training.previewLink || '';
+          const thumb = renderTrainingThumb({
+            thumbnail: training.thumbnail,
+            title: training.title,
+            placeholderLabel: isVideo ? 'Video' : 'Training',
+            isVideo,
+          });
+
+          return `
+            <div class="training-item-card${isVideo ? ' training-item-card-video' : ''} ${itemMatchesFocus(training.id) ? 'card-highlight' : ''}">
+              ${thumb}
+              <div class="training-item-content">
+                <div class="training-item-title">${esc(training.title || 'Untitled')}</div>
+                <div class="training-item-subtitle">${subtitle}</div>
+                ${
+                  training.description
+                    ? `<div class="training-item-description">${esc(truncateText(training.description, 220))}</div>`
+                    : ''
+                }
+                <div class="training-item-tags">
+                  <span class="training-badge training-badge-type">${esc((training.type || 'training').toUpperCase())}</span>
+                  ${
+                    training.source
+                      ? `<span class="training-badge training-badge-source">${esc(String(training.source).replaceAll('_', ' '))}</span>`
+                      : ''
+                  }
+                  ${
+                    training.domain
+                      ? `<span class="training-badge training-badge-domain">${esc(training.domain)}</span>`
+                      : ''
+                  }
+                  ${
+                    training.level
+                      ? `<span class="training-badge training-badge-level">${esc(training.level)}</span>`
+                      : ''
+                  }
+                  ${
+                    training.isFeatured === true
+                      ? '<span class="training-badge training-badge-featured">Featured</span>'
+                      : ''
+                  }
+                </div>
+                <div class="training-item-actions">
+                  ${
+                    link
+                      ? `<a class="resource-link" href="${esc(link)}" target="_blank" rel="noreferrer">Open</a>`
+                      : ''
+                  }
+                  <button
+                    class="btn-action btn-feature-training"
+                    data-action="toggle-training-featured"
+                    data-id="${esc(training.id)}"
+                    ${isBusy ? 'disabled' : ''}
+                  >
+                    ${training.isFeatured === true ? 'Unfeature' : 'Feature'}
+                  </button>
+                  <button
+                    class="btn-action btn-delete-training"
+                    data-action="delete-training"
+                    data-id="${esc(training.id)}"
+                    ${isBusy ? 'disabled' : ''}
+                  >
+                    ${isBusy ? 'Working...' : 'Delete'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+        })
+        .join('');
+    }
+
+    function documentDateLabel(value) {
+      const timestampMs = parseTimestampMs(value);
+      if (!timestampMs) {
+        return 'Not available';
+      }
+
+      return new Date(timestampMs).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      });
+    }
+
+    function renderCvTagRow(label, items) {
+      if (!Array.isArray(items) || items.length === 0) {
+        return '';
+      }
+
+      return `
+        <div class="document-info-block">
+          <div class="document-info-label">${esc(label)}</div>
+          <div class="document-tag-row">
+            ${items.map((item) => `<span class="document-tag">${esc(item)}</span>`).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderApplicationCvModal(application, cv, { loading = false, error = '' } = {}) {
+      const applicantName = cv?.fullName || application?.studentName || 'Applicant';
+      const primary = resolvePrimaryDocumentFields(cv);
+      const built = resolveBuiltDocumentFields(cv);
+      const builtInfoAvailable = hasBuilderContent(cv);
+      const contactParts = [cv?.email, cv?.phone].filter(Boolean);
+
+      if (loading) {
+        return `
+          <div class="modal-loading-state">
+            <div class="spinner"></div>
+            <p>Loading CV details...</p>
+          </div>
+        `;
+      }
+
+      if (error) {
+        return `
+          <div class="empty-card">
+            <div class="document-section-title">CV unavailable</div>
+            <p>${esc(error)}</p>
+          </div>
+        `;
+      }
+
+      if (!cv) {
+        return `
+          <div class="empty-card">
+            <div class="document-section-title">No CV uploaded</div>
+            <p>No uploaded or built CV file was found for this application.</p>
+          </div>
+        `;
+      }
+
+      return `
+        <div class="document-section">
+          <div class="document-section-header">
+            <div>
+              <div class="document-section-title">${esc(applicantName)}</div>
+              <div class="document-section-subtitle">
+                ${esc(application?.opportunityTitle || 'Application review')}
+              </div>
+            </div>
+          </div>
+          <div class="list-card-meta">
+            <span class="meta-pill meta-pill-application">${esc(application?.status || 'submitted')}</span>
+            <span class="meta-pill">${esc(application?.companyName || 'Unknown company')}</span>
+            <span class="meta-pill">${esc(timestampLabel(application?.appliedAt) || 'Unknown time')}</span>
+          </div>
+          ${
+            contactParts.length
+              ? `<div class="document-card-copy">${esc(contactParts.join(' | '))}</div>`
+              : ''
+          }
+          <div class="document-card document-card-accent">
+            <div class="document-card-head">
+              <div class="document-card-title">Uploaded CV</div>
+              <span class="document-badge ${primary.isAvailable ? 'is-success' : 'is-muted'}">
+                ${primary.isAvailable ? 'Available' : 'Not uploaded'}
+              </span>
+            </div>
+            ${
+              primary.isAvailable
+                ? `
+                  <div class="document-card-meta">Uploaded CV: ${esc(primary.fileName || 'primary_cv.pdf')}</div>
+                  <div class="document-card-meta">Uploaded: ${esc(documentDateLabel(primary.uploadedAt))}</div>
+                  <div class="document-actions">
+                    <button
+                      class="btn-open"
+                      data-document-action="application-cv"
+                      data-application-id="${esc(application.id)}"
+                      data-variant="primary"
+                      data-mode="view"
+                    >
+                      View CV
+                    </button>
+                    <button
+                      class="btn-secondary"
+                      data-document-action="application-cv"
+                      data-application-id="${esc(application.id)}"
+                      data-variant="primary"
+                      data-mode="download"
+                    >
+                      Download CV
+                    </button>
+                  </div>
+                  ${
+                    primary.isPdf
+                      ? ''
+                      : '<div class="document-feedback is-warning">This file is not a PDF. Viewing may download the file instead of previewing it.</div>'
+                  }
+                `
+                : '<div class="document-card-meta">No uploaded primary CV file is available for this applicant.</div>'
+            }
+          </div>
+          <div class="document-card">
+            <div class="document-card-head">
+              <div class="document-card-title">Built CV</div>
+              <span class="document-badge ${built.isAvailable ? 'is-success' : builtInfoAvailable ? 'is-warning' : 'is-muted'}">
+                ${built.isAvailable ? 'PDF available' : builtInfoAvailable ? 'Info only' : 'Not available'}
+              </span>
+            </div>
+            ${
+              built.isAvailable
+                ? `
+                  <div class="document-card-meta">Built CV PDF: ${esc(built.fileName || 'cv_builder.pdf')}</div>
+                  <div class="document-actions">
+                    <button
+                      class="btn-open"
+                      data-document-action="application-cv"
+                      data-application-id="${esc(application.id)}"
+                      data-variant="built"
+                      data-mode="view"
+                    >
+                      View Built CV
+                    </button>
+                    <button
+                      class="btn-secondary"
+                      data-document-action="application-cv"
+                      data-application-id="${esc(application.id)}"
+                      data-variant="built"
+                      data-mode="download"
+                    >
+                      Download Built CV
+                    </button>
+                  </div>
+                `
+                : builtInfoAvailable
+                ? '<div class="document-card-meta">Built CV information is available, but no exported PDF has been generated yet.</div>'
+                : '<div class="document-card-meta">No built CV information is available for this applicant.</div>'
+            }
+            ${
+              builtInfoAvailable && cv.summary
+                ? `<div class="document-card-copy">${esc(cv.summary)}</div>`
+                : ''
+            }
+            ${renderCvTagRow('Skills', Array.isArray(cv.skills) ? cv.skills.filter(Boolean) : [])}
+            ${renderCvTagRow('Languages', Array.isArray(cv.languages) ? cv.languages.filter(Boolean) : [])}
+          </div>
+          <div class="document-feedback" id="application-cv-feedback" aria-live="polite"></div>
+        </div>
+      `;
+    }
+
+    function setApplicationCvFeedback(message, type = '') {
+      const feedback = document.getElementById('application-cv-feedback');
+      if (!feedback) {
+        return;
+      }
+
+      feedback.className = type ? `document-feedback is-${type}` : 'document-feedback';
+      feedback.textContent = message || '';
+    }
+
+    function closeApplicationCvModal() {
+      activeApplicationCvId = '';
+      document.getElementById('cv-review-modal').classList.remove('show');
+    }
+
+    async function handleApplicationCvAction(button) {
+      const applicationId = button.dataset.applicationId || '';
+      const variant = button.dataset.variant || 'primary';
+      const mode = button.dataset.mode || 'view';
+      const isDownload = mode === 'download';
+      const originalLabel = button.textContent;
+
+      button.disabled = true;
+      button.textContent = isDownload ? 'Preparing...' : 'Opening...';
+      setApplicationCvFeedback('Preparing a secure CV link...', 'loading');
+
+      try {
+        const documentLink = await getApplicationCvDocument(applicationId, { variant });
+        openDocumentUrl(
+          isDownload ? documentLink?.downloadUrl : documentLink?.viewUrl,
+          {
+            download: isDownload,
+            fileName: documentLink?.fileName || '',
+          },
+        );
+        setApplicationCvFeedback(
+          isDownload ? 'Download started.' : 'Opening document in a new tab...',
+          'success',
+        );
+      } catch (error) {
+        const message = friendlyDocumentErrorMessage(error);
+        setApplicationCvFeedback(message, 'error');
+        showToast(message, 'error');
+      } finally {
+        button.disabled = false;
+        button.textContent = originalLabel;
+      }
+    }
+
+    async function openApplicationCv(applicationId) {
+      const application = allApplications.find((item) => item.id === applicationId);
+      if (!application) {
+        showToast('Application not found', 'error');
+        return;
+      }
+
+      activeApplicationCvId = applicationId;
+      const modal = document.getElementById('cv-review-modal');
+      const content = document.getElementById('cv-review-content');
+      content.innerHTML = renderApplicationCvModal(application, null, { loading: true });
+      modal.classList.add('show');
+
+      try {
+        const cv = await getApplicationCv(applicationId);
+        if (activeApplicationCvId !== applicationId) {
+          return;
+        }
+
+        content.innerHTML = renderApplicationCvModal(application, cv);
+      } catch (error) {
+        console.error('Open application CV error:', error);
+        if (activeApplicationCvId !== applicationId) {
+          return;
+        }
+
+        const status = Number(error?.status);
+        const message = String(error?.message || error || '').toLowerCase();
+        if (status === 404 || message.includes('404') || message.includes('not found')) {
+          content.innerHTML = renderApplicationCvModal(application, null);
+          return;
+        }
+
+        content.innerHTML = renderApplicationCvModal(application, null, {
+          error: friendlyDocumentErrorMessage(
+            error,
+            'Could not load CV details for this application.',
+          ),
+        });
+      }
+    }
+
+    function timestampLabel(value) {
+      if (!value) {
+        return '';
+      }
+
+      if (typeof value.toDate === 'function') {
+        return value.toDate().toLocaleString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+          hour: 'numeric',
+          minute: '2-digit',
+        });
+      }
+
+      if (typeof value.seconds === 'number') {
+        return new Date(value.seconds * 1000).toLocaleString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+          hour: 'numeric',
+          minute: '2-digit',
+        });
+      }
+
+      return String(value);
+    }
+
+    async function runGoogleBooksSearch() {
+      const { query: searchQuery, language } = trainingOptions();
+      if (!searchQuery) {
+        showToast('Please enter a search query', 'error');
+        return;
+      }
+
+      const searchButton = document.getElementById('training-search-btn');
+      trainingState.isSearching = true;
+      trainingState.hasSearched = true;
+      trainingState.searchError = '';
+      trainingState.results = [];
+      searchButton.disabled = true;
+      searchButton.textContent = 'Searching...';
+      renderBookResults();
+
+      try {
+        const authToken = await getAuthToken();
+        trainingState.results = await searchBooksRequest({
+          query: searchQuery,
+          langRestrict: language,
+          maxResults: 12,
+          authToken,
+        });
+        trainingState.searchError = '';
+      } catch (error) {
+        console.error('Search Google Books error:', {
+          status: error?.status,
+          message: error?.message,
+          payload: error?.payload,
+          error,
+        });
+        trainingState.results = [];
+        trainingState.searchError = friendlyErrorMessage(
+          error,
+          'Google Books search failed.',
+        );
+        showToast(
+          trainingState.searchError,
+          'error',
+        );
+      } finally {
+        trainingState.isSearching = false;
+        searchButton.disabled = false;
+        searchButton.textContent = 'Search Books';
+        renderBookResults();
+      }
+    }
+
+    async function importSelectedBook(bookId) {
+      const selectedBook = trainingState.results.find(
+        (item) => item.googleBookId === bookId,
+      );
+      if (!selectedBook) {
+        showToast('Selected Google Book could not be found.', 'error');
+        return;
+      }
+
+      const { domain, level, language, isFeatured } = trainingOptions();
+      trainingState.importingBookId = bookId;
+      renderBookResults();
+
+      try {
+        const result = await workerFetch('/api/trainings/import/google-book', {
+          method: 'POST',
+          body: JSON.stringify({
+            selectedBook,
+            domain,
+            level,
+            languageOverride: language,
+            isFeatured,
+          }),
+        });
+
+        await refreshTrainings(false);
+
+        showToast(
+          result.alreadyExisted
+            ? 'Book already existed and was updated in trainings'
+            : 'Book imported into trainings',
+          'success',
+        );
+      } catch (error) {
+        console.error('Import Google Book error:', error);
+        showToast(
+          friendlyErrorMessage(error, 'Failed to import Google Book.'),
+          'error',
+        );
+      } finally {
+        trainingState.importingBookId = '';
+        renderBookResults();
+      }
+    }
+
+    async function searchYoutubeVideos() {
+      const { query: searchQuery } = youtubeTrainingOptions();
+      if (!searchQuery) {
+        showToast('Please enter a search query', 'error');
+        return;
+      }
+
+      const searchButton = document.getElementById('youtube-search-btn');
+      youtubeState.isSearching = true;
+      youtubeState.hasSearched = true;
+      youtubeState.searchError = '';
+      youtubeState.results = [];
+      searchButton.disabled = true;
+      searchButton.textContent = 'Searching...';
+      renderYoutubeResults();
+
+      try {
+        const authToken = await getAuthToken();
+        youtubeState.results = await searchYoutubeVideosRequest({
+          query: searchQuery,
+          maxResults: 12,
+          authToken,
+        });
+        youtubeState.searchError = '';
+      } catch (error) {
+        console.error('Search YouTube error:', {
+          status: error?.status,
+          message: error?.message,
+          payload: error?.payload,
+          error,
+        });
+        youtubeState.results = [];
+        youtubeState.searchError = friendlyErrorMessage(
+          error,
+          'YouTube search failed.',
+        );
+        showToast(youtubeState.searchError, 'error');
+      } finally {
+        youtubeState.isSearching = false;
+        searchButton.disabled = false;
+        searchButton.textContent = 'Search Videos';
+        renderYoutubeResults();
+      }
+    }
+
+    async function importSelectedYoutubeVideo(videoId) {
+      const selectedVideo = youtubeState.results.find(
+        (item) => item.youtubeVideoId === videoId,
+      );
+      if (!selectedVideo) {
+        showToast('Selected YouTube video could not be found.', 'error');
+        return;
+      }
+
+      const { domain, level, isFeatured } = youtubeTrainingOptions();
+      youtubeState.importingVideoId = videoId;
+      renderYoutubeResults();
+
+      try {
+        const result = await workerFetch('/api/trainings/import/youtube-video', {
+          method: 'POST',
+          body: JSON.stringify({
+            selectedVideo,
+            domain,
+            level,
+            isFeatured,
+          }),
+        });
+
+        await refreshTrainings(false);
+
+        showToast(
+          result.alreadyExisted
+            ? 'Video already existed and was updated in trainings'
+            : 'Video imported into trainings',
+          'success',
+        );
+      } catch (error) {
+        console.error('Import YouTube video error:', error);
+        showToast(
+          friendlyErrorMessage(error, 'Failed to import YouTube video.'),
+          'error',
+        );
+      } finally {
+        youtubeState.importingVideoId = '';
+        renderYoutubeResults();
+      }
+    }
+
+    async function refreshTrainings(showSuccessToast) {
+      try {
+        const snapshot = await getDocs(collection(db, 'trainings'));
+        allTrainings = [];
+        snapshot.forEach((item) =>
+          allTrainings.push({ ...item.data(), id: item.id }),
+        );
+        sortByTimestampDesc(allTrainings, 'createdAt');
+        renderTrainings();
+
+        if (showSuccessToast) {
+          showToast('Training resources refreshed', 'success');
+        }
+      } catch (error) {
+        console.error('Refresh trainings error:', error);
+        showToast('Failed to refresh training resources', 'error');
+      }
+    }
+
+    async function createScholarship() {
+      if (scholarshipState.isSaving) {
+        return;
+      }
+
+      const values = scholarshipFormValues();
+      if (!values.title || !values.provider || !values.description || !values.eligibility) {
+        const message = 'Title, provider, description, and eligibility are required.';
+        setScholarshipStatus(message, 'error');
+        showToast(message, 'error');
+        return;
+      }
+
+      const amountValue = Number.parseFloat(values.amount);
+      if (!Number.isFinite(amountValue) || amountValue <= 0) {
+        const message = 'Please enter a valid scholarship amount in DZD.';
+        setScholarshipStatus(message, 'error');
+        showToast(message, 'error');
+        return;
+      }
+
+      if (!values.deadline) {
+        const message = 'Please choose a scholarship deadline.';
+        setScholarshipStatus(message, 'error');
+        showToast(message, 'error');
+        return;
+      }
+
+      let normalizedLink = '';
+      try {
+        normalizedLink = normalizeOptionalUrl(values.link);
+      } catch (error) {
+        const message = friendlyErrorMessage(error, 'Please enter a valid application link.');
+        setScholarshipStatus(message, 'error');
+        showToast(message, 'error');
+        return;
+      }
+
+      const createButton = document.getElementById('scholarship-create-btn');
+      scholarshipState.isSaving = true;
+      createButton.disabled = true;
+      createButton.textContent = 'Creating...';
+      setScholarshipStatus('Saving scholarship to Firestore...', 'info');
+
+      try {
+        const scholarshipRef = doc(collection(db, 'scholarships'));
+        const payload = {
+          id: scholarshipRef.id,
+          title: values.title,
+          description: values.description,
+          provider: values.provider,
+          eligibility: values.eligibility,
+          amount: amountValue,
+          deadline: values.deadline,
+          link: normalizedLink,
+          createdBy: currentAdminUid,
+          createdByRole: 'admin',
+          createdAt: serverTimestamp(),
+        };
+
+        await setDoc(scholarshipRef, payload);
+
+        const savedDoc = await getDoc(scholarshipRef);
+        allScholarships.unshift({
+          ...(savedDoc.exists() ? savedDoc.data() : payload),
+          id: scholarshipRef.id,
+          createdAt: savedDoc.exists() ? savedDoc.data().createdAt : new Date(),
+        });
+        sortByTimestampDesc(allScholarships, 'createdAt');
+        renderScholarships();
+        resetScholarshipForm();
+
+        setScholarshipStatus('Scholarship saved. Triggering notifications...', 'info');
+        showToast('Scholarship created', 'success');
+
+        try {
+          await notifyScholarship(scholarshipRef.id, { showSuccessToast: false });
+        } catch (error) {
+          console.error('Scholarship notify after create error:', error);
+          showToast(
+            'Scholarship was created, but notifications need to be retried from the list below.',
+            'error',
+          );
+        }
+      } catch (error) {
+        console.error('Create scholarship error:', error);
+        const message = friendlyErrorMessage(error, 'Failed to create scholarship.');
+        setScholarshipStatus(message, 'error');
+        showToast(message, 'error');
+      } finally {
+        scholarshipState.isSaving = false;
+        createButton.disabled = false;
+        createButton.textContent = 'Create Scholarship';
+      }
+    }
+
+    async function notifyScholarship(scholarshipId, options = {}) {
+      const scholarship = allScholarships.find((item) => item.id === scholarshipId);
+      if (!scholarshipId || !scholarship) {
+        return;
+      }
+
+      if (scholarshipState.busyScholarshipIds.has(scholarshipId)) {
+        return;
+      }
+
+      scholarshipState.busyScholarshipIds.add(scholarshipId);
+      renderScholarships();
+      setScholarshipStatus(
+        `Sending scholarship notifications for "${scholarship.title || 'Untitled scholarship'}"...`,
+        'info',
+      );
+
+      try {
+        const result = await workerFetch('/api/notify/scholarship', {
+          method: 'POST',
+          body: JSON.stringify({ scholarshipId }),
+        });
+
+        const statusMessage = formatScholarshipNotifyResult(result);
+        setScholarshipStatus(statusMessage, 'info');
+
+        if (options.showSuccessToast !== false) {
+          showToast(statusMessage, 'success');
+        }
+
+        return result;
+      } catch (error) {
+        console.error('Scholarship notification error:', error);
+        const message = friendlyErrorMessage(error, 'Failed to notify students about this scholarship.');
+        setScholarshipStatus(message, 'error');
+        showToast(message, 'error');
+        throw error;
+      } finally {
+        scholarshipState.busyScholarshipIds.delete(scholarshipId);
+        renderScholarships();
+      }
+    }
+
+    function formatScholarshipNotifyResult(result) {
+      const recipientsFound = Number(result?.uniqueRecipients ?? result?.recipientsFound ?? 0);
+      const created = Number(result?.notificationDocsCreated ?? result?.created ?? 0);
+      const pushSent = Number(result?.pushesSent ?? result?.pushSent ?? 0);
+      const duplicatesSkipped = Number(result?.duplicatesSkipped || 0);
+      const duplicateTokensSkipped = Number(result?.duplicateTokensSkipped || 0);
+      const missingTokens = Number(result?.missingTokens || 0);
+      const invalidTokens = Number(result?.invalidTokens || 0);
+      const errors = Array.isArray(result?.errors) ? result.errors.length : 0;
+
+      if (recipientsFound === 0) {
+        return 'No active student recipients were found for this scholarship.';
+      }
+
+      if (result?.alreadyNotified || (created === 0 && duplicatesSkipped > 0)) {
+        return `Scholarship notifications were already created earlier. ${duplicatesSkipped} recipient${duplicatesSkipped === 1 ? '' : 's'} skipped by event dedup.`;
+      }
+
+      const recipientSuffix = created === 1 ? '' : 's';
+      const pushSuffix = pushSent === 1 ? '' : 's';
+      const missingTokenSuffix = missingTokens === 1 ? '' : 's';
+      const invalidTokenSuffix = invalidTokens === 1 ? '' : 's';
+      const duplicateRecipientText =
+        duplicatesSkipped > 0
+          ? ` ${duplicatesSkipped} already-notified recipient${duplicatesSkipped === 1 ? '' : 's'} skipped.`
+          : '';
+      const duplicateTokenText =
+        duplicateTokensSkipped > 0
+          ? ` ${duplicateTokensSkipped} duplicate token${duplicateTokensSkipped === 1 ? '' : 's'} skipped.`
+          : '';
+      const errorText =
+        errors > 0
+          ? ` ${errors} push error${errors === 1 ? '' : 's'} recorded for follow-up.`
+          : '';
+
+      return `Scholarship notifications created for ${created} recipient${recipientSuffix}, with ${pushSent} unique push send${pushSuffix}, ${missingTokens} missing token${missingTokenSuffix}, and ${invalidTokens} invalid token${invalidTokenSuffix} cleaned up.${duplicateRecipientText}${duplicateTokenText}${errorText}`;
+    }
+
+    async function updateTrainingFeaturedState(trainingId) {
+      const training = allTrainings.find((item) => item.id === trainingId);
+      if (!training) {
+        return;
+      }
+
+      const nextValue = !(training.isFeatured === true);
+      trainingState.busyTrainingIds.add(trainingId);
+      renderTrainings();
+
+      try {
+        await workerFetch(`/api/trainings/${encodeURIComponent(trainingId)}/featured`, {
+          method: 'POST',
+          body: JSON.stringify({ isFeatured: nextValue }),
+        });
+
+        training.isFeatured = nextValue;
+        renderTrainings();
+        showToast(
+          nextValue ? 'Training marked as featured' : 'Training removed from featured',
+          'success',
+        );
+      } catch (error) {
+        console.error('Toggle training featured error:', error);
+        showToast(
+          friendlyErrorMessage(error, 'Failed to update featured status.'),
+          'error',
+        );
+      } finally {
+        trainingState.busyTrainingIds.delete(trainingId);
+        renderTrainings();
+      }
+    }
+
+    async function confirmDeleteTraining(trainingId) {
+      const training = allTrainings.find((item) => item.id === trainingId);
+      if (!training) {
+        return;
+      }
+
+      showConfirm(
+        'Delete Training Resource',
+        `Are you sure you want to delete "${training.title || 'this training resource'}"?`,
+        'Delete',
+        'danger',
+        async () => {
+          trainingState.busyTrainingIds.add(trainingId);
+          renderTrainings();
+
+          try {
+            await workerFetch(`/api/trainings/${encodeURIComponent(trainingId)}`, {
+              method: 'DELETE',
+            });
+            allTrainings = allTrainings.filter((item) => item.id !== trainingId);
+            renderTrainings();
+            showToast('Training resource deleted', 'success');
+          } catch (error) {
+            console.error('Delete training error:', error);
+            showToast(
+              friendlyErrorMessage(error, 'Failed to delete training resource.'),
+              'error',
+            );
+          } finally {
+            trainingState.busyTrainingIds.delete(trainingId);
+            renderTrainings();
+          }
+        },
+      );
+    }
+
+    function showConfirm(title, message, buttonText, buttonClass, onConfirm) {
+      document.getElementById('confirm-title').textContent = title;
+      document.getElementById('confirm-msg').textContent = message;
+
+      const confirmButton = document.getElementById('confirm-ok');
+      confirmButton.textContent = buttonText;
+      confirmButton.className = `btn-confirm ${buttonClass}`;
+      confirmButton.onclick = async () => {
+        document.getElementById('confirm-modal').classList.remove('show');
+        await onConfirm();
+      };
+
+      document.getElementById('confirm-cancel').onclick = () => {
+        document.getElementById('confirm-modal').classList.remove('show');
+      };
+
+      document.getElementById('confirm-modal').classList.add('show');
+    }
+
+    function timestampToMs(value) {
+      if (!value) {
+        return 0;
+      }
+
+      if (typeof value.toDate === 'function') {
+        return value.toDate().getTime();
+      }
+
+      if (value instanceof Date) {
+        return value.getTime();
+      }
+
+      if (typeof value.seconds === 'number') {
+        return value.seconds * 1000;
+      }
+
+      const parsed = Date.parse(value);
+      return Number.isNaN(parsed) ? 0 : parsed;
+    }
+
+    function sortByTimestampDesc(items, fieldName) {
+      items.sort((left, right) => timestampToMs(right[fieldName]) - timestampToMs(left[fieldName]));
+    }
+
+    function truncateText(value, maxLength) {
+      const safeValue = String(value || '').trim();
+      if (safeValue.length <= maxLength) {
+        return safeValue;
+      }
+
+      return `${safeValue.slice(0, maxLength - 1)}...`;
+    }
+
+    function friendlyErrorMessage(error, fallback) {
+      const errorMessage = String(error?.message || '').trim();
+
+      if (errorMessage.length > 0) {
+        return errorMessage.replace(/^FirebaseError:\s*/i, '');
+      }
+
+      if (typeof error?.code === 'string' && error.code.trim().length > 0) {
+        return error.code.trim();
+      }
+
+      return fallback;
+    }
+
+    function normalizeOptionalUrl(rawValue) {
+      const value = String(rawValue || '').trim();
+      if (!value) {
+        return '';
+      }
+
+      const candidate = /^https?:\/\//i.test(value) ? value : `https://${value}`;
+      try {
+        return new URL(candidate).toString();
+      } catch (_) {
+        throw new Error('Please enter a valid application link.');
+      }
+    }
+  </script>
+</body>
+</html>

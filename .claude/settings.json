@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(wc -l /c/Users/Yasser/Desktop/AvenirDZ/V3/Avenirdz-main/lib/models/*.dart)"
+    ]
+  }
+}

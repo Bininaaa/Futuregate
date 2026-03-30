@@ -1,0 +1,1034 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function userPath(uid) {
+      return /databases/$(database)/documents/users/$(uid);
+    }
+
+    function currentUserExists() {
+      return signedIn() && exists(userPath(request.auth.uid));
+    }
+
+    function isActiveUser() {
+      return currentUserExists() &&
+          get(userPath(request.auth.uid)).data.isActive == true;
+    }
+
+    function isStudent() {
+      return isActiveUser() &&
+          get(userPath(request.auth.uid)).data.role == 'student';
+    }
+
+    function isCompany() {
+      return isActiveUser() &&
+          get(userPath(request.auth.uid)).data.role == 'company';
+    }
+
+    function isAdmin() {
+      return isActiveUser() &&
+          get(userPath(request.auth.uid)).data.role == 'admin';
+    }
+
+    function isSelf(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    function opportunityPath(opportunityId) {
+      return /databases/$(database)/documents/opportunities/$(opportunityId);
+    }
+
+    function applicationPath(applicationId) {
+      return /databases/$(database)/documents/applications/$(applicationId);
+    }
+
+    function cvPath(cvId) {
+      return /databases/$(database)/documents/cvs/$(cvId);
+    }
+
+    function trainingPath(trainingId) {
+      return /databases/$(database)/documents/trainings/$(trainingId);
+    }
+
+    function conversationPath(conversationId) {
+      return /databases/$(database)/documents/conversations/$(conversationId);
+    }
+
+    function isOpportunityType(value) {
+      return value == 'job' || value == 'internship';
+    }
+
+    function isOpportunityStatus(value) {
+      return value == 'open' || value == 'closed';
+    }
+
+    function isApplicationStatus(value) {
+      return value == 'pending' ||
+          value == 'accepted' ||
+          value == 'rejected';
+    }
+
+    function isProjectIdeaStatus(value) {
+      return value == 'pending' ||
+          value == 'approved' ||
+          value == 'rejected';
+    }
+
+    function isAcademicLevel(value) {
+      return value == 'bac' ||
+          value == 'licence' ||
+          value == 'master' ||
+          value == 'doctorat';
+    }
+
+    function isValidAvatarId(value) {
+      return value == 'avatar_1' ||
+          value == 'avatar_2' ||
+          value == 'avatar_3' ||
+          value == 'avatar_4' ||
+          value == 'avatar_5' ||
+          value == 'avatar_6' ||
+          value == 'avatar_7' ||
+          value == 'avatar_8';
+    }
+
+    function isStudentPhotoType(value) {
+      return value == null ||
+          value == '' ||
+          value == 'avatar' ||
+          value == 'upload';
+    }
+
+    function isCompanyPhotoType(value) {
+      return value == null ||
+          value == '' ||
+          value == 'upload';
+    }
+
+    function hasPhotoTypeField(data) {
+      return data.keys().hasAny(['photoType']);
+    }
+
+    function hasAcademicLevelField(data) {
+      return data.keys().hasAny(['academicLevel']);
+    }
+
+    function hasAvatarIdField(data) {
+      return data.keys().hasAny(['avatarId']);
+    }
+
+    function hasAdminLevelField(data) {
+      return data.keys().hasAny(['adminLevel']);
+    }
+
+    function hasCreatedAtField(data) {
+      return data.keys().hasAny(['createdAt']);
+    }
+
+    function hasIsActiveField(data) {
+      return data.keys().hasAny(['isActive']);
+    }
+
+    function hasProfileImageField(data) {
+      return data.keys().hasAny(['profileImage']);
+    }
+
+    function hasProviderField(data) {
+      return data.keys().hasAny(['provider']);
+    }
+
+    function hasLogoField(data) {
+      return data.keys().hasAny(['logo']);
+    }
+
+    function isSupportedProvider(value) {
+      return value == 'email' || value == 'google';
+    }
+
+    function matchesCurrentSignInProvider(value) {
+      return (value == 'email' &&
+              request.auth.token.firebase.sign_in_provider == 'password') ||
+          (value == 'google' &&
+              request.auth.token.firebase.sign_in_provider == 'google.com');
+    }
+
+    function hasCompatibleAcademicLevel(newData, oldData) {
+      return (
+        !hasAcademicLevelField(newData) &&
+        !hasAcademicLevelField(oldData)
+      ) || (
+        hasAcademicLevelField(newData) &&
+        hasAcademicLevelField(oldData) &&
+        (
+          newData.academicLevel == oldData.academicLevel ||
+          (oldData.role == 'student' &&
+              isAcademicLevel(newData.academicLevel))
+        )
+      ) || (
+        hasAcademicLevelField(newData) &&
+        !hasAcademicLevelField(oldData) &&
+        (
+          newData.academicLevel == null ||
+          newData.academicLevel == '' ||
+          (oldData.role == 'student' &&
+              isAcademicLevel(newData.academicLevel))
+        )
+      );
+    }
+
+    function hasCompatibleAdminLevel(newData, oldData) {
+      return (
+        !hasAdminLevelField(newData) &&
+        !hasAdminLevelField(oldData)
+      ) || (
+        hasAdminLevelField(newData) &&
+        hasAdminLevelField(oldData) &&
+        newData.adminLevel == oldData.adminLevel
+      ) || (
+        hasAdminLevelField(newData) &&
+        !hasAdminLevelField(oldData) &&
+        newData.adminLevel == ''
+      );
+    }
+
+    function hasCompatibleCreatedAt(newData, oldData) {
+      return (
+        !hasCreatedAtField(newData) &&
+        !hasCreatedAtField(oldData)
+      ) || (
+        hasCreatedAtField(newData) &&
+        hasCreatedAtField(oldData) &&
+        newData.createdAt == oldData.createdAt
+      ) || (
+        hasCreatedAtField(newData) &&
+        !hasCreatedAtField(oldData) &&
+        newData.createdAt != null
+      );
+    }
+
+    function hasCompatibleIsActive(newData, oldData) {
+      return (
+        !hasIsActiveField(newData) &&
+        !hasIsActiveField(oldData)
+      ) || (
+        hasIsActiveField(newData) &&
+        hasIsActiveField(oldData) &&
+        newData.isActive == oldData.isActive
+      ) || (
+        hasIsActiveField(newData) &&
+        !hasIsActiveField(oldData) &&
+        newData.isActive == true
+      );
+    }
+
+    function hasCompatibleProvider(newData, oldData) {
+      return (
+        !hasProviderField(newData) &&
+        !hasProviderField(oldData)
+      ) || (
+        hasProviderField(newData) &&
+        hasProviderField(oldData) &&
+        (
+          newData.provider == oldData.provider ||
+          (
+            !isSupportedProvider(oldData.provider) &&
+            isSupportedProvider(newData.provider) &&
+            matchesCurrentSignInProvider(newData.provider)
+          )
+        )
+      ) || (
+        hasProviderField(newData) &&
+        !hasProviderField(oldData) &&
+        isSupportedProvider(newData.provider) &&
+        matchesCurrentSignInProvider(newData.provider)
+      );
+    }
+
+    function commercialRegisterFieldsChanged(newData, existingData) {
+      return newData.diff(existingData).changedKeys().hasAny([
+        'commercialRegisterUrl',
+        'commercialRegisterFileName',
+        'commercialRegisterMimeType',
+        'commercialRegisterStoragePath',
+        'commercialRegisterUploadedAt'
+      ]);
+    }
+
+    function hasValidCommercialRegisterPayload(data) {
+      return data.keys().hasAll([
+          'commercialRegisterUrl',
+          'commercialRegisterFileName',
+          'commercialRegisterMimeType',
+          'commercialRegisterStoragePath',
+          'commercialRegisterUploadedAt'
+        ]) &&
+        data.commercialRegisterUrl is string &&
+        data.commercialRegisterUrl.size() > 0 &&
+        data.commercialRegisterFileName is string &&
+        data.commercialRegisterFileName.size() > 0 &&
+        data.commercialRegisterStoragePath is string &&
+        data.commercialRegisterStoragePath.size() > 0 &&
+        isCommercialRegisterMimeType(
+          data.commercialRegisterMimeType
+        ) &&
+        data.commercialRegisterUploadedAt != null;
+    }
+
+    function hasValidProfilePhotoFields(data, role) {
+      return role == 'student'
+          ? (
+              (
+                !hasPhotoTypeField(data) ||
+                isStudentPhotoType(data.photoType)
+              ) &&
+              (
+                !hasPhotoTypeField(data) ||
+                data.photoType != 'avatar' ||
+                (
+                  hasAvatarIdField(data) &&
+                  isValidAvatarId(data.avatarId)
+                )
+              ) &&
+              (
+                !hasPhotoTypeField(data) ||
+                data.photoType == 'avatar' ||
+                !hasAvatarIdField(data) ||
+                data.avatarId == null ||
+                data.avatarId == ''
+              ) &&
+              (
+                !hasPhotoTypeField(data) ||
+                data.photoType != 'upload' ||
+                (
+                  hasProfileImageField(data) &&
+                  data.profileImage is string &&
+                  data.profileImage.size() > 0
+                )
+              )
+            )
+          : role == 'company'
+          ? (
+              (
+                !hasPhotoTypeField(data) ||
+                isCompanyPhotoType(data.photoType)
+              ) &&
+              (
+                !hasAvatarIdField(data) ||
+                data.avatarId == null ||
+                data.avatarId == ''
+              ) &&
+              (
+                !hasPhotoTypeField(data) ||
+                data.photoType != 'upload' ||
+                (
+                  hasLogoField(data) &&
+                  data.logo is string &&
+                  data.logo.size() > 0
+                )
+              )
+            )
+          : (
+              (
+                !hasPhotoTypeField(data) ||
+                data.photoType == null ||
+                data.photoType == ''
+              ) &&
+              (
+                !hasAvatarIdField(data) ||
+                data.avatarId == null ||
+                data.avatarId == ''
+              )
+            );
+    }
+
+    function isCommercialRegisterMimeType(value) {
+      return value == 'application/pdf' ||
+          value == 'image/png' ||
+          value == 'image/jpeg';
+    }
+
+    function isConversationStatus(value) {
+      return value == 'active' || value == 'closed';
+    }
+
+    function isParticipant(conversationId) {
+      return signedIn() &&
+          exists(conversationPath(conversationId)) &&
+          (get(conversationPath(conversationId)).data.studentId == request.auth.uid ||
+              get(conversationPath(conversationId)).data.companyId == request.auth.uid);
+    }
+
+    match /users/{uid} {
+      allow create: if isSelf(uid) &&
+          request.resource.data.keys().hasOnly([
+            'uid',
+            'fullName',
+            'email',
+            'role',
+            'academicLevel',
+            'phone',
+            'location',
+            'profileImage',
+            'photoType',
+            'avatarId',
+            'university',
+            'fieldOfStudy',
+            'bio',
+            'companyName',
+            'sector',
+            'description',
+            'website',
+            'logo',
+            'adminLevel',
+            'researchTopic',
+            'laboratory',
+            'supervisor',
+            'researchDomain',
+            'commercialRegisterUrl',
+            'commercialRegisterFileName',
+            'commercialRegisterMimeType',
+            'commercialRegisterStoragePath',
+            'commercialRegisterUploadedAt',
+            'isActive',
+            'createdAt',
+            'provider'
+          ]) &&
+          request.resource.data.uid == uid &&
+          request.resource.data.email == request.auth.token.email &&
+          (request.resource.data.role == 'student' ||
+              request.resource.data.role == 'company') &&
+          (request.resource.data.provider == 'email' ||
+              request.resource.data.provider == 'google') &&
+          (
+            request.resource.data.role == 'student' ||
+            (
+              request.resource.data.commercialRegisterUrl is string &&
+              request.resource.data.commercialRegisterUrl.size() > 0 &&
+              request.resource.data.commercialRegisterFileName is string &&
+              request.resource.data.commercialRegisterFileName.size() > 0 &&
+              request.resource.data.commercialRegisterStoragePath is string &&
+              request.resource.data.commercialRegisterStoragePath.size() > 0 &&
+              isCommercialRegisterMimeType(
+                request.resource.data.commercialRegisterMimeType
+              ) &&
+              request.resource.data.commercialRegisterUploadedAt != null
+            )
+          ) &&
+          hasValidProfilePhotoFields(
+            request.resource.data,
+            request.resource.data.role
+          ) &&
+          (request.resource.data.academicLevel == null ||
+              request.resource.data.academicLevel == '' ||
+              isAcademicLevel(request.resource.data.academicLevel)) &&
+          request.resource.data.adminLevel == '' &&
+          request.resource.data.isActive == true;
+
+      allow read: if signedIn() && (isSelf(uid) || isAdmin());
+
+      allow update: if signedIn() && (
+          (
+            isSelf(uid) &&
+            request.resource.data.diff(resource.data).changedKeys().hasOnly([
+              'fullName',
+              'phone',
+              'location',
+              'profileImage',
+              'photoType',
+              'avatarId',
+              'university',
+              'fieldOfStudy',
+              'bio',
+              'companyName',
+              'sector',
+              'description',
+              'website',
+              'logo',
+              'academicLevel',
+              'commercialRegisterUrl',
+              'commercialRegisterFileName',
+              'commercialRegisterMimeType',
+              'commercialRegisterStoragePath',
+              'commercialRegisterUploadedAt',
+              'fcmToken',
+              'fcmTokenUpdatedAt',
+              'fcmTokenPlatform'
+            ]) &&
+            request.resource.data.uid == resource.data.uid &&
+            request.resource.data.email == resource.data.email &&
+            request.resource.data.role == resource.data.role &&
+            hasCompatibleAcademicLevel(
+              request.resource.data,
+              resource.data
+            ) &&
+            hasValidProfilePhotoFields(
+              request.resource.data,
+              resource.data.role
+            ) &&
+            hasCompatibleAdminLevel(
+              request.resource.data,
+              resource.data
+            ) &&
+            hasCompatibleIsActive(
+              request.resource.data,
+              resource.data
+            ) &&
+            hasCompatibleCreatedAt(
+              request.resource.data,
+              resource.data
+            ) &&
+            hasCompatibleProvider(
+              request.resource.data,
+              resource.data
+            ) &&
+            (
+              resource.data.role != 'company'
+              ? !commercialRegisterFieldsChanged(
+                  request.resource.data,
+                  resource.data
+                )
+              : (
+                  !commercialRegisterFieldsChanged(
+                    request.resource.data,
+                    resource.data
+                  ) ||
+                  hasValidCommercialRegisterPayload(request.resource.data)
+                )
+            )
+          ) ||
+          (
+            isAdmin() &&
+            request.resource.data.diff(resource.data).changedKeys().hasOnly([
+              'isActive'
+            ]) &&
+            request.resource.data.uid == resource.data.uid &&
+            request.resource.data.email == resource.data.email &&
+            request.resource.data.role == resource.data.role &&
+            hasCompatibleAcademicLevel(
+              request.resource.data,
+              resource.data
+            ) &&
+            hasCompatibleAdminLevel(
+              request.resource.data,
+              resource.data
+            ) &&
+            hasCompatibleCreatedAt(
+              request.resource.data,
+              resource.data
+            ) &&
+            hasCompatibleProvider(
+              request.resource.data,
+              resource.data
+            )
+          )
+        );
+
+      allow delete: if isAdmin();
+
+      match /saved_trainings/{trainingId} {
+        allow read: if signedIn() && (isSelf(uid) || isAdmin());
+
+        allow create, update: if isStudent() &&
+            isSelf(uid) &&
+            request.resource.data.keys().hasOnly([
+              'id',
+              'trainingId',
+              'title',
+              'description',
+              'provider',
+              'duration',
+              'level',
+              'link',
+              'type',
+              'source',
+              'authors',
+              'thumbnail',
+              'domain',
+              'language',
+              'previewLink',
+              'isApproved',
+              'isFeatured',
+              'savedAt'
+            ]) &&
+            request.resource.data.id == trainingId &&
+            request.resource.data.trainingId == trainingId &&
+            exists(trainingPath(trainingId));
+
+        allow delete: if isAdmin() ||
+            (isStudent() && isSelf(uid));
+      }
+    }
+
+    match /opportunities/{opportunityId} {
+      allow read: if signedIn() &&
+          (isAdmin() ||
+              resource.data.companyId == request.auth.uid ||
+              (
+                isStudent() &&
+                exists(applicationPath(request.auth.uid + '_' + opportunityId))
+              ) ||
+              resource.data.status == 'open');
+
+      allow create: if isCompany() &&
+          request.resource.data.keys().hasOnly([
+            'id',
+            'companyId',
+            'companyName',
+            'companyLogo',
+            'title',
+            'description',
+            'type',
+            'location',
+            'requirements',
+            'status',
+            'deadline',
+            'createdAt'
+          ]) &&
+          request.resource.data.id == opportunityId &&
+          request.resource.data.companyId == request.auth.uid &&
+          isOpportunityType(request.resource.data.type) &&
+          isOpportunityStatus(request.resource.data.status);
+
+      allow update: if (
+          isAdmin() ||
+          (
+            isCompany() &&
+            resource.data.companyId == request.auth.uid &&
+            request.resource.data.diff(resource.data).changedKeys().hasOnly([
+              'companyName',
+              'companyLogo',
+              'title',
+              'description',
+              'type',
+              'location',
+              'requirements',
+              'status',
+              'deadline'
+            ]) &&
+            request.resource.data.id == resource.data.id &&
+            request.resource.data.companyId == resource.data.companyId &&
+            request.resource.data.createdAt == resource.data.createdAt &&
+            isOpportunityType(request.resource.data.type) &&
+            isOpportunityStatus(request.resource.data.status)
+          )
+        );
+
+      allow delete: if isAdmin() ||
+          (isCompany() && resource.data.companyId == request.auth.uid);
+    }
+
+    match /applications/{applicationId} {
+      allow read: if signedIn() &&
+          (isAdmin() ||
+              resource.data.studentId == request.auth.uid ||
+              resource.data.companyId == request.auth.uid);
+
+      allow create: if isStudent() &&
+          request.resource.data.keys().hasOnly([
+            'id',
+            'studentId',
+            'studentName',
+            'opportunityId',
+            'companyId',
+            'cvId',
+            'status',
+            'appliedAt'
+          ]) &&
+          request.resource.data.id == applicationId &&
+          request.resource.data.studentId == request.auth.uid &&
+          applicationId == request.auth.uid + '_' + request.resource.data.opportunityId &&
+          request.resource.data.status == 'pending' &&
+          exists(opportunityPath(request.resource.data.opportunityId)) &&
+          get(opportunityPath(request.resource.data.opportunityId)).data.status == 'open' &&
+          get(opportunityPath(request.resource.data.opportunityId)).data.companyId ==
+              request.resource.data.companyId &&
+          (
+            request.resource.data.cvId == '' ||
+            (
+              exists(cvPath(request.resource.data.cvId)) &&
+              get(cvPath(request.resource.data.cvId)).data.studentId == request.auth.uid
+            )
+          );
+
+      allow update: if isAdmin() ||
+          (
+            isCompany() &&
+            resource.data.companyId == request.auth.uid &&
+            request.resource.data.diff(resource.data).changedKeys().hasOnly([
+              'status'
+            ]) &&
+            request.resource.data.id == resource.data.id &&
+            request.resource.data.studentId == resource.data.studentId &&
+            request.resource.data.studentName == resource.data.studentName &&
+            request.resource.data.opportunityId == resource.data.opportunityId &&
+            request.resource.data.companyId == resource.data.companyId &&
+            request.resource.data.cvId == resource.data.cvId &&
+            request.resource.data.appliedAt == resource.data.appliedAt &&
+            isApplicationStatus(request.resource.data.status)
+          );
+
+      allow delete: if isAdmin();
+    }
+
+    match /cvs/{cvId} {
+      allow read: if signedIn() &&
+          (isAdmin() ||
+              resource.data.studentId == request.auth.uid);
+
+      allow create: if isStudent() &&
+          request.resource.data.keys().hasOnly([
+            'id',
+            'studentId',
+            'fullName',
+            'email',
+            'phone',
+            'address',
+            'summary',
+            'education',
+            'experience',
+            'skills',
+            'languages',
+            'sourceType',
+            'templateId',
+            'primaryCvMode',
+            'uploadedCvUrl',
+            'uploadedCvPath',
+            'uploadedFileName',
+            'uploadedCvObjectKey',
+            'uploadedCvUserId',
+            'uploadedCvBucketName',
+            'uploadedCvMimeType',
+            'uploadedCvSizeOriginal',
+            'uploadedCvFileType',
+            'uploadedCvCreatedAt',
+            'uploadedCvStorageProvider',
+            'exportedPdfUrl',
+            'exportedPdfPath',
+            'createdAt',
+            'updatedAt'
+          ]) &&
+          request.resource.data.id == cvId &&
+          request.resource.data.studentId == request.auth.uid;
+
+      allow update: if isAdmin() ||
+          (
+            isStudent() &&
+            resource.data.studentId == request.auth.uid &&
+            request.resource.data.diff(resource.data).changedKeys().hasOnly([
+              'fullName',
+              'email',
+              'phone',
+              'address',
+              'summary',
+              'education',
+              'experience',
+              'skills',
+              'languages',
+              'sourceType',
+              'templateId',
+              'primaryCvMode',
+              'uploadedCvUrl',
+              'uploadedCvPath',
+              'uploadedFileName',
+              'uploadedCvObjectKey',
+              'uploadedCvUserId',
+              'uploadedCvBucketName',
+              'uploadedCvMimeType',
+              'uploadedCvSizeOriginal',
+              'uploadedCvFileType',
+              'uploadedCvCreatedAt',
+              'uploadedCvStorageProvider',
+              'exportedPdfUrl',
+              'exportedPdfPath',
+              'uploadedCvFileId',
+              'uploadedCvBucketId',
+              'updatedAt'
+            ]) &&
+            request.resource.data.id == resource.data.id &&
+            request.resource.data.studentId == resource.data.studentId
+          );
+
+      allow delete: if isAdmin() ||
+          (isStudent() && resource.data.studentId == request.auth.uid);
+    }
+
+    match /savedOpportunities/{savedId} {
+      allow read: if signedIn() &&
+          (isAdmin() || resource.data.studentId == request.auth.uid);
+
+      allow create: if isStudent() &&
+          request.resource.data.keys().hasOnly([
+            'id',
+            'opportunityId',
+            'studentId',
+            'title',
+            'companyName',
+            'type',
+            'location',
+            'deadline',
+            'savedAt'
+          ]) &&
+          request.resource.data.id == savedId &&
+          request.resource.data.studentId == request.auth.uid &&
+          exists(opportunityPath(request.resource.data.opportunityId));
+
+      allow update: if false;
+
+      allow delete: if isAdmin() ||
+          (isStudent() && resource.data.studentId == request.auth.uid);
+    }
+
+    match /projectIdeas/{ideaId} {
+      allow read: if isAdmin()
+          || (signedIn() && resource.data.submittedBy == request.auth.uid)
+          || (signedIn() && resource.data.status == 'approved');
+
+      allow create: if isStudent() &&
+          request.resource.data.keys().hasOnly([
+            'id',
+            'title',
+            'description',
+            'domain',
+            'level',
+            'tools',
+            'status',
+            'submittedBy',
+            'createdAt'
+          ]) &&
+          request.resource.data.id == ideaId &&
+          request.resource.data.submittedBy == request.auth.uid &&
+          request.resource.data.status == 'pending' &&
+          isAcademicLevel(request.resource.data.level);
+
+      allow update: if (
+          // Admin can change status only
+          isAdmin() &&
+          request.resource.data.diff(resource.data).changedKeys().hasOnly([
+            'status'
+          ]) &&
+          request.resource.data.id == resource.data.id &&
+          request.resource.data.title == resource.data.title &&
+          request.resource.data.description == resource.data.description &&
+          request.resource.data.domain == resource.data.domain &&
+          request.resource.data.level == resource.data.level &&
+          request.resource.data.tools == resource.data.tools &&
+          request.resource.data.submittedBy == resource.data.submittedBy &&
+          request.resource.data.createdAt == resource.data.createdAt &&
+          isProjectIdeaStatus(request.resource.data.status)
+        ) || (
+          // Owner can edit content fields while idea is still pending
+          isStudent() &&
+          resource.data.submittedBy == request.auth.uid &&
+          resource.data.status == 'pending' &&
+          request.resource.data.diff(resource.data).changedKeys().hasOnly([
+            'title', 'description', 'domain', 'level', 'tools'
+          ]) &&
+          request.resource.data.id == resource.data.id &&
+          request.resource.data.status == resource.data.status &&
+          request.resource.data.submittedBy == resource.data.submittedBy &&
+          request.resource.data.createdAt == resource.data.createdAt &&
+          isAcademicLevel(request.resource.data.level)
+        );
+
+      allow delete: if isAdmin() ||
+          (isStudent() && resource.data.submittedBy == request.auth.uid);
+    }
+
+    match /scholarships/{scholarshipId} {
+      allow read: if signedIn();
+      allow write: if isAdmin();
+    }
+
+    match /trainings/{trainingId} {
+      allow read: if signedIn();
+      allow write: if isAdmin();
+    }
+
+    match /notifications/{notificationId} {
+      allow read: if signedIn() &&
+          (isAdmin() || resource.data.userId == request.auth.uid);
+
+      allow create: if signedIn() &&
+          (isAdmin() || isStudent() || isCompany()) &&
+          request.resource.data.keys().hasOnly([
+            'id',
+            'userId',
+            'title',
+            'message',
+            'type',
+            'createdAt',
+            'isRead',
+            'conversationId',
+            'targetId'
+          ]) &&
+          request.resource.data.id == notificationId &&
+          request.resource.data.userId != request.auth.uid &&
+          request.resource.data.isRead == false &&
+          (
+            (
+              request.resource.data.type == 'chat' &&
+              request.resource.data.conversationId is string &&
+              request.resource.data.conversationId.size() > 0 &&
+              isParticipant(request.resource.data.conversationId) &&
+              (
+                get(conversationPath(request.resource.data.conversationId)).data.studentId == request.resource.data.userId ||
+                get(conversationPath(request.resource.data.conversationId)).data.companyId == request.resource.data.userId
+              )
+            )
+            ||
+            (
+              request.resource.data.type == 'application' &&
+              isCompany()
+            )
+            ||
+            (
+              request.resource.data.type in ['opportunity', 'scholarship', 'training'] &&
+              isCompany()
+            )
+          );
+
+      allow delete: if isAdmin();
+
+      allow update: if isAdmin() ||
+          (
+            signedIn() &&
+            resource.data.userId == request.auth.uid &&
+            request.resource.data.diff(resource.data).changedKeys().hasOnly([
+              'isRead'
+            ]) &&
+            request.resource.data.id == resource.data.id &&
+            request.resource.data.userId == resource.data.userId &&
+            request.resource.data.title == resource.data.title &&
+            request.resource.data.message == resource.data.message &&
+            request.resource.data.type == resource.data.type &&
+            request.resource.data.createdAt == resource.data.createdAt &&
+            request.resource.data.conversationId == resource.data.conversationId
+          );
+    }
+
+    match /conversations/{conversationId} {
+      allow read: if isAdmin() ||
+          (signedIn() &&
+              (resource.data.studentId == request.auth.uid ||
+                  resource.data.companyId == request.auth.uid));
+
+      allow create: if signedIn() &&
+          request.resource.data.keys().hasOnly([
+            'id',
+            'studentId',
+            'studentName',
+            'companyId',
+            'companyName',
+            'lastMessage',
+            'lastMessageTime',
+            'startedAt',
+            'status'
+          ]) &&
+          request.resource.data.id == conversationId &&
+          (
+            (isStudent() && request.resource.data.studentId == request.auth.uid) ||
+            (isCompany() && request.resource.data.companyId == request.auth.uid)
+          ) &&
+          isConversationStatus(request.resource.data.status);
+
+      allow update: if isAdmin() ||
+          (
+            signedIn() &&
+            (resource.data.studentId == request.auth.uid ||
+                resource.data.companyId == request.auth.uid) &&
+            request.resource.data.diff(resource.data).changedKeys().hasOnly([
+              'lastMessage',
+              'lastMessageTime',
+              'status'
+            ]) &&
+            request.resource.data.id == resource.data.id &&
+            request.resource.data.studentId == resource.data.studentId &&
+            request.resource.data.studentName == resource.data.studentName &&
+            request.resource.data.companyId == resource.data.companyId &&
+            request.resource.data.companyName == resource.data.companyName &&
+            request.resource.data.startedAt == resource.data.startedAt &&
+            isConversationStatus(request.resource.data.status)
+          );
+
+      allow delete: if isAdmin();
+
+      match /messages/{messageId} {
+        allow read: if isAdmin() || isParticipant(conversationId);
+
+        allow create: if isParticipant(conversationId) &&
+            request.resource.data.keys().hasOnly([
+              'id',
+              'senderId',
+              'senderRole',
+              'text',
+              'sentAt',
+              'isRead',
+              'isEdited',
+              'isDeleted',
+              'editedAt'
+            ]) &&
+            request.resource.data.id == messageId &&
+            request.resource.data.senderId == request.auth.uid &&
+            request.resource.data.isEdited == false &&
+            request.resource.data.isDeleted == false &&
+            (
+              (isStudent() && request.resource.data.senderRole == 'student') ||
+              (isCompany() && request.resource.data.senderRole == 'company')
+            );
+
+        allow update: if isAdmin() ||
+            (
+              isParticipant(conversationId) &&
+              resource.data.senderId != request.auth.uid &&
+              request.resource.data.diff(resource.data).changedKeys().hasOnly([
+                'isRead'
+              ]) &&
+              request.resource.data.id == resource.data.id &&
+              request.resource.data.senderId == resource.data.senderId &&
+              request.resource.data.senderRole == resource.data.senderRole &&
+              request.resource.data.text == resource.data.text &&
+              request.resource.data.sentAt == resource.data.sentAt
+            ) ||
+            (
+              isParticipant(conversationId) &&
+              resource.data.senderId == request.auth.uid &&
+              resource.data.isDeleted == false &&
+              request.resource.data.diff(resource.data).changedKeys().hasOnly([
+                'text',
+                'isEdited',
+                'editedAt'
+              ]) &&
+              request.resource.data.isEdited == true &&
+              request.resource.data.id == resource.data.id &&
+              request.resource.data.senderId == resource.data.senderId &&
+              request.resource.data.senderRole == resource.data.senderRole &&
+              request.resource.data.sentAt == resource.data.sentAt &&
+              request.resource.data.isRead == resource.data.isRead &&
+              request.resource.data.isDeleted == resource.data.isDeleted
+            ) ||
+            (
+              isParticipant(conversationId) &&
+              resource.data.senderId == request.auth.uid &&
+              resource.data.isDeleted == false &&
+              request.resource.data.diff(resource.data).changedKeys().hasOnly([
+                'isDeleted',
+                'text'
+              ]) &&
+              request.resource.data.isDeleted == true &&
+              request.resource.data.text == '' &&
+              request.resource.data.id == resource.data.id &&
+              request.resource.data.senderId == resource.data.senderId &&
+              request.resource.data.senderRole == resource.data.senderRole &&
+              request.resource.data.sentAt == resource.data.sentAt &&
+              request.resource.data.isRead == resource.data.isRead
+            );
+
+        allow delete: if isAdmin();
+      }
+    }
+  }
+}

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AvenirDZ Admin - Recent Activity</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div id="auth-gate" class="auth-gate">
+    <div class="spinner"></div>
+    <p>Verifying session...</p>
+  </div>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-brand">
+          <div class="sidebar-brand-icon">&#x1F6E1;&#xFE0F;</div>
+          <div class="sidebar-brand-text"><h2>Admin Panel</h2><p>AvenirDZ Management</p></div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="index.html" class="nav-item"><span class="icon">&#x1F4CA;</span> Dashboard</a>
+        <a href="users.html" class="nav-item"><span class="icon">&#x1F465;</span> Users</a>
+        <a href="moderation.html" class="nav-item"><span class="icon">&#x2696;&#xFE0F;</span> Moderation</a>
+        <a href="activity.html" class="nav-item"><span class="icon">&#x23F1;&#xFE0F;</span> Activity</a>
+        <a href="notifications.html" class="nav-item"><span class="icon">&#x1F514;</span> Notifications <span class="nav-badge" data-notification-badge hidden>0</span></a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="admin-info">
+          <div class="admin-avatar" id="admin-avatar">A</div>
+          <div><div class="admin-name" id="admin-name">Admin</div><div class="admin-email" id="admin-email"></div></div>
+        </div>
+        <button class="btn-logout" id="btn-logout">&#x1F6AA; Logout</button>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <h1 class="page-title">Recent Activity</h1>
+      <p class="page-subtitle">Review the latest platform actions across applications, opportunities, scholarships, trainings, and project ideas.</p>
+
+      <div class="page-toolbar">
+        <div class="search-bar" style="margin:0; max-width: 460px; width: 100%;">
+          <span class="search-icon">&#x1F50D;</span>
+          <input type="text" id="activity-search" placeholder="Search by title, actor, or activity type...">
+        </div>
+        <div class="page-actions">
+          <span class="results-summary" id="activity-summary">Loading activity...</span>
+        </div>
+      </div>
+
+      <div class="filter-chips" id="activity-filters">
+        <button class="chip active" data-type="all">All</button>
+        <button class="chip" data-type="application">Applications</button>
+        <button class="chip" data-type="opportunity">Opportunities</button>
+        <button class="chip" data-type="scholarship">Scholarships</button>
+        <button class="chip" data-type="training">Trainings</button>
+        <button class="chip" data-type="project_idea">Project Ideas</button>
+      </div>
+
+      <div id="activity-list">
+        <div class="loading"><div class="spinner"></div></div>
+      </div>
+      <div class="load-more-row">
+        <button class="load-more-button" id="load-more-activity" hidden>Load More Activity</button>
+      </div>
+    </main>
+  </div>
+
+  <script type="module">
+    import { checkAuth, esc, showToast } from './js/auth.js';
+    import { createActivityState, loadRecentActivitiesPage } from './js/activity-service.js';
+    import {
+      activityTypeLabel,
+      adminTargetUrl,
+      formatFullTimestamp,
+      matchesSearch,
+      typeColor,
+      typeIcon,
+    } from './js/admin-utils.js';
+
+    const activityState = {
+      items: [],
+      sourceState: createActivityState(),
+      hasMore: true,
+      activeType: 'all',
+      searchQuery: '',
+      isLoading: false,
+    };
+
+    document.getElementById('activity-search').addEventListener('input', (event) => {
+      activityState.searchQuery = event.target.value;
+      renderActivities();
+    });
+
+    document.getElementById('activity-filters').addEventListener('click', (event) => {
+      const chip = event.target.closest('.chip');
+      if (!chip) {
+        return;
+      }
+
+      activityState.activeType = chip.dataset.type || 'all';
+      document.querySelectorAll('#activity-filters .chip').forEach((item) => {
+        item.classList.toggle('active', item === chip);
+      });
+      renderActivities();
+    });
+
+    document.getElementById('activity-list').addEventListener('click', (event) => {
+      const button = event.target.closest('[data-open-type]');
+      if (!button) {
+        return;
+      }
+
+      const type = button.dataset.openType || '';
+      const targetId = button.dataset.openId || '';
+      window.location.href = adminTargetUrl(type, targetId);
+    });
+
+    document.getElementById('load-more-activity').addEventListener('click', async () => {
+      await loadMoreActivity();
+    });
+
+    checkAuth(async () => {
+      await loadMoreActivity();
+    });
+
+    function filteredActivities() {
+      return activityState.items.filter((item) => {
+        if (activityState.activeType !== 'all' && item.type !== activityState.activeType) {
+          return false;
+        }
+
+        return matchesSearch(
+          [item.typeLabel, item.title, item.actorName, item.description, item.status],
+          activityState.searchQuery,
+        );
+      });
+    }
+
+    function renderActivities() {
+      const filtered = filteredActivities();
+      const list = document.getElementById('activity-list');
+      const summary = document.getElementById('activity-summary');
+      const loadMoreButton = document.getElementById('load-more-activity');
+
+      summary.textContent = `${filtered.length} loaded item${filtered.length === 1 ? '' : 's'} shown`;
+      loadMoreButton.hidden = !activityState.hasMore;
+      loadMoreButton.disabled = activityState.isLoading;
+      loadMoreButton.textContent = activityState.isLoading ? 'Loading...' : 'Load More Activity';
+
+      if (activityState.isLoading && activityState.items.length === 0) {
+        list.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+        return;
+      }
+
+      if (filtered.length === 0) {
+        list.innerHTML = '<div class="empty-card">No recent activity matches your current filters.</div>';
+        return;
+      }
+
+      list.innerHTML = filtered.map((item) => {
+        const accent = typeColor(item.type);
+        const statusMarkup = item.status
+          ? `<span class="meta-pill">${esc(item.status)}</span>`
+          : '';
+
+        return `
+          <div class="activity-card">
+            <div class="activity-card-header">
+              <div class="activity-card-main">
+                <div class="activity-type-icon" style="background:${accent}22;color:${accent}">${esc(typeIcon(item.type))}</div>
+                <div>
+                  <div class="activity-title">${esc(item.title || 'Untitled')}</div>
+                  <div class="list-card-subtitle">${esc(item.actorName || 'Unknown actor')} • ${esc(activityTypeLabel(item.type))}</div>
+                  <div class="activity-description">${esc(item.description || '')}</div>
+                  <div class="activity-meta">
+                    <span class="meta-pill" style="background:${accent}1f;color:${accent}">${esc(activityTypeLabel(item.type))}</span>
+                    ${statusMarkup}
+                    <span class="meta-pill">${esc(formatFullTimestamp(item.timestamp) || 'Unknown time')}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="notification-actions">
+              <button class="btn-open" data-open-type="${esc(item.type)}" data-open-id="${esc(item.targetId)}">Open Item</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function loadMoreActivity() {
+      if (activityState.isLoading || activityState.hasMore === false) {
+        return;
+      }
+
+      activityState.isLoading = true;
+      renderActivities();
+
+      try {
+        const result = await loadRecentActivitiesPage(activityState.sourceState, {
+          pageSize: 5,
+          maxItems: 250,
+        });
+        activityState.sourceState = result.state;
+        activityState.items = result.items;
+        activityState.hasMore = result.hasMore;
+      } catch (error) {
+        console.error('Failed to load activity page:', error);
+        showToast('Failed to load recent activity', 'error');
+      } finally {
+        activityState.isLoading = false;
+        renderActivities();
+      }
+    }
+  </script>
+</body>
+</html>
