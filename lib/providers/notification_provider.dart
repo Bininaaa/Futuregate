@@ -11,6 +11,8 @@ class NotificationProvider extends ChangeNotifier {
   bool _isFetchingToken = false;
   String? _fcmToken;
   StreamSubscription? _sub;
+  Future<void>? _startListeningFuture;
+  String? _activeUserId;
 
   List<NotificationModel> get notifications => _notifications;
   bool get isLoading => _isLoading;
@@ -20,6 +22,33 @@ class NotificationProvider extends ChangeNotifier {
   int get unreadCount => _notifications.where((n) => !n.isRead).length;
 
   Future<void> startListening(String userId) async {
+    final normalizedUserId = userId.trim();
+    if (normalizedUserId.isEmpty) {
+      return;
+    }
+
+    if (_activeUserId == normalizedUserId && _startListeningFuture != null) {
+      return _startListeningFuture;
+    }
+
+    if (_activeUserId == normalizedUserId && _sub != null) {
+      return;
+    }
+
+    final request = _startListeningInternal(normalizedUserId);
+    _startListeningFuture = request;
+
+    try {
+      await request;
+    } finally {
+      if (identical(_startListeningFuture, request)) {
+        _startListeningFuture = null;
+      }
+    }
+  }
+
+  Future<void> _startListeningInternal(String userId) async {
+    _activeUserId = userId;
     listenToNotifications(userId);
     _fcmToken = await _service.initializeFCM(userId);
     _service.setupForegroundHandler();
@@ -42,6 +71,8 @@ class NotificationProvider extends ChangeNotifier {
   void stopListening() {
     _sub?.cancel();
     _sub = null;
+    _startListeningFuture = null;
+    _activeUserId = null;
     _notifications = [];
     _isLoading = false;
     _isFetchingToken = false;
@@ -51,12 +82,22 @@ class NotificationProvider extends ChangeNotifier {
   }
 
   void listenToNotifications(String userId) {
+    final normalizedUserId = userId.trim();
+    if (normalizedUserId.isEmpty) {
+      return;
+    }
+
+    if (_activeUserId == normalizedUserId && _sub != null) {
+      return;
+    }
+
+    _activeUserId = normalizedUserId;
     _sub?.cancel();
     _isLoading = true;
     notifyListeners();
 
     _sub = _service
-        .getNotifications(userId)
+        .getNotifications(normalizedUserId)
         .listen(
           (data) {
             _notifications = data;

@@ -11,7 +11,7 @@ import 'chat_list_screen.dart';
 import 'saved_screen.dart';
 import 'cv_screen.dart';
 import 'profile_screen.dart';
-import '../settings/settingsdgs_screen.dart';
+import '../settings/settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

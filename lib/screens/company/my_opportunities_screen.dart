@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../providers/auth_provider.dart';
 import '../../providers/company_provider.dart';
+import '../../widgets/opportunity_type_badge.dart';
 import 'publish_opportunity_screen.dart';
 
 class MyOpportunitiesScreen extends StatefulWidget {
@@ -168,11 +169,10 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
                                   spacing: 8,
                                   runSpacing: 4,
                                   children: [
-                                    _buildTag(
-                                        opp.type,
-                                        opp.type == 'job'
-                                            ? vibrantOrange
-                                            : mediumBlue),
+                                    OpportunityTypeBadge(
+                                      type: opp.type,
+                                      fontSize: 10,
+                                    ),
                                     _buildTag(opp.location, Colors.grey),
                                     _buildTag('Deadline: ${opp.deadline}',
                                         Colors.orange),

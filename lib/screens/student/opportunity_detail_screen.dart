@@ -8,6 +8,7 @@ import '../../providers/chat_provider.dart';
 import '../../providers/cv_provider.dart';
 import '../../providers/saved_opportunity_provider.dart';
 import '../../services/application_service.dart';
+import '../../widgets/opportunity_type_badge.dart';
 import 'chat_screen.dart';
 
 class OpportunityDetailScreen extends StatefulWidget {
@@ -241,17 +242,27 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
         padding: const EdgeInsets.all(16),
         child: ListView(
           children: [
-            Text(
-              widget.opportunity.title,
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    widget.opportunity.title,
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                OpportunityTypeBadge(
+                  type: widget.opportunity.type,
+                  fontSize: 13,
+                ),
+              ],
             ),
             const SizedBox(height: 10),
             _infoRow(Icons.business, 'Company', widget.opportunity.companyName),
             _infoRow(Icons.location_on, 'Location', widget.opportunity.location),
-            _infoRow(Icons.category, 'Type', widget.opportunity.type),
             _infoRow(Icons.info_outline, 'Status', widget.opportunity.status),
             _infoRow(Icons.calendar_today, 'Deadline', widget.opportunity.deadline),
             const SizedBox(height: 20),

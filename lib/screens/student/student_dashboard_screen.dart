@@ -10,6 +10,8 @@ import '../../providers/auth_provider.dart';
 import '../../providers/notification_provider.dart';
 import '../../providers/opportunity_provider.dart';
 import '../../providers/training_provider.dart';
+import '../../utils/opportunity_type.dart';
+import '../../widgets/opportunity_type_badge.dart';
 import '../../widgets/profile_avatar.dart';
 import '../notifications_screen.dart';
 import 'cv_screen.dart';
@@ -345,32 +347,31 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
         title: 'Jobs',
         icon: Icons.work_outline,
         gradient: [const Color(0xFF6C63FF), const Color(0xFF8B83FF)],
-        onTap: () => Navigator.push(context,
-            MaterialPageRoute(builder: (_) => const OpportunitiesScreen())),
+        onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (_) => const OpportunitiesScreen(
+                    initialFilter: OpportunityType.job))),
       ),
       _CategoryItem(
         title: 'Internships',
         icon: Icons.school_outlined,
         gradient: [const Color(0xFF4DA0FF), const Color(0xFF74B9FF)],
-        onTap: () => Navigator.push(context,
-            MaterialPageRoute(builder: (_) => const OpportunitiesScreen())),
+        onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (_) => const OpportunitiesScreen(
+                    initialFilter: OpportunityType.internship))),
       ),
       _CategoryItem(
-        title: 'Sponsored',
+        title: 'Sponsoring',
         icon: Icons.campaign_outlined,
         gradient: [const Color(0xFFFF9F43), const Color(0xFFFECA57)],
-        onTap: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Sponsored content coming soon',
-                  style: GoogleFonts.poppins()),
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
-              backgroundColor: primaryPurple,
-            ),
-          );
-        },
+        onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (_) => const OpportunitiesScreen(
+                    initialFilter: OpportunityType.sponsoring))),
       ),
       _CategoryItem(
         title: 'Scholarships',
@@ -652,7 +653,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
             const Spacer(),
             Row(
               children: [
-                _buildTypeBadge(item.type),
+                OpportunityTypeBadge(type: item.type, showIcon: false),
                 const Spacer(),
                 if (item.deadline.isNotEmpty)
                   Row(
@@ -721,41 +722,6 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                 ),
               ),
             ),
-    );
-  }
-
-  Widget _buildTypeBadge(String type) {
-    Color badgeColor;
-    switch (type.toLowerCase()) {
-      case 'internship':
-        badgeColor = const Color(0xFF4DA0FF);
-        break;
-      case 'job':
-        badgeColor = primaryPurple;
-        break;
-      case 'freelance':
-        badgeColor = const Color(0xFFFF9F43);
-        break;
-      default:
-        badgeColor = const Color(0xFF2ED573);
-    }
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: badgeColor.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Text(
-        type.isNotEmpty
-            ? type[0].toUpperCase() + type.substring(1)
-            : 'Opportunity',
-        style: GoogleFonts.poppins(
-          fontSize: 11,
-          fontWeight: FontWeight.w600,
-          color: badgeColor,
-        ),
-      ),
     );
   }
 
@@ -920,7 +886,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
               ),
             ),
             const SizedBox(width: 10),
-            _buildTypeBadge(item.type),
+            OpportunityTypeBadge(type: item.type, showIcon: false),
           ],
         ),
       ),

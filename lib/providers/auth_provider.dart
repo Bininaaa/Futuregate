@@ -14,6 +14,8 @@ class AuthProvider extends ChangeNotifier {
   bool _isInitialLoadDone = false;
   bool _isBlockedOnLogin = false;
   StreamSubscription<DocumentSnapshot>? _userDocSubscription;
+  Future<void>? _loadCurrentUserFuture;
+  String? _listeningUserUid;
 
   UserModel? get userModel => _userModel;
   bool get isLoading => _isLoading;
@@ -28,6 +30,24 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> loadCurrentUser() async {
+    final existingRequest = _loadCurrentUserFuture;
+    if (existingRequest != null) {
+      return existingRequest;
+    }
+
+    final request = _loadCurrentUserInternal();
+    _loadCurrentUserFuture = request;
+
+    try {
+      await request;
+    } finally {
+      if (identical(_loadCurrentUserFuture, request)) {
+        _loadCurrentUserFuture = null;
+      }
+    }
+  }
+
+  Future<void> _loadCurrentUserInternal() async {
     try {
       _isLoading = true;
       notifyListeners();
@@ -47,7 +67,12 @@ class AuthProvider extends ChangeNotifier {
   }
 
   void _startUserDocListener(String uid) {
+    if (_listeningUserUid == uid && _userDocSubscription != null) {
+      return;
+    }
+
     _userDocSubscription?.cancel();
+    _listeningUserUid = uid;
     _userDocSubscription = FirebaseFirestore.instance
         .collection('users')
         .doc(uid)
@@ -70,12 +95,25 @@ class AuthProvider extends ChangeNotifier {
 
           _userModel = updatedUser;
           notifyListeners();
+        }, onError: (error, stackTrace) {
+          if (_isIgnorableFirebaseCancellation(error)) {
+            return;
+          }
+
+          debugPrint('User profile listener error: $error');
         });
   }
 
   void _stopUserDocListener() {
     _userDocSubscription?.cancel();
     _userDocSubscription = null;
+    _listeningUserUid = null;
+  }
+
+  bool _isIgnorableFirebaseCancellation(Object error) {
+    final message = error.toString().toLowerCase();
+    return message.contains('firebaseignoreexception') &&
+        message.contains('http request was aborted');
   }
 
   Future<String?> login({

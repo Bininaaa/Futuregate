@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../utils/opportunity_type.dart';
+
 class OpportunityModel {
   final String id;
   final String companyId;
@@ -39,7 +41,7 @@ class OpportunityModel {
       companyLogo: map['companyLogo'] ?? '',
       title: map['title'] ?? '',
       description: map['description'] ?? '',
-      type: map['type'] ?? '',
+      type: OpportunityType.parse(map['type']),
       location: map['location'] ?? '',
       requirements: map['requirements'] ?? '',
       status: map['status'] ?? '',

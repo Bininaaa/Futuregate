@@ -3,6 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/company_provider.dart';
+import '../../utils/opportunity_type.dart';
+import '../../widgets/opportunity_type_selector.dart';
 
 class PublishOpportunityScreen extends StatefulWidget {
   final String? opportunityId;
@@ -27,7 +29,7 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
   final _requirementsController = TextEditingController();
   final _deadlineController = TextEditingController();
 
-  String _selectedType = 'job';
+  String _selectedType = OpportunityType.job;
   String _selectedStatus = 'open';
   bool _isLoading = false;
   bool _isEditMode = false;
@@ -53,7 +55,7 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
       _locationController.text = opp.location;
       _requirementsController.text = opp.requirements;
       _deadlineController.text = opp.deadline;
-      _selectedType = opp.type;
+      _selectedType = OpportunityType.parse(opp.type);
       _selectedStatus = opp.status;
     }
 
@@ -111,12 +113,9 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        _buildTypeChip('Job', 'job'),
-                        const SizedBox(width: 10),
-                        _buildTypeChip('Internship', 'internship'),
-                      ],
+                    OpportunityTypeSelector(
+                      selected: _selectedType,
+                      onChanged: (v) => setState(() => _selectedType = v),
                     ),
                     const SizedBox(height: 16),
                     Text(
@@ -259,31 +258,6 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
     );
   }
 
-  Widget _buildTypeChip(String label, String value) {
-    final isSelected = _selectedType == value;
-    return GestureDetector(
-      onTap: () => setState(() => _selectedType = value),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        decoration: BoxDecoration(
-          color: isSelected ? vibrantOrange : Colors.white,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: isSelected ? vibrantOrange : Colors.grey.shade300,
-          ),
-        ),
-        child: Text(
-          label,
-          style: GoogleFonts.poppins(
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-            color: isSelected ? Colors.white : mediumBlue,
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildStatusChip(String label, String value) {
     final isSelected = _selectedStatus == value;
     final chipColor = value == 'open' ? Colors.green : Colors.grey;
@@ -365,6 +339,16 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(error)));
     } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            _isEditMode
+                ? 'Opportunity updated successfully'
+                : 'Opportunity published successfully',
+          ),
+          backgroundColor: Colors.green,
+        ),
+      );
       Navigator.pop(context);
     }
   }

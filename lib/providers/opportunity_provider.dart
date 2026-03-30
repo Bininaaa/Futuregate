@@ -9,6 +9,7 @@ class OpportunityProvider extends ChangeNotifier {
   List<OpportunityModel> _featuredOpportunities = [];
   bool _isLoading = false;
   bool _isFeaturedLoading = false;
+  Future<void>? _catalogLoadFuture;
 
   List<OpportunityModel> get opportunities => _opportunities;
   List<OpportunityModel> get featuredOpportunities => _featuredOpportunities;
@@ -16,30 +17,52 @@ class OpportunityProvider extends ChangeNotifier {
   bool get isFeaturedLoading => _isFeaturedLoading;
 
   Future<void> fetchOpportunities() async {
-    try {
-      _isLoading = true;
-      notifyListeners();
+    final existingRequest = _catalogLoadFuture;
+    if (existingRequest != null) {
+      return existingRequest;
+    }
 
-      _opportunities = await _service.getAllOpportunities();
-    } catch (e) {
-      debugPrint('fetchOpportunities error: $e');
+    final request = _loadOpportunityCatalog();
+    _catalogLoadFuture = request;
+
+    try {
+      await request;
     } finally {
-      _isLoading = false;
-      notifyListeners();
+      if (identical(_catalogLoadFuture, request)) {
+        _catalogLoadFuture = null;
+      }
     }
   }
 
   Future<void> fetchFeaturedOpportunities() async {
+    if (_featuredOpportunities.isNotEmpty || _opportunities.isNotEmpty) {
+      _featuredOpportunities = _deriveFeatured(_opportunities);
+      notifyListeners();
+      return;
+    }
+
+    await fetchOpportunities();
+  }
+
+  Future<void> _loadOpportunityCatalog() async {
     try {
+      _isLoading = true;
       _isFeaturedLoading = true;
       notifyListeners();
 
-      _featuredOpportunities = await _service.getFeaturedOpportunities();
+      final opportunities = await _service.getAllOpportunities();
+      _opportunities = opportunities;
+      _featuredOpportunities = _deriveFeatured(opportunities);
     } catch (e) {
-      debugPrint('fetchFeaturedOpportunities error: $e');
+      debugPrint('fetchOpportunities error: $e');
     } finally {
+      _isLoading = false;
       _isFeaturedLoading = false;
       notifyListeners();
     }
+  }
+
+  List<OpportunityModel> _deriveFeatured(List<OpportunityModel> opportunities) {
+    return opportunities.where((opportunity) => opportunity.isFeatured).toList();
   }
 }
