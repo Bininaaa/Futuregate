@@ -19,11 +19,38 @@ class CvService {
 
     final preferredDoc = _selectBestCvDoc(snapshot.docs);
     final data = Map<String, dynamic>.from(preferredDoc.data());
-    if ((data['id'] ?? '').toString().trim().isEmpty) {
-      data['id'] = preferredDoc.id;
-    }
+    // Legacy CV documents can contain an `id` field that no longer matches
+    // the Firestore document id. Rules validate applications against the
+    // actual document path, so we always expose the canonical doc id here.
+    data['id'] = preferredDoc.id;
 
     return CvModel.fromMap(data);
+  }
+
+  Future<String?> resolveCanonicalCvId({
+    required String studentId,
+    String preferredCvId = '',
+  }) async {
+    final trimmedPreferredCvId = preferredCvId.trim();
+
+    if (trimmedPreferredCvId.isNotEmpty) {
+      final directDoc = await _firestore
+          .collection('cvs')
+          .doc(trimmedPreferredCvId)
+          .get();
+
+      if (directDoc.exists) {
+        final ownerId = (directDoc.data()?['studentId'] ?? '')
+            .toString()
+            .trim();
+        if (ownerId == studentId) {
+          return directDoc.id;
+        }
+      }
+    }
+
+    final existingDoc = await _getExistingCvDoc(studentId);
+    return existingDoc?.id;
   }
 
   Future<void> saveCv({

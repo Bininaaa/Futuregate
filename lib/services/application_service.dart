@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'notification_worker_service.dart';
+import 'cv_service.dart';
 import '../utils/application_status.dart';
 
 enum ApplicationEligibilityStatus {
@@ -15,6 +16,7 @@ class ApplicationService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final NotificationWorkerService _notificationWorker =
       NotificationWorkerService();
+  final CvService _cvService = CvService();
 
   Future<ApplicationEligibilityStatus> getEligibility({
     required String studentId,
@@ -58,7 +60,6 @@ class ApplicationService {
     required String studentId,
     required String studentName,
     required String opportunityId,
-    required String companyId,
     required String cvId,
   }) async {
     final eligibility = await getEligibility(
@@ -79,6 +80,21 @@ class ApplicationService {
         break;
     }
 
+    final requestedCvId = cvId.trim();
+    final resolvedCvId = requestedCvId.isEmpty
+        ? ''
+        : await _cvService.resolveCanonicalCvId(
+                studentId: studentId,
+                preferredCvId: requestedCvId,
+              ) ??
+              '';
+
+    if (requestedCvId.isNotEmpty && resolvedCvId.isEmpty) {
+      throw Exception(
+        'Your CV could not be matched to your account. Please open My CV and try again.',
+      );
+    }
+
     final opportunityRef = _firestore
         .collection('opportunities')
         .doc(opportunityId);
@@ -86,43 +102,59 @@ class ApplicationService {
         .collection('applications')
         .doc('${studentId}_$opportunityId');
 
-    await _firestore.runTransaction((transaction) async {
-      final opportunitySnapshot = await transaction.get(opportunityRef);
-      final applicationSnapshot = await transaction.get(applicationRef);
+    final opportunitySnapshot = await opportunityRef.get();
+    if (!opportunitySnapshot.exists) {
+      throw Exception('This opportunity is no longer available');
+    }
 
-      if (!opportunitySnapshot.exists) {
-        throw Exception('This opportunity is no longer available');
-      }
+    final opportunityData = opportunitySnapshot.data();
+    final status = opportunityData?['status'] as String? ?? '';
+    final resolvedCompanyId = (opportunityData?['companyId'] ?? '')
+        .toString()
+        .trim();
 
-      if (applicationSnapshot.exists) {
-        throw Exception('You have already applied to this opportunity');
-      }
+    if (status != 'open') {
+      throw Exception('This opportunity is closed');
+    }
 
-      final opportunityData = opportunitySnapshot.data();
-      final status = opportunityData?['status'] as String? ?? '';
-      final resolvedCompanyId = (opportunityData?['companyId'] ?? '')
-          .toString()
-          .trim();
+    if (resolvedCompanyId.isEmpty) {
+      throw Exception('This opportunity is no longer available');
+    }
 
-      if (status != 'open') {
-        throw Exception('This opportunity is closed');
-      }
-
-      if (resolvedCompanyId.isEmpty) {
-        throw Exception('This opportunity is no longer available');
-      }
-
-      transaction.set(applicationRef, {
+    try {
+      await applicationRef.set({
         'id': applicationRef.id,
         'studentId': studentId,
         'studentName': studentName.trim(),
         'opportunityId': opportunityId,
         'companyId': resolvedCompanyId,
-        'cvId': cvId,
+        'cvId': resolvedCvId,
         'status': ApplicationStatus.pending,
         'appliedAt': FieldValue.serverTimestamp(),
       });
-    });
+    } on FirebaseException catch (e) {
+      if (e.code == 'permission-denied') {
+        final latestEligibility = await getEligibility(
+          studentId: studentId,
+          opportunityId: opportunityId,
+        );
+
+        switch (latestEligibility) {
+          case ApplicationEligibilityStatus.alreadyApplied:
+            throw Exception('You have already applied to this opportunity');
+          case ApplicationEligibilityStatus.closed:
+            throw Exception('This opportunity is closed');
+          case ApplicationEligibilityStatus.unavailable:
+            throw Exception('This opportunity is no longer available');
+          case ApplicationEligibilityStatus.requiresLogin:
+            throw Exception('You must be logged in to apply');
+          case ApplicationEligibilityStatus.available:
+            break;
+        }
+      }
+
+      rethrow;
+    }
 
     await _notificationWorker.notifyApplicationSubmitted(applicationRef.id);
   }

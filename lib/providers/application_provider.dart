@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../services/application_service.dart';
 
 class ApplicationProvider extends ChangeNotifier {
@@ -21,7 +22,6 @@ class ApplicationProvider extends ChangeNotifier {
     required String studentId,
     required String studentName,
     required String opportunityId,
-    required String companyId,
     required String cvId,
   }) async {
     try {
@@ -32,11 +32,16 @@ class ApplicationProvider extends ChangeNotifier {
         studentId: studentId,
         studentName: studentName,
         opportunityId: opportunityId,
-        companyId: companyId,
         cvId: cvId,
       );
 
       return null;
+    } on FirebaseException catch (e) {
+      if (e.code == 'permission-denied') {
+        return 'We could not submit your application right now. Please try again.';
+      }
+
+      return e.message ?? e.toString();
     } catch (e) {
       return e.toString();
     } finally {

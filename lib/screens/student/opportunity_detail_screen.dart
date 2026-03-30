@@ -99,7 +99,6 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
       studentId: currentUser.uid,
       studentName: currentUser.fullName,
       opportunityId: widget.opportunity.id,
-      companyId: widget.opportunity.companyId,
       cvId: cv.id,
     );
 
