@@ -12,6 +12,7 @@ import 'saved_screen.dart';
 import 'cv_screen.dart';
 import 'profile_screen.dart';
 import '../settings/settings_screen.dart';
+import '../../utils/opportunity_dashboard_palette.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -22,9 +23,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
-
-  static const Color primaryPurple = Color(0xFF6C63FF);
-  static const Color textMedium = Color(0xFF6E6E82);
 
   final List<Widget> _screens = const [
     StudentDashboardScreen(),
@@ -55,8 +53,8 @@ class _HomeScreenState extends State<HomeScreen> {
           onTap: (index) => setState(() => _currentIndex = index),
           type: BottomNavigationBarType.fixed,
           backgroundColor: Colors.white,
-          selectedItemColor: primaryPurple,
-          unselectedItemColor: textMedium,
+          selectedItemColor: OpportunityDashboardPalette.primary,
+          unselectedItemColor: OpportunityDashboardPalette.textSecondary,
           selectedLabelStyle: GoogleFonts.poppins(
             fontSize: 11,
             fontWeight: FontWeight.w600,
@@ -104,26 +102,23 @@ class _HomeScreenState extends State<HomeScreen> {
 class _MoreScreen extends StatelessWidget {
   const _MoreScreen();
 
-  static const Color primaryPurple = Color(0xFF6C63FF);
-  static const Color textDark = Color(0xFF1E1E2D);
-  static const Color textMedium = Color(0xFF6E6E82);
-  static const Color bgColor = Color(0xFFF6F5FB);
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: bgColor,
+      backgroundColor: OpportunityDashboardPalette.background,
       appBar: AppBar(
         title: Text(
           'More',
           style: GoogleFonts.poppins(
             fontWeight: FontWeight.w600,
-            color: textDark,
+            color: OpportunityDashboardPalette.textPrimary,
           ),
         ),
         backgroundColor: Colors.white,
         elevation: 0,
-        iconTheme: const IconThemeData(color: textDark),
+        iconTheme: const IconThemeData(
+          color: OpportunityDashboardPalette.textPrimary,
+        ),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
@@ -212,12 +207,16 @@ class _MoreScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 color: isDestructive
                     ? Colors.red.withValues(alpha: 0.08)
-                    : primaryPurple.withValues(alpha: 0.08),
+                    : OpportunityDashboardPalette.primary.withValues(
+                        alpha: 0.08,
+                      ),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
                 icon,
-                color: isDestructive ? Colors.red : primaryPurple,
+                color: isDestructive
+                    ? Colors.red
+                    : OpportunityDashboardPalette.primary,
                 size: 22,
               ),
             ),
@@ -228,7 +227,9 @@ class _MoreScreen extends StatelessWidget {
                 style: GoogleFonts.poppins(
                   fontSize: 15,
                   fontWeight: FontWeight.w500,
-                  color: isDestructive ? Colors.red : textDark,
+                  color: isDestructive
+                      ? Colors.red
+                      : OpportunityDashboardPalette.textPrimary,
                 ),
               ),
             ),
@@ -236,7 +237,9 @@ class _MoreScreen extends StatelessWidget {
               Icons.chevron_right,
               color: isDestructive
                   ? Colors.red.withValues(alpha: 0.4)
-                  : textMedium.withValues(alpha: 0.5),
+                  : OpportunityDashboardPalette.textSecondary.withValues(
+                      alpha: 0.5,
+                    ),
               size: 20,
             ),
           ],
