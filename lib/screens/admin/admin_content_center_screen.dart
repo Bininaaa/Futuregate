@@ -11,6 +11,7 @@ import '../../models/training_model.dart';
 import '../../providers/admin_provider.dart';
 import '../../services/company_service.dart';
 import '../../services/document_access_service.dart';
+import '../../utils/opportunity_type.dart';
 import '../../widgets/profile_avatar.dart';
 
 class AdminContentCenterScreen extends StatefulWidget {
@@ -616,6 +617,9 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
         itemCount: opportunities.length,
         itemBuilder: (context, index) {
           final opportunity = opportunities[index];
+          final opportunityType = OpportunityType.parse(
+            (opportunity['type'] ?? '').toString(),
+          );
           return _buildMapListTile(
             id: opportunity['id'].toString(),
             icon: Icons.work,
@@ -625,10 +629,8 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 .toString(),
             badges: [
               _BadgeData(
-                (opportunity['type'] ?? '').toString(),
-                (opportunity['type'] ?? '') == 'job'
-                    ? Colors.blue
-                    : Colors.green,
+                OpportunityType.label(opportunityType),
+                OpportunityType.color(opportunityType),
               ),
               _BadgeData(
                 (opportunity['status'] ?? '').toString(),
@@ -1348,7 +1350,12 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       subtitle: (opportunity['companyName'] ?? 'Unknown company').toString(),
       description: (opportunity['description'] ?? '').toString(),
       detailLines: [
-        _SheetDetailLine('Type', (opportunity['type'] ?? '').toString()),
+        _SheetDetailLine(
+          'Type',
+          OpportunityType.label(
+            OpportunityType.parse((opportunity['type'] ?? '').toString()),
+          ),
+        ),
         _SheetDetailLine('Status', (opportunity['status'] ?? '').toString()),
         _SheetDetailLine(
           'Location',

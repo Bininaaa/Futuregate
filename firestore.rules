@@ -59,7 +59,9 @@ service cloud.firestore {
     }
 
     function isOpportunityType(value) {
-      return value == 'job' || value == 'internship';
+      return value == 'job' ||
+          value == 'internship' ||
+          value == 'sponsoring';
     }
 
     function isOpportunityStatus(value) {

@@ -1740,6 +1740,11 @@ body {
   color: #4CAF50;
 }
 
+.badge-sponsoring {
+  background: rgba(255, 159, 67, 0.14);
+  color: #FF9F43;
+}
+
 .page-subtitle {
   color: var(--text-muted);
   font-size: 14px;

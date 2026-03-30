@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 class OpportunityType {
   OpportunityType._();
 
-  // ── Type keys (stored in Firestore) ──
+  // Type keys stored in Firestore.
   static const String job = 'job';
   static const String internship = 'internship';
   static const String sponsoring = 'sponsoring';
@@ -15,13 +15,13 @@ class OpportunityType {
   /// All valid type keys, in display order.
   static const List<String> values = [job, internship, sponsoring];
 
-  // ── Colors ──
+  // Colors
   static const Color jobColor = Color(0xFF6C63FF);
   static const Color internshipColor = Color(0xFF4DA0FF);
   static const Color sponsoringColor = Color(0xFFFF9F43);
 
   static Color color(String type) {
-    switch (type) {
+    switch (parse(type)) {
       case internship:
         return internshipColor;
       case sponsoring:
@@ -32,9 +32,9 @@ class OpportunityType {
     }
   }
 
-  // ── Icons ──
+  // Icons
   static IconData icon(String type) {
-    switch (type) {
+    switch (parse(type)) {
       case internship:
         return Icons.school_outlined;
       case sponsoring:
@@ -45,9 +45,9 @@ class OpportunityType {
     }
   }
 
-  // ── Display labels ──
+  // Display labels
   static String label(String type) {
-    switch (type) {
+    switch (parse(type)) {
       case internship:
         return 'Internship';
       case sponsoring:
@@ -58,9 +58,33 @@ class OpportunityType {
     }
   }
 
-  // ── Short helper text (used in selectors) ──
+  static String lowercaseLabel(String type) {
+    switch (parse(type)) {
+      case internship:
+        return 'internship';
+      case sponsoring:
+        return 'sponsoring';
+      case job:
+      default:
+        return 'job';
+    }
+  }
+
+  static String headline(String type) {
+    switch (parse(type)) {
+      case internship:
+        return 'Bring in future talent';
+      case sponsoring:
+        return 'Support students with a sponsoring program';
+      case job:
+      default:
+        return 'Hire for a real role';
+    }
+  }
+
+  // Short helper text used in selectors.
   static String subtitle(String type) {
-    switch (type) {
+    switch (parse(type)) {
       case internship:
         return 'Learning & work experience';
       case sponsoring:
@@ -70,6 +94,56 @@ class OpportunityType {
         return 'Full-time & part-time work';
     }
   }
+
+  static String descriptionLabel(String type) {
+    switch (parse(type)) {
+      case sponsoring:
+        return 'Program description';
+      case internship:
+      case job:
+      default:
+        return 'Role description';
+    }
+  }
+
+  static String descriptionHint(String type) {
+    switch (parse(type)) {
+      case sponsoring:
+        return 'Describe the sponsoring program, support offered, and who it is for...';
+      case internship:
+        return 'Describe the internship scope, learning goals, and responsibilities...';
+      case job:
+      default:
+        return 'Describe the role, team, and responsibilities...';
+    }
+  }
+
+  static String requirementsLabel(String type) {
+    switch (parse(type)) {
+      case sponsoring:
+        return 'Eligibility';
+      case internship:
+      case job:
+      default:
+        return 'Requirements';
+    }
+  }
+
+  static String requirementsHint(String type) {
+    switch (parse(type)) {
+      case sponsoring:
+        return 'Share eligibility criteria, documents, or expectations...';
+      case internship:
+        return 'Share preferred skills, academic background, or tools...';
+      case job:
+      default:
+        return 'Share the skills and qualifications needed...';
+    }
+  }
+
+  static bool isSponsoring(String? raw) => parse(raw) == sponsoring;
+
+  static bool supportsStudentPostNotification(String? raw) => isSponsoring(raw);
 
   /// Safely parse a Firestore value to a known type key.
   /// Returns [job] for null, empty, or unrecognized values.

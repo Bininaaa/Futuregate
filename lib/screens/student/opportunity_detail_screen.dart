@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/opportunity_model.dart';
@@ -8,22 +9,25 @@ import '../../providers/chat_provider.dart';
 import '../../providers/cv_provider.dart';
 import '../../providers/saved_opportunity_provider.dart';
 import '../../services/application_service.dart';
+import '../../utils/opportunity_type.dart';
 import '../../widgets/opportunity_type_badge.dart';
 import 'chat_screen.dart';
 
 class OpportunityDetailScreen extends StatefulWidget {
   final OpportunityModel opportunity;
 
-  const OpportunityDetailScreen({
-    super.key,
-    required this.opportunity,
-  });
+  const OpportunityDetailScreen({super.key, required this.opportunity});
 
   @override
-  State<OpportunityDetailScreen> createState() => _OpportunityDetailScreenState();
+  State<OpportunityDetailScreen> createState() =>
+      _OpportunityDetailScreenState();
 }
 
 class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
+  static const Color strongBlue = Color(0xFF004E98);
+  static const Color vibrantOrange = Color(0xFFFF6700);
+  static const Color softGray = Color(0xFFEBEBEB);
+
   late Future<ApplicationEligibilityStatus> _eligibilityFuture;
 
   @override
@@ -35,9 +39,9 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
   Future<ApplicationEligibilityStatus> _loadEligibility() {
     final currentUser = context.read<AuthProvider>().userModel;
     return context.read<ApplicationProvider>().getEligibility(
-          studentId: currentUser?.uid ?? '',
-          opportunityId: widget.opportunity.id,
-        );
+      studentId: currentUser?.uid ?? '',
+      opportunityId: widget.opportunity.id,
+    );
   }
 
   void _refreshEligibility() {
@@ -86,9 +90,7 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
     final cv = cvProvider.cv;
     if (cv == null) {
       messenger.showSnackBar(
-        const SnackBar(
-          content: Text('Please create your CV before applying'),
-        ),
+        const SnackBar(content: Text('Please create your CV before applying')),
       );
       return;
     }
@@ -111,9 +113,7 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
       );
       _refreshEligibility();
     } else {
-      messenger.showSnackBar(
-        SnackBar(content: Text(error)),
-      );
+      messenger.showSnackBar(SnackBar(content: Text(error)));
       _refreshEligibility();
     }
   }
@@ -188,9 +188,7 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
         const SnackBar(content: Text('Opportunity saved')),
       );
     } else {
-      messenger.showSnackBar(
-        SnackBar(content: Text(error)),
-      );
+      messenger.showSnackBar(SnackBar(content: Text(error)));
     }
   }
 
@@ -199,7 +197,9 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
       case ApplicationEligibilityStatus.requiresLogin:
         return 'Login to Apply';
       case ApplicationEligibilityStatus.available:
-        return 'Apply Now';
+        return widget.opportunity.type == OpportunityType.sponsoring
+            ? 'Apply for Sponsoring'
+            : 'Apply Now';
       case ApplicationEligibilityStatus.alreadyApplied:
         return 'Already Applied';
       case ApplicationEligibilityStatus.closed:
@@ -227,10 +227,20 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final applicationProvider = context.watch<ApplicationProvider>();
+    final typeColor = OpportunityType.color(widget.opportunity.type);
 
     return Scaffold(
+      backgroundColor: softGray,
       appBar: AppBar(
-        title: const Text('Opportunity Details'),
+        title: Text(
+          'Opportunity Details',
+          style: GoogleFonts.poppins(
+            fontWeight: FontWeight.w600,
+            color: strongBlue,
+          ),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0,
         actions: [
           IconButton(
             icon: const Icon(Icons.bookmark_add_outlined),
@@ -238,48 +248,89 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
+      body: SafeArea(
         child: ListView(
+          padding: const EdgeInsets.all(16),
           children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [typeColor.withValues(alpha: 0.18), Colors.white],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(color: typeColor.withValues(alpha: 0.16)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  OpportunityTypeBadge(
+                    type: widget.opportunity.type,
+                    fontSize: 12,
+                  ),
+                  const SizedBox(height: 14),
+                  Text(
                     widget.opportunity.title,
-                    style: const TextStyle(
+                    style: GoogleFonts.poppins(
                       fontSize: 24,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w700,
+                      color: strongBlue,
+                      height: 1.25,
                     ),
                   ),
-                ),
-                const SizedBox(width: 10),
-                OpportunityTypeBadge(
-                  type: widget.opportunity.type,
-                  fontSize: 13,
-                ),
-              ],
+                  const SizedBox(height: 10),
+                  Text(
+                    widget.opportunity.companyName,
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Wrap(
+                    spacing: 10,
+                    runSpacing: 10,
+                    children: [
+                      _buildMetaChip(
+                        icon: Icons.location_on_outlined,
+                        label: widget.opportunity.location,
+                      ),
+                      _buildMetaChip(
+                        icon: Icons.calendar_today_outlined,
+                        label: widget.opportunity.deadline.isNotEmpty
+                            ? widget.opportunity.deadline
+                            : 'No deadline',
+                      ),
+                      _buildMetaChip(
+                        icon: Icons.info_outline,
+                        label: widget.opportunity.status.isNotEmpty
+                            ? widget.opportunity.status[0].toUpperCase() +
+                                  widget.opportunity.status.substring(1)
+                            : 'Unknown',
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 10),
-            _infoRow(Icons.business, 'Company', widget.opportunity.companyName),
-            _infoRow(Icons.location_on, 'Location', widget.opportunity.location),
-            _infoRow(Icons.info_outline, 'Status', widget.opportunity.status),
-            _infoRow(Icons.calendar_today, 'Deadline', widget.opportunity.deadline),
-            const SizedBox(height: 20),
-            const Text(
-              'Description',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            const SizedBox(height: 16),
+            _buildSectionCard(
+              title: OpportunityType.descriptionLabel(widget.opportunity.type),
+              content: widget.opportunity.description.trim().isNotEmpty
+                  ? widget.opportunity.description
+                  : 'No description provided.',
             ),
-            const SizedBox(height: 8),
-            Text(widget.opportunity.description),
-            const SizedBox(height: 20),
-            const Text(
-              'Requirements',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            const SizedBox(height: 14),
+            _buildSectionCard(
+              title: OpportunityType.requirementsLabel(widget.opportunity.type),
+              content: widget.opportunity.requirements.trim().isNotEmpty
+                  ? widget.opportunity.requirements
+                  : 'No requirements provided.',
             ),
-            const SizedBox(height: 8),
-            Text(widget.opportunity.requirements),
-            const SizedBox(height: 30),
+            const SizedBox(height: 24),
             FutureBuilder<ApplicationEligibilityStatus>(
               future: _eligibilityFuture,
               builder: (context, snapshot) {
@@ -294,41 +345,57 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
                   return const Center(child: CircularProgressIndicator());
                 }
 
-                return ElevatedButton(
-                  onPressed: canApply ? _apply : null,
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    backgroundColor: const Color(0xFFFF8C00),
-                    foregroundColor: Colors.white,
-                    disabledBackgroundColor: Colors.grey.shade400,
-                    disabledForegroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
+                return Column(
+                  children: [
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: canApply ? _apply : null,
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 15),
+                          backgroundColor: vibrantOrange,
+                          foregroundColor: Colors.white,
+                          disabledBackgroundColor: Colors.grey.shade400,
+                          disabledForegroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18),
+                          ),
+                        ),
+                        child: Text(
+                          _buttonLabelForStatus(eligibility),
+                          style: GoogleFonts.poppins(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                  child: Text(
-                    _buttonLabelForStatus(eligibility),
-                    style: const TextStyle(fontSize: 16),
-                  ),
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        onPressed: _openChat,
+                        icon: const Icon(Icons.chat_outlined),
+                        label: Text(
+                          'Message Company',
+                          style: GoogleFonts.poppins(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 15),
+                          foregroundColor: strongBlue,
+                          side: const BorderSide(color: strongBlue),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 );
               },
-            ),
-            const SizedBox(height: 12),
-            OutlinedButton.icon(
-              onPressed: _openChat,
-              icon: const Icon(Icons.chat_outlined),
-              label: const Text(
-                'Message Company',
-                style: TextStyle(fontSize: 16),
-              ),
-              style: OutlinedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                foregroundColor: const Color(0xFF004E98),
-                side: const BorderSide(color: Color(0xFF004E98)),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
-              ),
             ),
           ],
         ),
@@ -336,18 +403,66 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
     );
   }
 
-  Widget _infoRow(IconData icon, String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        children: [
-          Icon(icon, size: 20, color: Colors.grey),
-          const SizedBox(width: 8),
-          Text(
-            '$label: ',
-            style: const TextStyle(fontWeight: FontWeight.w600),
+  Widget _buildSectionCard({required String title, required String content}) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(22),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
           ),
-          Expanded(child: Text(value)),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: GoogleFonts.poppins(
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              color: strongBlue,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            content,
+            style: GoogleFonts.poppins(
+              fontSize: 13,
+              height: 1.55,
+              color: Colors.black87,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMetaChip({required IconData icon, required String label}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.9),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 16, color: strongBlue),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: GoogleFonts.poppins(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: strongBlue,
+            ),
+          ),
         ],
       ),
     );

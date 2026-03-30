@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/company_provider.dart';
 import '../../widgets/profile_avatar.dart';
+import '../../widgets/application_status_badge.dart';
 import '../../providers/notification_provider.dart';
 import '../notifications_screen.dart';
 import 'publish_opportunity_screen.dart';
@@ -259,7 +260,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
               ),
               const SizedBox(height: 6),
               Text(
-                'Post opportunities and find\nthe right candidates.',
+                'Post jobs, internships, or\nsponsoring programs.',
                 style: GoogleFonts.poppins(
                   fontSize: 12,
                   color: Colors.white.withValues(alpha: 0.85),
@@ -436,7 +437,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
               const SizedBox(width: 10),
               Expanded(
                 child: _buildStatusChip(
-                  'Accepted',
+                  'Approved',
                   '${stats['acceptedApplications'] ?? 0}',
                   Colors.green,
                 ),
@@ -519,15 +520,6 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
               .firstOrNull;
           final oppTitle = opp?.title ?? 'Unknown Opportunity';
 
-          Color statusColor;
-          if (app.status == 'accepted') {
-            statusColor = Colors.green;
-          } else if (app.status == 'rejected') {
-            statusColor = Colors.red;
-          } else {
-            statusColor = Colors.orange;
-          }
-
           final appliedAt = app.appliedAt;
           String dateStr = '';
           if (appliedAt != null) {
@@ -585,24 +577,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 3,
-                      ),
-                      decoration: BoxDecoration(
-                        color: statusColor.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        app.status,
-                        style: GoogleFonts.poppins(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w600,
-                          color: statusColor,
-                        ),
-                      ),
-                    ),
+                    ApplicationStatusBadge(status: app.status, fontSize: 10),
                     const SizedBox(height: 4),
                     Text(
                       dateStr,

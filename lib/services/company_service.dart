@@ -4,6 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/opportunity_model.dart';
 import '../models/application_model.dart';
 import '../models/cv_model.dart';
+import '../utils/application_status.dart';
+import '../utils/opportunity_type.dart';
 import 'notification_worker_service.dart';
 import 'storage_service.dart';
 import 'worker_api_service.dart';
@@ -44,17 +46,38 @@ class CompanyService {
   Future<void> createOpportunity(Map<String, dynamic> data) async {
     final docRef = _firestore.collection('opportunities').doc();
     final docData = Map<String, dynamic>.from(data);
+    docData['type'] = OpportunityType.parse(docData['type']?.toString());
+    docData['status'] = _normalizeOpportunityStatus(docData['status']);
     docData['id'] = docRef.id;
     docData['createdAt'] = FieldValue.serverTimestamp();
     await docRef.set(docData);
-    await _notificationWorker.notifyOpportunityCreated(docRef.id);
+    if (_shouldNotifyStudentsAboutOpportunity(docData)) {
+      await _notificationWorker.notifyOpportunityCreated(docRef.id);
+    }
   }
 
   Future<void> updateOpportunity(
     String oppId,
     Map<String, dynamic> data,
   ) async {
-    await _firestore.collection('opportunities').doc(oppId).update(data);
+    final docRef = _firestore.collection('opportunities').doc(oppId);
+    final currentSnapshot = await docRef.get();
+    final currentData = currentSnapshot.data() ?? const <String, dynamic>{};
+    final nextData = Map<String, dynamic>.from(data);
+
+    if (nextData.containsKey('type')) {
+      nextData['type'] = OpportunityType.parse(nextData['type']?.toString());
+    }
+    if (nextData.containsKey('status')) {
+      nextData['status'] = _normalizeOpportunityStatus(nextData['status']);
+    }
+
+    await docRef.update(nextData);
+
+    final mergedData = <String, dynamic>{...currentData, ...nextData};
+    if (_shouldNotifyStudentsAboutOpportunity(mergedData)) {
+      await _notificationWorker.notifyOpportunityCreated(oppId);
+    }
   }
 
   Future<bool> deleteOpportunity(String oppId) async {
@@ -97,14 +120,18 @@ class CompanyService {
     final appDoc = await _firestore.collection('applications').doc(appId).get();
     if (!appDoc.exists) return;
 
-    final currentStatus = appDoc.data()?['status'] ?? '';
+    final currentStatus = ApplicationStatus.parse(appDoc.data()?['status']);
+    final nextStatus = ApplicationStatus.parse(status);
+
+    if (currentStatus == nextStatus) {
+      return;
+    }
 
     await _firestore.collection('applications').doc(appId).update({
-      'status': status,
+      'status': nextStatus,
     });
 
-    if (currentStatus == 'pending' &&
-        (status == 'accepted' || status == 'rejected')) {
+    if (ApplicationStatus.shouldNotifyTransition(currentStatus, nextStatus)) {
       await _notificationWorker.notifyApplicationStatusChanged(appId);
     }
   }
@@ -342,5 +369,18 @@ class CompanyService {
       return '';
     }
     return url;
+  }
+
+  bool _shouldNotifyStudentsAboutOpportunity(Map<String, dynamic> data) {
+    final type = OpportunityType.parse(data['type']?.toString());
+    final status = _normalizeOpportunityStatus(data['status']);
+
+    return OpportunityType.supportsStudentPostNotification(type) &&
+        status == 'open';
+  }
+
+  String _normalizeOpportunityStatus(Object? rawStatus) {
+    final normalized = (rawStatus ?? '').toString().trim().toLowerCase();
+    return normalized == 'closed' ? 'closed' : 'open';
   }
 }

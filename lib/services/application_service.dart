@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'notification_worker_service.dart';
+import '../utils/application_status.dart';
 
 enum ApplicationEligibilityStatus {
   requiresLogin,
@@ -23,8 +24,10 @@ class ApplicationService {
       return ApplicationEligibilityStatus.requiresLogin;
     }
 
-    final opportunitySnapshot =
-        await _firestore.collection('opportunities').doc(opportunityId).get();
+    final opportunitySnapshot = await _firestore
+        .collection('opportunities')
+        .doc(opportunityId)
+        .get();
 
     if (!opportunitySnapshot.exists) {
       return ApplicationEligibilityStatus.unavailable;
@@ -76,32 +79,47 @@ class ApplicationService {
         break;
     }
 
-    final opportunityRef = _firestore.collection('opportunities').doc(opportunityId);
-    final applicationRef =
-        _firestore.collection('applications').doc('${studentId}_$opportunityId');
+    final opportunityRef = _firestore
+        .collection('opportunities')
+        .doc(opportunityId);
+    final applicationRef = _firestore
+        .collection('applications')
+        .doc('${studentId}_$opportunityId');
 
     await _firestore.runTransaction((transaction) async {
       final opportunitySnapshot = await transaction.get(opportunityRef);
+      final applicationSnapshot = await transaction.get(applicationRef);
 
       if (!opportunitySnapshot.exists) {
         throw Exception('This opportunity is no longer available');
       }
 
+      if (applicationSnapshot.exists) {
+        throw Exception('You have already applied to this opportunity');
+      }
+
       final opportunityData = opportunitySnapshot.data();
       final status = opportunityData?['status'] as String? ?? '';
+      final resolvedCompanyId = (opportunityData?['companyId'] ?? '')
+          .toString()
+          .trim();
 
       if (status != 'open') {
         throw Exception('This opportunity is closed');
       }
 
+      if (resolvedCompanyId.isEmpty) {
+        throw Exception('This opportunity is no longer available');
+      }
+
       transaction.set(applicationRef, {
         'id': applicationRef.id,
         'studentId': studentId,
-        'studentName': studentName,
+        'studentName': studentName.trim(),
         'opportunityId': opportunityId,
-        'companyId': companyId,
+        'companyId': resolvedCompanyId,
         'cvId': cvId,
-        'status': 'pending',
+        'status': ApplicationStatus.pending,
         'appliedAt': FieldValue.serverTimestamp(),
       });
     });

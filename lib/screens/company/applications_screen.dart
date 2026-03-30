@@ -11,6 +11,8 @@ import '../../providers/company_provider.dart';
 import '../../models/application_model.dart';
 import '../../models/cv_model.dart';
 import '../../services/document_access_service.dart';
+import '../../utils/application_status.dart';
+import '../../widgets/application_status_badge.dart';
 import '../../widgets/profile_avatar.dart';
 import 'chat_screen.dart';
 
@@ -104,7 +106,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                     const SizedBox(width: 8),
                     _buildFilterChip('Pending', 'pending'),
                     const SizedBox(width: 8),
-                    _buildFilterChip('Accepted', 'accepted'),
+                    _buildFilterChip('Approved', 'accepted'),
                     const SizedBox(width: 8),
                     _buildFilterChip('Rejected', 'rejected'),
                   ],
@@ -258,14 +260,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
   }
 
   Color _statusColor(String status) {
-    switch (status) {
-      case 'accepted':
-        return Colors.green;
-      case 'rejected':
-        return Colors.red;
-      default:
-        return Colors.orange;
-    }
+    return ApplicationStatus.color(status);
   }
 
   Widget _buildApplicationCard(ApplicationModel app, CompanyProvider provider) {
@@ -273,8 +268,6 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
         .where((o) => o.id == app.opportunityId)
         .firstOrNull;
     final oppTitle = opp?.title ?? 'Unknown Opportunity';
-
-    final statusColor = _statusColor(app.status);
 
     final appliedAt = app.appliedAt;
     String dateStr = '';
@@ -334,26 +327,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                     ],
                   ),
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: statusColor.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Text(
-                    app.status.isNotEmpty
-                        ? app.status[0].toUpperCase() + app.status.substring(1)
-                        : 'Unknown',
-                    style: GoogleFonts.poppins(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
-                      color: statusColor,
-                    ),
-                  ),
-                ),
+                ApplicationStatusBadge(status: app.status),
               ],
             ),
             const SizedBox(height: 10),
@@ -482,7 +456,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                           elevation: 0,
                         ),
                         child: Text(
-                          provider.isAppBusy(app.id) ? 'Working...' : 'Accept',
+                          provider.isAppBusy(app.id) ? 'Working...' : 'Approve',
                           style: GoogleFonts.poppins(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
@@ -588,6 +562,11 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
     if (error != null) {
       scaffoldMessenger.showSnackBar(SnackBar(content: Text(error)));
     } else if (currentUserId != null) {
+      scaffoldMessenger.showSnackBar(
+        SnackBar(
+          content: Text('Application ${ApplicationStatus.label(status)}'),
+        ),
+      );
       provider.loadApplications(currentUserId);
     }
   }

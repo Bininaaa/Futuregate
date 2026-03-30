@@ -39,13 +39,28 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
   }
 
   List<OpportunityModel> _filtered(List<OpportunityModel> all) {
-    if (_activeFilter == null) return all;
-    return all.where((o) => o.type == _activeFilter).toList();
+    if (_activeFilter == null) {
+      return all;
+    }
+
+    return all
+        .where((opportunity) => opportunity.type == _activeFilter)
+        .toList();
+  }
+
+  String _filterSummary(int count) {
+    if (_activeFilter == null) {
+      return '$count open opportunit${count == 1 ? 'y' : 'ies'} available';
+    }
+
+    final label = OpportunityType.label(_activeFilter!);
+    return '$count $label posting${count == 1 ? '' : 's'} available';
   }
 
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<OpportunityProvider>();
+    final filteredItems = _filtered(provider.opportunities);
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -64,36 +79,50 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
       ),
       body: Column(
         children: [
-          // ── Filter chips ──
           Container(
             color: Colors.white,
-            padding: const EdgeInsets.fromLTRB(16, 4, 16, 14),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  _buildFilterChip(label: 'All', value: null),
-                  const SizedBox(width: 8),
-                  ...OpportunityType.values.map((type) => Padding(
-                        padding: const EdgeInsets.only(right: 8),
-                        child: _buildFilterChip(
-                          label: OpportunityType.label(type),
-                          value: type,
-                          icon: OpportunityType.icon(type),
-                          activeColor: OpportunityType.color(type),
+            padding: const EdgeInsets.fromLTRB(16, 6, 16, 14),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      _buildFilterChip(label: 'All', value: null),
+                      const SizedBox(width: 8),
+                      ...OpportunityType.values.map(
+                        (type) => Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: _buildFilterChip(
+                            label: OpportunityType.label(type),
+                            value: type,
+                            icon: OpportunityType.icon(type),
+                            activeColor: OpportunityType.color(type),
+                          ),
                         ),
-                      )),
-                ],
-              ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  _filterSummary(filteredItems.length),
+                  style: GoogleFonts.poppins(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: textMedium,
+                  ),
+                ),
+              ],
             ),
           ),
-
-          // ── List ──
           Expanded(
             child: provider.isLoading
                 ? const Center(
-                    child: CircularProgressIndicator(color: primaryPurple))
-                : _buildList(provider),
+                    child: CircularProgressIndicator(color: primaryPurple),
+                  )
+                : _buildList(filteredItems),
           ),
         ],
       ),
@@ -107,13 +136,16 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
     Color activeColor = primaryPurple,
   }) {
     final isActive = _activeFilter == value;
+
     return GestureDetector(
       onTap: () => setState(() => _activeFilter = value),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 180),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          color: isActive ? activeColor.withValues(alpha: 0.12) : Colors.grey.shade100,
+          color: isActive
+              ? activeColor.withValues(alpha: 0.12)
+              : Colors.grey.shade100,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isActive ? activeColor : Colors.transparent,
@@ -124,9 +156,11 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             if (icon != null) ...[
-              Icon(icon,
-                  size: 16,
-                  color: isActive ? activeColor : Colors.grey.shade500),
+              Icon(
+                icon,
+                size: 16,
+                color: isActive ? activeColor : Colors.grey.shade500,
+              ),
               const SizedBox(width: 5),
             ],
             Text(
@@ -143,13 +177,12 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
     );
   }
 
-  Widget _buildList(OpportunityProvider provider) {
-    final items = _filtered(provider.opportunities);
-
+  Widget _buildList(List<OpportunityModel> items) {
     if (items.isEmpty) {
       final filterLabel = _activeFilter != null
           ? OpportunityType.label(_activeFilter!)
           : null;
+
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -186,19 +219,21 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
       itemCount: items.length,
       itemBuilder: (context, index) {
-        final opp = items[index];
-        return _buildOpportunityCard(opp);
+        final opportunity = items[index];
+        return _buildOpportunityCard(opportunity);
       },
     );
   }
 
-  Widget _buildOpportunityCard(OpportunityModel opp) {
+  Widget _buildOpportunityCard(OpportunityModel opportunity) {
+    final typeColor = OpportunityType.color(opportunity.type);
+
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => OpportunityDetailScreen(opportunity: opp),
+            builder: (_) => OpportunityDetailScreen(opportunity: opportunity),
           ),
         );
       },
@@ -220,51 +255,88 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: typeColor.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Icon(
+                    OpportunityType.icon(opportunity.type),
+                    color: typeColor,
+                    size: 22,
+                  ),
+                ),
+                const SizedBox(width: 12),
                 Expanded(
-                  child: Text(
-                    opp.title,
-                    style: GoogleFonts.poppins(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: textDark,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        opportunity.title,
+                        style: GoogleFonts.poppins(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: textDark,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        opportunity.companyName,
+                        style: GoogleFonts.poppins(
+                          fontSize: 13,
+                          color: textMedium,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(width: 10),
-                OpportunityTypeBadge(type: opp.type),
+                OpportunityTypeBadge(type: opportunity.type),
               ],
             ),
-            const SizedBox(height: 8),
-            Text(
-              opp.companyName,
-              style: GoogleFonts.poppins(fontSize: 13, color: textMedium),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const SizedBox(height: 6),
+            if (opportunity.description.trim().isNotEmpty) ...[
+              const SizedBox(height: 10),
+              Text(
+                opportunity.description.trim(),
+                style: GoogleFonts.poppins(
+                  fontSize: 12,
+                  height: 1.45,
+                  color: textMedium,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+            const SizedBox(height: 10),
             Row(
               children: [
                 Icon(Icons.location_on_outlined, size: 14, color: textLight),
                 const SizedBox(width: 3),
                 Expanded(
                   child: Text(
-                    opp.location,
+                    opportunity.location,
                     style: GoogleFonts.poppins(fontSize: 12, color: textLight),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                if (opp.deadline.isNotEmpty) ...[
-                  Icon(Icons.schedule, size: 14, color: textLight),
-                  const SizedBox(width: 3),
-                  Text(
-                    opp.deadline,
-                    style: GoogleFonts.poppins(fontSize: 12, color: textLight),
-                  ),
-                ],
+                const SizedBox(width: 10),
+                Icon(Icons.schedule, size: 14, color: textLight),
+                const SizedBox(width: 3),
+                Text(
+                  opportunity.deadline.isNotEmpty
+                      ? opportunity.deadline
+                      : 'No deadline',
+                  style: GoogleFonts.poppins(fontSize: 12, color: textLight),
+                ),
               ],
             ),
           ],

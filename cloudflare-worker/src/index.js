@@ -80,6 +80,36 @@ function displayNameForUser(userData) {
   );
 }
 
+function normalizeOpportunityType(value) {
+  const normalized = trim(value).toLowerCase();
+  return ["job", "internship", "sponsoring"].includes(normalized)
+    ? normalized
+    : "job";
+}
+
+function opportunityTypeLabel(value) {
+  switch (normalizeOpportunityType(value)) {
+    case "internship":
+      return "Internship";
+    case "sponsoring":
+      return "Sponsoring";
+    case "job":
+    default:
+      return "Job";
+  }
+}
+
+function normalizeApplicationStatus(value) {
+  const normalized = trim(value).toLowerCase();
+  if (normalized === "accepted" || normalized === "approved") {
+    return "accepted";
+  }
+  if (normalized === "rejected") {
+    return "rejected";
+  }
+  return "pending";
+}
+
 function normalizeFcmPlatform(value) {
   const platform = trim(value).toLowerCase();
   return ["android", "ios", "web"].includes(platform) ? platform : "";
@@ -1957,19 +1987,34 @@ async function handleNotifyOpportunity(request, env) {
     });
   }
 
+  const opportunityType = normalizeOpportunityType(opportunity.type);
+  if (opportunityType !== "sponsoring") {
+    return json({
+      created: 0,
+      pushSent: 0,
+      duplicatesSkipped: 0,
+      missingTokens: 0,
+      invalidTokens: 0,
+      skipped: true,
+      reason: "opportunity_type_not_notifiable",
+      opportunityType,
+    });
+  }
+
   const title = trim(opportunity.title) || "New Opportunity";
   const companyName = trim(opportunity.companyName) || "A company";
-  const opportunityType = trim(opportunity.type) || "job";
-  const typeLabel = opportunityType === "internship" ? "internship" : "job";
+  const actorTokens = collectRecipientTokens(auth.profile);
 
   const students = await getActiveUsersByRole(env, "student");
   const result = await notifyRecipients(env, students, {
-    title: `New ${typeLabel}: ${title}`,
-    message: `${companyName} posted a new ${typeLabel} opportunity.`,
+    title: `New ${opportunityTypeLabel(opportunityType)}: ${title}`,
+    message: `${companyName} posted a new sponsoring opportunity.`,
     type: "opportunity",
     targetId: opportunityId,
-    eventKey: `opportunity:${opportunityId}`,
+    eventKey: `opportunity-sponsoring:${opportunityId}`,
     actorUserId: auth.user.uid,
+    excludeUserIds: [trim(opportunity.companyId)],
+    excludeTokens: actorTokens,
     logLabel: `[notifyOpportunity:${opportunityId}]`,
   });
 
@@ -2160,6 +2205,7 @@ async function handleNotifyApplicationSubmitted(request, env) {
   const studentName =
     trim(application.studentName) || displayNameForUser(auth.profile);
   const opportunityTitle = trim(opportunity.title) || "your opportunity";
+  const actorTokens = collectRecipientTokens(auth.profile);
 
   const result = await notifyRecipients(env, [companyDoc], {
     title: "New Application",
@@ -2168,6 +2214,7 @@ async function handleNotifyApplicationSubmitted(request, env) {
     targetId: applicationId,
     eventKey: `application-submitted:${applicationId}`,
     actorUserId: auth.user.uid,
+    excludeTokens: actorTokens,
     logLabel: `[notifyApplicationSubmitted:${applicationId}]`,
   });
 
@@ -2199,7 +2246,7 @@ async function handleNotifyApplicationStatusChanged(request, env) {
     return err("You can only notify for your own application decisions.", 403);
   }
 
-  const status = trim(application.status);
+  const status = normalizeApplicationStatus(application.status);
   if (status !== "accepted" && status !== "rejected") {
     return json({
       created: 0,
@@ -2222,6 +2269,10 @@ async function handleNotifyApplicationStatusChanged(request, env) {
     return err("The student recipient could not be resolved.", 404);
   }
 
+  const opportunityTitle = trim(
+    (await firestoreGet(env, "opportunities", trim(application.opportunityId)))
+      ?.data?.title,
+  );
   const companyName =
     auth.profile.role === "company"
       ? displayNameForUser(auth.profile)
@@ -2229,15 +2280,19 @@ async function handleNotifyApplicationStatusChanged(request, env) {
           (await firestoreGet(env, "users", trim(application.companyId)))
             ?.data || {},
         );
-  const statusLabel = status === "accepted" ? "Accepted" : "Rejected";
+  const statusLabel = status === "accepted" ? "Approved" : "Rejected";
+  const actorTokens = collectRecipientTokens(auth.profile);
 
   const result = await notifyRecipients(env, [studentDoc], {
     title: `Application ${statusLabel}`,
-    message: `Your application has been ${status} by ${companyName}.`,
+    message: opportunityTitle
+      ? `Your application to ${opportunityTitle} was ${status === "accepted" ? "approved" : "rejected"} by ${companyName}.`
+      : `Your application was ${status === "accepted" ? "approved" : "rejected"} by ${companyName}.`,
     type: "application",
     targetId: applicationId,
     eventKey: `application-status:${applicationId}:${status}`,
     actorUserId: auth.user.uid,
+    excludeTokens: actorTokens,
     logLabel: `[notifyApplicationStatusChanged:${applicationId}:${status}]`,
   });
 

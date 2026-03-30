@@ -952,6 +952,15 @@
       container.innerHTML = filteredOpps
         .map((opp) => {
           const isFeatured = opp.isFeatured === true;
+          const rawType = String(opp.type || '').trim().toLowerCase();
+          const normalizedType = ['job', 'internship', 'sponsoring'].includes(rawType)
+            ? rawType
+            : 'job';
+          const typeLabel = normalizedType === 'internship'
+            ? 'Internship'
+            : normalizedType === 'sponsoring'
+            ? 'Sponsoring'
+            : 'Job';
           return `
             <div class="opp-card ${itemMatchesFocus(opp.id) ? 'card-highlight' : ''}">
               <div class="opp-icon" style="background:rgba(255,140,0,0.12);color:#FF8C00">OF</div>
@@ -959,7 +968,7 @@
                 <div class="opp-title">${esc(opp.title || 'No title')}</div>
                 <div class="opp-company">${esc(opp.companyName || 'Unknown company')}</div>
                 <div class="opp-badges">
-                  <span class="badge badge-${opp.type === 'job' ? 'job' : 'internship'}">${esc(opp.type || '')}</span>
+                  <span class="badge badge-${normalizedType}">${esc(typeLabel)}</span>
                   <span class="badge badge-${opp.status === 'open' ? 'open' : 'closed'}">${esc(opp.status || '')}</span>
                   ${isFeatured ? '<span class="badge training-badge training-badge-featured">Featured</span>' : ''}
                 </div>

@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../utils/application_status.dart';
+
 class ApplicationModel {
   final String id;
   final String studentId;
@@ -29,7 +31,7 @@ class ApplicationModel {
       opportunityId: map['opportunityId'] ?? '',
       companyId: map['companyId'] ?? '',
       cvId: map['cvId'] ?? '',
-      status: map['status'] ?? '',
+      status: ApplicationStatus.parse(map['status']),
       appliedAt: map['appliedAt'],
     );
   }

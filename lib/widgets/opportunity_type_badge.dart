@@ -19,20 +19,26 @@ class OpportunityTypeBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final badgeColor = OpportunityType.color(type);
-    final label = OpportunityType.label(type);
+    final normalizedType = OpportunityType.parse(type);
+    final badgeColor = OpportunityType.color(normalizedType);
+    final label = OpportunityType.label(normalizedType);
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
         color: badgeColor.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: badgeColor.withValues(alpha: 0.12)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           if (showIcon) ...[
-            Icon(OpportunityType.icon(type), size: fontSize + 2, color: badgeColor),
+            Icon(
+              OpportunityType.icon(normalizedType),
+              size: fontSize + 2,
+              color: badgeColor,
+            ),
             const SizedBox(width: 4),
           ],
           Text(
