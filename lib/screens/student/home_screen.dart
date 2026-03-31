@@ -15,14 +15,25 @@ import '../settings/settings_screen.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final int initialIndex;
+
+  const HomeScreen({super.key, this.initialIndex = 0});
+
+  static final ValueNotifier<int?> _requestedTabIndex = ValueNotifier<int?>(
+    null,
+  );
+
+  static void switchToTab(BuildContext context, int index) {
+    _requestedTabIndex.value = index;
+    Navigator.of(context).popUntil((route) => route.isFirst);
+  }
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _currentIndex = 0;
+  late int _currentIndex;
 
   final List<Widget> _screens = const [
     StudentDashboardScreen(),
@@ -32,6 +43,56 @@ class _HomeScreenState extends State<HomeScreen> {
     ChatListScreen(),
     _MoreScreen(),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _currentIndex = _normalizeIndex(widget.initialIndex);
+    HomeScreen._requestedTabIndex.addListener(_handleRequestedTab);
+    _handleRequestedTab();
+  }
+
+  @override
+  void didUpdateWidget(covariant HomeScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialIndex != oldWidget.initialIndex) {
+      _currentIndex = _normalizeIndex(widget.initialIndex);
+    }
+  }
+
+  @override
+  void dispose() {
+    HomeScreen._requestedTabIndex.removeListener(_handleRequestedTab);
+    super.dispose();
+  }
+
+  void _handleRequestedTab() {
+    final requestedIndex = HomeScreen._requestedTabIndex.value;
+    if (requestedIndex == null) {
+      return;
+    }
+
+    final normalizedIndex = _normalizeIndex(requestedIndex);
+    HomeScreen._requestedTabIndex.value = null;
+
+    if (!mounted || normalizedIndex == _currentIndex) {
+      return;
+    }
+
+    setState(() {
+      _currentIndex = normalizedIndex;
+    });
+  }
+
+  int _normalizeIndex(int index) {
+    if (index < 0) {
+      return 0;
+    }
+    if (index >= _screens.length) {
+      return _screens.length - 1;
+    }
+    return index;
+  }
 
   @override
   Widget build(BuildContext context) {
