@@ -170,6 +170,8 @@ class OpportunityHeroCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: Colors.transparent,
+      borderRadius: BorderRadius.circular(28),
+      clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(28),
@@ -184,15 +186,6 @@ class OpportunityHeroCard extends StatelessWidget {
               end: Alignment.bottomRight,
             ),
             borderRadius: BorderRadius.circular(28),
-            boxShadow: [
-              BoxShadow(
-                color: OpportunityDashboardPalette.primary.withValues(
-                  alpha: 0.24,
-                ),
-                blurRadius: 24,
-                offset: const Offset(0, 12),
-              ),
-            ],
           ),
           child: SizedBox(
             height: 202,
@@ -347,6 +340,8 @@ class OpportunityCategoryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: Colors.transparent,
+      borderRadius: BorderRadius.circular(24),
+      clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(24),
@@ -356,13 +351,6 @@ class OpportunityCategoryCard extends StatelessWidget {
             color: backgroundColor,
             borderRadius: BorderRadius.circular(24),
             border: Border.all(color: color.withValues(alpha: 0.18)),
-            boxShadow: [
-              BoxShadow(
-                color: color.withValues(alpha: 0.08),
-                blurRadius: 18,
-                offset: const Offset(0, 10),
-              ),
-            ],
           ),
           child: Stack(
             children: [
@@ -387,7 +375,7 @@ class OpportunityCategoryCard extends StatelessWidget {
                     ),
                     child: Icon(icon, color: color, size: 17),
                   ),
-                  const Spacer(),
+                  const SizedBox(height: 16),
                   Text(
                     title,
                     style: GoogleFonts.poppins(
@@ -395,17 +383,25 @@ class OpportunityCategoryCard extends StatelessWidget {
                       fontWeight: FontWeight.w700,
                       color: OpportunityDashboardPalette.textPrimary,
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 2),
-                  Text(
-                    subtitle,
-                    style: GoogleFonts.poppins(
-                      fontSize: 10.2,
-                      color: OpportunityDashboardPalette.textSecondary,
-                      height: 1.28,
+                  SizedBox(
+                    height: 24,
+                    child: Align(
+                      alignment: Alignment.topLeft,
+                      child: Text(
+                        subtitle,
+                        style: GoogleFonts.poppins(
+                          fontSize: 9.8,
+                          color: OpportunityDashboardPalette.textSecondary,
+                          height: 1.18,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 5),
                   Text(
@@ -418,6 +414,7 @@ class OpportunityCategoryCard extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
+                  const Spacer(),
                 ],
               ),
             ],
@@ -446,6 +443,8 @@ class TrainingProgramsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: Colors.transparent,
+      borderRadius: BorderRadius.circular(22),
+      clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(22),
@@ -455,13 +454,6 @@ class TrainingProgramsCard extends StatelessWidget {
             color: OpportunityDashboardPalette.surface,
             borderRadius: BorderRadius.circular(22),
             border: Border.all(color: OpportunityDashboardPalette.border),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.04),
-                blurRadius: 14,
-                offset: const Offset(0, 8),
-              ),
-            ],
           ),
           child: Row(
             children: [
@@ -620,23 +612,18 @@ class TrendingOpportunityCard extends StatelessWidget {
 
     return Material(
       color: Colors.transparent,
+      borderRadius: BorderRadius.circular(28),
+      clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(28),
         child: Ink(
           width: cardWidth,
-          padding: const EdgeInsets.fromLTRB(16, 16, 14, 14),
+          padding: const EdgeInsets.fromLTRB(16, 16, 14, 16),
           decoration: BoxDecoration(
             color: OpportunityDashboardPalette.surface,
             borderRadius: BorderRadius.circular(28),
             border: Border.all(color: OpportunityDashboardPalette.border),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.045),
-                blurRadius: 22,
-                offset: const Offset(0, 10),
-              ),
-            ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -714,7 +701,7 @@ class TrendingOpportunityCard extends StatelessWidget {
                     ],
                     const Spacer(),
                     Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         if (compensationText != null &&
                             compensationText!.trim().isNotEmpty)
@@ -827,6 +814,8 @@ class OpportunityListTile extends StatelessWidget {
 
     return Material(
       color: Colors.transparent,
+      borderRadius: BorderRadius.circular(22),
+      clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(22),
@@ -836,13 +825,6 @@ class OpportunityListTile extends StatelessWidget {
             color: OpportunityDashboardPalette.surface,
             borderRadius: BorderRadius.circular(22),
             border: Border.all(color: OpportunityDashboardPalette.border),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.04),
-                blurRadius: 14,
-                offset: const Offset(0, 8),
-              ),
-            ],
           ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
