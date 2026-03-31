@@ -610,6 +610,13 @@ class TrendingOpportunityCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final badgeColor = _badgeColor();
     final companyLine = _companyLocationLine();
+    final textScale = MediaQuery.textScalerOf(context).scale(1);
+    final isCompactLayout =
+        MediaQuery.sizeOf(context).width < 380 || textScale > 1.08;
+    final cardWidth = isCompactLayout ? 208.0 : 216.0;
+    final topSpacing = isCompactLayout ? 10.0 : 12.0;
+    final detailSpacing = isCompactLayout ? 5.0 : 6.0;
+    final metadataMaxLines = isCompactLayout ? 1 : 2;
 
     return Material(
       color: Colors.transparent,
@@ -617,7 +624,7 @@ class TrendingOpportunityCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(28),
         child: Ink(
-          width: 216,
+          width: cardWidth,
           padding: const EdgeInsets.fromLTRB(16, 16, 14, 14),
           decoration: BoxDecoration(
             color: OpportunityDashboardPalette.surface,
@@ -639,7 +646,7 @@ class TrendingOpportunityCard extends StatelessWidget {
                 logoUrl: opportunity.companyLogo,
                 fallbackIcon: OpportunityType.icon(opportunity.type),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: topSpacing),
               Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 10,
@@ -657,9 +664,11 @@ class TrendingOpportunityCard extends StatelessWidget {
                     color: badgeColor,
                     letterSpacing: 0.5,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: topSpacing),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -676,7 +685,7 @@ class TrendingOpportunityCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                     if (companyLine != null) ...[
-                      const SizedBox(height: 7),
+                      SizedBox(height: detailSpacing + 1),
                       Text(
                         companyLine,
                         style: GoogleFonts.poppins(
@@ -690,7 +699,7 @@ class TrendingOpportunityCard extends StatelessWidget {
                     ],
                     if (metadataText != null &&
                         metadataText!.trim().isNotEmpty) ...[
-                      const SizedBox(height: 6),
+                      SizedBox(height: detailSpacing),
                       Text(
                         metadataText!,
                         style: GoogleFonts.poppins(
@@ -699,7 +708,7 @@ class TrendingOpportunityCard extends StatelessWidget {
                           color: OpportunityDashboardPalette.textSecondary,
                           height: 1.35,
                         ),
-                        maxLines: 2,
+                        maxLines: metadataMaxLines,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ],
@@ -1030,12 +1039,12 @@ class OpportunityDashboardLoadingSkeleton extends StatelessWidget {
         _SkeletonLine(widthFactor: 0.62, height: 14),
         SizedBox(height: 14),
         SizedBox(
-          height: 210,
+          height: 232,
           child: Row(
             children: [
-              Expanded(child: _SkeletonBlock(height: 210, radius: 24)),
+              Expanded(child: _SkeletonBlock(height: 232, radius: 24)),
               SizedBox(width: 12),
-              Expanded(child: _SkeletonBlock(height: 210, radius: 24)),
+              Expanded(child: _SkeletonBlock(height: 232, radius: 24)),
             ],
           ),
         ),

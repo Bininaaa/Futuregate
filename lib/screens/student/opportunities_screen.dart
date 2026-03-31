@@ -1338,6 +1338,8 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
     final opportunityProvider = context.watch<OpportunityProvider>();
     final trainingProvider = context.watch<TrainingProvider>();
     final savedProvider = context.watch<SavedOpportunityProvider>();
+    final textScale = MediaQuery.textScalerOf(context).scale(1);
+    final trendingCardHeight = textScale > 1.08 ? 244.0 : 232.0;
 
     final allOpportunities = opportunityProvider.opportunities;
     final visibleOpportunities = _applyFilters(allOpportunities);
@@ -1561,7 +1563,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                               ),
                             )
                           : SizedBox(
-                              height: 220,
+                              height: trendingCardHeight,
                               child: ListView.separated(
                                 scrollDirection: Axis.horizontal,
                                 padding: const EdgeInsets.only(right: 20),
