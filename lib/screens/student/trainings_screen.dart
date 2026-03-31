@@ -22,6 +22,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
   final GlobalKey _searchSectionKey = GlobalKey();
 
   String _searchText = '';
+  String _selectedDomain = 'All';
 
   @override
   void initState() {
@@ -288,6 +289,33 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
     ];
 
     return searchableValues.any((value) => value.toLowerCase().contains(query));
+  }
+
+  String _domainLabelFor(TrainingModel training) {
+    final domain = training.domain.trim();
+    return domain.isNotEmpty ? domain : 'General';
+  }
+
+  List<String> _availableDomains(List<TrainingModel> trainings) {
+    const fallbackDomains = [
+      'All',
+      'Data & AI',
+      'Health & Growth',
+      'Cloud & DevOps',
+    ];
+
+    final domains = trainings.map(_domainLabelFor).toSet().toList()
+      ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+
+    if (domains.isEmpty) {
+      return fallbackDomains;
+    }
+
+    return ['All', ...domains];
+  }
+
+  bool _matchesDomain(TrainingModel training, String activeDomain) {
+    return activeDomain == 'All' || _domainLabelFor(training) == activeDomain;
   }
 
   List<TrainingModel> _recommendedTrainings(List<TrainingModel> items) {
@@ -621,13 +649,17 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
   Widget build(BuildContext context) {
     final provider = context.watch<TrainingProvider>();
     final approvedTrainings = _sortedApprovedTrainings(provider.trainings);
-    final recommendedTrainings = _recommendedTrainings(approvedTrainings);
-    final recommendedIds = recommendedTrainings
-        .map((training) => training.id)
-        .toSet();
-    final catalogTrainings = approvedTrainings
-        .where((training) => !recommendedIds.contains(training.id))
+    final availableDomains = _availableDomains(approvedTrainings);
+    final activeDomain = availableDomains.contains(_selectedDomain)
+        ? _selectedDomain
+        : 'All';
+    final domainFilteredTrainings = approvedTrainings
+        .where((training) => _matchesDomain(training, activeDomain))
         .toList();
+    final recommendedTrainings = _recommendedTrainings(approvedTrainings);
+    final catalogTrainings = activeDomain == 'All'
+        ? approvedTrainings
+        : domainFilteredTrainings;
     final isSearching = _searchText.trim().isNotEmpty;
     final filteredTrainings = approvedTrainings.where(_matchesSearch).toList();
 
@@ -641,6 +673,21 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
                 ? catalogTrainings.map(_mapTrainingToCardData)
                 : const Iterable<TrainingCourseCardData>.empty())
             .toList();
+    final sectionTitle = isSearching ? 'Search results' : 'Recommended for you';
+    final showTopEmptyState =
+        approvedTrainings.isNotEmpty &&
+        isSearching &&
+        filteredTrainings.isEmpty;
+    final showDomainEmptyState =
+        !isSearching &&
+        activeDomain != 'All' &&
+        approvedTrainings.isNotEmpty &&
+        additionalCards.isEmpty;
+    final emptySubtitle = isSearching
+        ? 'Try another keyword to find available training programs.'
+        : activeDomain == 'All'
+        ? 'No training programs are available yet.'
+        : 'No training programs are available yet for $activeDomain.';
 
     if (provider.isLoading && provider.trainings.isEmpty) {
       return const Scaffold(
@@ -689,19 +736,12 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
                       ),
                     ],
                     const SizedBox(height: 18),
-                    TrainingSectionTitle(
-                      title: isSearching
-                          ? 'Search results'
-                          : 'Recommended for you',
-                    ),
+                    TrainingSectionTitle(title: sectionTitle),
                     const SizedBox(height: 12),
-                    if (approvedTrainings.isNotEmpty &&
-                        isSearching &&
-                        filteredTrainings.isEmpty)
-                      const TrainingProgramsEmptyState(
+                    if (showTopEmptyState)
+                      TrainingProgramsEmptyState(
                         title: 'No trainings match your search',
-                        subtitle:
-                            'Try another keyword to find available training programs.',
+                        subtitle: emptySubtitle,
                       )
                     else
                       ...topCards.map(
@@ -737,7 +777,23 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
                     if (!isSearching) ...[
                       const SizedBox(height: 6),
                       const BrowseMoreTopicsCard(),
-                      if (additionalCards.isNotEmpty) ...[
+                      const SizedBox(height: 10),
+                      TrainingCatalogueSelector(
+                        domains: availableDomains,
+                        selectedDomain: activeDomain,
+                        onSelected: (domain) {
+                          setState(() {
+                            _selectedDomain = domain;
+                          });
+                        },
+                      ),
+                      if (showDomainEmptyState) ...[
+                        const SizedBox(height: 16),
+                        TrainingProgramsEmptyState(
+                          title: 'No trainings found',
+                          subtitle: emptySubtitle,
+                        ),
+                      ] else if (additionalCards.isNotEmpty) ...[
                         const SizedBox(height: 16),
                         ...additionalCards.map(
                           (card) => Padding(

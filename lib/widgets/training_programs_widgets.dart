@@ -525,6 +525,59 @@ class BrowseMoreTopicsCard extends StatelessWidget {
   }
 }
 
+class TrainingCatalogueSelector extends StatelessWidget {
+  final List<String> domains;
+  final String selectedDomain;
+  final ValueChanged<String> onSelected;
+
+  const TrainingCatalogueSelector({
+    super.key,
+    required this.domains,
+    required this.selectedDomain,
+    required this.onSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Catalogue',
+          style: GoogleFonts.poppins(
+            fontSize: 13.5,
+            fontWeight: FontWeight.w700,
+            color: OpportunityDashboardPalette.textPrimary,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          'Choose your domain',
+          style: GoogleFonts.poppins(
+            fontSize: 11.5,
+            fontWeight: FontWeight.w500,
+            color: OpportunityDashboardPalette.textSecondary,
+          ),
+        ),
+        const SizedBox(height: 10),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: domains
+              .map(
+                (domain) => _TrainingCatalogueChip(
+                  label: domain,
+                  isSelected: domain == selectedDomain,
+                  onTap: () => onSelected(domain),
+                ),
+              )
+              .toList(),
+        ),
+      ],
+    );
+  }
+}
+
 class TrainingProgramsEmptyState extends StatelessWidget {
   final String title;
   final String subtitle;
@@ -1268,6 +1321,53 @@ class _TrainingInfoSticker extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _TrainingCatalogueChip extends StatelessWidget {
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _TrainingCatalogueChip({
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(999),
+        child: Ink(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? OpportunityDashboardPalette.primary.withValues(alpha: 0.08)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(999),
+            border: Border.all(
+              color: isSelected
+                  ? OpportunityDashboardPalette.primary
+                  : OpportunityDashboardPalette.border,
+            ),
+          ),
+          child: Text(
+            label,
+            style: GoogleFonts.poppins(
+              fontSize: 11.5,
+              fontWeight: FontWeight.w600,
+              color: isSelected
+                  ? OpportunityDashboardPalette.primary
+                  : OpportunityDashboardPalette.textSecondary,
+            ),
+          ),
         ),
       ),
     );
