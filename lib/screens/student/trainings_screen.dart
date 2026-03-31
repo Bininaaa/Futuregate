@@ -23,6 +23,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
 
   String _searchText = '';
   String _selectedDomain = 'All';
+  TrainingLayoutView _trainingLayoutView = TrainingLayoutView.grid;
 
   @override
   void initState() {
@@ -689,6 +690,29 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
         ? 'No training programs are available yet.'
         : 'No training programs are available yet for $activeDomain.';
 
+    Widget buildTrainingCard(TrainingCourseCardData card) {
+      void onTap() {
+        if (card.isPlaceholder) {
+          _showPlaceholderMessage();
+          return;
+        }
+
+        final training = approvedTrainings.firstWhere(
+          (item) => item.id == card.id,
+        );
+        _openLink(training.displayLink);
+      }
+
+      final cardWidget = _trainingLayoutView == TrainingLayoutView.grid
+          ? TrainingCourseCard(data: card, onTap: onTap, onStart: onTap)
+          : TrainingCourseListCard(data: card, onTap: onTap, onStart: onTap);
+
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 12),
+        child: cardWidget,
+      );
+    }
+
     if (provider.isLoading && provider.trainings.isEmpty) {
       return const Scaffold(
         backgroundColor: OpportunityDashboardPalette.background,
@@ -736,7 +760,21 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
                       ),
                     ],
                     const SizedBox(height: 18),
-                    TrainingSectionTitle(title: sectionTitle),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TrainingSectionTitle(title: sectionTitle),
+                        ),
+                        TrainingLayoutToggle(
+                          view: _trainingLayoutView,
+                          onChanged: (view) {
+                            setState(() {
+                              _trainingLayoutView = view;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
                     const SizedBox(height: 12),
                     if (showTopEmptyState)
                       TrainingProgramsEmptyState(
@@ -744,36 +782,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
                         subtitle: emptySubtitle,
                       )
                     else
-                      ...topCards.map(
-                        (card) => Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: TrainingCourseCard(
-                            data: card,
-                            onTap: () {
-                              if (card.isPlaceholder) {
-                                _showPlaceholderMessage();
-                                return;
-                              }
-
-                              final training = approvedTrainings.firstWhere(
-                                (item) => item.id == card.id,
-                              );
-                              _openLink(training.displayLink);
-                            },
-                            onStart: () {
-                              if (card.isPlaceholder) {
-                                _showPlaceholderMessage();
-                                return;
-                              }
-
-                              final training = approvedTrainings.firstWhere(
-                                (item) => item.id == card.id,
-                              );
-                              _openLink(training.displayLink);
-                            },
-                          ),
-                        ),
-                      ),
+                      ...topCards.map(buildTrainingCard),
                     if (!isSearching) ...[
                       const SizedBox(height: 6),
                       const BrowseMoreTopicsCard(),
@@ -795,26 +804,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
                         ),
                       ] else if (additionalCards.isNotEmpty) ...[
                         const SizedBox(height: 16),
-                        ...additionalCards.map(
-                          (card) => Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
-                            child: TrainingCourseCard(
-                              data: card,
-                              onTap: () {
-                                final training = approvedTrainings.firstWhere(
-                                  (item) => item.id == card.id,
-                                );
-                                _openLink(training.displayLink);
-                              },
-                              onStart: () {
-                                final training = approvedTrainings.firstWhere(
-                                  (item) => item.id == card.id,
-                                );
-                                _openLink(training.displayLink);
-                              },
-                            ),
-                          ),
-                        ),
+                        ...additionalCards.map(buildTrainingCard),
                       ],
                     ],
                   ]),

@@ -281,15 +281,15 @@ class TrainingCourseCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: Colors.transparent,
-      borderRadius: BorderRadius.circular(24),
+      borderRadius: BorderRadius.circular(22),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(22),
         child: Ink(
           decoration: BoxDecoration(
             color: OpportunityDashboardPalette.surface,
-            borderRadius: BorderRadius.circular(24),
+            borderRadius: BorderRadius.circular(22),
             border: Border.all(
               color: OpportunityDashboardPalette.border.withValues(alpha: 0.9),
             ),
@@ -298,8 +298,8 @@ class TrainingCourseCard extends StatelessWidget {
                 color: OpportunityDashboardPalette.textPrimary.withValues(
                   alpha: 0.04,
                 ),
-                blurRadius: 18,
-                offset: const Offset(0, 8),
+                blurRadius: 16,
+                offset: const Offset(0, 7),
               ),
             ],
           ),
@@ -308,10 +308,10 @@ class TrainingCourseCard extends StatelessWidget {
             children: [
               _TrainingCardImage(data: data),
               Padding(
-                padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+                padding: const EdgeInsets.fromLTRB(11, 9, 11, 11),
                 child: Container(
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(18),
                     border: Border.all(
                       color: data.accentColor.withValues(alpha: 0.09),
                     ),
@@ -330,19 +330,19 @@ class TrainingCourseCard extends StatelessWidget {
                         color: data.secondaryAccentColor.withValues(
                           alpha: 0.05,
                         ),
-                        blurRadius: 16,
-                        offset: const Offset(0, 8),
+                        blurRadius: 14,
+                        offset: const Offset(0, 7),
                       ),
                     ],
                   ),
                   child: Stack(
                     children: [
                       Positioned(
-                        top: -18,
+                        top: -16,
                         right: -8,
                         child: Container(
-                          width: 82,
-                          height: 82,
+                          width: 74,
+                          height: 74,
                           decoration: BoxDecoration(
                             color: data.accentColor.withValues(alpha: 0.07),
                             shape: BoxShape.circle,
@@ -350,11 +350,11 @@ class TrainingCourseCard extends StatelessWidget {
                         ),
                       ),
                       Positioned(
-                        bottom: -24,
-                        left: -14,
+                        bottom: -20,
+                        left: -12,
                         child: Container(
-                          width: 90,
-                          height: 90,
+                          width: 82,
+                          height: 82,
                           decoration: BoxDecoration(
                             color: data.secondaryAccentColor.withValues(
                               alpha: 0.06,
@@ -364,7 +364,7 @@ class TrainingCourseCard extends StatelessWidget {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
+                        padding: const EdgeInsets.fromLTRB(13, 13, 13, 13),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -379,12 +379,12 @@ class TrainingCourseCard extends StatelessWidget {
                                         providerLogoUrl: data.providerLogoUrl,
                                         accentColor: data.accentColor,
                                       ),
-                                      const SizedBox(width: 9),
+                                      const SizedBox(width: 8),
                                       Expanded(
                                         child: Text(
                                           data.providerName,
                                           style: GoogleFonts.poppins(
-                                            fontSize: 12,
+                                            fontSize: 11.5,
                                             fontWeight: FontWeight.w500,
                                             color: OpportunityDashboardPalette
                                                 .textSecondary,
@@ -396,26 +396,26 @@ class TrainingCourseCard extends StatelessWidget {
                                     ],
                                   ),
                                 ),
-                                const SizedBox(width: 10),
+                                const SizedBox(width: 8),
                                 _TrainingInfoSticker(data: data),
                               ],
                             ),
-                            const SizedBox(height: 12),
+                            const SizedBox(height: 10),
                             Text(
                               data.title,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: GoogleFonts.poppins(
-                                fontSize: 15.5,
+                                fontSize: 14.75,
                                 fontWeight: FontWeight.w700,
                                 height: 1.2,
                                 color: OpportunityDashboardPalette.textPrimary,
                               ),
                             ),
-                            const SizedBox(height: 10),
+                            const SizedBox(height: 9),
                             Wrap(
-                              spacing: 10,
-                              runSpacing: 6,
+                              spacing: 9,
+                              runSpacing: 5,
                               children: [
                                 _TrainingMetaItem(
                                   icon: Icons.schedule_rounded,
@@ -427,7 +427,7 @@ class TrainingCourseCard extends StatelessWidget {
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 14),
+                            const SizedBox(height: 12),
                             Row(
                               children: [
                                 if (data.ratingLabel != null &&
@@ -437,16 +437,16 @@ class TrainingCourseCard extends StatelessWidget {
                                       children: [
                                         const Icon(
                                           Icons.star_rounded,
-                                          size: 15,
+                                          size: 14,
                                           color: OpportunityDashboardPalette
                                               .warning,
                                         ),
-                                        const SizedBox(width: 5),
+                                        const SizedBox(width: 4),
                                         Flexible(
                                           child: Text(
                                             data.ratingLabel!,
                                             style: GoogleFonts.poppins(
-                                              fontSize: 12,
+                                              fontSize: 11.5,
                                               fontWeight: FontWeight.w600,
                                               color: OpportunityDashboardPalette
                                                   .textSecondary,
@@ -460,7 +460,7 @@ class TrainingCourseCard extends StatelessWidget {
                                   )
                                 else
                                   const Spacer(),
-                                const SizedBox(width: 10),
+                                const SizedBox(width: 8),
                                 _StartTrainingButton(onTap: onStart),
                               ],
                             ),
@@ -469,6 +469,160 @@ class TrainingCourseCard extends StatelessWidget {
                       ),
                     ],
                   ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class TrainingCourseListCard extends StatelessWidget {
+  final TrainingCourseCardData data;
+  final VoidCallback onTap;
+  final VoidCallback onStart;
+
+  const TrainingCourseListCard({
+    super.key,
+    required this.data,
+    required this.onTap,
+    required this.onStart,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(20),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: Ink(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: OpportunityDashboardPalette.surface,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: OpportunityDashboardPalette.border.withValues(alpha: 0.9),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: OpportunityDashboardPalette.textPrimary.withValues(
+                  alpha: 0.035,
+                ),
+                blurRadius: 14,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _TrainingListMedia(data: data),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Row(
+                            children: [
+                              TrainingProviderAvatar(
+                                providerName: data.providerName,
+                                providerLogoUrl: data.providerLogoUrl,
+                                accentColor: data.accentColor,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  data.providerName,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 11.5,
+                                    fontWeight: FontWeight.w500,
+                                    color: OpportunityDashboardPalette
+                                        .textSecondary,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        _TrainingInfoSticker(data: data),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      data.title,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.poppins(
+                        fontSize: 14.25,
+                        fontWeight: FontWeight.w700,
+                        height: 1.2,
+                        color: OpportunityDashboardPalette.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 4,
+                      children: [
+                        _TrainingMetaItem(
+                          icon: Icons.schedule_rounded,
+                          label: data.durationLabel,
+                        ),
+                        _TrainingMetaItem(
+                          icon: Icons.bar_chart_rounded,
+                          label: data.levelLabel,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        if (data.ratingLabel != null &&
+                            data.ratingLabel!.trim().isNotEmpty)
+                          Expanded(
+                            child: Row(
+                              children: [
+                                const Icon(
+                                  Icons.star_rounded,
+                                  size: 14,
+                                  color: OpportunityDashboardPalette.warning,
+                                ),
+                                const SizedBox(width: 4),
+                                Flexible(
+                                  child: Text(
+                                    data.ratingLabel!,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 11.5,
+                                      fontWeight: FontWeight.w600,
+                                      color: OpportunityDashboardPalette
+                                          .textSecondary,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        else
+                          const Spacer(),
+                        const SizedBox(width: 8),
+                        _StartTrainingButton(onTap: onStart),
+                      ],
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -521,6 +675,39 @@ class BrowseMoreTopicsCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+enum TrainingLayoutView { grid, list }
+
+class TrainingLayoutToggle extends StatelessWidget {
+  final TrainingLayoutView view;
+  final ValueChanged<TrainingLayoutView> onChanged;
+
+  const TrainingLayoutToggle({
+    super.key,
+    required this.view,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _CatalogueViewToggle(
+          icon: Icons.grid_view_rounded,
+          isSelected: view == TrainingLayoutView.grid,
+          onTap: () => onChanged(TrainingLayoutView.grid),
+        ),
+        const SizedBox(width: 8),
+        _CatalogueViewToggle(
+          icon: Icons.view_list_rounded,
+          isSelected: view == TrainingLayoutView.list,
+          onTap: () => onChanged(TrainingLayoutView.list),
+        ),
+      ],
     );
   }
 }
@@ -690,8 +877,8 @@ class TrainingProviderAvatar extends StatelessWidget {
     final initial = trimmedProvider.isEmpty ? 'T' : trimmedProvider[0];
 
     return Container(
-      width: 30,
-      height: 30,
+      width: 28,
+      height: 28,
       decoration: BoxDecoration(
         color: accentColor.withValues(alpha: 0.12),
         shape: BoxShape.circle,
@@ -702,7 +889,7 @@ class TrainingProviderAvatar extends StatelessWidget {
               child: Text(
                 initial.toUpperCase(),
                 style: GoogleFonts.poppins(
-                  fontSize: 12,
+                  fontSize: 11.5,
                   fontWeight: FontWeight.w700,
                   color: accentColor,
                 ),
@@ -715,7 +902,7 @@ class TrainingProviderAvatar extends StatelessWidget {
                 child: Text(
                   initial.toUpperCase(),
                   style: GoogleFonts.poppins(
-                    fontSize: 12,
+                    fontSize: 11.5,
                     fontWeight: FontWeight.w700,
                     color: accentColor,
                   ),
@@ -774,6 +961,102 @@ class _HeaderIconButton extends StatelessWidget {
   }
 }
 
+class _TrainingListMedia extends StatelessWidget {
+  final TrainingCourseCardData data;
+
+  const _TrainingListMedia({required this.data});
+
+  @override
+  Widget build(BuildContext context) {
+    final type = data.trainingType.trim().toLowerCase();
+
+    return Container(
+      width: 92,
+      height: 92,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(18),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            data.accentColor.withValues(alpha: 0.92),
+            data.secondaryAccentColor.withValues(alpha: 0.88),
+          ],
+        ),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          if (data.imageUrl.trim().isNotEmpty)
+            CachedNetworkImage(
+              imageUrl: data.imageUrl,
+              fit: BoxFit.cover,
+              errorWidget: (context, url, error) => const SizedBox.shrink(),
+            ),
+          DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.transparent,
+                  Colors.black.withValues(alpha: 0.12),
+                ],
+              ),
+            ),
+          ),
+          if (type == 'video')
+            Center(
+              child: Container(
+                width: 34,
+                height: 34,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.18),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.play_arrow_rounded,
+                  color: Colors.white,
+                  size: 22,
+                ),
+              ),
+            )
+          else
+            Positioned(
+              top: 10,
+              right: 10,
+              child: Container(
+                width: 28,
+                height: 28,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.16),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(data.fallbackIcon, color: Colors.white, size: 15),
+              ),
+            ),
+          Positioned(
+            left: 10,
+            right: 10,
+            bottom: 10,
+            child: Text(
+              data.categoryLabel,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.poppins(
+                fontSize: 9.5,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _TrainingCardImage extends StatelessWidget {
   final TrainingCourseCardData data;
 
@@ -783,14 +1066,14 @@ class _TrainingCardImage extends StatelessWidget {
   Widget build(BuildContext context) {
     final trainingType = data.trainingType.trim().toLowerCase();
     final aspectRatio = switch (trainingType) {
-      'video' => 1.95,
-      'book' => 1.38,
-      'file' => 1.62,
-      _ => 1.72,
+      'video' => 2.05,
+      'book' => 1.48,
+      'file' => 1.72,
+      _ => 1.84,
     };
 
     return ClipRRect(
-      borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
       child: AspectRatio(
         aspectRatio: aspectRatio,
         child: Stack(
@@ -814,12 +1097,12 @@ class _TrainingCardImage extends StatelessWidget {
             ),
             if (data.badges.isNotEmpty)
               Positioned(
-                top: 10,
-                left: 10,
-                right: 10,
+                top: 9,
+                left: 9,
+                right: 9,
                 child: Wrap(
-                  spacing: 5,
-                  runSpacing: 5,
+                  spacing: 4,
+                  runSpacing: 4,
                   children: data.badges
                       .map((badge) => _TrainingImageBadge(badge: badge))
                       .toList(),
@@ -1230,7 +1513,7 @@ class _TrainingImageBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: badge.backgroundColor,
         borderRadius: BorderRadius.circular(999),
@@ -1238,7 +1521,7 @@ class _TrainingImageBadge extends StatelessWidget {
       child: Text(
         badge.label,
         style: GoogleFonts.poppins(
-          fontSize: 9.5,
+          fontSize: 9,
           fontWeight: FontWeight.w700,
           letterSpacing: 0.2,
           color: badge.foregroundColor,
@@ -1290,7 +1573,7 @@ class _TrainingInfoSticker extends StatelessWidget {
     return Transform.rotate(
       angle: -0.045,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(14),
           gradient: LinearGradient(
@@ -1302,19 +1585,19 @@ class _TrainingInfoSticker extends StatelessWidget {
             BoxShadow(
               color: data.secondaryAccentColor.withValues(alpha: 0.18),
               blurRadius: 14,
-              offset: const Offset(0, 6),
+              offset: const Offset(0, 5),
             ),
           ],
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(sticker.icon, size: 13.5, color: Colors.white),
-            const SizedBox(width: 6),
+            Icon(sticker.icon, size: 13, color: Colors.white),
+            const SizedBox(width: 5),
             Text(
               sticker.label,
               style: GoogleFonts.poppins(
-                fontSize: 10,
+                fontSize: 9.5,
                 fontWeight: FontWeight.w700,
                 letterSpacing: 0.35,
                 color: Colors.white,
@@ -1360,6 +1643,7 @@ class _TrainingCatalogueChip extends StatelessWidget {
           ),
           child: Text(
             label,
+            textAlign: TextAlign.center,
             style: GoogleFonts.poppins(
               fontSize: 11.5,
               fontWeight: FontWeight.w600,
@@ -1367,6 +1651,51 @@ class _TrainingCatalogueChip extends StatelessWidget {
                   ? OpportunityDashboardPalette.primary
                   : OpportunityDashboardPalette.textSecondary,
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _CatalogueViewToggle extends StatelessWidget {
+  final IconData icon;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _CatalogueViewToggle({
+    required this.icon,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Ink(
+          width: 34,
+          height: 34,
+          decoration: BoxDecoration(
+            color: isSelected
+                ? OpportunityDashboardPalette.primary.withValues(alpha: 0.10)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: isSelected
+                  ? OpportunityDashboardPalette.primary
+                  : OpportunityDashboardPalette.border,
+            ),
+          ),
+          child: Icon(
+            icon,
+            size: 17,
+            color: isSelected
+                ? OpportunityDashboardPalette.primary
+                : OpportunityDashboardPalette.textSecondary,
           ),
         ),
       ),
@@ -1386,11 +1715,11 @@ class _TrainingMetaItem extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Icon(icon, size: 14, color: OpportunityDashboardPalette.textSecondary),
-        const SizedBox(width: 5),
+        const SizedBox(width: 4),
         Text(
           label,
           style: GoogleFonts.poppins(
-            fontSize: 11.5,
+            fontSize: 11,
             fontWeight: FontWeight.w500,
             color: OpportunityDashboardPalette.textSecondary,
           ),
@@ -1409,20 +1738,20 @@ class _StartTrainingButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: Colors.transparent,
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: BorderRadius.circular(13),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(13),
         child: Ink(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
           decoration: BoxDecoration(
             color: OpportunityDashboardPalette.primary.withValues(alpha: 0.10),
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(13),
           ),
           child: Text(
             'Start',
             style: GoogleFonts.poppins(
-              fontSize: 12,
+              fontSize: 11.5,
               fontWeight: FontWeight.w700,
               color: OpportunityDashboardPalette.primary,
             ),
