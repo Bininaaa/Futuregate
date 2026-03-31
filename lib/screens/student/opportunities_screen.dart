@@ -9,13 +9,11 @@ import '../../models/opportunity_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/opportunity_provider.dart';
 import '../../providers/saved_opportunity_provider.dart';
-import '../../providers/scholarship_provider.dart';
 import '../../providers/training_provider.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/opportunity_dashboard_widgets.dart';
 import 'opportunity_detail_screen.dart';
-import 'scholarships_screen.dart';
 import 'trainings_screen.dart';
 
 class OpportunitiesScreen extends StatefulWidget {
@@ -33,7 +31,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
   final ScrollController _scrollController = ScrollController();
   final GlobalKey _searchSectionKey = GlobalKey();
   final GlobalKey _trendingSectionKey = GlobalKey();
-  final GlobalKey _recentSectionKey = GlobalKey();
+  final GlobalKey _latestSectionKey = GlobalKey();
 
   late _OpportunityDashboardFilter _activeFilter;
   String _searchQuery = '';
@@ -76,7 +74,6 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
   Future<void> _loadData({bool force = false}) async {
     final opportunityProvider = context.read<OpportunityProvider>();
     final trainingProvider = context.read<TrainingProvider>();
-    final scholarshipProvider = context.read<ScholarshipProvider>();
     final savedProvider = context.read<SavedOpportunityProvider>();
     final userId = context.read<AuthProvider>().userModel?.uid;
 
@@ -84,10 +81,6 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
 
     if (force || trainingProvider.trainings.isEmpty) {
       futures.add(trainingProvider.fetchTrainings());
-    }
-
-    if (force || scholarshipProvider.scholarships.isEmpty) {
-      futures.add(scholarshipProvider.fetchScholarships());
     }
 
     if (userId != null && userId.isNotEmpty) {
@@ -129,6 +122,9 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
         opportunity.description,
         opportunity.requirements,
         _typeLabel(opportunity.type),
+        _deriveTrendingTag(opportunity),
+        _workModeLabel(opportunity) ?? '',
+        _compensationText(opportunity) ?? '',
       ];
 
       return searchableFields.any(
@@ -143,9 +139,6 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
     switch (_activeFilter) {
       case _OpportunityDashboardFilter.all:
         return true;
-      case _OpportunityDashboardFilter.jobsAndInternships:
-        return type == OpportunityType.job ||
-            type == OpportunityType.internship;
       case _OpportunityDashboardFilter.job:
         return type == OpportunityType.job;
       case _OpportunityDashboardFilter.internship:
@@ -164,13 +157,13 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
   }
 
   Future<void> _scrollToKey(GlobalKey key) async {
-    final context = key.currentContext;
-    if (context == null) {
+    final targetContext = key.currentContext;
+    if (targetContext == null) {
       return;
     }
 
     await Scrollable.ensureVisible(
-      context,
+      targetContext,
       duration: const Duration(milliseconds: 320),
       curve: Curves.easeOutCubic,
       alignment: 0.08,
@@ -183,13 +176,6 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
       MaterialPageRoute(
         builder: (_) => OpportunityDetailScreen(opportunity: opportunity),
       ),
-    );
-  }
-
-  void _openScholarships() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const ScholarshipsScreen()),
     );
   }
 
@@ -364,7 +350,6 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
   String _summaryText(int visibleCount, int totalCount) {
     final filterLabel = switch (_activeFilter) {
       _OpportunityDashboardFilter.all => 'opportunities',
-      _OpportunityDashboardFilter.jobsAndInternships => 'jobs and internships',
       _OpportunityDashboardFilter.job => 'jobs',
       _OpportunityDashboardFilter.internship => 'internships',
       _OpportunityDashboardFilter.sponsored => 'sponsored opportunities',
@@ -386,16 +371,63 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
     return '$count ${count == 1 ? singular : plural}';
   }
 
-  String _formatDeadlineDisplay(String rawDeadline) {
-    final parsed = _parseDeadline(rawDeadline);
-    if (parsed == null) {
-      return rawDeadline.trim().isEmpty ? 'No deadline' : rawDeadline.trim();
+  String _supportingCountText({
+    required int count,
+    required String singular,
+    required String plural,
+    required String fallback,
+  }) {
+    if (count <= 0) {
+      return fallback;
     }
 
-    return DateFormat('MMM d').format(parsed);
+    return _formatCount(count, singular, plural);
   }
 
-  DateTime? _parseDeadline(String rawDeadline) {
+  DateTime? _postedAt(OpportunityModel opportunity) {
+    return opportunity.createdAt?.toDate() ??
+        opportunity.readDateTime([
+          'postedAt',
+          'publishedAt',
+          'created_at',
+          'posted_at',
+          'published_at',
+        ]);
+  }
+
+  DateTime? _deadlineFor(OpportunityModel opportunity) {
+    final explicitDeadline = _parseDeadlineValue(opportunity.deadline);
+    if (explicitDeadline != null) {
+      return explicitDeadline;
+    }
+
+    final fallback = opportunity.readDateTime([
+      'deadlineAt',
+      'closingDate',
+      'closingAt',
+      'expiresAt',
+      'expiryDate',
+      'endDate',
+    ]);
+    if (fallback == null) {
+      return null;
+    }
+
+    final isDateOnly =
+        fallback.hour == 0 &&
+        fallback.minute == 0 &&
+        fallback.second == 0 &&
+        fallback.millisecond == 0 &&
+        fallback.microsecond == 0;
+
+    if (!isDateOnly) {
+      return fallback;
+    }
+
+    return DateTime(fallback.year, fallback.month, fallback.day, 23, 59, 59);
+  }
+
+  DateTime? _parseDeadlineValue(String rawDeadline) {
     final trimmed = rawDeadline.trim();
     if (trimmed.isEmpty) {
       return null;
@@ -432,8 +464,18 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
     return null;
   }
 
+  String _formatDeadlineDisplay(OpportunityModel opportunity) {
+    final parsed = _deadlineFor(opportunity);
+    if (parsed == null) {
+      final fallback = opportunity.deadline.trim();
+      return fallback.isEmpty ? 'No deadline' : fallback;
+    }
+
+    return DateFormat('MMM d').format(parsed);
+  }
+
   String _relativePostedTime(OpportunityModel opportunity) {
-    final createdAt = opportunity.createdAt?.toDate();
+    final createdAt = _postedAt(opportunity);
     if (createdAt == null) {
       return 'Recently added';
     }
@@ -462,7 +504,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
   }
 
   bool _isNewOpportunity(OpportunityModel opportunity) {
-    final createdAt = opportunity.createdAt?.toDate();
+    final createdAt = _postedAt(opportunity);
     if (createdAt == null) {
       return false;
     }
@@ -471,7 +513,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
   }
 
   String _closingSoonText(OpportunityModel opportunity) {
-    final deadline = _parseDeadline(opportunity.deadline);
+    final deadline = _deadlineFor(opportunity);
     if (deadline == null) {
       return 'Deadline unavailable';
     }
@@ -497,7 +539,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
   }
 
   Color _closingSoonColor(OpportunityModel opportunity) {
-    final deadline = _parseDeadline(opportunity.deadline);
+    final deadline = _deadlineFor(opportunity);
     if (deadline == null) {
       return OpportunityDashboardPalette.warning;
     }
@@ -508,7 +550,42 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
         : OpportunityDashboardPalette.warning;
   }
 
+  String? _explicitCategoryTag(OpportunityModel opportunity) {
+    final rawTag = opportunity.readString([
+      'category',
+      'tag',
+      'field',
+      'domain',
+      'industry',
+      'department',
+      'track',
+    ]);
+    if (rawTag == null) {
+      return null;
+    }
+
+    final compact = rawTag.split(RegExp(r'[/,&|-]')).first.trim();
+    if (compact.isEmpty) {
+      return null;
+    }
+
+    final words = compact
+        .split(RegExp(r'\s+'))
+        .where((word) => word.isNotEmpty);
+    final normalized = words.take(2).join(' ').toUpperCase();
+    if (normalized.length <= 12) {
+      return normalized;
+    }
+
+    return words.isEmpty ? null : words.first.toUpperCase();
+  }
+
   String _deriveTrendingTag(OpportunityModel opportunity) {
+    final explicitTag = _explicitCategoryTag(opportunity);
+    if (explicitTag != null) {
+      return explicitTag;
+    }
+
     final text = [
       opportunity.title,
       opportunity.description,
@@ -525,6 +602,11 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
         text.contains('business') ||
         text.contains('sales')) {
       return 'BUSINESS';
+    }
+    if (text.contains('finance') ||
+        text.contains('account') ||
+        text.contains('audit')) {
+      return 'FINANCE';
     }
     if (text.contains('research') ||
         text.contains('lab') ||
@@ -567,18 +649,18 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
     List<OpportunityModel> visible,
   ) {
     final items = visible.where((opportunity) {
-      final deadline = _parseDeadline(opportunity.deadline);
+      final deadline = _deadlineFor(opportunity);
       if (deadline == null) {
         return false;
       }
 
       final difference = deadline.difference(DateTime.now());
-      return !difference.isNegative && difference.inDays <= 21;
+      return !difference.isNegative && difference.inDays <= 14;
     }).toList();
 
     items.sort((a, b) {
-      final first = _parseDeadline(a.deadline);
-      final second = _parseDeadline(b.deadline);
+      final first = _deadlineFor(a);
+      final second = _deadlineFor(b);
       if (first == null && second == null) {
         return 0;
       }
@@ -595,29 +677,323 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
     return items.take(5).toList();
   }
 
+  String _companyName(OpportunityModel opportunity) {
+    final companyName = opportunity.companyName.trim();
+    return companyName.isEmpty ? 'AvenirDZ partner' : companyName;
+  }
+
+  String? _companyNameOrNull(OpportunityModel opportunity) {
+    final companyName = opportunity.companyName.trim();
+    return companyName.isEmpty ? null : companyName;
+  }
+
+  String? _locationLabel(OpportunityModel opportunity) {
+    final location = opportunity.location.trim();
+    if (location.isNotEmpty) {
+      return location;
+    }
+
+    final fallback = opportunity.readString([
+      'city',
+      'region',
+      'country',
+      'officeLocation',
+      'address',
+      'place',
+    ]);
+    if (fallback != null) {
+      return fallback;
+    }
+
+    return switch (_workModeLabel(opportunity)) {
+      'REMOTE' => 'Remote',
+      'HYBRID' => 'Hybrid',
+      _ => null,
+    };
+  }
+
+  String _companyLocationText(OpportunityModel opportunity) {
+    final company = _companyName(opportunity);
+    final location = _locationLabel(opportunity);
+
+    if (location == null || location.isEmpty) {
+      return company;
+    }
+
+    return '$company - $location';
+  }
+
+  String? _compensationText(OpportunityModel opportunity) {
+    final explicitCompensation = _sanitizeCompensationText(
+      opportunity.readString([
+        'salary',
+        'salaryRange',
+        'salary_range',
+        'stipend',
+        'stipendAmount',
+        'stipend_amount',
+        'compensation',
+        'payment',
+        'pay',
+        'payRange',
+        'pay_range',
+        'amount',
+        'budget',
+        'reward',
+      ]),
+    );
+    if (explicitCompensation != null) {
+      return explicitCompensation;
+    }
+
+    final extracted = _sanitizeCompensationText(
+      _extractCompensationFromText(opportunity),
+    );
+    if (extracted != null) {
+      return extracted;
+    }
+
+    if (_hasPaidIndicator(opportunity)) {
+      return 'Paid';
+    }
+
+    return null;
+  }
+
+  bool _hasPaidIndicator(OpportunityModel opportunity) {
+    final explicitPaid = opportunity.readBool([
+      'paid',
+      'isPaid',
+      'paidOpportunity',
+      'isPaidOpportunity',
+    ]);
+    if (explicitPaid != null) {
+      return explicitPaid;
+    }
+
+    final text = '${opportunity.description} ${opportunity.requirements}'
+        .toLowerCase();
+    if (text.contains('unpaid')) {
+      return false;
+    }
+
+    return text.contains('paid') ||
+        text.contains('stipend') ||
+        text.contains('salary') ||
+        RegExp(
+          r'(\$|usd|eur|dzd|/month|per month|per hour|monthly|hourly)',
+          caseSensitive: false,
+        ).hasMatch(text);
+  }
+
+  String? _extractCompensationFromText(OpportunityModel opportunity) {
+    final text = '${opportunity.description} ${opportunity.requirements}'
+        .replaceAll('\n', ' ');
+    final patterns = [
+      RegExp(
+        r'((?:salary|stipend|compensation|payment|pay)\s*[:\-]?\s*[^,;\n]{3,40})',
+        caseSensitive: false,
+      ),
+      RegExp(
+        r'((?:USD|EUR|DZD|\$)\s?[0-9][0-9,.\s/-]{1,24})',
+        caseSensitive: false,
+      ),
+      RegExp(
+        r'((?:paid|unpaid)\s+(?:internship|role|position|opportunity))',
+        caseSensitive: false,
+      ),
+    ];
+
+    for (final pattern in patterns) {
+      final match = pattern.firstMatch(text);
+      final result = match?.group(1)?.trim();
+      if (result != null && result.isNotEmpty) {
+        return result;
+      }
+    }
+
+    return null;
+  }
+
+  String? _sanitizeCompensationText(String? rawValue) {
+    if (rawValue == null) {
+      return null;
+    }
+
+    var value = rawValue.trim().replaceAll(RegExp(r'\s+'), ' ');
+    if (value.isEmpty) {
+      return null;
+    }
+
+    value = value.replaceFirst(
+      RegExp(
+        r'^(salary|stipend|compensation|payment|pay)\s*[:\-]?\s*',
+        caseSensitive: false,
+      ),
+      '',
+    );
+
+    final normalized = value.toLowerCase();
+    if (normalized.isEmpty) {
+      return null;
+    }
+
+    if (normalized.contains('http') ||
+        normalized.contains('www.') ||
+        normalized.contains('.png') ||
+        normalized.contains('.jpg') ||
+        normalized.contains('.jpeg') ||
+        normalized.contains('.webp')) {
+      return null;
+    }
+
+    if (normalized.contains('unpaid')) {
+      return null;
+    }
+
+    final looksLikePaidLabel =
+        normalized == 'paid' ||
+        normalized == 'paid internship' ||
+        normalized == 'paid role' ||
+        normalized == 'paid opportunity';
+    if (looksLikePaidLabel) {
+      return 'Paid';
+    }
+
+    final hasCompensationSignal = RegExp(
+      r'(\$|usd|eur|dzd|k\b|/month|per month|per hour|monthly|hourly|\d)',
+      caseSensitive: false,
+    ).hasMatch(value);
+
+    if (!hasCompensationSignal) {
+      return null;
+    }
+
+    if (value.length > 36) {
+      return null;
+    }
+
+    return value;
+  }
+
+  String? _workModeLabel(OpportunityModel opportunity) {
+    final explicitRemote = opportunity.readBool([
+      'remote',
+      'isRemote',
+      'remoteFriendly',
+      'isRemoteFriendly',
+    ]);
+    if (explicitRemote == true) {
+      return 'REMOTE';
+    }
+
+    final explicitMode = opportunity.readString([
+      'workMode',
+      'workplaceType',
+      'locationType',
+      'remoteType',
+    ]);
+    final searchable = [
+      explicitMode,
+      opportunity.location,
+      opportunity.description,
+      opportunity.requirements,
+    ].whereType<String>().join(' ').toLowerCase();
+
+    if (searchable.contains('hybrid')) {
+      return 'HYBRID';
+    }
+    if (searchable.contains('remote')) {
+      return 'REMOTE';
+    }
+    if (searchable.contains('on-site') ||
+        searchable.contains('onsite') ||
+        searchable.contains('on site')) {
+      return 'ON-SITE';
+    }
+
+    return null;
+  }
+
+  List<String> _latestStatusItems(OpportunityModel opportunity) {
+    final items = <String>[];
+    final deadline = _deadlineFor(opportunity);
+    final postedAt = _postedAt(opportunity);
+
+    if (deadline != null) {
+      final difference = deadline.difference(DateTime.now());
+      if (!difference.isNegative && difference.inDays <= 14) {
+        items.add(_closingSoonText(opportunity).toUpperCase());
+      } else if (postedAt == null) {
+        items.add(
+          'DEADLINE ${_formatDeadlineDisplay(opportunity).toUpperCase()}',
+        );
+      }
+    }
+
+    if (postedAt != null) {
+      items.add('POSTED ${_relativePostedTime(opportunity).toUpperCase()}');
+    }
+
+    final compensation = _compensationText(opportunity);
+    if (compensation != null) {
+      items.add(compensation.toLowerCase() == 'paid' ? 'PAID' : compensation);
+    }
+
+    final workMode = _workModeLabel(opportunity);
+    if (workMode != null) {
+      items.add(workMode);
+    }
+
+    if (items.isEmpty) {
+      items.add(_typeLabel(opportunity.type).toUpperCase());
+    }
+
+    return _uniqueValues(items).take(4).toList();
+  }
+
+  List<String> _uniqueValues(List<String> values) {
+    final seen = <String>{};
+    final result = <String>[];
+
+    for (final value in values) {
+      final trimmed = value.trim();
+      if (trimmed.isEmpty) {
+        continue;
+      }
+
+      final key = trimmed.toLowerCase();
+      if (seen.add(key)) {
+        result.add(trimmed);
+      }
+    }
+
+    return result;
+  }
+
   Widget _buildHeaderSection(int visibleCount, int totalCount) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Find your path.',
+          'Find your next move.',
           style: GoogleFonts.poppins(
-            fontSize: 34,
+            fontSize: 30,
             fontWeight: FontWeight.w700,
             color: OpportunityDashboardPalette.textPrimary,
-            height: 1.1,
+            height: 1.08,
           ),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 8),
         Text(
-          'Discover curated opportunities tailored for your academic and professional growth.',
+          'Browse jobs, internships, sponsored tracks, and training picks designed for students.',
           style: GoogleFonts.poppins(
-            fontSize: 15,
+            fontSize: 13.5,
             height: 1.5,
             color: OpportunityDashboardPalette.textSecondary,
           ),
         ),
-        const SizedBox(height: 22),
+        const SizedBox(height: 18),
         KeyedSubtree(
           key: _searchSectionKey,
           child: TextField(
@@ -625,8 +1001,9 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
             focusNode: _searchFocusNode,
             textInputAction: TextInputAction.search,
             decoration: InputDecoration(
-              hintText: 'Search internships, jobs, or programs',
+              hintText: 'Search jobs, internships or sponsored roles',
               hintStyle: GoogleFonts.poppins(
+                fontSize: 13,
                 color: OpportunityDashboardPalette.textSecondary,
               ),
               prefixIcon: const Icon(
@@ -642,15 +1019,15 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                     ),
               filled: true,
               fillColor: OpportunityDashboardPalette.surface,
-              contentPadding: const EdgeInsets.symmetric(vertical: 18),
+              contentPadding: const EdgeInsets.symmetric(vertical: 16),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(24),
+                borderRadius: BorderRadius.circular(22),
                 borderSide: const BorderSide(
                   color: OpportunityDashboardPalette.border,
                 ),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(24),
+                borderRadius: BorderRadius.circular(22),
                 borderSide: const BorderSide(
                   color: OpportunityDashboardPalette.primary,
                   width: 1.5,
@@ -659,9 +1036,9 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
             ),
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 14),
         SizedBox(
-          height: 42,
+          height: 40,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             itemCount: _dashboardFilters.length,
@@ -676,7 +1053,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                   duration: const Duration(milliseconds: 180),
                   padding: const EdgeInsets.symmetric(
                     horizontal: 14,
-                    vertical: 10,
+                    vertical: 9,
                   ),
                   decoration: BoxDecoration(
                     color: isActive
@@ -719,7 +1096,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
             },
           ),
         ),
-        const SizedBox(height: 14),
+        const SizedBox(height: 12),
         AnimatedSwitcher(
           duration: const Duration(milliseconds: 220),
           child: Text(
@@ -728,7 +1105,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
               'summary-$visibleCount-$totalCount-$_activeFilter-$_searchQuery',
             ),
             style: GoogleFonts.poppins(
-              fontSize: 13,
+              fontSize: 12.5,
               fontWeight: FontWeight.w500,
               color: OpportunityDashboardPalette.textSecondary,
             ),
@@ -742,15 +1119,23 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
   Widget build(BuildContext context) {
     final opportunityProvider = context.watch<OpportunityProvider>();
     final trainingProvider = context.watch<TrainingProvider>();
-    final scholarshipProvider = context.watch<ScholarshipProvider>();
     final savedProvider = context.watch<SavedOpportunityProvider>();
 
     final allOpportunities = opportunityProvider.opportunities;
     final visibleOpportunities = _applyFilters(allOpportunities);
-    final jobsAndInternships = allOpportunities.where((opportunity) {
-      final type = OpportunityType.parse(opportunity.type);
-      return type == OpportunityType.job || type == OpportunityType.internship;
-    }).toList();
+    final jobItems = allOpportunities
+        .where(
+          (opportunity) =>
+              OpportunityType.parse(opportunity.type) == OpportunityType.job,
+        )
+        .toList();
+    final internshipItems = allOpportunities
+        .where(
+          (opportunity) =>
+              OpportunityType.parse(opportunity.type) ==
+              OpportunityType.internship,
+        )
+        .toList();
     final sponsoredItems = allOpportunities
         .where(
           (opportunity) =>
@@ -832,115 +1217,117 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                     ),
                   ),
                   SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                    sliver: SliverToBoxAdapter(
+                      child: Column(
+                        children: [
+                          OpportunityHeroCard(
+                            title: 'Jobs',
+                            subtitle:
+                                'Discover premium open roles from trusted employers and remote-ready teams.',
+                            supportingLabel: _supportingCountText(
+                              count: jobItems.length,
+                              singular: 'open position',
+                              plural: 'open positions',
+                              fallback: 'Explore verified openings',
+                            ),
+                            icon: Icons.work_outline_rounded,
+                            onTap: () async {
+                              _setFilter(_OpportunityDashboardFilter.job);
+                              await _scrollToKey(_latestSectionKey);
+                            },
+                          ),
+                          const SizedBox(height: 14),
+                          SizedBox(
+                            height: 150,
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: OpportunityCategoryCard(
+                                    title: 'Internships',
+                                    subtitle: 'Hands-on student placements',
+                                    caption: _supportingCountText(
+                                      count: internshipItems.length,
+                                      singular: 'open internship',
+                                      plural: 'open internships',
+                                      fallback: 'Build experience faster',
+                                    ),
+                                    icon: Icons.school_outlined,
+                                    color:
+                                        OpportunityDashboardPalette.secondary,
+                                    backgroundColor: OpportunityDashboardPalette
+                                        .secondary
+                                        .withValues(alpha: 0.10),
+                                    onTap: () async {
+                                      _setFilter(
+                                        _OpportunityDashboardFilter.internship,
+                                      );
+                                      await _scrollToKey(_latestSectionKey);
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: OpportunityCategoryCard(
+                                    title: 'Sponsored',
+                                    subtitle: 'Partner-backed support',
+                                    caption: _supportingCountText(
+                                      count: sponsoredItems.length,
+                                      singular: 'active track',
+                                      plural: 'active tracks',
+                                      fallback: 'Partner-backed tracks',
+                                    ),
+                                    icon: Icons.campaign_outlined,
+                                    color: OpportunityDashboardPalette.accent,
+                                    backgroundColor: OpportunityDashboardPalette
+                                        .accent
+                                        .withValues(alpha: 0.10),
+                                    onTap: () async {
+                                      _setFilter(
+                                        _OpportunityDashboardFilter.sponsored,
+                                      );
+                                      await _scrollToKey(_latestSectionKey);
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 14),
+                          TrainingProgramsCard(
+                            title: 'Training Programs',
+                            subtitle: 'Courses, bootcamps, and certificates',
+                            badgeLabel: trainingProvider.isLoading
+                                ? 'Loading...'
+                                : _supportingCountText(
+                                    count: trainingItems.length,
+                                    singular: 'resource',
+                                    plural: 'resources',
+                                    fallback: 'Updated weekly',
+                                  ),
+                            onTap: _openTrainings,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SliverPadding(
                     padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
                     sliver: SliverToBoxAdapter(
-                      child: OpportunityHeroCard(
-                        title: 'Jobs & Internships',
-                        subtitle:
-                            'Explore career openings and student-first placements from trusted partners.',
-                        supportingLabel: _formatCount(
-                          jobsAndInternships.length,
-                          'open position',
-                          'open positions',
-                        ),
-                        icon: Icons.workspace_premium_outlined,
-                        onTap: () async {
-                          _setFilter(
-                            _OpportunityDashboardFilter.jobsAndInternships,
-                          );
-                          await _scrollToKey(_trendingSectionKey);
-                        },
-                      ),
-                    ),
-                  ),
-                  SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-                    sliver: SliverToBoxAdapter(
-                      child: SizedBox(
-                        height: 164,
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: OpportunityCategoryCard(
-                                title: 'Scholarships',
-                                subtitle: 'Funding & grants',
-                                caption: scholarshipProvider.isLoading
-                                    ? 'Loading...'
-                                    : _formatCount(
-                                        scholarshipProvider.scholarships.length,
-                                        'live listing',
-                                        'live listings',
-                                      ),
-                                icon: Icons.workspace_premium_outlined,
-                                color: OpportunityDashboardPalette.secondary,
-                                backgroundColor: OpportunityDashboardPalette
-                                    .secondary
-                                    .withValues(alpha: 0.10),
-                                onTap: _openScholarships,
-                              ),
-                            ),
-                            const SizedBox(width: 14),
-                            Expanded(
-                              child: OpportunityCategoryCard(
-                                title: 'Sponsored',
-                                subtitle: 'Partner-backed support',
-                                caption: _formatCount(
-                                  sponsoredItems.length,
-                                  'active track',
-                                  'active tracks',
-                                ),
-                                icon: Icons.campaign_outlined,
-                                color: OpportunityDashboardPalette.accent,
-                                backgroundColor: OpportunityDashboardPalette
-                                    .accent
-                                    .withValues(alpha: 0.10),
-                                onTap: () async {
-                                  _setFilter(
-                                    _OpportunityDashboardFilter.sponsored,
-                                  );
-                                  await _scrollToKey(_recentSectionKey);
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-                    sliver: SliverToBoxAdapter(
-                      child: TrainingProgramsCard(
-                        title: 'Training Programs',
-                        subtitle: 'Certification & Bootcamps',
-                        badgeLabel: trainingProvider.isLoading
-                            ? 'Loading...'
-                            : _formatCount(
-                                trainingItems.length,
-                                'resource',
-                                'resources',
-                              ),
-                        onTap: _openTrainings,
-                      ),
-                    ),
-                  ),
-                  SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(20, 30, 20, 0),
-                    sliver: SliverToBoxAdapter(
                       key: _trendingSectionKey,
-                      child: OpportunitySectionHeader(
+                      child: TrendingOpportunitySectionHeader(
                         title: 'Trending Opportunities',
                         subtitle: 'Based on student activity this week',
                         actionLabel: 'View All',
                         onAction: () async {
                           _setFilter(_OpportunityDashboardFilter.all);
-                          await _scrollToKey(_recentSectionKey);
+                          await _scrollToKey(_latestSectionKey);
                         },
                       ),
                     ),
                   ),
                   SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(20, 14, 0, 0),
+                    padding: const EdgeInsets.fromLTRB(20, 10, 0, 0),
                     sliver: SliverToBoxAdapter(
                       child: trendingItems.isEmpty
                           ? Padding(
@@ -954,24 +1341,26 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                               ),
                             )
                           : SizedBox(
-                              height: 290,
+                              height: 226,
                               child: ListView.separated(
                                 scrollDirection: Axis.horizontal,
                                 padding: const EdgeInsets.only(right: 20),
                                 itemCount: trendingItems.length,
                                 separatorBuilder: (context, index) =>
-                                    const SizedBox(width: 14),
+                                    const SizedBox(width: 12),
                                 itemBuilder: (context, index) {
                                   final opportunity = trendingItems[index];
 
                                   return TrendingOpportunityCard(
                                     opportunity: opportunity,
                                     badgeLabel: _deriveTrendingTag(opportunity),
-                                    primaryMeta:
-                                        '${opportunity.companyName.isEmpty ? 'AvenirDZ partner' : opportunity.companyName} | ${opportunity.location.isEmpty ? 'Remote friendly' : opportunity.location}',
-                                    secondaryMeta: opportunity.deadline.isEmpty
-                                        ? _relativePostedTime(opportunity)
-                                        : 'Deadline ${_formatDeadlineDisplay(opportunity.deadline)}',
+                                    companyName: _companyNameOrNull(
+                                      opportunity,
+                                    ),
+                                    locationText: _locationLabel(opportunity),
+                                    compensationText: _compensationText(
+                                      opportunity,
+                                    ),
                                     isSaved: savedIds.contains(opportunity.id),
                                     isBusy: savedProvider.isLoading,
                                     onTap: () => _openOpportunity(opportunity),
@@ -984,24 +1373,24 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                     ),
                   ),
                   SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(20, 30, 20, 0),
+                    padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
                     sliver: SliverToBoxAdapter(
-                      key: _recentSectionKey,
+                      key: _latestSectionKey,
                       child: const OpportunitySectionHeader(
-                        title: 'Recently Posted',
+                        title: 'Latest Opportunities',
                         subtitle:
-                            'Fresh listings curated for quick exploration',
+                            'Fresh roles, internships, and sponsored tracks for quick exploration',
                         accentColor: OpportunityDashboardPalette.success,
                       ),
                     ),
                   ),
                   if (visibleOpportunities.isEmpty)
                     SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
+                      padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
                       sliver: SliverToBoxAdapter(
                         child: OpportunityDashboardEmptyState(
                           icon: Icons.search_off_rounded,
-                          title: 'No recent opportunities found',
+                          title: 'No opportunities found',
                           subtitle:
                               'Try adjusting your search or filters to uncover more matches.',
                           color: OpportunityDashboardPalette.success,
@@ -1010,42 +1399,45 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                     )
                   else
                     SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
+                      padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
                       sliver: SliverList.separated(
                         itemCount: visibleOpportunities.length,
                         separatorBuilder: (context, index) =>
-                            const SizedBox(height: 12),
+                            const SizedBox(height: 10),
                         itemBuilder: (context, index) {
                           final opportunity = visibleOpportunities[index];
                           return OpportunityListTile(
-                            compact: true,
                             opportunity: opportunity,
-                            metaText: _relativePostedTime(opportunity),
-                            supportingText: opportunity.location.isNotEmpty
-                                ? opportunity.location
-                                : _typeLabel(opportunity.type),
+                            companyLocationText: _companyLocationText(
+                              opportunity,
+                            ),
+                            statusItems: _latestStatusItems(opportunity),
                             badgeText: _isNewOpportunity(opportunity)
                                 ? 'NEW'
                                 : null,
                             badgeColor: OpportunityDashboardPalette.success,
+                            isSaved: savedIds.contains(opportunity.id),
+                            isBusy: savedProvider.isLoading,
                             onTap: () => _openOpportunity(opportunity),
+                            onToggleSaved: () =>
+                                _toggleSavedOpportunity(opportunity),
                           );
                         },
                       ),
                     ),
                   SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(20, 30, 20, 0),
+                    padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
                     sliver: SliverToBoxAdapter(
                       child: const OpportunitySectionHeader(
                         title: 'Closing Soon',
                         subtitle:
-                            'Prioritize urgent applications before they expire',
+                            'Urgent applications that need attention before they expire',
                         accentColor: OpportunityDashboardPalette.error,
                       ),
                     ),
                   ),
                   SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
+                    padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
                     sliver: closingSoonItems.isEmpty
                         ? SliverToBoxAdapter(
                             child: OpportunityDashboardEmptyState(
@@ -1059,21 +1451,27 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                         : SliverList.separated(
                             itemCount: closingSoonItems.length,
                             separatorBuilder: (context, index) =>
-                                const SizedBox(height: 12),
+                                const SizedBox(height: 10),
                             itemBuilder: (context, index) {
                               final opportunity = closingSoonItems[index];
-                              final badgeColor = _closingSoonColor(opportunity);
+                              final urgencyColor = _closingSoonColor(
+                                opportunity,
+                              );
 
                               return OpportunityListTile(
-                                compact: true,
                                 opportunity: opportunity,
-                                metaText: _closingSoonText(opportunity),
-                                supportingText: opportunity.deadline.isEmpty
-                                    ? opportunity.location
-                                    : 'Deadline ${_formatDeadlineDisplay(opportunity.deadline)}',
+                                companyLocationText: _companyLocationText(
+                                  opportunity,
+                                ),
+                                statusItems: [_closingSoonText(opportunity)],
                                 badgeText: 'URGENT',
-                                badgeColor: badgeColor,
+                                badgeColor: urgencyColor,
+                                statusColor: urgencyColor,
+                                isSaved: savedIds.contains(opportunity.id),
+                                isBusy: savedProvider.isLoading,
                                 onTap: () => _openOpportunity(opportunity),
+                                onToggleSaved: () =>
+                                    _toggleSavedOpportunity(opportunity),
                               );
                             },
                           ),
@@ -1085,13 +1483,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
   }
 }
 
-enum _OpportunityDashboardFilter {
-  all,
-  jobsAndInternships,
-  job,
-  internship,
-  sponsored,
-}
+enum _OpportunityDashboardFilter { all, job, internship, sponsored }
 
 class _DashboardFilterDefinition {
   final _OpportunityDashboardFilter value;
@@ -1110,11 +1502,6 @@ const List<_DashboardFilterDefinition> _dashboardFilters = [
     value: _OpportunityDashboardFilter.all,
     label: 'All',
     icon: Icons.apps_rounded,
-  ),
-  _DashboardFilterDefinition(
-    value: _OpportunityDashboardFilter.jobsAndInternships,
-    label: 'Jobs & Internships',
-    icon: Icons.explore_outlined,
   ),
   _DashboardFilterDefinition(
     value: _OpportunityDashboardFilter.job,

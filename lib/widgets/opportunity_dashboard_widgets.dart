@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../models/opportunity_model.dart';
 import '../utils/opportunity_dashboard_palette.dart';
+import '../utils/opportunity_type.dart';
 
 class OpportunitySectionHeader extends StatelessWidget {
   final String title;
@@ -34,8 +35,8 @@ class OpportunitySectionHeader extends StatelessWidget {
                 children: [
                   if (accentColor != null) ...[
                     Container(
-                      width: 10,
-                      height: 10,
+                      width: 8,
+                      height: 8,
                       decoration: BoxDecoration(
                         color: accentColor,
                         shape: BoxShape.circle,
@@ -47,7 +48,7 @@ class OpportunitySectionHeader extends StatelessWidget {
                     child: Text(
                       title,
                       style: GoogleFonts.poppins(
-                        fontSize: 20,
+                        fontSize: 18,
                         fontWeight: FontWeight.w700,
                         color: OpportunityDashboardPalette.textPrimary,
                       ),
@@ -55,13 +56,13 @@ class OpportunitySectionHeader extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 6),
+              const SizedBox(height: 4),
               Text(
                 subtitle,
                 style: GoogleFonts.poppins(
-                  fontSize: 13,
-                  color: OpportunityDashboardPalette.textSecondary,
+                  fontSize: 12,
                   height: 1.45,
+                  color: OpportunityDashboardPalette.textSecondary,
                 ),
               ),
             ],
@@ -72,13 +73,78 @@ class OpportunitySectionHeader extends StatelessWidget {
             onPressed: onAction,
             style: TextButton.styleFrom(
               foregroundColor: OpportunityDashboardPalette.primary,
+              minimumSize: Size.zero,
+              padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 6),
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               textStyle: GoogleFonts.poppins(
-                fontSize: 13,
+                fontSize: 12,
                 fontWeight: FontWeight.w600,
               ),
             ),
             child: Text(actionLabel!),
           ),
+      ],
+    );
+  }
+}
+
+class TrendingOpportunitySectionHeader extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final String actionLabel;
+  final VoidCallback onAction;
+
+  const TrendingOpportunitySectionHeader({
+    super.key,
+    required this.title,
+    required this.subtitle,
+    required this.actionLabel,
+    required this.onAction,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: GoogleFonts.poppins(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: OpportunityDashboardPalette.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 3),
+              Text(
+                subtitle,
+                style: GoogleFonts.poppins(
+                  fontSize: 11.5,
+                  height: 1.35,
+                  color: OpportunityDashboardPalette.textSecondary,
+                ),
+              ),
+            ],
+          ),
+        ),
+        TextButton(
+          onPressed: onAction,
+          style: TextButton.styleFrom(
+            foregroundColor: OpportunityDashboardPalette.primary,
+            minimumSize: Size.zero,
+            padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            textStyle: GoogleFonts.poppins(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          child: Text(actionLabel),
+        ),
       ],
     );
   }
@@ -106,7 +172,7 @@ class OpportunityHeroCard extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(28),
+        borderRadius: BorderRadius.circular(30),
         child: Ink(
           decoration: BoxDecoration(
             gradient: const LinearGradient(
@@ -117,129 +183,137 @@ class OpportunityHeroCard extends StatelessWidget {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
-            borderRadius: BorderRadius.circular(28),
+            borderRadius: BorderRadius.circular(30),
             boxShadow: [
               BoxShadow(
                 color: OpportunityDashboardPalette.primary.withValues(
                   alpha: 0.24,
                 ),
-                blurRadius: 24,
-                offset: const Offset(0, 14),
+                blurRadius: 28,
+                offset: const Offset(0, 16),
               ),
             ],
           ),
-          child: Stack(
-            children: [
-              Positioned(
-                top: -28,
-                right: -18,
-                child: Container(
-                  width: 132,
-                  height: 132,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.09),
-                    shape: BoxShape.circle,
+          child: SizedBox(
+            height: 228,
+            child: Stack(
+              children: [
+                Positioned(
+                  top: -44,
+                  right: -26,
+                  child: Container(
+                    width: 168,
+                    height: 168,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.10),
+                      shape: BoxShape.circle,
+                    ),
                   ),
                 ),
-              ),
-              Positioned(
-                bottom: -22,
-                right: 44,
-                child: Container(
-                  width: 84,
-                  height: 84,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.08),
-                    shape: BoxShape.circle,
+                Positioned(
+                  bottom: -54,
+                  left: -16,
+                  child: Container(
+                    width: 132,
+                    height: 132,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.08),
+                      shape: BoxShape.circle,
+                    ),
                   ),
                 ),
-              ),
-              Positioned(
-                top: 24,
-                right: 24,
-                child: Container(
-                  width: 56,
-                  height: 56,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.16),
-                    borderRadius: BorderRadius.circular(18),
+                Positioned(
+                  top: 22,
+                  right: 22,
+                  child: Container(
+                    width: 58,
+                    height: 58,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.16),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Icon(icon, color: Colors.white, size: 30),
                   ),
-                  child: Icon(icon, color: Colors.white, size: 30),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(24, 24, 112, 24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.14),
-                        borderRadius: BorderRadius.circular(999),
-                      ),
-                      child: Text(
-                        'Featured pathway',
-                        style: GoogleFonts.poppins(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(22, 22, 104, 22),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 11,
+                          vertical: 6,
                         ),
-                      ),
-                    ),
-                    const SizedBox(height: 18),
-                    Text(
-                      title,
-                      style: GoogleFonts.poppins(
-                        fontSize: 26,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                        height: 1.15,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      subtitle,
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        height: 1.45,
-                        color: Colors.white.withValues(alpha: 0.82),
-                      ),
-                    ),
-                    const SizedBox(height: 22),
-                    Row(
-                      children: [
-                        Text(
-                          supportingLabel,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.14),
+                          borderRadius: BorderRadius.circular(999),
+                        ),
+                        child: Text(
+                          'Featured destination',
                           style: GoogleFonts.poppins(
-                            fontSize: 13,
+                            fontSize: 10,
                             fontWeight: FontWeight.w600,
                             color: Colors.white,
+                            letterSpacing: 0.2,
                           ),
                         ),
-                        const SizedBox(width: 10),
-                        Container(
-                          width: 30,
-                          height: 30,
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.14),
-                            borderRadius: BorderRadius.circular(999),
-                          ),
-                          child: const Icon(
-                            Icons.arrow_forward_rounded,
-                            color: Colors.white,
-                            size: 18,
-                          ),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        title,
+                        style: GoogleFonts.poppins(
+                          fontSize: 28,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                          height: 1.05,
                         ),
-                      ],
-                    ),
-                  ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        subtitle,
+                        style: GoogleFonts.poppins(
+                          fontSize: 13,
+                          height: 1.5,
+                          color: Colors.white.withValues(alpha: 0.84),
+                        ),
+                      ),
+                      const Spacer(),
+                      Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              supportingLabel,
+                              style: GoogleFonts.poppins(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Container(
+                            width: 30,
+                            height: 30,
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.14),
+                              borderRadius: BorderRadius.circular(999),
+                            ),
+                            child: const Icon(
+                              Icons.arrow_forward_rounded,
+                              color: Colors.white,
+                              size: 17,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -275,7 +349,7 @@ class OpportunityCategoryCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(24),
         child: Ink(
-          padding: const EdgeInsets.all(18),
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: backgroundColor,
             borderRadius: BorderRadius.circular(24),
@@ -288,43 +362,59 @@ class OpportunityCategoryCard extends StatelessWidget {
               ),
             ],
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Stack(
             children: [
-              Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
+              Positioned(
+                right: -10,
+                bottom: -10,
+                child: Icon(
+                  icon,
+                  size: 84,
                   color: color.withValues(alpha: 0.14),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Icon(icon, color: color, size: 24),
-              ),
-              const Spacer(),
-              Text(
-                title,
-                style: GoogleFonts.poppins(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: OpportunityDashboardPalette.textPrimary,
                 ),
               ),
-              const SizedBox(height: 4),
-              Text(
-                subtitle,
-                style: GoogleFonts.poppins(
-                  fontSize: 12,
-                  color: OpportunityDashboardPalette.textSecondary,
-                ),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                caption,
-                style: GoogleFonts.poppins(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                  color: color,
-                ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 38,
+                    height: 38,
+                    decoration: BoxDecoration(
+                      color: color.withValues(alpha: 0.16),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Icon(icon, color: color, size: 20),
+                  ),
+                  const Spacer(),
+                  Text(
+                    title,
+                    style: GoogleFonts.poppins(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: OpportunityDashboardPalette.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    subtitle,
+                    style: GoogleFonts.poppins(
+                      fontSize: 11.5,
+                      color: OpportunityDashboardPalette.textSecondary,
+                      height: 1.35,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    caption,
+                    style: GoogleFonts.poppins(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: color,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
               ),
             ],
           ),
@@ -354,17 +444,17 @@ class TrainingProgramsCard extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(26),
+        borderRadius: BorderRadius.circular(24),
         child: Ink(
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
           decoration: BoxDecoration(
             color: OpportunityDashboardPalette.surface,
-            borderRadius: BorderRadius.circular(26),
+            borderRadius: BorderRadius.circular(24),
             border: Border.all(color: OpportunityDashboardPalette.border),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.04),
-                blurRadius: 18,
+                blurRadius: 16,
                 offset: const Offset(0, 10),
               ),
             ],
@@ -372,21 +462,21 @@ class TrainingProgramsCard extends StatelessWidget {
           child: Row(
             children: [
               Container(
-                width: 54,
-                height: 54,
+                width: 48,
+                height: 48,
                 decoration: BoxDecoration(
                   color: OpportunityDashboardPalette.secondary.withValues(
-                    alpha: 0.14,
+                    alpha: 0.12,
                   ),
-                  borderRadius: BorderRadius.circular(18),
+                  shape: BoxShape.circle,
                 ),
                 child: const Icon(
                   Icons.cast_for_education_outlined,
                   color: OpportunityDashboardPalette.secondary,
-                  size: 28,
+                  size: 24,
                 ),
               ),
-              const SizedBox(width: 14),
+              const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -394,7 +484,7 @@ class TrainingProgramsCard extends StatelessWidget {
                     Text(
                       title,
                       style: GoogleFonts.poppins(
-                        fontSize: 17,
+                        fontSize: 15,
                         fontWeight: FontWeight.w700,
                         color: OpportunityDashboardPalette.textPrimary,
                       ),
@@ -403,18 +493,19 @@ class TrainingProgramsCard extends StatelessWidget {
                     Text(
                       subtitle,
                       style: GoogleFonts.poppins(
-                        fontSize: 13,
+                        fontSize: 12,
                         color: OpportunityDashboardPalette.textSecondary,
                       ),
                     ),
                   ],
                 ),
               ),
-              if (badgeLabel != null && badgeLabel!.isNotEmpty)
+              if (badgeLabel != null && badgeLabel!.isNotEmpty) ...[
+                const SizedBox(width: 10),
                 Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
+                    horizontal: 10,
+                    vertical: 7,
                   ),
                   decoration: BoxDecoration(
                     color: OpportunityDashboardPalette.background,
@@ -423,16 +514,17 @@ class TrainingProgramsCard extends StatelessWidget {
                   child: Text(
                     badgeLabel!,
                     style: GoogleFonts.poppins(
-                      fontSize: 11,
+                      fontSize: 10.5,
                       fontWeight: FontWeight.w600,
                       color: OpportunityDashboardPalette.textSecondary,
                     ),
                   ),
                 ),
+              ],
               const SizedBox(width: 10),
               const Icon(
                 Icons.arrow_forward_ios_rounded,
-                size: 16,
+                size: 15,
                 color: OpportunityDashboardPalette.textSecondary,
               ),
             ],
@@ -446,8 +538,9 @@ class TrainingProgramsCard extends StatelessWidget {
 class TrendingOpportunityCard extends StatelessWidget {
   final OpportunityModel opportunity;
   final String badgeLabel;
-  final String primaryMeta;
-  final String secondaryMeta;
+  final String? companyName;
+  final String? locationText;
+  final String? compensationText;
   final bool isSaved;
   final bool isBusy;
   final VoidCallback onTap;
@@ -457,32 +550,74 @@ class TrendingOpportunityCard extends StatelessWidget {
     super.key,
     required this.opportunity,
     required this.badgeLabel,
-    required this.primaryMeta,
-    required this.secondaryMeta,
+    required this.companyName,
+    required this.locationText,
+    required this.compensationText,
     required this.isSaved,
     required this.isBusy,
     required this.onTap,
     this.onToggleSaved,
   });
 
+  Color _badgeColor() {
+    final normalized = badgeLabel.trim().toUpperCase();
+
+    if (normalized.contains('TECH')) {
+      return OpportunityDashboardPalette.secondary;
+    }
+    if (normalized.contains('DESIGN')) {
+      return OpportunityDashboardPalette.primary;
+    }
+    if (normalized.contains('FINANCE')) {
+      return OpportunityDashboardPalette.warning;
+    }
+    if (normalized.contains('BUSINESS')) {
+      return OpportunityDashboardPalette.accent;
+    }
+
+    return switch (opportunity.type) {
+      'internship' => OpportunityDashboardPalette.secondary,
+      'sponsoring' => OpportunityDashboardPalette.accent,
+      _ => OpportunityDashboardPalette.primary,
+    };
+  }
+
+  String? _companyLocationLine() {
+    final parts = [
+      if (companyName != null && companyName!.trim().isNotEmpty)
+        companyName!.trim(),
+      if (locationText != null && locationText!.trim().isNotEmpty)
+        locationText!.trim(),
+    ];
+    if (parts.isEmpty) {
+      return null;
+    }
+
+    final separator = ' ${String.fromCharCode(8226)} ';
+    return parts.join(separator);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final badgeColor = _badgeColor();
+    final companyLine = _companyLocationLine();
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(26),
+        borderRadius: BorderRadius.circular(28),
         child: Ink(
-          width: 276,
-          padding: const EdgeInsets.all(18),
+          width: 224,
+          padding: const EdgeInsets.fromLTRB(16, 16, 14, 14),
           decoration: BoxDecoration(
             color: OpportunityDashboardPalette.surface,
-            borderRadius: BorderRadius.circular(26),
+            borderRadius: BorderRadius.circular(28),
             border: Border.all(color: OpportunityDashboardPalette.border),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
-                blurRadius: 18,
+                color: Colors.black.withValues(alpha: 0.045),
+                blurRadius: 22,
                 offset: const Offset(0, 10),
               ),
             ],
@@ -490,105 +625,88 @@ class TrendingOpportunityCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: OpportunityDashboardPalette.primary.withValues(
-                        alpha: 0.08,
-                      ),
-                      borderRadius: BorderRadius.circular(999),
-                    ),
-                    child: Text(
-                      badgeLabel,
-                      style: GoogleFonts.poppins(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700,
-                        color: OpportunityDashboardPalette.primary,
-                        letterSpacing: 0.4,
-                      ),
-                    ),
-                  ),
-                  const Spacer(),
-                  if (isBusy)
-                    const SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  else if (onToggleSaved != null)
-                    IconButton(
-                      onPressed: onToggleSaved,
-                      splashRadius: 20,
-                      visualDensity: VisualDensity.compact,
-                      icon: Icon(
-                        isSaved
-                            ? Icons.bookmark_rounded
-                            : Icons.bookmark_outline_rounded,
-                        color: isSaved
-                            ? OpportunityDashboardPalette.primary
-                            : OpportunityDashboardPalette.textSecondary,
-                      ),
-                    ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              _OpportunityCompanyAvatar(
+              _TrendingIdentityCircle(
                 companyName: opportunity.companyName,
                 logoUrl: opportunity.companyLogo,
+                fallbackIcon: OpportunityType.icon(opportunity.type),
               ),
-              const SizedBox(height: 14),
-              Text(
-                opportunity.title,
-                style: GoogleFonts.poppins(
-                  fontSize: 17,
-                  fontWeight: FontWeight.w700,
-                  color: OpportunityDashboardPalette.textPrimary,
-                  height: 1.25,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 10),
-              Text(
-                primaryMeta,
-                style: GoogleFonts.poppins(
-                  fontSize: 13,
-                  color: OpportunityDashboardPalette.textSecondary,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const Spacer(),
+              const SizedBox(height: 12),
               Container(
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: OpportunityDashboardPalette.background,
-                  borderRadius: BorderRadius.circular(18),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
                 ),
-                child: Row(
+                decoration: BoxDecoration(
+                  color: badgeColor.withValues(alpha: 0.16),
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: Text(
+                  badgeLabel,
+                  style: GoogleFonts.poppins(
+                    fontSize: 9.5,
+                    fontWeight: FontWeight.w700,
+                    color: badgeColor,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(
-                      Icons.schedule_outlined,
-                      size: 18,
-                      color: OpportunityDashboardPalette.textSecondary,
+                    Text(
+                      opportunity.title,
+                      style: GoogleFonts.poppins(
+                        fontSize: 14.5,
+                        fontWeight: FontWeight.w700,
+                        color: OpportunityDashboardPalette.textPrimary,
+                        height: 1.24,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        secondaryMeta,
+                    if (companyLine != null) ...[
+                      const SizedBox(height: 7),
+                      Text(
+                        companyLine,
                         style: GoogleFonts.poppins(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: OpportunityDashboardPalette.textPrimary,
+                          fontSize: 11,
+                          color: OpportunityDashboardPalette.textSecondary,
+                          height: 1.3,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
+                    ],
+                    const Spacer(),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        if (compensationText != null &&
+                            compensationText!.trim().isNotEmpty)
+                          Expanded(
+                            child: Text(
+                              compensationText!,
+                              style: GoogleFonts.poppins(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                                color: OpportunityDashboardPalette.primary,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          )
+                        else
+                          const Spacer(),
+                        _OpportunitySaveButton(
+                          isBusy: isBusy,
+                          isSaved: isSaved,
+                          onPressed: onToggleSaved,
+                          boxSize: 24,
+                          iconSize: 18,
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -601,30 +719,76 @@ class TrendingOpportunityCard extends StatelessWidget {
   }
 }
 
-class OpportunityListTile extends StatelessWidget {
-  final OpportunityModel opportunity;
-  final String metaText;
-  final String supportingText;
-  final String? badgeText;
-  final Color? badgeColor;
-  final bool compact;
-  final VoidCallback onTap;
+class _TrendingIdentityCircle extends StatelessWidget {
+  final String companyName;
+  final String logoUrl;
+  final IconData fallbackIcon;
 
-  const OpportunityListTile({
-    super.key,
-    required this.opportunity,
-    required this.metaText,
-    required this.supportingText,
-    required this.onTap,
-    this.badgeText,
-    this.badgeColor,
-    this.compact = false,
+  const _TrendingIdentityCircle({
+    required this.companyName,
+    required this.logoUrl,
+    required this.fallbackIcon,
   });
 
   @override
   Widget build(BuildContext context) {
-    final badgeBackground = (badgeColor ?? OpportunityDashboardPalette.primary)
-        .withValues(alpha: 0.12);
+    final hasLogo = logoUrl.trim().isNotEmpty;
+
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        _OpportunityCompanyAvatar(
+          companyName: companyName,
+          logoUrl: logoUrl,
+          size: 44,
+        ),
+        if (!hasLogo)
+          Positioned.fill(
+            child: IgnorePointer(
+              child: Center(
+                child: Icon(
+                  fallbackIcon,
+                  size: 15,
+                  color: OpportunityDashboardPalette.primary.withValues(
+                    alpha: 0.86,
+                  ),
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class OpportunityListTile extends StatelessWidget {
+  final OpportunityModel opportunity;
+  final String companyLocationText;
+  final List<String> statusItems;
+  final String? badgeText;
+  final Color? badgeColor;
+  final Color? statusColor;
+  final bool isSaved;
+  final bool isBusy;
+  final VoidCallback onTap;
+  final VoidCallback? onToggleSaved;
+
+  const OpportunityListTile({
+    super.key,
+    required this.opportunity,
+    required this.companyLocationText,
+    required this.statusItems,
+    required this.isSaved,
+    required this.isBusy,
+    required this.onTap,
+    this.onToggleSaved,
+    this.badgeText,
+    this.badgeColor,
+    this.statusColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     final effectiveBadgeColor =
         badgeColor ?? OpportunityDashboardPalette.primary;
 
@@ -634,7 +798,7 @@ class OpportunityListTile extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(22),
         child: Ink(
-          padding: EdgeInsets.all(compact ? 14 : 16),
+          padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
             color: OpportunityDashboardPalette.surface,
             borderRadius: BorderRadius.circular(22),
@@ -648,13 +812,14 @@ class OpportunityListTile extends StatelessWidget {
             ],
           ),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _OpportunityCompanyAvatar(
                 companyName: opportunity.companyName,
                 logoUrl: opportunity.companyLogo,
-                size: compact ? 44 : 48,
+                size: 46,
               ),
-              const SizedBox(width: 14),
+              const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -662,95 +827,75 @@ class OpportunityListTile extends StatelessWidget {
                     Text(
                       opportunity.title,
                       style: GoogleFonts.poppins(
-                        fontSize: compact ? 14 : 15,
+                        fontSize: 14.5,
                         fontWeight: FontWeight.w700,
                         color: OpportunityDashboardPalette.textPrimary,
+                        height: 1.2,
                       ),
-                      maxLines: 1,
+                      maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 5),
                     Text(
-                      opportunity.companyName.isNotEmpty
-                          ? opportunity.companyName
-                          : 'Opportunity',
+                      companyLocationText,
                       style: GoogleFonts.poppins(
-                        fontSize: 13,
+                        fontSize: 12,
                         color: OpportunityDashboardPalette.textSecondary,
+                        height: 1.4,
                       ),
-                      maxLines: 1,
+                      maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 6),
-                    Row(
-                      children: [
-                        Flexible(
-                          child: Text(
-                            metaText,
-                            style: GoogleFonts.poppins(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: OpportunityDashboardPalette.textPrimary,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
+                    if (statusItems.isNotEmpty) ...[
+                      const SizedBox(height: 8),
+                      Text(
+                        statusItems.join('  |  '),
+                        style: GoogleFonts.poppins(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          height: 1.4,
+                          color:
+                              statusColor ??
+                              OpportunityDashboardPalette.textSecondary,
                         ),
-                        const SizedBox(width: 8),
-                        Container(
-                          width: 4,
-                          height: 4,
-                          decoration: const BoxDecoration(
-                            color: OpportunityDashboardPalette.textSecondary,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            supportingText,
-                            style: GoogleFonts.poppins(
-                              fontSize: 12,
-                              color: OpportunityDashboardPalette.textSecondary,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
                   ],
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 8),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  if (badgeText != null && badgeText!.isNotEmpty)
+                  _OpportunitySaveButton(
+                    isBusy: isBusy,
+                    isSaved: isSaved,
+                    onPressed: onToggleSaved,
+                  ),
+                  if (badgeText != null && badgeText!.isNotEmpty) ...[
+                    const SizedBox(height: 10),
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 10,
-                        vertical: 6,
+                        vertical: 5,
                       ),
                       decoration: BoxDecoration(
-                        color: badgeBackground,
+                        color: effectiveBadgeColor.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(999),
                       ),
                       child: Text(
                         badgeText!,
                         style: GoogleFonts.poppins(
-                          fontSize: 10,
+                          fontSize: 9.5,
                           fontWeight: FontWeight.w700,
                           color: effectiveBadgeColor,
+                          letterSpacing: 0.2,
                         ),
                       ),
                     ),
-                  const SizedBox(height: 10),
-                  const Icon(
-                    Icons.arrow_forward_ios_rounded,
-                    size: 15,
-                    color: OpportunityDashboardPalette.textSecondary,
-                  ),
+                  ],
                 ],
               ),
             ],
@@ -779,7 +924,7 @@ class OpportunityDashboardEmptyState extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 26),
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 22),
       decoration: BoxDecoration(
         color: OpportunityDashboardPalette.surface,
         borderRadius: BorderRadius.circular(24),
@@ -788,19 +933,19 @@ class OpportunityDashboardEmptyState extends StatelessWidget {
       child: Column(
         children: [
           Container(
-            width: 54,
-            height: 54,
+            width: 50,
+            height: 50,
             decoration: BoxDecoration(
               color: color.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(18),
+              borderRadius: BorderRadius.circular(16),
             ),
-            child: Icon(icon, color: color, size: 28),
+            child: Icon(icon, color: color, size: 26),
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 12),
           Text(
             title,
             style: GoogleFonts.poppins(
-              fontSize: 15,
+              fontSize: 14.5,
               fontWeight: FontWeight.w700,
               color: OpportunityDashboardPalette.textPrimary,
             ),
@@ -810,7 +955,7 @@ class OpportunityDashboardEmptyState extends StatelessWidget {
           Text(
             subtitle,
             style: GoogleFonts.poppins(
-              fontSize: 12,
+              fontSize: 11.5,
               color: OpportunityDashboardPalette.textSecondary,
               height: 1.45,
             ),
@@ -831,48 +976,51 @@ class OpportunityDashboardLoadingSkeleton extends StatelessWidget {
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
       children: const [
-        _SkeletonLine(widthFactor: 0.34, height: 14),
-        SizedBox(height: 14),
-        _SkeletonLine(widthFactor: 0.62, height: 34),
-        SizedBox(height: 10),
-        _SkeletonLine(widthFactor: 0.95, height: 14),
+        _SkeletonLine(widthFactor: 0.44, height: 28),
+        SizedBox(height: 8),
+        _SkeletonLine(widthFactor: 0.86, height: 14),
         SizedBox(height: 6),
-        _SkeletonLine(widthFactor: 0.8, height: 14),
+        _SkeletonLine(widthFactor: 0.7, height: 14),
         SizedBox(height: 20),
-        _SkeletonBlock(height: 58, radius: 22),
+        _SkeletonBlock(height: 56, radius: 22),
+        SizedBox(height: 12),
+        _SkeletonLine(widthFactor: 0.78, height: 14),
         SizedBox(height: 20),
-        _SkeletonBlock(height: 220, radius: 28),
-        SizedBox(height: 16),
-        Row(
-          children: [
-            Expanded(child: _SkeletonBlock(height: 160, radius: 24)),
-            SizedBox(width: 14),
-            Expanded(child: _SkeletonBlock(height: 160, radius: 24)),
-          ],
-        ),
-        SizedBox(height: 16),
-        _SkeletonBlock(height: 90, radius: 24),
-        SizedBox(height: 28),
-        _SkeletonLine(widthFactor: 0.48, height: 20),
-        SizedBox(height: 6),
-        _SkeletonLine(widthFactor: 0.64, height: 14),
+        _SkeletonBlock(height: 228, radius: 30),
         SizedBox(height: 14),
         SizedBox(
-          height: 224,
+          height: 152,
           child: Row(
             children: [
-              Expanded(child: _SkeletonBlock(height: 224, radius: 26)),
-              SizedBox(width: 14),
-              Expanded(child: _SkeletonBlock(height: 224, radius: 26)),
+              Expanded(child: _SkeletonBlock(height: 152, radius: 24)),
+              SizedBox(width: 12),
+              Expanded(child: _SkeletonBlock(height: 152, radius: 24)),
+            ],
+          ),
+        ),
+        SizedBox(height: 14),
+        _SkeletonBlock(height: 82, radius: 24),
+        SizedBox(height: 28),
+        _SkeletonLine(widthFactor: 0.54, height: 18),
+        SizedBox(height: 6),
+        _SkeletonLine(widthFactor: 0.62, height: 14),
+        SizedBox(height: 14),
+        SizedBox(
+          height: 210,
+          child: Row(
+            children: [
+              Expanded(child: _SkeletonBlock(height: 210, radius: 24)),
+              SizedBox(width: 12),
+              Expanded(child: _SkeletonBlock(height: 210, radius: 24)),
             ],
           ),
         ),
         SizedBox(height: 28),
-        _SkeletonLine(widthFactor: 0.42, height: 20),
+        _SkeletonLine(widthFactor: 0.48, height: 18),
         SizedBox(height: 14),
-        _SkeletonBlock(height: 88, radius: 22),
+        _SkeletonBlock(height: 94, radius: 22),
         SizedBox(height: 12),
-        _SkeletonBlock(height: 88, radius: 22),
+        _SkeletonBlock(height: 94, radius: 22),
       ],
     );
   }
@@ -886,21 +1034,20 @@ class _OpportunityCompanyAvatar extends StatelessWidget {
   const _OpportunityCompanyAvatar({
     required this.companyName,
     required this.logoUrl,
-    this.size = 52,
+    this.size = 48,
   });
 
   @override
   Widget build(BuildContext context) {
-    final label = companyName.trim().isNotEmpty
-        ? companyName.trim()[0].toUpperCase()
-        : 'A';
+    final trimmedName = companyName.trim();
+    final label = trimmedName.isNotEmpty ? trimmedName[0].toUpperCase() : 'A';
 
     return Container(
       width: size,
       height: size,
       decoration: BoxDecoration(
         color: OpportunityDashboardPalette.primary.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(size * 0.34),
+        shape: BoxShape.circle,
       ),
       clipBehavior: Clip.antiAlias,
       child: logoUrl.trim().isEmpty
@@ -908,7 +1055,7 @@ class _OpportunityCompanyAvatar extends StatelessWidget {
               child: Text(
                 label,
                 style: GoogleFonts.poppins(
-                  fontSize: size * 0.36,
+                  fontSize: size * 0.34,
                   fontWeight: FontWeight.w700,
                   color: OpportunityDashboardPalette.primary,
                 ),
@@ -921,7 +1068,7 @@ class _OpportunityCompanyAvatar extends StatelessWidget {
                 child: Text(
                   label,
                   style: GoogleFonts.poppins(
-                    fontSize: size * 0.36,
+                    fontSize: size * 0.34,
                     fontWeight: FontWeight.w700,
                     color: OpportunityDashboardPalette.primary,
                   ),
@@ -929,12 +1076,65 @@ class _OpportunityCompanyAvatar extends StatelessWidget {
               ),
               placeholder: (context, url) => Center(
                 child: SizedBox(
-                  width: size * 0.34,
-                  height: size * 0.34,
+                  width: size * 0.32,
+                  height: size * 0.32,
                   child: const CircularProgressIndicator(strokeWidth: 2),
                 ),
               ),
             ),
+    );
+  }
+}
+
+class _OpportunitySaveButton extends StatelessWidget {
+  final bool isBusy;
+  final bool isSaved;
+  final VoidCallback? onPressed;
+  final double boxSize;
+  final double iconSize;
+
+  const _OpportunitySaveButton({
+    required this.isBusy,
+    required this.isSaved,
+    required this.onPressed,
+    this.boxSize = 28,
+    this.iconSize = 20,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (isBusy) {
+      return SizedBox(
+        width: boxSize,
+        height: boxSize,
+        child: Center(
+          child: SizedBox(
+            width: iconSize - 2,
+            height: iconSize - 2,
+            child: const CircularProgressIndicator(strokeWidth: 2),
+          ),
+        ),
+      );
+    }
+
+    if (onPressed == null) {
+      return SizedBox(width: boxSize, height: boxSize);
+    }
+
+    return IconButton(
+      onPressed: onPressed,
+      tooltip: isSaved ? 'Remove bookmark' : 'Save opportunity',
+      padding: EdgeInsets.zero,
+      constraints: BoxConstraints.tightFor(width: boxSize, height: boxSize),
+      splashRadius: boxSize * 0.7,
+      visualDensity: VisualDensity.compact,
+      icon: Icon(
+        isSaved ? Icons.bookmark_rounded : Icons.bookmark_outline_rounded,
+        size: iconSize,
+        color: isSaved
+            ? OpportunityDashboardPalette.primary
+            : OpportunityDashboardPalette.textSecondary,
+      ),
     );
   }
 }
