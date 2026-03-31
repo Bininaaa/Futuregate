@@ -281,11 +281,11 @@ class TrainingCourseCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: Colors.transparent,
-      borderRadius: BorderRadius.circular(28),
+      borderRadius: BorderRadius.circular(24),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(28),
+        borderRadius: BorderRadius.circular(24),
         child: Ink(
           decoration: BoxDecoration(
             color: OpportunityDashboardPalette.surface,
@@ -308,96 +308,167 @@ class TrainingCourseCard extends StatelessWidget {
             children: [
               _TrainingCardImage(data: data),
               Padding(
-                padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        TrainingProviderAvatar(
-                          providerName: data.providerName,
-                          providerLogoUrl: data.providerLogoUrl,
-                          accentColor: data.accentColor,
+                padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: data.accentColor.withValues(alpha: 0.09),
+                    ),
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        Colors.white,
+                        data.accentColor.withValues(alpha: 0.04),
+                        data.secondaryAccentColor.withValues(alpha: 0.07),
+                      ],
+                      stops: const [0.0, 0.56, 1.0],
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: data.secondaryAccentColor.withValues(
+                          alpha: 0.05,
                         ),
-                        const SizedBox(width: 9),
-                        Expanded(
-                          child: Text(
-                            data.providerName,
-                            style: GoogleFonts.poppins(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
-                              color: OpportunityDashboardPalette.textSecondary,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                        blurRadius: 16,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  child: Stack(
+                    children: [
+                      Positioned(
+                        top: -18,
+                        right: -8,
+                        child: Container(
+                          width: 82,
+                          height: 82,
+                          decoration: BoxDecoration(
+                            color: data.accentColor.withValues(alpha: 0.07),
+                            shape: BoxShape.circle,
                           ),
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      data.title,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.poppins(
-                        fontSize: 15.5,
-                        fontWeight: FontWeight.w700,
-                        height: 1.2,
-                        color: OpportunityDashboardPalette.textPrimary,
                       ),
-                    ),
-                    const SizedBox(height: 10),
-                    Wrap(
-                      spacing: 10,
-                      runSpacing: 6,
-                      children: [
-                        _TrainingMetaItem(
-                          icon: Icons.schedule_rounded,
-                          label: data.durationLabel,
+                      Positioned(
+                        bottom: -24,
+                        left: -14,
+                        child: Container(
+                          width: 90,
+                          height: 90,
+                          decoration: BoxDecoration(
+                            color: data.secondaryAccentColor.withValues(
+                              alpha: 0.06,
+                            ),
+                            shape: BoxShape.circle,
+                          ),
                         ),
-                        _TrainingMetaItem(
-                          icon: Icons.bar_chart_rounded,
-                          label: data.levelLabel,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 14),
-                    Row(
-                      children: [
-                        if (data.ratingLabel != null &&
-                            data.ratingLabel!.trim().isNotEmpty)
-                          Expanded(
-                            child: Row(
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Icon(
-                                  Icons.star_rounded,
-                                  size: 15,
-                                  color: OpportunityDashboardPalette.warning,
-                                ),
-                                const SizedBox(width: 5),
-                                Flexible(
-                                  child: Text(
-                                    data.ratingLabel!,
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600,
-                                      color: OpportunityDashboardPalette
-                                          .textSecondary,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
+                                Expanded(
+                                  child: Row(
+                                    children: [
+                                      TrainingProviderAvatar(
+                                        providerName: data.providerName,
+                                        providerLogoUrl: data.providerLogoUrl,
+                                        accentColor: data.accentColor,
+                                      ),
+                                      const SizedBox(width: 9),
+                                      Expanded(
+                                        child: Text(
+                                          data.providerName,
+                                          style: GoogleFonts.poppins(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w500,
+                                            color: OpportunityDashboardPalette
+                                                .textSecondary,
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ],
                                   ),
+                                ),
+                                const SizedBox(width: 10),
+                                _TrainingInfoSticker(data: data),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              data.title,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.poppins(
+                                fontSize: 15.5,
+                                fontWeight: FontWeight.w700,
+                                height: 1.2,
+                                color: OpportunityDashboardPalette.textPrimary,
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Wrap(
+                              spacing: 10,
+                              runSpacing: 6,
+                              children: [
+                                _TrainingMetaItem(
+                                  icon: Icons.schedule_rounded,
+                                  label: data.durationLabel,
+                                ),
+                                _TrainingMetaItem(
+                                  icon: Icons.bar_chart_rounded,
+                                  label: data.levelLabel,
                                 ),
                               ],
                             ),
-                          )
-                        else
-                          const Spacer(),
-                        const SizedBox(width: 10),
-                        _StartTrainingButton(onTap: onStart),
-                      ],
-                    ),
-                  ],
+                            const SizedBox(height: 14),
+                            Row(
+                              children: [
+                                if (data.ratingLabel != null &&
+                                    data.ratingLabel!.trim().isNotEmpty)
+                                  Expanded(
+                                    child: Row(
+                                      children: [
+                                        const Icon(
+                                          Icons.star_rounded,
+                                          size: 15,
+                                          color: OpportunityDashboardPalette
+                                              .warning,
+                                        ),
+                                        const SizedBox(width: 5),
+                                        Flexible(
+                                          child: Text(
+                                            data.ratingLabel!,
+                                            style: GoogleFonts.poppins(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w600,
+                                              color: OpportunityDashboardPalette
+                                                  .textSecondary,
+                                            ),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                else
+                                  const Spacer(),
+                                const SizedBox(width: 10),
+                                _StartTrainingButton(onTap: onStart),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -1124,6 +1195,85 @@ class _TrainingImageBadge extends StatelessWidget {
   }
 }
 
+class _TrainingInfoSticker extends StatelessWidget {
+  final TrainingCourseCardData data;
+
+  const _TrainingInfoSticker({required this.data});
+
+  _TrainingStickerData _stickerData() {
+    switch (data.trainingType.trim().toLowerCase()) {
+      case 'video':
+        return const _TrainingStickerData(
+          label: 'VIDEO',
+          icon: Icons.play_circle_fill_rounded,
+        );
+      case 'book':
+        return const _TrainingStickerData(
+          label: 'BOOK',
+          icon: Icons.auto_stories_rounded,
+        );
+      case 'file':
+        return const _TrainingStickerData(
+          label: 'GUIDE',
+          icon: Icons.description_rounded,
+        );
+      case 'course':
+        return const _TrainingStickerData(
+          label: 'COURSE',
+          icon: Icons.cast_for_education_rounded,
+        );
+      default:
+        return const _TrainingStickerData(
+          label: 'TRAIN',
+          icon: Icons.school_rounded,
+        );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final sticker = _stickerData();
+
+    return Transform.rotate(
+      angle: -0.045,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(14),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [data.accentColor, data.secondaryAccentColor],
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: data.secondaryAccentColor.withValues(alpha: 0.18),
+              blurRadius: 14,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(sticker.icon, size: 13.5, color: Colors.white),
+            const SizedBox(width: 6),
+            Text(
+              sticker.label,
+              style: GoogleFonts.poppins(
+                fontSize: 10,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.35,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _TrainingMetaItem extends StatelessWidget {
   final IconData icon;
   final String label;
@@ -1288,4 +1438,11 @@ class _SkeletonBlock extends StatelessWidget {
       ),
     );
   }
+}
+
+class _TrainingStickerData {
+  final String label;
+  final IconData icon;
+
+  const _TrainingStickerData({required this.label, required this.icon});
 }
