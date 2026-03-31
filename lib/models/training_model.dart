@@ -5,6 +5,7 @@ class TrainingModel {
   final String title;
   final String description;
   final String provider;
+  final String providerLogo;
   final String duration;
   final String level;
   final String link;
@@ -21,12 +22,18 @@ class TrainingModel {
   final String previewLink;
   final bool isApproved;
   final bool isFeatured;
+  final double? rating;
+  final int? learnerCount;
+  final String learnerCountLabel;
+  final bool? isFree;
+  final bool? hasCertificate;
 
   TrainingModel({
     required this.id,
     required this.title,
     required this.description,
     required this.provider,
+    this.providerLogo = '',
     required this.duration,
     required this.level,
     required this.link,
@@ -42,14 +49,25 @@ class TrainingModel {
     this.previewLink = '',
     this.isApproved = true,
     this.isFeatured = false,
+    this.rating,
+    this.learnerCount,
+    this.learnerCountLabel = '',
+    this.isFree,
+    this.hasCertificate,
   });
 
   factory TrainingModel.fromMap(Map<String, dynamic> map) {
+    final rawLearnerCount =
+        map['learnerCount'] ?? map['enrolledCount'] ?? map['studentsCount'];
+    final parsedLearnerCount = _parseLearnerCount(rawLearnerCount);
+
     return TrainingModel(
       id: (map['id'] ?? '').toString(),
       title: (map['title'] ?? '').toString(),
       description: (map['description'] ?? '').toString(),
       provider: (map['provider'] ?? '').toString(),
+      providerLogo: (map['providerLogo'] ?? map['providerLogoUrl'] ?? '')
+          .toString(),
       duration: (map['duration'] ?? '').toString(),
       level: (map['level'] ?? '').toString(),
       link: (map['link'] ?? '').toString(),
@@ -69,6 +87,18 @@ class TrainingModel {
       previewLink: (map['previewLink'] ?? '').toString(),
       isApproved: map['isApproved'] is bool ? map['isApproved'] as bool : true,
       isFeatured: map['isFeatured'] is bool ? map['isFeatured'] as bool : false,
+      rating: _parseDouble(map['rating']),
+      learnerCount: parsedLearnerCount,
+      learnerCountLabel: _parseLearnerCountLabel(
+        map['learnerCountLabel'] ??
+            map['enrolledCountLabel'] ??
+            rawLearnerCount,
+        fallbackCount: parsedLearnerCount,
+      ),
+      isFree: _parseBool(map['isFree'] ?? map['free']),
+      hasCertificate: _parseBool(
+        map['hasCertificate'] ?? map['isCertified'] ?? map['certified'],
+      ),
     );
   }
 
@@ -78,6 +108,7 @@ class TrainingModel {
       'title': title,
       'description': description,
       'provider': provider,
+      'providerLogo': providerLogo,
       'duration': duration,
       'level': level,
       'link': link,
@@ -93,6 +124,11 @@ class TrainingModel {
       'previewLink': previewLink,
       'isApproved': isApproved,
       'isFeatured': isFeatured,
+      'rating': rating,
+      'learnerCount': learnerCount,
+      'learnerCountLabel': learnerCountLabel,
+      'isFree': isFree,
+      'hasCertificate': hasCertificate,
     };
   }
 
@@ -103,6 +139,7 @@ class TrainingModel {
     String? title,
     String? description,
     String? provider,
+    String? providerLogo,
     String? duration,
     String? level,
     String? link,
@@ -118,12 +155,18 @@ class TrainingModel {
     String? previewLink,
     bool? isApproved,
     bool? isFeatured,
+    double? rating,
+    int? learnerCount,
+    String? learnerCountLabel,
+    bool? isFree,
+    bool? hasCertificate,
   }) {
     return TrainingModel(
       id: id ?? this.id,
       title: title ?? this.title,
       description: description ?? this.description,
       provider: provider ?? this.provider,
+      providerLogo: providerLogo ?? this.providerLogo,
       duration: duration ?? this.duration,
       level: level ?? this.level,
       link: link ?? this.link,
@@ -139,6 +182,83 @@ class TrainingModel {
       previewLink: previewLink ?? this.previewLink,
       isApproved: isApproved ?? this.isApproved,
       isFeatured: isFeatured ?? this.isFeatured,
+      rating: rating ?? this.rating,
+      learnerCount: learnerCount ?? this.learnerCount,
+      learnerCountLabel: learnerCountLabel ?? this.learnerCountLabel,
+      isFree: isFree ?? this.isFree,
+      hasCertificate: hasCertificate ?? this.hasCertificate,
     );
+  }
+
+  static double? _parseDouble(dynamic value) {
+    if (value == null) {
+      return null;
+    }
+    if (value is num) {
+      return value.toDouble();
+    }
+    return double.tryParse(value.toString().trim());
+  }
+
+  static int? _parseLearnerCount(dynamic value) {
+    if (value == null) {
+      return null;
+    }
+    if (value is int) {
+      return value;
+    }
+    if (value is num) {
+      return value.toInt();
+    }
+
+    final normalized = value.toString().trim().toLowerCase();
+    if (RegExp(r'[a-z]').hasMatch(normalized)) {
+      return null;
+    }
+
+    final digitsOnly = normalized.replaceAll(RegExp(r'[^0-9]'), '');
+    if (digitsOnly.isEmpty) {
+      return null;
+    }
+
+    return int.tryParse(digitsOnly);
+  }
+
+  static String _parseLearnerCountLabel(dynamic value, {int? fallbackCount}) {
+    final direct = value?.toString().trim() ?? '';
+    if (direct.isNotEmpty) {
+      return direct;
+    }
+    if (fallbackCount == null || fallbackCount <= 0) {
+      return '';
+    }
+    if (fallbackCount >= 1000000) {
+      return '${(fallbackCount / 1000000).toStringAsFixed(1)}m+';
+    }
+    if (fallbackCount >= 1000) {
+      final inThousands = fallbackCount / 1000;
+      final hasFraction = fallbackCount % 1000 != 0;
+      return '${inThousands.toStringAsFixed(hasFraction ? 1 : 0)}k+';
+    }
+    return '$fallbackCount+';
+  }
+
+  static bool? _parseBool(dynamic value) {
+    if (value == null) {
+      return null;
+    }
+    if (value is bool) {
+      return value;
+    }
+
+    final normalized = value.toString().trim().toLowerCase();
+    if (normalized == 'true' || normalized == '1' || normalized == 'yes') {
+      return true;
+    }
+    if (normalized == 'false' || normalized == '0' || normalized == 'no') {
+      return false;
+    }
+
+    return null;
   }
 }

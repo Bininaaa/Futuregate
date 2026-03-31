@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -6,7 +5,8 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../models/training_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/training_provider.dart';
-import '../../widgets/training_resource_card.dart';
+import '../../utils/opportunity_dashboard_palette.dart';
+import '../../widgets/training_programs_widgets.dart';
 import 'saved_trainings_screen.dart';
 
 class TrainingsScreen extends StatefulWidget {
@@ -18,9 +18,9 @@ class TrainingsScreen extends StatefulWidget {
 
 class _TrainingsScreenState extends State<TrainingsScreen> {
   final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode();
+  final GlobalKey _searchSectionKey = GlobalKey();
 
-  String _selectedFilter = 'all';
-  String _selectedDomain = 'All';
   String _searchText = '';
 
   @override
@@ -32,13 +32,21 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
       if (!mounted) {
         return;
       }
-
       await _refreshData();
     });
   }
 
+  @override
+  void dispose() {
+    _searchController
+      ..removeListener(_handleSearchChanged)
+      ..dispose();
+    _searchFocusNode.dispose();
+    super.dispose();
+  }
+
   void _handleSearchChanged() {
-    final nextValue = _searchController.text;
+    final nextValue = _searchController.text.trim();
     if (nextValue == _searchText) {
       return;
     }
@@ -63,11 +71,14 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
     }
   }
 
-  Future<void> _openLink(String link) async {
+  Future<void> _openLink(
+    String link, {
+    String emptyMessage = 'No training link is available for this item yet',
+  }) async {
     if (link.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No link available for this item')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(emptyMessage)));
       return;
     }
 
@@ -75,68 +86,187 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
     if (uri == null) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Invalid link')));
+      ).showSnackBar(const SnackBar(content: Text('Invalid training link')));
       return;
     }
 
     final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
 
     if (!launched && mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Could not open the link')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not open the training link')),
+      );
     }
   }
 
-  Future<void> _toggleSaved(TrainingModel training) async {
-    final authProvider = context.read<AuthProvider>();
-    final trainingProvider = context.read<TrainingProvider>();
-    final messenger = ScaffoldMessenger.of(context);
-    final uid = authProvider.userModel?.uid;
-
-    if (uid == null || uid.isEmpty) {
-      messenger.showSnackBar(
-        const SnackBar(
-          content: Text('You must be logged in to save resources'),
+  void _showPlaceholderMessage() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text(
+          'Live training links will appear here once your catalog is connected',
         ),
-      );
-      return;
-    }
-
-    final wasSaved = trainingProvider.isTrainingSaved(training.id);
-    final error = await trainingProvider.toggleSavedTraining(
-      userId: uid,
-      training: training,
+      ),
     );
+  }
 
+  Future<void> _focusSearchField() async {
+    await _ensureVisible(_searchSectionKey);
     if (!mounted) {
       return;
     }
+    _searchFocusNode.requestFocus();
+  }
 
-    if (error == null) {
-      messenger.showSnackBar(
-        SnackBar(
-          content: Text(
-            wasSaved ? 'Removed from saved resources' : 'Resource saved',
-          ),
-        ),
-      );
+  Future<void> _ensureVisible(GlobalKey key) async {
+    final targetContext = key.currentContext;
+    if (targetContext == null) {
       return;
     }
 
-    messenger.showSnackBar(SnackBar(content: Text(error)));
+    await Scrollable.ensureVisible(
+      targetContext,
+      duration: const Duration(milliseconds: 320),
+      curve: Curves.easeOutCubic,
+      alignment: 0.08,
+    );
   }
 
-  List<String> _availableDomains(List<TrainingModel> allItems) {
-    final domains =
-        allItems
-            .where((item) => item.isApproved && item.domain.trim().isNotEmpty)
-            .map((item) => item.domain.trim())
-            .toSet()
-            .toList()
-          ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+  Future<void> _openSavedTrainings() async {
+    await Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => const SavedTrainingsScreen()));
+  }
 
-    return ['All', ...domains];
+  Future<void> _showMenuSheet() async {
+    final canPop = Navigator.of(context).canPop();
+
+    await showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      builder: (sheetContext) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 18),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 48,
+                  height: 5,
+                  decoration: BoxDecoration(
+                    color: OpportunityDashboardPalette.border,
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                if (canPop)
+                  _TrainingMenuTile(
+                    icon: Icons.arrow_back_rounded,
+                    title: 'Back',
+                    onTap: () {
+                      Navigator.of(sheetContext).pop();
+                      Navigator.of(context).maybePop();
+                    },
+                  ),
+                _TrainingMenuTile(
+                  icon: Icons.bookmarks_outlined,
+                  title: 'Saved resources',
+                  onTap: () {
+                    Navigator.of(sheetContext).pop();
+                    _openSavedTrainings();
+                  },
+                ),
+                _TrainingMenuTile(
+                  icon: Icons.refresh_rounded,
+                  title: 'Refresh trainings',
+                  onTap: () {
+                    Navigator.of(sheetContext).pop();
+                    _refreshData();
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  List<TrainingModel> _sortedApprovedTrainings(List<TrainingModel> items) {
+    final approved = items.where((item) => item.isApproved).toList();
+
+    approved.sort((a, b) {
+      final priorityDiff = _trainingPriorityScore(
+        b,
+      ).compareTo(_trainingPriorityScore(a));
+      if (priorityDiff != 0) {
+        return priorityDiff;
+      }
+
+      final bCreated = b.createdAt?.millisecondsSinceEpoch ?? 0;
+      final aCreated = a.createdAt?.millisecondsSinceEpoch ?? 0;
+      return bCreated.compareTo(aCreated);
+    });
+
+    return approved;
+  }
+
+  int _trainingPriorityScore(TrainingModel training) {
+    var score = 0;
+
+    if (training.isFeatured) {
+      score += 120;
+    }
+
+    if (training.thumbnail.trim().isNotEmpty) {
+      score += 18;
+    }
+
+    if (training.rating != null && training.rating! > 0) {
+      score += 12;
+    }
+
+    if (training.providerLogo.trim().isNotEmpty) {
+      score += 8;
+    }
+
+    if (training.duration.trim().isNotEmpty) {
+      score += 6;
+    }
+
+    if (training.level.trim().isNotEmpty) {
+      score += 6;
+    }
+
+    if (_looksCertified(training)) {
+      score += 10;
+    }
+
+    switch (training.type.trim().toLowerCase()) {
+      case 'course':
+        score += 26;
+        break;
+      case 'training':
+        score += 22;
+        break;
+      case 'video':
+        score += 18;
+        break;
+      case 'book':
+        score += 14;
+        break;
+      case 'file':
+        score += 12;
+        break;
+      default:
+        score += 8;
+        break;
+    }
+
+    return score;
   }
 
   bool _matchesSearch(TrainingModel training) {
@@ -151,342 +281,488 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
       training.authors.join(' '),
       training.domain,
       training.description,
+      training.level,
+      training.duration,
+      training.type,
+      training.learnerCountLabel,
     ];
 
     return searchableValues.any((value) => value.toLowerCase().contains(query));
   }
 
-  List<TrainingModel> _filteredItems(
-    List<TrainingModel> allItems,
-    String activeDomain,
-  ) {
-    return allItems.where((item) {
-      if (!item.isApproved) {
-        return false;
-      }
-
-      if (_selectedFilter != 'all' && item.type != _selectedFilter) {
-        return false;
-      }
-
-      if (activeDomain != 'All' && item.domain.trim() != activeDomain) {
-        return false;
-      }
-
-      return _matchesSearch(item);
-    }).toList();
-  }
-
-  Widget _buildFilterChip(String value, String label) {
-    final isSelected = _selectedFilter == value;
-
-    return ChoiceChip(
-      label: Text(label),
-      selected: isSelected,
-      onSelected: (_) {
-        setState(() {
-          _selectedFilter = value;
-        });
-      },
-    );
-  }
-
-  Widget _buildSearchSection() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(14, 12, 14, 0),
-      child: TextField(
-        controller: _searchController,
-        decoration: InputDecoration(
-          hintText: 'Search by title, provider, authors, domain...',
-          prefixIcon: const Icon(Icons.search),
-          suffixIcon: _searchText.trim().isEmpty
-              ? null
-              : IconButton(
-                  tooltip: 'Clear search',
-                  onPressed: () {
-                    _searchController.clear();
-                  },
-                  icon: const Icon(Icons.close),
-                ),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
-          filled: true,
-          fillColor: Colors.white,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildFeaturedSection(
-    TrainingProvider provider,
-    List<TrainingModel> featuredItems,
-  ) {
-    if (featuredItems.isEmpty) {
-      return const SizedBox.shrink();
+  List<TrainingModel> _recommendedTrainings(List<TrainingModel> items) {
+    if (items.isEmpty) {
+      return const [];
     }
 
-    final uid = context.read<AuthProvider>().userModel?.uid ?? '';
-    final featuredHeight = featuredItems.any((item) => item.type == 'video')
-        ? 300.0
-        : 210.0;
+    final featured = items.where((item) => item.isFeatured).toList();
+    final remaining = items.where((item) => !item.isFeatured).toList();
+    final selected = <TrainingModel>[...featured.take(3)];
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(14, 16, 14, 0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Featured Resources',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            'Highlighted books, videos, and materials recommended for students.',
-            style: TextStyle(color: Colors.grey.shade700),
-          ),
-          const SizedBox(height: 12),
-          SizedBox(
-            height: featuredHeight,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              itemCount: featuredItems.length,
-              separatorBuilder: (context, index) => const SizedBox(width: 12),
-              itemBuilder: (context, index) {
-                final training = featuredItems[index];
-                final isSaved = provider.isTrainingSaved(training.id);
-                final isBusy = provider.isTrainingBusy(training.id);
+    final needed = 3 - selected.length;
+    if (needed > 0) {
+      selected.addAll(remaining.take(needed));
+    }
 
-                return Container(
-                  width: 280,
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.06),
-                        blurRadius: 10,
-                        offset: const Offset(0, 3),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildFeaturedMediaPreview(training),
-                      if (training.type == 'video') const SizedBox(height: 12),
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.amber.shade100,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Text(
-                              training.type.toUpperCase(),
-                              style: TextStyle(
-                                color: Colors.amber.shade900,
-                                fontSize: 11,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ),
-                          const Spacer(),
-                          if (uid.isNotEmpty)
-                            isBusy
-                                ? const SizedBox(
-                                    width: 20,
-                                    height: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                    ),
-                                  )
-                                : IconButton(
-                                    onPressed: () => _toggleSaved(training),
-                                    icon: Icon(
-                                      isSaved
-                                          ? Icons.bookmark_rounded
-                                          : Icons.bookmark_outline_rounded,
-                                      color: isSaved
-                                          ? const Color(0xFFFF8C00)
-                                          : Colors.grey.shade600,
-                                    ),
-                                  ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        training.title,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        training.authors.isNotEmpty
-                            ? training.authors.join(', ')
-                            : training.provider,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.grey.shade700,
-                        ),
-                      ),
-                      if (training.domain.trim().isNotEmpty) ...[
-                        const SizedBox(height: 8),
-                        Text(
-                          training.domain,
-                          style: const TextStyle(
-                            color: Colors.deepPurple,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                      const Spacer(),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton.icon(
-                          onPressed: () => _openLink(training.displayLink),
-                          icon: const Icon(Icons.open_in_new, size: 18),
-                          label: const Text('Open Resource'),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
+    return selected;
+  }
+
+  List<TrainingCourseCardData> _placeholderCards() {
+    return const [
+      TrainingCourseCardData(
+        id: 'placeholder-google-data',
+        title: 'Professional Data Analytics Certificate',
+        providerName: 'Google',
+        providerLogoUrl: '',
+        imageUrl: '',
+        trainingType: 'course',
+        durationLabel: '6 weeks',
+        levelLabel: 'Beginner',
+        ratingLabel: '4.8 (12k+)',
+        categoryLabel: 'Data & AI',
+        accentColor: OpportunityDashboardPalette.primary,
+        secondaryAccentColor: OpportunityDashboardPalette.primaryDark,
+        fallbackIcon: Icons.analytics_outlined,
+        badges: [
+          TrainingCourseBadgeData(
+            label: 'FREE',
+            backgroundColor: Color(0xFFDCFCE7),
+            foregroundColor: OpportunityDashboardPalette.success,
+          ),
+          TrainingCourseBadgeData(
+            label: 'CERTIFIED',
+            backgroundColor: Color(0xFFDBEAFE),
+            foregroundColor: OpportunityDashboardPalette.primaryDark,
           ),
         ],
+        isPlaceholder: true,
       ),
+      TrainingCourseCardData(
+        id: 'placeholder-yale-wellbeing',
+        title: 'The Science of Well-Being & Performance',
+        providerName: 'Yale University',
+        providerLogoUrl: '',
+        imageUrl: '',
+        trainingType: 'video',
+        durationLabel: '10 weeks',
+        levelLabel: 'Intermediate',
+        ratingLabel: '5.0 (45k+)',
+        categoryLabel: 'Health & Growth',
+        accentColor: OpportunityDashboardPalette.secondary,
+        secondaryAccentColor: OpportunityDashboardPalette.primary,
+        fallbackIcon: Icons.psychology_alt_outlined,
+        badges: [
+          TrainingCourseBadgeData(
+            label: 'CERTIFIED',
+            backgroundColor: Color(0xFFDBEAFE),
+            foregroundColor: OpportunityDashboardPalette.primaryDark,
+          ),
+        ],
+        isPlaceholder: true,
+      ),
+      TrainingCourseCardData(
+        id: 'placeholder-aws-cloud',
+        title: 'Cloud Foundations',
+        providerName: 'AWS Academy',
+        providerLogoUrl: '',
+        imageUrl: '',
+        trainingType: 'book',
+        durationLabel: '7 weeks',
+        levelLabel: 'Beginner',
+        ratingLabel: '4.7 (16k+)',
+        categoryLabel: 'Cloud & DevOps',
+        accentColor: OpportunityDashboardPalette.accent,
+        secondaryAccentColor: OpportunityDashboardPalette.primaryDark,
+        fallbackIcon: Icons.cloud_queue_rounded,
+        badges: [
+          TrainingCourseBadgeData(
+            label: 'FREE',
+            backgroundColor: Color(0xFFDCFCE7),
+            foregroundColor: OpportunityDashboardPalette.success,
+          ),
+        ],
+        isPlaceholder: true,
+      ),
+    ];
+  }
+
+  TrainingCourseCardData _mapTrainingToCardData(TrainingModel training) {
+    final accent = _accentFor(training);
+
+    return TrainingCourseCardData(
+      id: training.id,
+      title: training.title.trim().isEmpty
+          ? 'Training Program'
+          : training.title.trim(),
+      providerName: _providerName(training),
+      providerLogoUrl: training.providerLogo.trim(),
+      imageUrl: training.thumbnail.trim(),
+      trainingType: training.type.trim(),
+      durationLabel: _durationLabel(training),
+      levelLabel: _levelLabel(training),
+      ratingLabel: _ratingLabel(training),
+      categoryLabel: _categoryLabel(training),
+      accentColor: accent.primary,
+      secondaryAccentColor: accent.secondary,
+      fallbackIcon: _iconForTraining(training),
+      badges: _badgesForTraining(training),
+      isPlaceholder: false,
     );
   }
 
-  Widget _buildFeaturedMediaPreview(TrainingModel training) {
-    if (training.type != 'video') {
-      return const SizedBox.shrink();
+  _TrainingAccent _accentFor(TrainingModel training) {
+    const accents = [
+      _TrainingAccent(
+        primary: OpportunityDashboardPalette.primary,
+        secondary: OpportunityDashboardPalette.primaryDark,
+      ),
+      _TrainingAccent(
+        primary: OpportunityDashboardPalette.secondary,
+        secondary: OpportunityDashboardPalette.primary,
+      ),
+      _TrainingAccent(
+        primary: OpportunityDashboardPalette.accent,
+        secondary: OpportunityDashboardPalette.primaryDark,
+      ),
+      _TrainingAccent(
+        primary: OpportunityDashboardPalette.primaryDark,
+        secondary: OpportunityDashboardPalette.secondary,
+      ),
+      _TrainingAccent(
+        primary: OpportunityDashboardPalette.warning,
+        secondary: OpportunityDashboardPalette.accent,
+      ),
+    ];
+
+    final seed = '${training.title}${training.provider}${training.type}';
+    return accents[seed.hashCode.abs() % accents.length];
+  }
+
+  String _providerName(TrainingModel training) {
+    final provider = training.provider.trim();
+    if (provider.isNotEmpty) {
+      return provider;
     }
 
-    if (training.thumbnail.trim().isEmpty) {
-      return Container(
-        height: 96,
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: Colors.grey.shade200,
-          borderRadius: BorderRadius.circular(16),
+    final authorText = training.authors.join(', ').trim();
+    return authorText.isNotEmpty ? authorText : 'Training Provider';
+  }
+
+  String _durationLabel(TrainingModel training) {
+    final duration = training.duration.trim();
+    return duration.isNotEmpty ? duration : 'Flexible';
+  }
+
+  String _levelLabel(TrainingModel training) {
+    final level = training.level.trim();
+    return level.isNotEmpty ? _titleCase(level) : 'All levels';
+  }
+
+  String _categoryLabel(TrainingModel training) {
+    final domain = training.domain.trim();
+    if (domain.isNotEmpty) {
+      return domain;
+    }
+
+    return switch (training.type.trim().toLowerCase()) {
+      'course' => 'Career Course',
+      'video' => 'Video Lesson',
+      'book' => 'Reading Track',
+      'file' => 'Guide & Toolkit',
+      _ => 'Learning Path',
+    };
+  }
+
+  String? _ratingLabel(TrainingModel training) {
+    final rating = training.rating;
+    if (rating == null || rating <= 0) {
+      return null;
+    }
+
+    final learners = training.learnerCountLabel.trim();
+    final base = rating.toStringAsFixed(1);
+    return learners.isEmpty ? base : '$base ($learners)';
+  }
+
+  List<TrainingCourseBadgeData> _badgesForTraining(TrainingModel training) {
+    final badges = <TrainingCourseBadgeData>[];
+
+    if (training.isFree == true) {
+      badges.add(
+        const TrainingCourseBadgeData(
+          label: 'FREE',
+          backgroundColor: Color(0xFFDCFCE7),
+          foregroundColor: OpportunityDashboardPalette.success,
         ),
-        child: const Icon(Icons.play_circle_outline_rounded, size: 42),
       );
     }
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(16),
-      child: CachedNetworkImage(
-        imageUrl: training.thumbnail,
-        height: 96,
-        width: double.infinity,
-        fit: BoxFit.cover,
-        placeholder: (context, url) => Container(
-          height: 96,
-          color: Colors.grey.shade200,
-          child: const Center(child: CircularProgressIndicator()),
+    if (_looksCertified(training)) {
+      badges.add(
+        const TrainingCourseBadgeData(
+          label: 'CERTIFIED',
+          backgroundColor: Color(0xFFDBEAFE),
+          foregroundColor: OpportunityDashboardPalette.primaryDark,
         ),
-        errorWidget: (context, url, error) => Container(
-          height: 96,
-          color: Colors.grey.shade200,
-          child: const Icon(Icons.broken_image_outlined),
+      );
+    }
+
+    if (badges.isEmpty && training.isFeatured) {
+      badges.add(
+        const TrainingCourseBadgeData(
+          label: 'FEATURED',
+          backgroundColor: Color(0xFFFFEDD5),
+          foregroundColor: OpportunityDashboardPalette.accent,
         ),
-      ),
-    );
+      );
+    }
+
+    if (badges.isEmpty) {
+      final type = training.type.trim().toLowerCase();
+      switch (type) {
+        case 'course':
+          badges.add(
+            const TrainingCourseBadgeData(
+              label: 'COURSE',
+              backgroundColor: Color(0xFFDBEAFE),
+              foregroundColor: OpportunityDashboardPalette.primaryDark,
+            ),
+          );
+          break;
+        case 'video':
+          badges.add(
+            const TrainingCourseBadgeData(
+              label: 'VIDEO',
+              backgroundColor: Color(0xFFFEF3C7),
+              foregroundColor: OpportunityDashboardPalette.warning,
+            ),
+          );
+          break;
+        case 'book':
+          badges.add(
+            const TrainingCourseBadgeData(
+              label: 'BOOK',
+              backgroundColor: Color(0xFFFCE7F3),
+              foregroundColor: Color(0xFFBE185D),
+            ),
+          );
+          break;
+        case 'file':
+          badges.add(
+            const TrainingCourseBadgeData(
+              label: 'GUIDE',
+              backgroundColor: Color(0xFFEDE9FE),
+              foregroundColor: OpportunityDashboardPalette.primary,
+            ),
+          );
+          break;
+        default:
+          badges.add(
+            const TrainingCourseBadgeData(
+              label: 'PROGRAM',
+              backgroundColor: Color(0xFFEDE9FE),
+              foregroundColor: OpportunityDashboardPalette.primary,
+            ),
+          );
+          break;
+      }
+    }
+
+    return badges.take(2).toList();
   }
 
-  Widget _buildFiltersSection(List<String> domains, String activeDomain) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(14, 16, 14, 0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                _buildFilterChip('all', 'All'),
-                const SizedBox(width: 8),
-                _buildFilterChip('book', 'Books'),
-                const SizedBox(width: 8),
-                _buildFilterChip('training', 'Trainings'),
-                const SizedBox(width: 8),
-                _buildFilterChip('course', 'Courses'),
-                const SizedBox(width: 8),
-                _buildFilterChip('video', 'Videos'),
-                const SizedBox(width: 8),
-                _buildFilterChip('file', 'Files'),
-              ],
-            ),
-          ),
-          const SizedBox(height: 14),
-          DropdownButtonFormField<String>(
-            key: ValueKey('training-domain-$activeDomain-${domains.length}'),
-            initialValue: activeDomain,
-            decoration: InputDecoration(
-              labelText: 'Domain',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(14),
-              ),
-              filled: true,
-              fillColor: Colors.white,
-            ),
-            items: domains
-                .map(
-                  (domain) => DropdownMenuItem<String>(
-                    value: domain,
-                    child: Text(domain),
-                  ),
-                )
-                .toList(),
-            onChanged: (value) {
-              if (value == null) {
-                return;
-              }
+  bool _looksCertified(TrainingModel training) {
+    if (training.hasCertificate == true) {
+      return true;
+    }
 
-              setState(() {
-                _selectedDomain = value;
-              });
-            },
-          ),
-        ],
-      ),
-    );
+    final text = [
+      training.title,
+      training.description,
+      training.domain,
+    ].join(' ').toLowerCase();
+
+    return text.contains('certificate') ||
+        text.contains('certified') ||
+        text.contains('certification');
   }
 
-  Widget _buildEmptyState(bool hasFilters) {
-    return SliverFillRemaining(
-      hasScrollBody: false,
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.search_off_rounded,
-                size: 64,
-                color: Colors.grey.shade400,
-              ),
-              const SizedBox(height: 12),
-              Text(
-                hasFilters
-                    ? 'No resources match your current filters'
-                    : 'No training resources found',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16, color: Colors.grey.shade700),
+  IconData _iconForTraining(TrainingModel training) {
+    switch (training.type.trim().toLowerCase()) {
+      case 'course':
+        return Icons.cast_for_education_outlined;
+      case 'video':
+        return Icons.play_circle_outline_rounded;
+      case 'book':
+        return Icons.menu_book_rounded;
+      case 'file':
+        return Icons.description_outlined;
+      default:
+        return Icons.school_outlined;
+    }
+  }
+
+  String _titleCase(String value) {
+    if (value.trim().isEmpty) {
+      return value;
+    }
+
+    return value
+        .split(RegExp(r'\s+'))
+        .where((part) => part.isNotEmpty)
+        .map(
+          (part) =>
+              '${part[0].toUpperCase()}${part.substring(1).toLowerCase()}',
+        )
+        .join(' ');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final provider = context.watch<TrainingProvider>();
+    final approvedTrainings = _sortedApprovedTrainings(provider.trainings);
+    final recommendedTrainings = _recommendedTrainings(approvedTrainings);
+    final recommendedIds = recommendedTrainings
+        .map((training) => training.id)
+        .toSet();
+    final catalogTrainings = approvedTrainings
+        .where((training) => !recommendedIds.contains(training.id))
+        .toList();
+    final isSearching = _searchText.trim().isNotEmpty;
+    final filteredTrainings = approvedTrainings.where(_matchesSearch).toList();
+
+    final topCards = approvedTrainings.isEmpty
+        ? _placeholderCards()
+        : (isSearching ? filteredTrainings : recommendedTrainings)
+              .map(_mapTrainingToCardData)
+              .toList();
+    final additionalCards =
+        (!isSearching
+                ? catalogTrainings.map(_mapTrainingToCardData)
+                : const Iterable<TrainingCourseCardData>.empty())
+            .toList();
+
+    if (provider.isLoading && provider.trainings.isEmpty) {
+      return const Scaffold(
+        backgroundColor: OpportunityDashboardPalette.background,
+        body: SafeArea(child: TrainingProgramsLoadingView()),
+      );
+    }
+
+    return Scaffold(
+      backgroundColor: OpportunityDashboardPalette.background,
+      body: SafeArea(
+        child: RefreshIndicator(
+          onRefresh: _refreshData,
+          color: OpportunityDashboardPalette.primary,
+          child: CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            slivers: [
+              SliverPadding(
+                padding: const EdgeInsets.fromLTRB(18, 10, 18, 24),
+                sliver: SliverList(
+                  delegate: SliverChildListDelegate([
+                    TrainingHeaderBar(
+                      onMenuTap: _showMenuSheet,
+                      onSearchTap: _focusSearchField,
+                    ),
+                    const SizedBox(height: 22),
+                    const TrainingHeroIntro(),
+                    const SizedBox(height: 18),
+                    Container(
+                      key: _searchSectionKey,
+                      child: TrainingSearchBar(
+                        controller: _searchController,
+                        focusNode: _searchFocusNode,
+                        onClear: _searchController.clear,
+                      ),
+                    ),
+                    if (provider.isSavedLoading) ...[
+                      const SizedBox(height: 12),
+                      const LinearProgressIndicator(minHeight: 2),
+                    ],
+                    if (provider.errorMessage != null) ...[
+                      const SizedBox(height: 16),
+                      TrainingInfoBanner(
+                        message:
+                            '${provider.errorMessage!} Showing the best training content currently available.',
+                      ),
+                    ],
+                    const SizedBox(height: 18),
+                    TrainingSectionTitle(
+                      title: isSearching
+                          ? 'Search results'
+                          : 'Recommended for you',
+                    ),
+                    const SizedBox(height: 12),
+                    if (approvedTrainings.isNotEmpty &&
+                        isSearching &&
+                        filteredTrainings.isEmpty)
+                      const TrainingProgramsEmptyState(
+                        title: 'No trainings match your search',
+                        subtitle:
+                            'Try another keyword to find available training programs.',
+                      )
+                    else
+                      ...topCards.map(
+                        (card) => Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: TrainingCourseCard(
+                            data: card,
+                            onTap: () {
+                              if (card.isPlaceholder) {
+                                _showPlaceholderMessage();
+                                return;
+                              }
+
+                              final training = approvedTrainings.firstWhere(
+                                (item) => item.id == card.id,
+                              );
+                              _openLink(training.displayLink);
+                            },
+                            onStart: () {
+                              if (card.isPlaceholder) {
+                                _showPlaceholderMessage();
+                                return;
+                              }
+
+                              final training = approvedTrainings.firstWhere(
+                                (item) => item.id == card.id,
+                              );
+                              _openLink(training.displayLink);
+                            },
+                          ),
+                        ),
+                      ),
+                    if (!isSearching) ...[
+                      const SizedBox(height: 6),
+                      const BrowseMoreTopicsCard(),
+                      if (additionalCards.isNotEmpty) ...[
+                        const SizedBox(height: 16),
+                        ...additionalCards.map(
+                          (card) => Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: TrainingCourseCard(
+                              data: card,
+                              onTap: () {
+                                final training = approvedTrainings.firstWhere(
+                                  (item) => item.id == card.id,
+                                );
+                                _openLink(training.displayLink);
+                              },
+                              onStart: () {
+                                final training = approvedTrainings.firstWhere(
+                                  (item) => item.id == card.id,
+                                );
+                                _openLink(training.displayLink);
+                              },
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ]),
+                ),
               ),
             ],
           ),
@@ -494,115 +770,52 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
       ),
     );
   }
+}
 
-  @override
-  void dispose() {
-    _searchController
-      ..removeListener(_handleSearchChanged)
-      ..dispose();
-    super.dispose();
-  }
+class _TrainingMenuTile extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final VoidCallback onTap;
+
+  const _TrainingMenuTile({
+    required this.icon,
+    required this.title,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<TrainingProvider>();
-    final domains = _availableDomains(provider.trainings);
-    final activeDomain = domains.contains(_selectedDomain)
-        ? _selectedDomain
-        : 'All';
-    final items = _filteredItems(provider.trainings, activeDomain);
-    final featuredItems = items.where((item) => item.isFeatured).toList();
-    final hasFilters =
-        _selectedFilter != 'all' ||
-        activeDomain != 'All' ||
-        _searchText.trim().isNotEmpty;
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Training'),
-        actions: [
-          IconButton(
-            tooltip: 'Saved resources',
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const SavedTrainingsScreen()),
-              );
-            },
-            icon: const Icon(Icons.bookmarks_outlined),
-          ),
-        ],
+    return ListTile(
+      onTap: onTap,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 4),
+      leading: Container(
+        width: 38,
+        height: 38,
+        decoration: BoxDecoration(
+          color: OpportunityDashboardPalette.primary.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Icon(icon, size: 20, color: OpportunityDashboardPalette.primary),
       ),
-      body: provider.isLoading && provider.trainings.isEmpty
-          ? const Center(child: CircularProgressIndicator())
-          : provider.errorMessage != null && provider.trainings.isEmpty
-          ? Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(provider.errorMessage!, textAlign: TextAlign.center),
-                    const SizedBox(height: 12),
-                    ElevatedButton(
-                      onPressed: _refreshData,
-                      child: const Text('Retry'),
-                    ),
-                  ],
-                ),
-              ),
-            )
-          : RefreshIndicator(
-              onRefresh: _refreshData,
-              child: CustomScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                slivers: [
-                  SliverToBoxAdapter(child: _buildSearchSection()),
-                  if (provider.isSavedLoading)
-                    const SliverToBoxAdapter(
-                      child: Padding(
-                        padding: EdgeInsets.only(top: 10),
-                        child: LinearProgressIndicator(minHeight: 2),
-                      ),
-                    ),
-                  SliverToBoxAdapter(
-                    child: _buildFeaturedSection(provider, featuredItems),
-                  ),
-                  SliverToBoxAdapter(
-                    child: _buildFiltersSection(domains, activeDomain),
-                  ),
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 6),
-                      child: Text(
-                        '${items.length} resource${items.length == 1 ? '' : 's'}',
-                        style: TextStyle(
-                          color: Colors.grey.shade700,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ),
-                  if (items.isEmpty)
-                    _buildEmptyState(hasFilters)
-                  else
-                    SliverList.builder(
-                      itemCount: items.length,
-                      itemBuilder: (context, index) {
-                        final training = items[index];
-                        return TrainingResourceCard(
-                          training: training,
-                          isSaved: provider.isTrainingSaved(training.id),
-                          isSaveBusy: provider.isTrainingBusy(training.id),
-                          onOpen: () => _openLink(training.displayLink),
-                          onToggleSaved: () => _toggleSaved(training),
-                        );
-                      },
-                    ),
-                  const SliverToBoxAdapter(child: SizedBox(height: 16)),
-                ],
-              ),
-            ),
+      title: Text(
+        title,
+        style: TextStyle(
+          fontSize: 14.5,
+          fontWeight: FontWeight.w600,
+          color: OpportunityDashboardPalette.textPrimary,
+        ),
+      ),
+      trailing: const Icon(
+        Icons.chevron_right_rounded,
+        color: OpportunityDashboardPalette.textSecondary,
+      ),
     );
   }
+}
+
+class _TrainingAccent {
+  final Color primary;
+  final Color secondary;
+
+  const _TrainingAccent({required this.primary, required this.secondary});
 }

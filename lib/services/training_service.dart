@@ -80,22 +80,26 @@ class TrainingService {
     required String domain,
     required String level,
   }) async {
-    await _workerRequest('POST', '/api/trainings/import/google-book', body: {
-      'selectedBook': {
-        'googleBookId': book.id,
-        'title': book.title,
-        'description': book.description,
-        'authors': book.authors,
-        'provider': book.provider,
-        'thumbnail': book.thumbnail,
-        'language': book.language,
-        'previewLink': book.previewLink,
-        'infoLink': book.link,
-        'pageCount': _parsePageCount(book.duration),
+    await _workerRequest(
+      'POST',
+      '/api/trainings/import/google-book',
+      body: {
+        'selectedBook': {
+          'googleBookId': book.id,
+          'title': book.title,
+          'description': book.description,
+          'authors': book.authors,
+          'provider': book.provider,
+          'thumbnail': book.thumbnail,
+          'language': book.language,
+          'previewLink': book.previewLink,
+          'infoLink': book.link,
+          'pageCount': _parsePageCount(book.duration),
+        },
+        'domain': domain,
+        'level': level,
       },
-      'domain': domain,
-      'level': level,
-    });
+    );
   }
 
   Future<void> importYoutubeVideo({
@@ -104,18 +108,22 @@ class TrainingService {
     required String domain,
     required String level,
   }) async {
-    await _workerRequest('POST', '/api/trainings/import/youtube-video', body: {
-      'selectedVideo': {
-        'youtubeVideoId': video.id.trim(),
-        'title': video.title,
-        'description': video.description,
-        'provider': video.provider,
-        'thumbnail': video.thumbnail,
-        'link': video.link,
+    await _workerRequest(
+      'POST',
+      '/api/trainings/import/youtube-video',
+      body: {
+        'selectedVideo': {
+          'youtubeVideoId': video.id.trim(),
+          'title': video.title,
+          'description': video.description,
+          'provider': video.provider,
+          'thumbnail': video.thumbnail,
+          'link': video.link,
+        },
+        'domain': domain,
+        'level': level,
       },
-      'domain': domain,
-      'level': level,
-    });
+    );
   }
 
   Future<void> updateFeaturedStatus({
@@ -148,6 +156,7 @@ class TrainingService {
       'title': training.title,
       'description': training.description,
       'provider': training.provider,
+      'providerLogo': training.providerLogo,
       'duration': training.duration,
       'level': training.level,
       'link': training.link,
@@ -160,6 +169,11 @@ class TrainingService {
       'previewLink': training.previewLink,
       'isApproved': training.isApproved,
       'isFeatured': training.isFeatured,
+      'rating': training.rating,
+      'learnerCount': training.learnerCount,
+      'learnerCountLabel': training.learnerCountLabel,
+      'isFree': training.isFree,
+      'hasCertificate': training.hasCertificate,
       'savedAt': FieldValue.serverTimestamp(),
     }, SetOptions(merge: true));
   }
