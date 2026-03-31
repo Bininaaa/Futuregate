@@ -978,22 +978,22 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
         Text(
           'Find your next move.',
           style: GoogleFonts.poppins(
-            fontSize: 30,
+            fontSize: 27,
             fontWeight: FontWeight.w700,
             color: OpportunityDashboardPalette.textPrimary,
             height: 1.08,
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 6),
         Text(
           'Browse jobs, internships, sponsored tracks, and training picks designed for students.',
           style: GoogleFonts.poppins(
-            fontSize: 13.5,
-            height: 1.5,
+            fontSize: 12,
+            height: 1.35,
             color: OpportunityDashboardPalette.textSecondary,
           ),
         ),
-        const SizedBox(height: 18),
+        const SizedBox(height: 14),
         KeyedSubtree(
           key: _searchSectionKey,
           child: TextField(
@@ -1003,7 +1003,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
             decoration: InputDecoration(
               hintText: 'Search jobs, internships or sponsored roles',
               hintStyle: GoogleFonts.poppins(
-                fontSize: 13,
+                fontSize: 12,
                 color: OpportunityDashboardPalette.textSecondary,
               ),
               prefixIcon: const Icon(
@@ -1019,15 +1019,15 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                     ),
               filled: true,
               fillColor: OpportunityDashboardPalette.surface,
-              contentPadding: const EdgeInsets.symmetric(vertical: 16),
+              contentPadding: const EdgeInsets.symmetric(vertical: 13),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(22),
+                borderRadius: BorderRadius.circular(20),
                 borderSide: const BorderSide(
                   color: OpportunityDashboardPalette.border,
                 ),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(22),
+                borderRadius: BorderRadius.circular(20),
                 borderSide: const BorderSide(
                   color: OpportunityDashboardPalette.primary,
                   width: 1.5,
@@ -1036,13 +1036,13 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
             ),
           ),
         ),
-        const SizedBox(height: 14),
+        const SizedBox(height: 10),
         SizedBox(
-          height: 40,
+          height: 36,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             itemCount: _dashboardFilters.length,
-            separatorBuilder: (context, index) => const SizedBox(width: 10),
+            separatorBuilder: (context, index) => const SizedBox(width: 8),
             itemBuilder: (context, index) {
               final filter = _dashboardFilters[index];
               final isActive = filter.value == _activeFilter;
@@ -1052,8 +1052,8 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 180),
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 9,
+                    horizontal: 12,
+                    vertical: 8,
                   ),
                   decoration: BoxDecoration(
                     color: isActive
@@ -1073,16 +1073,16 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                     children: [
                       Icon(
                         filter.icon,
-                        size: 16,
+                        size: 14,
                         color: isActive
                             ? OpportunityDashboardPalette.primary
                             : OpportunityDashboardPalette.textSecondary,
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 6),
                       Text(
                         filter.label,
                         style: GoogleFonts.poppins(
-                          fontSize: 12,
+                          fontSize: 11,
                           fontWeight: FontWeight.w600,
                           color: isActive
                               ? OpportunityDashboardPalette.primary
@@ -1096,7 +1096,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
             },
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 10),
         AnimatedSwitcher(
           duration: const Duration(milliseconds: 220),
           child: Text(
@@ -1105,7 +1105,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
               'summary-$visibleCount-$totalCount-$_activeFilter-$_searchQuery',
             ),
             style: GoogleFonts.poppins(
-              fontSize: 12.5,
+              fontSize: 11.5,
               fontWeight: FontWeight.w500,
               color: OpportunityDashboardPalette.textSecondary,
             ),
@@ -1208,7 +1208,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                       child: LinearProgressIndicator(minHeight: 2),
                     ),
                   SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
+                    padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
                     sliver: SliverToBoxAdapter(
                       child: _buildHeaderSection(
                         visibleOpportunities.length,
@@ -1217,7 +1217,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                     ),
                   ),
                   SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                    padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
                     sliver: SliverToBoxAdapter(
                       child: Column(
                         children: [
@@ -1237,9 +1237,9 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                               await _scrollToKey(_latestSectionKey);
                             },
                           ),
-                          const SizedBox(height: 14),
+                          const SizedBox(height: 10),
                           SizedBox(
-                            height: 150,
+                            height: 140,
                             child: Row(
                               children: [
                                 Expanded(
@@ -1266,7 +1266,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                                     },
                                   ),
                                 ),
-                                const SizedBox(width: 12),
+                                const SizedBox(width: 10),
                                 Expanded(
                                   child: OpportunityCategoryCard(
                                     title: 'Sponsored',
@@ -1293,10 +1293,10 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                               ],
                             ),
                           ),
-                          const SizedBox(height: 14),
+                          const SizedBox(height: 10),
                           TrainingProgramsCard(
                             title: 'Training Programs',
-                            subtitle: 'Courses, bootcamps, and certificates',
+                            subtitle: '',
                             badgeLabel: trainingProvider.isLoading
                                 ? 'Loading...'
                                 : _supportingCountText(
@@ -1341,7 +1341,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                               ),
                             )
                           : SizedBox(
-                              height: 226,
+                              height: 220,
                               child: ListView.separated(
                                 scrollDirection: Axis.horizontal,
                                 padding: const EdgeInsets.only(right: 20),

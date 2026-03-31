@@ -172,7 +172,7 @@ class OpportunityHeroCard extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(30),
+        borderRadius: BorderRadius.circular(28),
         child: Ink(
           decoration: BoxDecoration(
             gradient: const LinearGradient(
@@ -183,27 +183,27 @@ class OpportunityHeroCard extends StatelessWidget {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
-            borderRadius: BorderRadius.circular(30),
+            borderRadius: BorderRadius.circular(28),
             boxShadow: [
               BoxShadow(
                 color: OpportunityDashboardPalette.primary.withValues(
                   alpha: 0.24,
                 ),
-                blurRadius: 28,
-                offset: const Offset(0, 16),
+                blurRadius: 24,
+                offset: const Offset(0, 12),
               ),
             ],
           ),
           child: SizedBox(
-            height: 228,
+            height: 202,
             child: Stack(
               children: [
                 Positioned(
-                  top: -44,
-                  right: -26,
+                  top: -40,
+                  right: -24,
                   child: Container(
-                    width: 168,
-                    height: 168,
+                    width: 148,
+                    height: 148,
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.10),
                       shape: BoxShape.circle,
@@ -211,11 +211,11 @@ class OpportunityHeroCard extends StatelessWidget {
                   ),
                 ),
                 Positioned(
-                  bottom: -54,
+                  bottom: -44,
                   left: -16,
                   child: Container(
-                    width: 132,
-                    height: 132,
+                    width: 116,
+                    height: 116,
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.08),
                       shape: BoxShape.circle,
@@ -223,27 +223,27 @@ class OpportunityHeroCard extends StatelessWidget {
                   ),
                 ),
                 Positioned(
-                  top: 22,
-                  right: 22,
+                  top: 18,
+                  right: 18,
                   child: Container(
-                    width: 58,
-                    height: 58,
+                    width: 50,
+                    height: 50,
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.16),
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(18),
                     ),
-                    child: Icon(icon, color: Colors.white, size: 30),
+                    child: Icon(icon, color: Colors.white, size: 26),
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(22, 22, 104, 22),
+                  padding: const EdgeInsets.fromLTRB(20, 18, 92, 18),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 11,
-                          vertical: 6,
+                          horizontal: 10,
+                          vertical: 5,
                         ),
                         decoration: BoxDecoration(
                           color: Colors.white.withValues(alpha: 0.14),
@@ -252,31 +252,33 @@ class OpportunityHeroCard extends StatelessWidget {
                         child: Text(
                           'Featured destination',
                           style: GoogleFonts.poppins(
-                            fontSize: 10,
+                            fontSize: 9.5,
                             fontWeight: FontWeight.w600,
                             color: Colors.white,
                             letterSpacing: 0.2,
                           ),
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 12),
                       Text(
                         title,
                         style: GoogleFonts.poppins(
-                          fontSize: 28,
+                          fontSize: 24,
                           fontWeight: FontWeight.w700,
                           color: Colors.white,
                           height: 1.05,
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 6),
                       Text(
                         subtitle,
                         style: GoogleFonts.poppins(
-                          fontSize: 13,
-                          height: 1.5,
+                          fontSize: 12,
+                          height: 1.4,
                           color: Colors.white.withValues(alpha: 0.84),
                         ),
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
                       ),
                       const Spacer(),
                       Row(
@@ -285,7 +287,7 @@ class OpportunityHeroCard extends StatelessWidget {
                             child: Text(
                               supportingLabel,
                               style: GoogleFonts.poppins(
-                                fontSize: 12,
+                                fontSize: 11.5,
                                 fontWeight: FontWeight.w600,
                                 color: Colors.white,
                               ),
@@ -293,10 +295,10 @@ class OpportunityHeroCard extends StatelessWidget {
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                          const SizedBox(width: 10),
+                          const SizedBox(width: 8),
                           Container(
-                            width: 30,
-                            height: 30,
+                            width: 28,
+                            height: 28,
                             decoration: BoxDecoration(
                               color: Colors.white.withValues(alpha: 0.14),
                               borderRadius: BorderRadius.circular(999),
@@ -304,7 +306,7 @@ class OpportunityHeroCard extends StatelessWidget {
                             child: const Icon(
                               Icons.arrow_forward_rounded,
                               color: Colors.white,
-                              size: 17,
+                              size: 16,
                             ),
                           ),
                         ],
@@ -349,7 +351,7 @@ class OpportunityCategoryCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(24),
         child: Ink(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: backgroundColor,
             borderRadius: BorderRadius.circular(24),
@@ -365,11 +367,11 @@ class OpportunityCategoryCard extends StatelessWidget {
           child: Stack(
             children: [
               Positioned(
-                right: -10,
-                bottom: -10,
+                right: -8,
+                bottom: -8,
                 child: Icon(
                   icon,
-                  size: 84,
+                  size: 66,
                   color: color.withValues(alpha: 0.14),
                 ),
               ),
@@ -377,37 +379,39 @@ class OpportunityCategoryCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    width: 38,
-                    height: 38,
+                    width: 32,
+                    height: 32,
                     decoration: BoxDecoration(
                       color: color.withValues(alpha: 0.16),
-                      borderRadius: BorderRadius.circular(14),
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Icon(icon, color: color, size: 20),
+                    child: Icon(icon, color: color, size: 17),
                   ),
                   const Spacer(),
                   Text(
                     title,
                     style: GoogleFonts.poppins(
-                      fontSize: 15,
+                      fontSize: 13.5,
                       fontWeight: FontWeight.w700,
                       color: OpportunityDashboardPalette.textPrimary,
                     ),
                   ),
-                  const SizedBox(height: 3),
+                  const SizedBox(height: 2),
                   Text(
                     subtitle,
                     style: GoogleFonts.poppins(
-                      fontSize: 11.5,
+                      fontSize: 10.2,
                       color: OpportunityDashboardPalette.textSecondary,
-                      height: 1.35,
+                      height: 1.28,
                     ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 5),
                   Text(
                     caption,
                     style: GoogleFonts.poppins(
-                      fontSize: 11,
+                      fontSize: 10,
                       fontWeight: FontWeight.w600,
                       color: color,
                     ),
@@ -444,26 +448,26 @@ class TrainingProgramsCard extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(22),
         child: Ink(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           decoration: BoxDecoration(
             color: OpportunityDashboardPalette.surface,
-            borderRadius: BorderRadius.circular(24),
+            borderRadius: BorderRadius.circular(22),
             border: Border.all(color: OpportunityDashboardPalette.border),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.04),
-                blurRadius: 16,
-                offset: const Offset(0, 10),
+                blurRadius: 14,
+                offset: const Offset(0, 8),
               ),
             ],
           ),
           child: Row(
             children: [
               Container(
-                width: 48,
-                height: 48,
+                width: 42,
+                height: 42,
                 decoration: BoxDecoration(
                   color: OpportunityDashboardPalette.secondary.withValues(
                     alpha: 0.12,
@@ -473,39 +477,42 @@ class TrainingProgramsCard extends StatelessWidget {
                 child: const Icon(
                   Icons.cast_for_education_outlined,
                   color: OpportunityDashboardPalette.secondary,
-                  size: 24,
+                  size: 21,
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 10),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
                       title,
                       style: GoogleFonts.poppins(
-                        fontSize: 15,
+                        fontSize: 14,
                         fontWeight: FontWeight.w700,
                         color: OpportunityDashboardPalette.textPrimary,
                       ),
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      subtitle,
-                      style: GoogleFonts.poppins(
-                        fontSize: 12,
-                        color: OpportunityDashboardPalette.textSecondary,
+                    if (subtitle.trim().isNotEmpty) ...[
+                      const SizedBox(height: 3),
+                      Text(
+                        subtitle,
+                        style: GoogleFonts.poppins(
+                          fontSize: 11.5,
+                          color: OpportunityDashboardPalette.textSecondary,
+                        ),
                       ),
-                    ),
+                    ],
                   ],
                 ),
               ),
               if (badgeLabel != null && badgeLabel!.isNotEmpty) ...[
-                const SizedBox(width: 10),
+                const SizedBox(width: 8),
                 Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 7,
+                    horizontal: 9,
+                    vertical: 6,
                   ),
                   decoration: BoxDecoration(
                     color: OpportunityDashboardPalette.background,
@@ -514,17 +521,17 @@ class TrainingProgramsCard extends StatelessWidget {
                   child: Text(
                     badgeLabel!,
                     style: GoogleFonts.poppins(
-                      fontSize: 10.5,
+                      fontSize: 10,
                       fontWeight: FontWeight.w600,
                       color: OpportunityDashboardPalette.textSecondary,
                     ),
                   ),
                 ),
               ],
-              const SizedBox(width: 10),
+              const SizedBox(width: 8),
               const Icon(
                 Icons.arrow_forward_ios_rounded,
-                size: 15,
+                size: 14,
                 color: OpportunityDashboardPalette.textSecondary,
               ),
             ],
@@ -608,7 +615,7 @@ class TrendingOpportunityCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(28),
         child: Ink(
-          width: 224,
+          width: 216,
           padding: const EdgeInsets.fromLTRB(16, 16, 14, 14),
           decoration: BoxDecoration(
             color: OpportunityDashboardPalette.surface,
@@ -671,9 +678,9 @@ class TrendingOpportunityCard extends StatelessWidget {
                       Text(
                         companyLine,
                         style: GoogleFonts.poppins(
-                          fontSize: 11,
+                          fontSize: 11.5,
                           color: OpportunityDashboardPalette.textSecondary,
-                          height: 1.3,
+                          height: 1.35,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
