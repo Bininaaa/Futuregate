@@ -10,6 +10,7 @@ import '../../providers/notification_provider.dart';
 import '../../providers/opportunity_provider.dart';
 import '../../providers/saved_opportunity_provider.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
+import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/profile_avatar.dart';
 import '../notifications_screen.dart';
@@ -305,12 +306,18 @@ class _JobsScreenState extends State<JobsScreen> {
     final company = _companyName(opportunity);
     final location = _locationLabel(opportunity);
     final salary = _compensationText(opportunity);
+    final metadata = _metadataItems(opportunity, maxItems: 3);
+    final metadataLine = metadata
+        .where((item) => item != salary)
+        .take(2)
+        .join(' | ');
     final badge = _jobBadgeLabel(opportunity);
     final searchable = <String>[
       title,
       company,
       location ?? '',
       salary ?? '',
+      metadata.join(' '),
       badge,
       category.label,
       category.key,
@@ -334,6 +341,7 @@ class _JobsScreenState extends State<JobsScreen> {
       company: company,
       location: location,
       salary: salary,
+      metadataLine: metadataLine,
       badge: badge,
       logoUrl: opportunity.companyLogo.trim(),
       category: category,
@@ -395,75 +403,45 @@ class _JobsScreenState extends State<JobsScreen> {
     }
 
     return switch (_workModeLabel(opportunity)) {
-      'REMOTE' => 'Remote',
-      'HYBRID' => 'Hybrid',
-      'ON-SITE' => 'On-site',
+      'Remote' => 'Remote',
+      'Hybrid' => 'Hybrid',
+      'On-site' => 'On-site',
       _ => null,
     };
   }
 
   String _jobBadgeLabel(OpportunityModel opportunity) {
-    final explicitLabel = opportunity.readString([
-      'employmentType',
-      'jobType',
-      'positionType',
-      'contractType',
-      'timeCommitment',
-      'schedule',
-      'commitment',
-    ]);
-
-    if (explicitLabel != null) {
-      final normalized = explicitLabel.toLowerCase();
-      if (normalized.contains('part')) {
-        return 'PART TIME';
-      }
-      if (normalized.contains('contract')) {
-        return 'CONTRACT';
-      }
-      if (normalized.contains('intern')) {
-        return 'INTERNSHIP';
-      }
-      if (normalized.contains('freelance')) {
-        return 'FREELANCE';
-      }
-      if (normalized.contains('hybrid')) {
-        return 'HYBRID';
-      }
-      if (normalized.contains('remote')) {
-        return 'REMOTE';
-      }
+    final employmentLabel = _employmentTypeLabel(opportunity);
+    if (employmentLabel != null) {
+      return employmentLabel.toUpperCase();
     }
 
     final workMode = _workModeLabel(opportunity);
     if (workMode != null) {
-      return workMode;
+      return workMode.toUpperCase();
     }
 
     return 'FULL TIME';
   }
 
   String? _compensationText(OpportunityModel opportunity) {
-    final explicitCompensation = _sanitizeCompensationText(
-      opportunity.readString([
-        'salary',
-        'salaryRange',
-        'salary_range',
-        'stipend',
-        'stipendAmount',
-        'stipend_amount',
-        'compensation',
-        'payment',
-        'pay',
-        'payRange',
-        'pay_range',
-        'amount',
-        'budget',
-        'reward',
-      ]),
+    final structuredLabel = OpportunityMetadata.buildCompensationLabel(
+      salaryMin: opportunity.salaryMin,
+      salaryMax: opportunity.salaryMax,
+      salaryCurrency: opportunity.salaryCurrency,
+      salaryPeriod: opportunity.salaryPeriod,
+      compensationText: opportunity.compensationText,
+      isPaid: opportunity.isPaid,
     );
-    if (explicitCompensation != null) {
-      return explicitCompensation;
+    if (structuredLabel != null) {
+      return structuredLabel;
+    }
+
+    final legacyCompensation = _sanitizeCompensationText(
+      OpportunityMetadata.extractCompensationText(opportunity.rawData),
+    );
+    if (legacyCompensation != null) {
+      return legacyCompensation;
     }
 
     final extracted = _sanitizeCompensationText(
@@ -473,37 +451,7 @@ class _JobsScreenState extends State<JobsScreen> {
       return extracted;
     }
 
-    if (_hasPaidIndicator(opportunity)) {
-      return 'Paid';
-    }
-
-    return null;
-  }
-
-  bool _hasPaidIndicator(OpportunityModel opportunity) {
-    final explicitPaid = opportunity.readBool([
-      'paid',
-      'isPaid',
-      'paidOpportunity',
-      'isPaidOpportunity',
-    ]);
-    if (explicitPaid != null) {
-      return explicitPaid;
-    }
-
-    final text = '${opportunity.description} ${opportunity.requirements}'
-        .toLowerCase();
-    if (text.contains('unpaid')) {
-      return false;
-    }
-
-    return text.contains('paid') ||
-        text.contains('stipend') ||
-        text.contains('salary') ||
-        RegExp(
-          r'(\$|usd|eur|dzd|/month|per month|per hour|monthly|hourly)',
-          caseSensitive: false,
-        ).hasMatch(text);
+    return OpportunityMetadata.formatPaidLabel(_effectiveIsPaid(opportunity));
   }
 
   String? _extractCompensationFromText(OpportunityModel opportunity) {
@@ -585,42 +533,82 @@ class _JobsScreenState extends State<JobsScreen> {
   }
 
   String? _workModeLabel(OpportunityModel opportunity) {
-    final explicitRemote = opportunity.readBool([
-      'remote',
-      'isRemote',
-      'remoteFriendly',
-      'isRemoteFriendly',
-    ]);
-    if (explicitRemote == true) {
-      return 'REMOTE';
+    final normalizedMode = _normalizedWorkMode(opportunity);
+    if (normalizedMode != null) {
+      return OpportunityMetadata.formatWorkMode(normalizedMode);
     }
 
-    final explicitMode = opportunity.readString([
-      'workMode',
-      'workplaceType',
-      'locationType',
-      'remoteType',
-    ]);
     final searchable = [
-      explicitMode,
       opportunity.location,
       opportunity.description,
       opportunity.requirements,
     ].whereType<String>().join(' ').toLowerCase();
 
     if (searchable.contains('hybrid')) {
-      return 'HYBRID';
+      return 'Hybrid';
     }
     if (searchable.contains('remote')) {
-      return 'REMOTE';
+      return 'Remote';
     }
     if (searchable.contains('on-site') ||
         searchable.contains('onsite') ||
         searchable.contains('on site')) {
-      return 'ON-SITE';
+      return 'On-site';
     }
 
     return null;
+  }
+
+  String? _employmentTypeLabel(OpportunityModel opportunity) {
+    return OpportunityMetadata.formatEmploymentType(opportunity.employmentType);
+  }
+
+  String? _normalizedWorkMode(OpportunityModel opportunity) {
+    return opportunity.workMode ??
+        OpportunityMetadata.extractWorkMode(opportunity.rawData);
+  }
+
+  bool? _effectiveIsPaid(OpportunityModel opportunity) {
+    return opportunity.isPaid ??
+        OpportunityMetadata.extractIsPaid(opportunity.rawData);
+  }
+
+  List<String> _metadataItems(
+    OpportunityModel opportunity, {
+    int maxItems = 3,
+  }) {
+    final items = OpportunityMetadata.buildMetadataItems(
+      type: opportunity.type,
+      salaryMin: opportunity.salaryMin,
+      salaryMax: opportunity.salaryMax,
+      salaryCurrency: opportunity.salaryCurrency,
+      salaryPeriod: opportunity.salaryPeriod,
+      compensationText: opportunity.compensationText,
+      isPaid: _effectiveIsPaid(opportunity),
+      employmentType: opportunity.employmentType,
+      workMode: _normalizedWorkMode(opportunity),
+      duration: opportunity.duration,
+      maxItems: maxItems,
+    );
+    if (items.isNotEmpty) {
+      return items;
+    }
+
+    final legacyItems = <String>[];
+    final compensation = _sanitizeCompensationText(
+      _extractCompensationFromText(opportunity),
+    );
+    if (compensation != null) {
+      legacyItems.add(compensation);
+    }
+    final workMode = _workModeLabel(opportunity);
+    if (workMode != null) {
+      legacyItems.add(workMode);
+    }
+
+    return OpportunityMetadata.uniqueNonEmpty(
+      legacyItems,
+    ).take(maxItems).toList();
   }
 
   List<_JobCardData> get _fallbackJobCards => [
@@ -1450,6 +1438,20 @@ class _FeaturedJobCard extends StatelessWidget {
                         color: Colors.white.withValues(alpha: 0.88),
                       ),
                     ),
+                    if (job.metadataLine != null &&
+                        job.metadataLine!.trim().isNotEmpty) ...[
+                      const SizedBox(height: 6),
+                      Text(
+                        job.metadataLine!,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.poppins(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white.withValues(alpha: 0.84),
+                        ),
+                      ),
+                    ],
                     const SizedBox(height: 18),
                     Row(
                       children: [
@@ -1591,6 +1593,21 @@ class _AvailableRoleCard extends StatelessWidget {
                   color: OpportunityDashboardPalette.textSecondary,
                 ),
               ),
+              if (job.metadataLine != null &&
+                  job.metadataLine!.trim().isNotEmpty) ...[
+                const SizedBox(height: 6),
+                Text(
+                  job.metadataLine!,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.poppins(
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w600,
+                    color: OpportunityDashboardPalette.textSecondary,
+                    height: 1.35,
+                  ),
+                ),
+              ],
               const Spacer(),
               Row(
                 children: [
@@ -1960,6 +1977,7 @@ class _JobCardData {
   final String company;
   final String? location;
   final String? salary;
+  final String? metadataLine;
   final String badge;
   final String logoUrl;
   final _JobCategoryData category;
@@ -1974,6 +1992,7 @@ class _JobCardData {
     required this.company,
     required this.location,
     required this.salary,
+    required this.metadataLine,
     required this.badge,
     required this.logoUrl,
     required this.category,
@@ -1998,6 +2017,7 @@ class _JobCardData {
       company: company,
       location: location,
       salary: salary,
+      metadataLine: null,
       badge: badge,
       logoUrl: '',
       category: category,

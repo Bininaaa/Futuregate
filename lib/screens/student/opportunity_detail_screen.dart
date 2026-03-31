@@ -9,6 +9,7 @@ import '../../providers/chat_provider.dart';
 import '../../providers/cv_provider.dart';
 import '../../providers/saved_opportunity_provider.dart';
 import '../../services/application_service.dart';
+import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/opportunity_type_badge.dart';
 import 'chat_screen.dart';
@@ -175,7 +176,7 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
       companyName: widget.opportunity.companyName,
       type: widget.opportunity.type,
       location: widget.opportunity.location,
-      deadline: widget.opportunity.deadline,
+      deadline: widget.opportunity.deadlineLabel,
     );
 
     if (!mounted) {
@@ -227,6 +228,37 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
   Widget build(BuildContext context) {
     final applicationProvider = context.watch<ApplicationProvider>();
     final typeColor = OpportunityType.color(widget.opportunity.type);
+    final deadlineLabel = _deadlineLabel();
+    final compensationLabel = _compensationLabel();
+    final employmentTypeLabel = OpportunityMetadata.formatEmploymentType(
+      widget.opportunity.employmentType,
+    );
+    final workModeLabel = OpportunityMetadata.formatWorkMode(
+      widget.opportunity.workMode,
+    );
+    final paidLabel = OpportunityMetadata.formatPaidLabel(
+      widget.opportunity.isPaid,
+    );
+    final durationLabel = OpportunityMetadata.normalizeDuration(
+      widget.opportunity.duration,
+    );
+    final snapshotItems = <MapEntry<String, String>>[
+      if (compensationLabel != null)
+        MapEntry('Compensation', compensationLabel),
+      if (employmentTypeLabel != null)
+        MapEntry('Employment type', employmentTypeLabel),
+      if (workModeLabel != null) MapEntry('Work mode', workModeLabel),
+      if (paidLabel != null &&
+          compensationLabel?.toLowerCase() != 'paid' &&
+          compensationLabel?.toLowerCase() != 'unpaid')
+        MapEntry('Paid status', paidLabel),
+      if (durationLabel != null &&
+          OpportunityType.parse(widget.opportunity.type) ==
+              OpportunityType.internship)
+        MapEntry('Duration', durationLabel),
+      if (deadlineLabel != null)
+        MapEntry('Application deadline', deadlineLabel),
+    ];
 
     return Scaffold(
       backgroundColor: softGray,
@@ -293,16 +325,32 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
                     spacing: 10,
                     runSpacing: 10,
                     children: [
-                      _buildMetaChip(
-                        icon: Icons.location_on_outlined,
-                        label: widget.opportunity.location,
-                      ),
+                      if (widget.opportunity.location.trim().isNotEmpty)
+                        _buildMetaChip(
+                          icon: Icons.location_on_outlined,
+                          label: widget.opportunity.location,
+                        ),
                       _buildMetaChip(
                         icon: Icons.calendar_today_outlined,
-                        label: widget.opportunity.deadline.isNotEmpty
-                            ? widget.opportunity.deadline
-                            : 'No deadline',
+                        label: deadlineLabel ?? 'No deadline',
                       ),
+                      if (compensationLabel != null)
+                        _buildMetaChip(
+                          icon: Icons.payments_outlined,
+                          label: compensationLabel,
+                        ),
+                      if (workModeLabel != null)
+                        _buildMetaChip(
+                          icon: Icons.laptop_mac_outlined,
+                          label: workModeLabel,
+                        ),
+                      if (durationLabel != null &&
+                          OpportunityType.parse(widget.opportunity.type) ==
+                              OpportunityType.internship)
+                        _buildMetaChip(
+                          icon: Icons.schedule_outlined,
+                          label: durationLabel,
+                        ),
                       _buildMetaChip(
                         icon: Icons.info_outline,
                         label: widget.opportunity.status.isNotEmpty
@@ -315,6 +363,52 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
                 ],
               ),
             ),
+            if (snapshotItems.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              _buildSectionCard(
+                title: 'Role Snapshot',
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: snapshotItems
+                      .map(
+                        (item) => Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                flex: 4,
+                                child: Text(
+                                  item.key,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.grey.shade600,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                flex: 6,
+                                child: Text(
+                                  item.value,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                    color: strongBlue,
+                                    height: 1.4,
+                                  ),
+                                  textAlign: TextAlign.right,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                      .toList(),
+                ),
+              ),
+            ],
             const SizedBox(height: 16),
             _buildSectionCard(
               title: OpportunityType.descriptionLabel(widget.opportunity.type),
@@ -402,7 +496,47 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
     );
   }
 
-  Widget _buildSectionCard({required String title, required String content}) {
+  String? _deadlineLabel() {
+    final deadline =
+        widget.opportunity.applicationDeadline ??
+        OpportunityMetadata.parseDateTimeLike(widget.opportunity.deadlineLabel);
+    if (deadline != null) {
+      return OpportunityMetadata.formatDateLabel(deadline);
+    }
+
+    final fallback = widget.opportunity.deadlineLabel.trim();
+    return fallback.isEmpty ? null : fallback;
+  }
+
+  String? _compensationLabel() {
+    final structuredLabel = OpportunityMetadata.buildCompensationLabel(
+      salaryMin: widget.opportunity.salaryMin,
+      salaryMax: widget.opportunity.salaryMax,
+      salaryCurrency: widget.opportunity.salaryCurrency,
+      salaryPeriod: widget.opportunity.salaryPeriod,
+      compensationText: widget.opportunity.compensationText,
+      isPaid: widget.opportunity.isPaid,
+      preferCompensationText: true,
+    );
+    if (structuredLabel != null) {
+      return structuredLabel;
+    }
+
+    final legacyLabel = OpportunityMetadata.extractCompensationText(
+      widget.opportunity.rawData,
+    );
+    if (legacyLabel != null && legacyLabel.trim().isNotEmpty) {
+      return legacyLabel.trim();
+    }
+
+    return null;
+  }
+
+  Widget _buildSectionCard({
+    required String title,
+    String? content,
+    Widget? child,
+  }) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(18),
@@ -428,15 +562,20 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
               color: strongBlue,
             ),
           ),
-          const SizedBox(height: 10),
-          Text(
-            content,
-            style: GoogleFonts.poppins(
-              fontSize: 13,
-              height: 1.55,
-              color: Colors.black87,
+          if (content != null) ...[
+            const SizedBox(height: 10),
+            Text(
+              content,
+              style: GoogleFonts.poppins(
+                fontSize: 13,
+                height: 1.55,
+                color: Colors.black87,
+              ),
             ),
-          ),
+          ] else if (child != null) ...[
+            const SizedBox(height: 12),
+            child,
+          ],
         ],
       ),
     );
@@ -454,12 +593,14 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
         children: [
           Icon(icon, size: 16, color: strongBlue),
           const SizedBox(width: 6),
-          Text(
-            label,
-            style: GoogleFonts.poppins(
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              color: strongBlue,
+          Flexible(
+            child: Text(
+              label,
+              style: GoogleFonts.poppins(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+                color: strongBlue,
+              ),
             ),
           ),
         ],

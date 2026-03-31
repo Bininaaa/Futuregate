@@ -6,11 +6,13 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../models/admin_application_item_model.dart';
 import '../../models/cv_model.dart';
+import '../../models/opportunity_model.dart';
 import '../../models/project_idea_model.dart';
 import '../../models/training_model.dart';
 import '../../providers/admin_provider.dart';
 import '../../services/company_service.dart';
 import '../../services/document_access_service.dart';
+import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/profile_avatar.dart';
 
@@ -617,6 +619,20 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
         itemCount: opportunities.length,
         itemBuilder: (context, index) {
           final opportunity = opportunities[index];
+          final opportunityModel = OpportunityModel.fromMap(opportunity);
+          final metadata = OpportunityMetadata.buildMetadataItems(
+            type: opportunityModel.type,
+            salaryMin: opportunityModel.salaryMin,
+            salaryMax: opportunityModel.salaryMax,
+            salaryCurrency: opportunityModel.salaryCurrency,
+            salaryPeriod: opportunityModel.salaryPeriod,
+            compensationText: opportunityModel.compensationText,
+            isPaid: opportunityModel.isPaid,
+            employmentType: opportunityModel.employmentType,
+            workMode: opportunityModel.workMode,
+            duration: opportunityModel.duration,
+            maxItems: 2,
+          );
           final opportunityType = OpportunityType.parse(
             (opportunity['type'] ?? '').toString(),
           );
@@ -638,6 +654,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                     ? Colors.green
                     : Colors.grey,
               ),
+              ...metadata.map((item) => _BadgeData(item, Colors.indigo)),
             ],
             onTap: () => _showOpportunityDetails(opportunity),
             trailing: IconButton(
@@ -796,6 +813,21 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       return true;
     }
 
+    final opportunityModel = OpportunityModel.fromMap(opportunity);
+    final metadataText = OpportunityMetadata.buildMetadataItems(
+      type: opportunityModel.type,
+      salaryMin: opportunityModel.salaryMin,
+      salaryMax: opportunityModel.salaryMax,
+      salaryCurrency: opportunityModel.salaryCurrency,
+      salaryPeriod: opportunityModel.salaryPeriod,
+      compensationText: opportunityModel.compensationText,
+      isPaid: opportunityModel.isPaid,
+      employmentType: opportunityModel.employmentType,
+      workMode: opportunityModel.workMode,
+      duration: opportunityModel.duration,
+      maxItems: 3,
+    ).join(' ').toLowerCase();
+
     return (opportunity['title'] ?? '').toString().toLowerCase().contains(
           query,
         ) ||
@@ -806,7 +838,10 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
           query,
         ) ||
         (opportunity['type'] ?? '').toString().toLowerCase().contains(query) ||
-        (opportunity['status'] ?? '').toString().toLowerCase().contains(query);
+        (opportunity['status'] ?? '').toString().toLowerCase().contains(
+          query,
+        ) ||
+        metadataText.contains(query);
   }
 
   bool _matchesScholarshipSearch(Map<String, dynamic> scholarship) {
@@ -1345,6 +1380,16 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
   }
 
   void _showOpportunityDetails(Map<String, dynamic> opportunity) {
+    final opportunityModel = OpportunityModel.fromMap(opportunity);
+    final compensationLabel = OpportunityMetadata.buildCompensationLabel(
+      salaryMin: opportunityModel.salaryMin,
+      salaryMax: opportunityModel.salaryMax,
+      salaryCurrency: opportunityModel.salaryCurrency,
+      salaryPeriod: opportunityModel.salaryPeriod,
+      compensationText: opportunityModel.compensationText,
+      isPaid: opportunityModel.isPaid,
+      preferCompensationText: true,
+    );
     _showContentDetailsSheet(
       title: (opportunity['title'] ?? 'Opportunity').toString(),
       subtitle: (opportunity['companyName'] ?? 'Unknown company').toString(),
@@ -1361,15 +1406,29 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
           'Location',
           (opportunity['location'] ?? '').toString(),
         ),
+        _SheetDetailLine('Deadline', opportunityModel.deadlineLabel),
+        _SheetDetailLine('Compensation', compensationLabel ?? ''),
         _SheetDetailLine(
-          'Deadline',
-          (opportunity['deadline'] ?? '').toString(),
+          'Employment type',
+          OpportunityMetadata.formatEmploymentType(
+                opportunityModel.employmentType,
+              ) ??
+              '',
         ),
+        _SheetDetailLine(
+          'Work mode',
+          OpportunityMetadata.formatWorkMode(opportunityModel.workMode) ?? '',
+        ),
+        _SheetDetailLine(
+          'Paid status',
+          OpportunityMetadata.formatPaidLabel(opportunityModel.isPaid) ?? '',
+        ),
+        _SheetDetailLine('Duration', opportunityModel.duration ?? ''),
         _SheetDetailLine(
           'Requirements',
           (opportunity['requirements'] ?? '').toString(),
         ),
-      ],
+      ].where((line) => line.value.trim().isNotEmpty).toList(),
     );
   }
 

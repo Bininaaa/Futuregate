@@ -547,6 +547,7 @@ class TrendingOpportunityCard extends StatelessWidget {
   final String badgeLabel;
   final String? companyName;
   final String? locationText;
+  final String? metadataText;
   final String? compensationText;
   final bool isSaved;
   final bool isBusy;
@@ -559,6 +560,7 @@ class TrendingOpportunityCard extends StatelessWidget {
     required this.badgeLabel,
     required this.companyName,
     required this.locationText,
+    required this.metadataText,
     required this.compensationText,
     required this.isSaved,
     required this.isBusy,
@@ -683,6 +685,21 @@ class TrendingOpportunityCard extends StatelessWidget {
                           height: 1.35,
                         ),
                         maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                    if (metadataText != null &&
+                        metadataText!.trim().isNotEmpty) ...[
+                      const SizedBox(height: 6),
+                      Text(
+                        metadataText!,
+                        style: GoogleFonts.poppins(
+                          fontSize: 10.8,
+                          fontWeight: FontWeight.w600,
+                          color: OpportunityDashboardPalette.textSecondary,
+                          height: 1.35,
+                        ),
+                        maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ],

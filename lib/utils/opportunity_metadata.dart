@@ -1,0 +1,659 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
+
+import 'opportunity_type.dart';
+
+class OpportunityMetadata {
+  OpportunityMetadata._();
+
+  static const List<String> employmentTypes = [
+    'full_time',
+    'part_time',
+    'internship',
+    'contract',
+    'temporary',
+    'freelance',
+  ];
+
+  static const List<String> workModes = ['onsite', 'remote', 'hybrid'];
+
+  static const List<String> salaryPeriods = [
+    'hour',
+    'day',
+    'week',
+    'month',
+    'year',
+  ];
+
+  static const List<String> supportedCurrencies = ['DZD', 'USD', 'EUR'];
+
+  static bool usesStructuredFields(String? type) {
+    final normalizedType = OpportunityType.parse(type);
+    return normalizedType == OpportunityType.job ||
+        normalizedType == OpportunityType.internship;
+  }
+
+  static dynamic firstValue(Map<String, dynamic> data, List<String> keys) {
+    for (final key in keys) {
+      if (!data.containsKey(key)) {
+        continue;
+      }
+
+      final value = data[key];
+      if (value != null) {
+        return value;
+      }
+    }
+
+    return null;
+  }
+
+  static String? stringFromValue(dynamic value) {
+    if (value == null) {
+      return null;
+    }
+
+    if (value is String) {
+      final trimmed = value.trim();
+      return trimmed.isEmpty ? null : trimmed;
+    }
+
+    if (value is num) {
+      return value.toString();
+    }
+
+    if (value is List) {
+      final parts = value
+          .map(stringFromValue)
+          .whereType<String>()
+          .where((part) => part.isNotEmpty)
+          .toList();
+      return parts.isEmpty ? null : parts.join(', ');
+    }
+
+    if (value is Map) {
+      final display = stringFromValue(
+        value['display'] ?? value['label'] ?? value['text'] ?? value['value'],
+      );
+      if (display != null) {
+        return display;
+      }
+
+      final currency = stringFromValue(value['currency'] ?? value['unit']);
+      final amount = stringFromValue(value['amount']);
+      if (amount != null) {
+        return currency == null ? amount : '$currency $amount';
+      }
+
+      final min = stringFromValue(
+        value['min'] ?? value['from'] ?? value['start'],
+      );
+      final max = stringFromValue(value['max'] ?? value['to'] ?? value['end']);
+      if (min != null && max != null) {
+        final range = '$min - $max';
+        return currency == null ? range : '$currency $range';
+      }
+    }
+
+    return null;
+  }
+
+  static String? sanitizeText(String? rawValue) {
+    final trimmed = rawValue?.trim();
+    return (trimmed == null || trimmed.isEmpty) ? null : trimmed;
+  }
+
+  static String? normalizeCurrency(String? rawValue) {
+    final trimmed = rawValue?.trim().toUpperCase();
+    if (trimmed == null || trimmed.isEmpty) {
+      return null;
+    }
+
+    return trimmed;
+  }
+
+  static String? normalizeEmploymentType(String? rawValue) {
+    final normalized = rawValue
+        ?.trim()
+        .toLowerCase()
+        .replaceAll('-', '_')
+        .replaceAll(' ', '_');
+    if (normalized == null || normalized.isEmpty) {
+      return null;
+    }
+
+    return switch (normalized) {
+      'full_time' || 'fulltime' => 'full_time',
+      'part_time' || 'parttime' => 'part_time',
+      'intern' || 'internship' => 'internship',
+      'contract' => 'contract',
+      'temporary' || 'temp' => 'temporary',
+      'freelance' || 'freelancer' => 'freelance',
+      _ => employmentTypes.contains(normalized) ? normalized : null,
+    };
+  }
+
+  static String? normalizeWorkMode(String? rawValue) {
+    final normalized = rawValue
+        ?.trim()
+        .toLowerCase()
+        .replaceAll('-', '')
+        .replaceAll('_', '')
+        .replaceAll(' ', '');
+    if (normalized == null || normalized.isEmpty) {
+      return null;
+    }
+
+    return switch (normalized) {
+      'onsite' || 'onsiteonly' || 'office' => 'onsite',
+      'remote' || 'remotefriendly' => 'remote',
+      'hybrid' => 'hybrid',
+      _ => null,
+    };
+  }
+
+  static String? normalizeSalaryPeriod(String? rawValue) {
+    final normalized = rawValue
+        ?.trim()
+        .toLowerCase()
+        .replaceAll('-', '_')
+        .replaceAll(' ', '_');
+    if (normalized == null || normalized.isEmpty) {
+      return null;
+    }
+
+    return switch (normalized) {
+      'hour' || 'hourly' || 'per_hour' => 'hour',
+      'day' || 'daily' || 'per_day' => 'day',
+      'week' || 'weekly' || 'per_week' => 'week',
+      'month' || 'monthly' || 'per_month' => 'month',
+      'year' || 'yearly' || 'annually' || 'annual' || 'per_year' => 'year',
+      _ => salaryPeriods.contains(normalized) ? normalized : null,
+    };
+  }
+
+  static String? normalizeDuration(String? rawValue) {
+    final trimmed = rawValue?.trim();
+    return (trimmed == null || trimmed.isEmpty) ? null : trimmed;
+  }
+
+  static num? parseNullableNum(Object? value) {
+    if (value == null) {
+      return null;
+    }
+
+    if (value is num) {
+      return value;
+    }
+
+    if (value is String) {
+      final trimmed = value.trim();
+      if (trimmed.isEmpty) {
+        return null;
+      }
+
+      final normalized = trimmed.replaceAll(RegExp(r'[^0-9.\-]'), '');
+      if (normalized.isEmpty ||
+          normalized == '-' ||
+          normalized == '.' ||
+          normalized == '-.') {
+        return null;
+      }
+
+      return num.tryParse(normalized);
+    }
+
+    return null;
+  }
+
+  static bool? parseNullableBool(Object? value) {
+    if (value is bool) {
+      return value;
+    }
+
+    if (value is num) {
+      return value != 0;
+    }
+
+    if (value is String) {
+      final normalized = value.trim().toLowerCase();
+      if (normalized.isEmpty) {
+        return null;
+      }
+      if (['true', 'yes', 'y', '1', 'paid'].contains(normalized)) {
+        return true;
+      }
+      if (['false', 'no', 'n', '0', 'unpaid'].contains(normalized)) {
+        return false;
+      }
+    }
+
+    return null;
+  }
+
+  static DateTime? parseDateTimeLike(Object? value) {
+    if (value == null) {
+      return null;
+    }
+
+    if (value is Timestamp) {
+      return value.toDate();
+    }
+
+    if (value is DateTime) {
+      return value;
+    }
+
+    if (value is String) {
+      final trimmed = value.trim();
+      if (trimmed.isEmpty) {
+        return null;
+      }
+
+      final direct = DateTime.tryParse(trimmed);
+      if (direct != null) {
+        return direct;
+      }
+
+      final formats = [
+        DateFormat('yyyy-MM-dd'),
+        DateFormat('dd/MM/yyyy'),
+        DateFormat('MM/dd/yyyy'),
+        DateFormat('dd-MM-yyyy'),
+        DateFormat('MMM d, yyyy'),
+        DateFormat('d MMM yyyy'),
+        DateFormat('MMMM d, yyyy'),
+        DateFormat('d MMMM yyyy'),
+      ];
+
+      for (final format in formats) {
+        try {
+          return format.parseStrict(trimmed);
+        } catch (_) {
+          continue;
+        }
+      }
+    }
+
+    return null;
+  }
+
+  static Timestamp? toTimestampOrNull(DateTime? value) {
+    if (value == null) {
+      return null;
+    }
+
+    return Timestamp.fromDate(value);
+  }
+
+  static DateTime normalizeDateToEndOfDay(DateTime value) {
+    return DateTime(value.year, value.month, value.day, 23, 59, 59);
+  }
+
+  static String formatDateForStorage(DateTime value) {
+    return DateFormat('yyyy-MM-dd').format(value);
+  }
+
+  static String formatDateLabel(
+    DateTime value, {
+    String pattern = 'MMM d, yyyy',
+  }) {
+    return DateFormat(pattern).format(value);
+  }
+
+  static num? extractSalaryMin(Map<String, dynamic> data) {
+    final salaryObject = data['salary'];
+    return parseNullableNum(
+      firstValue(data, ['salaryMin', 'salary_min']) ??
+          (salaryObject is Map
+              ? salaryObject['min'] ?? salaryObject['from']
+              : null),
+    );
+  }
+
+  static num? extractSalaryMax(Map<String, dynamic> data) {
+    final salaryObject = data['salary'];
+    return parseNullableNum(
+      firstValue(data, ['salaryMax', 'salary_max']) ??
+          (salaryObject is Map
+              ? salaryObject['max'] ?? salaryObject['to']
+              : null),
+    );
+  }
+
+  static String? extractSalaryCurrency(Map<String, dynamic> data) {
+    final salaryObject = data['salary'];
+    return normalizeCurrency(
+      stringFromValue(
+        firstValue(data, ['salaryCurrency', 'currency']) ??
+            (salaryObject is Map ? salaryObject['currency'] : null),
+      ),
+    );
+  }
+
+  static String? extractSalaryPeriod(Map<String, dynamic> data) {
+    final salaryObject = data['salary'];
+    return normalizeSalaryPeriod(
+      stringFromValue(
+        firstValue(data, [
+              'salaryPeriod',
+              'payPeriod',
+              'salaryFrequency',
+              'compensationPeriod',
+            ]) ??
+            (salaryObject is Map ? salaryObject['period'] : null),
+      ),
+    );
+  }
+
+  static String? extractCompensationText(Map<String, dynamic> data) {
+    final salaryObject = data['salary'];
+    return sanitizeText(
+      stringFromValue(
+        firstValue(data, [
+              'compensationText',
+              'salaryText',
+              'salaryRange',
+              'salary_range',
+              'stipend',
+              'stipendAmount',
+              'stipend_amount',
+              'compensation',
+              'payment',
+              'pay',
+              'payRange',
+              'pay_range',
+              'amount',
+              'budget',
+              'reward',
+            ]) ??
+            (salaryObject is Map
+                ? salaryObject['display'] ??
+                      salaryObject['label'] ??
+                      salaryObject['text']
+                : null),
+      ),
+    );
+  }
+
+  static String? extractEmploymentType(Map<String, dynamic> data) {
+    return normalizeEmploymentType(
+      stringFromValue(
+        firstValue(data, [
+          'employmentType',
+          'jobType',
+          'positionType',
+          'contractType',
+          'timeCommitment',
+          'schedule',
+          'commitment',
+        ]),
+      ),
+    );
+  }
+
+  static String? extractWorkMode(Map<String, dynamic> data) {
+    final explicitRemote = parseNullableBool(
+      firstValue(data, [
+        'remote',
+        'isRemote',
+        'remoteFriendly',
+        'isRemoteFriendly',
+      ]),
+    );
+    if (explicitRemote == true) {
+      return 'remote';
+    }
+
+    return normalizeWorkMode(
+      stringFromValue(
+        firstValue(data, [
+          'workMode',
+          'workplaceType',
+          'locationType',
+          'remoteType',
+        ]),
+      ),
+    );
+  }
+
+  static bool? extractIsPaid(Map<String, dynamic> data) {
+    return parseNullableBool(
+      firstValue(data, [
+        'isPaid',
+        'paid',
+        'paidOpportunity',
+        'isPaidOpportunity',
+      ]),
+    );
+  }
+
+  static String? extractDuration(Map<String, dynamic> data) {
+    return normalizeDuration(
+      stringFromValue(
+        firstValue(data, ['duration', 'internshipDuration', 'programDuration']),
+      ),
+    );
+  }
+
+  static DateTime? extractApplicationDeadline(Map<String, dynamic> data) {
+    return parseDateTimeLike(
+      firstValue(data, [
+            'applicationDeadline',
+            'deadlineAt',
+            'closingDate',
+            'closingAt',
+            'expiresAt',
+            'expiryDate',
+            'endDate',
+          ]) ??
+          data['deadline'],
+    );
+  }
+
+  static String? formatEmploymentType(String? rawValue) {
+    return switch (normalizeEmploymentType(rawValue)) {
+      'full_time' => 'Full-time',
+      'part_time' => 'Part-time',
+      'internship' => 'Internship',
+      'contract' => 'Contract',
+      'temporary' => 'Temporary',
+      'freelance' => 'Freelance',
+      _ => null,
+    };
+  }
+
+  static String? formatWorkMode(String? rawValue) {
+    return switch (normalizeWorkMode(rawValue)) {
+      'onsite' => 'On-site',
+      'remote' => 'Remote',
+      'hybrid' => 'Hybrid',
+      _ => null,
+    };
+  }
+
+  static String? formatPaidLabel(bool? isPaid) {
+    if (isPaid == null) {
+      return null;
+    }
+
+    return isPaid ? 'Paid' : 'Unpaid';
+  }
+
+  static String? formatSalaryRange({
+    num? salaryMin,
+    num? salaryMax,
+    String? salaryCurrency,
+    String? salaryPeriod,
+  }) {
+    num? normalizedMin = salaryMin;
+    num? normalizedMax = salaryMax;
+
+    if (normalizedMin == null && normalizedMax == null) {
+      return null;
+    }
+
+    if (normalizedMin != null &&
+        normalizedMax != null &&
+        normalizedMax < normalizedMin) {
+      final swappedMin = normalizedMax;
+      normalizedMax = normalizedMin;
+      normalizedMin = swappedMin;
+    }
+
+    final amountText = normalizedMin != null && normalizedMax != null
+        ? '${_formatCompactAmount(normalizedMin)}-${_formatCompactAmount(normalizedMax)}'
+        : _formatCompactAmount(normalizedMin ?? normalizedMax!);
+    final currencyText = normalizeCurrency(salaryCurrency);
+    final periodText = normalizeSalaryPeriod(salaryPeriod);
+
+    final buffer = StringBuffer(amountText);
+    if (currencyText != null) {
+      buffer.write(' $currencyText');
+    }
+    if (periodText != null) {
+      buffer.write(' / $periodText');
+    }
+
+    return buffer.toString().trim();
+  }
+
+  static String? buildCompensationLabel({
+    num? salaryMin,
+    num? salaryMax,
+    String? salaryCurrency,
+    String? salaryPeriod,
+    String? compensationText,
+    bool? isPaid,
+    bool preferCompensationText = false,
+  }) {
+    final customText = sanitizeText(compensationText);
+    final structured = formatSalaryRange(
+      salaryMin: salaryMin,
+      salaryMax: salaryMax,
+      salaryCurrency: salaryCurrency,
+      salaryPeriod: salaryPeriod,
+    );
+
+    if (preferCompensationText && customText != null) {
+      return customText;
+    }
+    if (structured != null) {
+      return structured;
+    }
+    if (customText != null) {
+      return customText;
+    }
+
+    return formatPaidLabel(isPaid);
+  }
+
+  static List<String> buildMetadataItems({
+    required String type,
+    num? salaryMin,
+    num? salaryMax,
+    String? salaryCurrency,
+    String? salaryPeriod,
+    String? compensationText,
+    bool? isPaid,
+    String? employmentType,
+    String? workMode,
+    String? duration,
+    int maxItems = 3,
+    bool preferCompensationText = false,
+  }) {
+    final items = <String>[];
+    final compensationLabel = buildCompensationLabel(
+      salaryMin: salaryMin,
+      salaryMax: salaryMax,
+      salaryCurrency: salaryCurrency,
+      salaryPeriod: salaryPeriod,
+      compensationText: compensationText,
+      isPaid: isPaid,
+      preferCompensationText: preferCompensationText,
+    );
+
+    if (compensationLabel != null) {
+      items.add(compensationLabel);
+    }
+
+    final employmentLabel = formatEmploymentType(employmentType);
+    if (employmentLabel != null) {
+      items.add(employmentLabel);
+    }
+
+    final workModeLabel = formatWorkMode(workMode);
+    if (workModeLabel != null) {
+      items.add(workModeLabel);
+    }
+
+    final paidLabel = formatPaidLabel(isPaid);
+    final normalizedCompensation = compensationLabel?.toLowerCase();
+    final compensationAlreadyConveysPaidState =
+        normalizedCompensation == 'paid' || normalizedCompensation == 'unpaid';
+    if (paidLabel != null &&
+        !compensationAlreadyConveysPaidState &&
+        compensationLabel == null) {
+      items.add(paidLabel);
+    }
+
+    if (OpportunityType.parse(type) == OpportunityType.internship) {
+      final normalizedDuration = normalizeDuration(duration);
+      if (normalizedDuration != null) {
+        items.add(normalizedDuration);
+      }
+    }
+
+    return uniqueNonEmpty(items).take(maxItems).toList();
+  }
+
+  static List<String> uniqueNonEmpty(Iterable<String?> items) {
+    final seen = <String>{};
+    final result = <String>[];
+
+    for (final item in items) {
+      final trimmed = item?.trim();
+      if (trimmed == null || trimmed.isEmpty) {
+        continue;
+      }
+
+      final key = trimmed.toLowerCase();
+      if (seen.add(key)) {
+        result.add(trimmed);
+      }
+    }
+
+    return result;
+  }
+
+  static String _formatCompactAmount(num value) {
+    final absoluteValue = value.abs();
+    if (absoluteValue >= 1000000) {
+      final compactMillions = value / 1000000;
+      final decimals = compactMillions % 1 == 0 ? 0 : 1;
+      return '${_trimTrailingZeros(compactMillions.toStringAsFixed(decimals))}m';
+    }
+
+    if (absoluteValue >= 1000) {
+      final compactThousands = value / 1000;
+      final decimals = compactThousands % 1 == 0 ? 0 : 1;
+      return '${_trimTrailingZeros(compactThousands.toStringAsFixed(decimals))}k';
+    }
+
+    if (value % 1 == 0) {
+      return value.toStringAsFixed(0);
+    }
+
+    return _trimTrailingZeros(value.toStringAsFixed(1));
+  }
+
+  static String _trimTrailingZeros(String value) {
+    if (!value.contains('.')) {
+      return value;
+    }
+
+    return value
+        .replaceFirst(RegExp(r'0+$'), '')
+        .replaceFirst(RegExp(r'\.$'), '');
+  }
+}

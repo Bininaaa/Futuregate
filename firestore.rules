@@ -68,6 +68,104 @@ service cloud.firestore {
       return value == 'open' || value == 'closed';
     }
 
+    function isNullableString(value) {
+      return value == null || value == '' || value is string;
+    }
+
+    function isNullableBool(value) {
+      return value == null || value is bool;
+    }
+
+    function isNullableNumber(value) {
+      return value == null || value is int || value is float;
+    }
+
+    function isNullableTimestamp(value) {
+      return value == null || value is timestamp;
+    }
+
+    function isEmploymentType(value) {
+      return value == 'full_time' ||
+          value == 'part_time' ||
+          value == 'internship' ||
+          value == 'contract' ||
+          value == 'temporary' ||
+          value == 'freelance';
+    }
+
+    function isWorkMode(value) {
+      return value == 'onsite' ||
+          value == 'remote' ||
+          value == 'hybrid';
+    }
+
+    function isSalaryPeriod(value) {
+      return value == 'hour' ||
+          value == 'day' ||
+          value == 'week' ||
+          value == 'month' ||
+          value == 'year';
+    }
+
+    function hasValidOpportunityMetadata(data) {
+      return (
+          !data.keys().hasAny(['salaryMin']) ||
+          isNullableNumber(data.salaryMin)
+        ) &&
+        (
+          !data.keys().hasAny(['salaryMax']) ||
+          isNullableNumber(data.salaryMax)
+        ) &&
+        (
+          !data.keys().hasAny(['salaryCurrency']) ||
+          isNullableString(data.salaryCurrency)
+        ) &&
+        (
+          !data.keys().hasAny(['salaryPeriod']) ||
+          data.salaryPeriod == null ||
+          data.salaryPeriod == '' ||
+          isSalaryPeriod(data.salaryPeriod)
+        ) &&
+        (
+          !data.keys().hasAny(['compensationText']) ||
+          isNullableString(data.compensationText)
+        ) &&
+        (
+          !data.keys().hasAny(['employmentType']) ||
+          data.employmentType == null ||
+          data.employmentType == '' ||
+          isEmploymentType(data.employmentType)
+        ) &&
+        (
+          !data.keys().hasAny(['workMode']) ||
+          data.workMode == null ||
+          data.workMode == '' ||
+          isWorkMode(data.workMode)
+        ) &&
+        (
+          !data.keys().hasAny(['isPaid']) ||
+          isNullableBool(data.isPaid)
+        ) &&
+        (
+          !data.keys().hasAny(['duration']) ||
+          isNullableString(data.duration)
+        ) &&
+        (
+          !data.keys().hasAny(['applicationDeadline']) ||
+          isNullableTimestamp(data.applicationDeadline)
+        ) &&
+        (
+          !data.keys().hasAny(['updatedAt']) ||
+          data.updatedAt != null
+        ) &&
+        (
+          !data.keys().hasAll(['salaryMin', 'salaryMax']) ||
+          data.salaryMin == null ||
+          data.salaryMax == null ||
+          data.salaryMax >= data.salaryMin
+        );
+    }
+
     function isApplicationStatus(value) {
       return value == 'pending' ||
           value == 'accepted' ||
@@ -588,12 +686,24 @@ service cloud.firestore {
             'requirements',
             'status',
             'deadline',
-            'createdAt'
+            'createdAt',
+            'updatedAt',
+            'salaryMin',
+            'salaryMax',
+            'salaryCurrency',
+            'salaryPeriod',
+            'compensationText',
+            'employmentType',
+            'workMode',
+            'isPaid',
+            'duration',
+            'applicationDeadline'
           ]) &&
           request.resource.data.id == opportunityId &&
           request.resource.data.companyId == request.auth.uid &&
           isOpportunityType(request.resource.data.type) &&
-          isOpportunityStatus(request.resource.data.status);
+          isOpportunityStatus(request.resource.data.status) &&
+          hasValidOpportunityMetadata(request.resource.data);
 
       allow update: if (
           isAdmin() ||
@@ -609,13 +719,25 @@ service cloud.firestore {
               'location',
               'requirements',
               'status',
-              'deadline'
+              'deadline',
+              'updatedAt',
+              'salaryMin',
+              'salaryMax',
+              'salaryCurrency',
+              'salaryPeriod',
+              'compensationText',
+              'employmentType',
+              'workMode',
+              'isPaid',
+              'duration',
+              'applicationDeadline'
             ]) &&
             request.resource.data.id == resource.data.id &&
             request.resource.data.companyId == resource.data.companyId &&
             request.resource.data.createdAt == resource.data.createdAt &&
             isOpportunityType(request.resource.data.type) &&
-            isOpportunityStatus(request.resource.data.status)
+            isOpportunityStatus(request.resource.data.status) &&
+            hasValidOpportunityMetadata(request.resource.data)
           )
         );
 

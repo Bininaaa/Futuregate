@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
+import '../../models/opportunity_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/company_provider.dart';
+import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/opportunity_type_badge.dart';
 import 'publish_opportunity_screen.dart';
@@ -255,20 +257,9 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
                                             Wrap(
                                               spacing: 8,
                                               runSpacing: 4,
-                                              children: [
-                                                OpportunityTypeBadge(
-                                                  type: opportunity.type,
-                                                  fontSize: 10,
-                                                ),
-                                                _buildTag(
-                                                  opportunity.location,
-                                                  Colors.grey,
-                                                ),
-                                                _buildTag(
-                                                  'Deadline: ${opportunity.deadline}',
-                                                  Colors.orange,
-                                                ),
-                                              ],
+                                              children: _buildOpportunityTags(
+                                                opportunity,
+                                              ),
                                             ),
                                             const SizedBox(height: 10),
                                             Row(
@@ -383,6 +374,31 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
         ),
       ),
     );
+  }
+
+  List<Widget> _buildOpportunityTags(OpportunityModel opportunity) {
+    final metadata = OpportunityMetadata.buildMetadataItems(
+      type: opportunity.type,
+      salaryMin: opportunity.salaryMin,
+      salaryMax: opportunity.salaryMax,
+      salaryCurrency: opportunity.salaryCurrency,
+      salaryPeriod: opportunity.salaryPeriod,
+      compensationText: opportunity.compensationText,
+      isPaid: opportunity.isPaid,
+      employmentType: opportunity.employmentType,
+      workMode: opportunity.workMode,
+      duration: opportunity.duration,
+      maxItems: 3,
+    );
+
+    return [
+      OpportunityTypeBadge(type: opportunity.type, fontSize: 10),
+      if (opportunity.location.trim().isNotEmpty)
+        _buildTag(opportunity.location, Colors.grey),
+      if (opportunity.deadlineLabel.isNotEmpty)
+        _buildTag('Deadline: ${opportunity.deadlineLabel}', Colors.orange),
+      ...metadata.map((item) => _buildTag(item, mediumBlue)),
+    ];
   }
 
   Widget _buildActionButton(IconData icon, Color color, VoidCallback onTap) {

@@ -690,14 +690,14 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
               children: [
                 OpportunityTypeBadge(type: item.type, showIcon: false),
                 const Spacer(),
-                if (item.deadline.isNotEmpty)
+                if (item.deadlineLabel.isNotEmpty)
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(Icons.schedule, size: 13, color: textLight),
                       const SizedBox(width: 3),
                       Text(
-                        item.deadline,
+                        item.deadlineLabel,
                         style: GoogleFonts.poppins(
                           fontSize: 10,
                           color: textMedium,

@@ -5,6 +5,7 @@ import '../models/opportunity_model.dart';
 import '../models/application_model.dart';
 import '../models/cv_model.dart';
 import '../utils/application_status.dart';
+import '../utils/opportunity_metadata.dart';
 import '../utils/opportunity_type.dart';
 import 'notification_worker_service.dart';
 import 'storage_service.dart';
@@ -45,11 +46,10 @@ class CompanyService {
 
   Future<void> createOpportunity(Map<String, dynamic> data) async {
     final docRef = _firestore.collection('opportunities').doc();
-    final docData = Map<String, dynamic>.from(data);
-    docData['type'] = OpportunityType.parse(docData['type']?.toString());
-    docData['status'] = _normalizeOpportunityStatus(docData['status']);
+    final docData = _normalizeOpportunityPayload(data, isCreate: true);
     docData['id'] = docRef.id;
     docData['createdAt'] = FieldValue.serverTimestamp();
+    docData['updatedAt'] = FieldValue.serverTimestamp();
     await docRef.set(docData);
     if (_shouldNotifyStudentsAboutOpportunity(docData)) {
       await _notificationWorker.notifyOpportunityCreated(docRef.id);
@@ -63,14 +63,8 @@ class CompanyService {
     final docRef = _firestore.collection('opportunities').doc(oppId);
     final currentSnapshot = await docRef.get();
     final currentData = currentSnapshot.data() ?? const <String, dynamic>{};
-    final nextData = Map<String, dynamic>.from(data);
-
-    if (nextData.containsKey('type')) {
-      nextData['type'] = OpportunityType.parse(nextData['type']?.toString());
-    }
-    if (nextData.containsKey('status')) {
-      nextData['status'] = _normalizeOpportunityStatus(nextData['status']);
-    }
+    final nextData = _normalizeOpportunityPayload(data, isCreate: false);
+    nextData['updatedAt'] = FieldValue.serverTimestamp();
 
     await docRef.update(nextData);
 
@@ -382,5 +376,113 @@ class CompanyService {
   String _normalizeOpportunityStatus(Object? rawStatus) {
     final normalized = (rawStatus ?? '').toString().trim().toLowerCase();
     return normalized == 'closed' ? 'closed' : 'open';
+  }
+
+  Map<String, dynamic> _normalizeOpportunityPayload(
+    Map<String, dynamic> data, {
+    required bool isCreate,
+  }) {
+    final nextData = Map<String, dynamic>.from(data);
+
+    for (final field in const [
+      'title',
+      'description',
+      'location',
+      'requirements',
+      'companyId',
+      'companyName',
+      'companyLogo',
+      'deadline',
+    ]) {
+      if (!nextData.containsKey(field)) {
+        continue;
+      }
+
+      nextData[field] = (nextData[field] ?? '').toString().trim();
+    }
+
+    if (nextData.containsKey('type') || isCreate) {
+      nextData['type'] = OpportunityType.parse(nextData['type']?.toString());
+    }
+
+    if (nextData.containsKey('status') || isCreate) {
+      nextData['status'] = _normalizeOpportunityStatus(nextData['status']);
+    }
+
+    if (nextData.containsKey('salaryMin')) {
+      nextData['salaryMin'] = OpportunityMetadata.parseNullableNum(
+        nextData['salaryMin'],
+      );
+    }
+
+    if (nextData.containsKey('salaryMax')) {
+      nextData['salaryMax'] = OpportunityMetadata.parseNullableNum(
+        nextData['salaryMax'],
+      );
+    }
+
+    if (nextData.containsKey('salaryCurrency')) {
+      nextData['salaryCurrency'] = OpportunityMetadata.normalizeCurrency(
+        nextData['salaryCurrency']?.toString(),
+      );
+    }
+
+    if (nextData.containsKey('salaryPeriod')) {
+      nextData['salaryPeriod'] = OpportunityMetadata.normalizeSalaryPeriod(
+        nextData['salaryPeriod']?.toString(),
+      );
+    }
+
+    if (nextData.containsKey('compensationText')) {
+      nextData['compensationText'] = OpportunityMetadata.sanitizeText(
+        nextData['compensationText']?.toString(),
+      );
+    }
+
+    if (nextData.containsKey('employmentType')) {
+      nextData['employmentType'] = OpportunityMetadata.normalizeEmploymentType(
+        nextData['employmentType']?.toString(),
+      );
+    }
+
+    if (nextData.containsKey('workMode')) {
+      nextData['workMode'] = OpportunityMetadata.normalizeWorkMode(
+        nextData['workMode']?.toString(),
+      );
+    }
+
+    if (nextData.containsKey('isPaid')) {
+      nextData['isPaid'] = OpportunityMetadata.parseNullableBool(
+        nextData['isPaid'],
+      );
+    }
+
+    if (nextData.containsKey('duration')) {
+      nextData['duration'] = OpportunityMetadata.normalizeDuration(
+        nextData['duration']?.toString(),
+      );
+    }
+
+    final shouldNormalizeDeadline =
+        isCreate ||
+        nextData.containsKey('applicationDeadline') ||
+        nextData.containsKey('deadline');
+    if (shouldNormalizeDeadline) {
+      final rawDeadline = nextData.containsKey('applicationDeadline')
+          ? nextData['applicationDeadline']
+          : nextData['deadline'];
+      final parsedDeadline = OpportunityMetadata.parseDateTimeLike(rawDeadline);
+
+      nextData['applicationDeadline'] = parsedDeadline == null
+          ? null
+          : Timestamp.fromDate(
+              OpportunityMetadata.normalizeDateToEndOfDay(parsedDeadline),
+            );
+      nextData['deadline'] = parsedDeadline == null
+          ? ((nextData['deadline'] ?? '').toString().trim())
+          : OpportunityMetadata.formatDateForStorage(parsedDeadline);
+    }
+
+    return nextData;
   }
 }

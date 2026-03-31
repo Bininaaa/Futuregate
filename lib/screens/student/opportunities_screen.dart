@@ -11,6 +11,7 @@ import '../../providers/opportunity_provider.dart';
 import '../../providers/saved_opportunity_provider.dart';
 import '../../providers/training_provider.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
+import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/opportunity_dashboard_widgets.dart';
 import 'jobs_screen.dart';
@@ -36,6 +37,10 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
 
   late _OpportunityDashboardFilter _activeFilter;
   String _searchQuery = '';
+  String? _selectedEmploymentFilter;
+  String? _selectedWorkModeFilter;
+  bool _paidOnly = false;
+  bool _closingSoonOnly = false;
 
   @override
   void initState() {
@@ -112,6 +117,10 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
         return false;
       }
 
+      if (!_matchesStructuredFilters(opportunity)) {
+        return false;
+      }
+
       if (query.isEmpty) {
         return true;
       }
@@ -124,8 +133,13 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
         opportunity.requirements,
         _typeLabel(opportunity.type),
         _deriveTrendingTag(opportunity),
+        _employmentTypeLabel(opportunity) ?? '',
         _workModeLabel(opportunity) ?? '',
         _compensationText(opportunity) ?? '',
+        OpportunityMetadata.formatPaidLabel(_effectiveIsPaid(opportunity)) ??
+            '',
+        OpportunityMetadata.normalizeDuration(opportunity.duration) ?? '',
+        opportunity.deadlineLabel,
       ];
 
       return searchableFields.any(
@@ -147,6 +161,35 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
       case _OpportunityDashboardFilter.sponsored:
         return type == OpportunityType.sponsoring;
     }
+  }
+
+  bool _matchesStructuredFilters(OpportunityModel opportunity) {
+    if (_selectedEmploymentFilter != null &&
+        opportunity.employmentType != _selectedEmploymentFilter) {
+      return false;
+    }
+
+    if (_selectedWorkModeFilter != null &&
+        _normalizedWorkMode(opportunity) != _selectedWorkModeFilter) {
+      return false;
+    }
+
+    if (_paidOnly && _effectiveIsPaid(opportunity) != true) {
+      return false;
+    }
+
+    if (_closingSoonOnly) {
+      final deadline = _deadlineFor(opportunity);
+      if (deadline == null) {
+        return false;
+      }
+      final difference = deadline.difference(DateTime.now());
+      if (difference.isNegative || difference.inDays > 14) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   Future<void> _focusSearchField() async {
@@ -221,7 +264,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
         companyName: opportunity.companyName,
         type: opportunity.type,
         location: opportunity.location,
-        deadline: opportunity.deadline,
+        deadline: opportunity.deadlineLabel,
       );
     }
 
@@ -233,97 +276,271 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
   }
 
   Future<void> _showFilterSheet() async {
-    final selected = await showModalBottomSheet<_OpportunityDashboardFilter>(
+    var draftFilter = _activeFilter;
+    var draftEmploymentType = _selectedEmploymentFilter;
+    var draftWorkMode = _selectedWorkModeFilter;
+    var draftPaidOnly = _paidOnly;
+    var draftClosingSoonOnly = _closingSoonOnly;
+
+    await showModalBottomSheet<void>(
       context: context,
       backgroundColor: OpportunityDashboardPalette.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
       builder: (context) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Browse categories',
-                  style: GoogleFonts.poppins(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                    color: OpportunityDashboardPalette.textPrimary,
-                  ),
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            Widget buildChip({
+              required String label,
+              required bool selected,
+              required VoidCallback onTap,
+              IconData? icon,
+            }) {
+              return ChoiceChip(
+                label: Text(label),
+                avatar: icon == null ? null : Icon(icon, size: 18),
+                selected: selected,
+                onSelected: (_) => onTap(),
+                selectedColor: OpportunityDashboardPalette.primary.withValues(
+                  alpha: 0.14,
                 ),
-                const SizedBox(height: 6),
-                Text(
-                  'Keep the existing data source, but tailor what you see.',
-                  style: GoogleFonts.poppins(
-                    fontSize: 13,
-                    color: OpportunityDashboardPalette.textSecondary,
-                  ),
+                labelStyle: GoogleFonts.poppins(
+                  fontWeight: FontWeight.w600,
+                  color: selected
+                      ? OpportunityDashboardPalette.primary
+                      : OpportunityDashboardPalette.textSecondary,
                 ),
-                const SizedBox(height: 18),
-                Wrap(
-                  spacing: 10,
-                  runSpacing: 10,
-                  children: _dashboardFilters.map((filter) {
-                    final isSelected = filter.value == _activeFilter;
+                side: BorderSide(
+                  color: selected
+                      ? OpportunityDashboardPalette.primary
+                      : OpportunityDashboardPalette.border,
+                ),
+                backgroundColor: OpportunityDashboardPalette.background,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(999),
+                ),
+              );
+            }
 
-                    return ChoiceChip(
-                      label: Text(filter.label),
-                      avatar: Icon(filter.icon, size: 18),
-                      selected: isSelected,
-                      onSelected: (_) => Navigator.pop(context, filter.value),
-                      selectedColor: OpportunityDashboardPalette.primary
-                          .withValues(alpha: 0.14),
-                      labelStyle: GoogleFonts.poppins(
-                        fontWeight: FontWeight.w600,
-                        color: isSelected
-                            ? OpportunityDashboardPalette.primary
-                            : OpportunityDashboardPalette.textSecondary,
+            return SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Browse categories',
+                        style: GoogleFonts.poppins(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                          color: OpportunityDashboardPalette.textPrimary,
+                        ),
                       ),
-                      side: BorderSide(
-                        color: isSelected
-                            ? OpportunityDashboardPalette.primary
-                            : OpportunityDashboardPalette.border,
+                      const SizedBox(height: 6),
+                      Text(
+                        'Keep the existing data source, but tailor what you see.',
+                        style: GoogleFonts.poppins(
+                          fontSize: 13,
+                          color: OpportunityDashboardPalette.textSecondary,
+                        ),
                       ),
-                      backgroundColor: OpportunityDashboardPalette.background,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(999),
+                      const SizedBox(height: 18),
+                      Wrap(
+                        spacing: 10,
+                        runSpacing: 10,
+                        children: _dashboardFilters.map((filter) {
+                          return buildChip(
+                            label: filter.label,
+                            icon: filter.icon,
+                            selected: filter.value == draftFilter,
+                            onTap: () {
+                              setModalState(() {
+                                draftFilter = filter.value;
+                              });
+                            },
+                          );
+                        }).toList(),
                       ),
-                    );
-                  }).toList(),
-                ),
-                if (_searchQuery.isNotEmpty) ...[
-                  const SizedBox(height: 18),
-                  TextButton.icon(
-                    onPressed: () {
-                      _searchController.clear();
-                      Navigator.pop(context);
-                    },
-                    icon: const Icon(Icons.close_rounded),
-                    label: const Text('Clear search'),
-                    style: TextButton.styleFrom(
-                      foregroundColor:
-                          OpportunityDashboardPalette.textSecondary,
-                    ),
+                      const SizedBox(height: 20),
+                      Text(
+                        'Employment type',
+                        style: GoogleFonts.poppins(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: OpportunityDashboardPalette.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Wrap(
+                        spacing: 10,
+                        runSpacing: 10,
+                        children: [
+                          buildChip(
+                            label: 'Any',
+                            selected: draftEmploymentType == null,
+                            onTap: () {
+                              setModalState(() {
+                                draftEmploymentType = null;
+                              });
+                            },
+                          ),
+                          ...OpportunityMetadata.employmentTypes.map((type) {
+                            final label =
+                                OpportunityMetadata.formatEmploymentType(
+                                  type,
+                                ) ??
+                                type;
+                            return buildChip(
+                              label: label,
+                              selected: draftEmploymentType == type,
+                              onTap: () {
+                                setModalState(() {
+                                  draftEmploymentType = type;
+                                });
+                              },
+                            );
+                          }),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        'Work mode',
+                        style: GoogleFonts.poppins(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: OpportunityDashboardPalette.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Wrap(
+                        spacing: 10,
+                        runSpacing: 10,
+                        children: [
+                          buildChip(
+                            label: 'Any',
+                            selected: draftWorkMode == null,
+                            onTap: () {
+                              setModalState(() {
+                                draftWorkMode = null;
+                              });
+                            },
+                          ),
+                          ...OpportunityMetadata.workModes.map((mode) {
+                            final label =
+                                OpportunityMetadata.formatWorkMode(mode) ??
+                                mode;
+                            return buildChip(
+                              label: label,
+                              selected: draftWorkMode == mode,
+                              onTap: () {
+                                setModalState(() {
+                                  draftWorkMode = mode;
+                                });
+                              },
+                            );
+                          }),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        'Quick filters',
+                        style: GoogleFonts.poppins(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: OpportunityDashboardPalette.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Wrap(
+                        spacing: 10,
+                        runSpacing: 10,
+                        children: [
+                          buildChip(
+                            label: 'Paid only',
+                            selected: draftPaidOnly,
+                            onTap: () {
+                              setModalState(() {
+                                draftPaidOnly = !draftPaidOnly;
+                              });
+                            },
+                            icon: Icons.payments_outlined,
+                          ),
+                          buildChip(
+                            label: 'Closing soon',
+                            selected: draftClosingSoonOnly,
+                            onTap: () {
+                              setModalState(() {
+                                draftClosingSoonOnly = !draftClosingSoonOnly;
+                              });
+                            },
+                            icon: Icons.hourglass_bottom_rounded,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 22),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: OutlinedButton(
+                              onPressed: () {
+                                setState(() {
+                                  _activeFilter =
+                                      _OpportunityDashboardFilter.all;
+                                  _selectedEmploymentFilter = null;
+                                  _selectedWorkModeFilter = null;
+                                  _paidOnly = false;
+                                  _closingSoonOnly = false;
+                                  if (_searchQuery.isNotEmpty) {
+                                    _searchController.clear();
+                                  }
+                                });
+                                Navigator.pop(context);
+                              },
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor:
+                                    OpportunityDashboardPalette.textSecondary,
+                                side: const BorderSide(
+                                  color: OpportunityDashboardPalette.border,
+                                ),
+                              ),
+                              child: const Text('Clear'),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: () {
+                                setState(() {
+                                  _activeFilter = draftFilter;
+                                  _selectedEmploymentFilter =
+                                      draftEmploymentType;
+                                  _selectedWorkModeFilter = draftWorkMode;
+                                  _paidOnly = draftPaidOnly;
+                                  _closingSoonOnly = draftClosingSoonOnly;
+                                });
+                                Navigator.pop(context);
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    OpportunityDashboardPalette.primary,
+                                foregroundColor: Colors.white,
+                              ),
+                              child: const Text('Apply'),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                ],
-              ],
-            ),
-          ),
+                ),
+              ),
+            );
+          },
         );
       },
     );
-
-    if (selected == null || !mounted) {
-      return;
-    }
-
-    setState(() {
-      _activeFilter = selected;
-    });
   }
 
   void _setFilter(_OpportunityDashboardFilter filter) {
@@ -397,7 +614,9 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
   }
 
   DateTime? _deadlineFor(OpportunityModel opportunity) {
-    final explicitDeadline = _parseDeadlineValue(opportunity.deadline);
+    final explicitDeadline =
+        opportunity.applicationDeadline ??
+        _parseDeadlineValue(opportunity.deadlineLabel);
     if (explicitDeadline != null) {
       return explicitDeadline;
     }
@@ -468,7 +687,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
   String _formatDeadlineDisplay(OpportunityModel opportunity) {
     final parsed = _deadlineFor(opportunity);
     if (parsed == null) {
-      final fallback = opportunity.deadline.trim();
+      final fallback = opportunity.deadlineLabel.trim();
       return fallback.isEmpty ? 'No deadline' : fallback;
     }
 
@@ -707,8 +926,8 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
     }
 
     return switch (_workModeLabel(opportunity)) {
-      'REMOTE' => 'Remote',
-      'HYBRID' => 'Hybrid',
+      'Remote' => 'Remote',
+      'Hybrid' => 'Hybrid',
       _ => null,
     };
   }
@@ -725,26 +944,23 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
   }
 
   String? _compensationText(OpportunityModel opportunity) {
-    final explicitCompensation = _sanitizeCompensationText(
-      opportunity.readString([
-        'salary',
-        'salaryRange',
-        'salary_range',
-        'stipend',
-        'stipendAmount',
-        'stipend_amount',
-        'compensation',
-        'payment',
-        'pay',
-        'payRange',
-        'pay_range',
-        'amount',
-        'budget',
-        'reward',
-      ]),
+    final structuredLabel = OpportunityMetadata.buildCompensationLabel(
+      salaryMin: opportunity.salaryMin,
+      salaryMax: opportunity.salaryMax,
+      salaryCurrency: opportunity.salaryCurrency,
+      salaryPeriod: opportunity.salaryPeriod,
+      compensationText: opportunity.compensationText,
+      isPaid: opportunity.isPaid,
     );
-    if (explicitCompensation != null) {
-      return explicitCompensation;
+    if (structuredLabel != null) {
+      return structuredLabel;
+    }
+
+    final legacyCompensation = _sanitizeCompensationText(
+      OpportunityMetadata.extractCompensationText(opportunity.rawData),
+    );
+    if (legacyCompensation != null) {
+      return legacyCompensation;
     }
 
     final extracted = _sanitizeCompensationText(
@@ -754,37 +970,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
       return extracted;
     }
 
-    if (_hasPaidIndicator(opportunity)) {
-      return 'Paid';
-    }
-
-    return null;
-  }
-
-  bool _hasPaidIndicator(OpportunityModel opportunity) {
-    final explicitPaid = opportunity.readBool([
-      'paid',
-      'isPaid',
-      'paidOpportunity',
-      'isPaidOpportunity',
-    ]);
-    if (explicitPaid != null) {
-      return explicitPaid;
-    }
-
-    final text = '${opportunity.description} ${opportunity.requirements}'
-        .toLowerCase();
-    if (text.contains('unpaid')) {
-      return false;
-    }
-
-    return text.contains('paid') ||
-        text.contains('stipend') ||
-        text.contains('salary') ||
-        RegExp(
-          r'(\$|usd|eur|dzd|/month|per month|per hour|monthly|hourly)',
-          caseSensitive: false,
-        ).hasMatch(text);
+    return OpportunityMetadata.formatPaidLabel(_effectiveIsPaid(opportunity));
   }
 
   String? _extractCompensationFromText(OpportunityModel opportunity) {
@@ -878,39 +1064,27 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
   }
 
   String? _workModeLabel(OpportunityModel opportunity) {
-    final explicitRemote = opportunity.readBool([
-      'remote',
-      'isRemote',
-      'remoteFriendly',
-      'isRemoteFriendly',
-    ]);
-    if (explicitRemote == true) {
-      return 'REMOTE';
+    final normalizedMode = _normalizedWorkMode(opportunity);
+    if (normalizedMode != null) {
+      return OpportunityMetadata.formatWorkMode(normalizedMode);
     }
 
-    final explicitMode = opportunity.readString([
-      'workMode',
-      'workplaceType',
-      'locationType',
-      'remoteType',
-    ]);
     final searchable = [
-      explicitMode,
       opportunity.location,
       opportunity.description,
       opportunity.requirements,
     ].whereType<String>().join(' ').toLowerCase();
 
     if (searchable.contains('hybrid')) {
-      return 'HYBRID';
+      return 'Hybrid';
     }
     if (searchable.contains('remote')) {
-      return 'REMOTE';
+      return 'Remote';
     }
     if (searchable.contains('on-site') ||
         searchable.contains('onsite') ||
         searchable.contains('on site')) {
-      return 'ON-SITE';
+      return 'On-site';
     }
 
     return null;
@@ -920,37 +1094,80 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
     final items = <String>[];
     final deadline = _deadlineFor(opportunity);
     final postedAt = _postedAt(opportunity);
+    final metadataItems = _metadataItems(opportunity, maxItems: 3);
+
+    items.addAll(metadataItems);
 
     if (deadline != null) {
       final difference = deadline.difference(DateTime.now());
       if (!difference.isNegative && difference.inDays <= 14) {
-        items.add(_closingSoonText(opportunity).toUpperCase());
+        items.add(_closingSoonText(opportunity));
       } else if (postedAt == null) {
-        items.add(
-          'DEADLINE ${_formatDeadlineDisplay(opportunity).toUpperCase()}',
-        );
+        items.add('Deadline ${_formatDeadlineDisplay(opportunity)}');
       }
     }
 
-    if (postedAt != null) {
-      items.add('POSTED ${_relativePostedTime(opportunity).toUpperCase()}');
-    }
-
-    final compensation = _compensationText(opportunity);
-    if (compensation != null) {
-      items.add(compensation.toLowerCase() == 'paid' ? 'PAID' : compensation);
-    }
-
-    final workMode = _workModeLabel(opportunity);
-    if (workMode != null) {
-      items.add(workMode);
+    if (postedAt != null && metadataItems.length < 2) {
+      items.add('Posted ${_relativePostedTime(opportunity)}');
     }
 
     if (items.isEmpty) {
-      items.add(_typeLabel(opportunity.type).toUpperCase());
+      items.add(_typeLabel(opportunity.type));
     }
 
     return _uniqueValues(items).take(4).toList();
+  }
+
+  String? _employmentTypeLabel(OpportunityModel opportunity) {
+    return OpportunityMetadata.formatEmploymentType(opportunity.employmentType);
+  }
+
+  String? _normalizedWorkMode(OpportunityModel opportunity) {
+    return opportunity.workMode ??
+        OpportunityMetadata.extractWorkMode(opportunity.rawData);
+  }
+
+  bool? _effectiveIsPaid(OpportunityModel opportunity) {
+    return opportunity.isPaid ??
+        OpportunityMetadata.extractIsPaid(opportunity.rawData);
+  }
+
+  List<String> _metadataItems(
+    OpportunityModel opportunity, {
+    int maxItems = 3,
+  }) {
+    final items = OpportunityMetadata.buildMetadataItems(
+      type: opportunity.type,
+      salaryMin: opportunity.salaryMin,
+      salaryMax: opportunity.salaryMax,
+      salaryCurrency: opportunity.salaryCurrency,
+      salaryPeriod: opportunity.salaryPeriod,
+      compensationText: opportunity.compensationText,
+      isPaid: _effectiveIsPaid(opportunity),
+      employmentType: opportunity.employmentType,
+      workMode: _normalizedWorkMode(opportunity),
+      duration: opportunity.duration,
+      maxItems: maxItems,
+    );
+    if (items.isNotEmpty) {
+      return items;
+    }
+
+    final legacyItems = <String>[];
+    final compensation = _sanitizeCompensationText(
+      _extractCompensationFromText(opportunity),
+    );
+    if (compensation != null) {
+      legacyItems.add(compensation);
+    }
+    final workMode = _workModeLabel(opportunity);
+    if (workMode != null) {
+      legacyItems.add(workMode);
+    }
+
+    return OpportunityMetadata.uniqueNonEmpty(
+      legacyItems,
+    ).take(maxItems).toList();
   }
 
   List<String> _uniqueValues(List<String> values) {
@@ -1361,6 +1578,17 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                                       opportunity,
                                     ),
                                     locationText: _locationLabel(opportunity),
+                                    metadataText:
+                                        OpportunityMetadata.uniqueNonEmpty(
+                                          _metadataItems(
+                                            opportunity,
+                                            maxItems: 3,
+                                          ).where(
+                                            (item) =>
+                                                item !=
+                                                _compensationText(opportunity),
+                                          ),
+                                        ).join(' | '),
                                     compensationText: _compensationText(
                                       opportunity,
                                     ),
@@ -1466,7 +1694,10 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                                 companyLocationText: _companyLocationText(
                                   opportunity,
                                 ),
-                                statusItems: [_closingSoonText(opportunity)],
+                                statusItems: [
+                                  _closingSoonText(opportunity),
+                                  ..._metadataItems(opportunity, maxItems: 2),
+                                ],
                                 badgeText: 'URGENT',
                                 badgeColor: urgencyColor,
                                 statusColor: urgencyColor,

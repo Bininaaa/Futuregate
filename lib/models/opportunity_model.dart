@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../utils/opportunity_metadata.dart';
 import '../utils/opportunity_type.dart';
 
 class OpportunityModel {
@@ -15,7 +16,18 @@ class OpportunityModel {
   final String status;
   final String deadline;
   final Timestamp? createdAt;
+  final Timestamp? updatedAt;
   final bool isFeatured;
+  final num? salaryMin;
+  final num? salaryMax;
+  final String? salaryCurrency;
+  final String? salaryPeriod;
+  final String? compensationText;
+  final String? employmentType;
+  final String? workMode;
+  final bool? isPaid;
+  final String? duration;
+  final DateTime? applicationDeadline;
   final Map<String, dynamic> rawData;
 
   OpportunityModel({
@@ -31,7 +43,18 @@ class OpportunityModel {
     required this.status,
     required this.deadline,
     this.createdAt,
+    this.updatedAt,
     this.isFeatured = false,
+    this.salaryMin,
+    this.salaryMax,
+    this.salaryCurrency,
+    this.salaryPeriod,
+    this.compensationText,
+    this.employmentType,
+    this.workMode,
+    this.isPaid,
+    this.duration,
+    this.applicationDeadline,
     this.rawData = const {},
   });
 
@@ -39,24 +62,39 @@ class OpportunityModel {
     final data = Map<String, dynamic>.from(map);
 
     return OpportunityModel(
-      id: data['id'] ?? '',
-      companyId: data['companyId'] ?? '',
-      companyName: data['companyName'] ?? '',
-      companyLogo: data['companyLogo'] ?? '',
-      title: data['title'] ?? '',
-      description: data['description'] ?? '',
-      type: OpportunityType.parse(data['type']),
-      location: data['location'] ?? '',
-      requirements: data['requirements'] ?? '',
-      status: data['status'] ?? '',
-      deadline: data['deadline'] ?? '',
-      createdAt: data['createdAt'],
-      isFeatured: data['isFeatured'] ?? false,
+      id: (data['id'] ?? '').toString(),
+      companyId: (data['companyId'] ?? '').toString(),
+      companyName: (data['companyName'] ?? '').toString(),
+      companyLogo: (data['companyLogo'] ?? '').toString(),
+      title: (data['title'] ?? '').toString(),
+      description: (data['description'] ?? '').toString(),
+      type: OpportunityType.parse(data['type']?.toString()),
+      location: (data['location'] ?? '').toString(),
+      requirements: (data['requirements'] ?? '').toString(),
+      status: (data['status'] ?? '').toString(),
+      deadline: OpportunityMetadata.stringFromValue(data['deadline']) ?? '',
+      createdAt: _timestampFromValue(data['createdAt']),
+      updatedAt: _timestampFromValue(data['updatedAt']),
+      isFeatured: data['isFeatured'] == true,
+      salaryMin: OpportunityMetadata.extractSalaryMin(data),
+      salaryMax: OpportunityMetadata.extractSalaryMax(data),
+      salaryCurrency: OpportunityMetadata.extractSalaryCurrency(data),
+      salaryPeriod: OpportunityMetadata.extractSalaryPeriod(data),
+      compensationText: OpportunityMetadata.extractCompensationText(data),
+      employmentType: OpportunityMetadata.extractEmploymentType(data),
+      workMode: OpportunityMetadata.extractWorkMode(data),
+      isPaid: OpportunityMetadata.extractIsPaid(data),
+      duration: OpportunityMetadata.extractDuration(data),
+      applicationDeadline: OpportunityMetadata.extractApplicationDeadline(data),
       rawData: data,
     );
   }
 
   Map<String, dynamic> toMap() {
+    final normalizedDeadline = deadlineLabel.isNotEmpty
+        ? deadlineLabel
+        : deadline.trim();
+
     return {
       ...rawData,
       'id': id,
@@ -69,123 +107,66 @@ class OpportunityModel {
       'location': location,
       'requirements': requirements,
       'status': status,
-      'deadline': deadline,
+      'deadline': normalizedDeadline,
       'createdAt': createdAt,
+      'updatedAt': updatedAt,
       'isFeatured': isFeatured,
+      'salaryMin': salaryMin,
+      'salaryMax': salaryMax,
+      'salaryCurrency': salaryCurrency,
+      'salaryPeriod': salaryPeriod,
+      'compensationText': compensationText,
+      'employmentType': employmentType,
+      'workMode': workMode,
+      'isPaid': isPaid,
+      'duration': duration,
+      'applicationDeadline': OpportunityMetadata.toTimestampOrNull(
+        applicationDeadline,
+      ),
     };
   }
 
-  dynamic firstValue(List<String> keys) {
-    for (final key in keys) {
-      if (!rawData.containsKey(key)) {
-        continue;
-      }
+  bool get usesStructuredMetadata =>
+      OpportunityMetadata.usesStructuredFields(type);
 
-      final value = rawData[key];
-      if (value != null) {
-        return value;
-      }
+  String get deadlineLabel {
+    if (applicationDeadline != null) {
+      return OpportunityMetadata.formatDateForStorage(applicationDeadline!);
     }
 
-    return null;
+    return deadline.trim();
+  }
+
+  dynamic firstValue(List<String> keys) {
+    return OpportunityMetadata.firstValue(rawData, keys);
   }
 
   String? readString(List<String> keys) {
-    return _stringFromValue(firstValue(keys));
+    return OpportunityMetadata.stringFromValue(firstValue(keys));
+  }
+
+  num? readNum(List<String> keys) {
+    return OpportunityMetadata.parseNullableNum(firstValue(keys));
   }
 
   bool? readBool(List<String> keys) {
-    final value = firstValue(keys);
-
-    if (value is bool) {
-      return value;
-    }
-    if (value is num) {
-      return value != 0;
-    }
-    if (value is String) {
-      final normalized = value.trim().toLowerCase();
-      if (normalized.isEmpty) {
-        return null;
-      }
-      if (['true', 'yes', 'y', '1', 'paid'].contains(normalized)) {
-        return true;
-      }
-      if (['false', 'no', 'n', '0', 'unpaid'].contains(normalized)) {
-        return false;
-      }
-    }
-
-    return null;
+    return OpportunityMetadata.parseNullableBool(firstValue(keys));
   }
 
   DateTime? readDateTime(List<String> keys) {
-    final value = firstValue(keys);
-
-    if (value is Timestamp) {
-      return value.toDate();
-    }
-    if (value is DateTime) {
-      return value;
-    }
-    if (value is String) {
-      final trimmed = value.trim();
-      if (trimmed.isEmpty) {
-        return null;
-      }
-      return DateTime.tryParse(trimmed);
-    }
-
-    return null;
+    return OpportunityMetadata.parseDateTimeLike(firstValue(keys));
   }
 
-  String? _stringFromValue(dynamic value) {
-    if (value == null) {
+  static Timestamp? _timestampFromValue(dynamic value) {
+    if (value is Timestamp) {
+      return value;
+    }
+
+    final parsed = OpportunityMetadata.parseDateTimeLike(value);
+    if (parsed == null) {
       return null;
     }
 
-    if (value is String) {
-      final trimmed = value.trim();
-      return trimmed.isEmpty ? null : trimmed;
-    }
-
-    if (value is num) {
-      return value.toString();
-    }
-
-    if (value is List) {
-      final parts = value
-          .map(_stringFromValue)
-          .whereType<String>()
-          .where((part) => part.isNotEmpty)
-          .toList();
-      return parts.isEmpty ? null : parts.join(', ');
-    }
-
-    if (value is Map) {
-      final display = _stringFromValue(
-        value['display'] ?? value['label'] ?? value['text'] ?? value['value'],
-      );
-      if (display != null) {
-        return display;
-      }
-
-      final currency = _stringFromValue(value['currency'] ?? value['unit']);
-      final amount = _stringFromValue(value['amount']);
-      if (amount != null) {
-        return currency == null ? amount : '$currency $amount';
-      }
-
-      final min = _stringFromValue(
-        value['min'] ?? value['from'] ?? value['start'],
-      );
-      final max = _stringFromValue(value['max'] ?? value['to'] ?? value['end']);
-      if (min != null && max != null) {
-        final range = '$min - $max';
-        return currency == null ? range : '$currency $range';
-      }
-    }
-
-    return null;
+    return Timestamp.fromDate(parsed);
   }
 }
