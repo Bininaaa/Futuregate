@@ -18,6 +18,7 @@ import 'cv_screen.dart';
 import 'saved_screen.dart';
 import 'profile_screen.dart';
 import 'opportunities_screen.dart';
+import 'jobs_screen.dart';
 import 'opportunity_detail_screen.dart';
 import 'project_ideas_screen.dart';
 import 'trainings_screen.dart';
@@ -85,30 +86,39 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
             SliverPadding(
               padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
               sliver: SliverToBoxAdapter(
-                child: _buildSectionHeader('Recommended', onSeeAll: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => const OpportunitiesScreen()),
-                  );
-                }),
+                child: _buildSectionHeader(
+                  'Recommended',
+                  onSeeAll: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const OpportunitiesScreen(),
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
             SliverPadding(
               padding: const EdgeInsets.fromLTRB(0, 12, 0, 0),
               sliver: SliverToBoxAdapter(
-                  child: _buildRecommendedSection(context)),
+                child: _buildRecommendedSection(context),
+              ),
             ),
             SliverPadding(
               padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
               sliver: SliverToBoxAdapter(
-                child: _buildSectionHeader('Recent', onSeeAll: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => const OpportunitiesScreen()),
-                  );
-                }),
+                child: _buildSectionHeader(
+                  'Recent',
+                  onSeeAll: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const OpportunitiesScreen(),
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
             SliverPadding(
@@ -126,7 +136,10 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
   // ═══════════════════════════════════════════════════════════════════════════
 
   Widget _buildProfileHeader(
-      BuildContext context, String firstName, UserModel? user) {
+    BuildContext context,
+    String firstName,
+    UserModel? user,
+  ) {
     final unreadCount = context.watch<NotificationProvider>().unreadCount;
 
     return Container(
@@ -164,7 +177,9 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.5), width: 2),
+                      color: Colors.white.withValues(alpha: 0.5),
+                      width: 2,
+                    ),
                   ),
                   child: ProfileAvatar(user: user, radius: 26),
                 ),
@@ -199,7 +214,8 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (_) => const NotificationsScreen()),
+                    builder: (_) => const NotificationsScreen(),
+                  ),
                 ),
                 child: Container(
                   width: 44,
@@ -211,8 +227,11 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
-                      const Icon(Icons.notifications_outlined,
-                          color: Colors.white, size: 22),
+                      const Icon(
+                        Icons.notifications_outlined,
+                        color: Colors.white,
+                        size: 22,
+                      ),
                       if (unreadCount > 0)
                         Positioned(
                           top: 8,
@@ -224,7 +243,9 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                               shape: BoxShape.circle,
                             ),
                             constraints: const BoxConstraints(
-                                minWidth: 16, minHeight: 16),
+                              minWidth: 16,
+                              minHeight: 16,
+                            ),
                             child: Text(
                               unreadCount > 9 ? '9+' : '$unreadCount',
                               style: GoogleFonts.poppins(
@@ -293,8 +314,10 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(18),
-        border:
-            Border.all(color: Colors.white.withValues(alpha: 0.1), width: 1),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.1),
+          width: 1,
+        ),
       ),
       child: Row(
         children: [
@@ -348,65 +371,80 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
         icon: Icons.work_outline,
         gradient: [const Color(0xFF6C63FF), const Color(0xFF8B83FF)],
         onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (_) => const OpportunitiesScreen(
-                    initialFilter: OpportunityType.job))),
+          context,
+          MaterialPageRoute(builder: (_) => const JobsScreen()),
+        ),
       ),
       _CategoryItem(
         title: 'Internships',
         icon: Icons.school_outlined,
         gradient: [const Color(0xFF4DA0FF), const Color(0xFF74B9FF)],
         onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (_) => const OpportunitiesScreen(
-                    initialFilter: OpportunityType.internship))),
+          context,
+          MaterialPageRoute(
+            builder: (_) => const OpportunitiesScreen(
+              initialFilter: OpportunityType.internship,
+            ),
+          ),
+        ),
       ),
       _CategoryItem(
         title: 'Sponsoring',
         icon: Icons.campaign_outlined,
         gradient: [const Color(0xFFFF9F43), const Color(0xFFFECA57)],
         onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (_) => const OpportunitiesScreen(
-                    initialFilter: OpportunityType.sponsoring))),
+          context,
+          MaterialPageRoute(
+            builder: (_) => const OpportunitiesScreen(
+              initialFilter: OpportunityType.sponsoring,
+            ),
+          ),
+        ),
       ),
       _CategoryItem(
         title: 'Scholarships',
         icon: Icons.emoji_events_outlined,
         gradient: [const Color(0xFF2ED573), const Color(0xFF7BED9F)],
-        onTap: () => Navigator.push(context,
-            MaterialPageRoute(builder: (_) => const ScholarshipsScreen())),
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const ScholarshipsScreen()),
+        ),
       ),
       _CategoryItem(
         title: 'Ideas',
         icon: Icons.lightbulb_outline,
         gradient: [const Color(0xFFFF6B6B), const Color(0xFFFF8E8E)],
-        onTap: () => Navigator.push(context,
-            MaterialPageRoute(builder: (_) => const ProjectIdeasScreen())),
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const ProjectIdeasScreen()),
+        ),
       ),
       _CategoryItem(
         title: 'CV Builder',
         icon: Icons.description_outlined,
         gradient: [const Color(0xFF5F27CD), const Color(0xFF8854D0)],
         onTap: () => Navigator.push(
-            context, MaterialPageRoute(builder: (_) => const CvScreen())),
+          context,
+          MaterialPageRoute(builder: (_) => const CvScreen()),
+        ),
       ),
       _CategoryItem(
         title: 'Training',
         icon: Icons.cast_for_education_outlined,
         gradient: [const Color(0xFF00B894), const Color(0xFF55EFC4)],
-        onTap: () => Navigator.push(context,
-            MaterialPageRoute(builder: (_) => const TrainingsScreen())),
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const TrainingsScreen()),
+        ),
       ),
       _CategoryItem(
         title: 'Saved',
         icon: Icons.bookmark_outline,
         gradient: [const Color(0xFFE17055), const Color(0xFFFAB1A0)],
         onTap: () => Navigator.push(
-            context, MaterialPageRoute(builder: (_) => const SavedScreen())),
+          context,
+          MaterialPageRoute(builder: (_) => const SavedScreen()),
+        ),
       ),
     ];
 
@@ -503,17 +541,13 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                 color: softLavender,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child:
-                  const Icon(Icons.search, color: primaryPurple, size: 22),
+              child: const Icon(Icons.search, color: primaryPurple, size: 22),
             ),
             const SizedBox(width: 14),
             Expanded(
               child: Text(
                 'Search jobs, internships, training...',
-                style: GoogleFonts.poppins(
-                  fontSize: 14,
-                  color: textLight,
-                ),
+                style: GoogleFonts.poppins(fontSize: 14, color: textLight),
               ),
             ),
             Container(
@@ -543,9 +577,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     if (isLoading) {
       return const SizedBox(
         height: 190,
-        child: Center(
-          child: CircularProgressIndicator(color: primaryPurple),
-        ),
+        child: Center(child: CircularProgressIndicator(color: primaryPurple)),
       );
     }
 
@@ -618,8 +650,11 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                       ),
                       Row(
                         children: [
-                          Icon(Icons.location_on_outlined,
-                              size: 12, color: textLight),
+                          Icon(
+                            Icons.location_on_outlined,
+                            size: 12,
+                            color: textLight,
+                          ),
                           const SizedBox(width: 2),
                           Expanded(
                             child: Text(
@@ -772,10 +807,9 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
       recentItems.add(_RecentItem(opportunity: recentOpps[i]));
     }
 
-    final trainingLimit =
-        recentTrainings.length > (6 - recentItems.length)
-            ? (6 - recentItems.length)
-            : recentTrainings.length;
+    final trainingLimit = recentTrainings.length > (6 - recentItems.length)
+        ? (6 - recentItems.length)
+        : recentTrainings.length;
     for (int i = 0; i < trainingLimit; i++) {
       recentItems.add(_RecentItem(training: recentTrainings[i]));
     }
@@ -793,28 +827,27 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     }
 
     return SliverList(
-      delegate: SliverChildBuilderDelegate(
-        (context, index) {
-          final item = recentItems[index];
-          if (item.opportunity != null) {
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: _buildRecentOpportunityCard(context, item.opportunity!),
-            );
-          } else {
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: _buildRecentTrainingCard(context, item.training!),
-            );
-          }
-        },
-        childCount: recentItems.length,
-      ),
+      delegate: SliverChildBuilderDelegate((context, index) {
+        final item = recentItems[index];
+        if (item.opportunity != null) {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: _buildRecentOpportunityCard(context, item.opportunity!),
+          );
+        } else {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: _buildRecentTrainingCard(context, item.training!),
+          );
+        }
+      }, childCount: recentItems.length),
     );
   }
 
   Widget _buildRecentOpportunityCard(
-      BuildContext context, OpportunityModel item) {
+    BuildContext context,
+    OpportunityModel item,
+  ) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -858,24 +891,26 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                   const SizedBox(height: 3),
                   Text(
                     item.companyName,
-                    style: GoogleFonts.poppins(
-                      fontSize: 12,
-                      color: textMedium,
-                    ),
+                    style: GoogleFonts.poppins(fontSize: 12, color: textMedium),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      Icon(Icons.location_on_outlined,
-                          size: 12, color: textLight),
+                      Icon(
+                        Icons.location_on_outlined,
+                        size: 12,
+                        color: textLight,
+                      ),
                       const SizedBox(width: 2),
                       Flexible(
                         child: Text(
                           item.location,
                           style: GoogleFonts.poppins(
-                              fontSize: 11, color: textLight),
+                            fontSize: 11,
+                            color: textLight,
+                          ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -893,8 +928,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     );
   }
 
-  Widget _buildRecentTrainingCard(
-      BuildContext context, TrainingModel item) {
+  Widget _buildRecentTrainingCard(BuildContext context, TrainingModel item) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -948,10 +982,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                   const SizedBox(height: 3),
                   Text(
                     item.provider.isNotEmpty ? item.provider : 'Training',
-                    style: GoogleFonts.poppins(
-                      fontSize: 12,
-                      color: textMedium,
-                    ),
+                    style: GoogleFonts.poppins(fontSize: 12, color: textMedium),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -960,8 +991,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
             ),
             const SizedBox(width: 10),
             Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
                 color: const Color(0xFF00B894).withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(8),
@@ -1071,10 +1101,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
           const SizedBox(height: 4),
           Text(
             subtitle,
-            style: GoogleFonts.poppins(
-              fontSize: 12,
-              color: textLight,
-            ),
+            style: GoogleFonts.poppins(fontSize: 12, color: textLight),
             textAlign: TextAlign.center,
           ),
         ],

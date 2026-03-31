@@ -13,6 +13,7 @@ import '../../providers/training_provider.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/opportunity_dashboard_widgets.dart';
+import 'jobs_screen.dart';
 import 'opportunity_detail_screen.dart';
 import 'trainings_screen.dart';
 
@@ -1232,10 +1233,12 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                               fallback: 'Explore verified openings',
                             ),
                             icon: Icons.work_outline_rounded,
-                            onTap: () async {
-                              _setFilter(_OpportunityDashboardFilter.job);
-                              await _scrollToKey(_latestSectionKey);
-                            },
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const JobsScreen(),
+                              ),
+                            ),
                           ),
                           const SizedBox(height: 10),
                           SizedBox(
