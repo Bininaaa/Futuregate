@@ -279,20 +279,17 @@ class _JobsScreenState extends State<JobsScreen> {
     return result;
   }
 
-  List<_JobCardData> _selectAvailableRoles(
-    List<_JobCardData> jobs,
-    List<_JobCardData> featuredJobs,
-  ) {
-    final featuredKeys = featuredJobs
-        .take(2)
-        .map((job) => job.uniqueKey)
-        .toSet();
-    final remaining = jobs
-        .where((job) => !featuredKeys.contains(job.uniqueKey))
-        .toList();
+  List<_JobCardData> _selectAvailableRoles(List<_JobCardData> jobs) {
+    final availableRoles = <_JobCardData>[];
+    final seen = <String>{};
 
-    final source = remaining.isNotEmpty ? remaining : jobs;
-    return source.take(10).toList();
+    for (final job in jobs) {
+      if (seen.add(job.uniqueKey)) {
+        availableRoles.add(job);
+      }
+    }
+
+    return availableRoles;
   }
 
   _JobCardData _mapOpportunityToJobCard(
@@ -304,21 +301,27 @@ class _JobsScreenState extends State<JobsScreen> {
         ? 'Open Role'
         : opportunity.title.trim();
     final company = _companyName(opportunity);
+    final subtitle = _subtitleLabel(opportunity, company: company);
     final location = _locationLabel(opportunity);
-    final salary = _compensationText(opportunity);
+    final salary = _availableRoleCompensationText(opportunity);
     final metadata = _metadataItems(opportunity, maxItems: 3);
     final metadataLine = metadata
         .where((item) => item != salary)
         .take(2)
         .join(' | ');
     final badge = _jobBadgeLabel(opportunity);
+    final typeBadge = _employmentBadgeLabel(opportunity);
+    final levelTag = _experienceChipLabel(opportunity);
     final searchable = <String>[
       title,
       company,
+      subtitle,
       location ?? '',
       salary ?? '',
       metadata.join(' '),
       badge,
+      typeBadge ?? '',
+      levelTag ?? '',
       category.label,
       category.key,
       opportunity.description,
@@ -339,10 +342,13 @@ class _JobsScreenState extends State<JobsScreen> {
       id: opportunity.id,
       title: title,
       company: company,
+      subtitle: subtitle,
       location: location,
       salary: salary,
       metadataLine: metadataLine,
       badge: badge,
+      typeBadge: typeBadge,
+      levelTag: levelTag,
       logoUrl: opportunity.companyLogo.trim(),
       category: category,
       isFeaturedPreferred: isFeaturedPreferred,
@@ -411,9 +417,9 @@ class _JobsScreenState extends State<JobsScreen> {
   }
 
   String _jobBadgeLabel(OpportunityModel opportunity) {
-    final employmentLabel = _employmentTypeLabel(opportunity);
-    if (employmentLabel != null) {
-      return employmentLabel.toUpperCase();
+    final employmentBadge = _employmentBadgeLabel(opportunity);
+    if (employmentBadge != null) {
+      return employmentBadge;
     }
 
     final workMode = _workModeLabel(opportunity);
@@ -422,6 +428,166 @@ class _JobsScreenState extends State<JobsScreen> {
     }
 
     return 'FULL TIME';
+  }
+
+  String? _employmentBadgeLabel(OpportunityModel opportunity) {
+    return switch (OpportunityMetadata.normalizeEmploymentType(
+      opportunity.employmentType,
+    )) {
+      'full_time' => 'FULL-TIME',
+      'part_time' => 'PART-TIME',
+      'internship' => 'INTERN',
+      'contract' => 'CONTRACT',
+      'temporary' => 'TEMP',
+      'freelance' => 'FREELANCE',
+      _ => null,
+    };
+  }
+
+  String? _availableRoleCompensationText(OpportunityModel opportunity) {
+    final label = _compensationText(opportunity);
+    if (label == null) {
+      return null;
+    }
+
+    final normalized = label.trim().toLowerCase();
+    if (normalized == 'unpaid') {
+      return null;
+    }
+
+    return _compactCompensationLabel(label);
+  }
+
+  String _compactCompensationLabel(String label) {
+    return label
+        .replaceAll(' / hour', ' / hr')
+        .replaceAll(' / day', ' / day')
+        .replaceAll(' / week', ' / wk')
+        .replaceAll(' / month', ' / mo')
+        .replaceAll(' / year', ' / yr')
+        .replaceAll(' per hour', ' / hr')
+        .replaceAll(' per day', ' / day')
+        .replaceAll(' per week', ' / wk')
+        .replaceAll(' per month', ' / mo')
+        .replaceAll(' per year', ' / yr')
+        .replaceAll(RegExp(r'\bUSD\b'), '\$');
+  }
+
+  String _subtitleLabel(
+    OpportunityModel opportunity, {
+    required String company,
+  }) {
+    final descriptor = _compactDescriptor(
+      opportunity.readString([
+        'department',
+        'team',
+        'category',
+        'field',
+        'industry',
+        'track',
+      ]),
+    );
+    if (descriptor == null ||
+        descriptor.toLowerCase() == company.toLowerCase()) {
+      return company;
+    }
+
+    return '$company • $descriptor';
+  }
+
+  String? _compactDescriptor(String? rawValue) {
+    final sanitized = rawValue?.trim();
+    if (sanitized == null || sanitized.isEmpty) {
+      return null;
+    }
+
+    final segment = sanitized.split(RegExp(r'[/|,&]')).first.trim();
+    if (segment.isEmpty) {
+      return null;
+    }
+
+    final words = segment
+        .split(RegExp(r'\s+'))
+        .where((word) => word.isNotEmpty);
+    return words.take(3).join(' ');
+  }
+
+  String? _experienceChipLabel(OpportunityModel opportunity) {
+    final explicitLevel = _formatLevelChip(
+      opportunity.readString([
+        'experienceLevel',
+        'experience_level',
+        'experience',
+        'seniority',
+        'careerStage',
+        'level',
+        'tag',
+      ]),
+    );
+    if (explicitLevel != null) {
+      return explicitLevel;
+    }
+
+    final normalizedTitle = opportunity.title.toLowerCase();
+    if (normalizedTitle.contains('entry')) {
+      return 'ENTRY';
+    }
+    if (normalizedTitle.contains('junior')) {
+      return 'JUNIOR';
+    }
+    if (normalizedTitle.contains('intern')) {
+      return 'STUDENT';
+    }
+
+    final normalizedEmploymentType =
+        OpportunityMetadata.normalizeEmploymentType(opportunity.employmentType);
+    if (normalizedEmploymentType == 'internship' ||
+        OpportunityType.parse(opportunity.type) == OpportunityType.internship) {
+      return 'STUDENT';
+    }
+
+    return null;
+  }
+
+  String? _formatLevelChip(String? rawValue) {
+    final trimmed = rawValue?.trim();
+    if (trimmed == null || trimmed.isEmpty) {
+      return null;
+    }
+
+    final normalized = trimmed
+        .toLowerCase()
+        .replaceAll('_', ' ')
+        .replaceAll('-', ' ');
+
+    if (normalized.contains('entry')) {
+      return 'ENTRY';
+    }
+    if (normalized.contains('junior')) {
+      return 'JUNIOR';
+    }
+    if (normalized.contains('student') || normalized.contains('intern')) {
+      return 'STUDENT';
+    }
+    if (normalized.contains('graduate')) {
+      return 'GRAD';
+    }
+    if (normalized.contains('senior')) {
+      return 'SENIOR';
+    }
+    if (normalized.contains('mid')) {
+      return 'MID';
+    }
+
+    final words = trimmed
+        .split(RegExp(r'\s+'))
+        .where((word) => word.isNotEmpty);
+    final candidate = words.take(2).join(' ').toUpperCase();
+    if (candidate.isEmpty) {
+      return null;
+    }
+
+    return candidate.length <= 12 ? candidate : words.first.toUpperCase();
   }
 
   String? _compensationText(OpportunityModel opportunity) {
@@ -559,10 +725,6 @@ class _JobsScreenState extends State<JobsScreen> {
     return null;
   }
 
-  String? _employmentTypeLabel(OpportunityModel opportunity) {
-    return OpportunityMetadata.formatEmploymentType(opportunity.employmentType);
-  }
-
   String? _normalizedWorkMode(OpportunityModel opportunity) {
     return opportunity.workMode ??
         OpportunityMetadata.extractWorkMode(opportunity.rawData);
@@ -615,100 +777,135 @@ class _JobsScreenState extends State<JobsScreen> {
     _JobCardData.placeholder(
       title: 'Senior Product Designer',
       company: 'Nova Labs',
+      subtitle: 'Nova Labs • Product Design',
       location: 'Remote - Algiers',
       salary: 'DZD 120k/mo',
       badge: 'FULL TIME',
+      typeBadge: 'FULL-TIME',
+      levelTag: 'SENIOR',
       category: _categories[1],
       isFeaturedPreferred: true,
     ),
     _JobCardData.placeholder(
       title: 'Cloud Support Engineer',
       company: 'Avenir Cloud',
+      subtitle: 'Avenir Cloud • Support',
       location: 'Hybrid - Oran',
       salary: 'DZD 105k/mo',
       badge: 'FULL TIME',
+      typeBadge: 'FULL-TIME',
+      levelTag: 'ENTRY',
       category: _categories[0],
       isFeaturedPreferred: true,
     ),
     _JobCardData.placeholder(
       title: 'Growth Marketing Lead',
       company: 'Bright Studio',
+      subtitle: 'Bright Studio • Growth',
       location: 'Remote',
       salary: 'DZD 95k/mo',
       badge: 'REMOTE',
+      levelTag: 'SENIOR',
       category: _categories[3],
       isFeaturedPreferred: true,
     ),
     _JobCardData.placeholder(
       title: 'Junior Frontend Developer',
       company: 'Pixel Foundry',
+      subtitle: 'Pixel Foundry • Engineering',
       location: 'Algiers',
       salary: 'DZD 75k/mo',
       badge: 'FULL TIME',
+      typeBadge: 'FULL-TIME',
+      levelTag: 'JUNIOR',
       category: _categories[0],
     ),
     _JobCardData.placeholder(
       title: 'UI Design Intern',
       company: 'Loom Studio',
+      subtitle: 'Loom Studio • Design',
       location: 'Remote',
       salary: 'Paid',
       badge: 'INTERNSHIP',
+      typeBadge: 'INTERN',
+      levelTag: 'STUDENT',
       category: _categories[1],
     ),
     _JobCardData.placeholder(
       title: 'Data Analyst',
       company: 'North Metrics',
+      subtitle: 'North Metrics • Analytics',
       location: 'Hybrid',
       salary: 'DZD 88k/mo',
       badge: 'FULL TIME',
+      typeBadge: 'FULL-TIME',
+      levelTag: 'ENTRY',
       category: _categories[0],
     ),
     _JobCardData.placeholder(
       title: 'Social Media Manager',
       company: 'Wave House',
+      subtitle: 'Wave House • Social',
       location: 'Remote',
       salary: 'DZD 82k/mo',
       badge: 'FULL TIME',
+      typeBadge: 'FULL-TIME',
+      levelTag: 'JUNIOR',
       category: _categories[3],
     ),
     _JobCardData.placeholder(
       title: 'Security Analyst',
       company: 'Shield Ops',
+      subtitle: 'Shield Ops • Security',
       location: 'Algiers',
       salary: 'DZD 110k/mo',
       badge: 'FULL TIME',
+      typeBadge: 'FULL-TIME',
+      levelTag: 'ENTRY',
       category: _categories[0],
     ),
     _JobCardData.placeholder(
       title: 'Marketing Analyst',
       company: 'Signal Growth',
+      subtitle: 'Signal Growth • Marketing',
       location: 'Hybrid',
       salary: 'DZD 84k/mo',
       badge: 'FULL TIME',
+      typeBadge: 'FULL-TIME',
+      levelTag: 'JUNIOR',
       category: _categories[3],
     ),
     _JobCardData.placeholder(
       title: 'Backend Support',
       company: 'Stack Harbor',
+      subtitle: 'Stack Harbor • Platform',
       location: 'Remote',
       salary: 'DZD 90k/mo',
       badge: 'FULL TIME',
+      typeBadge: 'FULL-TIME',
+      levelTag: 'ENTRY',
       category: _categories[0],
     ),
     _JobCardData.placeholder(
       title: 'Illustrator Intern',
       company: 'Sketchroom',
+      subtitle: 'Sketchroom • Illustration',
       location: 'Oran',
       salary: 'Paid',
       badge: 'INTERNSHIP',
+      typeBadge: 'INTERN',
+      levelTag: 'STUDENT',
       category: _categories[1],
     ),
     _JobCardData.placeholder(
       title: 'AI Trainer',
       company: 'Orbit AI',
+      subtitle: 'Orbit AI • AI Ops',
       location: 'Remote',
       salary: 'DZD 115k/mo',
       badge: 'CONTRACT',
+      typeBadge: 'CONTRACT',
+      levelTag: 'JUNIOR',
       category: _categories[0],
     ),
   ];
@@ -718,11 +915,72 @@ class _JobsScreenState extends State<JobsScreen> {
     final authProvider = context.watch<AuthProvider>();
     final notificationProvider = context.watch<NotificationProvider>();
     final opportunityProvider = context.watch<OpportunityProvider>();
+    final mediaQuery = MediaQuery.of(context);
+    final screenSize = mediaQuery.size;
+    final viewPadding = mediaQuery.viewPadding;
+    final isCompact = screenSize.width < 390 || screenSize.height < 780;
+    final isExtraCompact = screenSize.width < 360 || screenSize.height < 700;
+    final horizontalPadding = isExtraCompact
+        ? 16.0
+        : isCompact
+        ? 18.0
+        : 20.0;
+    final headlineTopPadding = isExtraCompact
+        ? 10.0
+        : isCompact
+        ? 12.0
+        : 22.0;
+    final headlineFontSize = isExtraCompact
+        ? 25.0
+        : isCompact
+        ? 26.0
+        : 34.0;
+    final searchTopPadding = isExtraCompact
+        ? 10.0
+        : isCompact
+        ? 12.0
+        : 18.0;
+    final categoriesTopPadding = isExtraCompact
+        ? 12.0
+        : isCompact
+        ? 14.0
+        : 24.0;
+    final categoriesHeight = isExtraCompact
+        ? 72.0
+        : isCompact
+        ? 78.0
+        : 102.0;
+    final categorySpacing = isExtraCompact ? 12.0 : 14.0;
+    final sectionTopPadding = isExtraCompact
+        ? 14.0
+        : isCompact
+        ? 16.0
+        : 28.0;
+    final featuredHeight = isExtraCompact
+        ? 198.0
+        : isCompact
+        ? 206.0
+        : 244.0;
+    final featuredCardWidthFactor = isExtraCompact ? 0.76 : 0.78;
+    final featuredSpacing = isExtraCompact ? 12.0 : 16.0;
+    final gridSpacing = isExtraCompact ? 12.0 : 14.0;
+    final gridMainExtent = isExtraCompact
+        ? 164.0
+        : isCompact
+        ? 166.0
+        : 176.0;
+    final bottomSpacing =
+        viewPadding.bottom +
+        (isExtraCompact
+            ? 18.0
+            : isCompact
+            ? 22.0
+            : 28.0);
 
     final allJobs = _buildJobCards(opportunityProvider);
     final filteredJobs = _applyFilters(allJobs);
     final featuredJobs = _selectFeaturedJobs(filteredJobs);
-    final availableRoles = _selectAvailableRoles(filteredJobs, featuredJobs);
+    final availableRoles = _selectAvailableRoles(filteredJobs);
     final showLoadingBar =
         opportunityProvider.isLoading &&
         opportunityProvider.opportunities.isNotEmpty;
@@ -744,6 +1002,7 @@ class _JobsScreenState extends State<JobsScreen> {
                 user: authProvider.userModel,
                 unreadCount: notificationProvider.unreadCount,
                 onNotificationsPressed: _openNotifications,
+                compact: isCompact,
               ),
             ),
             if (showLoadingBar)
@@ -751,7 +1010,12 @@ class _JobsScreenState extends State<JobsScreen> {
                 child: LinearProgressIndicator(minHeight: 2),
               ),
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 22, 20, 0),
+              padding: EdgeInsets.fromLTRB(
+                horizontalPadding,
+                headlineTopPadding,
+                horizontalPadding,
+                0,
+              ),
               sliver: SliverToBoxAdapter(
                 child: Text.rich(
                   TextSpan(
@@ -759,7 +1023,7 @@ class _JobsScreenState extends State<JobsScreen> {
                       TextSpan(
                         text: 'Find your next\n',
                         style: GoogleFonts.poppins(
-                          fontSize: 34,
+                          fontSize: headlineFontSize,
                           fontWeight: FontWeight.w700,
                           height: 1.08,
                           color: OpportunityDashboardPalette.textPrimary,
@@ -768,7 +1032,7 @@ class _JobsScreenState extends State<JobsScreen> {
                       TextSpan(
                         text: 'breakthrough',
                         style: GoogleFonts.poppins(
-                          fontSize: 34,
+                          fontSize: headlineFontSize,
                           fontWeight: FontWeight.w700,
                           height: 1.08,
                           color: OpportunityDashboardPalette.primary,
@@ -780,7 +1044,12 @@ class _JobsScreenState extends State<JobsScreen> {
               ),
             ),
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
+              padding: EdgeInsets.fromLTRB(
+                horizontalPadding,
+                searchTopPadding,
+                horizontalPadding,
+                0,
+              ),
               sliver: SliverToBoxAdapter(
                 child: _JobsSearchBar(
                   controller: _searchController,
@@ -788,15 +1057,22 @@ class _JobsScreenState extends State<JobsScreen> {
                   onClear: _searchQuery.isEmpty
                       ? null
                       : _searchController.clear,
+                  compact: isCompact,
                 ),
               ),
             ),
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
+              padding: EdgeInsets.fromLTRB(
+                horizontalPadding,
+                categoriesTopPadding,
+                horizontalPadding,
+                0,
+              ),
               sliver: SliverToBoxAdapter(
                 child: _SectionHeader(
                   title: 'Categories',
                   actionLabel: 'See All',
+                  compact: isCompact,
                   onAction: () {
                     if (_selectedCategoryKey == null) {
                       return;
@@ -811,19 +1087,29 @@ class _JobsScreenState extends State<JobsScreen> {
             ),
             SliverToBoxAdapter(
               child: SizedBox(
-                height: 102,
+                height: categoriesHeight,
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
+                  padding: EdgeInsets.fromLTRB(
+                    horizontalPadding,
+                    isExtraCompact
+                        ? 4
+                        : isCompact
+                        ? 6
+                        : 14,
+                    horizontalPadding,
+                    0,
+                  ),
                   physics: const BouncingScrollPhysics(),
                   itemCount: _categories.length,
                   separatorBuilder: (context, index) =>
-                      const SizedBox(width: 14),
+                      SizedBox(width: categorySpacing),
                   itemBuilder: (context, index) {
                     final category = _categories[index];
                     return _JobCategoryChip(
                       category: category,
                       isSelected: category.key == _selectedCategoryKey,
+                      compact: isCompact,
                       onTap: () {
                         setState(() {
                           _selectedCategoryKey =
@@ -838,12 +1124,17 @@ class _JobsScreenState extends State<JobsScreen> {
               ),
             ),
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
+              padding: EdgeInsets.fromLTRB(
+                horizontalPadding,
+                sectionTopPadding,
+                horizontalPadding,
+                0,
+              ),
               sliver: SliverToBoxAdapter(
                 child: Text(
                   'Featured Jobs',
                   style: GoogleFonts.poppins(
-                    fontSize: 19,
+                    fontSize: isCompact ? 16 : 19,
                     fontWeight: FontWeight.w700,
                     color: OpportunityDashboardPalette.textPrimary,
                   ),
@@ -852,33 +1143,53 @@ class _JobsScreenState extends State<JobsScreen> {
             ),
             if (filteredJobs.isEmpty)
               SliverPadding(
-                padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
+                padding: EdgeInsets.fromLTRB(
+                  horizontalPadding,
+                  isExtraCompact
+                      ? 8
+                      : isCompact
+                      ? 10
+                      : 14,
+                  horizontalPadding,
+                  0,
+                ),
                 sliver: SliverToBoxAdapter(
-                  child: const _JobsEmptyStateCard(
+                  child: _JobsEmptyStateCard(
                     title: 'No featured jobs found',
                     message:
                         'Try another keyword or clear your category filter to see more roles.',
+                    compact: isCompact,
                   ),
                 ),
               )
             else
               SliverToBoxAdapter(
                 child: SizedBox(
-                  height: 244,
+                  height: featuredHeight,
                   child: ListView.separated(
                     scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
+                    padding: EdgeInsets.fromLTRB(
+                      horizontalPadding,
+                      isExtraCompact
+                          ? 8
+                          : isCompact
+                          ? 10
+                          : 14,
+                      horizontalPadding,
+                      0,
+                    ),
                     physics: const BouncingScrollPhysics(),
                     itemCount: featuredJobs.length,
                     separatorBuilder: (context, index) =>
-                        const SizedBox(width: 16),
+                        SizedBox(width: featuredSpacing),
                     itemBuilder: (context, index) {
                       final job = featuredJobs[index];
                       return SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.78,
+                        width: screenSize.width * featuredCardWidthFactor,
                         child: _FeaturedJobCard(
                           job: job,
                           gradientColors: _featuredGradientFor(index),
+                          compact: isCompact,
                           onTap: job.opportunity == null
                               ? null
                               : () => _openOpportunity(job.opportunity!),
@@ -892,12 +1203,22 @@ class _JobsScreenState extends State<JobsScreen> {
                 ),
               ),
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
+              padding: EdgeInsets.fromLTRB(
+                horizontalPadding,
+                sectionTopPadding,
+                horizontalPadding,
+                0,
+              ),
               sliver: SliverToBoxAdapter(
                 child: _SectionHeader(
                   title: 'Available Roles',
+                  countLabel: availableRoles.length == 1
+                      ? '1 job'
+                      : '${availableRoles.length} jobs',
+                  compact: isCompact,
                   trailing: _RolesViewToggle(
                     viewMode: _viewMode,
+                    compact: isCompact,
                     onChanged: (viewMode) {
                       setState(() {
                         _viewMode = viewMode;
@@ -909,39 +1230,56 @@ class _JobsScreenState extends State<JobsScreen> {
             ),
             if (filteredJobs.isEmpty)
               SliverPadding(
-                padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
+                padding: EdgeInsets.fromLTRB(
+                  horizontalPadding,
+                  isExtraCompact ? 12 : 14,
+                  horizontalPadding,
+                  0,
+                ),
                 sliver: SliverToBoxAdapter(
-                  child: const _JobsEmptyStateCard(
+                  child: _JobsEmptyStateCard(
                     title: 'No roles match your search',
                     message:
                         'Search by title or company, or tap See All to reset categories.',
+                    compact: isCompact,
                   ),
                 ),
               )
             else if (_viewMode == _JobsViewMode.grid)
               SliverPadding(
-                padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
+                padding: EdgeInsets.fromLTRB(
+                  horizontalPadding,
+                  isExtraCompact ? 12 : 14,
+                  horizontalPadding,
+                  0,
+                ),
                 sliver: SliverGrid(
                   delegate: SliverChildBuilderDelegate((context, index) {
                     final job = availableRoles[index];
                     return _AvailableRoleCard(
                       job: job,
+                      compact: isCompact,
                       onTap: job.opportunity == null
                           ? null
                           : () => _openOpportunity(job.opportunity!),
                     );
                   }, childCount: availableRoles.length),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
-                    crossAxisSpacing: 14,
-                    mainAxisSpacing: 14,
-                    mainAxisExtent: 176,
+                    crossAxisSpacing: gridSpacing,
+                    mainAxisSpacing: gridSpacing,
+                    mainAxisExtent: gridMainExtent,
                   ),
                 ),
               )
             else
               SliverPadding(
-                padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
+                padding: EdgeInsets.fromLTRB(
+                  horizontalPadding,
+                  isExtraCompact ? 12 : 14,
+                  horizontalPadding,
+                  0,
+                ),
                 sliver: SliverList(
                   delegate: SliverChildBuilderDelegate((context, index) {
                     final job = availableRoles[index];
@@ -951,6 +1289,7 @@ class _JobsScreenState extends State<JobsScreen> {
                       ),
                       child: _AvailableRoleListCard(
                         job: job,
+                        compact: isCompact,
                         onTap: job.opportunity == null
                             ? null
                             : () => _openOpportunity(job.opportunity!),
@@ -959,7 +1298,7 @@ class _JobsScreenState extends State<JobsScreen> {
                   }, childCount: availableRoles.length),
                 ),
               ),
-            const SliverToBoxAdapter(child: SizedBox(height: 28)),
+            SliverToBoxAdapter(child: SizedBox(height: bottomSpacing)),
           ],
         ),
       ),
@@ -991,17 +1330,24 @@ class _JobsHeaderBar extends StatelessWidget {
   final UserModel? user;
   final int unreadCount;
   final VoidCallback onNotificationsPressed;
+  final bool compact;
 
   const _JobsHeaderBar({
     required this.user,
     required this.unreadCount,
     required this.onNotificationsPressed,
+    required this.compact,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+      padding: EdgeInsets.fromLTRB(
+        compact ? 16 : 20,
+        compact ? 10 : 16,
+        compact ? 16 : 20,
+        compact ? 10 : 16,
+      ),
       decoration: BoxDecoration(
         color: OpportunityDashboardPalette.surface,
         border: Border(
@@ -1009,13 +1355,6 @@ class _JobsHeaderBar extends StatelessWidget {
             color: OpportunityDashboardPalette.border.withValues(alpha: 0.75),
           ),
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.025),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
       ),
       child: SafeArea(
         bottom: false,
@@ -1031,14 +1370,18 @@ class _JobsHeaderBar extends StatelessWidget {
                   ),
                 ),
               ),
-              child: ProfileAvatar(user: user, radius: 18, fallbackName: 'J'),
+              child: ProfileAvatar(
+                user: user,
+                radius: compact ? 15 : 18,
+                fallbackName: 'J',
+              ),
             ),
-            const SizedBox(width: 12),
+            SizedBox(width: compact ? 8 : 12),
             Expanded(
               child: Text(
                 'Jobs',
                 style: GoogleFonts.poppins(
-                  fontSize: 22,
+                  fontSize: compact ? 18 : 22,
                   fontWeight: FontWeight.w700,
                   color: OpportunityDashboardPalette.textPrimary,
                 ),
@@ -1047,6 +1390,7 @@ class _JobsHeaderBar extends StatelessWidget {
             _NotificationBellButton(
               unreadCount: unreadCount,
               onTap: onNotificationsPressed,
+              compact: compact,
             ),
           ],
         ),
@@ -1058,45 +1402,49 @@ class _JobsHeaderBar extends StatelessWidget {
 class _NotificationBellButton extends StatelessWidget {
   final int unreadCount;
   final VoidCallback onTap;
+  final bool compact;
 
   const _NotificationBellButton({
     required this.unreadCount,
     required this.onTap,
+    required this.compact,
   });
 
   @override
   Widget build(BuildContext context) {
+    final buttonSize = compact ? 40.0 : 46.0;
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(compact ? 14 : 16),
         child: Ink(
-          width: 46,
-          height: 46,
+          width: buttonSize,
+          height: buttonSize,
           decoration: BoxDecoration(
             color: OpportunityDashboardPalette.surface,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(compact ? 14 : 16),
             border: Border.all(color: OpportunityDashboardPalette.border),
           ),
           child: Stack(
             alignment: Alignment.center,
             children: [
-              const Icon(
+              Icon(
                 Icons.notifications_none_rounded,
                 color: OpportunityDashboardPalette.textPrimary,
-                size: 22,
+                size: compact ? 19 : 22,
               ),
               if (unreadCount > 0)
                 Positioned(
-                  top: 10,
-                  right: 10,
+                  top: compact ? 8 : 10,
+                  right: compact ? 8 : 10,
                   child: Container(
-                    constraints: const BoxConstraints(
-                      minWidth: 18,
-                      minHeight: 18,
+                    constraints: BoxConstraints(
+                      minWidth: compact ? 16 : 18,
+                      minHeight: compact ? 16 : 18,
                     ),
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    padding: EdgeInsets.symmetric(horizontal: compact ? 3 : 4),
                     decoration: const BoxDecoration(
                       color: OpportunityDashboardPalette.error,
                       shape: BoxShape.circle,
@@ -1105,7 +1453,7 @@ class _NotificationBellButton extends StatelessWidget {
                     child: Text(
                       unreadCount > 9 ? '9+' : '$unreadCount',
                       style: GoogleFonts.poppins(
-                        fontSize: 9,
+                        fontSize: compact ? 8 : 9,
                         fontWeight: FontWeight.w700,
                         color: Colors.white,
                       ),
@@ -1124,11 +1472,13 @@ class _JobsSearchBar extends StatelessWidget {
   final TextEditingController controller;
   final FocusNode focusNode;
   final VoidCallback? onClear;
+  final bool compact;
 
   const _JobsSearchBar({
     required this.controller,
     required this.focusNode,
     this.onClear,
+    required this.compact,
   });
 
   @override
@@ -1138,19 +1488,21 @@ class _JobsSearchBar extends StatelessWidget {
       focusNode: focusNode,
       textInputAction: TextInputAction.search,
       style: GoogleFonts.poppins(
-        fontSize: 14,
+        fontSize: compact ? 12 : 14,
         fontWeight: FontWeight.w500,
         color: OpportunityDashboardPalette.textPrimary,
       ),
       decoration: InputDecoration(
+        isDense: compact,
         hintText: 'Search roles, companies...',
         hintStyle: GoogleFonts.poppins(
-          fontSize: 14,
+          fontSize: compact ? 12 : 14,
           color: OpportunityDashboardPalette.textSecondary,
         ),
-        prefixIcon: const Icon(
+        prefixIcon: Icon(
           Icons.search_rounded,
           color: OpportunityDashboardPalette.textSecondary,
+          size: compact ? 18 : 22,
         ),
         suffixIcon: onClear == null
             ? null
@@ -1162,16 +1514,16 @@ class _JobsSearchBar extends StatelessWidget {
               ),
         filled: true,
         fillColor: const Color(0xFFEEF2FF),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 18,
-          vertical: 18,
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: compact ? 14 : 18,
+          vertical: compact ? 12 : 18,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(compact ? 18 : 24),
           borderSide: const BorderSide(color: Colors.transparent),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(compact ? 18 : 24),
           borderSide: BorderSide(
             color: OpportunityDashboardPalette.primary.withValues(alpha: 0.22),
             width: 1.5,
@@ -1184,15 +1536,19 @@ class _JobsSearchBar extends StatelessWidget {
 
 class _SectionHeader extends StatelessWidget {
   final String title;
+  final String? countLabel;
   final String? actionLabel;
   final VoidCallback? onAction;
   final Widget? trailing;
+  final bool compact;
 
   const _SectionHeader({
     required this.title,
+    this.countLabel,
     this.actionLabel,
     this.onAction,
     this.trailing,
+    required this.compact,
   });
 
   @override
@@ -1200,13 +1556,47 @@ class _SectionHeader extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: Text(
-            title,
-            style: GoogleFonts.poppins(
-              fontSize: 19,
-              fontWeight: FontWeight.w700,
-              color: OpportunityDashboardPalette.textPrimary,
-            ),
+          child: Row(
+            children: [
+              Flexible(
+                child: Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.poppins(
+                    fontSize: compact ? 16 : 19,
+                    fontWeight: FontWeight.w700,
+                    color: OpportunityDashboardPalette.textPrimary,
+                  ),
+                ),
+              ),
+              if (countLabel != null) ...[
+                SizedBox(width: compact ? 8 : 10),
+                Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: compact ? 8 : 10,
+                    vertical: compact ? 4 : 5,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF1F5F9),
+                    borderRadius: BorderRadius.circular(compact ? 12 : 14),
+                    border: Border.all(
+                      color: OpportunityDashboardPalette.border.withValues(
+                        alpha: 0.95,
+                      ),
+                    ),
+                  ),
+                  child: Text(
+                    countLabel!,
+                    style: GoogleFonts.poppins(
+                      fontSize: compact ? 10 : 11,
+                      fontWeight: FontWeight.w600,
+                      color: OpportunityDashboardPalette.textSecondary,
+                    ),
+                  ),
+                ),
+              ],
+            ],
           ),
         ),
         if (trailing != null)
@@ -1216,12 +1606,14 @@ class _SectionHeader extends StatelessWidget {
             onPressed: onAction,
             style: TextButton.styleFrom(
               foregroundColor: OpportunityDashboardPalette.primary,
-              padding: const EdgeInsets.symmetric(horizontal: 6),
+              padding: EdgeInsets.symmetric(horizontal: compact ? 4 : 6),
+              minimumSize: Size(0, compact ? 28 : 36),
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
             child: Text(
               actionLabel!,
               style: GoogleFonts.poppins(
-                fontSize: 13,
+                fontSize: compact ? 11 : 13,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -1235,11 +1627,13 @@ class _JobCategoryChip extends StatelessWidget {
   final _JobCategoryData category;
   final bool isSelected;
   final VoidCallback onTap;
+  final bool compact;
 
   const _JobCategoryChip({
     required this.category,
     required this.isSelected,
     required this.onTap,
+    required this.compact,
   });
 
   @override
@@ -1248,39 +1642,34 @@ class _JobCategoryChip extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(compact ? 20 : 24),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 180),
           curve: Curves.easeOutCubic,
-          width: 78,
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          width: compact ? 60 : 78,
+          padding: EdgeInsets.symmetric(
+            horizontal: compact ? 4 : 8,
+            vertical: compact ? 2 : 4,
+          ),
           decoration: BoxDecoration(
             color: isSelected
                 ? OpportunityDashboardPalette.surface
                 : Colors.transparent,
-            borderRadius: BorderRadius.circular(24),
-            boxShadow: isSelected
-                ? [
-                    BoxShadow(
-                      color: category.accentColor.withValues(alpha: 0.12),
-                      blurRadius: 16,
-                      offset: const Offset(0, 8),
-                    ),
-                  ]
-                : const [],
+            borderRadius: BorderRadius.circular(compact ? 20 : 24),
           ),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               AnimatedContainer(
                 duration: const Duration(milliseconds: 180),
-                width: 58,
-                height: 58,
+                width: compact ? 40 : 58,
+                height: compact ? 40 : 58,
                 decoration: BoxDecoration(
                   color: isSelected
                       ? category.accentColor.withValues(alpha: 0.14)
                       : category.surfaceTint,
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(compact ? 14 : 20),
                   border: Border.all(
                     color: isSelected
                         ? category.accentColor.withValues(alpha: 0.22)
@@ -1290,14 +1679,16 @@ class _JobCategoryChip extends StatelessWidget {
                 child: Icon(
                   category.icon,
                   color: category.accentColor,
-                  size: 26,
+                  size: compact ? 18 : 26,
                 ),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: compact ? 4 : 8),
               Text(
                 category.label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: GoogleFonts.poppins(
-                  fontSize: 12,
+                  fontSize: compact ? 10 : 12,
                   fontWeight: FontWeight.w600,
                   color: OpportunityDashboardPalette.textPrimary,
                 ),
@@ -1315,12 +1706,14 @@ class _FeaturedJobCard extends StatelessWidget {
   final List<Color> gradientColors;
   final VoidCallback? onTap;
   final VoidCallback? onApply;
+  final bool compact;
 
   const _FeaturedJobCard({
     required this.job,
     required this.gradientColors,
     this.onTap,
     this.onApply,
+    required this.compact,
   });
 
   @override
@@ -1329,159 +1722,203 @@ class _FeaturedJobCard extends StatelessWidget {
         ? job.company
         : '${job.company} • ${job.location}';
 
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(30),
-        child: Ink(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: gradientColors,
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.circular(30),
-            boxShadow: [
-              BoxShadow(
-                color: gradientColors.first.withValues(alpha: 0.24),
-                blurRadius: 26,
-                offset: const Offset(0, 14),
-              ),
-            ],
-          ),
-          child: Stack(
-            children: [
-              Positioned(
-                top: -22,
-                right: -16,
-                child: Container(
-                  width: 118,
-                  height: 118,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.08),
-                    shape: BoxShape.circle,
-                  ),
-                ),
-              ),
-              Positioned(
-                bottom: -36,
-                left: -22,
-                child: Container(
-                  width: 126,
-                  height: 126,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.06),
-                    shape: BoxShape.circle,
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 18),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        _CompanyLogoTile(
-                          logoUrl: job.logoUrl,
-                          companyName: job.company,
-                          size: 46,
-                          backgroundColor: Colors.white,
-                          foregroundColor: gradientColors.first,
-                        ),
-                        const Spacer(),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.14),
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                              color: Colors.white.withValues(alpha: 0.18),
-                            ),
-                          ),
-                          child: Text(
-                            job.badge,
-                            style: GoogleFonts.poppins(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white,
-                              letterSpacing: 0.3,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const Spacer(),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isTight =
+            compact ||
+            constraints.maxHeight < 228 ||
+            constraints.maxWidth < 280;
+        final borderRadius = isTight ? 24.0 : 30.0;
+        final cardPadding = isTight
+            ? const EdgeInsets.fromLTRB(16, 16, 16, 14)
+            : const EdgeInsets.fromLTRB(20, 20, 20, 18);
+        final logoSize = isTight ? 40.0 : 46.0;
+        final titleFontSize = isTight ? 20.0 : 24.0;
+        final locationFontSize = isTight ? 12.0 : 13.0;
+        final metadataFontSize = isTight ? 10.5 : 11.5;
+        final salaryFontSize = isTight ? 13.0 : 15.0;
+        final useStackedFooter = constraints.maxWidth < 250;
+
+        final footer = useStackedFooter
+            ? Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (job.salary != null)
                     Text(
-                      job.title,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.poppins(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w700,
-                        height: 1.1,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      locationText,
+                      job.salary!,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.poppins(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white.withValues(alpha: 0.88),
+                        fontSize: salaryFontSize,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
                       ),
                     ),
-                    if (job.metadataLine != null &&
-                        job.metadataLine!.trim().isNotEmpty) ...[
-                      const SizedBox(height: 6),
-                      Text(
-                        job.metadataLine!,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.poppins(
-                          fontSize: 11.5,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white.withValues(alpha: 0.84),
-                        ),
+                  if (job.salary != null) const SizedBox(height: 10),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: _ApplyNowButton(
+                      onTap: onApply,
+                      textColor: gradientColors.first,
+                      compact: isTight,
+                    ),
+                  ),
+                ],
+              )
+            : Row(
+                children: [
+                  Expanded(
+                    child: job.salary == null
+                        ? const SizedBox.shrink()
+                        : Text(
+                            job.salary!,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.poppins(
+                              fontSize: salaryFontSize,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                            ),
+                          ),
+                  ),
+                  SizedBox(width: isTight ? 10 : 12),
+                  _ApplyNowButton(
+                    onTap: onApply,
+                    textColor: gradientColors.first,
+                    compact: isTight,
+                  ),
+                ],
+              );
+
+        return Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(borderRadius),
+            child: Ink(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: gradientColors,
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(borderRadius),
+              ),
+              child: Stack(
+                children: [
+                  Positioned(
+                    top: isTight ? -18 : -22,
+                    right: isTight ? -12 : -16,
+                    child: Container(
+                      width: isTight ? 98 : 118,
+                      height: isTight ? 98 : 118,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.08),
+                        shape: BoxShape.circle,
                       ),
-                    ],
-                    const SizedBox(height: 18),
-                    Row(
+                    ),
+                  ),
+                  Positioned(
+                    bottom: isTight ? -30 : -36,
+                    left: isTight ? -18 : -22,
+                    child: Container(
+                      width: isTight ? 108 : 126,
+                      height: isTight ? 108 : 126,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.06),
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: cardPadding,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(
-                          child: job.salary == null
-                              ? const SizedBox.shrink()
-                              : Text(
-                                  job.salary!,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w700,
-                                    color: Colors.white,
-                                  ),
+                        Row(
+                          children: [
+                            _CompanyLogoTile(
+                              logoUrl: job.logoUrl,
+                              companyName: job.company,
+                              size: logoSize,
+                              backgroundColor: Colors.white,
+                              foregroundColor: gradientColors.first,
+                            ),
+                            const Spacer(),
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: isTight ? 10 : 12,
+                                vertical: isTight ? 6 : 8,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha: 0.14),
+                                borderRadius: BorderRadius.circular(
+                                  isTight ? 14 : 16,
                                 ),
+                                border: Border.all(
+                                  color: Colors.white.withValues(alpha: 0.18),
+                                ),
+                              ),
+                              child: Text(
+                                job.badge,
+                                style: GoogleFonts.poppins(
+                                  fontSize: isTight ? 9 : 10,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white,
+                                  letterSpacing: 0.3,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                        _ApplyNowButton(
-                          onTap: onApply,
-                          textColor: gradientColors.first,
+                        const Spacer(),
+                        Text(
+                          job.title,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.poppins(
+                            fontSize: titleFontSize,
+                            fontWeight: FontWeight.w700,
+                            height: 1.1,
+                            color: Colors.white,
+                          ),
                         ),
+                        SizedBox(height: isTight ? 8 : 10),
+                        Text(
+                          locationText,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.poppins(
+                            fontSize: locationFontSize,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.white.withValues(alpha: 0.88),
+                          ),
+                        ),
+                        if (job.metadataLine != null &&
+                            job.metadataLine!.trim().isNotEmpty) ...[
+                          SizedBox(height: isTight ? 4 : 6),
+                          Text(
+                            job.metadataLine!,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.poppins(
+                              fontSize: metadataFontSize,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white.withValues(alpha: 0.84),
+                            ),
+                          ),
+                        ],
+                        SizedBox(height: isTight ? 12 : 18),
+                        footer,
                       ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }
@@ -1489,8 +1926,13 @@ class _FeaturedJobCard extends StatelessWidget {
 class _ApplyNowButton extends StatelessWidget {
   final VoidCallback? onTap;
   final Color textColor;
+  final bool compact;
 
-  const _ApplyNowButton({required this.onTap, required this.textColor});
+  const _ApplyNowButton({
+    required this.onTap,
+    required this.textColor,
+    required this.compact,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -1502,17 +1944,20 @@ class _ApplyNowButton extends StatelessWidget {
           color: Colors.transparent,
           child: InkWell(
             onTap: onTap,
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(compact ? 16 : 18),
             child: Ink(
-              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+              padding: EdgeInsets.symmetric(
+                horizontal: compact ? 14 : 18,
+                vertical: compact ? 10 : 12,
+              ),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(18),
+                borderRadius: BorderRadius.circular(compact ? 16 : 18),
               ),
               child: Text(
                 'Apply Now',
                 style: GoogleFonts.poppins(
-                  fontSize: 12,
+                  fontSize: compact ? 11 : 12,
                   fontWeight: FontWeight.w700,
                   color: textColor,
                 ),
@@ -1525,122 +1970,296 @@ class _ApplyNowButton extends StatelessWidget {
   }
 }
 
+class _AvailableRolePalette {
+  final List<Color> gradientColors;
+  final Color accentColor;
+  final Alignment glowCenter;
+
+  const _AvailableRolePalette({
+    required this.gradientColors,
+    required this.accentColor,
+    required this.glowCenter,
+  });
+}
+
 class _AvailableRoleCard extends StatelessWidget {
   final _JobCardData job;
   final VoidCallback? onTap;
+  final bool compact;
 
-  const _AvailableRoleCard({required this.job, this.onTap});
+  const _AvailableRoleCard({
+    required this.job,
+    this.onTap,
+    required this.compact,
+  });
+
+  _AvailableRolePalette _rolePalette() {
+    const palettes = <_AvailableRolePalette>[
+      _AvailableRolePalette(
+        gradientColors: [Color(0xFFF4F0FF), Color(0xFFDDD2FF)],
+        accentColor: OpportunityDashboardPalette.primary,
+        glowCenter: Alignment(0.78, 0.74),
+      ),
+      _AvailableRolePalette(
+        gradientColors: [Color(0xFFF5F2FF), Color(0xFFE7DEFF)],
+        accentColor: OpportunityDashboardPalette.primaryDark,
+        glowCenter: Alignment(0.82, 0.68),
+      ),
+      _AvailableRolePalette(
+        gradientColors: [Color(0xFFF2FBFF), Color(0xFFDCEEFF)],
+        accentColor: OpportunityDashboardPalette.primaryDark,
+        glowCenter: Alignment(0.82, 0.82),
+      ),
+      _AvailableRolePalette(
+        gradientColors: [Color(0xFFF0FFFB), Color(0xFFD8F6EF)],
+        accentColor: OpportunityDashboardPalette.secondary,
+        glowCenter: Alignment(0.76, 0.80),
+      ),
+      _AvailableRolePalette(
+        gradientColors: [Color(0xFFF3F8FF), Color(0xFFD7E7FF)],
+        accentColor: OpportunityDashboardPalette.primaryDark,
+        glowCenter: Alignment(-0.76, -0.74),
+      ),
+      _AvailableRolePalette(
+        gradientColors: [Color(0xFFF2FCFF), Color(0xFFD7F1F7)],
+        accentColor: OpportunityDashboardPalette.secondary,
+        glowCenter: Alignment(0.86, 0.60),
+      ),
+    ];
+
+    return palettes[job.uniqueKey.hashCode.abs() % palettes.length];
+  }
 
   @override
   Widget build(BuildContext context) {
+    const badgeBackground = Color(0xFFF3F0FF);
+    const locationIconColor = OpportunityDashboardPalette.secondary;
+    const salaryIconColor = OpportunityDashboardPalette.primaryDark;
+    final palette = _rolePalette();
+    final gradientColors = palette.gradientColors;
+    final accentColor = palette.accentColor;
+    final cardRadius = BorderRadius.circular(compact ? 20 : 24);
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: cardRadius,
         child: Ink(
-          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: OpportunityDashboardPalette.surface,
-            borderRadius: BorderRadius.circular(24),
+            gradient: RadialGradient(
+              center: palette.glowCenter,
+              radius: 1.72,
+              colors: [
+                gradientColors.last.withValues(alpha: 0.98),
+                gradientColors.first.withValues(alpha: 0.90),
+                OpportunityDashboardPalette.surface,
+                OpportunityDashboardPalette.surface,
+              ],
+              stops: const [0.0, 0.42, 0.84, 1.0],
+            ),
+            borderRadius: cardRadius,
             border: Border.all(
               color: OpportunityDashboardPalette.border.withValues(alpha: 0.8),
             ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.035),
-                blurRadius: 18,
-                offset: const Offset(0, 10),
-              ),
-            ],
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: 46,
-                height: 46,
-                decoration: BoxDecoration(
-                  color: job.category.accentColor.withValues(alpha: 0.10),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Icon(
-                  job.category.icon,
-                  color: job.category.accentColor,
-                  size: 23,
-                ),
-              ),
-              const SizedBox(height: 14),
-              Text(
-                job.title,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: GoogleFonts.poppins(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  height: 1.24,
-                  color: OpportunityDashboardPalette.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                job.company,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: GoogleFonts.poppins(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                  color: OpportunityDashboardPalette.textSecondary,
-                ),
-              ),
-              if (job.metadataLine != null &&
-                  job.metadataLine!.trim().isNotEmpty) ...[
-                const SizedBox(height: 6),
-                Text(
-                  job.metadataLine!,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.poppins(
-                    fontSize: 11.5,
-                    fontWeight: FontWeight.w600,
-                    color: OpportunityDashboardPalette.textSecondary,
-                    height: 1.35,
-                  ),
-                ),
-              ],
-              const Spacer(),
-              Row(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final isTight =
+                  compact ||
+                  constraints.maxWidth < 170 ||
+                  constraints.maxHeight < 172;
+              final cardPadding = EdgeInsets.fromLTRB(
+                isTight ? 12 : 14,
+                isTight ? 11 : 13,
+                isTight ? 12 : 14,
+                isTight ? 10 : 12,
+              );
+              final iconSize = isTight ? 16.0 : 18.0;
+              final iconTileSize = isTight ? 34.0 : 38.0;
+              final titleSize = isTight ? 13.0 : 14.1;
+              final subtitleSize = isTight ? 10.0 : 10.9;
+              final detailSize = isTight ? 9.8 : 10.5;
+              final chipSize = isTight ? 9.1 : 9.6;
+
+              return Stack(
                 children: [
-                  Expanded(
-                    child: job.salary == null
-                        ? const SizedBox.shrink()
-                        : Text(
-                            job.salary!,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.poppins(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                              color: OpportunityDashboardPalette.primary,
+                  Padding(
+                    padding: cardPadding,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              width: iconTileSize,
+                              height: iconTileSize,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [Colors.white, gradientColors.first],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                                borderRadius: BorderRadius.circular(
+                                  isTight ? 12 : 14,
+                                ),
+                                border: Border.all(
+                                  color: accentColor.withValues(alpha: 0.10),
+                                ),
+                              ),
+                              child: Icon(
+                                job.category.icon,
+                                color: accentColor,
+                                size: iconSize,
+                              ),
                             ),
+                            const Spacer(),
+                            if (job.typeBadge != null)
+                              ConstrainedBox(
+                                constraints: BoxConstraints(
+                                  maxWidth: constraints.maxWidth * 0.42,
+                                ),
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: isTight ? 7 : 8,
+                                    vertical: isTight ? 4 : 5,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [Colors.white, badgeBackground],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                    ),
+                                    borderRadius: BorderRadius.circular(
+                                      isTight ? 10 : 11,
+                                    ),
+                                    border: Border.all(
+                                      color: accentColor.withValues(
+                                        alpha: 0.10,
+                                      ),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    job.typeBadge!,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: GoogleFonts.poppins(
+                                      fontSize: chipSize,
+                                      fontWeight: FontWeight.w700,
+                                      color: accentColor,
+                                      letterSpacing: 0.25,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                        SizedBox(height: isTight ? 8 : 10),
+                        Text(
+                          job.title,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.poppins(
+                            fontSize: titleSize,
+                            fontWeight: FontWeight.w700,
+                            height: 1.18,
+                            color: OpportunityDashboardPalette.textPrimary,
                           ),
-                  ),
-                  Container(
-                    width: 30,
-                    height: 30,
-                    decoration: BoxDecoration(
-                      color: job.category.accentColor.withValues(alpha: 0.08),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Icon(
-                      Icons.chevron_right_rounded,
-                      size: 19,
-                      color: job.category.accentColor,
+                        ),
+                        SizedBox(height: isTight ? 3 : 4),
+                        Text(
+                          job.subtitle,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.poppins(
+                            fontSize: subtitleSize,
+                            fontWeight: FontWeight.w600,
+                            color: OpportunityDashboardPalette.textSecondary,
+                          ),
+                        ),
+                        SizedBox(height: isTight ? 7 : 8),
+                        if (job.location != null &&
+                            job.location!.trim().isNotEmpty) ...[
+                          _AvailableRoleMetaLine(
+                            icon: Icons.place_rounded,
+                            text: job.location!,
+                            fontSize: detailSize,
+                            iconSize: isTight ? 12.5 : 13.5,
+                            iconColor: locationIconColor,
+                          ),
+                          SizedBox(height: isTight ? 5 : 6),
+                        ],
+                        if (job.salary != null && job.salary!.trim().isNotEmpty)
+                          _AvailableRoleMetaLine(
+                            icon: Icons.payments_rounded,
+                            text: job.salary!,
+                            fontSize: detailSize,
+                            iconSize: isTight ? 12.5 : 13.5,
+                            iconColor: salaryIconColor,
+                          ),
+                        const Spacer(),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Expanded(
+                              child: job.levelTag == null
+                                  ? const SizedBox.shrink()
+                                  : Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: isTight ? 8 : 9,
+                                          vertical: isTight ? 5 : 6,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          gradient: LinearGradient(
+                                            colors: [
+                                              Colors.white,
+                                              gradientColors.first,
+                                            ],
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.bottomRight,
+                                          ),
+                                          borderRadius: BorderRadius.circular(
+                                            isTight ? 11 : 12,
+                                          ),
+                                        ),
+                                        child: Text(
+                                          job.levelTag!,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: GoogleFonts.poppins(
+                                            fontSize: chipSize,
+                                            fontWeight: FontWeight.w700,
+                                            color: accentColor,
+                                            letterSpacing: 0.3,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                            ),
+                            Container(
+                              width: isTight ? 28 : 30,
+                              height: isTight ? 28 : 30,
+                              decoration: BoxDecoration(
+                                color: accentColor.withValues(alpha: 0.12),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                Icons.arrow_forward_rounded,
+                                size: isTight ? 15 : 16,
+                                color: accentColor,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                 ],
-              ),
-            ],
+              );
+            },
           ),
         ),
       ),
@@ -1648,11 +2267,56 @@ class _AvailableRoleCard extends StatelessWidget {
   }
 }
 
+class _AvailableRoleMetaLine extends StatelessWidget {
+  final IconData icon;
+  final String text;
+  final double fontSize;
+  final double iconSize;
+  final Color iconColor;
+
+  const _AvailableRoleMetaLine({
+    required this.icon,
+    required this.text,
+    required this.fontSize,
+    required this.iconSize,
+    required this.iconColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Icon(icon, size: iconSize, color: iconColor),
+        const SizedBox(width: 5),
+        Expanded(
+          child: Text(
+            text,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: GoogleFonts.poppins(
+              fontSize: fontSize,
+              fontWeight: FontWeight.w500,
+              color: OpportunityDashboardPalette.textSecondary,
+              height: 1.1,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class _AvailableRoleListCard extends StatelessWidget {
   final _JobCardData job;
   final VoidCallback? onTap;
+  final bool compact;
 
-  const _AvailableRoleListCard({required this.job, this.onTap});
+  const _AvailableRoleListCard({
+    required this.job,
+    this.onTap,
+    required this.compact,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -1660,12 +2324,12 @@ class _AvailableRoleListCard extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(22),
+        borderRadius: BorderRadius.circular(compact ? 18 : 22),
         child: Ink(
-          padding: const EdgeInsets.all(14),
+          padding: EdgeInsets.all(compact ? 12 : 14),
           decoration: BoxDecoration(
             color: OpportunityDashboardPalette.surface,
-            borderRadius: BorderRadius.circular(22),
+            borderRadius: BorderRadius.circular(compact ? 18 : 22),
             border: Border.all(
               color: OpportunityDashboardPalette.border.withValues(alpha: 0.8),
             ),
@@ -1673,19 +2337,19 @@ class _AvailableRoleListCard extends StatelessWidget {
           child: Row(
             children: [
               Container(
-                width: 52,
-                height: 52,
+                width: compact ? 46 : 52,
+                height: compact ? 46 : 52,
                 decoration: BoxDecoration(
                   color: job.category.surfaceTint,
-                  borderRadius: BorderRadius.circular(18),
+                  borderRadius: BorderRadius.circular(compact ? 16 : 18),
                 ),
                 child: Icon(
                   job.category.icon,
                   color: job.category.accentColor,
-                  size: 24,
+                  size: compact ? 21 : 24,
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: compact ? 10 : 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -1695,7 +2359,7 @@ class _AvailableRoleListCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.poppins(
-                        fontSize: 14,
+                        fontSize: compact ? 13 : 14,
                         fontWeight: FontWeight.w700,
                         color: OpportunityDashboardPalette.textPrimary,
                       ),
@@ -1708,7 +2372,7 @@ class _AvailableRoleListCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.poppins(
-                        fontSize: 12,
+                        fontSize: compact ? 11 : 12,
                         fontWeight: FontWeight.w500,
                         color: OpportunityDashboardPalette.textSecondary,
                       ),
@@ -1716,26 +2380,31 @@ class _AvailableRoleListCard extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(width: 10),
+              SizedBox(width: compact ? 8 : 10),
               Column(
+                mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   if (job.salary != null)
-                    Text(
-                      job.salary!,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.poppins(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: OpportunityDashboardPalette.primary,
+                    SizedBox(
+                      width: compact ? 88 : 104,
+                      child: Text(
+                        job.salary!,
+                        maxLines: 1,
+                        textAlign: TextAlign.right,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.poppins(
+                          fontSize: compact ? 11 : 12,
+                          fontWeight: FontWeight.w700,
+                          color: OpportunityDashboardPalette.primary,
+                        ),
                       ),
                     ),
                   const SizedBox(height: 6),
                   Icon(
                     Icons.chevron_right_rounded,
                     color: job.category.accentColor,
-                    size: 20,
+                    size: compact ? 18 : 20,
                   ),
                 ],
               ),
@@ -1750,17 +2419,24 @@ class _AvailableRoleListCard extends StatelessWidget {
 class _RolesViewToggle extends StatelessWidget {
   final _JobsViewMode viewMode;
   final ValueChanged<_JobsViewMode> onChanged;
+  final bool compact;
 
-  const _RolesViewToggle({required this.viewMode, required this.onChanged});
+  const _RolesViewToggle({
+    required this.viewMode,
+    required this.onChanged,
+    required this.compact,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(4),
+      padding: EdgeInsets.all(compact ? 3 : 4),
       decoration: BoxDecoration(
-        color: OpportunityDashboardPalette.surface,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: OpportunityDashboardPalette.border),
+        color: const Color(0xFFF1F5F9),
+        borderRadius: BorderRadius.circular(compact ? 16 : 18),
+        border: Border.all(
+          color: OpportunityDashboardPalette.border.withValues(alpha: 0.92),
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -1768,12 +2444,14 @@ class _RolesViewToggle extends StatelessWidget {
           _ToggleIconButton(
             icon: Icons.grid_view_rounded,
             isActive: viewMode == _JobsViewMode.grid,
+            compact: compact,
             onTap: () => onChanged(_JobsViewMode.grid),
           ),
-          const SizedBox(width: 4),
+          SizedBox(width: compact ? 3 : 4),
           _ToggleIconButton(
             icon: Icons.view_list_rounded,
             isActive: viewMode == _JobsViewMode.list,
+            compact: compact,
             onTap: () => onChanged(_JobsViewMode.list),
           ),
         ],
@@ -1786,11 +2464,13 @@ class _ToggleIconButton extends StatelessWidget {
   final IconData icon;
   final bool isActive;
   final VoidCallback onTap;
+  final bool compact;
 
   const _ToggleIconButton({
     required this.icon,
     required this.isActive,
     required this.onTap,
+    required this.compact,
   });
 
   @override
@@ -1799,21 +2479,26 @@ class _ToggleIconButton extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(compact ? 12 : 14),
         child: Ink(
-          width: 34,
-          height: 34,
+          width: compact ? 30 : 34,
+          height: compact ? 30 : 34,
           decoration: BoxDecoration(
             color: isActive
-                ? OpportunityDashboardPalette.primary
-                : OpportunityDashboardPalette.surface,
-            borderRadius: BorderRadius.circular(14),
+                ? OpportunityDashboardPalette.primary.withValues(alpha: 0.12)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(compact ? 12 : 14),
+            border: Border.all(
+              color: isActive
+                  ? OpportunityDashboardPalette.primary.withValues(alpha: 0.18)
+                  : Colors.transparent,
+            ),
           ),
           child: Icon(
             icon,
-            size: 18,
+            size: compact ? 16 : 18,
             color: isActive
-                ? Colors.white
+                ? OpportunityDashboardPalette.primary
                 : OpportunityDashboardPalette.textSecondary,
           ),
         ),
@@ -1894,35 +2579,41 @@ class _CompanyLogoTile extends StatelessWidget {
 class _JobsEmptyStateCard extends StatelessWidget {
   final String title;
   final String message;
+  final bool compact;
 
-  const _JobsEmptyStateCard({required this.title, required this.message});
+  const _JobsEmptyStateCard({
+    required this.title,
+    required this.message,
+    required this.compact,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(18),
+      padding: EdgeInsets.all(compact ? 16 : 18),
       decoration: BoxDecoration(
         color: OpportunityDashboardPalette.surface,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(compact ? 20 : 24),
         border: Border.all(color: OpportunityDashboardPalette.border),
       ),
       child: Row(
         children: [
           Container(
-            width: 48,
-            height: 48,
+            width: compact ? 42 : 48,
+            height: compact ? 42 : 48,
             decoration: BoxDecoration(
               color: OpportunityDashboardPalette.primary.withValues(
                 alpha: 0.10,
               ),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(compact ? 14 : 16),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.work_outline_rounded,
               color: OpportunityDashboardPalette.primary,
+              size: compact ? 20 : 24,
             ),
           ),
-          const SizedBox(width: 14),
+          SizedBox(width: compact ? 12 : 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1930,7 +2621,7 @@ class _JobsEmptyStateCard extends StatelessWidget {
                 Text(
                   title,
                   style: GoogleFonts.poppins(
-                    fontSize: 14,
+                    fontSize: compact ? 13 : 14,
                     fontWeight: FontWeight.w700,
                     color: OpportunityDashboardPalette.textPrimary,
                   ),
@@ -1939,7 +2630,7 @@ class _JobsEmptyStateCard extends StatelessWidget {
                 Text(
                   message,
                   style: GoogleFonts.poppins(
-                    fontSize: 12,
+                    fontSize: compact ? 11 : 12,
                     height: 1.35,
                     color: OpportunityDashboardPalette.textSecondary,
                   ),
@@ -1975,10 +2666,13 @@ class _JobCardData {
   final String id;
   final String title;
   final String company;
+  final String subtitle;
   final String? location;
   final String? salary;
   final String? metadataLine;
   final String badge;
+  final String? typeBadge;
+  final String? levelTag;
   final String logoUrl;
   final _JobCategoryData category;
   final bool isFeaturedPreferred;
@@ -1990,10 +2684,13 @@ class _JobCardData {
     required this.id,
     required this.title,
     required this.company,
+    required this.subtitle,
     required this.location,
     required this.salary,
     required this.metadataLine,
     required this.badge,
+    required this.typeBadge,
+    required this.levelTag,
     required this.logoUrl,
     required this.category,
     required this.isFeaturedPreferred,
@@ -2005,9 +2702,12 @@ class _JobCardData {
   factory _JobCardData.placeholder({
     required String title,
     required String company,
+    String? subtitle,
     required String? location,
     required String? salary,
     required String badge,
+    String? typeBadge,
+    String? levelTag,
     required _JobCategoryData category,
     bool isFeaturedPreferred = false,
   }) {
@@ -2015,10 +2715,13 @@ class _JobCardData {
       id: '',
       title: title,
       company: company,
+      subtitle: subtitle ?? company,
       location: location,
       salary: salary,
       metadataLine: null,
       badge: badge,
+      typeBadge: typeBadge,
+      levelTag: levelTag,
       logoUrl: '',
       category: category,
       isFeaturedPreferred: isFeaturedPreferred,
@@ -2030,6 +2733,8 @@ class _JobCardData {
         location ?? '',
         salary ?? '',
         badge,
+        typeBadge ?? '',
+        levelTag ?? '',
         category.label,
         category.key,
       ].join(' ').toLowerCase(),
