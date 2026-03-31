@@ -14,6 +14,7 @@ import '../../utils/opportunity_dashboard_palette.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/opportunity_dashboard_widgets.dart';
+import 'internships_screen.dart';
 import 'jobs_screen.dart';
 import 'opportunity_detail_screen.dart';
 import 'trainings_screen.dart';
@@ -1480,12 +1481,13 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                                     backgroundColor: OpportunityDashboardPalette
                                         .secondary
                                         .withValues(alpha: 0.10),
-                                    onTap: () async {
-                                      _setFilter(
-                                        _OpportunityDashboardFilter.internship,
-                                      );
-                                      await _scrollToKey(_latestSectionKey);
-                                    },
+                                    onTap: () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) =>
+                                            const InternshipsScreen(),
+                                      ),
+                                    ),
                                   ),
                                 ),
                                 const SizedBox(width: 10),

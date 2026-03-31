@@ -19,6 +19,7 @@ import 'saved_screen.dart';
 import 'profile_screen.dart';
 import 'opportunities_screen.dart';
 import 'jobs_screen.dart';
+import 'internships_screen.dart';
 import 'opportunity_detail_screen.dart';
 import 'project_ideas_screen.dart';
 import 'trainings_screen.dart';
@@ -381,11 +382,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
         gradient: [const Color(0xFF4DA0FF), const Color(0xFF74B9FF)],
         onTap: () => Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (_) => const OpportunitiesScreen(
-              initialFilter: OpportunityType.internship,
-            ),
-          ),
+          MaterialPageRoute(builder: (_) => const InternshipsScreen()),
         ),
       ),
       _CategoryItem(
