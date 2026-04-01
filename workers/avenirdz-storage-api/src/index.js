@@ -7,6 +7,8 @@ const FIREBASE_ISSUER = `https://securetoken.google.com/${FIREBASE_PROJECT_ID}`;
 const MAX_CV_BYTES = 10 * 1024 * 1024;
 const MAX_COMMERCIAL_REGISTER_BYTES = 10 * 1024 * 1024;
 const MAX_PROFILE_PHOTO_BYTES = 5 * 1024 * 1024;
+const MAX_CHAT_IMAGE_BYTES = 10 * 1024 * 1024;
+const MAX_CHAT_FILE_BYTES = 20 * 1024 * 1024;
 
 let cachedJwks = null;
 let jwksCachedAt = 0;
@@ -483,6 +485,14 @@ function buildObjectKey({ userId, fileType, fileName }) {
     return `profiles/${safeUserId}/${Date.now()}_${safeFileName}`;
   }
 
+  if (fileType === "chat_image") {
+    return `chat/${safeUserId}/images/${Date.now()}_${safeFileName}`;
+  }
+
+  if (fileType === "chat_file") {
+    return `chat/${safeUserId}/files/${Date.now()}_${safeFileName}`;
+  }
+
   return `cvs/${safeUserId}/uploads/${Date.now()}_${safeFileName}`;
 }
 
@@ -498,6 +508,14 @@ function buildDefaultFileName(fileType, templateId) {
 
   if (fileType === "profile_photo") {
     return "profile_photo.jpg";
+  }
+
+  if (fileType === "chat_image") {
+    return "chat_image.jpg";
+  }
+
+  if (fileType === "chat_file") {
+    return "chat_attachment.bin";
   }
 
   return "upload.bin";
@@ -565,6 +583,12 @@ function normalizeMimeType({ requestedMimeType, fileMimeType, fileName }) {
   if (normalizedFileName.endsWith(".pdf")) {
     return "application/pdf";
   }
+  if (normalizedFileName.endsWith(".doc")) {
+    return "application/msword";
+  }
+  if (normalizedFileName.endsWith(".docx")) {
+    return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+  }
   if (normalizedFileName.endsWith(".png")) {
     return "image/png";
   }
@@ -576,6 +600,27 @@ function normalizeMimeType({ requestedMimeType, fileMimeType, fileName }) {
   }
   if (normalizedFileName.endsWith(".webp")) {
     return "image/webp";
+  }
+  if (normalizedFileName.endsWith(".xls")) {
+    return "application/vnd.ms-excel";
+  }
+  if (normalizedFileName.endsWith(".xlsx")) {
+    return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+  }
+  if (normalizedFileName.endsWith(".ppt")) {
+    return "application/vnd.ms-powerpoint";
+  }
+  if (normalizedFileName.endsWith(".pptx")) {
+    return "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+  }
+  if (normalizedFileName.endsWith(".txt")) {
+    return "text/plain";
+  }
+  if (normalizedFileName.endsWith(".zip")) {
+    return "application/zip";
+  }
+  if (normalizedFileName.endsWith(".rar")) {
+    return "application/vnd.rar";
   }
 
   return "application/octet-stream";
@@ -637,6 +682,25 @@ function validateUploadRequest({ fileType, fileName, mimeType, fileSize }) {
       normalizedMimeType !== "image/webp"
     ) {
       return "Profile photos must be JPG, PNG, or WebP images.";
+    }
+  }
+
+  if (normalizedFileType === "chat_image") {
+    if (fileSize > MAX_CHAT_IMAGE_BYTES) {
+      return "Chat images must be smaller than 10 MB.";
+    }
+    if (
+      normalizedMimeType !== "image/png" &&
+      normalizedMimeType !== "image/jpeg" &&
+      normalizedMimeType !== "image/webp"
+    ) {
+      return "Chat images must be JPG, PNG, or WebP files.";
+    }
+  }
+
+  if (normalizedFileType === "chat_file") {
+    if (fileSize > MAX_CHAT_FILE_BYTES) {
+      return "Chat files must be smaller than 20 MB.";
     }
   }
 

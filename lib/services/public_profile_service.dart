@@ -10,11 +10,16 @@ class PublicProfileService {
 
   final WorkerApiService _workerApi = WorkerApiService();
   final Map<String, Future<UserModel?>> _inFlightRequests = {};
+  final Map<String, UserModel?> _cache = {};
 
   Future<UserModel?> fetchPublicProfile(String userId) {
     final normalizedUserId = userId.trim();
     if (normalizedUserId.isEmpty) {
       return Future.value(null);
+    }
+
+    if (_cache.containsKey(normalizedUserId)) {
+      return Future.value(_cache[normalizedUserId]);
     }
 
     final existingRequest = _inFlightRequests[normalizedUserId];
@@ -38,12 +43,15 @@ class PublicProfileService {
       );
       final payload = response['user'];
       if (payload is Map<String, dynamic>) {
-        return UserModel.fromMap(payload);
+        final user = UserModel.fromMap(payload);
+        _cache[userId] = user;
+        return user;
       }
     } catch (e) {
       debugPrint('fetchPublicProfile error for $userId: $e');
     }
 
+    _cache.remove(userId);
     return null;
   }
 }

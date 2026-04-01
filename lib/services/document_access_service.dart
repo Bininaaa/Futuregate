@@ -36,6 +36,17 @@ class DocumentAccessService {
     return _parseDocument(result);
   }
 
+  Future<SecureDocumentLink> getChatAttachmentDocument({
+    required String conversationId,
+    required String messageId,
+  }) async {
+    final result = await _workerApi.get(
+      '/api/conversations/${Uri.encodeComponent(conversationId)}/messages/${Uri.encodeComponent(messageId)}/attachment/access',
+    );
+
+    return _parseDocument(result);
+  }
+
   SecureDocumentLink _parseDocument(Map<String, dynamic> payload) {
     final document = payload['document'];
     if (document is! Map<String, dynamic>) {

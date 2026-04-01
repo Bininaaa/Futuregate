@@ -455,6 +455,10 @@ service cloud.firestore {
       return value == 'active' || value == 'closed';
     }
 
+    function isMessageType(value) {
+      return value == 'text' || value == 'image' || value == 'file';
+    }
+
     function isParticipant(conversationId) {
       return signedIn() &&
           exists(conversationPath(conversationId)) &&
@@ -493,6 +497,8 @@ service cloud.firestore {
             'commercialRegisterMimeType',
             'commercialRegisterStoragePath',
             'commercialRegisterUploadedAt',
+            'isOnline',
+            'lastSeenAt',
             'isActive',
             'createdAt',
             'provider'
@@ -554,6 +560,8 @@ service cloud.firestore {
               'commercialRegisterMimeType',
               'commercialRegisterStoragePath',
               'commercialRegisterUploadedAt',
+              'isOnline',
+              'lastSeenAt',
               'fcmToken',
               'fcmTokenUpdatedAt',
               'fcmTokenPlatform'
@@ -1048,9 +1056,21 @@ service cloud.firestore {
             'companyId',
             'companyName',
             'lastMessage',
+            'lastMessageType',
+            'lastMessageSenderId',
+            'lastMessageSenderName',
             'lastMessageTime',
             'startedAt',
-            'status'
+            'status',
+            'studentUnreadCount',
+            'companyUnreadCount',
+            'archivedBy',
+            'mutedBy',
+            'contextType',
+            'contextLabel',
+            'isGroup',
+            'groupName',
+            'groupAvatarUrl'
           ]) &&
           request.resource.data.id == conversationId &&
           (
@@ -1066,8 +1086,17 @@ service cloud.firestore {
                 resource.data.companyId == request.auth.uid) &&
             request.resource.data.diff(resource.data).changedKeys().hasOnly([
               'lastMessage',
+              'lastMessageType',
+              'lastMessageSenderId',
+              'lastMessageSenderName',
               'lastMessageTime',
-              'status'
+              'status',
+              'studentUnreadCount',
+              'companyUnreadCount',
+              'archivedBy',
+              'mutedBy',
+              'contextType',
+              'contextLabel'
             ]) &&
             request.resource.data.id == resource.data.id &&
             request.resource.data.studentId == resource.data.studentId &&
@@ -1075,6 +1104,9 @@ service cloud.firestore {
             request.resource.data.companyId == resource.data.companyId &&
             request.resource.data.companyName == resource.data.companyName &&
             request.resource.data.startedAt == resource.data.startedAt &&
+            request.resource.data.isGroup == resource.data.isGroup &&
+            request.resource.data.groupName == resource.data.groupName &&
+            request.resource.data.groupAvatarUrl == resource.data.groupAvatarUrl &&
             isConversationStatus(request.resource.data.status)
           );
 
@@ -1089,7 +1121,16 @@ service cloud.firestore {
               'senderId',
               'senderRole',
               'text',
+              'messageType',
+              'attachmentUrl',
+              'attachmentStoragePath',
+              'fileName',
+              'fileSize',
+              'mimeType',
+              'thumbnailUrl',
               'sentAt',
+              'deliveredAt',
+              'seenAt',
               'isRead',
               'isEdited',
               'isDeleted',
@@ -1099,6 +1140,7 @@ service cloud.firestore {
             request.resource.data.senderId == request.auth.uid &&
             request.resource.data.isEdited == false &&
             request.resource.data.isDeleted == false &&
+            isMessageType(request.resource.data.messageType) &&
             (
               (isStudent() && request.resource.data.senderRole == 'student') ||
               (isCompany() && request.resource.data.senderRole == 'company')
@@ -1109,13 +1151,25 @@ service cloud.firestore {
               isParticipant(conversationId) &&
               resource.data.senderId != request.auth.uid &&
               request.resource.data.diff(resource.data).changedKeys().hasOnly([
-                'isRead'
+                'isRead',
+                'seenAt'
               ]) &&
               request.resource.data.id == resource.data.id &&
               request.resource.data.senderId == resource.data.senderId &&
               request.resource.data.senderRole == resource.data.senderRole &&
               request.resource.data.text == resource.data.text &&
-              request.resource.data.sentAt == resource.data.sentAt
+              request.resource.data.messageType == resource.data.messageType &&
+              request.resource.data.attachmentUrl == resource.data.attachmentUrl &&
+              request.resource.data.attachmentStoragePath == resource.data.attachmentStoragePath &&
+              request.resource.data.fileName == resource.data.fileName &&
+              request.resource.data.fileSize == resource.data.fileSize &&
+              request.resource.data.mimeType == resource.data.mimeType &&
+              request.resource.data.thumbnailUrl == resource.data.thumbnailUrl &&
+              request.resource.data.sentAt == resource.data.sentAt &&
+              request.resource.data.deliveredAt == resource.data.deliveredAt &&
+              request.resource.data.isEdited == resource.data.isEdited &&
+              request.resource.data.isDeleted == resource.data.isDeleted &&
+              request.resource.data.editedAt == resource.data.editedAt
             ) ||
             (
               isParticipant(conversationId) &&
@@ -1130,7 +1184,16 @@ service cloud.firestore {
               request.resource.data.id == resource.data.id &&
               request.resource.data.senderId == resource.data.senderId &&
               request.resource.data.senderRole == resource.data.senderRole &&
+              request.resource.data.messageType == resource.data.messageType &&
+              request.resource.data.attachmentUrl == resource.data.attachmentUrl &&
+              request.resource.data.attachmentStoragePath == resource.data.attachmentStoragePath &&
+              request.resource.data.fileName == resource.data.fileName &&
+              request.resource.data.fileSize == resource.data.fileSize &&
+              request.resource.data.mimeType == resource.data.mimeType &&
+              request.resource.data.thumbnailUrl == resource.data.thumbnailUrl &&
               request.resource.data.sentAt == resource.data.sentAt &&
+              request.resource.data.deliveredAt == resource.data.deliveredAt &&
+              request.resource.data.seenAt == resource.data.seenAt &&
               request.resource.data.isRead == resource.data.isRead &&
               request.resource.data.isDeleted == resource.data.isDeleted
             ) ||
@@ -1147,7 +1210,16 @@ service cloud.firestore {
               request.resource.data.id == resource.data.id &&
               request.resource.data.senderId == resource.data.senderId &&
               request.resource.data.senderRole == resource.data.senderRole &&
+              request.resource.data.messageType == resource.data.messageType &&
+              request.resource.data.attachmentUrl == resource.data.attachmentUrl &&
+              request.resource.data.attachmentStoragePath == resource.data.attachmentStoragePath &&
+              request.resource.data.fileName == resource.data.fileName &&
+              request.resource.data.fileSize == resource.data.fileSize &&
+              request.resource.data.mimeType == resource.data.mimeType &&
+              request.resource.data.thumbnailUrl == resource.data.thumbnailUrl &&
               request.resource.data.sentAt == resource.data.sentAt &&
+              request.resource.data.deliveredAt == resource.data.deliveredAt &&
+              request.resource.data.seenAt == resource.data.seenAt &&
               request.resource.data.isRead == resource.data.isRead
             );
 

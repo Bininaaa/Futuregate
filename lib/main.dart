@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import 'firebase_options.dart';
 import 'services/notification_service.dart';
+import 'services/presence_service.dart';
 import 'providers/auth_provider.dart';
 import 'providers/opportunity_provider.dart';
 import 'providers/application_provider.dart';
@@ -55,9 +56,7 @@ void _handleNotificationTap(Map<String, dynamic> data) {
     NotificationService.pendingNotificationData = data;
     return;
   }
-  state.push(
-    MaterialPageRoute(builder: (_) => const NotificationsScreen()),
-  );
+  state.push(MaterialPageRoute(builder: (_) => const NotificationsScreen()));
 }
 
 class AvenirDZApp extends StatelessWidget {
@@ -82,17 +81,82 @@ class AvenirDZApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => NotificationProvider()),
         ChangeNotifierProvider(create: (_) => ConnectivityProvider()),
       ],
-      child: MaterialApp(
-        navigatorKey: navigatorKey,
-        debugShowCheckedModeBanner: false,
-        title: 'AvenirDZ',
-        theme: ThemeData(
-          primarySwatch: Colors.deepPurple,
-          colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFFFF8C00)),
-          appBarTheme: const AppBarTheme(centerTitle: true, elevation: 0),
+      child: const _PresenceAwareApp(),
+    );
+  }
+}
+
+class _PresenceAwareApp extends StatefulWidget {
+  const _PresenceAwareApp();
+
+  @override
+  State<_PresenceAwareApp> createState() => _PresenceAwareAppState();
+}
+
+class _PresenceAwareAppState extends State<_PresenceAwareApp>
+    with WidgetsBindingObserver {
+  AppLifecycleState? _lastLifecycleState;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _syncPresence());
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    _lastLifecycleState = state;
+    _syncPresence();
+  }
+
+  Future<void> _syncPresence() async {
+    final auth = context.read<AuthProvider>().userModel;
+    if (auth == null) {
+      return;
+    }
+
+    final isOnline =
+        _lastLifecycleState == null ||
+        _lastLifecycleState == AppLifecycleState.resumed;
+    try {
+      await PresenceService.instance.updatePresence(
+        userId: auth.uid,
+        isOnline: isOnline,
+      );
+    } catch (_) {
+      // Presence is best-effort and should never block the app shell.
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    context.select<AuthProvider, String?>(
+      (provider) => provider.userModel?.uid,
+    );
+    WidgetsBinding.instance.addPostFrameCallback((_) => _syncPresence());
+
+    return MaterialApp(
+      navigatorKey: navigatorKey,
+      debugShowCheckedModeBanner: false,
+      title: 'AvenirDZ',
+      theme: ThemeData(
+        scaffoldBackgroundColor: const Color(0xFFF8FAFC),
+        colorScheme: const ColorScheme.light(
+          primary: Color(0xFF3B22F6),
+          secondary: Color(0xFF14B8A6),
+          surface: Colors.white,
+          error: Color(0xFFEF4444),
         ),
-        home: const AuthWrapper(),
+        appBarTheme: const AppBarTheme(centerTitle: true, elevation: 0),
       ),
+      home: const AuthWrapper(),
     );
   }
 }

@@ -125,6 +125,51 @@ class FileStorageService {
     );
   }
 
+  Future<StoredFileUploadResult> uploadChatImage({
+    required String userId,
+    required String fileName,
+    String filePath = '',
+    Uint8List? fileBytes,
+  }) async {
+    final sanitizedFileName = _sanitizeFileName(fileName);
+    final mimeType = _resolveMimeType(
+      fileName: sanitizedFileName,
+      fallback: 'image/jpeg',
+    );
+
+    return _uploadFile(
+      userId: userId,
+      filePath: filePath,
+      fileBytes: fileBytes,
+      fileName: sanitizedFileName,
+      mimeType: mimeType,
+      fileType: 'chat_image',
+    );
+  }
+
+  Future<StoredFileUploadResult> uploadChatFile({
+    required String userId,
+    required String fileName,
+    String filePath = '',
+    Uint8List? fileBytes,
+    String fallbackMimeType = 'application/octet-stream',
+  }) async {
+    final sanitizedFileName = _sanitizeFileName(fileName);
+    final mimeType = _resolveMimeType(
+      fileName: sanitizedFileName,
+      fallback: fallbackMimeType,
+    );
+
+    return _uploadFile(
+      userId: userId,
+      filePath: filePath,
+      fileBytes: fileBytes,
+      fileName: sanitizedFileName,
+      mimeType: mimeType,
+      fileType: 'chat_file',
+    );
+  }
+
   Future<void> deleteFileByPath(String storagePath) async {
     var objectKey = storagePath.trim();
     if (objectKey.startsWith('http://') || objectKey.startsWith('https://')) {
@@ -326,6 +371,20 @@ class FileStorageService {
         return 'image/jpeg';
       case 'webp':
         return 'image/webp';
+      case 'txt':
+        return 'text/plain';
+      case 'zip':
+        return 'application/zip';
+      case 'rar':
+        return 'application/vnd.rar';
+      case 'xls':
+        return 'application/vnd.ms-excel';
+      case 'xlsx':
+        return 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+      case 'ppt':
+        return 'application/vnd.ms-powerpoint';
+      case 'pptx':
+        return 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
       default:
         return fallback;
     }

@@ -519,6 +519,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
         studentName: app.studentName,
         companyId: currentUser.uid,
         companyName: currentUser.companyName ?? currentUser.fullName,
+        contextType: 'application',
       );
 
       if (!mounted) return;
@@ -530,6 +531,8 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
             conversationId: conversation.id,
             otherName: conversation.studentName,
             recipientId: conversation.studentId,
+            otherRole: 'student',
+            contextLabel: 'Application conversation',
           ),
         ),
       );

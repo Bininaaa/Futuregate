@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../models/scholarship_model.dart';
 
 class ScholarshipService {
@@ -8,7 +9,7 @@ class ScholarshipService {
     final snapshot = await _firestore.collection('scholarships').get();
 
     return snapshot.docs
-        .map((doc) => ScholarshipModel.fromMap(doc.data()))
+        .map((doc) => ScholarshipModel.fromMap({...doc.data(), 'id': doc.id}))
         .toList();
   }
 
@@ -17,6 +18,6 @@ class ScholarshipService {
 
     if (!doc.exists) return null;
 
-    return ScholarshipModel.fromMap(doc.data()!);
+    return ScholarshipModel.fromMap({...doc.data()!, 'id': doc.id});
   }
 }

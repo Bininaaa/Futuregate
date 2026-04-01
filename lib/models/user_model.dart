@@ -29,6 +29,8 @@ class UserModel {
   final String commercialRegisterMimeType;
   final String commercialRegisterStoragePath;
   final Timestamp? commercialRegisterUploadedAt;
+  final bool isOnline;
+  final Timestamp? lastSeenAt;
   final bool isActive;
   final String provider; // 'email' or 'google'
 
@@ -67,6 +69,8 @@ class UserModel {
     this.commercialRegisterMimeType = '',
     this.commercialRegisterStoragePath = '',
     this.commercialRegisterUploadedAt,
+    this.isOnline = false,
+    this.lastSeenAt,
   });
 
   bool get needsAcademicLevel =>
@@ -104,6 +108,8 @@ class UserModel {
       commercialRegisterUploadedAt: _parseTimestamp(
         map['commercialRegisterUploadedAt'],
       ),
+      isOnline: map['isOnline'] == true,
+      lastSeenAt: _parseTimestamp(map['lastSeenAt']),
       isActive: map['isActive'] ?? true,
       provider: map['provider'] ?? 'email',
     );
@@ -139,6 +145,8 @@ class UserModel {
       'commercialRegisterMimeType': commercialRegisterMimeType,
       'commercialRegisterStoragePath': commercialRegisterStoragePath,
       'commercialRegisterUploadedAt': commercialRegisterUploadedAt,
+      'isOnline': isOnline,
+      'lastSeenAt': lastSeenAt,
       'isActive': isActive,
       'provider': provider,
     };

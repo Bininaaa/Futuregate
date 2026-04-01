@@ -7,9 +7,21 @@ class ConversationModel {
   final String companyId;
   final String companyName;
   final String lastMessage;
+  final String lastMessageType;
+  final String lastMessageSenderId;
+  final String lastMessageSenderName;
   final Timestamp? lastMessageTime;
   final Timestamp? startedAt;
   final String status;
+  final int studentUnreadCount;
+  final int companyUnreadCount;
+  final List<String> archivedBy;
+  final List<String> mutedBy;
+  final String contextType;
+  final String contextLabel;
+  final bool isGroup;
+  final String groupName;
+  final String groupAvatarUrl;
 
   ConversationModel({
     required this.id,
@@ -18,9 +30,21 @@ class ConversationModel {
     required this.companyId,
     required this.companyName,
     required this.lastMessage,
+    this.lastMessageType = 'text',
+    this.lastMessageSenderId = '',
+    this.lastMessageSenderName = '',
     this.lastMessageTime,
     this.startedAt,
     required this.status,
+    this.studentUnreadCount = 0,
+    this.companyUnreadCount = 0,
+    this.archivedBy = const [],
+    this.mutedBy = const [],
+    this.contextType = '',
+    this.contextLabel = '',
+    this.isGroup = false,
+    this.groupName = '',
+    this.groupAvatarUrl = '',
   });
 
   factory ConversationModel.fromMap(Map<String, dynamic> map) {
@@ -31,9 +55,23 @@ class ConversationModel {
       companyId: map['companyId'] ?? '',
       companyName: map['companyName'] ?? '',
       lastMessage: map['lastMessage'] ?? '',
-      lastMessageTime: map['lastMessageTime'],
-      startedAt: map['startedAt'],
+      lastMessageType: (map['lastMessageType'] ?? 'text').toString().trim(),
+      lastMessageSenderId: (map['lastMessageSenderId'] ?? '').toString().trim(),
+      lastMessageSenderName: (map['lastMessageSenderName'] ?? '')
+          .toString()
+          .trim(),
+      lastMessageTime: _parseTimestamp(map['lastMessageTime']),
+      startedAt: _parseTimestamp(map['startedAt']),
       status: map['status'] ?? 'active',
+      studentUnreadCount: _parseInt(map['studentUnreadCount']),
+      companyUnreadCount: _parseInt(map['companyUnreadCount']),
+      archivedBy: _parseStringList(map['archivedBy']),
+      mutedBy: _parseStringList(map['mutedBy']),
+      contextType: (map['contextType'] ?? '').toString().trim(),
+      contextLabel: (map['contextLabel'] ?? '').toString().trim(),
+      isGroup: map['isGroup'] == true,
+      groupName: (map['groupName'] ?? '').toString().trim(),
+      groupAvatarUrl: (map['groupAvatarUrl'] ?? '').toString().trim(),
     );
   }
 
@@ -45,9 +83,124 @@ class ConversationModel {
       'companyId': companyId,
       'companyName': companyName,
       'lastMessage': lastMessage,
+      'lastMessageType': lastMessageType,
+      'lastMessageSenderId': lastMessageSenderId,
+      'lastMessageSenderName': lastMessageSenderName,
       'lastMessageTime': lastMessageTime,
       'startedAt': startedAt,
       'status': status,
+      'studentUnreadCount': studentUnreadCount,
+      'companyUnreadCount': companyUnreadCount,
+      'archivedBy': archivedBy,
+      'mutedBy': mutedBy,
+      'contextType': contextType,
+      'contextLabel': contextLabel,
+      'isGroup': isGroup,
+      'groupName': groupName,
+      'groupAvatarUrl': groupAvatarUrl,
     };
+  }
+
+  String displayNameFor(String currentUserId) {
+    if (isGroup && groupName.trim().isNotEmpty) {
+      return groupName.trim();
+    }
+
+    return currentUserId == studentId ? companyName : studentName;
+  }
+
+  String otherParticipantId(String currentUserId) {
+    return currentUserId == studentId ? companyId : studentId;
+  }
+
+  String otherParticipantRole(String currentUserId) {
+    return currentUserId == studentId ? 'company' : 'student';
+  }
+
+  int unreadCountFor(String currentUserId) {
+    return currentUserId == studentId ? studentUnreadCount : companyUnreadCount;
+  }
+
+  bool isArchivedFor(String currentUserId) {
+    return archivedBy.contains(currentUserId);
+  }
+
+  bool isMutedFor(String currentUserId) {
+    return mutedBy.contains(currentUserId);
+  }
+
+  bool get isProjectConversation {
+    if (contextType == 'project' ||
+        contextType == 'opportunity' ||
+        contextType == 'application') {
+      return true;
+    }
+
+    return !isGroup && studentId.isNotEmpty && companyId.isNotEmpty;
+  }
+
+  String get listPreviewText {
+    final preview = lastMessage.trim();
+    if (preview.isNotEmpty) {
+      if (isGroup &&
+          lastMessageSenderName.trim().isNotEmpty &&
+          lastMessageSenderId.trim().isNotEmpty) {
+        return '${lastMessageSenderName.trim()}: $preview';
+      }
+
+      return preview;
+    }
+
+    if (lastMessageType == 'image') {
+      return 'Photo attachment';
+    }
+
+    if (lastMessageType == 'file') {
+      return 'File attachment';
+    }
+
+    return 'Start the conversation';
+  }
+
+  static int _parseInt(Object? value) {
+    if (value is int) {
+      return value;
+    }
+
+    if (value is num) {
+      return value.toInt();
+    }
+
+    if (value is String) {
+      return int.tryParse(value) ?? 0;
+    }
+
+    return 0;
+  }
+
+  static List<String> _parseStringList(Object? value) {
+    if (value is List) {
+      return value
+          .map((item) => item.toString().trim())
+          .where((item) => item.isNotEmpty)
+          .toList();
+    }
+
+    return const [];
+  }
+
+  static Timestamp? _parseTimestamp(Object? value) {
+    if (value is Timestamp) {
+      return value;
+    }
+
+    if (value is String && value.trim().isNotEmpty) {
+      final parsed = DateTime.tryParse(value);
+      if (parsed != null) {
+        return Timestamp.fromDate(parsed);
+      }
+    }
+
+    return null;
   }
 }

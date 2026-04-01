@@ -137,6 +137,8 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
         studentName: currentUser.fullName,
         companyId: widget.opportunity.companyId,
         companyName: widget.opportunity.companyName,
+        contextType: 'opportunity',
+        contextLabel: widget.opportunity.title,
       );
 
       if (!mounted) return;
@@ -148,6 +150,10 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
             conversationId: conversation.id,
             otherName: conversation.companyName,
             recipientId: conversation.companyId,
+            otherRole: 'company',
+            contextLabel: widget.opportunity.title,
+            fallbackProfileAbout: widget.opportunity.description.trim(),
+            fallbackProfileLocation: widget.opportunity.location.trim(),
           ),
         ),
       );

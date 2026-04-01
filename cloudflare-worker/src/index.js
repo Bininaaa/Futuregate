@@ -1571,6 +1571,59 @@ function resolveCommercialRegisterMetadata(companyData) {
   };
 }
 
+function resolveChatAttachmentMetadata(messageData) {
+  const safeMessageData =
+    messageData && typeof messageData === "object" ? messageData : {};
+  const fileName = trim(safeMessageData.fileName) || "attachment";
+
+  return {
+    storagePath: resolveStoredObjectKey(
+      safeMessageData.attachmentStoragePath,
+      safeMessageData.storagePath,
+      safeMessageData.filePath,
+      safeMessageData.attachmentUrl,
+      safeMessageData.fileUrl,
+    ),
+    fallbackUrl: resolveDocumentFallbackUrl(
+      safeMessageData.attachmentAccessUrl,
+      safeMessageData.attachmentSignedUrl,
+      safeMessageData.attachmentUrl,
+      safeMessageData.fileUrl,
+    ),
+    fileName,
+    mimeType: normalizeDocumentMimeType(safeMessageData.mimeType, fileName),
+  };
+}
+
+function buildPublicUserProfile(userId, userData) {
+  const safeUserData =
+    userData && typeof userData === "object" ? userData : {};
+  const photoType = trim(safeUserData.photoType);
+  const avatarId = trim(safeUserData.avatarId);
+
+  return {
+    uid: trim(userId),
+    role: trim(safeUserData.role),
+    fullName: trim(safeUserData.fullName),
+    companyName: trim(safeUserData.companyName),
+    profileImage: trim(safeUserData.profileImage),
+    logo: trim(safeUserData.logo),
+    photoType: photoType || null,
+    avatarId: avatarId || null,
+    academicLevel: trim(safeUserData.academicLevel),
+    university: trim(safeUserData.university),
+    fieldOfStudy: trim(safeUserData.fieldOfStudy),
+    bio: trim(safeUserData.bio),
+    location: trim(safeUserData.location),
+    sector: trim(safeUserData.sector),
+    description: trim(safeUserData.description),
+    website: trim(safeUserData.website),
+    isOnline: safeUserData.isOnline === true,
+    lastSeenAt: safeUserData.lastSeenAt || null,
+    isActive: safeUserData.isActive !== false,
+  };
+}
+
 function parseDocumentTimestamp(value) {
   if (typeof value === "number" && Number.isFinite(value)) {
     return value;
@@ -1890,23 +1943,110 @@ async function handleGetPublicUserProfile(request, env, userId) {
     return err("User not found.", 404);
   }
 
-  const userData = userDoc.data || {};
-  const photoType = trim(userData.photoType);
-  const avatarId = trim(userData.avatarId);
-
   return json({
-    user: {
-      uid: trim(userId),
-      role: trim(userData.role),
-      fullName: trim(userData.fullName),
-      companyName: trim(userData.companyName),
-      profileImage: trim(userData.profileImage),
-      logo: trim(userData.logo),
-      photoType: photoType || null,
-      avatarId: avatarId || null,
-      isActive: userData.isActive !== false,
-    },
+    user: buildPublicUserProfile(userId, userDoc.data || {}),
   });
+}
+
+async function handleSearchChatContacts(request, env) {
+  const auth = await requireUser(request, env, {
+    roles: ["student", "company"],
+  });
+  if (auth.error) {
+    return auth.error;
+  }
+
+  const url = new URL(request.url);
+  const role = trim(url.searchParams.get("role")).toLowerCase();
+  const query = trim(url.searchParams.get("query")).toLowerCase();
+
+  if (role !== "student" && role !== "company") {
+    return err("A valid role is required.");
+  }
+
+  const users = await firestoreQuery(env, "users", [
+    { field: "role", op: "EQUAL", value: role },
+    { field: "isActive", op: "EQUAL", value: true },
+  ]);
+
+  const filteredUsers = users
+    .filter((userDoc) => trim(userDoc.id) !== auth.user.uid)
+    .map((userDoc) => buildPublicUserProfile(userDoc.id, userDoc.data || {}))
+    .filter((user) => {
+      if (!query) {
+        return true;
+      }
+
+      const haystack = [
+        trim(user.companyName),
+        trim(user.fullName),
+        trim(user.sector),
+        trim(user.university),
+        trim(user.fieldOfStudy),
+        trim(user.location),
+      ]
+        .join(" ")
+        .toLowerCase();
+
+      return haystack.includes(query);
+    })
+    .sort((left, right) =>
+      displayNameForUser(left).localeCompare(displayNameForUser(right)),
+    )
+    .slice(0, 40);
+
+  return json({ users: filteredUsers });
+}
+
+async function handleGetChatAttachmentAccess(
+  request,
+  env,
+  conversationId,
+  messageId,
+) {
+  const auth = await requireUser(request, env, {
+    roles: ["student", "company", "admin"],
+  });
+  if (auth.error) {
+    return auth.error;
+  }
+
+  if (!conversationId || !messageId) {
+    return err("conversationId and messageId are required.");
+  }
+
+  const conversationDoc = await firestoreGet(env, "conversations", conversationId);
+  if (!conversationDoc) {
+    return err("Conversation not found.", 404);
+  }
+
+  const conversation = conversationDoc.data || {};
+  const isParticipant =
+    auth.profile.role === "admin" ||
+    trim(conversation.studentId) === auth.user.uid ||
+    trim(conversation.companyId) === auth.user.uid;
+  if (!isParticipant) {
+    return err("You are not a participant in this conversation.", 403);
+  }
+
+  const messageDoc = await firestoreGet(
+    env,
+    `conversations/${conversationId}/messages`,
+    messageId,
+  );
+  if (!messageDoc) {
+    return err("Message not found.", 404);
+  }
+
+  const document = await buildSecureDocumentResponse(
+    env,
+    resolveChatAttachmentMetadata(messageDoc.data || {}),
+  );
+  if (!document) {
+    return err("Attachment not found.", 404);
+  }
+
+  return json({ document });
 }
 
 async function handleGetCompanyCommercialRegisterAccess(
@@ -2622,6 +2762,9 @@ function matchRoute(method, path) {
   if (method === "POST" && path === "/api/notify/chat-message") {
     return { handler: "notifyChatMessage" };
   }
+  if (method === "GET" && path === "/api/chat/contacts") {
+    return { handler: "searchChatContacts" };
+  }
 
   const applicationCvRoute = path.match(/^\/api\/applications\/([^/]+)\/cv$/);
   if (method === "GET" && applicationCvRoute) {
@@ -2656,6 +2799,17 @@ function matchRoute(method, path) {
     return {
       handler: "getPublicUserProfile",
       id: decodeURIComponent(publicUserProfileRoute[1]),
+    };
+  }
+
+  const chatAttachmentRoute = path.match(
+    /^\/api\/conversations\/([^/]+)\/messages\/([^/]+)\/attachment\/access$/,
+  );
+  if (method === "GET" && chatAttachmentRoute) {
+    return {
+      handler: "getChatAttachmentAccess",
+      conversationId: decodeURIComponent(chatAttachmentRoute[1]),
+      messageId: decodeURIComponent(chatAttachmentRoute[2]),
     };
   }
 
@@ -2761,6 +2915,9 @@ export default {
         case "notifyChatMessage":
           response = await handleNotifyChatMessage(request, env);
           break;
+        case "searchChatContacts":
+          response = await handleSearchChatContacts(request, env);
+          break;
         case "getApplicationCv":
           response = await handleGetApplicationCv(request, env, route.id);
           break;
@@ -2772,6 +2929,14 @@ export default {
           break;
         case "getPublicUserProfile":
           response = await handleGetPublicUserProfile(request, env, route.id);
+          break;
+        case "getChatAttachmentAccess":
+          response = await handleGetChatAttachmentAccess(
+            request,
+            env,
+            route.conversationId,
+            route.messageId,
+          );
           break;
         case "getCompanyCommercialRegisterAccess":
           response = await handleGetCompanyCommercialRegisterAccess(
