@@ -53,18 +53,17 @@ class ChatInputBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(14, 10, 14, 14),
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border(
+          top: BorderSide(color: ChatThemePalette.border.withValues(alpha: 0.5)),
+        ),
+      ),
       child: SafeArea(
         top: false,
-        child: Container(
-          padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
-          decoration: BoxDecoration(
-            gradient: ChatThemePalette.heroGradient,
-            borderRadius: BorderRadius.circular(32),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.88)),
-            boxShadow: ChatThemeStyles.softShadow(0.09),
-          ),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(12, 8, 12, 10),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -75,14 +74,13 @@ class ChatInputBar extends StatelessWidget {
                     label: 'Editing message',
                     onClear: onCancelEdit,
                   ),
-                if (isEditing && pendingAttachment != null)
-                  const SizedBox(height: 10),
+                if (isEditing && pendingAttachment != null) const SizedBox(height: 8),
                 if (pendingAttachment != null)
                   _AttachmentPreview(
                     attachment: pendingAttachment!,
                     onRemove: onRemoveAttachment,
                   ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 8),
               ],
               Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -90,15 +88,12 @@ class ChatInputBar extends StatelessWidget {
                   PopupMenuButton<String>(
                     tooltip: 'Attach',
                     color: ChatThemePalette.surface,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(22),
-                    ),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
                     onSelected: (value) {
                       if (value == 'image') {
                         onPickImage();
                         return;
                       }
-
                       onPickFile();
                     },
                     itemBuilder: (context) => [
@@ -106,12 +101,9 @@ class ChatInputBar extends StatelessWidget {
                         value: 'image',
                         child: Row(
                           children: [
-                            const Icon(
-                              Icons.image_outlined,
-                              color: ChatThemePalette.primary,
-                            ),
+                            const Icon(Icons.image_outlined, color: ChatThemePalette.primary, size: 20),
                             const SizedBox(width: 10),
-                            Text('Attach photo', style: ChatThemeStyles.body()),
+                            Text('Photo', style: ChatThemeStyles.body()),
                           ],
                         ),
                       ),
@@ -119,30 +111,32 @@ class ChatInputBar extends StatelessWidget {
                         value: 'file',
                         child: Row(
                           children: [
-                            const Icon(
-                              Icons.attach_file_rounded,
-                              color: ChatThemePalette.secondary,
-                            ),
+                            const Icon(Icons.attach_file_rounded, color: ChatThemePalette.secondary, size: 20),
                             const SizedBox(width: 10),
-                            Text('Attach file', style: ChatThemeStyles.body()),
+                            Text('File', style: ChatThemeStyles.body()),
                           ],
                         ),
                       ),
                     ],
-                    child: const _RoundIconButton(
-                      icon: Icons.add_rounded,
-                      color: ChatThemePalette.primary,
+                    child: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: ChatThemePalette.primary.withValues(alpha: 0.08),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.add_rounded, color: ChatThemePalette.primary, size: 22),
                     ),
                   ),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      padding: const EdgeInsets.symmetric(horizontal: 14),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.92),
-                        borderRadius: BorderRadius.circular(26),
+                        color: const Color(0xFFF5F7FA),
+                        borderRadius: BorderRadius.circular(22),
                         border: Border.all(
-                          color: ChatThemePalette.border.withValues(alpha: 0.9),
+                          color: ChatThemePalette.border.withValues(alpha: 0.6),
                         ),
                       ),
                       child: Row(
@@ -154,56 +148,59 @@ class ChatInputBar extends StatelessWidget {
                               maxLines: 5,
                               textCapitalization: TextCapitalization.sentences,
                               textInputAction: TextInputAction.newline,
-                              style: ChatThemeStyles.body(),
+                              style: ChatThemeStyles.body().copyWith(fontSize: 13.5),
                               decoration: InputDecoration(
-                                hintText: isEditing
-                                    ? 'Edit your message...'
-                                    : 'Type your message...',
-                                hintStyle: ChatThemeStyles.body(
-                                  ChatThemePalette.textSecondary,
-                                ),
+                                hintText: isEditing ? 'Edit your message...' : 'Message...',
+                                hintStyle: ChatThemeStyles.body(ChatThemePalette.textSecondary).copyWith(fontSize: 13.5),
                                 border: InputBorder.none,
+                                contentPadding: const EdgeInsets.symmetric(vertical: 10),
                               ),
                               onSubmitted: (_) => onSend(),
                             ),
                           ),
-                          IconButton(
-                            onPressed: onEmojiTap,
-                            splashRadius: 20,
-                            icon: const Icon(
-                              Icons.sentiment_satisfied_alt_outlined,
-                              color: ChatThemePalette.textSecondary,
+                          GestureDetector(
+                            onTap: onEmojiTap,
+                            child: const Padding(
+                              padding: EdgeInsets.only(left: 4),
+                              child: Icon(
+                                Icons.sentiment_satisfied_alt_outlined,
+                                color: ChatThemePalette.textSecondary,
+                                size: 22,
+                              ),
                             ),
                           ),
                         ],
                       ),
                     ),
                   ),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: 8),
                   Container(
-                    width: 56,
-                    height: 56,
+                    width: 44,
+                    height: 44,
                     decoration: BoxDecoration(
                       gradient: ChatThemePalette.fabGradient,
                       shape: BoxShape.circle,
-                      boxShadow: ChatThemeStyles.softShadow(0.12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: ChatThemePalette.primary.withValues(alpha: 0.25),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
                     ),
                     child: IconButton(
                       onPressed: isSending ? null : onSend,
+                      padding: EdgeInsets.zero,
                       icon: isSending
                           ? const SizedBox(
-                              width: 18,
-                              height: 18,
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 2,
-                              ),
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                             )
                           : Icon(
-                              isEditing
-                                  ? Icons.check_rounded
-                                  : Icons.send_rounded,
+                              isEditing ? Icons.check_rounded : Icons.send_rounded,
                               color: Colors.white,
+                              size: 20,
                             ),
                     ),
                   ),
@@ -231,36 +228,27 @@ class _StatusBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: ChatThemePalette.primary.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: ChatThemePalette.primary.withValues(alpha: 0.12),
-        ),
+        color: ChatThemePalette.primary.withValues(alpha: 0.07),
+        borderRadius: BorderRadius.circular(14),
       ),
       child: Row(
         children: [
-          Icon(icon, size: 18, color: ChatThemePalette.primary),
-          const SizedBox(width: 10),
+          Icon(icon, size: 16, color: ChatThemePalette.primary),
+          const SizedBox(width: 8),
           Expanded(
             child: Text(
               label,
-              style: ChatThemeStyles.meta(
-                ChatThemePalette.primary,
-              ).copyWith(fontWeight: FontWeight.w700),
+              style: ChatThemeStyles.meta(ChatThemePalette.primary).copyWith(fontWeight: FontWeight.w600),
             ),
           ),
           InkWell(
             onTap: onClear,
             borderRadius: BorderRadius.circular(99),
             child: const Padding(
-              padding: EdgeInsets.all(4),
-              child: Icon(
-                Icons.close_rounded,
-                size: 18,
-                color: ChatThemePalette.primary,
-              ),
+              padding: EdgeInsets.all(2),
+              child: Icon(Icons.close_rounded, size: 16, color: ChatThemePalette.primary),
             ),
           ),
         ],
@@ -278,50 +266,47 @@ class _AttachmentPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
-        gradient: ChatThemePalette.canvasGradient,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: ChatThemePalette.border),
+        color: const Color(0xFFF5F7FA),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: ChatThemePalette.border.withValues(alpha: 0.5)),
       ),
       child: Row(
         children: [
           Container(
-            width: 40,
-            height: 40,
+            width: 36,
+            height: 36,
             decoration: BoxDecoration(
               color: attachment.isImage
-                  ? ChatThemePalette.secondary.withValues(alpha: 0.14)
-                  : ChatThemePalette.primary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(14),
+                  ? ChatThemePalette.secondary.withValues(alpha: 0.12)
+                  : ChatThemePalette.primary.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(
-              attachment.isImage
-                  ? Icons.image_outlined
-                  : Icons.insert_drive_file_outlined,
-              color: attachment.isImage
-                  ? ChatThemePalette.secondary
-                  : ChatThemePalette.primary,
+              attachment.isImage ? Icons.image_outlined : Icons.insert_drive_file_outlined,
+              color: attachment.isImage ? ChatThemePalette.secondary : ChatThemePalette.primary,
+              size: 18,
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   attachment.fileName,
-                  style: ChatThemeStyles.cardTitle().copyWith(fontSize: 14),
+                  style: ChatThemeStyles.cardTitle().copyWith(fontSize: 12.5),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 2),
                 Text(
                   [
                     ChatFormatters.fileSizeLabel(attachment.fileSize),
                     attachment.isImage ? 'IMAGE' : 'FILE',
                   ].where((part) => part.trim().isNotEmpty).join(' - '),
-                  style: ChatThemeStyles.meta(),
+                  style: ChatThemeStyles.meta().copyWith(fontSize: 10),
                 ),
               ],
             ),
@@ -330,44 +315,12 @@ class _AttachmentPreview extends StatelessWidget {
             onTap: onRemove,
             borderRadius: BorderRadius.circular(99),
             child: const Padding(
-              padding: EdgeInsets.all(4),
-              child: Icon(
-                Icons.close_rounded,
-                size: 18,
-                color: ChatThemePalette.textSecondary,
-              ),
+              padding: EdgeInsets.all(2),
+              child: Icon(Icons.close_rounded, size: 16, color: ChatThemePalette.textSecondary),
             ),
           ),
         ],
       ),
-    );
-  }
-}
-
-class _RoundIconButton extends StatelessWidget {
-  final IconData icon;
-  final Color color;
-
-  const _RoundIconButton({required this.icon, required this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 42,
-      height: 42,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            color.withValues(alpha: 0.16),
-            color.withValues(alpha: 0.08),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        shape: BoxShape.circle,
-        border: Border.all(color: color.withValues(alpha: 0.1)),
-      ),
-      child: Icon(icon, color: color),
     );
   }
 }

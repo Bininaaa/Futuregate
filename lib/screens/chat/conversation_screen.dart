@@ -85,14 +85,10 @@ class _ConversationScreenState extends State<ConversationScreen> {
     }
 
     final file = await _imagePicker.pickImage(source: ImageSource.gallery);
-    if (file == null) {
-      return;
-    }
+    if (file == null) return;
 
     final bytes = await file.readAsBytes();
-    if (!mounted) {
-      return;
-    }
+    if (!mounted) return;
 
     setState(() {
       _pendingAttachment = PendingChatAttachment(
@@ -112,14 +108,10 @@ class _ConversationScreenState extends State<ConversationScreen> {
     }
 
     final result = await FilePicker.platform.pickFiles(withData: true);
-    if (result == null || result.files.isEmpty) {
-      return;
-    }
+    if (result == null || result.files.isEmpty) return;
 
     final file = result.files.single;
-    if (!mounted) {
-      return;
-    }
+    if (!mounted) return;
 
     setState(() {
       _pendingAttachment = PendingChatAttachment(
@@ -142,9 +134,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
     final attachment = _pendingAttachment;
 
     if (_editingMessageId != null && attachment == null) {
-      if (text.isEmpty) {
-        return;
-      }
+      if (text.isEmpty) return;
 
       await provider.editMessage(
         conversationId: widget.conversationId,
@@ -152,9 +142,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
         newText: text,
       );
 
-      if (!mounted || provider.error != null) {
-        return;
-      }
+      if (!mounted || provider.error != null) return;
 
       setState(() {
         _editingMessageId = null;
@@ -163,9 +151,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
       return;
     }
 
-    if (auth == null || (text.isEmpty && attachment == null)) {
-      return;
-    }
+    if (auth == null || (text.isEmpty && attachment == null)) return;
 
     final draftText = text;
     final draftAttachment = attachment;
@@ -181,8 +167,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
       senderId: auth.uid,
       senderRole: auth.role,
       text: text,
-      recipientId:
-          conversation?.otherParticipantId(auth.uid) ?? widget.recipientId,
+      recipientId: conversation?.otherParticipantId(auth.uid) ?? widget.recipientId,
       messageType: attachment?.messageType ?? 'text',
       attachmentFileName: attachment?.fileName ?? '',
       attachmentFilePath: attachment?.filePath ?? '',
@@ -191,9 +176,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
       attachmentMimeType: attachment?.mimeType ?? '',
     );
 
-    if (!mounted || provider.error == null) {
-      return;
-    }
+    if (!mounted || provider.error == null) return;
 
     setState(() => _pendingAttachment = draftAttachment);
     _messageController.text = draftText;
@@ -220,9 +203,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
       icon: Icons.delete_outline_rounded,
     );
 
-    if (confirm != true || !mounted) {
-      return;
-    }
+    if (confirm != true || !mounted) return;
 
     await context.read<ChatProvider>().deleteMessage(
       conversationId: widget.conversationId,
@@ -249,19 +230,15 @@ class _ConversationScreenState extends State<ConversationScreen> {
       return;
     }
 
-    if (_lastHandledError == error) {
-      return;
-    }
+    if (_lastHandledError == error) return;
 
     _lastHandledError = error;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) {
-        return;
-      }
+      if (!mounted) return;
 
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(_readableError(error))));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(_readableError(error))),
+      );
       context.read<ChatProvider>().clearError();
     });
   }
@@ -281,9 +258,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
     String fallbackWebsite = '',
     String contextLabel = '',
   }) {
-    if (userId.trim().isEmpty) {
-      return;
-    }
+    if (userId.trim().isEmpty) return;
 
     Navigator.push(
       context,
@@ -305,14 +280,9 @@ class _ConversationScreenState extends State<ConversationScreen> {
   Future<void> _toggleArchive(ConversationModel conversation) async {
     final auth = context.read<AuthProvider>().userModel;
     final provider = context.read<ChatProvider>();
-    if (auth == null) {
-      return;
-    }
+    if (auth == null) return;
 
-    final archived = !provider.isConversationArchivedFor(
-      conversation,
-      auth.uid,
-    );
+    final archived = !provider.isConversationArchivedFor(conversation, auth.uid);
     if (archived) {
       final confirmed = await showChatConfirmationDialog(
         context,
@@ -322,9 +292,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
         icon: Icons.archive_outlined,
       );
 
-      if (confirmed != true || !mounted) {
-        return;
-      }
+      if (confirmed != true || !mounted) return;
     }
 
     await provider.archiveConversation(
@@ -333,9 +301,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
       archived: archived,
     );
 
-    if (!mounted || provider.error != null) {
-      return;
-    }
+    if (!mounted || provider.error != null) return;
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -345,17 +311,13 @@ class _ConversationScreenState extends State<ConversationScreen> {
       ),
     );
 
-    if (archived) {
-      Navigator.pop(context);
-    }
+    if (archived) Navigator.pop(context);
   }
 
   Future<void> _toggleMute(ConversationModel conversation) async {
     final auth = context.read<AuthProvider>().userModel;
     final provider = context.read<ChatProvider>();
-    if (auth == null) {
-      return;
-    }
+    if (auth == null) return;
 
     final muted = !provider.isConversationMutedFor(conversation, auth.uid);
     await provider.muteConversation(
@@ -364,9 +326,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
       muted: muted,
     );
 
-    if (!mounted || provider.error != null) {
-      return;
-    }
+    if (!mounted || provider.error != null) return;
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(muted ? 'Chat muted' : 'Chat unmuted')),
@@ -376,30 +336,23 @@ class _ConversationScreenState extends State<ConversationScreen> {
   Future<void> _deleteConversation(ConversationModel conversation) async {
     final auth = context.read<AuthProvider>().userModel;
     final provider = context.read<ChatProvider>();
-    if (auth == null) {
-      return;
-    }
+    if (auth == null) return;
 
     final confirmed = await showChatConfirmationDialog(
       context,
       title: 'Delete conversation?',
-      message:
-          'Are you sure you want to delete this conversation? This action cannot be undone.',
+      message: 'Are you sure you want to delete this conversation? This action cannot be undone.',
       confirmLabel: 'Delete',
       destructive: true,
       icon: Icons.delete_outline_rounded,
     );
-    if (confirmed != true || !mounted) {
-      return;
-    }
+    if (confirmed != true || !mounted) return;
 
     await provider.deleteConversation(
       conversationId: widget.conversationId,
       userId: auth.uid,
     );
-    if (!mounted || provider.error != null) {
-      return;
-    }
+    if (!mounted || provider.error != null) return;
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Conversation deleted')),
@@ -411,23 +364,14 @@ class _ConversationScreenState extends State<ConversationScreen> {
     final currentUserId = auth?.uid ?? '';
     final fromConversation =
         conversation?.otherParticipantRole(currentUserId).trim() ?? '';
-    if (fromConversation.isNotEmpty) {
-      return fromConversation;
-    }
-
-    if (widget.otherRole.trim().isNotEmpty) {
-      return widget.otherRole.trim();
-    }
-
+    if (fromConversation.isNotEmpty) return fromConversation;
+    if (widget.otherRole.trim().isNotEmpty) return widget.otherRole.trim();
     return auth?.role == 'company' ? 'student' : 'company';
   }
 
   String _resolveContextLabel(ConversationModel? conversation) {
     final fromConversation = conversation?.contextLabel.trim() ?? '';
-    if (fromConversation.isNotEmpty) {
-      return fromConversation;
-    }
-
+    if (fromConversation.isNotEmpty) return fromConversation;
     return widget.contextLabel.trim();
   }
 
@@ -445,29 +389,25 @@ class _ConversationScreenState extends State<ConversationScreen> {
     }
 
     return Scaffold(
-      backgroundColor: ChatThemePalette.background,
+      backgroundColor: const Color(0xFFF8FAFC),
       body: StreamBuilder<ConversationModel?>(
         stream: _conversationStream,
         builder: (context, snapshot) {
           final conversation = snapshot.data;
           final currentUserId = auth?.uid ?? '';
           final otherUserId =
-              conversation?.otherParticipantId(currentUserId) ??
-              widget.recipientId;
+              conversation?.otherParticipantId(currentUserId) ?? widget.recipientId;
           final otherRole = _resolveOtherRole(conversation, auth);
           final otherName =
               conversation?.displayNameFor(currentUserId) ?? widget.otherName;
           final contextLabel = _resolveContextLabel(conversation);
           final normalizedOtherUserId = otherUserId.trim();
 
-          if (_profileUserId != normalizedOtherUserId ||
-              _profileFuture == null) {
+          if (_profileUserId != normalizedOtherUserId || _profileFuture == null) {
             _profileUserId = normalizedOtherUserId;
             _profileFuture = normalizedOtherUserId.isEmpty
                 ? Future<UserModel?>.value(null)
-                : PublicProfileService.instance.fetchPublicProfile(
-                    normalizedOtherUserId,
-                  );
+                : PublicProfileService.instance.fetchPublicProfile(normalizedOtherUserId);
           }
 
           return FutureBuilder<UserModel?>(
@@ -476,347 +416,149 @@ class _ConversationScreenState extends State<ConversationScreen> {
               final otherUser = profileSnapshot.data;
               final fallbackHeadline =
                   widget.fallbackProfileHeadline.trim().isNotEmpty
-                  ? widget.fallbackProfileHeadline.trim()
-                  : otherRole == 'company'
-                  ? (otherUser?.sector ?? '').trim()
-                  : [
-                      (otherUser?.fieldOfStudy ?? '').trim(),
-                      (otherUser?.university ?? '').trim(),
-                    ].where((value) => value.isNotEmpty).join(' - ');
+                      ? widget.fallbackProfileHeadline.trim()
+                      : otherRole == 'company'
+                          ? (otherUser?.sector ?? '').trim()
+                          : [
+                              (otherUser?.fieldOfStudy ?? '').trim(),
+                              (otherUser?.university ?? '').trim(),
+                            ].where((value) => value.isNotEmpty).join(' - ');
               final fallbackAbout =
                   widget.fallbackProfileAbout.trim().isNotEmpty
-                  ? widget.fallbackProfileAbout.trim()
-                  : otherRole == 'company'
-                  ? (otherUser?.description ?? '').trim()
-                  : (otherUser?.bio ?? '').trim();
+                      ? widget.fallbackProfileAbout.trim()
+                      : otherRole == 'company'
+                          ? (otherUser?.description ?? '').trim()
+                          : (otherUser?.bio ?? '').trim();
               final fallbackLocation =
                   widget.fallbackProfileLocation.trim().isNotEmpty
-                  ? widget.fallbackProfileLocation.trim()
-                  : (otherUser?.location ?? '').trim();
+                      ? widget.fallbackProfileLocation.trim()
+                      : (otherUser?.location ?? '').trim();
               final fallbackWebsite =
                   widget.fallbackProfileWebsite.trim().isNotEmpty
-                  ? widget.fallbackProfileWebsite.trim()
-                  : (otherUser?.website ?? '').trim();
+                      ? widget.fallbackProfileWebsite.trim()
+                      : (otherUser?.website ?? '').trim();
 
-              return DecoratedBox(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Color(0xFFFFFFFF),
-                      ChatThemePalette.background,
-                      Color(0xFFF3F6FF),
-                    ],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    stops: [0, 0.38, 1],
-                  ),
-                ),
-                child: Stack(
+              final isOnline = otherUser?.isOnline ?? false;
+
+              return SafeArea(
+                child: Column(
                   children: [
-                    const Positioned(
-                      top: -80,
-                      right: -34,
-                      child: _BackgroundOrb(
-                        size: 240,
-                        color: ChatThemePalette.primary,
-                        opacity: 0.06,
+                    _ConversationHeader(
+                      title: otherName,
+                      otherUser: otherUser,
+                      otherUserId: otherUserId,
+                      otherRole: otherRole,
+                      fallbackName: otherName,
+                      isOnline: isOnline,
+                      contextLabel: contextLabel,
+                      onBack: () => Navigator.pop(context),
+                      onOpenProfile: () => _openProfile(
+                        userId: otherUserId,
+                        fallbackName: otherName,
+                        fallbackRole: otherRole,
+                        fallbackHeadline: fallbackHeadline,
+                        fallbackAbout: fallbackAbout,
+                        fallbackLocation: fallbackLocation,
+                        fallbackWebsite: fallbackWebsite,
+                        contextLabel: contextLabel,
                       ),
+                      onMenuSelected: (value) {
+                        if (value == 'profile') {
+                          _openProfile(
+                            userId: otherUserId,
+                            fallbackName: otherName,
+                            fallbackRole: otherRole,
+                            fallbackHeadline: fallbackHeadline,
+                            fallbackAbout: fallbackAbout,
+                            fallbackLocation: fallbackLocation,
+                            fallbackWebsite: fallbackWebsite,
+                            contextLabel: contextLabel,
+                          );
+                          return;
+                        }
+                        if (value == 'mute' && conversation != null) {
+                          _toggleMute(conversation);
+                          return;
+                        }
+                        if (value == 'archive' && conversation != null) {
+                          _toggleArchive(conversation);
+                          return;
+                        }
+                        if (value == 'delete' && conversation != null) {
+                          _deleteConversation(conversation);
+                        }
+                      },
+                      muted: auth == null || conversation == null
+                          ? false
+                          : chatProvider.isConversationMutedFor(conversation, auth.uid),
+                      archived: auth == null || conversation == null
+                          ? false
+                          : chatProvider.isConversationArchivedFor(conversation, auth.uid),
                     ),
-                    const Positioned(
-                      top: 156,
-                      left: -72,
-                      child: _BackgroundOrb(
-                        size: 180,
-                        color: ChatThemePalette.secondary,
-                        opacity: 0.05,
-                      ),
-                    ),
-                    const Positioned(
-                      bottom: 132,
-                      right: -54,
-                      child: _BackgroundOrb(
-                        size: 170,
-                        color: ChatThemePalette.accent,
-                        opacity: 0.05,
-                      ),
-                    ),
-                    SafeArea(
-                      child: Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(16, 12, 16, 10),
-                            child: _ConversationHeader(
-                              title: otherName,
-                              otherUser: otherUser,
-                              otherUserId: otherUserId,
-                              otherRole: otherRole,
-                              fallbackName: otherName,
-                              onBack: () => Navigator.pop(context),
-                              onOpenProfile: () => _openProfile(
-                                userId: otherUserId,
-                                fallbackName: otherName,
-                                fallbackRole: otherRole,
-                                fallbackHeadline: fallbackHeadline,
-                                fallbackAbout: fallbackAbout,
-                                fallbackLocation: fallbackLocation,
-                                fallbackWebsite: fallbackWebsite,
+                    Expanded(
+                      child: Container(
+                        color: const Color(0xFFF8FAFC),
+                        child: messages.isEmpty
+                            ? _EmptyConversationState(
                                 contextLabel: contextLabel,
-                              ),
-                              onMenuSelected: (value) {
-                                if (value == 'profile') {
-                                  _openProfile(
-                                    userId: otherUserId,
-                                    fallbackName: otherName,
-                                    fallbackRole: otherRole,
-                                    fallbackHeadline: fallbackHeadline,
-                                    fallbackAbout: fallbackAbout,
-                                    fallbackLocation: fallbackLocation,
-                                    fallbackWebsite: fallbackWebsite,
-                                    contextLabel: contextLabel,
-                                  );
-                                  return;
-                                }
-                                if (value == 'mute' && conversation != null) {
-                                  _toggleMute(conversation);
-                                  return;
-                                }
-                                if (value == 'archive' &&
-                                    conversation != null) {
-                                  _toggleArchive(conversation);
-                                  return;
-                                }
-                                if (value == 'delete' &&
-                                    conversation != null) {
-                                  _deleteConversation(conversation);
-                                }
-                              },
-                              muted: auth == null || conversation == null
-                                  ? false
-                                  : chatProvider.isConversationMutedFor(
-                                      conversation,
-                                      auth.uid,
-                                    ),
-                              archived: auth == null || conversation == null
-                                  ? false
-                                  : chatProvider.isConversationArchivedFor(
-                                      conversation,
-                                      auth.uid,
-                                    ),
-                            ),
-                          ),
-                          if (contextLabel.trim().isNotEmpty)
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(18, 0, 18, 10),
-                              child: Align(
-                                alignment: Alignment.centerLeft,
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                    vertical: 8,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    gradient: ChatThemePalette.headerGradient,
-                                    borderRadius: BorderRadius.circular(999),
-                                    border: Border.all(
-                                      color: ChatThemePalette.primary
-                                          .withValues(alpha: 0.14),
-                                    ),
-                                  ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      const Icon(
-                                        Icons.workspaces_outline,
-                                        size: 15,
-                                        color: ChatThemePalette.primaryDark,
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Flexible(
-                                        child: Text(
-                                          contextLabel,
-                                          style:
-                                              ChatThemeStyles.meta(
-                                                ChatThemePalette.primaryDark,
-                                              ).copyWith(
-                                                fontWeight: FontWeight.w700,
-                                              ),
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.fromLTRB(12, 2, 12, 0),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  gradient: ChatThemePalette.canvasGradient,
-                                  borderRadius: BorderRadius.circular(32),
-                                  border: Border.all(
-                                    color: Colors.white.withValues(alpha: 0.9),
-                                  ),
-                                  boxShadow: ChatThemeStyles.softShadow(0.06),
-                                ),
-                                child: messages.isEmpty
-                                    ? _EmptyConversationState(
-                                        contextLabel: contextLabel,
-                                        otherName: otherName,
-                                      )
-                                    : LayoutBuilder(
-                                        builder: (context, constraints) {
-                                          return SingleChildScrollView(
-                                            controller: _scrollController,
-                                            physics:
-                                                const BouncingScrollPhysics(),
-                                            padding: const EdgeInsets.fromLTRB(
-                                              0,
-                                              10,
-                                              0,
-                                              20,
-                                            ),
-                                            child: ConstrainedBox(
-                                              constraints: BoxConstraints(
-                                                minHeight:
-                                                    constraints.maxHeight,
-                                              ),
-                                              child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.end,
-                                                children: List.generate(messages.length, (
-                                                  index,
-                                                ) {
-                                                  final message =
-                                                      messages[index];
-                                                  final previous = index > 0
-                                                      ? messages[index - 1]
-                                                      : null;
-                                                  final next =
-                                                      index <
-                                                          messages.length - 1
-                                                      ? messages[index + 1]
-                                                      : null;
-                                                  final isMe =
-                                                      message.senderId ==
-                                                      currentUserId;
-                                                  final startsNewDay =
-                                                      previous == null ||
-                                                      !ChatFormatters.isSameMessageDay(
-                                                        previous.sentAt,
-                                                        message.sentAt,
-                                                      );
-                                                  final isFirstInGroup =
-                                                      startsNewDay ||
-                                                      previous.senderId !=
-                                                          message.senderId;
-                                                  final isLastInGroup =
-                                                      next == null ||
-                                                      !ChatFormatters.isSameMessageDay(
-                                                        message.sentAt,
-                                                        next.sentAt,
-                                                      ) ||
-                                                      next.senderId !=
-                                                          message.senderId;
+                                otherName: otherName,
+                              )
+                            : ListView.builder(
+                                controller: _scrollController,
+                                physics: const BouncingScrollPhysics(),
+                                padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+                                itemCount: messages.length + _dateDividerCount(messages),
+                                itemBuilder: (context, index) {
+                                  final mapped = _mapIndexToMessage(messages, index);
+                                  if (mapped.isDivider) {
+                                    return _DateDivider(label: mapped.dividerLabel!);
+                                  }
 
-                                                  return Column(
-                                                    children: [
-                                                      if (startsNewDay)
-                                                        _DateDivider(
-                                                          label: ChatFormatters.dayDividerLabel(
-                                                            message.sentAt
-                                                                    ?.toDate() ??
-                                                                DateTime.now(),
-                                                          ),
-                                                        ),
-                                                      ChatMessageBubble(
-                                                        conversationId: widget
-                                                            .conversationId,
-                                                        message: message,
-                                                        isMe: isMe,
-                                                        isFirstInGroup:
-                                                            isFirstInGroup,
-                                                        isLastInGroup:
-                                                            isLastInGroup,
-                                                        showAvatar:
-                                                            !isMe &&
-                                                            isLastInGroup,
-                                                        otherUser: otherUser,
-                                                        otherUserId:
-                                                            otherUserId,
-                                                        otherRole: otherRole,
-                                                        fallbackName: otherName,
-                                                        onEdit:
-                                                            isMe &&
-                                                                message
-                                                                    .isTextMessage &&
-                                                                !message
-                                                                    .isDeleted
-                                                            ? () => _startEdit(
-                                                                message,
-                                                              )
-                                                            : null,
-                                                        onDelete:
-                                                            isMe &&
-                                                                !message
-                                                                    .isDeleted
-                                                            ? () =>
-                                                                  _deleteMessage(
-                                                                    message.id,
-                                                                  )
-                                                            : null,
-                                                      ),
-                                                    ],
-                                                  );
-                                                }),
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                      ),
+                                  final message = mapped.message!;
+                                  final messageIndex = mapped.messageIndex!;
+                                  final isMe = message.senderId == currentUserId;
+                                  final isFirstInGroup = messageIndex == 0 ||
+                                      messages[messageIndex - 1].senderId != message.senderId;
+                                  final isLastInGroup = messageIndex == messages.length - 1 ||
+                                      messages[messageIndex + 1].senderId != message.senderId;
+                                  final showAvatar = isLastInGroup;
+
+                                  return ChatMessageBubble(
+                                    conversationId: widget.conversationId,
+                                    message: message,
+                                    isMe: isMe,
+                                    isFirstInGroup: isFirstInGroup,
+                                    isLastInGroup: isLastInGroup,
+                                    showAvatar: showAvatar,
+                                    otherUser: otherUser,
+                                    otherUserId: otherUserId,
+                                    otherRole: otherRole,
+                                    fallbackName: otherName,
+                                    onEdit: () => _startEdit(message),
+                                    onDelete: () => _deleteMessage(message.id),
+                                  );
+                                },
                               ),
-                            ),
-                          ),
-                          ChatInputBar(
-                            controller: _messageController,
-                            isSending: chatProvider.isSending,
-                            isEditing: _editingMessageId != null,
-                            pendingAttachment: _pendingAttachment,
-                            onSend: () => _sendMessage(conversation),
-                            onPickImage: _pickImage,
-                            onPickFile: _pickFile,
-                            onCancelEdit: () {
-                              setState(() {
-                                _editingMessageId = null;
-                                _messageController.clear();
-                              });
-                            },
-                            onRemoveAttachment: () {
-                              setState(() => _pendingAttachment = null);
-                            },
-                            onEmojiTap: () {
-                              const emoji = '\u{1F60A}';
-                              final selection = _messageController.selection;
-                              final value = _messageController.text;
-                              final safeOffset = selection.isValid
-                                  ? selection.start
-                                  : value.length;
-                              final nextValue = value.replaceRange(
-                                safeOffset,
-                                safeOffset,
-                                emoji,
-                              );
-                              _messageController.value = TextEditingValue(
-                                text: nextValue,
-                                selection: TextSelection.collapsed(
-                                  offset: safeOffset + emoji.length,
-                                ),
-                              );
-                            },
-                          ),
-                        ],
                       ),
+                    ),
+                    ChatInputBar(
+                      controller: _messageController,
+                      isSending: chatProvider.isSending,
+                      isEditing: _editingMessageId != null,
+                      pendingAttachment: _pendingAttachment,
+                      onSend: () => _sendMessage(conversation),
+                      onPickImage: _pickImage,
+                      onPickFile: _pickFile,
+                      onCancelEdit: () {
+                        setState(() {
+                          _editingMessageId = null;
+                          _messageController.clear();
+                        });
+                      },
+                      onRemoveAttachment: () {
+                        setState(() => _pendingAttachment = null);
+                      },
+                      onEmojiTap: () {},
                     ),
                   ],
                 ),
@@ -828,51 +570,81 @@ class _ConversationScreenState extends State<ConversationScreen> {
     );
   }
 
-  bool _isImageFile(String fileName) {
-    final normalized = fileName.trim().toLowerCase();
-    return normalized.endsWith('.png') ||
-        normalized.endsWith('.jpg') ||
-        normalized.endsWith('.jpeg') ||
-        normalized.endsWith('.webp');
+  int _dateDividerCount(List<MessageModel> messages) {
+    if (messages.isEmpty) return 0;
+    int count = 1;
+    for (int i = 1; i < messages.length; i++) {
+      if (!ChatFormatters.isSameMessageDay(messages[i - 1].sentAt, messages[i].sentAt)) {
+        count++;
+      }
+    }
+    return count;
   }
 
-  String _inferMimeType(String fileName, {required String fallback}) {
-    final normalized = fileName.trim().toLowerCase();
-    if (normalized.endsWith('.png')) {
-      return 'image/png';
+  _MappedItem _mapIndexToMessage(List<MessageModel> messages, int index) {
+    int currentIndex = 0;
+    String? lastDateLabel;
+
+    for (int i = 0; i < messages.length; i++) {
+      final dateLabel = messages[i].sentAt != null
+          ? ChatFormatters.dayDividerLabel(messages[i].sentAt!.toDate())
+          : '';
+      if (dateLabel != lastDateLabel) {
+        if (currentIndex == index) {
+          return _MappedItem.divider(dateLabel);
+        }
+        lastDateLabel = dateLabel;
+        currentIndex++;
+      }
+
+      if (currentIndex == index) {
+        return _MappedItem.message(messages[i], i);
+      }
+      currentIndex++;
     }
-    if (normalized.endsWith('.jpg') || normalized.endsWith('.jpeg')) {
-      return 'image/jpeg';
-    }
-    if (normalized.endsWith('.webp')) {
-      return 'image/webp';
-    }
-    if (normalized.endsWith('.pdf')) {
-      return 'application/pdf';
-    }
-    if (normalized.endsWith('.doc')) {
-      return 'application/msword';
-    }
-    if (normalized.endsWith('.docx')) {
+
+    return _MappedItem.divider('');
+  }
+
+
+  String _inferMimeType(String fileName, {String fallback = ''}) {
+    final lower = fileName.toLowerCase();
+    if (lower.endsWith('.jpg') || lower.endsWith('.jpeg')) return 'image/jpeg';
+    if (lower.endsWith('.png')) return 'image/png';
+    if (lower.endsWith('.gif')) return 'image/gif';
+    if (lower.endsWith('.webp')) return 'image/webp';
+    if (lower.endsWith('.pdf')) return 'application/pdf';
+    if (lower.endsWith('.doc')) return 'application/msword';
+    if (lower.endsWith('.docx')) {
       return 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
-    }
-    if (normalized.endsWith('.xls')) {
-      return 'application/vnd.ms-excel';
-    }
-    if (normalized.endsWith('.xlsx')) {
-      return 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
-    }
-    if (normalized.endsWith('.ppt')) {
-      return 'application/vnd.ms-powerpoint';
-    }
-    if (normalized.endsWith('.pptx')) {
-      return 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
-    }
-    if (normalized.endsWith('.zip')) {
-      return 'application/zip';
     }
     return fallback;
   }
+
+  bool _isImageFile(String fileName) {
+    final lower = fileName.toLowerCase();
+    return lower.endsWith('.jpg') ||
+        lower.endsWith('.jpeg') ||
+        lower.endsWith('.png') ||
+        lower.endsWith('.gif') ||
+        lower.endsWith('.webp');
+  }
+}
+
+class _MappedItem {
+  final bool isDivider;
+  final String? dividerLabel;
+  final MessageModel? message;
+  final int? messageIndex;
+
+  _MappedItem.divider(this.dividerLabel)
+      : isDivider = true,
+        message = null,
+        messageIndex = null;
+
+  _MappedItem.message(this.message, this.messageIndex)
+      : isDivider = false,
+        dividerLabel = null;
 }
 
 class _ConversationHeader extends StatelessWidget {
@@ -881,6 +653,8 @@ class _ConversationHeader extends StatelessWidget {
   final String otherUserId;
   final String otherRole;
   final String fallbackName;
+  final bool isOnline;
+  final String contextLabel;
   final VoidCallback onBack;
   final VoidCallback onOpenProfile;
   final ValueChanged<String> onMenuSelected;
@@ -893,6 +667,8 @@ class _ConversationHeader extends StatelessWidget {
     required this.otherUserId,
     required this.otherRole,
     required this.fallbackName,
+    required this.isOnline,
+    required this.contextLabel,
     required this.onBack,
     required this.onOpenProfile,
     required this.onMenuSelected,
@@ -902,185 +678,158 @@ class _ConversationHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isOnline = otherUser?.isOnline ?? false;
-    final presenceColor = isOnline
-        ? ChatThemePalette.success
-        : ChatThemePalette.textSecondary;
+    final presenceColor = isOnline ? ChatThemePalette.success : ChatThemePalette.textSecondary;
 
     return Container(
-      padding: const EdgeInsets.fromLTRB(14, 12, 14, 13),
       decoration: BoxDecoration(
-        gradient: ChatThemePalette.headerGradient,
-        borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.92)),
-        boxShadow: ChatThemeStyles.softShadow(0.08),
+        color: Colors.white,
+        border: Border(
+          bottom: BorderSide(color: ChatThemePalette.border.withValues(alpha: 0.5)),
+        ),
       ),
-      child: Column(
-        children: [
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Container(
-              width: 46,
-              height: 4,
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [
-                    ChatThemePalette.primaryDark,
-                    ChatThemePalette.primary,
-                    ChatThemePalette.secondary,
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(999),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(8, 8, 12, 10),
+        child: Row(
+          children: [
+            IconButton(
+              onPressed: onBack,
+              icon: const Icon(Icons.arrow_back_ios_rounded, size: 20),
+              color: ChatThemePalette.textPrimary,
+              padding: const EdgeInsets.all(8),
+              constraints: const BoxConstraints(),
+            ),
+            const SizedBox(width: 4),
+            GestureDetector(
+              onTap: onOpenProfile,
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  ProfileAvatar(
+                    user: otherUser,
+                    userId: otherUserId,
+                    radius: 19,
+                    fallbackName: fallbackName,
+                    role: otherRole,
+                  ),
+                  if (isOnline)
+                    Positioned(
+                      right: -1,
+                      bottom: -1,
+                      child: Container(
+                        width: 11,
+                        height: 11,
+                        decoration: BoxDecoration(
+                          color: ChatThemePalette.success,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white, width: 2),
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              _ToolbarButton(
-                icon: Icons.arrow_back_ios_new_rounded,
-                onTap: onBack,
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: InkWell(
-                  onTap: onOpenProfile,
-                  borderRadius: BorderRadius.circular(18),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 2),
-                    child: Row(
+            const SizedBox(width: 10),
+            Expanded(
+              child: GestureDetector(
+                onTap: onOpenProfile,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      title,
+                      style: ChatThemeStyles.cardTitle().copyWith(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 1),
+                    Row(
                       children: [
-                        Stack(
-                          clipBehavior: Clip.none,
-                          children: [
-                            ProfileAvatar(
-                              user: otherUser,
-                              userId: otherUserId,
-                              radius: 22,
-                              fallbackName: fallbackName,
-                              role: otherRole,
-                            ),
-                            if (isOnline)
-                              Positioned(
-                                right: -1,
-                                bottom: -1,
-                                child: Container(
-                                  width: 12,
-                                  height: 12,
-                                  decoration: BoxDecoration(
-                                    color: ChatThemePalette.success,
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: Colors.white,
-                                      width: 2,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                          ],
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                title,
-                                style: ChatThemeStyles.cardTitle(
-                                  ChatThemePalette.primaryDark,
-                                ).copyWith(fontSize: 16.5),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(height: 4),
-                              Row(
-                                children: [
-                                  Container(
-                                    width: 7,
-                                    height: 7,
-                                    decoration: BoxDecoration(
-                                      color: presenceColor,
-                                      shape: BoxShape.circle,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 6),
-                                  Expanded(
-                                    child: Text(
-                                      ChatFormatters.presenceLabel(
-                                        otherUser?.lastSeenAt,
-                                        isOnline: isOnline,
-                                      ),
-                                      style: ChatThemeStyles.meta(
-                                        presenceColor,
-                                      ).copyWith(fontWeight: FontWeight.w700),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                  if (muted) ...[
-                                    const SizedBox(width: 8),
-                                    const Icon(
-                                      Icons.notifications_off_outlined,
-                                      size: 14,
-                                      color: ChatThemePalette.textSecondary,
-                                    ),
-                                  ],
-                                  if (archived) ...[
-                                    const SizedBox(width: 8),
-                                    const Icon(
-                                      Icons.archive_outlined,
-                                      size: 14,
-                                      color: ChatThemePalette.textSecondary,
-                                    ),
-                                  ],
-                                ],
-                              ),
-                            ],
+                        Container(
+                          width: 7,
+                          height: 7,
+                          decoration: BoxDecoration(
+                            color: presenceColor,
+                            shape: BoxShape.circle,
                           ),
                         ),
+                        const SizedBox(width: 5),
+                        Expanded(
+                          child: Text(
+                            ChatFormatters.presenceLabel(
+                              otherUser?.lastSeenAt,
+                              isOnline: isOnline,
+                            ),
+                            style: ChatThemeStyles.meta(presenceColor).copyWith(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        if (muted)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 6),
+                            child: Icon(
+                              Icons.notifications_off_outlined,
+                              size: 13,
+                              color: ChatThemePalette.textSecondary.withValues(alpha: 0.6),
+                            ),
+                          ),
                       ],
                     ),
-                  ),
+                  ],
                 ),
               ),
-              PopupMenuButton<String>(
-                color: ChatThemePalette.surface,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
+            ),
+            const SizedBox(width: 8),
+            PopupMenuButton<String>(
+              color: ChatThemePalette.surface,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              onSelected: onMenuSelected,
+              itemBuilder: (context) => [
+                PopupMenuItem<String>(
+                  value: 'profile',
+                  child: Text('View Profile', style: ChatThemeStyles.body()),
                 ),
-                onSelected: onMenuSelected,
-                itemBuilder: (context) => [
-                  PopupMenuItem<String>(
-                    value: 'profile',
-                    child: Text('View Profile', style: ChatThemeStyles.body()),
+                PopupMenuItem<String>(
+                  value: 'mute',
+                  child: Text(
+                    muted ? 'Unmute Chat' : 'Mute Chat',
+                    style: ChatThemeStyles.body(),
                   ),
-                  PopupMenuItem<String>(
-                    value: 'mute',
-                    child: Text(
-                      muted ? 'Unmute Chat' : 'Mute Chat',
-                      style: ChatThemeStyles.body(),
-                    ),
+                ),
+                PopupMenuItem<String>(
+                  value: 'archive',
+                  child: Text(
+                    archived ? 'Unarchive Chat' : 'Archive Chat',
+                    style: ChatThemeStyles.body(),
                   ),
-                  PopupMenuItem<String>(
-                    value: 'archive',
-                    child: Text(
-                      archived ? 'Unarchive Chat' : 'Archive Chat',
-                      style: ChatThemeStyles.body(),
-                    ),
+                ),
+                PopupMenuItem<String>(
+                  value: 'delete',
+                  child: Text(
+                    'Delete Chat',
+                    style: ChatThemeStyles.body(ChatThemePalette.error),
                   ),
-                  PopupMenuItem<String>(
-                    value: 'delete',
-                    child: Text(
-                      'Delete Chat',
-                      style: ChatThemeStyles.body(ChatThemePalette.error),
-                    ),
-                  ),
-                ],
-                child: const _ToolbarButton(icon: Icons.more_vert_rounded),
+                ),
+              ],
+              child: Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF1F5F9),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(Icons.more_vert_rounded, size: 18, color: ChatThemePalette.textSecondary),
               ),
-            ],
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -1094,82 +843,20 @@ class _DateDivider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 14),
+      padding: const EdgeInsets.symmetric(vertical: 12),
       child: Center(
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
           decoration: BoxDecoration(
-            gradient: ChatThemePalette.headerGradient,
+            color: const Color(0xFFE8ECF4),
             borderRadius: BorderRadius.circular(999),
-            border: Border.all(
-              color: ChatThemePalette.primary.withValues(alpha: 0.14),
-            ),
           ),
           child: Text(
             label,
-            style: ChatThemeStyles.meta(
-              ChatThemePalette.primary,
-            ).copyWith(fontWeight: FontWeight.w700),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _ToolbarButton extends StatelessWidget {
-  final IconData icon;
-  final VoidCallback? onTap;
-
-  const _ToolbarButton({required this.icon, this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Ink(
-          width: 44,
-          height: 44,
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.88),
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: ChatThemePalette.border),
-            boxShadow: ChatThemeStyles.softShadow(0.04),
-          ),
-          child: Icon(icon, color: ChatThemePalette.primaryDark, size: 18),
-        ),
-      ),
-    );
-  }
-}
-
-class _BackgroundOrb extends StatelessWidget {
-  final double size;
-  final Color color;
-  final double opacity;
-
-  const _BackgroundOrb({
-    required this.size,
-    required this.color,
-    required this.opacity,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return IgnorePointer(
-      child: Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          gradient: RadialGradient(
-            colors: [
-              color.withValues(alpha: opacity),
-              color.withValues(alpha: 0),
-            ],
+            style: ChatThemeStyles.meta(ChatThemePalette.textSecondary).copyWith(
+              fontSize: 10.5,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
       ),
@@ -1190,65 +877,57 @@ class _EmptyConversationState extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(28, 0, 28, 32),
-        child: Container(
-          padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            color: ChatThemePalette.surface.withValues(alpha: 0.94),
-            borderRadius: BorderRadius.circular(28),
-            border: Border.all(color: ChatThemePalette.border),
-            boxShadow: ChatThemeStyles.softShadow(0.04),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
+        padding: const EdgeInsets.symmetric(horizontal: 40),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 60,
+              height: 60,
+              decoration: BoxDecoration(
+                color: ChatThemePalette.primary.withValues(alpha: 0.08),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.chat_bubble_outline_rounded,
+                color: ChatThemePalette.primary,
+                size: 26,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Say hello to $otherName',
+              textAlign: TextAlign.center,
+              style: ChatThemeStyles.cardTitle().copyWith(fontSize: 16, fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Send your first message to start the conversation.',
+              textAlign: TextAlign.center,
+              style: ChatThemeStyles.body(ChatThemePalette.textSecondary).copyWith(
+                fontSize: 13,
+                height: 1.5,
+              ),
+            ),
+            if (contextLabel.trim().isNotEmpty) ...[
+              const SizedBox(height: 12),
               Container(
-                width: 64,
-                height: 64,
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
-                  color: ChatThemePalette.primary.withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
+                  color: ChatThemePalette.primary.withValues(alpha: 0.07),
+                  borderRadius: BorderRadius.circular(999),
                 ),
-                child: const Icon(
-                  Icons.chat_bubble_outline_rounded,
-                  color: ChatThemePalette.primary,
-                  size: 28,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Say hello to $otherName',
-                textAlign: TextAlign.center,
-                style: ChatThemeStyles.cardTitle().copyWith(fontSize: 18),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Your next message will appear here instantly once it is sent.',
-                textAlign: TextAlign.center,
-                style: ChatThemeStyles.body(ChatThemePalette.textSecondary),
-              ),
-              if (contextLabel.trim().isNotEmpty) ...[
-                const SizedBox(height: 14),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    color: ChatThemePalette.primary.withValues(alpha: 0.08),
-                    borderRadius: BorderRadius.circular(999),
-                  ),
-                  child: Text(
-                    contextLabel.trim(),
-                    textAlign: TextAlign.center,
-                    style: ChatThemeStyles.meta(
-                      ChatThemePalette.primary,
-                    ).copyWith(fontWeight: FontWeight.w700),
+                child: Text(
+                  contextLabel.trim(),
+                  textAlign: TextAlign.center,
+                  style: ChatThemeStyles.meta(ChatThemePalette.primary).copyWith(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 11,
                   ),
                 ),
-              ],
+              ),
             ],
-          ),
+          ],
         ),
       ),
     );

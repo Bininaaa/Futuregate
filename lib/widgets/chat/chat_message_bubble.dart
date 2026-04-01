@@ -42,24 +42,25 @@ class ChatMessageBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final maxBubbleWidth = (screenWidth * 0.72).clamp(200.0, 420.0);
+
     return Padding(
       padding: EdgeInsets.only(
-        top: isFirstInGroup ? 12 : 4,
-        bottom: isLastInGroup ? 8 : 2,
-        left: 18,
-        right: 18,
+        top: isFirstInGroup ? 10 : 3,
+        bottom: isLastInGroup ? 6 : 2,
+        left: 14,
+        right: 14,
       ),
       child: Align(
         alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
         child: Row(
-          mainAxisAlignment: isMe
-              ? MainAxisAlignment.end
-              : MainAxisAlignment.start,
+          mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             if (!isMe)
               Padding(
-                padding: const EdgeInsets.only(right: 10),
+                padding: const EdgeInsets.only(right: 8),
                 child: AnimatedOpacity(
                   duration: const Duration(milliseconds: 180),
                   opacity: showAvatar ? 1 : 0,
@@ -67,25 +68,23 @@ class ChatMessageBubble extends StatelessWidget {
                       ? ProfileAvatar(
                           user: otherUser,
                           userId: otherUserId,
-                          radius: 16,
+                          radius: 15,
                           fallbackName: fallbackName,
                           role: otherRole,
                         )
-                      : const SizedBox(width: 32, height: 32),
+                      : const SizedBox(width: 30, height: 30),
                 ),
               ),
             Flexible(
               child: GestureDetector(
-                onLongPress: isMe && !message.isDeleted
-                    ? () => _showActions(context)
-                    : null,
+                onLongPress: isMe && !message.isDeleted ? () => _showActions(context) : null,
                 child: Container(
-                  constraints: const BoxConstraints(maxWidth: 304),
+                  constraints: BoxConstraints(maxWidth: maxBubbleWidth),
                   padding: EdgeInsets.fromLTRB(
-                    15,
-                    message.hasAttachment ? 10 : 12,
-                    15,
-                    11,
+                    14,
+                    message.hasAttachment ? 8 : 10,
+                    14,
+                    8,
                   ),
                   decoration: _bubbleDecoration(),
                   child: message.isDeleted
@@ -105,18 +104,15 @@ class ChatMessageBubble extends StatelessWidget {
                                 isMe: isMe,
                               ),
                             if (message.text.trim().isNotEmpty) ...[
-                              if (message.hasAttachment)
-                                const SizedBox(height: 12),
+                              if (message.hasAttachment) const SizedBox(height: 10),
                               Text(
                                 message.text.trim(),
                                 style: ChatThemeStyles.body(
-                                  isMe
-                                      ? Colors.white
-                                      : ChatThemePalette.textPrimary,
-                                ),
+                                  isMe ? Colors.white : ChatThemePalette.textPrimary,
+                                ).copyWith(fontSize: 13.5, height: 1.45),
                               ),
                             ],
-                            const SizedBox(height: 8),
+                            const SizedBox(height: 5),
                             _MessageFooter(message: message, isMe: isMe),
                           ],
                         ),
@@ -133,8 +129,8 @@ class ChatMessageBubble extends StatelessWidget {
     if (message.isDeleted) {
       return BoxDecoration(
         color: isMe
-            ? ChatThemePalette.primary.withValues(alpha: 0.56)
-            : ChatThemePalette.border.withValues(alpha: 0.8),
+            ? ChatThemePalette.primary.withValues(alpha: 0.45)
+            : ChatThemePalette.border.withValues(alpha: 0.6),
         borderRadius: _bubbleRadius(),
       );
     }
@@ -142,41 +138,33 @@ class ChatMessageBubble extends StatelessWidget {
     return BoxDecoration(
       gradient: isMe
           ? const LinearGradient(
-              colors: [
-                ChatThemePalette.primaryDark,
-                ChatThemePalette.primary,
-                Color(0xFF5B39FF),
-              ],
+              colors: [ChatThemePalette.primaryDark, ChatThemePalette.primary, Color(0xFF5B39FF)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             )
-          : const LinearGradient(
-              colors: [Color(0xFFFFFFFF), Color(0xFFF6F8FF), Color(0xFFF3F7FF)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-      color: null,
+          : null,
+      color: isMe ? null : const Color(0xFFFFFFFF),
       borderRadius: _bubbleRadius(),
       border: Border.all(
         color: isMe
-            ? Colors.white.withValues(alpha: 0.08)
-            : const Color(0xFFE4EAF5),
+            ? Colors.white.withValues(alpha: 0.06)
+            : const Color(0xFFE8EDF5),
       ),
       boxShadow: [
         BoxShadow(
           color: isMe
-              ? ChatThemePalette.primary.withValues(alpha: 0.16)
-              : const Color(0xFF0F172A).withValues(alpha: 0.05),
-          blurRadius: isMe ? 24 : 18,
-          offset: const Offset(0, 11),
+              ? ChatThemePalette.primary.withValues(alpha: 0.12)
+              : const Color(0xFF0F172A).withValues(alpha: 0.04),
+          blurRadius: isMe ? 18 : 12,
+          offset: const Offset(0, 6),
         ),
       ],
     );
   }
 
   BorderRadius _bubbleRadius() {
-    const regular = Radius.circular(24);
-    const tail = Radius.circular(10);
+    const regular = Radius.circular(20);
+    const tail = Radius.circular(6);
 
     if (isMe) {
       return BorderRadius.only(
@@ -202,35 +190,27 @@ class ChatMessageBubble extends StatelessWidget {
       builder: (context) {
         return SafeArea(
           child: Container(
-            margin: const EdgeInsets.all(12),
-            padding: const EdgeInsets.symmetric(vertical: 8),
+            margin: const EdgeInsets.all(14),
+            padding: const EdgeInsets.symmetric(vertical: 6),
             decoration: BoxDecoration(
               color: ChatThemePalette.surface,
-              borderRadius: BorderRadius.circular(26),
+              borderRadius: BorderRadius.circular(22),
+              boxShadow: ChatThemeStyles.softShadow(0.08),
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 if (message.isTextMessage)
                   ListTile(
-                    leading: const Icon(
-                      Icons.edit_outlined,
-                      color: ChatThemePalette.primary,
-                    ),
-                    title: Text(
-                      'Edit message',
-                      style: ChatThemeStyles.cardTitle(),
-                    ),
+                    leading: const Icon(Icons.edit_outlined, color: ChatThemePalette.primary),
+                    title: Text('Edit message', style: ChatThemeStyles.cardTitle()),
                     onTap: () {
                       Navigator.pop(context);
                       onEdit?.call();
                     },
                   ),
                 ListTile(
-                  leading: const Icon(
-                    Icons.delete_outline_rounded,
-                    color: ChatThemePalette.error,
-                  ),
+                  leading: const Icon(Icons.delete_outline_rounded, color: ChatThemePalette.error),
                   title: Text(
                     'Delete for everyone',
                     style: ChatThemeStyles.cardTitle(ChatThemePalette.error),
@@ -256,21 +236,20 @@ class _DeletedMessageRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = isMe
-        ? Colors.white.withValues(alpha: 0.84)
-        : ChatThemePalette.textSecondary;
+    final color = isMe ? Colors.white.withValues(alpha: 0.78) : ChatThemePalette.textSecondary;
 
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(Icons.block, size: 14, color: color),
-        const SizedBox(width: 6),
+        Icon(Icons.block, size: 13, color: color),
+        const SizedBox(width: 5),
         Flexible(
           child: Text(
             'This message was deleted',
-            style: ChatThemeStyles.body(
-              color,
-            ).copyWith(fontStyle: FontStyle.italic),
+            style: ChatThemeStyles.body(color).copyWith(
+              fontStyle: FontStyle.italic,
+              fontSize: 12.5,
+            ),
           ),
         ),
       ],
@@ -287,17 +266,17 @@ class _MessageFooter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final metaColor = isMe
-        ? Colors.white.withValues(alpha: 0.8)
+        ? Colors.white.withValues(alpha: 0.72)
         : ChatThemePalette.textSecondary;
     final isSeen = message.seenAt != null || message.isRead;
     final isDelivered = message.deliveredAt != null;
     final statusIcon = isSeen
         ? Icons.done_all_rounded
         : isDelivered
-        ? Icons.done_all_rounded
-        : Icons.done_rounded;
+            ? Icons.done_all_rounded
+            : Icons.done_rounded;
     final statusColor = isMe
-        ? (isSeen ? Colors.white : Colors.white.withValues(alpha: 0.78))
+        ? (isSeen ? Colors.white : Colors.white.withValues(alpha: 0.68))
         : metaColor;
 
     return Row(
@@ -306,18 +285,19 @@ class _MessageFooter extends StatelessWidget {
         if (message.isEdited)
           Text(
             'edited',
-            style: ChatThemeStyles.meta(
-              metaColor,
-            ).copyWith(fontStyle: FontStyle.italic),
+            style: ChatThemeStyles.meta(metaColor).copyWith(
+              fontStyle: FontStyle.italic,
+              fontSize: 10,
+            ),
           ),
-        if (message.isEdited) const SizedBox(width: 4),
+        if (message.isEdited) const SizedBox(width: 3),
         Text(
           ChatFormatters.messageTime(message.sentAt),
-          style: ChatThemeStyles.meta(metaColor),
+          style: ChatThemeStyles.meta(metaColor).copyWith(fontSize: 10),
         ),
         if (isMe) ...[
-          const SizedBox(width: 6),
-          Icon(statusIcon, size: 14, color: statusColor),
+          const SizedBox(width: 4),
+          Icon(statusIcon, size: 13, color: statusColor),
         ],
       ],
     );
@@ -357,18 +337,19 @@ class _ImageAttachmentBubbleState extends State<_ImageAttachmentBubble> {
         final document = snapshot.data;
         if (document == null) {
           return Container(
-            height: 180,
+            height: 160,
             alignment: Alignment.center,
             decoration: BoxDecoration(
               color: ChatThemePalette.background,
-              borderRadius: BorderRadius.circular(22),
+              borderRadius: BorderRadius.circular(16),
             ),
             child: snapshot.hasError
-                ? const Icon(
-                    Icons.broken_image_outlined,
-                    color: ChatThemePalette.textSecondary,
-                  )
-                : const CircularProgressIndicator(),
+                ? const Icon(Icons.broken_image_outlined, color: ChatThemePalette.textSecondary)
+                : const SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
           );
         }
 
@@ -387,16 +368,20 @@ class _ImageAttachmentBubbleState extends State<_ImageAttachmentBubble> {
             );
           },
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(22),
+            borderRadius: BorderRadius.circular(16),
             child: AspectRatio(
-              aspectRatio: 1.18,
+              aspectRatio: 1.2,
               child: CachedNetworkImage(
                 imageUrl: document.viewUrl,
                 fit: BoxFit.cover,
                 placeholder: (context, url) => Container(
                   color: ChatThemePalette.background,
                   alignment: Alignment.center,
-                  child: const CircularProgressIndicator(),
+                  child: const SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
                 ),
                 errorWidget: (context, url, error) => Container(
                   color: ChatThemePalette.background,
@@ -429,67 +414,59 @@ class _FileAttachmentBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final backgroundColor = isMe
-        ? Colors.white.withValues(alpha: 0.16)
+        ? Colors.white.withValues(alpha: 0.14)
         : ChatThemePalette.background;
     final borderColor = isMe
-        ? Colors.white.withValues(alpha: 0.15)
+        ? Colors.white.withValues(alpha: 0.12)
         : ChatThemePalette.border;
     final iconBackground = isMe
-        ? Colors.white.withValues(alpha: 0.18)
+        ? Colors.white.withValues(alpha: 0.16)
         : ChatThemePalette.primary.withValues(alpha: 0.08);
     final iconColor = isMe ? Colors.white : ChatThemePalette.primary;
     final titleColor = isMe ? Colors.white : ChatThemePalette.textPrimary;
     final metaColor = isMe
-        ? Colors.white.withValues(alpha: 0.76)
+        ? Colors.white.withValues(alpha: 0.7)
         : ChatThemePalette.textSecondary;
 
     return InkWell(
       onTap: () => _openAttachment(context),
-      borderRadius: BorderRadius.circular(18),
+      borderRadius: BorderRadius.circular(14),
       child: Ink(
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: backgroundColor,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(16),
           border: Border.all(color: borderColor),
         ),
         child: Row(
           children: [
             Container(
-              width: 42,
-              height: 42,
+              width: 38,
+              height: 38,
               decoration: BoxDecoration(
                 color: iconBackground,
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(
-                Icons.insert_drive_file_outlined,
-                color: iconColor,
-                size: 22,
-              ),
+              child: Icon(Icons.insert_drive_file_outlined, color: iconColor, size: 20),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 10),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    message.fileName.trim().isEmpty
-                        ? 'Attachment'
-                        : message.fileName.trim(),
-                    style: ChatThemeStyles.cardTitle(
-                      titleColor,
-                    ).copyWith(fontSize: 14),
+                    message.fileName.trim().isEmpty ? 'Attachment' : message.fileName.trim(),
+                    style: ChatThemeStyles.cardTitle(titleColor).copyWith(fontSize: 13),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 2),
                   Text(
                     [
                       ChatFormatters.fileSizeLabel(message.fileSize),
                       _fileTypeLabel(message.mimeType, message.fileName),
                     ].where((item) => item.trim().isNotEmpty).join(' - '),
-                    style: ChatThemeStyles.meta(metaColor),
+                    style: ChatThemeStyles.meta(metaColor).copyWith(fontSize: 10),
                   ),
                 ],
               ),
@@ -536,30 +513,17 @@ class _FileAttachmentBubble extends StatelessWidget {
   String _fileTypeLabel(String mimeType, String fileName) {
     final normalizedMimeType = mimeType.trim().toLowerCase();
     if (normalizedMimeType.isNotEmpty) {
-      if (normalizedMimeType.startsWith('image/')) {
-        return 'IMAGE';
-      }
-      if (normalizedMimeType == 'application/pdf') {
-        return 'PDF FILE';
-      }
-      if (normalizedMimeType.contains('word')) {
-        return 'DOC FILE';
-      }
-      if (normalizedMimeType.contains('sheet') ||
-          normalizedMimeType.contains('excel')) {
+      if (normalizedMimeType.startsWith('image/')) return 'IMAGE';
+      if (normalizedMimeType == 'application/pdf') return 'PDF FILE';
+      if (normalizedMimeType.contains('word')) return 'DOC FILE';
+      if (normalizedMimeType.contains('sheet') || normalizedMimeType.contains('excel')) {
         return 'SPREADSHEET';
       }
     }
 
     final normalizedFileName = fileName.trim().toLowerCase();
-    if (normalizedFileName.endsWith('.fig')) {
-      return 'FIGMA FILE';
-    }
-
-    if (normalizedFileName.contains('.')) {
-      return normalizedFileName.split('.').last.toUpperCase();
-    }
-
+    if (normalizedFileName.endsWith('.fig')) return 'FIGMA FILE';
+    if (normalizedFileName.contains('.')) return normalizedFileName.split('.').last.toUpperCase();
     return 'FILE';
   }
 }

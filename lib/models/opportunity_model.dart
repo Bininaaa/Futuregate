@@ -28,6 +28,9 @@ class OpportunityModel {
   final bool? isPaid;
   final String? duration;
   final DateTime? applicationDeadline;
+  final List<String> tags;
+  final List<String> requirementItems;
+  final List<String> benefits;
   final Map<String, dynamic> rawData;
 
   OpportunityModel({
@@ -55,6 +58,9 @@ class OpportunityModel {
     this.isPaid,
     this.duration,
     this.applicationDeadline,
+    this.tags = const [],
+    this.requirementItems = const [],
+    this.benefits = const [],
     this.rawData = const {},
   });
 
@@ -86,6 +92,26 @@ class OpportunityModel {
       isPaid: OpportunityMetadata.extractIsPaid(data),
       duration: OpportunityMetadata.extractDuration(data),
       applicationDeadline: OpportunityMetadata.extractApplicationDeadline(data),
+      tags: OpportunityMetadata.extractTags(
+        data,
+        type: data['type']?.toString(),
+        employmentType: OpportunityMetadata.extractEmploymentType(data),
+        workMode: OpportunityMetadata.extractWorkMode(data),
+        isFeatured: data['isFeatured'] == true,
+        compensationText: OpportunityMetadata.extractCompensationText(data),
+      ),
+      requirementItems: OpportunityMetadata.extractRequirementItems(
+        data,
+        fallbackText: (data['requirements'] ?? '').toString(),
+      ),
+      benefits: OpportunityMetadata.extractBenefits(
+        data,
+        type: data['type']?.toString() ?? '',
+        workMode: OpportunityMetadata.extractWorkMode(data),
+        isFeatured: data['isFeatured'] == true,
+        isPaid: OpportunityMetadata.extractIsPaid(data),
+        compensationText: OpportunityMetadata.extractCompensationText(data),
+      ),
       rawData: data,
     );
   }
@@ -123,6 +149,9 @@ class OpportunityModel {
       'applicationDeadline': OpportunityMetadata.toTimestampOrNull(
         applicationDeadline,
       ),
+      'tags': tags,
+      'requirementItems': requirementItems,
+      'benefits': benefits,
     };
   }
 

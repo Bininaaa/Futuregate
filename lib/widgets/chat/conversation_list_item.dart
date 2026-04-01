@@ -81,45 +81,29 @@ class _ConversationListItemState extends State<ConversationListItem> {
           child: InkWell(
             onTap: widget.onTap,
             onLongPress: widget.onLongPress,
-            borderRadius: BorderRadius.circular(30),
+            borderRadius: BorderRadius.circular(20),
             child: Ink(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               decoration: BoxDecoration(
-                gradient: ChatThemePalette.headerGradient,
-                borderRadius: BorderRadius.circular(30),
+                color: hasUnread
+                    ? ChatThemePalette.primary.withValues(alpha: 0.04)
+                    : ChatThemePalette.surface,
+                borderRadius: BorderRadius.circular(20),
                 border: Border.all(
                   color: hasUnread
-                      ? ChatThemePalette.primary.withValues(alpha: 0.2)
-                      : ChatThemePalette.border,
+                      ? ChatThemePalette.primary.withValues(alpha: 0.15)
+                      : ChatThemePalette.border.withValues(alpha: 0.7),
                 ),
-                boxShadow: ChatThemeStyles.softShadow(hasUnread ? 0.11 : 0.06),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF0F172A).withValues(alpha: hasUnread ? 0.06 : 0.03),
+                    blurRadius: 16,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    width: 4,
-                    height: 70,
-                    decoration: BoxDecoration(
-                      gradient: hasUnread || widget.isArchived
-                          ? LinearGradient(
-                              colors: [
-                                hasUnread
-                                    ? ChatThemePalette.primary
-                                    : ChatThemePalette.secondary,
-                                ChatThemePalette.primaryDark,
-                              ],
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                            )
-                          : null,
-                      color: hasUnread || widget.isArchived
-                          ? null
-                          : Colors.transparent,
-                      borderRadius: BorderRadius.circular(999),
-                    ),
-                  ),
-                  const SizedBox(width: 14),
                   GestureDetector(
                     onTap: widget.onOpenProfile,
                     child: _ConversationAvatar(
@@ -130,139 +114,108 @@ class _ConversationListItemState extends State<ConversationListItem> {
                       isOnline: isOnline,
                     ),
                   ),
-                  const SizedBox(width: 14),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    displayName,
-                                    style: ChatThemeStyles.cardTitle().copyWith(
-                                      fontWeight: hasUnread
-                                          ? FontWeight.w800
-                                          : FontWeight.w700,
-                                      fontSize: 15.5,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Wrap(
-                                    spacing: 8,
-                                    runSpacing: 6,
-                                    children: [
-                                      if (conversation.contextLabel.trim().isNotEmpty)
-                                        _MetaPill(
-                                          icon: Icons.work_outline_rounded,
-                                          label: conversation.contextLabel.trim(),
-                                          foregroundColor:
-                                              ChatThemePalette.primaryDark,
-                                          backgroundColor: ChatThemePalette.primary
-                                              .withValues(alpha: 0.08),
-                                        ),
-                                      if (widget.isMuted)
-                                        const _MetaPill(
-                                          icon: Icons.notifications_off_outlined,
-                                          label: 'Muted',
-                                        ),
-                                      if (widget.isArchived)
-                                        const _MetaPill(
-                                          icon: Icons.archive_outlined,
-                                          label: 'Archived',
-                                          foregroundColor:
-                                              ChatThemePalette.secondary,
-                                          backgroundColor: Color(0x1100A38C),
-                                        ),
-                                    ],
-                                  ),
-                                ],
+                              child: Text(
+                                displayName,
+                                style: ChatThemeStyles.cardTitle().copyWith(
+                                  fontWeight: hasUnread ? FontWeight.w700 : FontWeight.w600,
+                                  fontSize: 14.5,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
-                            const SizedBox(width: 12),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 10,
-                                    vertical: 6,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: hasUnread
-                                        ? ChatThemePalette.primary.withValues(
-                                            alpha: 0.09,
-                                          )
-                                        : ChatThemePalette.surfaceMuted,
-                                    borderRadius: BorderRadius.circular(999),
-                                  ),
-                                  child: Text(
-                                    ChatFormatters.inboxTimestamp(
-                                      conversation.lastMessageTime,
-                                    ),
-                                    style: ChatThemeStyles.meta(
-                                      hasUnread
-                                          ? ChatThemePalette.primary
-                                          : ChatThemePalette.textSecondary,
-                                    ).copyWith(
-                                      fontWeight: hasUnread
-                                          ? FontWeight.w800
-                                          : FontWeight.w700,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 12),
-                                if (hasUnread)
-                                  Container(
-                                    constraints: const BoxConstraints(
-                                      minWidth: 28,
-                                    ),
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 10,
-                                      vertical: 6,
-                                    ),
-                                    decoration: const BoxDecoration(
-                                      gradient: ChatThemePalette.primaryGradient,
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(999),
-                                      ),
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        unreadCount > 99 ? '99+' : '$unreadCount',
-                                        style: ChatThemeStyles.meta(
-                                          Colors.white,
-                                        ).copyWith(fontWeight: FontWeight.w800),
-                                      ),
-                                    ),
-                                  )
-                                else
-                                  const SizedBox(height: 28),
-                              ],
+                            const SizedBox(width: 8),
+                            Text(
+                              ChatFormatters.inboxTimestamp(conversation.lastMessageTime),
+                              style: ChatThemeStyles.meta(
+                                hasUnread
+                                    ? ChatThemePalette.primary
+                                    : ChatThemePalette.textSecondary,
+                              ).copyWith(
+                                fontSize: 10.5,
+                                fontWeight: hasUnread ? FontWeight.w700 : FontWeight.w500,
+                              ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 12),
-                        Text(
-                          subtitle,
-                          style: ChatThemeStyles.body(
-                            hasUnread
-                                ? ChatThemePalette.textPrimary
-                                : ChatThemePalette.textSecondary,
-                          ).copyWith(
-                            fontWeight: hasUnread
-                                ? FontWeight.w600
-                                : FontWeight.w500,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                subtitle,
+                                style: ChatThemeStyles.body(
+                                  hasUnread
+                                      ? ChatThemePalette.textPrimary
+                                      : ChatThemePalette.textSecondary,
+                                ).copyWith(
+                                  fontSize: 12.5,
+                                  fontWeight: hasUnread ? FontWeight.w600 : FontWeight.w400,
+                                  height: 1.3,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            if (hasUnread) ...[
+                              const SizedBox(width: 8),
+                              Container(
+                                constraints: const BoxConstraints(minWidth: 22, minHeight: 22),
+                                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                                decoration: BoxDecoration(
+                                  gradient: ChatThemePalette.primaryGradient,
+                                  borderRadius: BorderRadius.circular(999),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    unreadCount > 99 ? '99+' : '$unreadCount',
+                                    style: ChatThemeStyles.meta(Colors.white).copyWith(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ],
                         ),
+                        if (_hasMetaPills) ...[
+                          const SizedBox(height: 6),
+                          Wrap(
+                            spacing: 6,
+                            runSpacing: 4,
+                            children: [
+                              if (conversation.contextLabel.trim().isNotEmpty)
+                                _MetaPill(
+                                  icon: Icons.work_outline_rounded,
+                                  label: conversation.contextLabel.trim(),
+                                  foregroundColor: ChatThemePalette.primaryDark,
+                                  backgroundColor: ChatThemePalette.primary.withValues(alpha: 0.07),
+                                ),
+                              if (widget.isMuted)
+                                const _MetaPill(
+                                  icon: Icons.notifications_off_outlined,
+                                  label: 'Muted',
+                                ),
+                              if (widget.isArchived)
+                                const _MetaPill(
+                                  icon: Icons.archive_outlined,
+                                  label: 'Archived',
+                                  foregroundColor: ChatThemePalette.secondary,
+                                  backgroundColor: Color(0x1100A38C),
+                                ),
+                            ],
+                          ),
+                        ],
                       ],
                     ),
                   ),
@@ -274,6 +227,11 @@ class _ConversationListItemState extends State<ConversationListItem> {
       },
     );
   }
+
+  bool get _hasMetaPills =>
+      widget.conversation.contextLabel.trim().isNotEmpty ||
+      widget.isMuted ||
+      widget.isArchived;
 }
 
 class _ConversationAvatar extends StatelessWidget {
@@ -293,57 +251,57 @@ class _ConversationAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(2.5),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            ChatThemePalette.primary.withValues(alpha: 0.32),
-            ChatThemePalette.secondary.withValues(alpha: 0.2),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        shape: BoxShape.circle,
-      ),
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          if (conversation.isGroup)
-            CircleAvatar(
-              radius: 28,
-              backgroundColor: ChatThemePalette.primary.withValues(alpha: 0.12),
-              child: Text(
-                _groupInitials(fallbackName),
-                style: ChatThemeStyles.cardTitle(
-                  ChatThemePalette.primary,
-                ).copyWith(fontSize: 16, fontWeight: FontWeight.w800),
-              ),
-            )
-          else
-            ProfileAvatar(
-              user: profile,
-              userId: conversation.otherParticipantId(currentUserId),
-              radius: 28,
-              fallbackName: fallbackName,
-              role: conversation.otherParticipantRole(currentUserId),
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(2),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                ChatThemePalette.primary.withValues(alpha: 0.22),
+                ChatThemePalette.secondary.withValues(alpha: 0.14),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
-          if (isOnline)
-            Positioned(
-              right: -1,
-              bottom: -1,
-              child: Container(
-                width: 14,
-                height: 14,
-                decoration: BoxDecoration(
-                  color: ChatThemePalette.success,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white, width: 2.4),
+            shape: BoxShape.circle,
+          ),
+          child: conversation.isGroup
+              ? CircleAvatar(
+                  radius: 24,
+                  backgroundColor: ChatThemePalette.primary.withValues(alpha: 0.1),
+                  child: Text(
+                    _groupInitials(fallbackName),
+                    style: ChatThemeStyles.cardTitle(ChatThemePalette.primary).copyWith(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                )
+              : ProfileAvatar(
+                  user: profile,
+                  userId: conversation.otherParticipantId(currentUserId),
+                  radius: 24,
+                  fallbackName: fallbackName,
+                  role: conversation.otherParticipantRole(currentUserId),
                 ),
+        ),
+        if (isOnline)
+          Positioned(
+            right: 0,
+            bottom: 0,
+            child: Container(
+              width: 13,
+              height: 13,
+              decoration: BoxDecoration(
+                color: ChatThemePalette.success,
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.white, width: 2),
               ),
             ),
-        ],
-      ),
+          ),
+      ],
     );
   }
 
@@ -374,7 +332,7 @@ class _MetaPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(999),
@@ -382,15 +340,16 @@ class _MetaPill extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 12.5, color: foregroundColor),
-          const SizedBox(width: 6),
+          Icon(icon, size: 11, color: foregroundColor),
+          const SizedBox(width: 4),
           ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 146),
+            constraints: const BoxConstraints(maxWidth: 120),
             child: Text(
               label,
-              style: ChatThemeStyles.meta(
-                foregroundColor,
-              ).copyWith(fontWeight: FontWeight.w700),
+              style: ChatThemeStyles.meta(foregroundColor).copyWith(
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+              ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),

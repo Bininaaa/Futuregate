@@ -38,7 +38,7 @@ class OpportunityType {
       case internship:
         return Icons.school_outlined;
       case sponsoring:
-        return Icons.campaign_outlined;
+        return Icons.workspace_premium_outlined;
       case job:
       default:
         return Icons.work_outline;
@@ -51,7 +51,7 @@ class OpportunityType {
       case internship:
         return 'Internship';
       case sponsoring:
-        return 'Sponsoring';
+        return 'Sponsored';
       case job:
       default:
         return 'Job';
@@ -63,7 +63,7 @@ class OpportunityType {
       case internship:
         return 'internship';
       case sponsoring:
-        return 'sponsoring';
+        return 'sponsored';
       case job:
       default:
         return 'job';
@@ -75,7 +75,7 @@ class OpportunityType {
       case internship:
         return 'Bring in future talent';
       case sponsoring:
-        return 'Support students with a sponsoring program';
+        return 'Support students with a premium sponsored program';
       case job:
       default:
         return 'Hire for a real role';
@@ -88,7 +88,7 @@ class OpportunityType {
       case internship:
         return 'Learning & work experience';
       case sponsoring:
-        return 'Sponsored support programs';
+        return 'Premium funded & partner programs';
       case job:
       default:
         return 'Full-time & part-time work';
@@ -150,6 +150,9 @@ class OpportunityType {
   static String parse(String? raw) {
     if (raw == null || raw.isEmpty) return job;
     final normalized = raw.trim().toLowerCase();
+    if (normalized == 'sponsored' || normalized == 'sponsorship') {
+      return sponsoring;
+    }
     if (values.contains(normalized)) return normalized;
     return job;
   }

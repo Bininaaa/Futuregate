@@ -98,9 +98,235 @@ class OpportunityMetadata {
     return null;
   }
 
+  static List<String> stringListFromValue(dynamic value, {int maxItems = 12}) {
+    if (value == null) {
+      return const [];
+    }
+
+    final items = <String>[];
+
+    void addValue(dynamic next) {
+      if (next == null) {
+        return;
+      }
+
+      if (next is List) {
+        for (final item in next) {
+          addValue(item);
+        }
+        return;
+      }
+
+      if (next is Map) {
+        final nested =
+            next['items'] ??
+            next['values'] ??
+            next['list'] ??
+            next['data'] ??
+            next['tags'] ??
+            next['benefits'] ??
+            next['requirements'];
+        if (nested != null) {
+          addValue(nested);
+          return;
+        }
+
+        final display = stringFromValue(next);
+        if (display != null) {
+          addValue(display);
+        }
+        return;
+      }
+
+      final text = stringFromValue(next);
+      if (text == null) {
+        return;
+      }
+
+      final normalized = text
+          .replaceAll('\r', '\n')
+          .replaceAll(RegExp(r'\s*\|\s*'), ', ')
+          .trim();
+      if (normalized.isEmpty) {
+        return;
+      }
+
+      final splitCandidates = normalized
+          .split(RegExp(r'\n+|(?<!\d),(?!\d)|;|•'))
+          .map(_normalizeListItem)
+          .whereType<String>()
+          .toList();
+
+      if (splitCandidates.length > 1) {
+        items.addAll(splitCandidates);
+        return;
+      }
+
+      final single = _normalizeListItem(normalized);
+      if (single != null) {
+        items.add(single);
+      }
+    }
+
+    addValue(value);
+    return uniqueNonEmpty(items).take(maxItems).toList();
+  }
+
   static String? sanitizeText(String? rawValue) {
     final trimmed = rawValue?.trim();
     return (trimmed == null || trimmed.isEmpty) ? null : trimmed;
+  }
+
+  static List<String> extractTags(
+    Map<String, dynamic> data, {
+    String? type,
+    String? employmentType,
+    String? workMode,
+    bool isFeatured = false,
+    String? compensationText,
+  }) {
+    final explicitTags = stringListFromValue(
+      firstValue(data, [
+        'tags',
+        'tag',
+        'labels',
+        'badges',
+        'badgeLabels',
+        'highlightTags',
+        'pills',
+      ]),
+      maxItems: 6,
+    );
+    if (explicitTags.isNotEmpty) {
+      return explicitTags;
+    }
+
+    final tags = <String>[];
+    final normalizedType = OpportunityType.parse(type);
+    final employmentLabel = formatEmploymentType(employmentType);
+    final workModeLabel = formatWorkMode(workMode);
+    final lowerCompensation = compensationText?.trim().toLowerCase();
+
+    if (employmentLabel != null) {
+      tags.add(employmentLabel.toUpperCase());
+    }
+    if (workModeLabel != null) {
+      tags.add(workModeLabel.toUpperCase());
+    }
+
+    switch (normalizedType) {
+      case OpportunityType.internship:
+        tags.addAll(const ['INTERNSHIP', 'LEARNING']);
+        break;
+      case OpportunityType.sponsoring:
+        if (isFeatured) {
+          tags.add('FEATURED');
+        } else {
+          tags.add('SPONSORED');
+        }
+        break;
+      case OpportunityType.job:
+        break;
+    }
+
+    if (lowerCompensation != null) {
+      if (lowerCompensation.contains('fully funded') ||
+          lowerCompensation.contains('full funding')) {
+        tags.add('FULLY FUNDED');
+      } else if (lowerCompensation.contains('stipend')) {
+        tags.add('STIPEND');
+      }
+    }
+
+    return uniqueNonEmpty(tags).take(6).toList();
+  }
+
+  static List<String> extractRequirementItems(
+    Map<String, dynamic> data, {
+    String? fallbackText,
+  }) {
+    final explicitItems = stringListFromValue(
+      firstValue(data, [
+        'requirementsList',
+        'requirements_list',
+        'requirementItems',
+        'requirement_items',
+        'eligibilityItems',
+        'eligibility_items',
+        'skills',
+        'qualifications',
+        'mustHaves',
+        'must_haves',
+        'criteria',
+      ]),
+      maxItems: 8,
+    );
+    if (explicitItems.isNotEmpty) {
+      return explicitItems;
+    }
+
+    return stringListFromValue(fallbackText, maxItems: 8);
+  }
+
+  static List<String> extractBenefits(
+    Map<String, dynamic> data, {
+    required String type,
+    String? workMode,
+    bool isFeatured = false,
+    bool? isPaid,
+    String? compensationText,
+  }) {
+    final explicitBenefits = stringListFromValue(
+      firstValue(data, [
+        'benefits',
+        'benefitList',
+        'benefit_list',
+        'perks',
+        'perkList',
+        'perk_list',
+        'advantages',
+        'offerings',
+        'whatYouGet',
+        'support',
+      ]),
+      maxItems: 8,
+    );
+    if (explicitBenefits.isNotEmpty) {
+      return explicitBenefits;
+    }
+
+    final benefits = <String>[];
+    final normalizedType = OpportunityType.parse(type);
+    final normalizedWorkMode = normalizeWorkMode(workMode);
+    final normalizedCompensation = sanitizeText(compensationText);
+
+    if (normalizedCompensation != null) {
+      benefits.add(normalizedCompensation);
+    } else if (isPaid == true) {
+      benefits.add(
+        normalizedType == OpportunityType.sponsoring
+            ? 'Funding included'
+            : 'Paid opportunity',
+      );
+    }
+
+    switch (normalizedWorkMode) {
+      case 'remote':
+        benefits.add('Remote-friendly setup');
+        break;
+      case 'hybrid':
+        benefits.add('Hybrid work format');
+        break;
+      case 'onsite':
+      case null:
+        break;
+    }
+
+    if (normalizedType == OpportunityType.sponsoring && isFeatured) {
+      benefits.add('Featured sponsored placement');
+    }
+
+    return uniqueNonEmpty(benefits).take(6).toList();
   }
 
   static String? normalizeCurrency(String? rawValue) {
@@ -655,5 +881,15 @@ class OpportunityMetadata {
     return value
         .replaceFirst(RegExp(r'0+$'), '')
         .replaceFirst(RegExp(r'\.$'), '');
+  }
+
+  static String? _normalizeListItem(String? value) {
+    final trimmed = value
+        ?.replaceAll('\u2022', '')
+        .replaceFirst(RegExp(r'^\s*[-*]+\s*'), '')
+        .replaceFirst(RegExp(r'^\s*\d+[.)]\s*'), '')
+        .replaceAll(RegExp(r'\s+'), ' ')
+        .trim();
+    return (trimmed == null || trimmed.isEmpty) ? null : trimmed;
   }
 }
