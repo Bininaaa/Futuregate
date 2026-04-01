@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../models/notification_model.dart';
 import '../services/notification_service.dart';
@@ -105,9 +106,11 @@ class NotificationProvider extends ChangeNotifier {
             notifyListeners();
           },
           onError: (e) {
-            debugPrint('Notification stream error: $e');
-            _isLoading = false;
-            notifyListeners();
+            if (!_isIgnorableFirebaseCancellation(e)) {
+              debugPrint('Notification stream error: $e');
+              _isLoading = false;
+              notifyListeners();
+            }
           },
         );
   }
@@ -136,6 +139,16 @@ class NotificationProvider extends ChangeNotifier {
       conversationId: conversationId,
       targetId: targetId,
     );
+  }
+
+  bool _isIgnorableFirebaseCancellation(Object error) {
+    if (error is FirebaseException &&
+        (error.code == 'aborted' || error.code == 'cancelled')) {
+      return true;
+    }
+    final message = error.toString().toLowerCase();
+    return message.contains('firebaseignoreexception') &&
+        message.contains('http request was aborted');
   }
 
   @override

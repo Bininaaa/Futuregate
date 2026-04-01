@@ -369,7 +369,9 @@ class ChatProvider extends ChangeNotifier {
           currentUserId: currentUserId,
         )
         .catchError((Object error) {
-          debugPrint('markMessagesAsRead failed: $error');
+          if (!_isIgnorableFirebaseCancellation(error)) {
+            debugPrint('markMessagesAsRead failed: $error');
+          }
         });
   }
 
