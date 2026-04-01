@@ -1105,11 +1105,11 @@ service cloud.firestore {
             request.resource.data.studentName == resource.data.studentName &&
             request.resource.data.companyId == resource.data.companyId &&
             request.resource.data.companyName == resource.data.companyName &&
-            request.resource.data.startedAt == resource.data.startedAt &&
-            request.resource.data.isGroup == resource.data.isGroup &&
-            request.resource.data.groupName == resource.data.groupName &&
-            request.resource.data.groupAvatarUrl == resource.data.groupAvatarUrl &&
-            isConversationStatus(request.resource.data.status)
+            request.resource.data.get('startedAt', null) == resource.data.get('startedAt', null) &&
+            request.resource.data.get('isGroup', null) == resource.data.get('isGroup', null) &&
+            request.resource.data.get('groupName', null) == resource.data.get('groupName', null) &&
+            request.resource.data.get('groupAvatarUrl', null) == resource.data.get('groupAvatarUrl', null) &&
+            isConversationStatus(request.resource.data.get('status', 'active'))
           );
 
       allow delete: if isAdmin();
@@ -1158,25 +1158,25 @@ service cloud.firestore {
               ]) &&
               request.resource.data.id == resource.data.id &&
               request.resource.data.senderId == resource.data.senderId &&
-              request.resource.data.senderRole == resource.data.senderRole &&
-              request.resource.data.text == resource.data.text &&
-              request.resource.data.messageType == resource.data.messageType &&
-              request.resource.data.attachmentUrl == resource.data.attachmentUrl &&
-              request.resource.data.attachmentStoragePath == resource.data.attachmentStoragePath &&
-              request.resource.data.fileName == resource.data.fileName &&
-              request.resource.data.fileSize == resource.data.fileSize &&
-              request.resource.data.mimeType == resource.data.mimeType &&
-              request.resource.data.thumbnailUrl == resource.data.thumbnailUrl &&
+              request.resource.data.get('senderRole', null) == resource.data.get('senderRole', null) &&
+              request.resource.data.get('text', '') == resource.data.get('text', '') &&
+              request.resource.data.get('messageType', 'text') == resource.data.get('messageType', 'text') &&
+              request.resource.data.get('attachmentUrl', '') == resource.data.get('attachmentUrl', '') &&
+              request.resource.data.get('attachmentStoragePath', '') == resource.data.get('attachmentStoragePath', '') &&
+              request.resource.data.get('fileName', '') == resource.data.get('fileName', '') &&
+              request.resource.data.get('fileSize', 0) == resource.data.get('fileSize', 0) &&
+              request.resource.data.get('mimeType', '') == resource.data.get('mimeType', '') &&
+              request.resource.data.get('thumbnailUrl', '') == resource.data.get('thumbnailUrl', '') &&
               request.resource.data.sentAt == resource.data.sentAt &&
-              request.resource.data.deliveredAt == resource.data.deliveredAt &&
-              request.resource.data.isEdited == resource.data.isEdited &&
-              request.resource.data.isDeleted == resource.data.isDeleted &&
-              request.resource.data.editedAt == resource.data.editedAt
+              request.resource.data.get('deliveredAt', null) == resource.data.get('deliveredAt', null) &&
+              request.resource.data.get('isEdited', false) == resource.data.get('isEdited', false) &&
+              request.resource.data.get('isDeleted', false) == resource.data.get('isDeleted', false) &&
+              request.resource.data.get('editedAt', null) == resource.data.get('editedAt', null)
             ) ||
             (
               isParticipant(conversationId) &&
               resource.data.senderId == request.auth.uid &&
-              resource.data.isDeleted == false &&
+              resource.data.get('isDeleted', false) == false &&
               request.resource.data.diff(resource.data).changedKeys().hasOnly([
                 'text',
                 'isEdited',
@@ -1185,24 +1185,24 @@ service cloud.firestore {
               request.resource.data.isEdited == true &&
               request.resource.data.id == resource.data.id &&
               request.resource.data.senderId == resource.data.senderId &&
-              request.resource.data.senderRole == resource.data.senderRole &&
-              request.resource.data.messageType == resource.data.messageType &&
-              request.resource.data.attachmentUrl == resource.data.attachmentUrl &&
-              request.resource.data.attachmentStoragePath == resource.data.attachmentStoragePath &&
-              request.resource.data.fileName == resource.data.fileName &&
-              request.resource.data.fileSize == resource.data.fileSize &&
-              request.resource.data.mimeType == resource.data.mimeType &&
-              request.resource.data.thumbnailUrl == resource.data.thumbnailUrl &&
+              request.resource.data.get('senderRole', null) == resource.data.get('senderRole', null) &&
+              request.resource.data.get('messageType', 'text') == resource.data.get('messageType', 'text') &&
+              request.resource.data.get('attachmentUrl', '') == resource.data.get('attachmentUrl', '') &&
+              request.resource.data.get('attachmentStoragePath', '') == resource.data.get('attachmentStoragePath', '') &&
+              request.resource.data.get('fileName', '') == resource.data.get('fileName', '') &&
+              request.resource.data.get('fileSize', 0) == resource.data.get('fileSize', 0) &&
+              request.resource.data.get('mimeType', '') == resource.data.get('mimeType', '') &&
+              request.resource.data.get('thumbnailUrl', '') == resource.data.get('thumbnailUrl', '') &&
               request.resource.data.sentAt == resource.data.sentAt &&
-              request.resource.data.deliveredAt == resource.data.deliveredAt &&
-              request.resource.data.seenAt == resource.data.seenAt &&
-              request.resource.data.isRead == resource.data.isRead &&
-              request.resource.data.isDeleted == resource.data.isDeleted
+              request.resource.data.get('deliveredAt', null) == resource.data.get('deliveredAt', null) &&
+              request.resource.data.get('seenAt', null) == resource.data.get('seenAt', null) &&
+              request.resource.data.get('isRead', false) == resource.data.get('isRead', false) &&
+              request.resource.data.get('isDeleted', false) == resource.data.get('isDeleted', false)
             ) ||
             (
               isParticipant(conversationId) &&
               resource.data.senderId == request.auth.uid &&
-              resource.data.isDeleted == false &&
+              resource.data.get('isDeleted', false) == false &&
               request.resource.data.diff(resource.data).changedKeys().hasOnly([
                 'isDeleted',
                 'text'
@@ -1211,18 +1211,18 @@ service cloud.firestore {
               request.resource.data.text == '' &&
               request.resource.data.id == resource.data.id &&
               request.resource.data.senderId == resource.data.senderId &&
-              request.resource.data.senderRole == resource.data.senderRole &&
-              request.resource.data.messageType == resource.data.messageType &&
-              request.resource.data.attachmentUrl == resource.data.attachmentUrl &&
-              request.resource.data.attachmentStoragePath == resource.data.attachmentStoragePath &&
-              request.resource.data.fileName == resource.data.fileName &&
-              request.resource.data.fileSize == resource.data.fileSize &&
-              request.resource.data.mimeType == resource.data.mimeType &&
-              request.resource.data.thumbnailUrl == resource.data.thumbnailUrl &&
+              request.resource.data.get('senderRole', null) == resource.data.get('senderRole', null) &&
+              request.resource.data.get('messageType', 'text') == resource.data.get('messageType', 'text') &&
+              request.resource.data.get('attachmentUrl', '') == resource.data.get('attachmentUrl', '') &&
+              request.resource.data.get('attachmentStoragePath', '') == resource.data.get('attachmentStoragePath', '') &&
+              request.resource.data.get('fileName', '') == resource.data.get('fileName', '') &&
+              request.resource.data.get('fileSize', 0) == resource.data.get('fileSize', 0) &&
+              request.resource.data.get('mimeType', '') == resource.data.get('mimeType', '') &&
+              request.resource.data.get('thumbnailUrl', '') == resource.data.get('thumbnailUrl', '') &&
               request.resource.data.sentAt == resource.data.sentAt &&
-              request.resource.data.deliveredAt == resource.data.deliveredAt &&
-              request.resource.data.seenAt == resource.data.seenAt &&
-              request.resource.data.isRead == resource.data.isRead
+              request.resource.data.get('deliveredAt', null) == resource.data.get('deliveredAt', null) &&
+              request.resource.data.get('seenAt', null) == resource.data.get('seenAt', null) &&
+              request.resource.data.get('isRead', false) == resource.data.get('isRead', false)
             );
 
         allow delete: if isAdmin();

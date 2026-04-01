@@ -459,7 +459,9 @@ class ChatProvider extends ChangeNotifier {
         attachmentMimeType: attachmentMimeType,
       );
     } catch (error) {
-      _error = error.toString();
+      if (!_isIgnorableFirebaseCancellation(error)) {
+        _error = error.toString();
+      }
     } finally {
       _isSending = false;
       notifyListeners();
@@ -479,6 +481,9 @@ class ChatProvider extends ChangeNotifier {
         newText: newText,
       );
     } catch (error) {
+      if (_isIgnorableFirebaseCancellation(error)) {
+        return;
+      }
       _error = error.toString();
       notifyListeners();
     }
@@ -495,6 +500,9 @@ class ChatProvider extends ChangeNotifier {
         messageId: messageId,
       );
     } catch (error) {
+      if (_isIgnorableFirebaseCancellation(error)) {
+        return;
+      }
       _error = error.toString();
       notifyListeners();
     }
@@ -698,6 +706,10 @@ class ChatProvider extends ChangeNotifier {
   }
 
   bool _isIgnorableFirebaseCancellation(Object error) {
+    if (error is FirebaseException &&
+        (error.code == 'aborted' || error.code == 'cancelled')) {
+      return true;
+    }
     final message = error.toString().toLowerCase();
     return message.contains('firebaseignoreexception') &&
         message.contains('http request was aborted');

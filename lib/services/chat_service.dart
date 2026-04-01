@@ -137,9 +137,20 @@ class ChatService {
       'companyId': companyId,
       'companyName': companyName,
       'lastMessage': '',
+      'lastMessageType': 'text',
+      'lastMessageSenderId': '',
+      'lastMessageSenderName': '',
       'lastMessageTime': now,
       'startedAt': now,
       'status': 'active',
+      'studentUnreadCount': 0,
+      'companyUnreadCount': 0,
+      'archivedBy': <String>[],
+      'mutedBy': <String>[],
+      'deletedBy': <String>[],
+      'isGroup': false,
+      'groupName': '',
+      'groupAvatarUrl': '',
     };
 
     await _createConversationWithFallbacks(docRef, legacyConversationData);
@@ -493,6 +504,9 @@ class ChatService {
     try {
       await batch.commit();
     } on FirebaseException catch (error) {
+      if (_isIgnorableAbort(error)) {
+        return;
+      }
       if (!_isPermissionDeniedError(error)) {
         rethrow;
       }
@@ -505,6 +519,9 @@ class ChatService {
         legacyBatch.update(conversationRef, {unreadField: 0});
         await legacyBatch.commit();
       } on FirebaseException catch (legacyError) {
+        if (_isIgnorableAbort(legacyError)) {
+          return;
+        }
         if (!_isPermissionDeniedError(legacyError)) {
           rethrow;
         }
@@ -794,6 +811,9 @@ class ChatService {
           await batch.commit();
           return;
         } on FirebaseException catch (error) {
+          if (_isIgnorableAbort(error)) {
+            return;
+          }
           if (!_isPermissionDeniedError(error)) {
             rethrow;
           }
@@ -840,6 +860,16 @@ class ChatService {
     return error is FirebaseException && error.code == 'permission-denied';
   }
 
+  bool _isIgnorableAbort(Object error) {
+    if (error is FirebaseException &&
+        (error.code == 'aborted' || error.code == 'cancelled')) {
+      return true;
+    }
+    final message = error.toString().toLowerCase();
+    return message.contains('firebaseignoreexception') &&
+        message.contains('http request was aborted');
+  }
+
   Future<void> _updateConversationDocument(
     DocumentReference<Map<String, dynamic>> ref,
     Map<String, dynamic> data,
@@ -857,6 +887,9 @@ class ChatService {
         await ref.update(candidate);
         return;
       } on FirebaseException catch (error) {
+        if (_isIgnorableAbort(error)) {
+          return;
+        }
         if (!_isPermissionDeniedError(error)) {
           rethrow;
         }
@@ -933,6 +966,9 @@ class ChatService {
         await ref.set(candidate);
         return;
       } on FirebaseException catch (error) {
+        if (_isIgnorableAbort(error)) {
+          return;
+        }
         if (!_isPermissionDeniedError(error)) {
           rethrow;
         }
