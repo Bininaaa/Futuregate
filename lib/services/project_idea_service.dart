@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 
 import '../models/project_idea_model.dart';
 import 'worker_api_service.dart';
@@ -169,29 +170,38 @@ class ProjectIdeaService {
     String attachmentUrl = '',
     bool isPublic = true,
   }) async {
-    await _ideasCollection.doc(id).update(<String, dynamic>{
-      'title': title,
-      'description': description,
-      'domain': domain,
-      'level': level,
-      'tools': tools,
-      'tagline': tagline,
-      'shortDescription': shortDescription,
-      'category': category,
-      'tags': tags,
-      'stage': stage,
-      'skillsNeeded': skillsNeeded,
-      'teamNeeded': teamNeeded,
-      'targetAudience': targetAudience,
-      'problemStatement': problemStatement,
-      'solution': solution,
-      'resourcesNeeded': resourcesNeeded,
-      'benefits': benefits,
-      'imageUrl': imageUrl,
-      'attachmentUrl': attachmentUrl,
-      'isPublic': isPublic,
-      'updatedAt': FieldValue.serverTimestamp(),
-    });
+    try {
+      await _ideasCollection.doc(id).update(<String, dynamic>{
+        'title': title,
+        'description': description,
+        'domain': domain,
+        'level': level,
+        'tools': tools,
+        'tagline': tagline,
+        'shortDescription': shortDescription,
+        'category': category,
+        'tags': tags,
+        'stage': stage,
+        'skillsNeeded': skillsNeeded,
+        'teamNeeded': teamNeeded,
+        'targetAudience': targetAudience,
+        'problemStatement': problemStatement,
+        'solution': solution,
+        'resourcesNeeded': resourcesNeeded,
+        'benefits': benefits,
+        'imageUrl': imageUrl,
+        'attachmentUrl': attachmentUrl,
+        'isPublic': isPublic,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+    } on FirebaseException catch (error) {
+      if (_isPermissionDeniedError(error)) {
+        throw Exception(
+          'Idea editing is temporarily unavailable until the latest Firestore permissions are live.',
+        );
+      }
+      rethrow;
+    }
   }
 
   Future<void> deleteProjectIdea(String id) async {
@@ -219,9 +229,20 @@ class ProjectIdeaService {
     final joined = <String>{};
 
     for (final chunk in _chunkIds(normalizedIdeaIds)) {
-      final snapshot = await _interactionCollection
-          .where('ideaId', whereIn: chunk)
-          .get();
+      QuerySnapshot<Map<String, dynamic>> snapshot;
+      try {
+        snapshot = await _interactionCollection
+            .where('ideaId', whereIn: chunk)
+            .get();
+      } on FirebaseException catch (error) {
+        if (_isPermissionDeniedError(error)) {
+          debugPrint(
+            'Project idea engagement read skipped because Firestore permissions are not live yet: $error',
+          );
+          return const ProjectIdeaEngagementSnapshot();
+        }
+        rethrow;
+      }
 
       for (final doc in snapshot.docs) {
         final data = doc.data();
@@ -278,18 +299,27 @@ class ProjectIdeaService {
     final docId = '${type.storageKey}_${normalizedUserId}_$normalizedIdeaId';
     final docRef = _interactionCollection.doc(docId);
 
-    if (enabled) {
-      await docRef.set(<String, dynamic>{
-        'id': docId,
-        'ideaId': normalizedIdeaId,
-        'userId': normalizedUserId,
-        'type': type.storageKey,
-        'createdAt': FieldValue.serverTimestamp(),
-      });
-      return;
-    }
+    try {
+      if (enabled) {
+        await docRef.set(<String, dynamic>{
+          'id': docId,
+          'ideaId': normalizedIdeaId,
+          'userId': normalizedUserId,
+          'type': type.storageKey,
+          'createdAt': FieldValue.serverTimestamp(),
+        });
+        return;
+      }
 
-    await docRef.delete();
+      await docRef.delete();
+    } on FirebaseException catch (error) {
+      if (_isPermissionDeniedError(error)) {
+        throw Exception(
+          'Idea engagement is temporarily unavailable until the latest Firestore permissions are live.',
+        );
+      }
+      rethrow;
+    }
   }
 
   List<List<String>> _chunkIds(List<String> ideaIds) {
@@ -322,5 +352,10 @@ class ProjectIdeaService {
       return bTime.compareTo(aTime);
     });
     return ideas;
+  }
+
+  bool _isPermissionDeniedError(Object error) {
+    return error is FirebaseException && error.code == 'permission-denied' ||
+        error.toString().contains('[cloud_firestore/permission-denied]');
   }
 }

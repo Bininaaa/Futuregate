@@ -1,9 +1,11 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/project_idea_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/project_idea_provider.dart';
+import '../../services/file_storage_service.dart';
 import '../../widgets/ideas/innovation_hub_theme.dart';
 
 class CreateIdeaScreen extends StatefulWidget {
@@ -18,6 +20,7 @@ class CreateIdeaScreen extends StatefulWidget {
 
 class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final StorageService _storageService = StorageService();
   late final TextEditingController _titleController;
   late final TextEditingController _taglineController;
   late final TextEditingController _overviewController;
@@ -26,7 +29,6 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
   late final TextEditingController _audienceController;
   late final TextEditingController _resourcesController;
   late final TextEditingController _benefitsController;
-  late final TextEditingController _imageUrlController;
   late final TextEditingController _attachmentUrlController;
   late final TextEditingController _customSkillsController;
   late final TextEditingController _customRolesController;
@@ -37,6 +39,9 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
   late bool _isPublic;
   late Set<String> _selectedSkills;
   late Set<String> _selectedRoles;
+  late String _imageUrl;
+  late String _uploadedImageName;
+  bool _isUploadingImage = false;
 
   bool get _isLocked =>
       widget.isEditMode &&
@@ -62,7 +67,6 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
       text: idea?.resourcesNeeded ?? '',
     );
     _benefitsController = TextEditingController(text: idea?.benefits ?? '');
-    _imageUrlController = TextEditingController(text: idea?.imageUrl ?? '');
     _attachmentUrlController = TextEditingController(
       text: idea?.attachmentUrl ?? '',
     );
@@ -80,6 +84,8 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
     _isPublic = idea?.isPublic ?? true;
     _selectedSkills = {...?idea?.displaySkills};
     _selectedRoles = {...?idea?.displayTeamNeeded};
+    _imageUrl = (idea?.imageUrl ?? '').trim();
+    _uploadedImageName = _deriveImageLabel(_imageUrl);
   }
 
   @override
@@ -92,7 +98,6 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
     _audienceController.dispose();
     _resourcesController.dispose();
     _benefitsController.dispose();
-    _imageUrlController.dispose();
     _attachmentUrlController.dispose();
     _customSkillsController.dispose();
     _customRolesController.dispose();
@@ -101,6 +106,14 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
 
   Future<void> _submit() async {
     if (_isLocked) {
+      return;
+    }
+    if (_isUploadingImage) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please wait for the cover image upload to finish.'),
+        ),
+      );
       return;
     }
     if (!_formKey.currentState!.validate()) {
@@ -144,7 +157,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
             solution: _solutionController.text.trim(),
             resourcesNeeded: _resourcesController.text.trim(),
             benefits: _benefitsController.text.trim(),
-            imageUrl: _imageUrlController.text.trim(),
+            imageUrl: _imageUrl.trim(),
             attachmentUrl: _attachmentUrlController.text.trim(),
             isPublic: _isPublic,
           )
@@ -167,7 +180,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
             solution: _solutionController.text.trim(),
             resourcesNeeded: _resourcesController.text.trim(),
             benefits: _benefitsController.text.trim(),
-            imageUrl: _imageUrlController.text.trim(),
+            imageUrl: _imageUrl.trim(),
             attachmentUrl: _attachmentUrlController.text.trim(),
             isPublic: _isPublic,
           );
@@ -211,6 +224,104 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
     _customRolesController.clear();
   }
 
+  Future<void> _pickAndUploadImage() async {
+    if (_isLocked ||
+        _isUploadingImage ||
+        context.read<ProjectIdeaProvider>().isLoading) {
+      return;
+    }
+
+    final messenger = ScaffoldMessenger.of(context);
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: const ['jpg', 'jpeg', 'png', 'webp'],
+      withData: true,
+    );
+
+    if (result == null || result.files.isEmpty || !mounted) {
+      return;
+    }
+
+    final file = result.files.single;
+    if (file.size > 5 * 1024 * 1024) {
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Image must be smaller than 5 MB.')),
+      );
+      return;
+    }
+
+    final currentUser = context.read<AuthProvider>().userModel;
+    if (currentUser == null) {
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Please sign in again to upload images.')),
+      );
+      return;
+    }
+
+    setState(() => _isUploadingImage = true);
+
+    try {
+      final upload = await _storageService.uploadProjectIdeaImage(
+        userId: currentUser.uid,
+        fileName: file.name,
+        filePath: file.path ?? '',
+        fileBytes: file.bytes,
+      );
+
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        _imageUrl = upload.fileUrl.trim();
+        _uploadedImageName = upload.fileName.trim();
+        _isUploadingImage = false;
+      });
+
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Cover image uploaded successfully.')),
+      );
+    } catch (error) {
+      if (!mounted) {
+        return;
+      }
+
+      setState(() => _isUploadingImage = false);
+      messenger.showSnackBar(
+        SnackBar(content: Text(_formatUploadError(error))),
+      );
+    }
+  }
+
+  void _removeImage() {
+    setState(() {
+      _imageUrl = '';
+      _uploadedImageName = '';
+    });
+  }
+
+  String _formatUploadError(Object error) {
+    final message = error.toString().replaceFirst('Exception: ', '').trim();
+    if (message.isEmpty) {
+      return 'Image upload failed. Please try again.';
+    }
+    return message;
+  }
+
+  String _deriveImageLabel(String url) {
+    final trimmed = url.trim();
+    if (trimmed.isEmpty) {
+      return '';
+    }
+
+    final uri = Uri.tryParse(trimmed);
+    if (uri == null || uri.pathSegments.isEmpty) {
+      return 'Current cover image';
+    }
+
+    return Uri.decodeComponent(uri.pathSegments.last);
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<ProjectIdeaProvider>();
@@ -243,10 +354,13 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                   child: Center(child: CircularProgressIndicator()),
                 )
               : ElevatedButton(
-                  onPressed: _submit,
+                  onPressed: _isUploadingImage ? null : _submit,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: InnovationHubPalette.primary,
                     foregroundColor: Colors.white,
+                    disabledBackgroundColor: InnovationHubPalette.primary
+                        .withValues(alpha: 0.4),
+                    disabledForegroundColor: Colors.white,
                     elevation: 0,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
@@ -254,7 +368,9 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                     ),
                   ),
                   child: Text(
-                    _isLocked
+                    _isUploadingImage
+                        ? 'Uploading cover image...'
+                        : _isLocked
                         ? 'Editing locked after review'
                         : widget.isEditMode
                         ? 'Save Changes'
@@ -463,69 +579,17 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
               ),
               const SizedBox(height: 18),
               _SectionCard(
-                title: 'Visuals & Links',
+                title: 'Cover & Links',
                 subtitle:
-                    'Optional now, but structured so richer upload flows can slot in cleanly later.',
+                    'Give the idea a strong first frame with a direct image upload and an optional deck link.',
                 child: Column(
                   children: [
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(18),
-                      decoration: BoxDecoration(
-                        color: InnovationHubPalette.cardTint,
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: InnovationHubPalette.border),
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 48,
-                            height: 48,
-                            decoration: BoxDecoration(
-                              gradient: InnovationHubPalette.primaryGradient,
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: const Icon(
-                              Icons.image_outlined,
-                              color: Colors.white,
-                            ),
-                          ),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Add a cover visual or deck link',
-                                  style: InnovationHubTypography.label(
-                                    color: InnovationHubPalette.textPrimary,
-                                    size: 13,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  'Use URLs for now so the idea stays publishable even if native uploads are not configured yet.',
-                                  style: InnovationHubTypography.body(
-                                    size: 12.5,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 14),
-                    _StyledField(
-                      controller: _imageUrlController,
-                      label: 'Image URL',
-                      hint: 'https://...',
-                    ),
+                    _buildImageUploadCard(),
                     const SizedBox(height: 14),
                     _StyledField(
                       controller: _attachmentUrlController,
-                      label: 'Attachment / Deck Link',
-                      hint: 'Figma, Notion, pitch deck, demo link...',
+                      label: 'Deck / Demo Link',
+                      hint: 'Figma, Notion, pitch deck, landing page...',
                     ),
                     const SizedBox(height: 14),
                     Container(
@@ -561,6 +625,235 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildImageUploadCard() {
+    final hasImage = _imageUrl.trim().isNotEmpty;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [
+            InnovationHubPalette.cardTint,
+            InnovationHubPalette.searchTint,
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: InnovationHubPalette.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 52,
+                height: 52,
+                decoration: BoxDecoration(
+                  gradient: InnovationHubPalette.primaryGradient,
+                  borderRadius: BorderRadius.circular(18),
+                  boxShadow: [
+                    BoxShadow(
+                      color: InnovationHubPalette.primary.withValues(
+                        alpha: 0.16,
+                      ),
+                      blurRadius: 18,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
+                ),
+                child: const Icon(Icons.image_outlined, color: Colors.white),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      hasImage ? 'Cover image ready' : 'Upload a cover image',
+                      style: InnovationHubTypography.label(
+                        color: InnovationHubPalette.textPrimary,
+                        size: 13.5,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      hasImage
+                          ? 'Your idea now has a visual header that will show across Discover, My Ideas, and the details view.'
+                          : 'Choose a JPG, PNG, or WebP image to make the idea feel polished from the first glance.',
+                      style: InnovationHubTypography.body(size: 12.5),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          if (hasImage) ...[
+            ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Image.network(
+                _imageUrl,
+                height: 170,
+                width: double.infinity,
+                fit: BoxFit.cover,
+                errorBuilder: (_, _, _) => Container(
+                  height: 170,
+                  alignment: Alignment.center,
+                  color: Colors.white,
+                  child: const Icon(
+                    Icons.image_not_supported_outlined,
+                    color: InnovationHubPalette.textSecondary,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.82),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: InnovationHubPalette.border),
+              ),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.check_circle_rounded,
+                    size: 18,
+                    color: InnovationHubPalette.success,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      _uploadedImageName.isNotEmpty
+                          ? _uploadedImageName
+                          : 'Cover image uploaded',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: InnovationHubTypography.body(
+                        color: InnovationHubPalette.textPrimary,
+                        size: 12.5,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ] else ...[
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.74),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: InnovationHubPalette.border),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: InnovationHubPalette.secondary.withValues(
+                        alpha: 0.12,
+                      ),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: const Icon(
+                      Icons.auto_awesome_rounded,
+                      color: InnovationHubPalette.secondary,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'A strong visual makes the featured cards and detail hero feel much more alive.',
+                      style: InnovationHubTypography.body(
+                        color: InnovationHubPalette.textPrimary,
+                        size: 12.5,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: _isUploadingImage ? null : _pickAndUploadImage,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: InnovationHubPalette.primary,
+                    foregroundColor: Colors.white,
+                    disabledBackgroundColor: InnovationHubPalette.primary
+                        .withValues(alpha: 0.36),
+                    disabledForegroundColor: Colors.white,
+                    elevation: 0,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18),
+                    ),
+                  ),
+                  icon: _isUploadingImage
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white,
+                            ),
+                          ),
+                        )
+                      : Icon(
+                          hasImage
+                              ? Icons.refresh_rounded
+                              : Icons.file_upload_outlined,
+                        ),
+                  label: Text(
+                    _isUploadingImage
+                        ? 'Uploading...'
+                        : hasImage
+                        ? 'Change image'
+                        : 'Upload image',
+                    style: InnovationHubTypography.label(
+                      color: Colors.white,
+                      size: 13,
+                    ),
+                  ),
+                ),
+              ),
+              if (hasImage) ...[
+                const SizedBox(width: 12),
+                TextButton(
+                  onPressed: _isUploadingImage ? null : _removeImage,
+                  child: Text(
+                    'Remove',
+                    style: InnovationHubTypography.label(
+                      color: InnovationHubPalette.error,
+                      size: 13,
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
+          const SizedBox(height: 10),
+          Text(
+            'Best results: 16:9 cover, under 5 MB.',
+            style: InnovationHubTypography.body(size: 12.5),
+          ),
+        ],
       ),
     );
   }

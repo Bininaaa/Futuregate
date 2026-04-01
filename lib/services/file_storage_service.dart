@@ -147,6 +147,28 @@ class FileStorageService {
     );
   }
 
+  Future<StoredFileUploadResult> uploadProjectIdeaImage({
+    required String userId,
+    required String fileName,
+    String filePath = '',
+    Uint8List? fileBytes,
+  }) async {
+    final sanitizedFileName = _sanitizeFileName(fileName);
+    final mimeType = _resolveMimeType(
+      fileName: sanitizedFileName,
+      fallback: 'image/jpeg',
+    );
+
+    return _uploadFile(
+      userId: userId,
+      filePath: filePath,
+      fileBytes: fileBytes,
+      fileName: sanitizedFileName,
+      mimeType: mimeType,
+      fileType: 'chat_image',
+    );
+  }
+
   Future<StoredFileUploadResult> uploadChatFile({
     required String userId,
     required String fileName,
