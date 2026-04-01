@@ -1,71 +1,1531 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 import '../../models/scholarship_model.dart';
+import '../../utils/opportunity_dashboard_palette.dart';
+
+typedef _P = OpportunityDashboardPalette;
 
 class ScholarshipDetailScreen extends StatelessWidget {
   final ScholarshipModel scholarship;
 
   const ScholarshipDetailScreen({super.key, required this.scholarship});
 
+  String get _title {
+    final value = scholarship.title.trim();
+    return value.isEmpty ? 'Scholarship Opportunity' : value;
+  }
+
+  String get _provider {
+    final value = scholarship.provider.trim();
+    return value.isEmpty ? 'AvenirDZ Partner' : value;
+  }
+
+  String get _description {
+    final value = scholarship.description.trim();
+    return value.isEmpty
+        ? 'This scholarship does not include a detailed description yet.'
+        : value;
+  }
+
+  String get _eligibility {
+    final value = scholarship.eligibility.trim();
+    return value.isEmpty
+        ? 'Eligibility details will be shared by the scholarship provider.'
+        : value;
+  }
+
+  String get _deadlineText {
+    final value = scholarship.deadline.trim();
+    return value.isEmpty ? 'Provider-announced deadline' : value;
+  }
+
+  String get _amountText {
+    final amount = scholarship.amount;
+    if (amount <= 0) {
+      final funding = _fundingType;
+      return funding ?? 'Funding shared on the official call';
+    }
+
+    final isWholeNumber = amount is int || amount == amount.roundToDouble();
+    final formatter = NumberFormat(isWholeNumber ? '#,##0' : '#,##0.##');
+    return '${formatter.format(amount)} DA';
+  }
+
+  String? get _fundingType {
+    final value = scholarship.fundingType?.trim();
+    return value == null || value.isEmpty ? null : value;
+  }
+
+  String? get _level {
+    final value = scholarship.level?.trim();
+    return value == null || value.isEmpty ? null : value;
+  }
+
+  String? get _category {
+    final value = scholarship.category?.trim();
+    return value == null || value.isEmpty ? null : value;
+  }
+
+  String? get _locationText {
+    final parts = <String>[];
+
+    final city = scholarship.city?.trim();
+    if (city != null && city.isNotEmpty) {
+      parts.add(city);
+    }
+
+    final country = scholarship.country?.trim();
+    if (country != null && country.isNotEmpty) {
+      parts.add(country);
+    }
+
+    if (parts.isNotEmpty) {
+      return parts.join(', ');
+    }
+
+    final location = scholarship.location?.trim();
+    return location == null || location.isEmpty ? null : location;
+  }
+
+  Uri? get _linkUri {
+    final rawLink = scholarship.link.trim();
+    if (rawLink.isEmpty) {
+      return null;
+    }
+
+    final normalized = rawLink.contains('://') ? rawLink : 'https://$rawLink';
+    return Uri.tryParse(normalized);
+  }
+
+  String? get _linkHost {
+    final host = _linkUri?.host.trim();
+    if (host == null || host.isEmpty) {
+      return null;
+    }
+    return host.replaceFirst(RegExp(r'^www\.'), '');
+  }
+
+  String get _primaryBadgeLabel {
+    final funding = _fundingType;
+    if (funding != null) {
+      return funding.toUpperCase();
+    }
+    if (scholarship.isFeatured) {
+      return 'FEATURED';
+    }
+    final level = _level;
+    if (level != null) {
+      return level.toUpperCase();
+    }
+    return 'SCHOLARSHIP';
+  }
+
+  String? get _secondaryBadgeLabel {
+    if (_fundingType != null && scholarship.isFeatured) {
+      return 'FEATURED';
+    }
+    return null;
+  }
+
+  List<String> get _heroChips {
+    final chips = <String>[];
+
+    void addChip(String? value) {
+      final trimmed = value?.trim();
+      if (trimmed == null || trimmed.isEmpty) {
+        return;
+      }
+
+      final exists = chips.any(
+        (chip) => chip.toLowerCase() == trimmed.toLowerCase(),
+      );
+      if (!exists) {
+        chips.add(trimmed);
+      }
+    }
+
+    addChip(_level);
+    addChip(_category);
+
+    for (final tag in scholarship.tags) {
+      addChip(tag);
+      if (chips.length >= 3) {
+        break;
+      }
+    }
+
+    return chips.take(3).toList(growable: false);
+  }
+
+  List<String> get _eligibilityItems {
+    final normalized = scholarship.eligibility.replaceAll('\r', '\n').trim();
+    if (normalized.isEmpty) {
+      return const [];
+    }
+
+    final lineItems = normalized
+        .split('\n')
+        .map(
+          (item) =>
+              item.trim().replaceFirst(RegExp('^[-*\\u2022]\\s*'), '').trim(),
+        )
+        .where((item) => item.isNotEmpty)
+        .toList(growable: false);
+
+    if (lineItems.length > 1) {
+      return lineItems.take(6).toList(growable: false);
+    }
+
+    final segmented = normalized
+        .split(RegExp('[;\\u2022]'))
+        .map((item) => item.trim())
+        .where((item) => item.isNotEmpty)
+        .toList(growable: false);
+
+    if (segmented.length > 1) {
+      return segmented.take(6).toList(growable: false);
+    }
+
+    return const [];
+  }
+
+  List<_ScholarshipStatData> get _stats {
+    final stats = <_ScholarshipStatData>[
+      _ScholarshipStatData(
+        icon: Icons.payments_rounded,
+        label: scholarship.amount > 0 ? 'Funding Amount' : 'Funding Details',
+        value: _amountText,
+        accentColor: _P.primary,
+        highlight: true,
+      ),
+      _ScholarshipStatData(
+        icon: Icons.event_available_rounded,
+        label: 'Deadline',
+        value: _deadlineText,
+        accentColor: _P.accent,
+      ),
+    ];
+
+    final location = _locationText;
+    if (location != null) {
+      stats.add(
+        _ScholarshipStatData(
+          icon: Icons.public_rounded,
+          label: 'Destination',
+          value: location,
+          accentColor: _P.secondary,
+        ),
+      );
+    } else {
+      stats.add(
+        _ScholarshipStatData(
+          icon: Icons.apartment_rounded,
+          label: 'Provider',
+          value: _provider,
+          accentColor: _P.secondary,
+        ),
+      );
+    }
+
+    final academicLabel = _level ?? _category;
+    if (academicLabel != null) {
+      stats.add(
+        _ScholarshipStatData(
+          icon: Icons.school_rounded,
+          label: _level != null ? 'Study Level' : 'Program Type',
+          value: academicLabel,
+          accentColor: _P.primaryDark,
+        ),
+      );
+    } else if (_fundingType != null) {
+      stats.add(
+        _ScholarshipStatData(
+          icon: Icons.workspace_premium_rounded,
+          label: 'Support Type',
+          value: _fundingType!,
+          accentColor: _P.primaryDark,
+        ),
+      );
+    }
+
+    return stats;
+  }
+
+  List<_ScholarshipProfileRowData> get _profileRows {
+    final rows = <_ScholarshipProfileRowData>[
+      _ScholarshipProfileRowData(
+        icon: Icons.business_center_rounded,
+        label: 'Provider',
+        value: _provider,
+      ),
+      _ScholarshipProfileRowData(
+        icon: Icons.calendar_month_rounded,
+        label: 'Application deadline',
+        value: _deadlineText,
+      ),
+    ];
+
+    final location = _locationText;
+    if (location != null) {
+      rows.add(
+        _ScholarshipProfileRowData(
+          icon: Icons.location_on_outlined,
+          label: 'Location',
+          value: location,
+        ),
+      );
+    }
+
+    if (_fundingType != null) {
+      rows.add(
+        _ScholarshipProfileRowData(
+          icon: Icons.wallet_giftcard_rounded,
+          label: 'Funding type',
+          value: _fundingType!,
+        ),
+      );
+    }
+
+    if (_level != null) {
+      rows.add(
+        _ScholarshipProfileRowData(
+          icon: Icons.auto_stories_rounded,
+          label: 'Level',
+          value: _level!,
+        ),
+      );
+    }
+
+    if (_category != null) {
+      rows.add(
+        _ScholarshipProfileRowData(
+          icon: Icons.category_rounded,
+          label: 'Category',
+          value: _category!,
+        ),
+      );
+    }
+
+    return rows;
+  }
+
+  Future<void> _openLink(BuildContext context) async {
+    final uri = _linkUri;
+    if (uri == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No scholarship link is available for this item yet'),
+        ),
+      );
+      return;
+    }
+
+    final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!launched && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not open the scholarship link')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final hasLink = _linkUri != null;
+    final location = _locationText;
+    final chips = _heroChips;
+    final eligibilityItems = _eligibilityItems;
+    final profileRows = _profileRows;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Scholarship Details')),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
+      backgroundColor: _P.background,
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+          child: _ScholarshipActionBar(
+            hostLabel: _linkHost,
+            enabled: hasLink,
+            onTap: hasLink ? () => _openLink(context) : null,
+          ),
+        ),
+      ),
+      body: Stack(
         children: [
-          Text(
-            scholarship.title,
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 12),
-          _infoRow(Icons.business, 'Provider', scholarship.provider),
-          _infoRow(Icons.attach_money, 'Amount', '${scholarship.amount} DA'),
-          _infoRow(Icons.calendar_today, 'Deadline', scholarship.deadline),
-          const SizedBox(height: 20),
-          const Text(
-            'Description',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 8),
-          Text(scholarship.description),
-          const SizedBox(height: 20),
-          const Text(
-            'Eligibility',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 8),
-          Text(scholarship.eligibility),
-          if (scholarship.link.isNotEmpty) ...[
-            const SizedBox(height: 20),
-            const Text(
-              'Link',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          Positioned(
+            top: -72,
+            right: -36,
+            child: _SoftOrb(
+              size: 184,
+              color: _P.primary.withValues(alpha: 0.12),
             ),
-            const SizedBox(height: 8),
-            Text(
-              scholarship.link,
-              style: const TextStyle(
-                color: Colors.blue,
-                decoration: TextDecoration.underline,
+          ),
+          Positioned(
+            top: 240,
+            left: -58,
+            child: _SoftOrb(
+              size: 144,
+              color: _P.secondary.withValues(alpha: 0.10),
+            ),
+          ),
+          Column(
+            children: [
+              SafeArea(
+                bottom: false,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 10, 16, 6),
+                  child: Row(
+                    children: [
+                      _TopBarIconButton(
+                        icon: Icons.arrow_back_ios_new_rounded,
+                        onTap: () => Navigator.of(context).maybePop(),
+                      ),
+                      Expanded(
+                        child: Text(
+                          'Scholarship',
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: _P.textPrimary,
+                          ),
+                        ),
+                      ),
+                      _TopBarIconButton(
+                        icon: hasLink
+                            ? Icons.open_in_new_rounded
+                            : Icons.link_off_rounded,
+                        onTap: hasLink ? () => _openLink(context) : null,
+                        iconColor: hasLink ? _P.primary : _P.textSecondary,
+                        fillColor: hasLink
+                            ? _P.primary.withValues(alpha: 0.08)
+                            : _P.surface,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Expanded(
+                child: ListView(
+                  physics: const BouncingScrollPhysics(),
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 132),
+                  children: [
+                    _ScholarshipHeroCard(
+                      scholarship: scholarship,
+                      badgeLabel: _primaryBadgeLabel,
+                      secondaryBadgeLabel: _secondaryBadgeLabel,
+                      provider: _provider,
+                      title: _title,
+                      location: location,
+                      deadline: scholarship.deadline.trim().isEmpty
+                          ? null
+                          : _deadlineText,
+                      chips: chips,
+                    ),
+                    const SizedBox(height: 22),
+                    _PageSectionHeading(
+                      eyebrow: 'AT A GLANCE',
+                      title: 'Quick Snapshot',
+                      subtitle:
+                          'Everything important is surfaced here before you open the full application call.',
+                    ),
+                    const SizedBox(height: 14),
+                    _ScholarshipStatsWrap(stats: _stats),
+                    const SizedBox(height: 22),
+                    _ScholarshipSectionCard(
+                      icon: Icons.auto_awesome_rounded,
+                      iconColor: _P.primary,
+                      title: 'About This Scholarship',
+                      subtitle:
+                          'A focused overview so the opportunity feels easy to scan.',
+                      child: Text(
+                        _description,
+                        style: GoogleFonts.poppins(
+                          fontSize: 13,
+                          height: 1.7,
+                          color: _P.textSecondary,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    _ScholarshipSectionCard(
+                      icon: Icons.verified_user_rounded,
+                      iconColor: _P.secondary,
+                      title: 'Who Can Apply',
+                      subtitle:
+                          'Check the core eligibility signals before moving forward.',
+                      child: eligibilityItems.isEmpty
+                          ? Text(
+                              _eligibility,
+                              style: GoogleFonts.poppins(
+                                fontSize: 13,
+                                height: 1.7,
+                                color: _P.textSecondary,
+                              ),
+                            )
+                          : Column(
+                              children: eligibilityItems
+                                  .asMap()
+                                  .entries
+                                  .map(
+                                    (entry) => Padding(
+                                      padding: EdgeInsets.only(
+                                        bottom:
+                                            entry.key ==
+                                                eligibilityItems.length - 1
+                                            ? 0
+                                            : 10,
+                                      ),
+                                      child: _EligibilityItem(
+                                        text: entry.value,
+                                      ),
+                                    ),
+                                  )
+                                  .toList(growable: false),
+                            ),
+                    ),
+                    const SizedBox(height: 16),
+                    _ScholarshipSectionCard(
+                      icon: Icons.fact_check_outlined,
+                      iconColor: _P.accent,
+                      title: 'Scholarship Profile',
+                      subtitle:
+                          'A cleaner breakdown of the provider, destination, and track.',
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ...profileRows.asMap().entries.map(
+                            (entry) => Padding(
+                              padding: EdgeInsets.only(
+                                bottom: entry.key == profileRows.length - 1
+                                    ? 0
+                                    : 8,
+                              ),
+                              child: _ProfileRow(data: entry.value),
+                            ),
+                          ),
+                          if (scholarship.tags.isNotEmpty) ...[
+                            const SizedBox(height: 16),
+                            Text(
+                              'Highlights',
+                              style: GoogleFonts.poppins(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                                color: _P.textPrimary,
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              children: scholarship.tags
+                                  .take(6)
+                                  .map((tag) => _TagChip(label: tag))
+                                  .toList(growable: false),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    _ScholarshipSectionCard(
+                      icon: Icons.launch_rounded,
+                      iconColor: _P.primaryDark,
+                      title: 'Application Link',
+                      subtitle:
+                          'Continue with confidence on the official destination.',
+                      child: _ApplicationPreviewCard(
+                        link: scholarship.link,
+                        hostLabel: _linkHost,
+                        enabled: hasLink,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ScholarshipHeroCard extends StatelessWidget {
+  final ScholarshipModel scholarship;
+  final String badgeLabel;
+  final String? secondaryBadgeLabel;
+  final String provider;
+  final String title;
+  final String? location;
+  final String? deadline;
+  final List<String> chips;
+
+  const _ScholarshipHeroCard({
+    required this.scholarship,
+    required this.badgeLabel,
+    required this.secondaryBadgeLabel,
+    required this.provider,
+    required this.title,
+    required this.location,
+    required this.deadline,
+    required this.chips,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final width = MediaQuery.sizeOf(context).width;
+    final isCompact = width < 380;
+    final imageUrl = scholarship.imageUrl?.trim();
+    final hasImage = imageUrl != null && imageUrl.isNotEmpty;
+
+    return Container(
+      height: isCompact ? 244 : 262,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(32),
+        boxShadow: [
+          BoxShadow(
+            color: _P.primary.withValues(alpha: 0.18),
+            blurRadius: 26,
+            offset: const Offset(0, 14),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(32),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            if (hasImage)
+              Image.network(
+                imageUrl,
+                fit: BoxFit.cover,
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) {
+                    return child;
+                  }
+                  return const _HeroGradientFallback();
+                },
+                errorBuilder: (context, error, stackTrace) {
+                  return const _HeroGradientFallback();
+                },
+              )
+            else
+              const _HeroGradientFallback(),
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    _P.primaryDark.withValues(alpha: hasImage ? 0.42 : 0.08),
+                    Colors.black.withValues(alpha: 0.64),
+                  ],
+                ),
+              ),
+            ),
+            Positioned(
+              top: -18,
+              right: -18,
+              child: Container(
+                width: 148,
+                height: 148,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.08),
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ),
+            Positioned(
+              left: -24,
+              bottom: -42,
+              child: Container(
+                width: 134,
+                height: 134,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.06),
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.fromLTRB(
+                isCompact ? 16 : 20,
+                isCompact ? 16 : 20,
+                isCompact ? 16 : 20,
+                isCompact ? 16 : 20,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            _GlassPill(label: badgeLabel),
+                            if (secondaryBadgeLabel != null)
+                              _GlassPill(
+                                label: secondaryBadgeLabel!,
+                                backgroundColor: _P.secondary.withValues(
+                                  alpha: 0.24,
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Container(
+                        width: isCompact ? 46 : 50,
+                        height: isCompact ? 46 : 50,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.12),
+                          ),
+                        ),
+                        child: const Icon(
+                          Icons.school_rounded,
+                          size: 24,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const Spacer(),
+                  Text(
+                    provider.toUpperCase(),
+                    style: GoogleFonts.poppins(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 1.3,
+                      color: Colors.white.withValues(alpha: 0.76),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.poppins(
+                      fontSize: isCompact ? 21 : 24,
+                      fontWeight: FontWeight.w800,
+                      height: 1.12,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 14,
+                    runSpacing: 8,
+                    children: [
+                      if (location != null)
+                        _HeroMetaLine(
+                          icon: Icons.location_on_outlined,
+                          text: location!,
+                        ),
+                      if (deadline != null)
+                        _HeroMetaLine(
+                          icon: Icons.event_outlined,
+                          text: deadline!,
+                        ),
+                    ],
+                  ),
+                  if (chips.isNotEmpty) ...[
+                    const SizedBox(height: 10),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: chips
+                          .map(
+                            (chip) => _GlassPill(
+                              label: chip,
+                              compact: true,
+                              backgroundColor: Colors.white.withValues(
+                                alpha: 0.10,
+                              ),
+                            ),
+                          )
+                          .toList(growable: false),
+                    ),
+                  ],
+                ],
               ),
             ),
           ],
-        ],
+        ),
       ),
     );
   }
+}
 
-  Widget _infoRow(IconData icon, String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
+class _HeroGradientFallback extends StatelessWidget {
+  const _HeroGradientFallback();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [_P.primary, _P.primaryDark],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      child: Stack(
         children: [
-          Icon(icon, size: 20, color: Colors.grey),
-          const SizedBox(width: 8),
-          Text('$label: ', style: const TextStyle(fontWeight: FontWeight.w600)),
-          Expanded(child: Text(value)),
+          Positioned(
+            top: -24,
+            right: -18,
+            child: Container(
+              width: 148,
+              height: 148,
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.10),
+                shape: BoxShape.circle,
+              ),
+            ),
+          ),
+          Positioned(
+            left: -18,
+            bottom: -34,
+            child: Container(
+              width: 124,
+              height: 124,
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.08),
+                shape: BoxShape.circle,
+              ),
+            ),
+          ),
+          Center(
+            child: Icon(
+              Icons.school_rounded,
+              size: 72,
+              color: Colors.white.withValues(alpha: 0.20),
+            ),
+          ),
         ],
       ),
     );
   }
+}
+
+class _PageSectionHeading extends StatelessWidget {
+  final String eyebrow;
+  final String title;
+  final String subtitle;
+
+  const _PageSectionHeading({
+    required this.eyebrow,
+    required this.title,
+    required this.subtitle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          eyebrow,
+          style: GoogleFonts.poppins(
+            fontSize: 10,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 1.8,
+            color: _P.secondary,
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          title,
+          style: GoogleFonts.poppins(
+            fontSize: 22,
+            fontWeight: FontWeight.w800,
+            color: _P.textPrimary,
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          subtitle,
+          style: GoogleFonts.poppins(
+            fontSize: 12.25,
+            height: 1.55,
+            color: _P.textSecondary,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ScholarshipStatsWrap extends StatelessWidget {
+  final List<_ScholarshipStatData> stats;
+
+  const _ScholarshipStatsWrap({required this.stats});
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final maxWidth = constraints.maxWidth;
+        final itemWidth = (maxWidth - 12) / 2;
+
+        return Wrap(
+          spacing: 12,
+          runSpacing: 12,
+          children: stats
+              .map(
+                (data) => SizedBox(
+                  width: itemWidth,
+                  child: _ScholarshipStatCard(data: data),
+                ),
+              )
+              .toList(growable: false),
+        );
+      },
+    );
+  }
+}
+
+class _ScholarshipStatCard extends StatelessWidget {
+  final _ScholarshipStatData data;
+
+  const _ScholarshipStatCard({required this.data});
+
+  @override
+  Widget build(BuildContext context) {
+    final borderColor = data.highlight
+        ? data.accentColor.withValues(alpha: 0.18)
+        : _P.border;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: data.highlight
+            ? data.accentColor.withValues(alpha: 0.06)
+            : _P.surface,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: borderColor),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 16,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: data.accentColor.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Icon(data.icon, size: 20, color: data.accentColor),
+          ),
+          const SizedBox(height: 14),
+          Text(
+            data.label,
+            style: GoogleFonts.poppins(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: _P.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            data.value,
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
+            style: GoogleFonts.poppins(
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+              height: 1.35,
+              color: _P.textPrimary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ScholarshipSectionCard extends StatelessWidget {
+  final IconData icon;
+  final Color iconColor;
+  final String title;
+  final String subtitle;
+  final Widget child;
+
+  const _ScholarshipSectionCard({
+    required this.icon,
+    required this.iconColor,
+    required this.title,
+    required this.subtitle,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: _P.surface,
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(color: _P.border.withValues(alpha: 0.92)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: iconColor.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Icon(icon, size: 22, color: iconColor),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: _P.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: GoogleFonts.poppins(
+                        fontSize: 11.75,
+                        height: 1.5,
+                        color: _P.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 18),
+          child,
+        ],
+      ),
+    );
+  }
+}
+
+class _EligibilityItem extends StatelessWidget {
+  final String text;
+
+  const _EligibilityItem({required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: _P.background,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: _P.border.withValues(alpha: 0.86)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 26,
+            height: 26,
+            decoration: BoxDecoration(
+              color: _P.secondary.withValues(alpha: 0.14),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.check_rounded,
+              size: 16,
+              color: _P.secondary,
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              text,
+              style: GoogleFonts.poppins(
+                fontSize: 12.5,
+                height: 1.55,
+                color: _P.textPrimary,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ProfileRow extends StatelessWidget {
+  final _ScholarshipProfileRowData data;
+
+  const _ProfileRow({required this.data});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: _P.background,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: _P.border.withValues(alpha: 0.84)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(data.icon, size: 18, color: _P.primary),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  data.label,
+                  style: GoogleFonts.poppins(
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.w600,
+                    color: _P.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  data.value,
+                  style: GoogleFonts.poppins(
+                    fontSize: 12.75,
+                    fontWeight: FontWeight.w600,
+                    height: 1.45,
+                    color: _P.textPrimary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ApplicationPreviewCard extends StatelessWidget {
+  final String link;
+  final String? hostLabel;
+  final bool enabled;
+
+  const _ApplicationPreviewCard({
+    required this.link,
+    required this.hostLabel,
+    required this.enabled,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final previewText = enabled
+        ? link.trim()
+        : 'The provider has not attached an external application link yet.';
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            _P.primary.withValues(alpha: enabled ? 0.07 : 0.03),
+            _P.primaryDark.withValues(alpha: enabled ? 0.05 : 0.02),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(
+          color: enabled
+              ? _P.primary.withValues(alpha: 0.14)
+              : _P.border.withValues(alpha: 0.92),
+        ),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 42,
+            height: 42,
+            decoration: BoxDecoration(
+              color: enabled
+                  ? _P.primary.withValues(alpha: 0.14)
+                  : _P.textSecondary.withValues(alpha: 0.10),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Icon(
+              enabled ? Icons.language_rounded : Icons.hourglass_top_rounded,
+              color: enabled ? _P.primary : _P.textSecondary,
+              size: 20,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  hostLabel ?? 'Official scholarship source',
+                  style: GoogleFonts.poppins(
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w700,
+                    color: _P.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  previewText,
+                  maxLines: enabled ? 3 : 4,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.poppins(
+                    fontSize: 11.75,
+                    height: 1.55,
+                    color: _P.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ScholarshipActionBar extends StatelessWidget {
+  final String? hostLabel;
+  final bool enabled;
+  final VoidCallback? onTap;
+
+  const _ScholarshipActionBar({
+    required this.hostLabel,
+    required this.enabled,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: _P.surface,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: _P.border),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.06),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            enabled
+                ? 'Open the official scholarship page'
+                : 'Application link unavailable',
+            style: GoogleFonts.poppins(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: _P.textPrimary,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            enabled
+                ? 'Continue on ${hostLabel ?? 'the provider website'} to review the full call and complete your application.'
+                : 'This scholarship is styled and ready, but the provider still needs to add its application URL.',
+            style: GoogleFonts.poppins(
+              fontSize: 11.75,
+              height: 1.5,
+              color: _P.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 12),
+          _PrimaryActionButton(
+            label: enabled ? 'Open Official Page' : 'Link Not Available',
+            icon: enabled ? Icons.open_in_new_rounded : Icons.link_off_rounded,
+            onTap: onTap,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PrimaryActionButton extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final VoidCallback? onTap;
+
+  const _PrimaryActionButton({
+    required this.label,
+    required this.icon,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isEnabled = onTap != null;
+
+    return Material(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(18),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(18),
+        child: Ink(
+          height: 54,
+          decoration: BoxDecoration(
+            color: isEnabled ? null : _P.border,
+            gradient: isEnabled
+                ? const LinearGradient(
+                    colors: [_P.primary, _P.primaryDark],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  )
+                : null,
+            borderRadius: BorderRadius.circular(18),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 18, color: Colors.white),
+              const SizedBox(width: 10),
+              Text(
+                label,
+                style: GoogleFonts.poppins(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _TopBarIconButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback? onTap;
+  final Color? iconColor;
+  final Color? fillColor;
+
+  const _TopBarIconButton({
+    required this.icon,
+    required this.onTap,
+    this.iconColor,
+    this.fillColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final enabled = onTap != null;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(14),
+        child: Ink(
+          width: 42,
+          height: 42,
+          decoration: BoxDecoration(
+            color: fillColor ?? _P.surface,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: _P.border),
+          ),
+          child: Icon(
+            icon,
+            size: 18,
+            color: enabled
+                ? iconColor ?? _P.textPrimary
+                : _P.textSecondary.withValues(alpha: 0.55),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _GlassPill extends StatelessWidget {
+  final String label;
+  final Color? backgroundColor;
+  final bool compact;
+
+  const _GlassPill({
+    required this.label,
+    this.backgroundColor,
+    this.compact = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: compact ? 10 : 12,
+        vertical: compact ? 5 : 6,
+      ),
+      decoration: BoxDecoration(
+        color: backgroundColor ?? Colors.white.withValues(alpha: 0.16),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.14)),
+      ),
+      child: Text(
+        label,
+        style: GoogleFonts.poppins(
+          fontSize: compact ? 10 : 10.5,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 0.3,
+          color: Colors.white,
+        ),
+      ),
+    );
+  }
+}
+
+class _HeroMetaLine extends StatelessWidget {
+  final IconData icon;
+  final String text;
+
+  const _HeroMetaLine({required this.icon, required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 260),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 15, color: Colors.white.withValues(alpha: 0.82)),
+          const SizedBox(width: 6),
+          Flexible(
+            child: Text(
+              text,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.poppins(
+                fontSize: 11.5,
+                fontWeight: FontWeight.w500,
+                color: Colors.white.withValues(alpha: 0.82),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TagChip extends StatelessWidget {
+  final String label;
+
+  const _TagChip({required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: _P.primary.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: _P.primary.withValues(alpha: 0.10)),
+      ),
+      child: Text(
+        label,
+        style: GoogleFonts.poppins(
+          fontSize: 10.5,
+          fontWeight: FontWeight.w600,
+          color: _P.primary,
+        ),
+      ),
+    );
+  }
+}
+
+class _SoftOrb extends StatelessWidget {
+  final double size;
+  final Color color;
+
+  const _SoftOrb({required this.size, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+      ),
+    );
+  }
+}
+
+class _ScholarshipStatData {
+  final IconData icon;
+  final String label;
+  final String value;
+  final Color accentColor;
+  final bool highlight;
+
+  const _ScholarshipStatData({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.accentColor,
+    this.highlight = false,
+  });
+}
+
+class _ScholarshipProfileRowData {
+  final IconData icon;
+  final String label;
+  final String value;
+
+  const _ScholarshipProfileRowData({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
 }

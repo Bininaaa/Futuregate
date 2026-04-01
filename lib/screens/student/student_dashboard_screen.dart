@@ -10,7 +10,6 @@ import '../../providers/auth_provider.dart';
 import '../../providers/notification_provider.dart';
 import '../../providers/opportunity_provider.dart';
 import '../../providers/training_provider.dart';
-import '../../utils/opportunity_type.dart';
 import '../../widgets/opportunity_type_badge.dart';
 import '../../widgets/profile_avatar.dart';
 import '../notifications_screen.dart';
@@ -22,6 +21,7 @@ import 'jobs_screen.dart';
 import 'internships_screen.dart';
 import 'opportunity_detail_screen.dart';
 import 'project_ideas_screen.dart';
+import 'sponsored_opportunities_screen.dart';
 import 'trainings_screen.dart';
 import 'scholarships_screen.dart';
 
@@ -392,9 +392,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => const OpportunitiesScreen(
-              initialFilter: OpportunityType.sponsoring,
-            ),
+            builder: (_) => const SponsoredOpportunitiesScreen(),
           ),
         ),
       ),

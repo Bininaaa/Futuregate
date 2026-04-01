@@ -1114,100 +1114,256 @@ class _SponsoredOpportunityCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final outerRadius = BorderRadius.circular(26);
+    final innerRadius = BorderRadius.circular(24);
+    final accentSurface = item.iconBackgroundColor;
+    final accentColor = item.iconForegroundColor;
+    final warmTint = const Color(0xFFFFF2E2);
+    final warmGlow = const Color(0xFFF8C98B);
+    final warmStroke = const Color(0xFFE8B16A);
+
     return Material(
       color: Colors.transparent,
+      borderRadius: outerRadius,
+      clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(22),
+        borderRadius: outerRadius,
         child: Ink(
-          padding: const EdgeInsets.all(15),
           decoration: BoxDecoration(
-            color: OpportunityDashboardPalette.surface,
-            borderRadius: BorderRadius.circular(22),
-            border: Border.all(
-              color: OpportunityDashboardPalette.border.withValues(alpha: 0.9),
+            gradient: LinearGradient(
+              colors: [
+                Color.lerp(accentSurface, warmTint, 0.48)!,
+                warmTint,
+                Colors.white,
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
+            borderRadius: outerRadius,
+            border: Border.all(
+              color: Color.lerp(
+                accentColor,
+                warmStroke,
+                0.55,
+              )!.withValues(alpha: 0.16),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 18,
+                offset: const Offset(0, 10),
+              ),
+              BoxShadow(
+                color: accentColor.withValues(alpha: 0.08),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+              BoxShadow(
+                color: warmStroke.withValues(alpha: 0.10),
+                blurRadius: 16,
+                offset: const Offset(0, 8),
+              ),
+            ],
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Stack(
             children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _SponsoredIconTile(item: item),
-                  const Spacer(),
-                  _SponsoredStatusBadge(badge: item.badge),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Text(
-                item.title,
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
-                style: GoogleFonts.poppins(
-                  fontSize: 16.5,
-                  fontWeight: FontWeight.w700,
-                  height: 1.18,
-                  color: OpportunityDashboardPalette.textPrimary,
+              Positioned(
+                top: -42,
+                right: -16,
+                child: _SponsoredCardGlow(
+                  size: 120,
+                  color: warmGlow.withValues(alpha: 0.28),
                 ),
               ),
-              const SizedBox(height: 8),
-              Text(
-                item.description,
-                maxLines: 4,
-                overflow: TextOverflow.ellipsis,
-                style: GoogleFonts.poppins(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                  height: 1.45,
-                  color: OpportunityDashboardPalette.textSecondary,
+              Positioned(
+                bottom: -52,
+                left: -20,
+                child: _SponsoredCardGlow(
+                  size: 128,
+                  color: warmGlow.withValues(alpha: 0.18),
                 ),
               ),
-              if (item.urgency != null) ...[
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    Icon(
-                      item.urgency!.icon,
-                      size: 14,
-                      color: item.urgency!.color,
+              Padding(
+                padding: const EdgeInsets.all(1.5),
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Colors.white, warmTint.withValues(alpha: 0.56)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
-                    const SizedBox(width: 6),
-                    Text(
-                      item.urgency!.text,
-                      style: GoogleFonts.poppins(
-                        fontSize: 11.5,
-                        fontWeight: FontWeight.w600,
-                        color: item.urgency!.color,
+                    borderRadius: innerRadius,
+                    border: Border.all(
+                      color: OpportunityDashboardPalette.border.withValues(
+                        alpha: 0.95,
                       ),
                     ),
-                  ],
-                ),
-              ],
-              if (item.primaryStat != null) ...[
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(child: _SponsoredStatBox(stat: item.primaryStat!)),
-                    if (item.secondaryStat != null) ...[
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _SponsoredStatBox(stat: item.secondaryStat!),
+                  ),
+                  child: Stack(
+                    children: [
+                      Positioned(
+                        left: 0,
+                        top: 0,
+                        right: 0,
+                        child: Container(
+                          height: 92,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.vertical(
+                              top: Radius.circular(innerRadius.topLeft.x),
+                            ),
+                            gradient: LinearGradient(
+                              colors: [
+                                warmGlow.withValues(alpha: 0.24),
+                                accentSurface.withValues(alpha: 0.42),
+                                accentSurface.withValues(alpha: 0.10),
+                                Colors.transparent,
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomCenter,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        top: -20,
+                        right: -14,
+                        child: _SponsoredCardGlow(
+                          size: 96,
+                          color: Colors.white.withValues(alpha: 0.76),
+                        ),
+                      ),
+                      Positioned(
+                        right: -10,
+                        bottom: -10,
+                        child: Icon(
+                          item.iconData,
+                          size: 84,
+                          color: Color.lerp(
+                            accentColor,
+                            warmStroke,
+                            0.65,
+                          )!.withValues(alpha: 0.08),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _SponsoredIconTile(item: item),
+                                const Spacer(),
+                                _SponsoredStatusBadge(badge: item.badge),
+                              ],
+                            ),
+                            const SizedBox(height: 14),
+                            Text(
+                              item.title,
+                              maxLines: 3,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.poppins(
+                                fontSize: 16.8,
+                                fontWeight: FontWeight.w700,
+                                height: 1.18,
+                                color: OpportunityDashboardPalette.textPrimary,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              item.description,
+                              maxLines: 4,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.poppins(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                                height: 1.45,
+                                color:
+                                    OpportunityDashboardPalette.textSecondary,
+                              ),
+                            ),
+                            if (item.urgency != null) ...[
+                              const SizedBox(height: 12),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 8,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: item.urgency!.color.withValues(
+                                    alpha: 0.10,
+                                  ),
+                                  borderRadius: BorderRadius.circular(999),
+                                  border: Border.all(
+                                    color: item.urgency!.color.withValues(
+                                      alpha: 0.14,
+                                    ),
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      item.urgency!.icon,
+                                      size: 14,
+                                      color: item.urgency!.color,
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Flexible(
+                                      child: Text(
+                                        item.urgency!.text,
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 11.3,
+                                          fontWeight: FontWeight.w600,
+                                          color: item.urgency!.color,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                            if (item.primaryStat != null) ...[
+                              const SizedBox(height: 14),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: _SponsoredStatBox(
+                                      stat: item.primaryStat!,
+                                      accentColor: accentSurface,
+                                    ),
+                                  ),
+                                  if (item.secondaryStat != null) ...[
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: _SponsoredStatBox(
+                                        stat: item.secondaryStat!,
+                                        accentColor: accentSurface,
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ],
+                            const SizedBox(height: 16),
+                            _SponsoredPrimaryActionButton(
+                              label: 'Apply Now',
+                              isLoading: isApplying,
+                              onTap: onApply,
+                            ),
+                            const SizedBox(height: 8),
+                            _SponsoredSecondaryActionButton(
+                              label: 'View Details',
+                              onTap: onViewDetails,
+                            ),
+                          ],
+                        ),
                       ),
                     ],
-                  ],
+                  ),
                 ),
-              ],
-              const SizedBox(height: 14),
-              _SponsoredPrimaryActionButton(
-                label: 'Apply Now',
-                isLoading: isApplying,
-                onTap: onApply,
-              ),
-              const SizedBox(height: 8),
-              _SponsoredSecondaryActionButton(
-                label: 'View Details',
-                onTap: onViewDetails,
               ),
             ],
           ),
@@ -1225,24 +1381,39 @@ class _SponsoredIconTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 46,
-      height: 46,
+      width: 50,
+      height: 50,
+      padding: const EdgeInsets.all(2),
       decoration: BoxDecoration(
-        color: item.iconBackgroundColor,
-        borderRadius: BorderRadius.circular(15),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: item.iconBackgroundColor),
+        boxShadow: [
+          BoxShadow(
+            color: item.iconForegroundColor.withValues(alpha: 0.08),
+            blurRadius: 14,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
-      clipBehavior: Clip.antiAlias,
-      child: item.logoUrl.isEmpty
-          ? Icon(item.iconData, color: item.iconForegroundColor, size: 26)
-          : CachedNetworkImage(
-              imageUrl: item.logoUrl,
-              fit: BoxFit.cover,
-              errorWidget: (context, url, error) => Icon(
-                item.iconData,
-                color: item.iconForegroundColor,
-                size: 26,
+      child: Container(
+        decoration: BoxDecoration(
+          color: item.iconBackgroundColor,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: item.logoUrl.isEmpty
+            ? Icon(item.iconData, color: item.iconForegroundColor, size: 26)
+            : CachedNetworkImage(
+                imageUrl: item.logoUrl,
+                fit: BoxFit.cover,
+                errorWidget: (context, url, error) => Icon(
+                  item.iconData,
+                  color: item.iconForegroundColor,
+                  size: 26,
+                ),
               ),
-            ),
+      ),
     );
   }
 }
@@ -1259,6 +1430,9 @@ class _SponsoredStatusBadge extends StatelessWidget {
       decoration: BoxDecoration(
         color: badge.backgroundColor,
         borderRadius: BorderRadius.circular(999),
+        border: Border.all(
+          color: badge.foregroundColor.withValues(alpha: 0.16),
+        ),
       ),
       child: Text(
         badge.label,
@@ -1275,17 +1449,34 @@ class _SponsoredStatusBadge extends StatelessWidget {
 
 class _SponsoredStatBox extends StatelessWidget {
   final _SponsoredStatData stat;
+  final Color accentColor;
 
-  const _SponsoredStatBox({required this.stat});
+  const _SponsoredStatBox({required this.stat, required this.accentColor});
 
   @override
   Widget build(BuildContext context) {
+    final warmTint = const Color(0xFFFFF5E9);
+    final warmStroke = const Color(0xFFE9B87A);
+
     return Container(
       padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
       decoration: BoxDecoration(
-        color: const Color(0xFFF8FAFC),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: OpportunityDashboardPalette.border),
+        gradient: LinearGradient(
+          colors: [
+            Colors.white,
+            Color.lerp(accentColor.withValues(alpha: 0.14), warmTint, 0.82)!,
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: Color.lerp(
+            accentColor,
+            warmStroke,
+            0.72,
+          )!.withValues(alpha: 0.18),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1357,7 +1548,7 @@ class _SponsoredPrimaryActionButton extends StatelessWidget {
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
             ),
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(18),
           ),
           child: Center(
             child: isLoading
@@ -1403,9 +1594,9 @@ class _SponsoredSecondaryActionButton extends StatelessWidget {
         child: Ink(
           height: 44,
           decoration: BoxDecoration(
-            color: const Color(0xFFF8FAFC),
+            color: const Color(0xFFFFF7ED),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: OpportunityDashboardPalette.border),
+            border: Border.all(color: const Color(0xFFF3D2A6)),
           ),
           child: Center(
             child: Text(
@@ -1413,11 +1604,30 @@ class _SponsoredSecondaryActionButton extends StatelessWidget {
               style: GoogleFonts.poppins(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
-                color: OpportunityDashboardPalette.primary,
+                color: const Color(0xFFD48827),
               ),
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _SponsoredCardGlow extends StatelessWidget {
+  final double size;
+  final Color color;
+
+  const _SponsoredCardGlow({required this.size, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: RadialGradient(colors: [color, color.withValues(alpha: 0)]),
       ),
     );
   }
