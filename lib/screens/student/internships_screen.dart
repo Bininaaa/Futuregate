@@ -25,6 +25,22 @@ class InternshipsScreen extends StatefulWidget {
 
 enum _InternshipQuickFilter { remote, paid, summer, tech, marketing }
 
+enum _InternshipsViewMode { grid, list }
+
+class _InternshipVisualPalette {
+  const _InternshipVisualPalette._();
+
+  static const Color canvas = OpportunityDashboardPalette.background;
+  static const Color surface = OpportunityDashboardPalette.surface;
+  static const Color mint = OpportunityDashboardPalette.secondary;
+  static const Color deepTeal = Color(0xFF0F766E);
+  static const Color oceanTeal = Color(0xFF0D9488);
+  static const Color glowMint = Color(0xFF8DE7DA);
+  static const Color border = OpportunityDashboardPalette.border;
+  static const Color textPrimary = OpportunityDashboardPalette.textPrimary;
+  static const Color textSecondary = OpportunityDashboardPalette.textSecondary;
+}
+
 class _InternshipsScreenState extends State<InternshipsScreen> {
   static const List<_QuickFilterDefinition> _quickFilters = [
     _QuickFilterDefinition(
@@ -42,21 +58,15 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
       label: 'Marketing',
     ),
   ];
-  static const List<Color> _weeklyAccentColors = [
-    OpportunityDashboardPalette.accent,
-    OpportunityDashboardPalette.primary,
-    OpportunityDashboardPalette.secondary,
-    OpportunityDashboardPalette.primaryDark,
-    OpportunityDashboardPalette.warning,
-  ];
 
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
   final ScrollController _scrollController = ScrollController();
-  final GlobalKey _popularSectionKey = GlobalKey();
+  final GlobalKey _availableSectionKey = GlobalKey();
 
   String _searchQuery = '';
   _InternshipQuickFilter? _selectedQuickFilter;
+  _InternshipsViewMode _viewMode = _InternshipsViewMode.grid;
 
   @override
   void initState() {
@@ -169,8 +179,8 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
     messenger.showSnackBar(SnackBar(content: Text(error ?? message)));
   }
 
-  Future<void> _scrollToPopularSection() async {
-    final sectionContext = _popularSectionKey.currentContext;
+  Future<void> _scrollToAvailableSection() async {
+    final sectionContext = _availableSectionKey.currentContext;
     if (sectionContext == null) {
       return;
     }
@@ -181,15 +191,6 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
       curve: Curves.easeOutCubic,
       alignment: 0.02,
     );
-  }
-
-  void _clearFilters() {
-    setState(() {
-      _selectedQuickFilter = null;
-      if (_searchQuery.isNotEmpty) {
-        _searchController.clear();
-      }
-    });
   }
 
   List<_InternshipCardModel> _buildLiveInternships(
@@ -254,7 +255,7 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
     return result;
   }
 
-  List<_InternshipCardModel> _selectPopularInternships(
+  List<_InternshipCardModel> _selectAvailableInternships(
     List<_InternshipCardModel> items,
   ) {
     final sorted = [...items];
@@ -362,6 +363,7 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
       deadlinePill: _deadlinePillText(deadline, daysUntilDeadline),
       applyByText: _applyByText(deadline),
       isPaid: isPaid == true || compensation != null,
+      compensation: compensation,
       duration: duration,
       categoryLabel: categoryLabel,
       isFeaturedPreferred: opportunity.isFeatured,
@@ -636,72 +638,16 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
         .join(' ');
   }
 
-  List<_InternshipBadgeData> _popularBadgesFor(_InternshipCardModel item) {
-    final badges = <_InternshipBadgeData>[];
-
-    if (item.isPaid) {
-      badges.add(
-        const _InternshipBadgeData(
-          label: 'PAID',
-          backgroundColor: Color(0xFFDCFCE7),
-          foregroundColor: OpportunityDashboardPalette.success,
-        ),
-      );
-    }
-
-    if (item.workMode != null) {
-      badges.add(
-        _InternshipBadgeData(
-          label: item.workMode!.toUpperCase(),
-          backgroundColor: item.workMode == 'Remote'
-              ? const Color(0xFFCCFBF1)
-              : const Color(0xFFDBEAFE),
-          foregroundColor: item.workMode == 'Remote'
-              ? const Color(0xFF0F766E)
-              : OpportunityDashboardPalette.primaryDark,
-        ),
-      );
-    }
-
-    if (item.duration != null && item.duration!.isNotEmpty) {
-      badges.add(
-        _InternshipBadgeData(
-          label: item.duration!.toUpperCase(),
-          backgroundColor: const Color(0xFFFFEDD5),
-          foregroundColor: OpportunityDashboardPalette.accent,
-        ),
-      );
-    }
-
-    if (item.categoryLabel != null && item.categoryLabel!.isNotEmpty) {
-      badges.add(
-        _InternshipBadgeData(
-          label: item.categoryLabel!.toUpperCase(),
-          backgroundColor: const Color(0xFFEDE9FE),
-          foregroundColor: OpportunityDashboardPalette.primary,
-        ),
-      );
-    }
-
-    if (badges.isEmpty) {
-      badges.add(
-        const _InternshipBadgeData(
-          label: 'INTERNSHIP',
-          backgroundColor: Color(0xFFE2E8F0),
-          foregroundColor: OpportunityDashboardPalette.textSecondary,
-        ),
-      );
-    }
-
-    return badges.take(4).toList();
-  }
-
   @override
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
     final notificationProvider = context.watch<NotificationProvider>();
     final opportunityProvider = context.watch<OpportunityProvider>();
     final savedProvider = context.watch<SavedOpportunityProvider>();
+    final mediaQuery = MediaQuery.of(context);
+    final screenSize = mediaQuery.size;
+    final isCompact = screenSize.width < 390 || screenSize.height < 780;
+    final isExtraCompact = screenSize.width < 360 || screenSize.height < 700;
     final savedIds = savedProvider.savedOpportunities
         .map((item) => item.opportunityId)
         .toSet();
@@ -716,13 +662,23 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
     final applyThisWeek = hasLiveData
         ? _selectApplyThisWeek(filteredInternships)
         : _placeholderWeeklyInternships;
-    final popularInternships = hasLiveData
-        ? _selectPopularInternships(filteredInternships)
-        : _placeholderPopularInternships;
+    final availableInternships = hasLiveData
+        ? _selectAvailableInternships(filteredInternships)
+        : _placeholderAvailableInternships;
+    final availableCountLabel = availableInternships.length == 1
+        ? '1 internship'
+        : '${availableInternships.length} internships';
+    final gridCrossAxisCount = 2;
+    final gridSpacing = isExtraCompact ? 12.0 : 14.0;
+    final gridMainExtent = isExtraCompact
+        ? 168.0
+        : isCompact
+        ? 172.0
+        : 182.0;
     final contentBottomPadding = 20 + MediaQuery.paddingOf(context).bottom;
 
     return Scaffold(
-      backgroundColor: OpportunityDashboardPalette.background,
+      backgroundColor: _InternshipVisualPalette.canvas,
       body: Column(
         children: [
           _InternshipsHeaderBar(
@@ -731,11 +687,14 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
             onNotificationsPressed: _openNotifications,
           ),
           if (opportunityProvider.isLoading && hasLiveData)
-            const LinearProgressIndicator(minHeight: 2),
+            const LinearProgressIndicator(
+              minHeight: 2,
+              color: _InternshipVisualPalette.mint,
+            ),
           Expanded(
             child: RefreshIndicator(
-              color: OpportunityDashboardPalette.primary,
-              backgroundColor: OpportunityDashboardPalette.surface,
+              color: _InternshipVisualPalette.mint,
+              backgroundColor: _InternshipVisualPalette.surface,
               onRefresh: () => _loadData(force: true),
               child: ListView(
                 controller: _scrollController,
@@ -768,11 +727,10 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
                     },
                   ),
                   const SizedBox(height: 18),
-                  _SectionHeader(
+                  _InternshipSectionHeader(
                     title: 'Apply This Week',
-                    actionLabel: 'View All',
-                    showAccentDot: true,
-                    onAction: _scrollToPopularSection,
+                    actionLabel: 'Browse all',
+                    onAction: _scrollToAvailableSection,
                   ),
                   const SizedBox(height: 10),
                   if (hasLiveData && filteredInternships.isEmpty)
@@ -784,7 +742,6 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
                   else
                     _ApplyThisWeekSection(
                       items: applyThisWeek,
-                      accentColors: _weeklyAccentColors,
                       onOpenOpportunity: (item) {
                         if (item.opportunity != null) {
                           _openOpportunity(item.opportunity!);
@@ -799,11 +756,18 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
                     ),
                   const SizedBox(height: 20),
                   Container(
-                    key: _popularSectionKey,
-                    child: _SectionHeader(
-                      title: 'Popular Internships',
-                      actionLabel: 'View all',
-                      onAction: _clearFilters,
+                    key: _availableSectionKey,
+                    child: _InternshipSectionHeader(
+                      title: 'Available Internships',
+                      countLabel: availableCountLabel,
+                      trailing: _InternshipViewToggle(
+                        viewMode: _viewMode,
+                        onChanged: (nextViewMode) {
+                          setState(() {
+                            _viewMode = nextViewMode;
+                          });
+                        },
+                      ),
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -814,25 +778,91 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
                           'Live internships will appear here as soon as they match your search.',
                     )
                   else
-                    ...popularInternships.map(
-                      (item) => Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: _PopularInternshipCard(
-                          item: item,
-                          badges: _popularBadgesFor(item),
-                          onTap: item.opportunity == null
-                              ? null
-                              : () => _openOpportunity(item.opportunity!),
-                          onApply: item.opportunity == null
-                              ? null
-                              : () => _openOpportunity(item.opportunity!),
-                          onToggleSaved: item.opportunity == null
-                              ? null
-                              : () =>
-                                    _toggleSavedOpportunity(item.opportunity!),
-                          isSaving: savedProvider.isLoading,
-                        ),
-                      ),
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 240),
+                      switchInCurve: Curves.easeOutCubic,
+                      switchOutCurve: Curves.easeInCubic,
+                      transitionBuilder: (child, animation) {
+                        return FadeTransition(
+                          opacity: animation,
+                          child: SizeTransition(
+                            sizeFactor: animation,
+                            axisAlignment: -1,
+                            child: child,
+                          ),
+                        );
+                      },
+                      child: _viewMode == _InternshipsViewMode.grid
+                          ? GridView.builder(
+                              key: const ValueKey('internships-grid'),
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: availableInternships.length,
+                              gridDelegate:
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: gridCrossAxisCount,
+                                    crossAxisSpacing: gridSpacing,
+                                    mainAxisSpacing: gridSpacing,
+                                    mainAxisExtent: gridMainExtent,
+                                  ),
+                              itemBuilder: (context, index) {
+                                final item = availableInternships[index];
+                                return _AvailableInternshipCard(
+                                  item: item,
+                                  onTap: item.opportunity == null
+                                      ? null
+                                      : () =>
+                                            _openOpportunity(item.opportunity!),
+                                  onToggleSaved: item.opportunity == null
+                                      ? null
+                                      : () => _toggleSavedOpportunity(
+                                          item.opportunity!,
+                                        ),
+                                  isSaving: savedProvider.isLoading,
+                                );
+                              },
+                            )
+                          : Column(
+                              key: const ValueKey('internships-list'),
+                              children: [
+                                for (
+                                  var index = 0;
+                                  index < availableInternships.length;
+                                  index++
+                                )
+                                  Padding(
+                                    padding: EdgeInsets.only(
+                                      bottom:
+                                          index ==
+                                              availableInternships.length - 1
+                                          ? 0
+                                          : 12,
+                                    ),
+                                    child: _AvailableInternshipListTile(
+                                      item: availableInternships[index],
+                                      onTap:
+                                          availableInternships[index]
+                                                  .opportunity ==
+                                              null
+                                          ? null
+                                          : () => _openOpportunity(
+                                              availableInternships[index]
+                                                  .opportunity!,
+                                            ),
+                                      onToggleSaved:
+                                          availableInternships[index]
+                                                  .opportunity ==
+                                              null
+                                          ? null
+                                          : () => _toggleSavedOpportunity(
+                                              availableInternships[index]
+                                                  .opportunity!,
+                                            ),
+                                      isSaving: savedProvider.isLoading,
+                                    ),
+                                  ),
+                              ],
+                            ),
                     ),
                   if (!hasLiveData && opportunityProvider.isLoading) ...[
                     const SizedBox(height: 8),
@@ -841,7 +871,7 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
                       style: GoogleFonts.poppins(
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
-                        color: OpportunityDashboardPalette.textSecondary,
+                        color: _InternshipVisualPalette.textSecondary,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -871,9 +901,9 @@ class _InternshipsHeaderBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-        color: OpportunityDashboardPalette.surface,
+        color: _InternshipVisualPalette.surface,
         border: Border(
-          bottom: BorderSide(color: OpportunityDashboardPalette.border),
+          bottom: BorderSide(color: _InternshipVisualPalette.border),
         ),
       ),
       child: SafeArea(
@@ -887,8 +917,8 @@ class _InternshipsHeaderBar extends StatelessWidget {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: OpportunityDashboardPalette.primary.withValues(
-                      alpha: 0.16,
+                    color: _InternshipVisualPalette.mint.withValues(
+                      alpha: 0.20,
                     ),
                   ),
                 ),
@@ -937,16 +967,16 @@ class _NotificationBellButton extends StatelessWidget {
           width: 42,
           height: 42,
           decoration: BoxDecoration(
-            color: OpportunityDashboardPalette.surface,
+            color: _InternshipVisualPalette.surface,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: OpportunityDashboardPalette.border),
+            border: Border.all(color: _InternshipVisualPalette.border),
           ),
           child: Stack(
             alignment: Alignment.center,
             children: [
               const Icon(
                 Icons.notifications_none_rounded,
-                color: OpportunityDashboardPalette.textPrimary,
+                color: _InternshipVisualPalette.textPrimary,
                 size: 21,
               ),
               if (unreadCount > 0)
@@ -1111,12 +1141,12 @@ class _InternshipFilterChipRow extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               decoration: BoxDecoration(
                 color: isActive
-                    ? OpportunityDashboardPalette.secondary
+                    ? _InternshipVisualPalette.mint
                     : const Color(0xFFF1F5F9),
                 borderRadius: BorderRadius.circular(999),
                 border: Border.all(
                   color: isActive
-                      ? OpportunityDashboardPalette.secondary
+                      ? _InternshipVisualPalette.mint
                       : OpportunityDashboardPalette.border,
                 ),
               ),
@@ -1140,85 +1170,240 @@ class _InternshipFilterChipRow extends StatelessWidget {
   }
 }
 
-class _SectionHeader extends StatelessWidget {
+class _InternshipSectionHeader extends StatelessWidget {
   final String title;
-  final String actionLabel;
-  final bool showAccentDot;
-  final VoidCallback onAction;
+  final String? countLabel;
+  final String? actionLabel;
+  final VoidCallback? onAction;
+  final Widget? trailing;
 
-  const _SectionHeader({
+  const _InternshipSectionHeader({
     required this.title,
-    required this.actionLabel,
-    required this.onAction,
-    this.showAccentDot = false,
+    this.countLabel,
+    this.actionLabel,
+    this.onAction,
+    this.trailing,
   });
 
   @override
   Widget build(BuildContext context) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Flexible(
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
+        Expanded(
+          child: Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              Flexible(
-                child: Text(
-                  title,
-                  overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.poppins(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color: OpportunityDashboardPalette.textPrimary,
-                  ),
+              Text(
+                title,
+                style: GoogleFonts.poppins(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: OpportunityDashboardPalette.textPrimary,
                 ),
               ),
-              if (showAccentDot) ...[
-                const SizedBox(width: 6),
+              if (countLabel != null)
                 Container(
-                  width: 7,
-                  height: 7,
-                  decoration: const BoxDecoration(
-                    color: OpportunityDashboardPalette.accent,
-                    shape: BoxShape.circle,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF1F5F9),
+                    borderRadius: BorderRadius.circular(999),
+                    border: Border.all(
+                      color: OpportunityDashboardPalette.border,
+                    ),
+                  ),
+                  child: Text(
+                    countLabel!,
+                    style: GoogleFonts.poppins(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                      color: OpportunityDashboardPalette.textSecondary,
+                    ),
                   ),
                 ),
-              ],
             ],
           ),
         ),
-        const SizedBox(width: 12),
-        TextButton(
-          onPressed: onAction,
-          style: TextButton.styleFrom(
-            foregroundColor: OpportunityDashboardPalette.primary,
-            padding: EdgeInsets.zero,
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            minimumSize: Size.zero,
-          ),
-          child: Text(
-            actionLabel,
-            style: GoogleFonts.poppins(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: OpportunityDashboardPalette.primary,
+        if (trailing != null) ...[
+          const SizedBox(width: 12),
+          trailing!,
+        ] else if (actionLabel != null && onAction != null) ...[
+          const SizedBox(width: 12),
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: onAction,
+              borderRadius: BorderRadius.circular(16),
+              child: Ink(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: OpportunityDashboardPalette.border.withValues(
+                      alpha: 0.9,
+                    ),
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      actionLabel!,
+                      style: GoogleFonts.poppins(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: OpportunityDashboardPalette.primary,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    const Icon(
+                      Icons.arrow_outward_rounded,
+                      size: 14,
+                      color: OpportunityDashboardPalette.primary,
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
-        ),
+        ],
       ],
     );
   }
 }
 
+enum _InternshipFeaturedDecorationVariant {
+  auroraBloom,
+  glassPanel,
+  meshPattern,
+  lineStudio,
+  haloGlow,
+}
+
+class _InternshipFeaturedVariantStyle {
+  final _InternshipFeaturedDecorationVariant decorationVariant;
+  final List<Color> gradientColors;
+  final Alignment gradientBegin;
+  final Alignment gradientEnd;
+  final Color accentColor;
+  final Color glowColor;
+  final Color logoSurface;
+  final Color logoForeground;
+  final Color badgeBackground;
+  final Color badgeBorderColor;
+  final List<Color> buttonGradientColors;
+  final Color buttonTextColor;
+
+  const _InternshipFeaturedVariantStyle({
+    required this.decorationVariant,
+    required this.gradientColors,
+    required this.gradientBegin,
+    required this.gradientEnd,
+    required this.accentColor,
+    required this.glowColor,
+    required this.logoSurface,
+    required this.logoForeground,
+    required this.badgeBackground,
+    required this.badgeBorderColor,
+    required this.buttonGradientColors,
+    required this.buttonTextColor,
+  });
+}
+
+_InternshipFeaturedVariantStyle _featuredInternshipStyleFor(int index) {
+  const styles = <_InternshipFeaturedVariantStyle>[
+    _InternshipFeaturedVariantStyle(
+      decorationVariant: _InternshipFeaturedDecorationVariant.auroraBloom,
+      gradientColors: [Color(0xFF33D0BF), Color(0xFF14B8A6), Color(0xFF0F766E)],
+      gradientBegin: Alignment.topLeft,
+      gradientEnd: Alignment.bottomRight,
+      accentColor: Color(0xFFBFF6EE),
+      glowColor: Color(0xFF62E5D5),
+      logoSurface: Color(0xFFF2FEFB),
+      logoForeground: _InternshipVisualPalette.deepTeal,
+      badgeBackground: Color(0x24FFFFFF),
+      badgeBorderColor: Color(0x38FFFFFF),
+      buttonGradientColors: [Colors.white, Color(0xFFD9FAF4)],
+      buttonTextColor: _InternshipVisualPalette.deepTeal,
+    ),
+    _InternshipFeaturedVariantStyle(
+      decorationVariant: _InternshipFeaturedDecorationVariant.glassPanel,
+      gradientColors: [Color(0xFF26C6B8), Color(0xFF0D9488), Color(0xFF115E59)],
+      gradientBegin: Alignment.topLeft,
+      gradientEnd: Alignment.bottomCenter,
+      accentColor: Color(0xFFC9FBF3),
+      glowColor: Color(0xFF46DCCA),
+      logoSurface: Color(0xFFF1FDFC),
+      logoForeground: _InternshipVisualPalette.oceanTeal,
+      badgeBackground: Color(0x22FFFFFF),
+      badgeBorderColor: Color(0x36FFFFFF),
+      buttonGradientColors: [Colors.white, Color(0xFFDFFAF6)],
+      buttonTextColor: _InternshipVisualPalette.oceanTeal,
+    ),
+    _InternshipFeaturedVariantStyle(
+      decorationVariant: _InternshipFeaturedDecorationVariant.meshPattern,
+      gradientColors: [Color(0xFF34D6C3), Color(0xFF0EA5A0), Color(0xFF0F766E)],
+      gradientBegin: Alignment.topCenter,
+      gradientEnd: Alignment.bottomRight,
+      accentColor: Color(0xFFD5FCF6),
+      glowColor: Color(0xFF71E7D9),
+      logoSurface: Color(0xFFF3FDFC),
+      logoForeground: Color(0xFF0F766E),
+      badgeBackground: Color(0x24FFFFFF),
+      badgeBorderColor: Color(0x38FFFFFF),
+      buttonGradientColors: [Colors.white, Color(0xFFDDFBF6)],
+      buttonTextColor: Color(0xFF0F766E),
+    ),
+    _InternshipFeaturedVariantStyle(
+      decorationVariant: _InternshipFeaturedDecorationVariant.lineStudio,
+      gradientColors: [Color(0xFF17BDAA), Color(0xFF0F766E), Color(0xFF134E4A)],
+      gradientBegin: Alignment.topLeft,
+      gradientEnd: Alignment.bottomRight,
+      accentColor: Color(0xFFBDEFE8),
+      glowColor: Color(0xFF49D9C8),
+      logoSurface: Color(0xFFF1FCFB),
+      logoForeground: Color(0xFF115E59),
+      badgeBackground: Color(0x24FFFFFF),
+      badgeBorderColor: Color(0x36FFFFFF),
+      buttonGradientColors: [Colors.white, Color(0xFFD7F8F1)],
+      buttonTextColor: Color(0xFF115E59),
+    ),
+    _InternshipFeaturedVariantStyle(
+      decorationVariant: _InternshipFeaturedDecorationVariant.haloGlow,
+      gradientColors: [Color(0xFF22C8B6), Color(0xFF14B8A6), Color(0xFF115E59)],
+      gradientBegin: Alignment.topLeft,
+      gradientEnd: Alignment.bottomRight,
+      accentColor: Color(0xFFC9FBF3),
+      glowColor: Color(0xFF5CE0CF),
+      logoSurface: Color(0xFFF1FDFC),
+      logoForeground: _InternshipVisualPalette.deepTeal,
+      badgeBackground: Color(0x24FFFFFF),
+      badgeBorderColor: Color(0x38FFFFFF),
+      buttonGradientColors: [Colors.white, Color(0xFFDCF9F4)],
+      buttonTextColor: _InternshipVisualPalette.deepTeal,
+    ),
+  ];
+
+  return styles[index % styles.length];
+}
+
 class _ApplyThisWeekSection extends StatelessWidget {
   final List<_InternshipCardModel> items;
-  final List<Color> accentColors;
   final ValueChanged<_InternshipCardModel> onOpenOpportunity;
   final ValueChanged<_InternshipCardModel> onToggleSaved;
   final bool isSaving;
 
   const _ApplyThisWeekSection({
     required this.items,
-    required this.accentColors,
     required this.onOpenOpportunity,
     required this.onToggleSaved,
     required this.isSaving,
@@ -1226,27 +1411,33 @@ class _ApplyThisWeekSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cardWidth = (MediaQuery.sizeOf(context).width * 0.60)
-        .clamp(186.0, 208.0)
-        .toDouble();
+    final screenSize = MediaQuery.of(context).size;
+    final isCompact = screenSize.width < 390 || screenSize.height < 780;
+    final isExtraCompact = screenSize.width < 360 || screenSize.height < 700;
+    final cardWidth = screenSize.width * (isExtraCompact ? 0.76 : 0.78);
+    final cardHeight = isExtraCompact
+        ? 204.0
+        : isCompact
+        ? 212.0
+        : 248.0;
+    final cardSpacing = isExtraCompact ? 12.0 : 16.0;
 
     return SizedBox(
-      height: 142,
+      height: cardHeight,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.only(right: 12),
+        padding: const EdgeInsets.only(right: 10),
         itemCount: items.length,
-        separatorBuilder: (context, index) => const SizedBox(width: 10),
+        separatorBuilder: (context, index) => SizedBox(width: cardSpacing),
         itemBuilder: (context, index) {
           final item = items[index];
-          final accentColor = accentColors[index % accentColors.length];
 
           return SizedBox(
             width: cardWidth,
-            child: _WeeklyInternshipCard(
+            child: _InternshipFeaturedCard(
               item: item,
-              accentColor: accentColor,
+              style: _featuredInternshipStyleFor(index),
               onTap: item.opportunity == null
                   ? null
                   : () => onOpenOpportunity(item),
@@ -1262,142 +1453,645 @@ class _ApplyThisWeekSection extends StatelessWidget {
   }
 }
 
-class _WeeklyInternshipCard extends StatelessWidget {
+class _InternshipFeaturedCard extends StatelessWidget {
   final _InternshipCardModel item;
-  final Color accentColor;
+  final _InternshipFeaturedVariantStyle style;
   final VoidCallback? onTap;
   final VoidCallback? onToggleSaved;
   final bool isSaving;
 
-  const _WeeklyInternshipCard({
+  const _InternshipFeaturedCard({
     required this.item,
-    required this.accentColor,
+    required this.style,
     this.onTap,
     this.onToggleSaved,
     required this.isSaving,
   });
 
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      clipBehavior: Clip.antiAlias,
-      borderRadius: BorderRadius.circular(20),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(20),
-        child: Ink(
-          decoration: BoxDecoration(
-            color: OpportunityDashboardPalette.surface,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: OpportunityDashboardPalette.border.withValues(alpha: 0.9),
+  String _supportingLine() {
+    final location = item.location?.trim();
+    if (location != null && location.isNotEmpty) {
+      return '${item.companyName} • $location';
+    }
+
+    final workMode = item.workMode?.trim();
+    if (workMode != null && workMode.isNotEmpty) {
+      return '${item.companyName} • $workMode';
+    }
+
+    return item.companyName;
+  }
+
+  String? _metadataLine() {
+    final parts = <String>[
+      if (item.categoryLabel?.trim().isNotEmpty ?? false)
+        item.categoryLabel!.trim(),
+      if (item.applyByText.trim().isNotEmpty) item.applyByText.trim(),
+      if (item.duration?.trim().isNotEmpty ?? false) item.duration!.trim(),
+    ];
+
+    if (parts.isEmpty) {
+      return null;
+    }
+
+    return parts.take(2).join(' • ');
+  }
+
+  List<String> _tagLabels() {
+    final tags = <String>[
+      if (item.deadlinePill?.trim().isNotEmpty ?? false)
+        item.deadlinePill!.trim(),
+      if (item.isPaid) 'Paid',
+      if (item.duration?.trim().isNotEmpty ?? false) item.duration!.trim(),
+      if (item.categoryLabel?.trim().isNotEmpty ?? false)
+        item.categoryLabel!.trim(),
+    ];
+
+    return tags.take(2).toList();
+  }
+
+  String _ctaLabel() => _featuredHeroTag(item) == null ? 'Apply' : 'Open';
+
+  List<Widget> _buildDecorations() {
+    switch (style.decorationVariant) {
+      case _InternshipFeaturedDecorationVariant.auroraBloom:
+        return [
+          Positioned(
+            top: -46,
+            right: -14,
+            child: _GlowOrb(
+              size: 148,
+              color: Colors.white.withValues(alpha: 0.44),
             ),
           ),
-          child: Row(
-            children: [
-              Container(
-                width: 4,
+          Positioned(
+            bottom: -54,
+            left: -26,
+            child: _GlowOrb(
+              size: 176,
+              color: style.glowColor.withValues(alpha: 0.36),
+            ),
+          ),
+        ];
+      case _InternshipFeaturedDecorationVariant.glassPanel:
+        return [
+          Positioned(
+            top: 16,
+            right: 18,
+            child: Transform.rotate(
+              angle: 0.22,
+              child: Container(
+                width: 82,
+                height: 126,
                 decoration: BoxDecoration(
-                  color: accentColor,
-                  borderRadius: BorderRadius.horizontal(
-                    left: Radius.circular(20),
+                  borderRadius: BorderRadius.circular(28),
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.white.withValues(alpha: 0.28),
+                      Colors.white.withValues(alpha: 0.06),
+                      Colors.transparent,
+                    ],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
                   ),
                 ),
               ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(12, 10, 10, 10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
+            ),
+          ),
+          Positioned(
+            bottom: -34,
+            right: -18,
+            child: _GlowOrb(
+              size: 158,
+              color: style.glowColor.withValues(alpha: 0.34),
+            ),
+          ),
+        ];
+      case _InternshipFeaturedDecorationVariant.meshPattern:
+        return [
+          Positioned(
+            top: -34,
+            left: -20,
+            child: _GlowOrb(
+              size: 120,
+              color: Colors.white.withValues(alpha: 0.34),
+            ),
+          ),
+          Positioned(
+            bottom: -44,
+            left: 18,
+            child: _GlowOrb(
+              size: 128,
+              color: style.glowColor.withValues(alpha: 0.24),
+            ),
+          ),
+        ];
+      case _InternshipFeaturedDecorationVariant.lineStudio:
+        return [
+          Positioned(
+            top: 10,
+            right: -4,
+            child: Transform.rotate(
+              angle: 0.16,
+              child: _DecorativeLineArtLoop(
+                width: 108,
+                height: 108,
+                color: Colors.white.withValues(alpha: 0.34),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: -18,
+            left: -10,
+            child: Transform.rotate(
+              angle: -0.22,
+              child: _DecorativeLineArtLoop(
+                width: 86,
+                height: 86,
+                color: style.glowColor.withValues(alpha: 0.28),
+              ),
+            ),
+          ),
+        ];
+      case _InternshipFeaturedDecorationVariant.haloGlow:
+        return [
+          Positioned(
+            top: 16,
+            left: 20,
+            child: _GlowOrb(
+              size: 96,
+              color: Colors.white.withValues(alpha: 0.24),
+            ),
+          ),
+          Positioned(
+            bottom: -38,
+            right: -18,
+            child: _GlowOrb(
+              size: 170,
+              color: style.glowColor.withValues(alpha: 0.46),
+            ),
+          ),
+          Positioned(
+            bottom: 18,
+            right: 24,
+            child: Container(
+              width: 68,
+              height: 68,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    Colors.white.withValues(alpha: 0.22),
+                    Colors.transparent,
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ];
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final topTag = _featuredHeroTag(item);
+    final supportingLine = _supportingLine();
+    final metadataLine = _metadataLine();
+    final tagLabels = _tagLabels();
+    final compensationLabel = _compensationLineFor(item)?.trim();
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isTight =
+            constraints.maxHeight < 220 || constraints.maxWidth < 304;
+        final denseLayout =
+            isTight ||
+            item.title.length > 22 ||
+            supportingLine.length > 26 ||
+            (metadataLine?.length ?? 0) > 24;
+        final cardPadding = denseLayout
+            ? EdgeInsets.fromLTRB(
+                isTight ? 14 : 18,
+                isTight ? 14 : 16,
+                isTight ? 14 : 18,
+                isTight ? 12 : 14,
+              )
+            : const EdgeInsets.fromLTRB(20, 20, 20, 18);
+        final logoSize = denseLayout
+            ? (isTight ? 38.0 : 42.0)
+            : (isTight ? 40.0 : 46.0);
+        final titleFontSize = denseLayout
+            ? (isTight ? 18.2 : 21.0)
+            : (isTight ? 19.2 : 23.0);
+        final supportingFontSize = denseLayout
+            ? (isTight ? 11.4 : 12.1)
+            : (isTight ? 11.8 : 12.8);
+        final metadataFontSize = denseLayout
+            ? (isTight ? 10.0 : 10.8)
+            : (isTight ? 10.4 : 11.2);
+        final tagFontSize = denseLayout
+            ? (isTight ? 8.6 : 9.0)
+            : (isTight ? 8.9 : 9.4);
+        final compensationFontSize = denseLayout
+            ? (isTight ? 12.0 : 13.4)
+            : (isTight ? 12.6 : 14.6);
+        final cardRadiusValue = isTight ? 24.0 : 30.0;
+        final cardRadius = BorderRadius.circular(cardRadiusValue);
+        final hasCompensation =
+            compensationLabel != null && compensationLabel.isNotEmpty;
+        final useStackedFooter =
+            constraints.maxWidth < 286 ||
+            ((compensationLabel?.length ?? 0) > (isTight ? 18 : 20) &&
+                constraints.maxWidth < 316);
+        final compensationWidget = !hasCompensation
+            ? null
+            : Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.payments_rounded,
+                    size: isTight ? 13 : 15,
+                    color: Colors.white.withValues(alpha: 0.92),
+                  ),
+                  SizedBox(width: isTight ? 6 : 8),
+                  Flexible(
+                    child: Text(
+                      compensationLabel,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.poppins(
+                        fontSize: compensationFontSize,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white.withValues(alpha: 0.96),
+                        height: 1.08,
+                      ),
+                    ),
+                  ),
+                ],
+              );
+        final footer = useStackedFooter
+            ? Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ...?compensationWidget == null
+                      ? null
+                      : <Widget>[
+                          compensationWidget,
+                          SizedBox(height: isTight ? 8 : 10),
+                        ],
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: _InternshipFeaturedCtaButton(
+                      label: _ctaLabel(),
+                      onTap: onTap,
+                      backgroundColors: style.buttonGradientColors,
+                      textColor: style.buttonTextColor,
+                      compact: denseLayout,
+                    ),
+                  ),
+                ],
+              )
+            : Row(
+                children: [
+                  Expanded(
+                    child: compensationWidget == null
+                        ? const SizedBox.shrink()
+                        : Align(
+                            alignment: Alignment.centerLeft,
+                            child: compensationWidget,
+                          ),
+                  ),
+                  SizedBox(width: isTight ? 10 : 12),
+                  _InternshipFeaturedCtaButton(
+                    label: _ctaLabel(),
+                    onTap: onTap,
+                    backgroundColors: style.buttonGradientColors,
+                    textColor: style.buttonTextColor,
+                    compact: denseLayout,
+                  ),
+                ],
+              );
+
+        return Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: cardRadius,
+            child: Ink(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: style.gradientColors,
+                  begin: style.gradientBegin,
+                  end: style.gradientEnd,
+                ),
+                borderRadius: cardRadius,
+                border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
+                boxShadow: [
+                  BoxShadow(
+                    color: style.glowColor.withValues(alpha: 0.14),
+                    blurRadius: 22,
+                    offset: const Offset(0, 12),
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: cardRadius,
+                child: Stack(
+                  children: [
+                    ..._buildDecorations(),
+                    Positioned.fill(
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.white.withValues(alpha: 0.16),
+                              Colors.white.withValues(alpha: 0.04),
+                              Colors.transparent,
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Positioned.fill(
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.transparent,
+                              style.accentColor.withValues(alpha: 0.12),
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: cardPadding,
+                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
                         children: [
                           Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              _CompanyLogoTile(
-                                logoUrl: item.logoUrl,
-                                fallbackLabel: item.fallbackLabel,
-                                size: 28,
-                                borderRadius: 10,
-                                backgroundColor: accentColor.withValues(
-                                  alpha: 0.12,
+                              Container(
+                                padding: EdgeInsets.all(isTight ? 2.5 : 3),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(
+                                    isTight ? 18 : 20,
+                                  ),
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      Colors.white.withValues(alpha: 0.30),
+                                      Colors.white.withValues(alpha: 0.10),
+                                    ],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  ),
+                                  border: Border.all(
+                                    color: Colors.white.withValues(alpha: 0.16),
+                                  ),
                                 ),
-                                foregroundColor: accentColor,
+                                child: _CompanyLogoTile(
+                                  logoUrl: item.logoUrl,
+                                  fallbackLabel: item.fallbackLabel,
+                                  size: logoSize,
+                                  borderRadius: isTight ? 15 : 17,
+                                  backgroundColor: style.logoSurface,
+                                  foregroundColor: style.logoForeground,
+                                ),
                               ),
                               const Spacer(),
+                              if (topTag != null) ...[
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: denseLayout
+                                        ? (isTight ? 8 : 10)
+                                        : (isTight ? 10 : 12),
+                                    vertical: denseLayout
+                                        ? (isTight ? 5 : 6)
+                                        : (isTight ? 6 : 8),
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: style.badgeBackground,
+                                    borderRadius: BorderRadius.circular(
+                                      denseLayout
+                                          ? (isTight ? 12 : 14)
+                                          : (isTight ? 14 : 16),
+                                    ),
+                                    border: Border.all(
+                                      color: style.badgeBorderColor,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    topTag,
+                                    style: GoogleFonts.poppins(
+                                      fontSize: denseLayout
+                                          ? (isTight ? 8.4 : 9.2)
+                                          : (isTight ? 9 : 10),
+                                      fontWeight: FontWeight.w700,
+                                      color: Colors.white,
+                                      letterSpacing: 0.3,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(width: isTight ? 8 : 10),
+                              ],
                               _BookmarkIconButton(
                                 isSaved: item.isSaved,
                                 isSaving: isSaving,
                                 onTap: onToggleSaved,
-                                size: 24,
-                                iconSize: 14,
-                                borderRadius: 10,
+                                size: denseLayout
+                                    ? (isTight ? 32 : 34)
+                                    : (isTight ? 34 : 36),
+                                iconSize: denseLayout
+                                    ? (isTight ? 16 : 17)
+                                    : (isTight ? 17 : 18),
+                                borderRadius: denseLayout
+                                    ? (isTight ? 12 : 14)
+                                    : (isTight ? 13 : 15),
+                                activeColor: Colors.white,
+                                activeBackgroundColor: Colors.white.withValues(
+                                  alpha: 0.20,
+                                ),
+                                activeBorderColor: Colors.white.withValues(
+                                  alpha: 0.28,
+                                ),
+                                inactiveColor: Colors.white,
+                                inactiveBackgroundColor: Colors.white
+                                    .withValues(alpha: 0.12),
+                                inactiveBorderColor: Colors.white.withValues(
+                                  alpha: 0.20,
+                                ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 8),
-                          Text(
-                            item.companyLabel,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.poppins(
-                              fontSize: 9,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 0.4,
-                              color: OpportunityDashboardPalette.textSecondary,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
+                          const Spacer(),
                           Text(
                             item.title,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.poppins(
+                              fontSize: titleFontSize,
+                              fontWeight: FontWeight.w700,
+                              height: denseLayout ? 1.04 : 1.10,
+                              color: Colors.white,
+                            ),
+                          ),
+                          SizedBox(
+                            height: denseLayout
+                                ? (isTight ? 6 : 8)
+                                : (isTight ? 8 : 10),
+                          ),
+                          Text(
+                            supportingLine,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: GoogleFonts.poppins(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                              height: 1.08,
-                              color: OpportunityDashboardPalette.textPrimary,
+                              fontSize: supportingFontSize,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.white.withValues(alpha: 0.88),
                             ),
                           ),
+                          if (metadataLine != null &&
+                              metadataLine.trim().isNotEmpty) ...[
+                            SizedBox(
+                              height: denseLayout
+                                  ? (isTight ? 3 : 4)
+                                  : (isTight ? 4 : 6),
+                            ),
+                            Text(
+                              metadataLine,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.poppins(
+                                fontSize: metadataFontSize,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white.withValues(alpha: 0.80),
+                              ),
+                            ),
+                          ],
+                          if (tagLabels.isNotEmpty) ...[
+                            SizedBox(
+                              height: denseLayout
+                                  ? (isTight ? 8 : 10)
+                                  : (isTight ? 10 : 12),
+                            ),
+                            Wrap(
+                              spacing: isTight ? 6 : 7,
+                              runSpacing: isTight ? 6 : 7,
+                              children: tagLabels
+                                  .map(
+                                    (tag) => Container(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: isTight ? 8 : 9,
+                                        vertical: isTight ? 5 : 6,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: style.badgeBackground,
+                                        borderRadius: BorderRadius.circular(
+                                          999,
+                                        ),
+                                        border: Border.all(
+                                          color: style.badgeBorderColor,
+                                        ),
+                                      ),
+                                      child: Text(
+                                        tag,
+                                        style: GoogleFonts.poppins(
+                                          fontSize: tagFontSize,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.white.withValues(
+                                            alpha: 0.96,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                  .toList(),
+                            ),
+                          ],
+                          SizedBox(
+                            height: denseLayout
+                                ? (isTight ? 10 : 14)
+                                : (isTight ? 12 : 18),
+                          ),
+                          footer,
                         ],
                       ),
-                      const SizedBox(height: 6),
-                      Wrap(
-                        spacing: 6,
-                        runSpacing: 6,
-                        children: [
-                          if (item.deadlinePill != null)
-                            _MiniPill(
-                              label: item.deadlinePill!,
-                              backgroundColor: const Color(0xFFFFF1E8),
-                              foregroundColor:
-                                  OpportunityDashboardPalette.accent,
-                              fontSize: 9,
-                              verticalPadding: 4,
-                              horizontalPadding: 8,
-                            ),
-                          if (item.isPaid)
-                            _MiniPill(
-                              label: 'Paid',
-                              backgroundColor: Color(0xFFDCFCE7),
-                              foregroundColor:
-                                  OpportunityDashboardPalette.success,
-                              fontSize: 9,
-                              verticalPadding: 4,
-                              horizontalPadding: 8,
-                            ),
-                        ],
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-            ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _InternshipFeaturedCtaButton extends StatelessWidget {
+  final String label;
+  final VoidCallback? onTap;
+  final List<Color> backgroundColors;
+  final Color textColor;
+  final bool compact;
+
+  const _InternshipFeaturedCtaButton({
+    required this.label,
+    required this.onTap,
+    required this.backgroundColors,
+    required this.textColor,
+    required this.compact,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      ignoring: onTap == null,
+      child: Opacity(
+        opacity: onTap == null ? 0.82 : 1,
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(compact ? 16 : 18),
+            child: Ink(
+              padding: EdgeInsets.symmetric(
+                horizontal: compact ? 10 : 13,
+                vertical: compact ? 6 : 7,
+              ),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: backgroundColors,
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(compact ? 16 : 18),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.58)),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    label,
+                    style: GoogleFonts.poppins(
+                      fontSize: compact ? 10.0 : 11.0,
+                      fontWeight: FontWeight.w700,
+                      color: textColor,
+                    ),
+                  ),
+                  SizedBox(width: compact ? 5 : 6),
+                  Icon(
+                    Icons.arrow_outward_rounded,
+                    size: compact ? 13 : 14,
+                    color: textColor,
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ),
@@ -1405,21 +2099,859 @@ class _WeeklyInternshipCard extends StatelessWidget {
   }
 }
 
-class _PopularInternshipCard extends StatelessWidget {
+enum _AvailableInternshipDecorationStyle {
+  cornerBloom,
+  topMist,
+  dotMatrix,
+  ribbonLoop,
+}
+
+class _AvailableInternshipPalette {
+  final List<Color> gradientColors;
+  final Alignment gradientBegin;
+  final Alignment gradientEnd;
+  final Color accentColor;
+  final Color borderColor;
+  final Color surfaceTint;
+  final Color glowColor;
+  final _AvailableInternshipDecorationStyle decorationStyle;
+
+  const _AvailableInternshipPalette({
+    required this.gradientColors,
+    required this.gradientBegin,
+    required this.gradientEnd,
+    required this.accentColor,
+    required this.borderColor,
+    required this.surfaceTint,
+    required this.glowColor,
+    required this.decorationStyle,
+  });
+}
+
+_AvailableInternshipPalette _availableInternshipPaletteFor(String uniqueKey) {
+  const palettes = <_AvailableInternshipPalette>[
+    _AvailableInternshipPalette(
+      gradientColors: [Color(0xFFF3FCF9), Color(0xFFEAF8F4), Color(0xFFDEF4EE)],
+      gradientBegin: Alignment.topLeft,
+      gradientEnd: Alignment.bottomRight,
+      accentColor: _InternshipVisualPalette.deepTeal,
+      borderColor: Color(0xFFD6EEE8),
+      surfaceTint: Color(0xFFD9F1EB),
+      glowColor: Color(0xFFC6EFE7),
+      decorationStyle: _AvailableInternshipDecorationStyle.cornerBloom,
+    ),
+    _AvailableInternshipPalette(
+      gradientColors: [Color(0xFFF4FCFA), Color(0xFFEAF9F6), Color(0xFFE1F5F1)],
+      gradientBegin: Alignment.topCenter,
+      gradientEnd: Alignment.bottomRight,
+      accentColor: _InternshipVisualPalette.oceanTeal,
+      borderColor: Color(0xFFD5EFEB),
+      surfaceTint: Color(0xFFDDF4F0),
+      glowColor: Color(0xFFCAF1EA),
+      decorationStyle: _AvailableInternshipDecorationStyle.topMist,
+    ),
+    _AvailableInternshipPalette(
+      gradientColors: [Color(0xFFF3FCF9), Color(0xFFE9F8F5), Color(0xFFDFF3EF)],
+      gradientBegin: Alignment.topLeft,
+      gradientEnd: Alignment.bottomCenter,
+      accentColor: Color(0xFF0F766E),
+      borderColor: Color(0xFFD7EEEA),
+      surfaceTint: Color(0xFFDFF4F0),
+      glowColor: Color(0xFFCBEFEA),
+      decorationStyle: _AvailableInternshipDecorationStyle.dotMatrix,
+    ),
+    _AvailableInternshipPalette(
+      gradientColors: [Color(0xFFF2FBF8), Color(0xFFE8F8F4), Color(0xFFDBF1EC)],
+      gradientBegin: Alignment.topRight,
+      gradientEnd: Alignment.bottomLeft,
+      accentColor: Color(0xFF115E59),
+      borderColor: Color(0xFFD4ECE7),
+      surfaceTint: Color(0xFFD8F0EA),
+      glowColor: Color(0xFFC3ECE3),
+      decorationStyle: _AvailableInternshipDecorationStyle.ribbonLoop,
+    ),
+  ];
+
+  return palettes[uniqueKey.hashCode.abs() % palettes.length];
+}
+
+List<Widget> _buildAvailableInternshipDecorations({
+  required _AvailableInternshipPalette palette,
+  required bool listLayout,
+}) {
+  switch (palette.decorationStyle) {
+    case _AvailableInternshipDecorationStyle.cornerBloom:
+      return [
+        Positioned.fill(
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: RadialGradient(
+                center: listLayout
+                    ? const Alignment(0.92, -0.14)
+                    : const Alignment(0.96, -0.18),
+                radius: listLayout ? 1.18 : 1.08,
+                colors: [
+                  palette.glowColor.withValues(alpha: 0.20),
+                  Colors.transparent,
+                ],
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          top: -18,
+          right: -16,
+          child: _GlowOrb(
+            size: listLayout ? 116 : 92,
+            color: palette.glowColor.withValues(alpha: 0.16),
+          ),
+        ),
+      ];
+    case _AvailableInternshipDecorationStyle.topMist:
+      return [
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          child: Container(
+            height: listLayout ? 56 : 48,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.white.withValues(alpha: 0.58),
+                  Colors.white.withValues(alpha: 0.10),
+                  Colors.transparent,
+                ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          right: -18,
+          top: 22,
+          child: _GlowOrb(
+            size: listLayout ? 108 : 86,
+            color: palette.glowColor.withValues(alpha: 0.18),
+          ),
+        ),
+      ];
+    case _AvailableInternshipDecorationStyle.dotMatrix:
+      return [
+        Positioned.fill(
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.white.withValues(alpha: 0.26),
+                  Colors.transparent,
+                  palette.glowColor.withValues(alpha: 0.08),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+          ),
+        ),
+      ];
+    case _AvailableInternshipDecorationStyle.ribbonLoop:
+      return [
+        Positioned(
+          top: 10,
+          right: 14,
+          child: Transform.rotate(
+            angle: 0.24,
+            child: Container(
+              width: listLayout ? 76 : 60,
+              height: listLayout ? 130 : 100,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(28),
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.white.withValues(alpha: 0.18),
+                    Colors.transparent,
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          bottom: -10,
+          left: -8,
+          child: _DecorativeLineArtLoop(
+            width: listLayout ? 86 : 70,
+            height: listLayout ? 86 : 70,
+            color: palette.glowColor.withValues(alpha: 0.24),
+          ),
+        ),
+      ];
+  }
+}
+
+class _AvailableInternshipCard extends StatelessWidget {
   final _InternshipCardModel item;
-  final List<_InternshipBadgeData> badges;
   final VoidCallback? onTap;
-  final VoidCallback? onApply;
   final VoidCallback? onToggleSaved;
   final bool isSaving;
 
-  const _PopularInternshipCard({
+  const _AvailableInternshipCard({
     required this.item,
-    required this.badges,
     this.onTap,
-    this.onApply,
     this.onToggleSaved,
     required this.isSaving,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+    final compact = screenSize.width < 390 || screenSize.height < 780;
+    final palette = _availableInternshipPaletteFor(item.uniqueKey);
+    final compensationLabel = _compensationLineFor(item);
+    final topBadge = _availableTopBadge(item);
+    final footerBadge = _availableFooterBadge(item);
+    final cardRadius = BorderRadius.circular(compact ? 20 : 24);
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: cardRadius,
+        child: Ink(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: palette.gradientColors,
+              begin: palette.gradientBegin,
+              end: palette.gradientEnd,
+            ),
+            borderRadius: cardRadius,
+            border: Border.all(
+              color: palette.accentColor.withValues(alpha: 0.10),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: palette.glowColor.withValues(alpha: 0.08),
+                blurRadius: 12,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: cardRadius,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final isTight =
+                    compact ||
+                    constraints.maxWidth < 170 ||
+                    constraints.maxHeight < 172;
+                final cardPadding = EdgeInsets.fromLTRB(
+                  isTight ? 11 : 13,
+                  isTight ? 10 : 12,
+                  isTight ? 11 : 13,
+                  isTight ? 9 : 11,
+                );
+                final iconTileSize = isTight ? 32.0 : 36.0;
+                final titleSize = isTight ? 12.5 : 13.6;
+                final subtitleSize = isTight ? 9.6 : 10.3;
+                final detailSize = isTight ? 9.0 : 9.8;
+                final chipSize = isTight ? 8.6 : 9.1;
+
+                return Stack(
+                  children: [
+                    ..._buildAvailableInternshipDecorations(
+                      palette: palette,
+                      listLayout: false,
+                    ),
+                    Padding(
+                      padding: cardPadding,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: iconTileSize,
+                                height: iconTileSize,
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      Colors.white.withValues(alpha: 0.94),
+                                      palette.surfaceTint,
+                                    ],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  ),
+                                  borderRadius: BorderRadius.circular(
+                                    isTight ? 12 : 14,
+                                  ),
+                                  border: Border.all(
+                                    color: palette.accentColor.withValues(
+                                      alpha: 0.10,
+                                    ),
+                                  ),
+                                ),
+                                child: _CompanyLogoTile(
+                                  logoUrl: item.logoUrl,
+                                  fallbackLabel: item.fallbackLabel,
+                                  size: iconTileSize,
+                                  borderRadius: isTight ? 12 : 14,
+                                  backgroundColor: Colors.transparent,
+                                  foregroundColor: palette.accentColor,
+                                ),
+                              ),
+                              const Spacer(),
+                              if (topBadge != null)
+                                ConstrainedBox(
+                                  constraints: BoxConstraints(
+                                    maxWidth: constraints.maxWidth * 0.44,
+                                  ),
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: isTight ? 7 : 8,
+                                      vertical: isTight ? 4 : 5,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: palette.accentColor.withValues(
+                                        alpha: 0.10,
+                                      ),
+                                      borderRadius: BorderRadius.circular(
+                                        isTight ? 10 : 11,
+                                      ),
+                                      border: Border.all(
+                                        color: palette.accentColor.withValues(
+                                          alpha: 0.12,
+                                        ),
+                                      ),
+                                    ),
+                                    child: Text(
+                                      topBadge,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: GoogleFonts.poppins(
+                                        fontSize: chipSize,
+                                        fontWeight: FontWeight.w700,
+                                        color: palette.accentColor,
+                                        letterSpacing: 0.25,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                          SizedBox(height: isTight ? 6 : 8),
+                          Text(
+                            item.title,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.poppins(
+                              fontSize: titleSize,
+                              fontWeight: FontWeight.w700,
+                              height: 1.12,
+                              color: OpportunityDashboardPalette.textPrimary,
+                            ),
+                          ),
+                          SizedBox(height: isTight ? 2 : 3),
+                          Text(
+                            item.companyName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.poppins(
+                              fontSize: subtitleSize,
+                              fontWeight: FontWeight.w600,
+                              color: OpportunityDashboardPalette.textSecondary,
+                            ),
+                          ),
+                          SizedBox(height: isTight ? 5 : 6),
+                          if (item.location != null &&
+                              item.location!.trim().isNotEmpty) ...[
+                            _InternshipMetaLine(
+                              icon: Icons.place_rounded,
+                              text: item.location!,
+                              iconColor: palette.accentColor,
+                              textColor:
+                                  OpportunityDashboardPalette.textSecondary,
+                              fontSize: detailSize,
+                              iconSize: isTight ? 12.5 : 13.5,
+                            ),
+                            SizedBox(height: isTight ? 4 : 5),
+                          ] else if (item.workMode != null &&
+                              item.workMode!.trim().isNotEmpty) ...[
+                            _InternshipMetaLine(
+                              icon: Icons.laptop_chromebook_rounded,
+                              text: item.workMode!,
+                              iconColor: palette.accentColor,
+                              textColor:
+                                  OpportunityDashboardPalette.textSecondary,
+                              fontSize: detailSize,
+                              iconSize: isTight ? 12.5 : 13.5,
+                            ),
+                            SizedBox(height: isTight ? 4 : 5),
+                          ],
+                          if (compensationLabel != null)
+                            _InternshipMetaLine(
+                              icon: Icons.payments_rounded,
+                              text: compensationLabel,
+                              iconColor: palette.accentColor,
+                              textColor: palette.accentColor,
+                              fontSize: detailSize,
+                              iconSize: isTight ? 12.5 : 13.5,
+                            ),
+                          const Spacer(),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Expanded(
+                                child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: isTight ? 7 : 8,
+                                      vertical: isTight ? 4 : 5,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: palette.accentColor.withValues(
+                                        alpha: 0.10,
+                                      ),
+                                      borderRadius: BorderRadius.circular(
+                                        isTight ? 11 : 12,
+                                      ),
+                                      border: Border.all(
+                                        color: palette.accentColor.withValues(
+                                          alpha: 0.10,
+                                        ),
+                                      ),
+                                    ),
+                                    child: Text(
+                                      footerBadge,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: GoogleFonts.poppins(
+                                        fontSize: chipSize,
+                                        fontWeight: FontWeight.w700,
+                                        color: palette.accentColor,
+                                        letterSpacing: 0.3,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                width: isTight ? 28 : 30,
+                                height: isTight ? 28 : 30,
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      palette.accentColor,
+                                      palette.accentColor.withValues(
+                                        alpha: 0.78,
+                                      ),
+                                    ],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  ),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.arrow_forward_rounded,
+                                  size: 15,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _AvailableInternshipListTile extends StatelessWidget {
+  final _InternshipCardModel item;
+  final VoidCallback? onTap;
+  final VoidCallback? onToggleSaved;
+  final bool isSaving;
+
+  const _AvailableInternshipListTile({
+    required this.item,
+    this.onTap,
+    this.onToggleSaved,
+    required this.isSaving,
+  });
+
+  String _supportingLine() {
+    final companyName = item.companyName.trim();
+    if (companyName.isNotEmpty) {
+      return companyName;
+    }
+
+    final secondary = item.secondaryText.trim().replaceAll('|', '•');
+    return secondary.isEmpty ? item.secondaryText.trim() : secondary;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+    final compact = screenSize.width < 390 || screenSize.height < 780;
+    final palette = _availableInternshipPaletteFor(item.uniqueKey);
+    final compensationLabel = _compensationLineFor(item);
+    final topBadge = _availableTopBadge(item);
+    final footerBadge = _availableFooterBadge(item);
+    final cardRadius = BorderRadius.circular(compact ? 17 : 19);
+    final supportingLine = _supportingLine();
+    final detailText = item.location?.trim().isNotEmpty ?? false
+        ? item.location!.trim()
+        : item.workMode?.trim();
+    final showInlineBadge =
+        topBadge != null &&
+        topBadge.trim().isNotEmpty &&
+        topBadge.trim().toUpperCase() != footerBadge.trim().toUpperCase();
+    final topSurface = Color.alphaBlend(
+      palette.surfaceTint.withValues(alpha: 0.24),
+      const Color(0xFFFCFFFE),
+    );
+    final bottomSurface = Color.alphaBlend(
+      palette.surfaceTint.withValues(alpha: 0.34),
+      const Color(0xFFF1FBF8),
+    );
+    final iconSurface = Color.alphaBlend(
+      palette.surfaceTint.withValues(alpha: 0.48),
+      Colors.white,
+    );
+    final metadataItems = <Widget>[
+      if (compensationLabel?.trim().isNotEmpty ?? false)
+        _AvailableInternshipListMetaItem(
+          text: compensationLabel!.trim(),
+          icon: Icons.payments_rounded,
+          color: palette.accentColor,
+          compact: compact,
+          emphasize: true,
+        ),
+      if (detailText != null && detailText.isNotEmpty)
+        _AvailableInternshipListMetaItem(
+          text: detailText,
+          icon: item.location?.trim().isNotEmpty ?? false
+              ? Icons.place_rounded
+              : Icons.laptop_chromebook_rounded,
+          color: _InternshipVisualPalette.textSecondary,
+          compact: compact,
+        ),
+      if (footerBadge.trim().isNotEmpty)
+        _AvailableInternshipListMetaItem(
+          text: footerBadge.trim(),
+          color: palette.accentColor.withValues(alpha: 0.82),
+          compact: compact,
+        ),
+      if (item.applyByText.trim().isNotEmpty)
+        _AvailableInternshipListMetaItem(
+          text: item.applyByText.trim(),
+          color: palette.accentColor.withValues(alpha: 0.72),
+          compact: compact,
+        ),
+    ];
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: cardRadius,
+        child: Ink(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [topSurface, bottomSurface],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+            borderRadius: cardRadius,
+            border: Border.all(
+              color: palette.accentColor.withValues(alpha: 0.10),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: palette.glowColor.withValues(alpha: 0.08),
+                blurRadius: 12,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: cardRadius,
+            child: Stack(
+              children: [
+                Positioned.fill(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.white.withValues(alpha: 0.34),
+                          Colors.white.withValues(alpha: 0.08),
+                          Colors.transparent,
+                        ],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  left: -22,
+                  bottom: -30,
+                  child: Container(
+                    width: 72,
+                    height: 72,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: RadialGradient(
+                        colors: [
+                          Colors.white.withValues(alpha: 0.18),
+                          Colors.transparent,
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(
+                    compact ? 11 : 13,
+                    compact ? 11 : 12,
+                    compact ? 11 : 13,
+                    compact ? 11 : 12,
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(3),
+                        decoration: BoxDecoration(
+                          color: iconSurface,
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(
+                            color: palette.accentColor.withValues(alpha: 0.10),
+                          ),
+                        ),
+                        child: _CompanyLogoTile(
+                          logoUrl: item.logoUrl,
+                          fallbackLabel: item.fallbackLabel,
+                          size: compact ? 34 : 38,
+                          borderRadius: 14,
+                          backgroundColor: Colors.transparent,
+                          foregroundColor: palette.accentColor,
+                        ),
+                      ),
+                      SizedBox(width: compact ? 10 : 11),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    item.title,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: GoogleFonts.poppins(
+                                      fontSize: compact ? 13.6 : 14.6,
+                                      fontWeight: FontWeight.w700,
+                                      height: 1.08,
+                                      color: OpportunityDashboardPalette
+                                          .textPrimary,
+                                    ),
+                                  ),
+                                ),
+                                if (showInlineBadge) ...[
+                                  const SizedBox(width: 10),
+                                  Text(
+                                    topBadge,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: GoogleFonts.poppins(
+                                      fontSize: compact ? 9.0 : 9.6,
+                                      fontWeight: FontWeight.w700,
+                                      letterSpacing: 0.24,
+                                      color: palette.accentColor.withValues(
+                                        alpha: 0.80,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              supportingLine,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.poppins(
+                                fontSize: compact ? 10.6 : 11.2,
+                                fontWeight: FontWeight.w600,
+                                color:
+                                    OpportunityDashboardPalette.textSecondary,
+                              ),
+                            ),
+                            SizedBox(height: compact ? 5 : 6),
+                            Wrap(
+                              spacing: compact ? 9 : 11,
+                              runSpacing: compact ? 3 : 4,
+                              children: metadataItems,
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(width: compact ? 8 : 10),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _BookmarkIconButton(
+                            isSaved: item.isSaved,
+                            isSaving: isSaving,
+                            onTap: onToggleSaved,
+                            size: compact ? 28 : 30,
+                            iconSize: compact ? 15 : 16,
+                            borderRadius: compact ? 11 : 12,
+                            activeColor: Colors.white,
+                            activeBackgroundColor: palette.accentColor,
+                            activeBorderColor: palette.accentColor,
+                            inactiveColor: palette.accentColor,
+                            inactiveBackgroundColor: Colors.white.withValues(
+                              alpha: 0.82,
+                            ),
+                            inactiveBorderColor: palette.accentColor.withValues(
+                              alpha: 0.10,
+                            ),
+                          ),
+                          SizedBox(width: compact ? 7 : 8),
+                          Container(
+                            width: compact ? 28 : 30,
+                            height: compact ? 28 : 30,
+                            decoration: BoxDecoration(
+                              color: palette.accentColor.withValues(
+                                alpha: 0.10,
+                              ),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.arrow_forward_rounded,
+                              color: palette.accentColor.withValues(
+                                alpha: 0.82,
+                              ),
+                              size: compact ? 15 : 16,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _AvailableInternshipListMetaItem extends StatelessWidget {
+  final String text;
+  final Color color;
+  final IconData? icon;
+  final bool compact;
+  final bool emphasize;
+
+  const _AvailableInternshipListMetaItem({
+    required this.text,
+    required this.color,
+    this.icon,
+    required this.compact,
+    this.emphasize = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (icon != null) ...[
+          Icon(icon, size: compact ? 12 : 13, color: color),
+          SizedBox(width: compact ? 4 : 5),
+        ],
+        Text(
+          text,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: GoogleFonts.poppins(
+            fontSize: compact ? 9.8 : 10.4,
+            fontWeight: emphasize ? FontWeight.w700 : FontWeight.w600,
+            color: color,
+            height: 1.05,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _InternshipViewToggle extends StatelessWidget {
+  final _InternshipsViewMode viewMode;
+  final ValueChanged<_InternshipsViewMode> onChanged;
+
+  const _InternshipViewToggle({
+    required this.viewMode,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8FAFC),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: OpportunityDashboardPalette.border),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _InternshipToggleIconButton(
+            icon: Icons.grid_view_rounded,
+            isActive: viewMode == _InternshipsViewMode.grid,
+            onTap: () => onChanged(_InternshipsViewMode.grid),
+          ),
+          const SizedBox(width: 4),
+          _InternshipToggleIconButton(
+            icon: Icons.view_list_rounded,
+            isActive: viewMode == _InternshipsViewMode.list,
+            onTap: () => onChanged(_InternshipsViewMode.list),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _InternshipToggleIconButton extends StatelessWidget {
+  final IconData icon;
+  final bool isActive;
+  final VoidCallback onTap;
+
+  const _InternshipToggleIconButton({
+    required this.icon,
+    required this.isActive,
+    required this.onTap,
   });
 
   @override
@@ -1428,129 +2960,130 @@ class _PopularInternshipCard extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(20),
-        child: Ink(
-          padding: const EdgeInsets.all(14),
+        borderRadius: BorderRadius.circular(14),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          width: 34,
+          height: 34,
           decoration: BoxDecoration(
-            color: OpportunityDashboardPalette.surface,
-            borderRadius: BorderRadius.circular(20),
+            gradient: isActive
+                ? const LinearGradient(
+                    colors: [Color(0xFFF7FCFB), Color(0xFFEAF5F2)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  )
+                : null,
+            color: isActive ? null : Colors.transparent,
+            borderRadius: BorderRadius.circular(14),
             border: Border.all(
-              color: OpportunityDashboardPalette.border.withValues(alpha: 0.9),
+              color: isActive
+                  ? _InternshipVisualPalette.mint.withValues(alpha: 0.18)
+                  : Colors.transparent,
             ),
+            boxShadow: isActive
+                ? [
+                    BoxShadow(
+                      color: _InternshipVisualPalette.glowMint.withValues(
+                        alpha: 0.18,
+                      ),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ]
+                : null,
           ),
-          child: Column(
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _CompanyLogoAvatar(
-                    logoUrl: item.logoUrl,
-                    fallbackLabel: item.fallbackLabel,
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          item.title,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.poppins(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w700,
-                            height: 1.2,
-                            color: OpportunityDashboardPalette.textPrimary,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          item.secondaryText,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.poppins(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w500,
-                            color: OpportunityDashboardPalette.textSecondary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  _BookmarkIconButton(
-                    isSaved: item.isSaved,
-                    isSaving: isSaving,
-                    onTap: onToggleSaved,
-                    size: 30,
-                    iconSize: 16,
-                    borderRadius: 12,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Wrap(
-                  spacing: 6,
-                  runSpacing: 6,
-                  children: badges
-                      .map(
-                        (badge) => _MiniPill(
-                          label: badge.label,
-                          backgroundColor: badge.backgroundColor,
-                          foregroundColor: badge.foregroundColor,
-                        ),
-                      )
-                      .toList(),
-                ),
-              ),
-              const SizedBox(height: 12),
-              Divider(
-                height: 1,
-                thickness: 1,
-                color: OpportunityDashboardPalette.border.withValues(
-                  alpha: 0.8,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  const Icon(
-                    Icons.calendar_today_outlined,
-                    size: 14,
-                    color: OpportunityDashboardPalette.textSecondary,
-                  ),
-                  const SizedBox(width: 6),
-                  Expanded(
-                    child: Text(
-                      item.applyByText,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.poppins(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w500,
-                        color: OpportunityDashboardPalette.textSecondary,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  GestureDetector(
-                    onTap: onApply,
-                    child: Text(
-                      'Apply Now',
-                      style: GoogleFonts.poppins(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: OpportunityDashboardPalette.primary,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
+          child: Icon(
+            icon,
+            size: 18,
+            color: isActive
+                ? _InternshipVisualPalette.deepTeal
+                : _InternshipVisualPalette.textSecondary,
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _InternshipMetaLine extends StatelessWidget {
+  final IconData icon;
+  final String text;
+  final Color iconColor;
+  final Color textColor;
+  final double fontSize;
+  final double iconSize;
+
+  const _InternshipMetaLine({
+    required this.icon,
+    required this.text,
+    required this.iconColor,
+    required this.textColor,
+    required this.fontSize,
+    required this.iconSize,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(icon, size: iconSize, color: iconColor),
+        const SizedBox(width: 5),
+        Expanded(
+          child: Text(
+            text,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: GoogleFonts.poppins(
+              fontSize: fontSize,
+              fontWeight: FontWeight.w500,
+              color: textColor,
+              height: 1.1,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _GlowOrb extends StatelessWidget {
+  final double size;
+  final Color color;
+
+  const _GlowOrb({required this.size, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: RadialGradient(colors: [color, Colors.transparent]),
+      ),
+    );
+  }
+}
+
+class _DecorativeLineArtLoop extends StatelessWidget {
+  final double width;
+  final double height;
+  final Color color;
+
+  const _DecorativeLineArtLoop({
+    required this.width,
+    required this.height,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(width * 0.32),
+        border: Border.all(color: color, width: 1.4),
       ),
     );
   }
@@ -1563,6 +3096,12 @@ class _BookmarkIconButton extends StatelessWidget {
   final double size;
   final double iconSize;
   final double borderRadius;
+  final Color activeColor;
+  final Color activeBackgroundColor;
+  final Color activeBorderColor;
+  final Color inactiveColor;
+  final Color inactiveBackgroundColor;
+  final Color inactiveBorderColor;
 
   const _BookmarkIconButton({
     required this.isSaved,
@@ -1571,6 +3110,12 @@ class _BookmarkIconButton extends StatelessWidget {
     this.size = 34,
     this.iconSize = 18,
     this.borderRadius = 14,
+    this.activeColor = _InternshipVisualPalette.deepTeal,
+    this.activeBackgroundColor = const Color(0xFFE8FBF6),
+    this.activeBorderColor = _InternshipVisualPalette.border,
+    this.inactiveColor = _InternshipVisualPalette.textSecondary,
+    this.inactiveBackgroundColor = Colors.white,
+    this.inactiveBorderColor = _InternshipVisualPalette.border,
   });
 
   @override
@@ -1584,63 +3129,17 @@ class _BookmarkIconButton extends StatelessWidget {
           width: size,
           height: size,
           decoration: BoxDecoration(
-            color: isSaved
-                ? OpportunityDashboardPalette.primary.withValues(alpha: 0.10)
-                : const Color(0xFFF8FAFC),
+            color: isSaved ? activeBackgroundColor : inactiveBackgroundColor,
             borderRadius: BorderRadius.circular(borderRadius),
             border: Border.all(
-              color: isSaved
-                  ? OpportunityDashboardPalette.primary.withValues(alpha: 0.16)
-                  : OpportunityDashboardPalette.border,
+              color: isSaved ? activeBorderColor : inactiveBorderColor,
             ),
           ),
           child: Icon(
             isSaved ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
             size: iconSize,
-            color: isSaved
-                ? OpportunityDashboardPalette.primary
-                : OpportunityDashboardPalette.textSecondary,
+            color: isSaved ? activeColor : inactiveColor,
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _MiniPill extends StatelessWidget {
-  final String label;
-  final Color backgroundColor;
-  final Color foregroundColor;
-  final double fontSize;
-  final double horizontalPadding;
-  final double verticalPadding;
-
-  const _MiniPill({
-    required this.label,
-    required this.backgroundColor,
-    required this.foregroundColor,
-    this.fontSize = 11,
-    this.horizontalPadding = 10,
-    this.verticalPadding = 6,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: horizontalPadding,
-        vertical: verticalPadding,
-      ),
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Text(
-        label,
-        style: GoogleFonts.poppins(
-          fontSize: fontSize,
-          fontWeight: FontWeight.w600,
-          color: foregroundColor,
         ),
       ),
     );
@@ -1703,57 +3202,6 @@ class _CompanyLogoTile extends StatelessWidget {
   }
 }
 
-class _CompanyLogoAvatar extends StatelessWidget {
-  final String logoUrl;
-  final String fallbackLabel;
-
-  const _CompanyLogoAvatar({
-    required this.logoUrl,
-    required this.fallbackLabel,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 42,
-      height: 42,
-      decoration: BoxDecoration(
-        color: const Color(0xFFF1F5F9),
-        shape: BoxShape.circle,
-        border: Border.all(
-          color: OpportunityDashboardPalette.border.withValues(alpha: 0.9),
-        ),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: logoUrl.isEmpty
-          ? Center(
-              child: Text(
-                fallbackLabel,
-                style: GoogleFonts.poppins(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: OpportunityDashboardPalette.primary,
-                ),
-              ),
-            )
-          : CachedNetworkImage(
-              imageUrl: logoUrl,
-              fit: BoxFit.cover,
-              errorWidget: (context, url, error) => Center(
-                child: Text(
-                  fallbackLabel,
-                  style: GoogleFonts.poppins(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color: OpportunityDashboardPalette.primary,
-                  ),
-                ),
-              ),
-            ),
-    );
-  }
-}
-
 class _InternshipsEmptyState extends StatelessWidget {
   final String title;
   final String subtitle;
@@ -1763,25 +3211,28 @@ class _InternshipsEmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: OpportunityDashboardPalette.surface,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(22),
         border: Border.all(color: OpportunityDashboardPalette.border),
       ),
       child: Row(
         children: [
           Container(
-            width: 40,
-            height: 40,
+            width: 44,
+            height: 44,
             decoration: BoxDecoration(
-              color: const Color(0xFFEDE9FE),
-              borderRadius: BorderRadius.circular(12),
+              color: const Color(0xFFEAF8F4),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: _InternshipVisualPalette.mint.withValues(alpha: 0.14),
+              ),
             ),
             child: const Icon(
               Icons.school_outlined,
-              color: OpportunityDashboardPalette.primary,
-              size: 20,
+              color: _InternshipVisualPalette.deepTeal,
+              size: 22,
             ),
           ),
           const SizedBox(width: 12),
@@ -1792,18 +3243,18 @@ class _InternshipsEmptyState extends StatelessWidget {
                 Text(
                   title,
                   style: GoogleFonts.poppins(
-                    fontSize: 13,
+                    fontSize: 13.4,
                     fontWeight: FontWeight.w700,
-                    color: OpportunityDashboardPalette.textPrimary,
+                    color: _InternshipVisualPalette.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   subtitle,
                   style: GoogleFonts.poppins(
-                    fontSize: 11,
+                    fontSize: 11.2,
                     height: 1.4,
-                    color: OpportunityDashboardPalette.textSecondary,
+                    color: _InternshipVisualPalette.textSecondary,
                   ),
                 ),
               ],
@@ -1822,18 +3273,6 @@ class _QuickFilterDefinition {
   const _QuickFilterDefinition({required this.value, required this.label});
 }
 
-class _InternshipBadgeData {
-  final String label;
-  final Color backgroundColor;
-  final Color foregroundColor;
-
-  const _InternshipBadgeData({
-    required this.label,
-    required this.backgroundColor,
-    required this.foregroundColor,
-  });
-}
-
 class _InternshipCardModel {
   final String id;
   final String title;
@@ -1849,6 +3288,7 @@ class _InternshipCardModel {
   final String? deadlinePill;
   final String applyByText;
   final bool isPaid;
+  final String? compensation;
   final String? duration;
   final String? categoryLabel;
   final bool isFeaturedPreferred;
@@ -1876,6 +3316,7 @@ class _InternshipCardModel {
     required this.deadlinePill,
     required this.applyByText,
     required this.isPaid,
+    required this.compensation,
     required this.duration,
     required this.categoryLabel,
     required this.isFeaturedPreferred,
@@ -1899,6 +3340,7 @@ class _InternshipCardModel {
     required String? deadlinePill,
     required String applyByText,
     required bool isPaid,
+    String? compensation,
     required String? workMode,
     required String? duration,
     required String? categoryLabel,
@@ -1922,6 +3364,7 @@ class _InternshipCardModel {
       deadlinePill: deadlinePill,
       applyByText: applyByText,
       isPaid: isPaid,
+      compensation: compensation,
       duration: duration,
       categoryLabel: categoryLabel,
       isFeaturedPreferred: isFeaturedPreferred,
@@ -1934,6 +3377,7 @@ class _InternshipCardModel {
         companyName,
         secondaryText,
         workMode ?? '',
+        compensation ?? '',
         duration ?? '',
         categoryLabel ?? '',
       ].join(' ').toLowerCase(),
@@ -1944,6 +3388,53 @@ class _InternshipCardModel {
   }
 
   String get uniqueKey => id.isEmpty ? '$title|$companyName' : id;
+}
+
+String? _featuredHeroTag(_InternshipCardModel item) {
+  if (item.workMode != null && item.workMode!.trim().isNotEmpty) {
+    return item.workMode!.toUpperCase();
+  }
+  if (item.categoryLabel != null && item.categoryLabel!.trim().isNotEmpty) {
+    return switch (item.categoryLabel!.toLowerCase()) {
+      'engineering' => 'TECH',
+      'marketing' => 'GROWTH',
+      'strategy' => 'STRATEGY',
+      'design' => 'DESIGN',
+      _ => item.categoryLabel!.toUpperCase(),
+    };
+  }
+  return item.isFeaturedPreferred ? 'CURATED' : null;
+}
+
+String? _compensationLineFor(_InternshipCardModel item) {
+  final compensation = item.compensation?.trim();
+  if (compensation != null && compensation.isNotEmpty) {
+    return compensation;
+  }
+  return item.isPaid ? 'Paid internship' : null;
+}
+
+String? _availableTopBadge(_InternshipCardModel item) {
+  if (item.workMode != null && item.workMode!.trim().isNotEmpty) {
+    return item.workMode!.toUpperCase();
+  }
+  if (item.isPaid) {
+    return 'PAID';
+  }
+  if (item.categoryLabel != null && item.categoryLabel!.trim().isNotEmpty) {
+    return item.categoryLabel!.toUpperCase();
+  }
+  return 'INTERNSHIP';
+}
+
+String _availableFooterBadge(_InternshipCardModel item) {
+  if (item.duration != null && item.duration!.trim().isNotEmpty) {
+    return item.duration!;
+  }
+  if (item.categoryLabel != null && item.categoryLabel!.trim().isNotEmpty) {
+    return item.categoryLabel!;
+  }
+  return 'Internship';
 }
 
 final List<_InternshipCardModel> _placeholderWeeklyInternships = [
@@ -1957,6 +3448,7 @@ final List<_InternshipCardModel> _placeholderWeeklyInternships = [
     deadlinePill: '3 days left',
     applyByText: 'Applying by Oct 12',
     isPaid: true,
+    compensation: 'Paid stipend',
     workMode: 'Remote',
     duration: '3 months',
     categoryLabel: 'Design',
@@ -1975,6 +3467,7 @@ final List<_InternshipCardModel> _placeholderWeeklyInternships = [
     deadlinePill: '5 days left',
     applyByText: 'Applying by Oct 16',
     isPaid: true,
+    compensation: 'Monthly stipend',
     workMode: 'Hybrid',
     duration: '4 months',
     categoryLabel: 'Design',
@@ -1993,6 +3486,7 @@ final List<_InternshipCardModel> _placeholderWeeklyInternships = [
     deadlinePill: '1 week left',
     applyByText: 'Applying by Oct 21',
     isPaid: true,
+    compensation: 'Project stipend',
     workMode: null,
     duration: '10 weeks',
     categoryLabel: 'Marketing',
@@ -2002,7 +3496,7 @@ final List<_InternshipCardModel> _placeholderWeeklyInternships = [
   ),
 ];
 
-final List<_InternshipCardModel> _placeholderPopularInternships = [
+final List<_InternshipCardModel> _placeholderAvailableInternships = [
   _InternshipCardModel.placeholder(
     id: 'google-ux',
     title: 'UX Design Intern',
@@ -2013,6 +3507,7 @@ final List<_InternshipCardModel> _placeholderPopularInternships = [
     deadlinePill: '3 days left',
     applyByText: 'Applying by Oct 12',
     isPaid: true,
+    compensation: 'Paid stipend',
     workMode: 'Hybrid',
     duration: '3 months',
     categoryLabel: 'Design',
@@ -2031,6 +3526,7 @@ final List<_InternshipCardModel> _placeholderPopularInternships = [
     deadlinePill: '6 days left',
     applyByText: 'Applying by Oct 18',
     isPaid: true,
+    compensation: 'Monthly stipend',
     workMode: 'Remote',
     duration: '3 months',
     categoryLabel: 'Engineering',
