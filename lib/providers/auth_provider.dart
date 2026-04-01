@@ -58,6 +58,12 @@ class AuthProvider extends ChangeNotifier {
         _startUserDocListener(_userModel!.uid);
       }
     } catch (e) {
+      if (_isIgnorableFirebaseCancellation(e)) {
+        _isLoading = false;
+        _isInitialLoadDone = true;
+        notifyListeners();
+        return;
+      }
       debugPrint('loadCurrentUser error: $e');
     } finally {
       _isLoading = false;

@@ -139,6 +139,7 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
         companyName: widget.opportunity.companyName,
         contextType: 'opportunity',
         contextLabel: widget.opportunity.title,
+        currentUserId: currentUser.uid,
       );
 
       if (!mounted) return;

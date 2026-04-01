@@ -5,6 +5,7 @@ import '../../models/conversation_model.dart';
 import '../../models/user_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/chat_provider.dart';
+import '../../widgets/chat/chat_confirmation_dialog.dart';
 import '../../widgets/chat/chat_theme.dart';
 import '../../widgets/chat/conversation_list_item.dart';
 import '../../widgets/profile_avatar.dart';
@@ -20,7 +21,10 @@ class MessagesInboxScreen extends StatefulWidget {
 }
 
 class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
+  final TextEditingController _searchController = TextEditingController();
+
   _InboxFilter _selectedFilter = _InboxFilter.all;
+  String _searchQuery = '';
 
   @override
   void initState() {
@@ -34,9 +38,19 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
   }
 
   @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>().userModel;
     final chatProvider = context.watch<ChatProvider>();
+    final conversations = List<ConversationModel>.of(chatProvider.conversations);
+    final filtered = auth == null
+        ? const <ConversationModel>[]
+        : _filteredConversations(conversations, auth.uid, chatProvider);
 
     return Scaffold(
       backgroundColor: ChatThemePalette.background,
@@ -50,100 +64,63 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
           backgroundColor: Colors.transparent,
           elevation: 0,
           onPressed: auth == null ? null : _openNewChat,
-          child: const Icon(Icons.add_rounded, color: Colors.white, size: 28),
+          child: const Icon(Icons.edit_outlined, color: Colors.white, size: 24),
         ),
       ),
-      body: Container(
+      body: DecoratedBox(
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              ChatThemePalette.primary.withValues(alpha: 0.07),
+              ChatThemePalette.primary.withValues(alpha: 0.08),
+              ChatThemePalette.secondary.withValues(alpha: 0.04),
               ChatThemePalette.background,
               ChatThemePalette.background,
             ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            stops: const [0, 0.24, 1],
+            stops: const [0, 0.16, 0.42, 1],
           ),
         ),
         child: SafeArea(
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 12, 20, 18),
-                child: Row(
-                  children: [
-                    GestureDetector(
-                      onTap: auth == null ? null : () => _openProfile(auth),
-                      child: ProfileAvatar(user: auth, radius: 18),
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Text(
-                        'Messages',
-                        style: ChatThemeStyles.title(ChatThemePalette.primary),
-                      ),
-                    ),
-                    _ToolbarButton(
-                      icon: Icons.search_rounded,
-                      onTap: auth == null
-                          ? null
-                          : () => _openConversationSearch(
-                              chatProvider.conversations,
-                              auth.uid,
-                            ),
-                    ),
-                    const SizedBox(width: 10),
-                    PopupMenuButton<String>(
-                      color: ChatThemePalette.surface,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      onSelected: (value) {
-                        if (value == 'archived') {
-                          setState(
-                            () => _selectedFilter = _InboxFilter.archived,
-                          );
-                          return;
-                        }
-                        if (value == 'all') {
-                          setState(() => _selectedFilter = _InboxFilter.all);
-                          return;
-                        }
-                        _openNewChat();
-                      },
-                      itemBuilder: (context) => [
-                        PopupMenuItem<String>(
-                          value: 'new',
-                          child: Text(
-                            'Start New Chat',
-                            style: ChatThemeStyles.body(),
-                          ),
-                        ),
-                        PopupMenuItem<String>(
-                          value: 'all',
-                          child: Text(
-                            'Show All Chats',
-                            style: ChatThemeStyles.body(),
-                          ),
-                        ),
-                        PopupMenuItem<String>(
-                          value: 'archived',
-                          child: Text(
-                            'Show Archived',
-                            style: ChatThemeStyles.body(),
-                          ),
-                        ),
-                      ],
-                      child: const _ToolbarButton(
-                        icon: Icons.more_vert_rounded,
-                      ),
-                    ),
-                  ],
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+                child: _HeaderCard(
+                  auth: auth,
+                  filter: _selectedFilter,
+                  visibleCount: filtered.length,
+                  onProfileTap: auth == null ? null : () => _openProfile(auth),
+                  onActionSelected: (value) {
+                    if (value == 'new') {
+                      _openNewChat();
+                      return;
+                    }
+
+                    setState(() {
+                      _selectedFilter = value == 'archived'
+                          ? _InboxFilter.archived
+                          : _InboxFilter.all;
+                    });
+                  },
                 ),
               ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
+                child: _SearchField(
+                  controller: _searchController,
+                  onChanged: (value) {
+                    setState(() => _searchQuery = value.trim().toLowerCase());
+                  },
+                  onClear: () {
+                    _searchController.clear();
+                    setState(() => _searchQuery = '');
+                  },
+                ),
+              ),
+              const SizedBox(height: 16),
               SizedBox(
-                height: 42,
+                height: 44,
                 child: ListView(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   scrollDirection: Axis.horizontal,
@@ -151,23 +128,21 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
                       .map(
                         (filter) => Padding(
                           padding: const EdgeInsets.only(right: 10),
-                          child: _FilterChipButton(
+                          child: _FilterChip(
                             label: filter.label,
                             selected: filter == _selectedFilter,
-                            onTap: () =>
-                                setState(() => _selectedFilter = filter),
+                            onTap: () => setState(() => _selectedFilter = filter),
                           ),
                         ),
                       )
-                      .toList(),
+                      .toList(growable: false),
                 ),
               ),
               const SizedBox(height: 18),
               Expanded(
                 child: Builder(
                   builder: (context) {
-                    if (chatProvider.isLoading &&
-                        chatProvider.conversations.isEmpty) {
+                    if (chatProvider.isLoading && conversations.isEmpty) {
                       return const Center(child: CircularProgressIndicator());
                     }
 
@@ -176,52 +151,72 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
                     }
 
                     if (auth == null) {
-                      return _EmptyState(
-                        title: 'Sign in to see your chats',
+                      return const _EmptyState(
+                        title: 'Sign in to see your conversations',
                         subtitle:
-                            'Your student or company conversations appear here.',
+                            'Your messages with students and companies will appear here.',
                       );
                     }
 
-                    final filteredConversations = _filteredConversations(
-                      chatProvider.conversations,
-                      auth.uid,
-                    );
-
-                    if (filteredConversations.isEmpty) {
-                      return _EmptyState(
-                        title: _selectedFilter == _InboxFilter.archived
-                            ? 'No archived chats'
-                            : 'No conversations yet',
-                        subtitle: _selectedFilter == _InboxFilter.archived
-                            ? 'Archived conversations will appear here.'
-                            : 'Start a new chat to begin your premium inbox flow.',
+                    if (filtered.isEmpty) {
+                      return RefreshIndicator(
+                        onRefresh: _refreshConversations,
+                        color: ChatThemePalette.primary,
+                        child: ListView(
+                          physics: const AlwaysScrollableScrollPhysics(
+                            parent: BouncingScrollPhysics(),
+                          ),
+                          padding: const EdgeInsets.fromLTRB(20, 4, 20, 120),
+                          children: [
+                            _EmptyState(
+                              title: _selectedFilter == _InboxFilter.archived
+                                  ? 'No archived conversations'
+                                  : _searchQuery.isNotEmpty
+                                  ? 'No matching conversations'
+                                  : 'No conversations yet',
+                              subtitle: _selectedFilter == _InboxFilter.archived
+                                  ? 'Archived conversations will stay here until you restore them.'
+                                  : _searchQuery.isNotEmpty
+                                  ? 'Try a different name, company, or project keyword.'
+                                  : 'Start a new conversation to bring your inbox to life.',
+                            ),
+                          ],
+                        ),
                       );
                     }
 
-                    return ListView.separated(
-                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 120),
-                      itemCount: filteredConversations.length,
-                      separatorBuilder: (_, _) => const SizedBox(height: 12),
-                      itemBuilder: (context, index) {
-                        final conversation = filteredConversations[index];
-                        return ConversationListItem(
-                          conversation: conversation,
-                          currentUserId: auth.uid,
-                          unreadCount: chatProvider.unreadCountFor(
-                            conversation.id,
-                          ),
-                          isMuted: chatProvider.isConversationMutedFor(
-                            conversation,
-                            auth.uid,
-                          ),
-                          onTap: () => _openConversation(conversation),
-                          onLongPress: () =>
-                              _showConversationActions(conversation, auth.uid),
-                          onOpenProfile: () =>
-                              _openConversationProfile(conversation, auth.uid),
-                        );
-                      },
+                    return RefreshIndicator(
+                      onRefresh: _refreshConversations,
+                      color: ChatThemePalette.primary,
+                      child: ListView.separated(
+                        physics: const AlwaysScrollableScrollPhysics(
+                          parent: BouncingScrollPhysics(),
+                        ),
+                        padding: const EdgeInsets.fromLTRB(20, 4, 20, 120),
+                        itemCount: filtered.length,
+                        separatorBuilder: (_, _) => const SizedBox(height: 14),
+                        itemBuilder: (context, index) {
+                          final conversation = filtered[index];
+                          return ConversationListItem(
+                            conversation: conversation,
+                            currentUserId: auth.uid,
+                            unreadCount: chatProvider.unreadCountFor(conversation.id),
+                            isMuted: chatProvider.isConversationMutedFor(
+                              conversation,
+                              auth.uid,
+                            ),
+                            isArchived: chatProvider.isConversationArchivedFor(
+                              conversation,
+                              auth.uid,
+                            ),
+                            onTap: () => _openConversation(conversation),
+                            onLongPress: () =>
+                                _showConversationActions(conversation, auth.uid),
+                            onOpenProfile: () =>
+                                _openConversationProfile(conversation, auth.uid),
+                          );
+                        },
+                      ),
                     );
                   },
                 ),
@@ -236,10 +231,10 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
   List<ConversationModel> _filteredConversations(
     List<ConversationModel> conversations,
     String currentUserId,
+    ChatProvider chatProvider,
   ) {
     return conversations.where((conversation) {
-      final chatProvider = context.read<ChatProvider>();
-      if (chatProvider.isConversationHidden(conversation.id)) {
+      if (chatProvider.isConversationDeletedFor(conversation, currentUserId)) {
         return false;
       }
 
@@ -248,6 +243,19 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
         conversation,
         currentUserId,
       );
+
+      if (_searchQuery.isNotEmpty) {
+        final haystack = [
+          conversation.displayNameFor(currentUserId),
+          conversation.listPreviewText,
+          conversation.contextLabel,
+          conversation.studentName,
+          conversation.companyName,
+        ].join(' ').toLowerCase();
+        if (!haystack.contains(_searchQuery)) {
+          return false;
+        }
+      }
 
       switch (_selectedFilter) {
         case _InboxFilter.all:
@@ -259,7 +267,11 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
         case _InboxFilter.archived:
           return isArchived;
       }
-    }).toList();
+    }).toList(growable: false);
+  }
+
+  Future<void> _refreshConversations() async {
+    await context.read<ChatProvider>().refreshConversations();
   }
 
   Future<void> _openNewChat() async {
@@ -267,11 +279,9 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
       context,
       MaterialPageRoute(builder: (_) => const NewChatScreen()),
     );
-
     if (!mounted || result == null) {
       return;
     }
-
     _openConversation(result);
   }
 
@@ -336,113 +346,21 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
     );
   }
 
-  Future<void> _openConversationSearch(
-    List<ConversationModel> conversations,
-    String currentUserId,
-  ) async {
-    final selected = await showSearch<ConversationModel?>(
-      context: context,
-      delegate: _ConversationSearchDelegate(
-        conversations: conversations
-            .where(
-              (conversation) => !context
-                  .read<ChatProvider>()
-                  .isConversationHidden(conversation.id),
-            )
-            .toList(),
-        currentUserId: currentUserId,
-      ),
-    );
-
-    if (!mounted || selected == null) {
-      return;
-    }
-
-    _openConversation(selected);
-  }
-
   Future<void> _showConversationActions(
     ConversationModel conversation,
     String currentUserId,
   ) async {
+    final provider = context.read<ChatProvider>();
+    final isArchived = provider.isConversationArchivedFor(
+      conversation,
+      currentUserId,
+    );
+    final isMuted = provider.isConversationMutedFor(conversation, currentUserId);
+
     final selected = await showModalBottomSheet<String>(
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (context) {
-        final chatProvider = context.read<ChatProvider>();
-        final isArchived = chatProvider.isConversationArchivedFor(
-          conversation,
-          currentUserId,
-        );
-        final isMuted = chatProvider.isConversationMutedFor(
-          conversation,
-          currentUserId,
-        );
-        return SafeArea(
-          child: Container(
-            margin: const EdgeInsets.all(12),
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            decoration: BoxDecoration(
-              color: ChatThemePalette.surface,
-              borderRadius: BorderRadius.circular(28),
-              boxShadow: ChatThemeStyles.softShadow(0.08),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ListTile(
-                  leading: const Icon(
-                    Icons.person_outline_rounded,
-                    color: ChatThemePalette.primary,
-                  ),
-                  title: Text(
-                    'View Profile',
-                    style: ChatThemeStyles.cardTitle(),
-                  ),
-                  onTap: () => Navigator.pop(context, 'profile'),
-                ),
-                ListTile(
-                  leading: Icon(
-                    isMuted
-                        ? Icons.notifications_active_outlined
-                        : Icons.notifications_off_outlined,
-                    color: ChatThemePalette.textPrimary,
-                  ),
-                  title: Text(
-                    isMuted ? 'Unmute Chat' : 'Mute Chat',
-                    style: ChatThemeStyles.cardTitle(),
-                  ),
-                  onTap: () => Navigator.pop(context, 'mute'),
-                ),
-                ListTile(
-                  leading: Icon(
-                    isArchived
-                        ? Icons.unarchive_outlined
-                        : Icons.archive_outlined,
-                    color: ChatThemePalette.textPrimary,
-                  ),
-                  title: Text(
-                    isArchived ? 'Unarchive Chat' : 'Archive Chat',
-                    style: ChatThemeStyles.cardTitle(),
-                  ),
-                  onTap: () => Navigator.pop(context, 'archive'),
-                ),
-                ListTile(
-                  leading: const Icon(
-                    Icons.delete_outline_rounded,
-                    color: ChatThemePalette.error,
-                  ),
-                  title: Text(
-                    'Delete Chat',
-                    style: ChatThemeStyles.cardTitle(ChatThemePalette.error),
-                  ),
-                  onTap: () => Navigator.pop(context, 'delete'),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
+      builder: (context) => _ActionSheet(isArchived: isArchived, isMuted: isMuted),
     );
 
     if (!mounted || selected == null) {
@@ -454,141 +372,100 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
       return;
     }
 
-    final chatProvider = context.read<ChatProvider>();
-
     if (selected == 'mute') {
-      final muted = !chatProvider.isConversationMutedFor(
-        conversation,
-        currentUserId,
-      );
-      await chatProvider.muteConversation(
+      final muted = !isMuted;
+      await provider.muteConversation(
         conversationId: conversation.id,
         userId: currentUserId,
         muted: muted,
       );
-      if (!mounted) {
+      if (!mounted) return;
+      if (provider.error != null) {
+        _showProviderError(provider.error!);
         return;
       }
-
-      if (chatProvider.error != null) {
-        _showProviderError(chatProvider.error!);
-        return;
-      }
-
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(muted ? 'Chat muted' : 'Chat unmuted')),
+        SnackBar(content: Text(muted ? 'Conversation muted' : 'Conversation unmuted')),
       );
       return;
     }
 
     if (selected == 'archive') {
-      final archived = !chatProvider.isConversationArchivedFor(
-        conversation,
-        currentUserId,
-      );
+      final archived = !isArchived;
       if (archived) {
-        final confirmed = await _confirmConversationAction(
-          title: 'Archive Chat',
-          message:
-              'Archive this conversation? You can still find it later in Archived chats.',
+        final confirmed = await showChatConfirmationDialog(
+          context,
+          title: 'Archive conversation?',
+          message: 'Are you sure you want to archive this conversation?',
           confirmLabel: 'Archive',
+          icon: Icons.archive_outlined,
         );
         if (confirmed != true || !mounted) {
           return;
         }
       }
 
-      await chatProvider.archiveConversation(
+      await provider.archiveConversation(
         conversationId: conversation.id,
         userId: currentUserId,
         archived: archived,
       );
-      if (!mounted) {
+      if (!mounted) return;
+      if (provider.error != null) {
+        _showProviderError(provider.error!);
         return;
       }
-
-      if (chatProvider.error != null) {
-        _showProviderError(chatProvider.error!);
-        return;
-      }
-
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(archived ? 'Chat archived' : 'Chat restored to inbox'),
+          content: Text(
+            archived
+                ? 'Conversation moved to Archived'
+                : 'Conversation restored to Inbox',
+          ),
         ),
       );
       return;
     }
 
-    final confirmed = await _confirmConversationAction(
-      title: 'Delete Chat',
+    final confirmed = await showChatConfirmationDialog(
+      context,
+      title: 'Delete conversation?',
       message:
-          'Delete this conversation from your inbox? You can start it again later if needed.',
+          'Are you sure you want to delete this conversation? This action cannot be undone.',
       confirmLabel: 'Delete',
+      destructive: true,
+      icon: Icons.delete_outline_rounded,
     );
-
     if (confirmed != true || !mounted) {
       return;
     }
 
-    await chatProvider.hideConversation(conversation.id);
-    if (!mounted) {
+    await provider.deleteConversation(
+      conversationId: conversation.id,
+      userId: currentUserId,
+    );
+    if (!mounted) return;
+    if (provider.error != null) {
+      _showProviderError(provider.error!);
       return;
     }
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Conversation removed from your inbox')),
+      const SnackBar(content: Text('Conversation deleted')),
     );
   }
 
   void _showProviderError(String error) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(error.replaceFirst(RegExp(r'^Exception:\s*'), '')),
+        content: Text(error.replaceFirst(RegExp(r'^Exception:\\s*'), '')),
       ),
     );
     context.read<ChatProvider>().clearError();
   }
-
-  Future<bool?> _confirmConversationAction({
-    required String title,
-    required String message,
-    required String confirmLabel,
-  }) {
-    return showDialog<bool>(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(24),
-          ),
-          backgroundColor: ChatThemePalette.surface,
-          title: Text(title),
-          content: Text(message),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () => Navigator.pop(context, true),
-              child: Text(
-                confirmLabel,
-                style: TextStyle(
-                  color: confirmLabel == 'Delete'
-                      ? ChatThemePalette.error
-                      : ChatThemePalette.primary,
-                ),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
 }
 
 enum _InboxFilter {
-  all('All Chats'),
+  all('Inbox'),
   unread('Unread'),
   projects('Projects'),
   archived('Archived');
@@ -598,12 +475,145 @@ enum _InboxFilter {
   const _InboxFilter(this.label);
 }
 
-class _FilterChipButton extends StatelessWidget {
+class _HeaderCard extends StatelessWidget {
+  final UserModel? auth;
+  final _InboxFilter filter;
+  final int visibleCount;
+  final VoidCallback? onProfileTap;
+  final ValueChanged<String> onActionSelected;
+
+  const _HeaderCard({
+    required this.auth,
+    required this.filter,
+    required this.visibleCount,
+    required this.onProfileTap,
+    required this.onActionSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final subtitle = filter == _InboxFilter.archived
+        ? '$visibleCount archived conversations'
+        : '$visibleCount conversations ready for follow-up';
+
+    return Container(
+      padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
+      decoration: BoxDecoration(
+        gradient: ChatThemePalette.heroGradient,
+        borderRadius: BorderRadius.circular(32),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.9)),
+        boxShadow: ChatThemeStyles.softShadow(0.1),
+      ),
+      child: Row(
+        children: [
+          GestureDetector(onTap: onProfileTap, child: ProfileAvatar(user: auth, radius: 20)),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Messages', style: ChatThemeStyles.title()),
+                const SizedBox(height: 4),
+                Text(
+                  subtitle,
+                  style: ChatThemeStyles.body(ChatThemePalette.textSecondary),
+                ),
+              ],
+            ),
+          ),
+          PopupMenuButton<String>(
+            color: ChatThemePalette.surface,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+            onSelected: onActionSelected,
+            itemBuilder: (context) => [
+              PopupMenuItem<String>(
+                value: 'new',
+                child: Text('Start New Chat', style: ChatThemeStyles.body()),
+              ),
+              PopupMenuItem<String>(
+                value: 'all',
+                child: Text('Show Inbox', style: ChatThemeStyles.body()),
+              ),
+              PopupMenuItem<String>(
+                value: 'archived',
+                child: Text('Show Archived', style: ChatThemeStyles.body()),
+              ),
+            ],
+            child: Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: ChatThemePalette.surface,
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(color: ChatThemePalette.border),
+              ),
+              child: const Icon(Icons.more_horiz_rounded, size: 18),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SearchField extends StatelessWidget {
+  final TextEditingController controller;
+  final ValueChanged<String> onChanged;
+  final VoidCallback onClear;
+
+  const _SearchField({
+    required this.controller,
+    required this.onChanged,
+    required this.onClear,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      decoration: BoxDecoration(
+        color: ChatThemePalette.surface,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: ChatThemePalette.border),
+        boxShadow: ChatThemeStyles.softShadow(0.05),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.search_rounded, color: ChatThemePalette.textSecondary),
+          const SizedBox(width: 12),
+          Expanded(
+            child: TextField(
+              controller: controller,
+              onChanged: onChanged,
+              style: ChatThemeStyles.body(),
+              decoration: InputDecoration(
+                hintText: 'Search conversations, companies, or projects',
+                hintStyle: ChatThemeStyles.body(ChatThemePalette.textSecondary),
+                border: InputBorder.none,
+              ),
+            ),
+          ),
+          if (controller.text.trim().isNotEmpty)
+            IconButton(
+              onPressed: onClear,
+              splashRadius: 18,
+              icon: const Icon(
+                Icons.close_rounded,
+                color: ChatThemePalette.textSecondary,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _FilterChip extends StatelessWidget {
   final String label;
   final bool selected;
   final VoidCallback onTap;
 
-  const _FilterChipButton({
+  const _FilterChip({
     required this.label,
     required this.selected,
     required this.onTap,
@@ -615,53 +625,21 @@ class _FilterChipButton extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(999),
       child: Ink(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 11),
         decoration: BoxDecoration(
-          color: selected
-              ? ChatThemePalette.primary
-              : ChatThemePalette.surface.withValues(alpha: 0.9),
+          gradient: selected ? ChatThemePalette.primaryGradient : null,
+          color: selected ? null : ChatThemePalette.surface,
           borderRadius: BorderRadius.circular(999),
           border: Border.all(
-            color: selected
-                ? ChatThemePalette.primary
-                : ChatThemePalette.border,
+            color: selected ? Colors.transparent : ChatThemePalette.border,
           ),
+          boxShadow: selected ? ChatThemeStyles.softShadow(0.08) : null,
         ),
-        child: Center(
-          child: Text(
-            label,
-            style: ChatThemeStyles.meta(
-              selected ? Colors.white : ChatThemePalette.textSecondary,
-            ).copyWith(fontWeight: FontWeight.w700),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _ToolbarButton extends StatelessWidget {
-  final IconData icon;
-  final VoidCallback? onTap;
-
-  const _ToolbarButton({required this.icon, this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Ink(
-          width: 42,
-          height: 42,
-          decoration: BoxDecoration(
-            color: ChatThemePalette.surface,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: ChatThemePalette.border),
-          ),
-          child: Icon(icon, color: ChatThemePalette.textPrimary, size: 18),
+        child: Text(
+          label,
+          style: ChatThemeStyles.meta(
+            selected ? Colors.white : ChatThemePalette.textSecondary,
+          ).copyWith(fontWeight: FontWeight.w800),
         ),
       ),
     );
@@ -677,163 +655,126 @@ class _EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 0, 24, 120),
-      child: Center(
-        child: Container(
-          padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            color: ChatThemePalette.surface,
-            borderRadius: BorderRadius.circular(28),
-            border: Border.all(color: ChatThemePalette.border),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 64,
-                height: 64,
-                decoration: BoxDecoration(
-                  color: ChatThemePalette.primary.withValues(alpha: 0.08),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.chat_bubble_outline_rounded,
-                  color: ChatThemePalette.primary,
-                  size: 30,
-                ),
+      padding: const EdgeInsets.fromLTRB(20, 24, 20, 40),
+      child: Container(
+        padding: const EdgeInsets.all(28),
+        decoration: BoxDecoration(
+          gradient: ChatThemePalette.headerGradient,
+          borderRadius: BorderRadius.circular(30),
+          border: Border.all(color: ChatThemePalette.border),
+          boxShadow: ChatThemeStyles.softShadow(0.05),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 72,
+              height: 72,
+              decoration: BoxDecoration(
+                color: ChatThemePalette.primary.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
               ),
-              const SizedBox(height: 16),
-              Text(
-                title,
-                style: ChatThemeStyles.cardTitle().copyWith(fontSize: 18),
+              child: const Icon(
+                Icons.chat_bubble_outline_rounded,
+                color: ChatThemePalette.primary,
+                size: 30,
               ),
-              const SizedBox(height: 8),
-              Text(
-                subtitle,
-                textAlign: TextAlign.center,
-                style: ChatThemeStyles.body(ChatThemePalette.textSecondary),
-              ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 18),
+            Text(title, textAlign: TextAlign.center, style: ChatThemeStyles.dialogTitle()),
+            const SizedBox(height: 10),
+            Text(
+              subtitle,
+              textAlign: TextAlign.center,
+              style: ChatThemeStyles.body(ChatThemePalette.textSecondary),
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
-class _ConversationSearchDelegate extends SearchDelegate<ConversationModel?> {
-  final List<ConversationModel> conversations;
-  final String currentUserId;
+class _ActionSheet extends StatelessWidget {
+  final bool isArchived;
+  final bool isMuted;
 
-  _ConversationSearchDelegate({
-    required this.conversations,
-    required this.currentUserId,
-  });
+  const _ActionSheet({required this.isArchived, required this.isMuted});
 
   @override
-  String get searchFieldLabel => 'Search chats';
-
-  @override
-  ThemeData appBarTheme(BuildContext context) {
-    return Theme.of(context).copyWith(
-      scaffoldBackgroundColor: ChatThemePalette.background,
-      appBarTheme: const AppBarTheme(
-        backgroundColor: ChatThemePalette.background,
-        foregroundColor: ChatThemePalette.textPrimary,
-        elevation: 0,
-      ),
-      inputDecorationTheme: const InputDecorationTheme(
-        border: InputBorder.none,
-      ),
-    );
-  }
-
-  @override
-  List<Widget>? buildActions(BuildContext context) {
-    return [
-      if (query.isNotEmpty)
-        IconButton(
-          onPressed: () => query = '',
-          icon: const Icon(Icons.close_rounded),
+  Widget build(BuildContext context) {
+    Widget action({
+      required String value,
+      required IconData icon,
+      required String label,
+      bool destructive = false,
+    }) {
+      final color = destructive ? ChatThemePalette.error : ChatThemePalette.textPrimary;
+      return ListTile(
+        leading: Container(
+          width: 42,
+          height: 42,
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: Icon(icon, color: color, size: 20),
         ),
-    ];
-  }
-
-  @override
-  Widget? buildLeading(BuildContext context) {
-    return IconButton(
-      onPressed: () => close(context, null),
-      icon: const Icon(Icons.arrow_back_ios_new_rounded),
-    );
-  }
-
-  @override
-  Widget buildResults(BuildContext context) {
-    return _buildList();
-  }
-
-  @override
-  Widget buildSuggestions(BuildContext context) {
-    return _buildList();
-  }
-
-  Widget _buildList() {
-    final matches = conversations.where((conversation) {
-      final target = [
-        conversation.displayNameFor(currentUserId),
-        conversation.listPreviewText,
-        conversation.contextLabel,
-      ].join(' ').toLowerCase();
-      return target.contains(query.trim().toLowerCase());
-    }).toList();
-
-    if (matches.isEmpty) {
-      return Center(
-        child: Text(
-          'No chats match your search.',
-          style: ChatThemeStyles.body(ChatThemePalette.textSecondary),
-        ),
+        title: Text(label, style: ChatThemeStyles.cardTitle(color)),
+        onTap: () => Navigator.pop(context, value),
       );
     }
 
-    return ListView.separated(
-      padding: const EdgeInsets.all(20),
-      itemBuilder: (context, index) {
-        final conversation = matches[index];
-        return ConversationListItem(
-          conversation: conversation,
-          currentUserId: currentUserId,
-          unreadCount: context.read<ChatProvider>().unreadCountFor(
-            conversation.id,
-          ),
-          isMuted: context.read<ChatProvider>().isConversationMutedFor(
-            conversation,
-            currentUserId,
-          ),
-          onTap: () => close(context, conversation),
-          onOpenProfile: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => UserProfilePreviewScreen(
-                  userId: conversation.otherParticipantId(currentUserId),
-                  fallbackName: conversation.displayNameFor(currentUserId),
-                  fallbackRole: conversation.otherParticipantRole(
-                    currentUserId,
-                  ),
-                  fallbackHeadline: conversation.contextLabel,
-                  fallbackAbout: conversation.contextLabel.trim().isEmpty
-                      ? ''
-                      : 'Conversation started around ${conversation.contextLabel.trim()}.',
-                  contextLabel: conversation.contextLabel,
-                ),
+    return SafeArea(
+      child: Container(
+        margin: const EdgeInsets.all(12),
+        padding: const EdgeInsets.fromLTRB(12, 12, 12, 10),
+        decoration: BoxDecoration(
+          gradient: ChatThemePalette.headerGradient,
+          borderRadius: BorderRadius.circular(32),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.92)),
+          boxShadow: ChatThemeStyles.softShadow(0.1),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 48,
+              height: 4,
+              margin: const EdgeInsets.only(bottom: 14),
+              decoration: BoxDecoration(
+                color: ChatThemePalette.border,
+                borderRadius: BorderRadius.circular(999),
               ),
-            );
-          },
-        );
-      },
-      separatorBuilder: (_, _) => const SizedBox(height: 12),
-      itemCount: matches.length,
+            ),
+            action(
+              value: 'profile',
+              icon: Icons.person_outline_rounded,
+              label: 'View profile',
+            ),
+            action(
+              value: 'mute',
+              icon: isMuted
+                  ? Icons.notifications_active_outlined
+                  : Icons.notifications_off_outlined,
+              label: isMuted ? 'Unmute conversation' : 'Mute conversation',
+            ),
+            action(
+              value: 'archive',
+              icon: isArchived
+                  ? Icons.unarchive_outlined
+                  : Icons.archive_outlined,
+              label: isArchived ? 'Restore to inbox' : 'Archive conversation',
+            ),
+            action(
+              value: 'delete',
+              icon: Icons.delete_outline_rounded,
+              label: 'Delete conversation',
+              destructive: true,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

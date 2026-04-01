@@ -10,6 +10,7 @@ import '../../providers/auth_provider.dart';
 import '../../providers/chat_provider.dart';
 import '../../services/public_profile_service.dart';
 import '../../widgets/chat/chat_formatters.dart';
+import '../../widgets/chat/chat_confirmation_dialog.dart';
 import '../../widgets/chat/chat_input_bar.dart';
 import '../../widgets/chat/chat_message_bubble.dart';
 import '../../widgets/chat/chat_theme.dart';
@@ -210,11 +211,13 @@ class _ConversationScreenState extends State<ConversationScreen> {
   }
 
   Future<void> _deleteMessage(String messageId) async {
-    final confirm = await _showActionDialog(
-      title: 'Delete Message',
+    final confirm = await showChatConfirmationDialog(
+      context,
+      title: 'Delete message?',
       message: 'Delete this message for everyone?',
       confirmLabel: 'Delete',
       destructive: true,
+      icon: Icons.delete_outline_rounded,
     );
 
     if (confirm != true || !mounted) {
@@ -268,44 +271,6 @@ class _ConversationScreenState extends State<ConversationScreen> {
     return trimmed.replaceFirst(RegExp(r'^Exception:\s*'), '');
   }
 
-  Future<bool?> _showActionDialog({
-    required String title,
-    required String message,
-    required String confirmLabel,
-    bool destructive = false,
-  }) {
-    return showDialog<bool>(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          backgroundColor: ChatThemePalette.surface,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(24),
-          ),
-          title: Text(title),
-          content: Text(message),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () => Navigator.pop(context, true),
-              child: Text(
-                confirmLabel,
-                style: TextStyle(
-                  color: destructive
-                      ? ChatThemePalette.error
-                      : ChatThemePalette.primary,
-                ),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   void _openProfile({
     required String userId,
     required String fallbackName,
@@ -349,11 +314,12 @@ class _ConversationScreenState extends State<ConversationScreen> {
       auth.uid,
     );
     if (archived) {
-      final confirmed = await _showActionDialog(
-        title: 'Archive Chat',
-        message:
-            'Archive this conversation? You can still open it later from Archived chats.',
+      final confirmed = await showChatConfirmationDialog(
+        context,
+        title: 'Archive conversation?',
+        message: 'Are you sure you want to archive this conversation?',
         confirmLabel: 'Archive',
+        icon: Icons.archive_outlined,
       );
 
       if (confirmed != true || !mounted) {
@@ -373,7 +339,9 @@ class _ConversationScreenState extends State<ConversationScreen> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(archived ? 'Chat archived' : 'Chat restored to inbox'),
+        content: Text(
+          archived ? 'Conversation moved to Archived' : 'Conversation restored to Inbox',
+        ),
       ),
     );
 
@@ -405,6 +373,40 @@ class _ConversationScreenState extends State<ConversationScreen> {
     );
   }
 
+  Future<void> _deleteConversation(ConversationModel conversation) async {
+    final auth = context.read<AuthProvider>().userModel;
+    final provider = context.read<ChatProvider>();
+    if (auth == null) {
+      return;
+    }
+
+    final confirmed = await showChatConfirmationDialog(
+      context,
+      title: 'Delete conversation?',
+      message:
+          'Are you sure you want to delete this conversation? This action cannot be undone.',
+      confirmLabel: 'Delete',
+      destructive: true,
+      icon: Icons.delete_outline_rounded,
+    );
+    if (confirmed != true || !mounted) {
+      return;
+    }
+
+    await provider.deleteConversation(
+      conversationId: widget.conversationId,
+      userId: auth.uid,
+    );
+    if (!mounted || provider.error != null) {
+      return;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Conversation deleted')),
+    );
+    Navigator.pop(context);
+  }
+
   String _resolveOtherRole(ConversationModel? conversation, UserModel? auth) {
     final currentUserId = auth?.uid ?? '';
     final fromConversation =
@@ -432,7 +434,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
   @override
   Widget build(BuildContext context) {
     final chatProvider = context.watch<ChatProvider>();
-    final messages = chatProvider.messages;
+    final messages = List<MessageModel>.of(chatProvider.messages);
     final auth = context.watch<AuthProvider>().userModel;
 
     _handleProviderError(chatProvider);
@@ -581,6 +583,11 @@ class _ConversationScreenState extends State<ConversationScreen> {
                                 if (value == 'archive' &&
                                     conversation != null) {
                                   _toggleArchive(conversation);
+                                  return;
+                                }
+                                if (value == 'delete' &&
+                                    conversation != null) {
+                                  _deleteConversation(conversation);
                                 }
                               },
                               muted: auth == null || conversation == null
@@ -1059,6 +1066,13 @@ class _ConversationHeader extends StatelessWidget {
                     child: Text(
                       archived ? 'Unarchive Chat' : 'Archive Chat',
                       style: ChatThemeStyles.body(),
+                    ),
+                  ),
+                  PopupMenuItem<String>(
+                    value: 'delete',
+                    child: Text(
+                      'Delete Chat',
+                      style: ChatThemeStyles.body(ChatThemePalette.error),
                     ),
                   ),
                 ],

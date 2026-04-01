@@ -68,6 +68,7 @@ class ChatService {
     required String companyName,
     String contextType = '',
     String contextLabel = '',
+    String currentUserId = '',
   }) async {
     final query = await _firestore
         .collection('conversations')
@@ -80,6 +81,7 @@ class ChatService {
       final existingSnapshot = query.docs.first;
       final existingData = existingSnapshot.data();
       final updates = <String, dynamic>{};
+      final normalizedCurrentUserId = currentUserId.trim();
       if (!_hasValidConversationStatus(existingData['status'])) {
         updates['status'] = 'active';
       }
@@ -91,6 +93,10 @@ class ChatService {
           contextLabel.trim().isNotEmpty) {
         updates['contextLabel'] = contextLabel.trim();
       }
+      if (normalizedCurrentUserId.isNotEmpty) {
+        updates['archivedBy'] = FieldValue.arrayRemove([normalizedCurrentUserId]);
+        updates['deletedBy'] = FieldValue.arrayRemove([normalizedCurrentUserId]);
+      }
       if (updates.isNotEmpty) {
         await _safeConversationMetadataUpdate(
           existingSnapshot.reference,
@@ -98,7 +104,21 @@ class ChatService {
         );
         return ConversationModel.fromMap({
           ...existingData,
-          ...updates,
+          if (updates.containsKey('status')) 'status': updates['status'],
+          if (updates.containsKey('contextType'))
+            'contextType': updates['contextType'],
+          if (updates.containsKey('contextLabel'))
+            'contextLabel': updates['contextLabel'],
+          if (normalizedCurrentUserId.isNotEmpty)
+            'archivedBy': _removeUserFromStringList(
+              existingData['archivedBy'],
+              normalizedCurrentUserId,
+            ),
+          if (normalizedCurrentUserId.isNotEmpty)
+            'deletedBy': _removeUserFromStringList(
+              existingData['deletedBy'],
+              normalizedCurrentUserId,
+            ),
           'id': (existingData['id'] ?? existingSnapshot.id).toString(),
         });
       }
@@ -187,6 +207,10 @@ class ChatService {
       senderId,
       recipientId,
     );
+    final conversationVisibilityRestoreTargets = _conversationStateTargets(
+      senderId,
+      resolvedRecipientId,
+    );
     final msgRef = conversationRef.collection('messages').doc();
 
     StoredFileUploadResult? uploadedAttachment;
@@ -255,11 +279,10 @@ class ChatService {
           'companyUnreadCount': senderId == conversationData['studentId']
               ? FieldValue.increment(1)
               : 0,
-          'archivedBy': FieldValue.arrayRemove([
-            senderId,
-            if (resolvedRecipientId.trim().isNotEmpty)
-              resolvedRecipientId.trim(),
-          ]),
+          'archivedBy':
+              FieldValue.arrayRemove(conversationVisibilityRestoreTargets),
+          'deletedBy':
+              FieldValue.arrayRemove(conversationVisibilityRestoreTargets),
           'status': 'active',
         });
       } else {
@@ -275,14 +298,15 @@ class ChatService {
           'lastMessageSenderName': senderName,
           'lastMessageTime': now,
           unreadField: FieldValue.increment(1),
-          'archivedBy': FieldValue.arrayRemove([
-            senderId,
-            if (resolvedRecipientId.trim().isNotEmpty)
-              resolvedRecipientId.trim(),
-          ]),
+          'archivedBy':
+              FieldValue.arrayRemove(conversationVisibilityRestoreTargets),
           'status': 'active',
         });
         await batch.commit();
+        await _safeConversationMetadataUpdate(conversationRef, {
+          'deletedBy':
+              FieldValue.arrayRemove(conversationVisibilityRestoreTargets),
+        });
       }
     } on FirebaseException catch (error) {
       if (uploadedAttachment != null &&
@@ -355,22 +379,17 @@ class ChatService {
     required String userId,
     required bool archived,
   }) async {
-    try {
-      final conversationData = await _conversationData(conversationId);
-      await _updateConversationDocument(
-        _firestore.collection('conversations').doc(conversationId),
-        {
-          'archivedBy': archived
-              ? FieldValue.arrayUnion([userId])
-              : FieldValue.arrayRemove([userId]),
-          'status': _resolvedConversationStatus(conversationData['status']),
-        },
-      );
-    } on FirebaseException catch (error) {
-      if (!_isPermissionDeniedError(error)) {
-        rethrow;
-      }
-    }
+    final conversationData = await _conversationData(conversationId);
+    await _updateConversationDocument(
+      _firestore.collection('conversations').doc(conversationId),
+      {
+        'archivedBy': archived
+            ? FieldValue.arrayUnion([userId])
+            : FieldValue.arrayRemove([userId]),
+        'deletedBy': FieldValue.arrayRemove([userId]),
+        'status': _resolvedConversationStatus(conversationData['status']),
+      },
+    );
   }
 
   Future<void> muteConversation({
@@ -378,22 +397,36 @@ class ChatService {
     required String userId,
     required bool muted,
   }) async {
-    try {
-      final conversationData = await _conversationData(conversationId);
-      await _updateConversationDocument(
-        _firestore.collection('conversations').doc(conversationId),
-        {
-          'mutedBy': muted
-              ? FieldValue.arrayUnion([userId])
-              : FieldValue.arrayRemove([userId]),
-          'status': _resolvedConversationStatus(conversationData['status']),
-        },
-      );
-    } on FirebaseException catch (error) {
-      if (!_isPermissionDeniedError(error)) {
-        rethrow;
-      }
-    }
+    final conversationData = await _conversationData(conversationId);
+    await _updateConversationDocument(
+      _firestore.collection('conversations').doc(conversationId),
+      {
+        'mutedBy': muted
+            ? FieldValue.arrayUnion([userId])
+            : FieldValue.arrayRemove([userId]),
+        'status': _resolvedConversationStatus(conversationData['status']),
+      },
+    );
+  }
+
+  Future<void> deleteConversation({
+    required String conversationId,
+    required String userId,
+  }) async {
+    final conversationData = await _conversationData(conversationId);
+    final unreadField = userId == conversationData['studentId']
+        ? 'studentUnreadCount'
+        : 'companyUnreadCount';
+
+    await _updateConversationDocument(
+      _firestore.collection('conversations').doc(conversationId),
+      {
+        'deletedBy': FieldValue.arrayUnion([userId]),
+        'archivedBy': FieldValue.arrayRemove([userId]),
+        unreadField: 0,
+        'status': _resolvedConversationStatus(conversationData['status']),
+      },
+    );
   }
 
   Future<List<UserModel>> searchChatContacts({
@@ -679,6 +712,12 @@ class ChatService {
     return senderId == studentId ? companyId : studentId;
   }
 
+  List<String> _conversationStateTargets(String leftUserId, String rightUserId) {
+    return <String>{leftUserId.trim(), rightUserId.trim()}
+        .where((userId) => userId.isNotEmpty)
+        .toList(growable: false);
+  }
+
   String _senderNameFromConversation(
     Map<String, dynamic> conversationData,
     String senderRole,
@@ -805,13 +844,12 @@ class ChatService {
     DocumentReference<Map<String, dynamic>> ref,
     Map<String, dynamic> data,
   ) async {
-    final candidates = <Map<String, dynamic>>[data];
-    if (data.containsKey('status')) {
-      final withoutStatus = Map<String, dynamic>.from(data)..remove('status');
-      if (withoutStatus.isNotEmpty) {
-        candidates.add(withoutStatus);
-      }
-    }
+    final candidates = <Map<String, dynamic>>[
+      data,
+      _withoutKeys(data, const <String>{'status'}),
+      _withoutKeys(data, const <String>{'deletedBy'}),
+      _withoutKeys(data, const <String>{'status', 'deletedBy'}),
+    ].where((candidate) => candidate.isNotEmpty).toList(growable: false);
 
     FirebaseException? lastPermissionError;
     for (final candidate in candidates) {
@@ -832,6 +870,15 @@ class ChatService {
     }
   }
 
+  Map<String, dynamic> _withoutKeys(
+    Map<String, dynamic> source,
+    Set<String> keys,
+  ) {
+    final copy = Map<String, dynamic>.from(source);
+    copy.removeWhere((key, value) => keys.contains(key));
+    return copy;
+  }
+
   bool _hasValidConversationStatus(Object? value) {
     final normalized = value?.toString().trim().toLowerCase() ?? '';
     return normalized == 'active' || normalized == 'closed';
@@ -840,6 +887,17 @@ class ChatService {
   String _resolvedConversationStatus(Object? value) {
     final normalized = value?.toString().trim().toLowerCase() ?? '';
     return normalized == 'closed' ? 'closed' : 'active';
+  }
+
+  List<String> _removeUserFromStringList(Object? value, String userId) {
+    if (value is! List) {
+      return const <String>[];
+    }
+
+    return value
+        .map((item) => item.toString().trim())
+        .where((item) => item.isNotEmpty && item != userId)
+        .toList(growable: false);
   }
 
   Future<void> _createConversationWithFallbacks(

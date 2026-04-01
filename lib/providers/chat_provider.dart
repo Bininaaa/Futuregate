@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'dart:typed_data';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+
 import '../models/conversation_model.dart';
 import '../models/message_model.dart';
 import '../models/user_model.dart';
@@ -8,49 +11,83 @@ import '../services/chat_local_state_service.dart';
 import '../services/chat_service.dart';
 
 class ChatProvider extends ChangeNotifier {
-  final ChatService _chatService = ChatService();
-  final ChatLocalStateService _localStateService = ChatLocalStateService();
+  ChatProvider({
+    ChatService? chatService,
+    ChatLocalStateService? localStateService,
+  }) : _chatService = chatService ?? ChatService(),
+       _localStateService = localStateService ?? ChatLocalStateService();
 
-  List<ConversationModel> _conversations = [];
-  List<MessageModel> _messages = [];
+  final ChatService _chatService;
+  final ChatLocalStateService _localStateService;
+
+  List<ConversationModel> _conversations = <ConversationModel>[];
+  List<MessageModel> _messages = <MessageModel>[];
   bool _isLoading = false;
   bool _isSending = false;
   String? _error;
   String _currentUserId = '';
+  String _currentUserRole = '';
   String _activeConversationId = '';
-  final Map<String, int> _unreadCounts = {};
+  final Map<String, int> _unreadCounts = <String, int>{};
   bool _hasHydratedConversationState = false;
-  Set<String> _archivedConversationIds = <String>{};
-  Set<String> _mutedConversationIds = <String>{};
-  Set<String> _hiddenConversationIds = <String>{};
 
-  StreamSubscription? _conversationsSub;
-  StreamSubscription? _messagesSub;
-  final Map<String, StreamSubscription<int>> _unreadSubs = {};
+  final Set<String> _legacyArchivedConversationIds = <String>{};
+  final Set<String> _legacyMutedConversationIds = <String>{};
+  final Set<String> _legacyDeletedConversationIds = <String>{};
+  final Map<String, bool> _archivedConversationOverrides = <String, bool>{};
+  final Map<String, bool> _mutedConversationOverrides = <String, bool>{};
+  final Map<String, bool> _deletedConversationOverrides = <String, bool>{};
 
-  List<ConversationModel> get conversations => _conversations;
-  List<MessageModel> get messages => _messages;
+  StreamSubscription<List<ConversationModel>>? _conversationsSub;
+  StreamSubscription<List<MessageModel>>? _messagesSub;
+  final Map<String, StreamSubscription<int>> _unreadSubs =
+      <String, StreamSubscription<int>>{};
+
+  List<ConversationModel> get conversations =>
+      List<ConversationModel>.unmodifiable(_conversations);
+  List<MessageModel> get messages =>
+      List<MessageModel>.unmodifiable(_messages);
   bool get isLoading => _isLoading;
   bool get isSending => _isSending;
   String? get error => _error;
   bool get hasHydratedConversationState => _hasHydratedConversationState;
-  int unreadCountFor(String conversationId) =>
-      _unreadCounts[conversationId] ?? 0;
+
+  int unreadCountFor(String conversationId) => _unreadCounts[conversationId] ?? 0;
+
   bool isConversationArchivedFor(
     ConversationModel conversation,
     String userId,
   ) {
+    final override = _archivedConversationOverrides[conversation.id];
+    if (override != null) {
+      return override;
+    }
+
     return conversation.isArchivedFor(userId) ||
-        _archivedConversationIds.contains(conversation.id);
+        _legacyArchivedConversationIds.contains(conversation.id);
   }
 
   bool isConversationMutedFor(ConversationModel conversation, String userId) {
+    final override = _mutedConversationOverrides[conversation.id];
+    if (override != null) {
+      return override;
+    }
+
     return conversation.isMutedFor(userId) ||
-        _mutedConversationIds.contains(conversation.id);
+        _legacyMutedConversationIds.contains(conversation.id);
   }
 
-  bool isConversationHidden(String conversationId) {
-    return _hiddenConversationIds.contains(conversationId);
+  bool isConversationDeletedFor(
+    ConversationModel conversation,
+    String userId,
+  ) {
+    final override = _deletedConversationOverrides[conversation.id];
+    if (override != null) {
+      return override;
+    }
+
+    return conversation.isDeletedFor(userId) ||
+        _legacyDeletedConversationIds.contains(conversation.id);
   }
 
   void clearError() {
@@ -69,38 +106,60 @@ class ChatProvider extends ChangeNotifier {
     }
     _unreadSubs.clear();
     _unreadCounts.clear();
-    _currentUserId = userId;
-    _hasHydratedConversationState = false;
-    _restoreLocalState(userId);
+    _currentUserId = userId.trim();
+    _currentUserRole = role.trim();
+    _resetConversationStateHydration();
+    _hydrateLegacyConversationState(_currentUserId);
     _isLoading = true;
     _error = null;
     notifyListeners();
 
-    final stream = role == 'company'
-        ? _chatService.getConversationsAsCompany(userId)
-        : _chatService.getConversationsAsStudent(userId);
+    final stream = _currentUserRole == 'company'
+        ? _chatService.getConversationsAsCompany(_currentUserId)
+        : _chatService.getConversationsAsStudent(_currentUserId);
 
     _conversationsSub = stream.listen(
       (data) {
-        _conversations = data;
-        _syncUnreadStreams(data);
+        _conversations = List<ConversationModel>.from(data);
+        _reconcileConversationStateOverrides(_conversations);
+        _syncUnreadStreams(_conversations);
         _isLoading = false;
         notifyListeners();
       },
-      onError: (e) {
-        _error = e.toString();
+      onError: (Object error) {
+        if (_isIgnorableFirebaseCancellation(error)) {
+          return;
+        }
+        _error = error.toString();
         _isLoading = false;
         notifyListeners();
       },
     );
   }
 
-  void _restoreLocalState(String userId) {
+  Future<void> refreshConversations() async {
+    if (_currentUserId.isEmpty || _currentUserRole.isEmpty) {
+      return;
+    }
+
+    listenToConversations(_currentUserId, _currentUserRole);
+  }
+
+  void _resetConversationStateHydration() {
+    _legacyArchivedConversationIds.clear();
+    _legacyMutedConversationIds.clear();
+    _legacyDeletedConversationIds.clear();
+    _archivedConversationOverrides.clear();
+    _mutedConversationOverrides.clear();
+    _deletedConversationOverrides.clear();
+    _hasHydratedConversationState = _currentUserId.isEmpty;
+  }
+
+  void _hydrateLegacyConversationState(String userId) {
     final normalizedUserId = userId.trim();
-    _archivedConversationIds = <String>{};
-    _mutedConversationIds = <String>{};
-    _hiddenConversationIds = <String>{};
-    _hasHydratedConversationState = normalizedUserId.isEmpty;
+    if (normalizedUserId.isEmpty) {
+      return;
+    }
 
     unawaited(() async {
       final state = await _localStateService.load(normalizedUserId);
@@ -108,29 +167,105 @@ class ChatProvider extends ChangeNotifier {
         return;
       }
 
-      _archivedConversationIds = state.archivedConversationIds;
-      _mutedConversationIds = state.mutedConversationIds;
-      _hiddenConversationIds = state.hiddenConversationIds;
+      _legacyArchivedConversationIds
+        ..clear()
+        ..addAll(state.archivedConversationIds);
+      _legacyMutedConversationIds
+        ..clear()
+        ..addAll(state.mutedConversationIds);
+      _legacyDeletedConversationIds
+        ..clear()
+        ..addAll(state.hiddenConversationIds);
       _hasHydratedConversationState = true;
       notifyListeners();
+
+      unawaited(_migrateLegacyConversationState(normalizedUserId, state));
     }());
   }
 
+  Future<void> _migrateLegacyConversationState(
+    String userId,
+    ChatLocalState state,
+  ) async {
+    if (state.isEmpty) {
+      await _localStateService.clear(userId);
+      return;
+    }
+
+    var migrationSucceeded = true;
+
+    Future<void> runMigration(
+      Iterable<String> conversationIds,
+      Future<void> Function(String conversationId) task,
+    ) async {
+      for (final conversationId in conversationIds) {
+        if (_currentUserId != userId) {
+          return;
+        }
+
+        try {
+          await task(conversationId);
+        } catch (error) {
+          if (_isPermissionDeniedError(error) ||
+              _isIgnorableFirebaseCancellation(error)) {
+            migrationSucceeded = false;
+            return;
+          }
+          migrationSucceeded = false;
+          debugPrint(
+            'Legacy chat state migration failed for $conversationId: $error',
+          );
+        }
+      }
+    }
+
+    await runMigration(
+      state.archivedConversationIds,
+      (conversationId) => _chatService.archiveConversation(
+        conversationId: conversationId,
+        userId: userId,
+        archived: true,
+      ),
+    );
+    await runMigration(
+      state.mutedConversationIds,
+      (conversationId) => _chatService.muteConversation(
+        conversationId: conversationId,
+        userId: userId,
+        muted: true,
+      ),
+    );
+    await runMigration(
+      state.hiddenConversationIds,
+      (conversationId) => _chatService.deleteConversation(
+        conversationId: conversationId,
+        userId: userId,
+      ),
+    );
+
+    if (migrationSucceeded && _currentUserId == userId) {
+      await _localStateService.clear(userId);
+    }
+  }
+
   void _syncUnreadStreams(List<ConversationModel> conversations) {
-    final activeIds = conversations
+    final visibleConversationIds = conversations
+        .where((conversation) => !isConversationDeletedFor(conversation, _currentUserId))
         .map((conversation) => conversation.id)
         .toSet();
 
     final idsToRemove = _unreadSubs.keys
-        .where((id) => !activeIds.contains(id))
-        .toList();
+        .where((id) => !visibleConversationIds.contains(id))
+        .toList(growable: false);
     for (final id in idsToRemove) {
       _unreadSubs.remove(id)?.cancel();
       _unreadCounts.remove(id);
     }
 
     for (final conversation in conversations) {
-      if (_unreadSubs.containsKey(conversation.id) || _currentUserId.isEmpty) {
+      if (isConversationDeletedFor(conversation, _currentUserId) ||
+          _unreadSubs.containsKey(conversation.id) ||
+          _currentUserId.isEmpty) {
         continue;
       }
 
@@ -139,16 +274,56 @@ class ChatProvider extends ChangeNotifier {
             conversationId: conversation.id,
             currentUserId: _currentUserId,
           )
-          .listen((count) {
-            _unreadCounts[conversation.id] = count;
+          .listen((unreadCount) {
+            _unreadCounts[conversation.id] = unreadCount;
             notifyListeners();
           });
     }
   }
 
+  void _reconcileConversationStateOverrides(
+    List<ConversationModel> conversations,
+  ) {
+    if (_currentUserId.isEmpty) {
+      return;
+    }
+
+    for (final conversation in conversations) {
+      final conversationId = conversation.id;
+
+      if (_archivedConversationOverrides[conversationId] ==
+          conversation.isArchivedFor(_currentUserId)) {
+        _archivedConversationOverrides.remove(conversationId);
+      }
+      if (conversation.isArchivedFor(_currentUserId)) {
+        _legacyArchivedConversationIds.remove(conversationId);
+      }
+
+      if (_mutedConversationOverrides[conversationId] ==
+          conversation.isMutedFor(_currentUserId)) {
+        _mutedConversationOverrides.remove(conversationId);
+      }
+      if (conversation.isMutedFor(_currentUserId)) {
+        _legacyMutedConversationIds.remove(conversationId);
+      }
+
+      if (_deletedConversationOverrides[conversationId] ==
+          conversation.isDeletedFor(_currentUserId)) {
+        _deletedConversationOverrides.remove(conversationId);
+      }
+      if (conversation.isDeletedFor(_currentUserId)) {
+        _legacyDeletedConversationIds.remove(conversationId);
+      }
+
+      if (conversation.isDeletedFor(_currentUserId)) {
+        _unreadCounts[conversationId] = 0;
+      }
+    }
+  }
+
   void listenToMessages(String conversationId, String currentUserId) {
     if (_activeConversationId != conversationId) {
-      _messages = [];
+      _messages = <MessageModel>[];
       _activeConversationId = conversationId;
     }
 
@@ -160,14 +335,17 @@ class ChatProvider extends ChangeNotifier {
         .getMessages(conversationId)
         .listen(
           (data) {
-            _messages = data;
+            _messages = List<MessageModel>.from(data);
             notifyListeners();
 
             _markIncomingAsRead(conversationId, currentUserId, data);
           },
-          onError: (e) {
-            _error = e.toString();
-            debugPrint('Messages stream error: $e');
+          onError: (Object error) {
+            if (_isIgnorableFirebaseCancellation(error)) {
+              return;
+            }
+            _error = error.toString();
+            debugPrint('Messages stream error: $error');
             notifyListeners();
           },
         );
@@ -179,25 +357,27 @@ class ChatProvider extends ChangeNotifier {
     List<MessageModel> messages,
   ) {
     final hasUnread = messages.any(
-      (m) => !m.isRead && m.senderId != currentUserId,
+      (message) => !message.isRead && message.senderId != currentUserId,
     );
-    if (hasUnread) {
-      _chatService
-          .markMessagesAsRead(
-            conversationId: conversationId,
-            currentUserId: currentUserId,
-          )
-          .catchError((error) {
-            debugPrint('markMessagesAsRead failed: $error');
-          });
+    if (!hasUnread) {
+      return;
     }
+
+    _chatService
+        .markMessagesAsRead(
+          conversationId: conversationId,
+          currentUserId: currentUserId,
+        )
+        .catchError((Object error) {
+          debugPrint('markMessagesAsRead failed: $error');
+        });
   }
 
   void stopListeningToMessages() {
     _messagesSub?.cancel();
     _messagesSub = null;
     _activeConversationId = '';
-    _messages = [];
+    _messages = <MessageModel>[];
     notifyListeners();
   }
 
@@ -208,8 +388,12 @@ class ChatProvider extends ChangeNotifier {
     required String companyName,
     String contextType = '',
     String contextLabel = '',
+    String currentUserId = '',
   }) async {
     _error = null;
+    final resolvedCurrentUserId = currentUserId.trim().isEmpty
+        ? _currentUserId
+        : currentUserId.trim();
     final conversation = await _chatService.getOrCreateConversation(
       studentId: studentId,
       studentName: studentName,
@@ -217,12 +401,17 @@ class ChatProvider extends ChangeNotifier {
       companyName: companyName,
       contextType: contextType,
       contextLabel: contextLabel,
+      currentUserId: resolvedCurrentUserId,
     );
 
-    final wasHidden = _hiddenConversationIds.remove(conversation.id);
-    final wasArchived = _archivedConversationIds.remove(conversation.id);
-    if (wasHidden || wasArchived) {
-      await _persistLocalState();
+    final restoredArchived = _legacyArchivedConversationIds.remove(conversation.id);
+    final restoredDeleted = _legacyDeletedConversationIds.remove(conversation.id);
+    final didRestoreVisibility = restoredArchived || restoredDeleted;
+    _archivedConversationOverrides[conversation.id] = false;
+    _deletedConversationOverrides[conversation.id] = false;
+
+    if (didRestoreVisibility) {
+      await _persistLegacyConversationState();
       notifyListeners();
     }
 
@@ -242,22 +431,20 @@ class ChatProvider extends ChangeNotifier {
     int attachmentFileSize = 0,
     String attachmentMimeType = '',
   }) async {
-    if (_isSending) return;
+    if (_isSending) {
+      return;
+    }
+
     _error = null;
     _isSending = true;
+    _archivedConversationOverrides[conversationId] = false;
+    _deletedConversationOverrides[conversationId] = false;
+    _legacyArchivedConversationIds.remove(conversationId);
+    _legacyDeletedConversationIds.remove(conversationId);
+    await _persistLegacyConversationState();
     notifyListeners();
-    try {
-      var didRestoreConversation = false;
-      if (_hiddenConversationIds.remove(conversationId)) {
-        didRestoreConversation = true;
-      }
-      if (_archivedConversationIds.remove(conversationId)) {
-        didRestoreConversation = true;
-      }
-      if (didRestoreConversation) {
-        await _persistLocalState();
-      }
 
+    try {
       await _chatService.sendMessage(
         conversationId: conversationId,
         senderId: senderId,
@@ -271,8 +458,8 @@ class ChatProvider extends ChangeNotifier {
         attachmentFileSize: attachmentFileSize,
         attachmentMimeType: attachmentMimeType,
       );
-    } catch (e) {
-      _error = e.toString();
+    } catch (error) {
+      _error = error.toString();
     } finally {
       _isSending = false;
       notifyListeners();
@@ -291,8 +478,8 @@ class ChatProvider extends ChangeNotifier {
         messageId: messageId,
         newText: newText,
       );
-    } catch (e) {
-      _error = e.toString();
+    } catch (error) {
+      _error = error.toString();
       notifyListeners();
     }
   }
@@ -307,8 +494,8 @@ class ChatProvider extends ChangeNotifier {
         conversationId: conversationId,
         messageId: messageId,
       );
-    } catch (e) {
-      _error = e.toString();
+    } catch (error) {
+      _error = error.toString();
       notifyListeners();
     }
   }
@@ -322,22 +509,51 @@ class ChatProvider extends ChangeNotifier {
     required String userId,
     required bool archived,
   }) async {
+    final previousOverride = _archivedConversationOverrides[conversationId];
+    _error = null;
+    _archivedConversationOverrides[conversationId] = archived;
+    if (!archived) {
+      _legacyArchivedConversationIds.remove(conversationId);
+    }
+    notifyListeners();
+
     try {
-      _error = null;
-      if (archived) {
-        _archivedConversationIds.add(conversationId);
-      } else {
-        _archivedConversationIds.remove(conversationId);
-      }
-      await _persistLocalState();
-      notifyListeners();
       await _chatService.archiveConversation(
         conversationId: conversationId,
         userId: userId,
         archived: archived,
       );
-    } catch (e) {
-      _error = e.toString();
+      if (archived) {
+        _legacyArchivedConversationIds.remove(conversationId);
+        _legacyDeletedConversationIds.remove(conversationId);
+      } else {
+        _legacyArchivedConversationIds.remove(conversationId);
+      }
+      await _persistLegacyConversationState();
+    } catch (error) {
+      if (_isPermissionDeniedError(error)) {
+        if (archived) {
+          _legacyArchivedConversationIds.add(conversationId);
+          _legacyDeletedConversationIds.remove(conversationId);
+        } else {
+          _legacyArchivedConversationIds.remove(conversationId);
+        }
+        await _persistLegacyConversationState();
+        _error = null;
+        notifyListeners();
+        return;
+      }
+      if (_isIgnorableFirebaseCancellation(error)) {
+        _error = null;
+        notifyListeners();
+        return;
+      }
+      if (previousOverride == null) {
+        _archivedConversationOverrides.remove(conversationId);
+      } else {
+        _archivedConversationOverrides[conversationId] = previousOverride;
+      }
+      _error = error.toString();
       notifyListeners();
     }
   }
@@ -347,22 +563,93 @@ class ChatProvider extends ChangeNotifier {
     required String userId,
     required bool muted,
   }) async {
+    final previousOverride = _mutedConversationOverrides[conversationId];
+    _error = null;
+    _mutedConversationOverrides[conversationId] = muted;
+    if (!muted) {
+      _legacyMutedConversationIds.remove(conversationId);
+    }
+    notifyListeners();
+
     try {
-      _error = null;
-      if (muted) {
-        _mutedConversationIds.add(conversationId);
-      } else {
-        _mutedConversationIds.remove(conversationId);
-      }
-      await _persistLocalState();
-      notifyListeners();
       await _chatService.muteConversation(
         conversationId: conversationId,
         userId: userId,
         muted: muted,
       );
-    } catch (e) {
-      _error = e.toString();
+      if (muted) {
+        _legacyMutedConversationIds.remove(conversationId);
+      } else {
+        _legacyMutedConversationIds.remove(conversationId);
+      }
+      await _persistLegacyConversationState();
+    } catch (error) {
+      if (_isPermissionDeniedError(error)) {
+        if (muted) {
+          _legacyMutedConversationIds.add(conversationId);
+        } else {
+          _legacyMutedConversationIds.remove(conversationId);
+        }
+        await _persistLegacyConversationState();
+        _error = null;
+        notifyListeners();
+        return;
+      }
+      if (_isIgnorableFirebaseCancellation(error)) {
+        _error = null;
+        notifyListeners();
+        return;
+      }
+      if (previousOverride == null) {
+        _mutedConversationOverrides.remove(conversationId);
+      } else {
+        _mutedConversationOverrides[conversationId] = previousOverride;
+      }
+      _error = error.toString();
+      notifyListeners();
+    }
+  }
+
+  Future<void> deleteConversation({
+    required String conversationId,
+    required String userId,
+  }) async {
+    final previousOverride = _deletedConversationOverrides[conversationId];
+    _error = null;
+    _deletedConversationOverrides[conversationId] = true;
+    _archivedConversationOverrides[conversationId] = false;
+    _legacyArchivedConversationIds.remove(conversationId);
+    _unreadCounts[conversationId] = 0;
+    notifyListeners();
+
+    try {
+      await _chatService.deleteConversation(
+        conversationId: conversationId,
+        userId: userId,
+      );
+      _legacyDeletedConversationIds.remove(conversationId);
+      _legacyArchivedConversationIds.remove(conversationId);
+      await _persistLegacyConversationState();
+    } catch (error) {
+      if (_isPermissionDeniedError(error)) {
+        _legacyDeletedConversationIds.add(conversationId);
+        _legacyArchivedConversationIds.remove(conversationId);
+        await _persistLegacyConversationState();
+        _error = null;
+        notifyListeners();
+        return;
+      }
+      if (_isIgnorableFirebaseCancellation(error)) {
+        _error = null;
+        notifyListeners();
+        return;
+      }
+      if (previousOverride == null) {
+        _deletedConversationOverrides.remove(conversationId);
+      } else {
+        _deletedConversationOverrides[conversationId] = previousOverride;
+      }
+      _error = error.toString();
       notifyListeners();
     }
   }
@@ -379,30 +666,41 @@ class ChatProvider extends ChangeNotifier {
         currentRole: currentRole,
         query: query,
       );
-    } catch (e) {
-      _error = e.toString();
+    } catch (error) {
+      _error = error.toString();
       notifyListeners();
-      return const [];
+      return const <UserModel>[];
     }
   }
 
-  Future<void> hideConversation(String conversationId) async {
-    _error = null;
-    _hiddenConversationIds.add(conversationId);
-    _archivedConversationIds.remove(conversationId);
-    await _persistLocalState();
-    notifyListeners();
+  Future<void> _persistLegacyConversationState() async {
+    if (_currentUserId.isEmpty) {
+      return;
+    }
+
+    final state = ChatLocalState(
+      archivedConversationIds: _legacyArchivedConversationIds,
+      mutedConversationIds: _legacyMutedConversationIds,
+      hiddenConversationIds: _legacyDeletedConversationIds,
+    );
+
+    if (state.isEmpty) {
+      await _localStateService.clear(_currentUserId);
+      return;
+    }
+
+    await _localStateService.save(_currentUserId, state);
   }
 
-  Future<void> _persistLocalState() {
-    return _localStateService.save(
-      _currentUserId,
-      ChatLocalState(
-        archivedConversationIds: _archivedConversationIds,
-        mutedConversationIds: _mutedConversationIds,
-        hiddenConversationIds: _hiddenConversationIds,
-      ),
-    );
+  bool _isPermissionDeniedError(Object error) {
+    return error is FirebaseException && error.code == 'permission-denied' ||
+        error.toString().contains('[cloud_firestore/permission-denied]');
+  }
+
+  bool _isIgnorableFirebaseCancellation(Object error) {
+    final message = error.toString().toLowerCase();
+    return message.contains('firebaseignoreexception') &&
+        message.contains('http request was aborted');
   }
 
   @override

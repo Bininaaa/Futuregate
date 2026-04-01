@@ -1066,6 +1066,7 @@ service cloud.firestore {
             'companyUnreadCount',
             'archivedBy',
             'mutedBy',
+            'deletedBy',
             'contextType',
             'contextLabel',
             'isGroup',
@@ -1095,6 +1096,7 @@ service cloud.firestore {
               'companyUnreadCount',
               'archivedBy',
               'mutedBy',
+              'deletedBy',
               'contextType',
               'contextLabel'
             ]) &&

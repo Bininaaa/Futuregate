@@ -520,6 +520,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
         companyId: currentUser.uid,
         companyName: currentUser.companyName ?? currentUser.fullName,
         contextType: 'application',
+        currentUserId: currentUser.uid,
       );
 
       if (!mounted) return;

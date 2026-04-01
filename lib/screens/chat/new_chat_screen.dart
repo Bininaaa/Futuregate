@@ -82,6 +82,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
             companyId: auth.uid,
             companyName: auth.companyName ?? auth.fullName,
             contextType: 'project',
+            currentUserId: auth.uid,
           )
         : await chatProvider.getOrCreateConversation(
             studentId: auth.uid,
@@ -89,6 +90,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
             companyId: contact.uid,
             companyName: contact.companyName ?? contact.fullName,
             contextType: 'project',
+            currentUserId: auth.uid,
           );
 
     if (!mounted) {
@@ -101,7 +103,17 @@ class _NewChatScreenState extends State<NewChatScreen> {
   @override
   Widget build(BuildContext context) {
     final currentUser = context.watch<AuthProvider>().userModel;
-    final conversations = context.watch<ChatProvider>().conversations;
+    final chatProvider = context.watch<ChatProvider>();
+    final conversations = chatProvider.conversations
+        .where(
+          (conversation) =>
+              currentUser == null ||
+              !chatProvider.isConversationDeletedFor(
+                conversation,
+                currentUser.uid,
+              ),
+        )
+        .toList(growable: false);
     final recentIds = conversations
         .map(
           (conversation) =>

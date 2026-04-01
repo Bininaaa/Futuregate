@@ -17,6 +17,7 @@ class ConversationModel {
   final int companyUnreadCount;
   final List<String> archivedBy;
   final List<String> mutedBy;
+  final List<String> deletedBy;
   final String contextType;
   final String contextLabel;
   final bool isGroup;
@@ -38,14 +39,17 @@ class ConversationModel {
     required this.status,
     this.studentUnreadCount = 0,
     this.companyUnreadCount = 0,
-    this.archivedBy = const [],
-    this.mutedBy = const [],
+    List<String> archivedBy = const <String>[],
+    List<String> mutedBy = const <String>[],
+    List<String> deletedBy = const <String>[],
     this.contextType = '',
     this.contextLabel = '',
     this.isGroup = false,
     this.groupName = '',
     this.groupAvatarUrl = '',
-  });
+  }) : archivedBy = List<String>.unmodifiable(archivedBy),
+       mutedBy = List<String>.unmodifiable(mutedBy),
+       deletedBy = List<String>.unmodifiable(deletedBy);
 
   factory ConversationModel.fromMap(Map<String, dynamic> map) {
     return ConversationModel(
@@ -67,6 +71,7 @@ class ConversationModel {
       companyUnreadCount: _parseInt(map['companyUnreadCount']),
       archivedBy: _parseStringList(map['archivedBy']),
       mutedBy: _parseStringList(map['mutedBy']),
+      deletedBy: _parseStringList(map['deletedBy']),
       contextType: (map['contextType'] ?? '').toString().trim(),
       contextLabel: (map['contextLabel'] ?? '').toString().trim(),
       isGroup: map['isGroup'] == true,
@@ -91,8 +96,9 @@ class ConversationModel {
       'status': status,
       'studentUnreadCount': studentUnreadCount,
       'companyUnreadCount': companyUnreadCount,
-      'archivedBy': archivedBy,
-      'mutedBy': mutedBy,
+      'archivedBy': List<String>.from(archivedBy),
+      'mutedBy': List<String>.from(mutedBy),
+      'deletedBy': List<String>.from(deletedBy),
       'contextType': contextType,
       'contextLabel': contextLabel,
       'isGroup': isGroup,
@@ -127,6 +133,10 @@ class ConversationModel {
 
   bool isMutedFor(String currentUserId) {
     return mutedBy.contains(currentUserId);
+  }
+
+  bool isDeletedFor(String currentUserId) {
+    return deletedBy.contains(currentUserId);
   }
 
   bool get isProjectConversation {

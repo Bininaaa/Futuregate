@@ -60,8 +60,8 @@ class ChatInputBar extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
           decoration: BoxDecoration(
-            gradient: ChatThemePalette.headerGradient,
-            borderRadius: BorderRadius.circular(30),
+            gradient: ChatThemePalette.heroGradient,
+            borderRadius: BorderRadius.circular(32),
             border: Border.all(color: Colors.white.withValues(alpha: 0.88)),
             boxShadow: ChatThemeStyles.softShadow(0.09),
           ),
@@ -91,7 +91,7 @@ class ChatInputBar extends StatelessWidget {
                     tooltip: 'Attach',
                     color: ChatThemePalette.surface,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(22),
                     ),
                     onSelected: (value) {
                       if (value == 'image') {
@@ -137,10 +137,10 @@ class ChatInputBar extends StatelessWidget {
                   const SizedBox(width: 10),
                   Expanded(
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 14),
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.9),
-                        borderRadius: BorderRadius.circular(24),
+                        color: Colors.white.withValues(alpha: 0.92),
+                        borderRadius: BorderRadius.circular(26),
                         border: Border.all(
                           color: ChatThemePalette.border.withValues(alpha: 0.9),
                         ),
@@ -181,17 +181,10 @@ class ChatInputBar extends StatelessWidget {
                   ),
                   const SizedBox(width: 10),
                   Container(
-                    width: 52,
-                    height: 52,
+                    width: 56,
+                    height: 56,
                     decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [
-                          ChatThemePalette.primaryDark,
-                          ChatThemePalette.primary,
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
+                      gradient: ChatThemePalette.fabGradient,
                       shape: BoxShape.circle,
                       boxShadow: ChatThemeStyles.softShadow(0.12),
                     ),
@@ -241,7 +234,7 @@ class _StatusBanner extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
         color: ChatThemePalette.primary.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: ChatThemePalette.primary.withValues(alpha: 0.12),
         ),
@@ -288,7 +281,7 @@ class _AttachmentPreview extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
         gradient: ChatThemePalette.canvasGradient,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(color: ChatThemePalette.border),
       ),
       child: Row(
@@ -363,7 +356,14 @@ class _RoundIconButton extends StatelessWidget {
       width: 42,
       height: 42,
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
+        gradient: LinearGradient(
+          colors: [
+            color.withValues(alpha: 0.16),
+            color.withValues(alpha: 0.08),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         shape: BoxShape.circle,
         border: Border.all(color: color.withValues(alpha: 0.1)),
       ),

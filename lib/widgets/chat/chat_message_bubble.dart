@@ -80,7 +80,7 @@ class ChatMessageBubble extends StatelessWidget {
                     ? () => _showActions(context)
                     : null,
                 child: Container(
-                  constraints: const BoxConstraints(maxWidth: 292),
+                  constraints: const BoxConstraints(maxWidth: 304),
                   padding: EdgeInsets.fromLTRB(
                     15,
                     message.hasAttachment ? 10 : 12,
@@ -142,12 +142,16 @@ class ChatMessageBubble extends StatelessWidget {
     return BoxDecoration(
       gradient: isMe
           ? const LinearGradient(
-              colors: [ChatThemePalette.primaryDark, ChatThemePalette.primary],
+              colors: [
+                ChatThemePalette.primaryDark,
+                ChatThemePalette.primary,
+                Color(0xFF5B39FF),
+              ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             )
           : const LinearGradient(
-              colors: [Color(0xFFFFFFFF), Color(0xFFF6F8FF)],
+              colors: [Color(0xFFFFFFFF), Color(0xFFF6F8FF), Color(0xFFF3F7FF)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -163,8 +167,8 @@ class ChatMessageBubble extends StatelessWidget {
           color: isMe
               ? ChatThemePalette.primary.withValues(alpha: 0.16)
               : const Color(0xFF0F172A).withValues(alpha: 0.05),
-          blurRadius: isMe ? 22 : 16,
-          offset: const Offset(0, 10),
+          blurRadius: isMe ? 24 : 18,
+          offset: const Offset(0, 11),
         ),
       ],
     );
@@ -357,7 +361,7 @@ class _ImageAttachmentBubbleState extends State<_ImageAttachmentBubble> {
             alignment: Alignment.center,
             decoration: BoxDecoration(
               color: ChatThemePalette.background,
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(22),
             ),
             child: snapshot.hasError
                 ? const Icon(
@@ -383,7 +387,7 @@ class _ImageAttachmentBubbleState extends State<_ImageAttachmentBubble> {
             );
           },
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(22),
             child: AspectRatio(
               aspectRatio: 1.18,
               child: CachedNetworkImage(
@@ -446,7 +450,7 @@ class _FileAttachmentBubble extends StatelessWidget {
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: backgroundColor,
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(20),
           border: Border.all(color: borderColor),
         ),
         child: Row(

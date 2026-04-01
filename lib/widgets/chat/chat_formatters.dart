@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 
 class ChatFormatters {
   static final DateFormat _clockFormat = DateFormat('h:mma');
-  static final DateFormat _monthShortFormat = DateFormat('MMMdd');
+  static final DateFormat _monthShortFormat = DateFormat('MMM d');
   static final DateFormat _monthDayFormat = DateFormat('MMMM d');
   static final DateFormat _metaDateFormat = DateFormat('MMM d');
 
