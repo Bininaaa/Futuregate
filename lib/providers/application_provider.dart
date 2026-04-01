@@ -6,7 +6,21 @@ class ApplicationProvider extends ChangeNotifier {
   final ApplicationService _service = ApplicationService();
 
   bool _isLoading = false;
+  int _submittedApplicationsCount = 0;
+
   bool get isLoading => _isLoading;
+  int get submittedApplicationsCount => _submittedApplicationsCount;
+
+  Future<void> fetchSubmittedApplicationsCount(String studentId) async {
+    try {
+      _submittedApplicationsCount = await _service.getApplicationsCount(
+        studentId,
+      );
+      notifyListeners();
+    } catch (e) {
+      debugPrint('fetchSubmittedApplicationsCount error: $e');
+    }
+  }
 
   Future<ApplicationEligibilityStatus> getEligibility({
     required String studentId,

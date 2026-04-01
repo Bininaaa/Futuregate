@@ -18,6 +18,7 @@ class StudentService {
 
   Future<void> updateStudentProfile({
     required String uid,
+    required String fullName,
     required String phone,
     required String location,
     required String university,
@@ -25,6 +26,7 @@ class StudentService {
     required String bio,
   }) async {
     await _firestore.collection('users').doc(uid).update({
+      'fullName': fullName,
       'phone': phone,
       'location': location,
       'university': university,

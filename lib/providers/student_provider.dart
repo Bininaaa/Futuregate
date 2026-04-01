@@ -29,6 +29,7 @@ class StudentProvider extends ChangeNotifier {
 
   Future<String?> updateStudentProfile({
     required String uid,
+    required String fullName,
     required String phone,
     required String location,
     required String university,
@@ -41,6 +42,7 @@ class StudentProvider extends ChangeNotifier {
 
       await _studentService.updateStudentProfile(
         uid: uid,
+        fullName: fullName,
         phone: phone,
         location: location,
         university: university,

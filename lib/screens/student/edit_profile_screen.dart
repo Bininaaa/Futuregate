@@ -1,11 +1,13 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../../config/avatar_config.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/student_provider.dart';
+import '../../screens/settings/account_security_screens.dart';
+import '../../screens/settings/settings_flow_theme.dart';
+import '../../screens/settings/settings_flow_widgets.dart';
 import '../../widgets/profile_avatar.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -16,109 +18,149 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
-  static const Color vibrantOrange = Color(0xFFFF6700);
-  static const Color strongBlue = Color(0xFF004E98);
-  static const Color mediumBlue = Color(0xFF3A6EA5);
-  static const Color softGray = Color(0xFFEBEBEB);
-
-  final TextEditingController phoneController = TextEditingController();
-  final TextEditingController locationController = TextEditingController();
-  final TextEditingController universityController = TextEditingController();
-  final TextEditingController fieldOfStudyController = TextEditingController();
-  final TextEditingController bioController = TextEditingController();
+  final TextEditingController _fullNameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _locationController = TextEditingController();
+  final TextEditingController _universityController = TextEditingController();
+  final TextEditingController _fieldOfStudyController = TextEditingController();
+  final TextEditingController _bioController = TextEditingController();
 
   bool _initialized = false;
   bool _uploadingPhoto = false;
+
+  StudentProvider get _studentProvider => context.read<StudentProvider>();
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    if (!_initialized) {
-      final student = context.read<StudentProvider>().student;
-
-      if (student != null) {
-        phoneController.text = student.phone;
-        locationController.text = student.location;
-        universityController.text = student.university ?? '';
-        fieldOfStudyController.text = student.fieldOfStudy ?? '';
-        bioController.text = student.bio ?? '';
-      }
-
-      _initialized = true;
+    if (_initialized) {
+      return;
     }
+
+    final student = context.read<StudentProvider>().student;
+    final authUser = context.read<AuthProvider>().userModel;
+
+    _fullNameController.text = (student?.fullName ?? authUser?.fullName ?? '')
+        .trim();
+    _emailController.text = (student?.email ?? authUser?.email ?? '').trim();
+    _phoneController.text = student?.phone ?? '';
+    _locationController.text = student?.location ?? '';
+    _universityController.text = student?.university ?? '';
+    _fieldOfStudyController.text = student?.fieldOfStudy ?? '';
+    _bioController.text = student?.bio ?? '';
+
+    _initialized = true;
+  }
+
+  @override
+  void dispose() {
+    _fullNameController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
+    _locationController.dispose();
+    _universityController.dispose();
+    _fieldOfStudyController.dispose();
+    _bioController.dispose();
+    super.dispose();
   }
 
   Future<void> _saveProfile() async {
     final authProvider = context.read<AuthProvider>();
-    final studentProvider = context.read<StudentProvider>();
-
     final currentUser = authProvider.userModel;
-    if (currentUser == null) return;
-
-    final error = await studentProvider.updateStudentProfile(
-      uid: currentUser.uid,
-      phone: phoneController.text.trim(),
-      location: locationController.text.trim(),
-      university: universityController.text.trim(),
-      fieldOfStudy: fieldOfStudyController.text.trim(),
-      bio: bioController.text.trim(),
-    );
-
-    if (!mounted) return;
-
-    if (error == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Profile updated successfully')),
-      );
-      Navigator.pop(context);
-    } else {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(error)));
-    }
-  }
-
-  Future<void> _selectAvatar(String avatarId) async {
-    final authProvider = context.read<AuthProvider>();
-    final studentProvider = context.read<StudentProvider>();
-    final currentUser = authProvider.userModel;
-    if (currentUser == null || studentProvider.isLoading || _uploadingPhoto) {
+    if (currentUser == null) {
       return;
     }
 
-    final error = await studentProvider.selectAvatar(
+    final error = await _studentProvider.updateStudentProfile(
+      uid: currentUser.uid,
+      fullName: _fullNameController.text.trim(),
+      phone: _phoneController.text.trim(),
+      location: _locationController.text.trim(),
+      university: _universityController.text.trim(),
+      fieldOfStudy: _fieldOfStudyController.text.trim(),
+      bio: _bioController.text.trim(),
+    );
+
+    if (!mounted) {
+      return;
+    }
+
+    if (error != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error),
+          backgroundColor: SettingsFlowPalette.error,
+        ),
+      );
+      return;
+    }
+
+    await authProvider.loadCurrentUser();
+
+    if (!mounted) {
+      return;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Profile updated successfully.'),
+        backgroundColor: SettingsFlowPalette.success,
+      ),
+    );
+    Navigator.pop(context);
+  }
+
+  Future<void> _selectAvatar(String avatarId) async {
+    final currentUser = context.read<AuthProvider>().userModel;
+    if (currentUser == null || _studentProvider.isLoading || _uploadingPhoto) {
+      return;
+    }
+
+    final error = await _studentProvider.selectAvatar(
       uid: currentUser.uid,
       avatarId: avatarId,
     );
 
-    if (!mounted) return;
-    if (error != null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(error)));
+    if (!mounted) {
       return;
     }
+
+    if (error != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error),
+          backgroundColor: SettingsFlowPalette.error,
+        ),
+      );
+      return;
+    }
+
     await context.read<AuthProvider>().loadCurrentUser();
   }
 
   Future<void> _useUploadedPhoto() async {
-    final authProvider = context.read<AuthProvider>();
-    final studentProvider = context.read<StudentProvider>();
-    final currentUser = authProvider.userModel;
-    if (currentUser == null || studentProvider.isLoading || _uploadingPhoto) {
+    final currentUser = context.read<AuthProvider>().userModel;
+    if (currentUser == null || _studentProvider.isLoading || _uploadingPhoto) {
       return;
     }
 
-    final error = await studentProvider.useUploadedProfilePhoto(
+    final error = await _studentProvider.useUploadedProfilePhoto(
       currentUser.uid,
     );
 
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
+
     if (error != null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(error)));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error),
+          backgroundColor: SettingsFlowPalette.error,
+        ),
+      );
       return;
     }
 
@@ -126,7 +168,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Future<void> _pickAndUploadPhoto() async {
-    if (_uploadingPhoto || context.read<StudentProvider>().isLoading) {
+    final messenger = ScaffoldMessenger.of(context);
+
+    if (_uploadingPhoto || _studentProvider.isLoading) {
       return;
     }
 
@@ -136,408 +180,438 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       withData: true,
     );
 
-    if (result == null || result.files.isEmpty) return;
+    if (result == null || result.files.isEmpty) {
+      return;
+    }
+
+    if (!mounted) {
+      return;
+    }
 
     final file = result.files.single;
-
     if (file.size > 5 * 1024 * 1024) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Image must be smaller than 5 MB')),
+      if (!mounted) {
+        return;
+      }
+      messenger.showSnackBar(
+        const SnackBar(
+          content: Text('Image must be smaller than 5 MB.'),
+          backgroundColor: SettingsFlowPalette.error,
+        ),
       );
       return;
     }
 
-    if (!mounted) return;
-    final authProvider = context.read<AuthProvider>();
-    final studentProvider = context.read<StudentProvider>();
-    final currentUser = authProvider.userModel;
-    if (currentUser == null) return;
+    final currentUser = context.read<AuthProvider>().userModel;
+    if (currentUser == null) {
+      return;
+    }
 
     setState(() => _uploadingPhoto = true);
 
-    final error = await studentProvider.uploadProfilePhoto(
+    final error = await _studentProvider.uploadProfilePhoto(
       uid: currentUser.uid,
       fileName: file.name,
       filePath: file.path ?? '',
       fileBytes: file.bytes,
     );
 
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
+
     setState(() => _uploadingPhoto = false);
 
     if (error != null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(error)));
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(error),
+          backgroundColor: SettingsFlowPalette.error,
+        ),
+      );
       return;
     }
+
     await context.read<AuthProvider>().loadCurrentUser();
   }
 
   Future<void> _removePhoto() async {
-    final authProvider = context.read<AuthProvider>();
-    final studentProvider = context.read<StudentProvider>();
-    final currentUser = authProvider.userModel;
-    if (currentUser == null) return;
-
-    final error = await studentProvider.removeProfilePhoto(currentUser.uid);
-
-    if (!mounted) return;
-    if (error != null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(error)));
+    final currentUser = context.read<AuthProvider>().userModel;
+    if (currentUser == null) {
       return;
     }
+
+    final error = await _studentProvider.removeProfilePhoto(currentUser.uid);
+
+    if (!mounted) {
+      return;
+    }
+
+    if (error != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error),
+          backgroundColor: SettingsFlowPalette.error,
+        ),
+      );
+      return;
+    }
+
     await context.read<AuthProvider>().loadCurrentUser();
   }
 
   @override
-  void dispose() {
-    phoneController.dispose();
-    locationController.dispose();
-    universityController.dispose();
-    fieldOfStudyController.dispose();
-    bioController.dispose();
-    super.dispose();
+  Widget build(BuildContext context) {
+    final authProvider = context.watch<AuthProvider>();
+    final student =
+        context.watch<StudentProvider>().student ?? authProvider.userModel;
+    final hasUploadedPhoto =
+        student != null && (student.profileImage).trim().isNotEmpty;
+    final isUploadActive = student?.photoType == 'upload';
+
+    return SettingsPageScaffold(
+      title: 'Edit Profile',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SettingsPanel(
+            padding: const EdgeInsets.all(18),
+            child: Column(
+              children: [
+                Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Container(
+                      width: 104,
+                      height: 104,
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFFF0F4FF), Color(0xFFE6FFFB)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: SettingsFlowTheme.radius(28),
+                      ),
+                      child: Center(
+                        child: _uploadingPhoto
+                            ? const SizedBox(
+                                width: 30,
+                                height: 30,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 3,
+                                  color: SettingsFlowPalette.primary,
+                                ),
+                              )
+                            : ProfileAvatar(user: student, radius: 32),
+                      ),
+                    ),
+                    Positioned(
+                      right: -4,
+                      bottom: -4,
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: _pickAndUploadPhoto,
+                          borderRadius: BorderRadius.circular(18),
+                          child: Ink(
+                            width: 34,
+                            height: 34,
+                            decoration: BoxDecoration(
+                              color: SettingsFlowPalette.primary,
+                              borderRadius: SettingsFlowTheme.radius(16),
+                              border: Border.all(color: Colors.white, width: 3),
+                            ),
+                            child: const Icon(
+                              Icons.edit_rounded,
+                              color: Colors.white,
+                              size: 16,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Update your profile',
+                  style: SettingsFlowTheme.sectionTitle(),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  'Refresh your details, switch avatars, or upload a new photo without affecting your existing account logic.',
+                  style: SettingsFlowTheme.caption(),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                SettingsButtonGroup(
+                  children: [
+                    SettingsSecondaryButton(
+                      label: 'Choose Avatar',
+                      icon: Icons.face_retouching_natural_rounded,
+                      onPressed: () =>
+                          _showAvatarPicker(context, student?.avatarId),
+                    ),
+                    SettingsPrimaryButton(
+                      label: 'Upload Photo',
+                      icon: Icons.upload_rounded,
+                      onPressed: _pickAndUploadPhoto,
+                    ),
+                  ],
+                ),
+                if (hasUploadedPhoto || student?.photoType == 'avatar') ...[
+                  const SizedBox(height: 12),
+                  SettingsButtonGroup(
+                    children: [
+                      if (hasUploadedPhoto && !isUploadActive)
+                        SettingsSecondaryButton(
+                          label: 'Use Uploaded',
+                          onPressed: _useUploadedPhoto,
+                        ),
+                      SettingsSecondaryButton(
+                        label: 'Remove Photo',
+                        color: SettingsFlowPalette.error,
+                        onPressed: _removePhoto,
+                      ),
+                    ],
+                  ),
+                ],
+              ],
+            ),
+          ),
+          const SizedBox(height: 18),
+          const SettingsSectionHeading(
+            title: 'Basic Details',
+            subtitle:
+                'Use graceful fallbacks where data is missing and keep email changes on the secure auth flow.',
+          ),
+          const SizedBox(height: 10),
+          SettingsPanel(
+            child: Column(
+              children: [
+                _ProfileField(
+                  controller: _fullNameController,
+                  label: 'Full Name',
+                  icon: Icons.badge_outlined,
+                ),
+                const SizedBox(height: 14),
+                _ProfileField(
+                  controller: _emailController,
+                  label: 'Email',
+                  icon: Icons.email_outlined,
+                  readOnly: true,
+                  suffix: TextButton(
+                    onPressed: authProvider.isEmailProvider
+                        ? () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const ChangeEmailScreen(),
+                            ),
+                          )
+                        : null,
+                    child: Text(
+                      authProvider.isEmailProvider ? 'Change' : 'Managed',
+                      style: SettingsFlowTheme.micro(
+                        SettingsFlowPalette.primary,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 14),
+                _ProfileField(
+                  controller: _phoneController,
+                  label: 'Phone',
+                  icon: Icons.phone_outlined,
+                  keyboardType: TextInputType.phone,
+                ),
+                const SizedBox(height: 14),
+                _ProfileField(
+                  controller: _locationController,
+                  label: 'Location',
+                  icon: Icons.location_on_outlined,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 18),
+          const SettingsSectionHeading(
+            title: 'Academic Profile',
+            subtitle:
+                'Keep your student context current so opportunity matching stays useful.',
+          ),
+          const SizedBox(height: 10),
+          SettingsPanel(
+            child: Column(
+              children: [
+                _ProfileField(
+                  controller: _universityController,
+                  label: 'University',
+                  icon: Icons.school_outlined,
+                ),
+                const SizedBox(height: 14),
+                _ProfileField(
+                  controller: _fieldOfStudyController,
+                  label: 'Field of Study',
+                  icon: Icons.auto_stories_outlined,
+                ),
+                const SizedBox(height: 14),
+                _ProfileField(
+                  controller: _bioController,
+                  label: 'Bio',
+                  icon: Icons.notes_rounded,
+                  maxLines: 5,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 18),
+          SettingsPrimaryButton(
+            label: _studentProvider.isLoading ? 'Saving...' : 'Save Changes',
+            icon: _studentProvider.isLoading ? null : Icons.check_rounded,
+            onPressed: _studentProvider.isLoading || _uploadingPhoto
+                ? null
+                : _saveProfile,
+          ),
+        ],
+      ),
+    );
   }
+
+  void _showAvatarPicker(BuildContext context, String? selectedAvatarId) {
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (sheetContext) {
+        return Container(
+          margin: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(
+            color: SettingsFlowPalette.surface,
+            borderRadius: SettingsFlowTheme.radius(26),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 5,
+                  decoration: BoxDecoration(
+                    color: SettingsFlowPalette.border,
+                    borderRadius: SettingsFlowTheme.radius(999),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 14),
+              Text('Choose an Avatar', style: SettingsFlowTheme.sectionTitle()),
+              const SizedBox(height: 6),
+              Text(
+                'Pick a built-in look, or keep using your uploaded photo.',
+                style: SettingsFlowTheme.caption(),
+              ),
+              const SizedBox(height: 18),
+              GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 4,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                ),
+                itemCount: AvatarConfig.avatars.length,
+                itemBuilder: (context, index) {
+                  final avatar = AvatarConfig.avatars[index];
+                  final isSelected = selectedAvatarId == avatar.id;
+
+                  return InkWell(
+                    onTap: () {
+                      Navigator.pop(sheetContext);
+                      _selectAvatar(avatar.id);
+                    },
+                    borderRadius: BorderRadius.circular(24),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: isSelected
+                              ? SettingsFlowPalette.primary
+                              : Colors.transparent,
+                          width: 3,
+                        ),
+                      ),
+                      child: CircleAvatar(
+                        backgroundColor: avatar.backgroundColor,
+                        child: Icon(
+                          avatar.icon,
+                          color: avatar.iconColor,
+                          size: 26,
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _ProfileField extends StatelessWidget {
+  final TextEditingController controller;
+  final String label;
+  final IconData icon;
+  final TextInputType? keyboardType;
+  final int maxLines;
+  final bool readOnly;
+  final Widget? suffix;
+
+  const _ProfileField({
+    required this.controller,
+    required this.label,
+    required this.icon,
+    this.keyboardType,
+    this.maxLines = 1,
+    this.readOnly = false,
+    this.suffix,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final studentProvider = context.watch<StudentProvider>();
-    final student = studentProvider.student;
-
-    return Scaffold(
-      backgroundColor: softGray,
-      appBar: AppBar(
-        title: Text(
-          'Edit Profile',
-          style: GoogleFonts.poppins(
-            fontWeight: FontWeight.w600,
-            color: strongBlue,
-          ),
+    return TextField(
+      controller: controller,
+      keyboardType: keyboardType,
+      maxLines: maxLines,
+      readOnly: readOnly,
+      style: SettingsFlowTheme.body(),
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: SettingsFlowTheme.caption(),
+        prefixIcon: Icon(icon, color: SettingsFlowPalette.textSecondary),
+        suffixIcon: suffix,
+        filled: true,
+        fillColor: SettingsFlowPalette.background,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
         ),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: strongBlue),
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(20),
-        children: [
-          // Current profile picture preview
-          _buildPhotoPreview(student),
-          const SizedBox(height: 24),
-
-          // Avatar picker section
-          _buildAvatarPicker(student),
-          const SizedBox(height: 20),
-
-          // Upload section
-          _buildUploadSection(student),
-          const SizedBox(height: 24),
-
-          // Text fields
-          _buildField('Phone', phoneController),
-          const SizedBox(height: 14),
-          _buildField('Location', locationController),
-          const SizedBox(height: 14),
-          _buildField('University', universityController),
-          const SizedBox(height: 14),
-          _buildField('Field of Study', fieldOfStudyController),
-          const SizedBox(height: 14),
-          _buildField('Bio', bioController, maxLines: 4),
-          const SizedBox(height: 28),
-
-          SizedBox(
-            width: double.infinity,
-            height: 50,
-            child: ElevatedButton(
-              onPressed: studentProvider.isLoading || _uploadingPhoto
-                  ? null
-                  : _saveProfile,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: vibrantOrange,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                elevation: 0,
-              ),
-              child: studentProvider.isLoading
-                  ? const SizedBox(
-                      width: 22,
-                      height: 22,
-                      child: CircularProgressIndicator(
-                        color: Colors.white,
-                        strokeWidth: 2,
-                      ),
-                    )
-                  : Text(
-                      'Save Changes',
-                      style: GoogleFonts.poppins(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPhotoPreview(dynamic student) {
-    final hasPhoto =
-        student != null &&
-        (student.photoType == 'upload' ||
-            student.photoType == 'avatar' ||
-            (student.profileImage as String).isNotEmpty);
-
-    return Column(
-      children: [
-        Stack(
-          alignment: Alignment.center,
-          children: [
-            if (_uploadingPhoto)
-              const SizedBox(
-                width: 100,
-                height: 100,
-                child: CircularProgressIndicator(strokeWidth: 3),
-              )
-            else
-              ProfileAvatar(user: student, radius: 50),
-          ],
+        border: OutlineInputBorder(
+          borderRadius: SettingsFlowTheme.radius(20),
+          borderSide: const BorderSide(color: SettingsFlowPalette.border),
         ),
-        if (hasPhoto) ...[
-          const SizedBox(height: 10),
-          TextButton.icon(
-            onPressed: studentProvider.isLoading ? null : _removePhoto,
-            icon: const Icon(Icons.close, size: 16),
-            label: Text(
-              'Remove current photo',
-              style: GoogleFonts.poppins(fontSize: 13),
-            ),
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-          ),
-        ],
-      ],
-    );
-  }
-
-  StudentProvider get studentProvider => context.read<StudentProvider>();
-
-  Widget _buildAvatarPicker(dynamic student) {
-    final selectedAvatarId = student?.photoType == 'avatar'
-        ? student?.avatarId
-        : null;
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Choose an Avatar',
-            style: GoogleFonts.poppins(
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
-              color: strongBlue,
-            ),
-          ),
-          const SizedBox(height: 12),
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 4,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-            ),
-            itemCount: AvatarConfig.avatars.length,
-            itemBuilder: (context, index) {
-              final avatar = AvatarConfig.avatars[index];
-              final isSelected = selectedAvatarId == avatar.id;
-
-              return GestureDetector(
-                onTap: studentProvider.isLoading || _uploadingPhoto
-                    ? null
-                    : () => _selectAvatar(avatar.id),
-                child: Container(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: isSelected
-                        ? Border.all(color: vibrantOrange, width: 3)
-                        : null,
-                  ),
-                  child: CircleAvatar(
-                    backgroundColor: avatar.backgroundColor,
-                    child: Icon(avatar.icon, color: avatar.iconColor, size: 28),
-                  ),
-                ),
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildUploadSection(dynamic student) {
-    final hasUploadedPhoto =
-        student != null && (student.profileImage as String).isNotEmpty;
-    final isUploadActive = student?.photoType == 'upload';
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Or Upload Your Own Picture',
-            style: GoogleFonts.poppins(
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
-              color: strongBlue,
-            ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            'JPG, PNG or WebP. Max 5 MB.',
-            style: GoogleFonts.poppins(fontSize: 12, color: mediumBlue),
-          ),
-          if (hasUploadedPhoto) ...[
-            const SizedBox(height: 8),
-            Text(
-              isUploadActive
-                  ? 'Your uploaded photo is currently active.'
-                  : 'Your uploaded photo is saved. You can switch back without re-uploading.',
-              style: GoogleFonts.poppins(
-                fontSize: 12,
-                color: isUploadActive ? vibrantOrange : mediumBlue,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
-          const SizedBox(height: 12),
-          SizedBox(
-            width: double.infinity,
-            child: OutlinedButton.icon(
-              onPressed: _uploadingPhoto ? null : _pickAndUploadPhoto,
-              icon: _uploadingPhoto
-                  ? const SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Icon(Icons.upload_outlined),
-              label: Text(
-                _uploadingPhoto
-                    ? 'Uploading...'
-                    : hasUploadedPhoto
-                    ? 'Replace Uploaded Image'
-                    : 'Choose Image',
-                style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
-              ),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: strongBlue,
-                side: BorderSide(color: strongBlue.withValues(alpha: 0.2)),
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-              ),
-            ),
-          ),
-          if (hasUploadedPhoto && !isUploadActive) ...[
-            const SizedBox(height: 10),
-            SizedBox(
-              width: double.infinity,
-              child: TextButton.icon(
-                onPressed: studentProvider.isLoading || _uploadingPhoto
-                    ? null
-                    : _useUploadedPhoto,
-                icon: const Icon(Icons.refresh_outlined, size: 18),
-                label: Text(
-                  'Use Uploaded Photo',
-                  style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
-                ),
-                style: TextButton.styleFrom(foregroundColor: vibrantOrange),
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildField(
-    String label,
-    TextEditingController controller, {
-    int maxLines = 1,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: GoogleFonts.poppins(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: strongBlue,
-          ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: SettingsFlowTheme.radius(20),
+          borderSide: const BorderSide(color: SettingsFlowPalette.border),
         ),
-        const SizedBox(height: 6),
-        TextFormField(
-          controller: controller,
-          maxLines: maxLines,
-          style: GoogleFonts.poppins(fontSize: 14),
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: Colors.white,
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 14,
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: BorderSide.none,
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: BorderSide(color: Colors.grey.shade200),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: vibrantOrange),
-            ),
-          ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: SettingsFlowTheme.radius(20),
+          borderSide: const BorderSide(color: SettingsFlowPalette.primary),
         ),
-      ],
+      ),
     );
   }
 }

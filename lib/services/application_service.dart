@@ -18,6 +18,20 @@ class ApplicationService {
       NotificationWorkerService();
   final CvService _cvService = CvService();
 
+  Future<int> getApplicationsCount(String studentId) async {
+    final normalizedStudentId = studentId.trim();
+    if (normalizedStudentId.isEmpty) {
+      return 0;
+    }
+
+    final snapshot = await _firestore
+        .collection('applications')
+        .where('studentId', isEqualTo: normalizedStudentId)
+        .get();
+
+    return snapshot.docs.length;
+  }
+
   Future<ApplicationEligibilityStatus> getEligibility({
     required String studentId,
     required String opportunityId,

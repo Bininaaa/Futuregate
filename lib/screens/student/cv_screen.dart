@@ -1,6 +1,5 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -9,6 +8,8 @@ import '../../config/cv_template_config.dart';
 import '../../models/cv_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/cv_provider.dart';
+import '../../screens/settings/settings_flow_theme.dart';
+import '../../screens/settings/settings_flow_widgets.dart';
 import '../../services/document_access_service.dart';
 import '../../utils/document_upload_validator.dart';
 import '../../widgets/cv_templates/cv_template_preview.dart';
@@ -24,20 +25,18 @@ class CvScreen extends StatefulWidget {
 }
 
 class _CvScreenState extends State<CvScreen> {
-  static const Color strongBlue = Color(0xFF004E98);
-  static const Color vibrantOrange = Color(0xFFFF6700);
-  static const Color mediumBlue = Color(0xFF3A6EA5);
-  static const Color softGray = Color(0xFFEBEBEB);
   final DocumentAccessService _documentAccessService = DocumentAccessService();
 
   @override
   void initState() {
     super.initState();
-    Future.microtask(() {
-      if (!mounted) return;
+    Future.microtask(() async {
+      if (!mounted) {
+        return;
+      }
       final uid = context.read<AuthProvider>().userModel?.uid;
       if (uid != null) {
-        context.read<CvProvider>().loadCv(uid);
+        await context.read<CvProvider>().loadCv(uid);
       }
     });
   }
@@ -77,9 +76,10 @@ class _CvScreenState extends State<CvScreen> {
 
     if (selectedId != null && selectedId != cv.templateId && mounted) {
       final uid = _uid;
-      if (uid == null) return;
+      if (uid == null) {
+        return;
+      }
 
-      // Save CV with the new template ID
       final error = await context.read<CvProvider>().saveCv(
         studentId: uid,
         fullName: cv.fullName,
@@ -94,21 +94,21 @@ class _CvScreenState extends State<CvScreen> {
         templateId: selectedId,
       );
 
-      if (mounted) {
-        if (error == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'Template changed to ${CvTemplateConfig.getTemplate(selectedId).name}',
-              ),
-            ),
-          );
-        } else {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(error)));
-        }
+      if (!mounted) {
+        return;
       }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            error ??
+                'Template changed to ${CvTemplateConfig.getTemplate(selectedId).name}.',
+          ),
+          backgroundColor: error == null
+              ? SettingsFlowPalette.success
+              : SettingsFlowPalette.error,
+        ),
+      );
     }
   }
 
@@ -117,12 +117,53 @@ class _CvScreenState extends State<CvScreen> {
       context,
       MaterialPageRoute(builder: (_) => CvPreviewScreen(cv: cv)),
     );
-    if (exported == true) _reload();
+    if (exported == true) {
+      await _reload();
+    }
+  }
+
+  Future<void> _generateCv(CvModel? cv) async {
+    final messenger = ScaffoldMessenger.of(context);
+
+    if (cv == null || !cv.hasBuilderContent) {
+      messenger.showSnackBar(
+        const SnackBar(
+          content: Text('Add CV content first to generate a PDF.'),
+          backgroundColor: SettingsFlowPalette.warning,
+        ),
+      );
+      return;
+    }
+
+    final uid = _uid;
+    if (uid == null) {
+      return;
+    }
+
+    final error = await context.read<CvProvider>().exportCvAsPdf(
+      studentId: uid,
+    );
+
+    if (!mounted) {
+      return;
+    }
+
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(error ?? 'Built CV exported successfully.'),
+        backgroundColor: error == null
+            ? SettingsFlowPalette.success
+            : SettingsFlowPalette.error,
+      ),
+    );
   }
 
   Future<void> _uploadExistingCv() async {
+    final messenger = ScaffoldMessenger.of(context);
     final uid = _uid;
-    if (uid == null) return;
+    if (uid == null) {
+      return;
+    }
 
     final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
@@ -130,7 +171,13 @@ class _CvScreenState extends State<CvScreen> {
       withData: true,
     );
 
-    if (result == null || result.files.isEmpty) return;
+    if (result == null || result.files.isEmpty) {
+      return;
+    }
+
+    if (!mounted) {
+      return;
+    }
 
     final file = result.files.single;
     final validationError = DocumentUploadValidator.validatePrimaryCv(
@@ -139,15 +186,17 @@ class _CvScreenState extends State<CvScreen> {
     );
 
     if (validationError != null) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(validationError)));
+      if (!mounted) {
+        return;
       }
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(validationError),
+          backgroundColor: SettingsFlowPalette.error,
+        ),
+      );
       return;
     }
-
-    if (!mounted) return;
 
     final error = await context.read<CvProvider>().uploadCvFile(
       studentId: uid,
@@ -156,22 +205,26 @@ class _CvScreenState extends State<CvScreen> {
       fileBytes: file.bytes,
     );
 
-    if (!mounted) return;
-
-    if (error == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('CV uploaded successfully')));
-    } else {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(error)));
+    if (!mounted) {
+      return;
     }
+
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(error ?? 'Primary CV uploaded successfully.'),
+        backgroundColor: error == null
+            ? SettingsFlowPalette.success
+            : SettingsFlowPalette.error,
+      ),
+    );
   }
 
   Future<void> _togglePrimaryCvMode(CvModel cv) async {
+    final messenger = ScaffoldMessenger.of(context);
     final uid = _uid;
-    if (uid == null) return;
+    if (uid == null) {
+      return;
+    }
 
     final newMode = cv.primaryCvMode == 'uploaded' ? 'builder_pdf' : 'uploaded';
 
@@ -180,23 +233,22 @@ class _CvScreenState extends State<CvScreen> {
       primaryCvMode: newMode,
     );
 
-    if (!mounted) return;
-
-    if (error == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            newMode == 'uploaded'
-                ? 'Using uploaded CV as primary'
-                : 'Using builder CV as primary',
-          ),
-        ),
-      );
-    } else {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(error)));
+    if (!mounted) {
+      return;
     }
+
+    final successMessage = newMode == 'uploaded'
+        ? 'Applications now use your uploaded CV.'
+        : 'Applications now use your built CV PDF.';
+
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(error ?? successMessage),
+        backgroundColor: error == null
+            ? SettingsFlowPalette.success
+            : SettingsFlowPalette.error,
+      ),
+    );
   }
 
   Future<void> _openSecureCv({
@@ -205,7 +257,9 @@ class _CvScreenState extends State<CvScreen> {
     bool requirePdf = false,
   }) async {
     final uid = _uid;
-    if (uid == null) return;
+    if (uid == null) {
+      return;
+    }
 
     final messenger = ScaffoldMessenger.of(context);
 
@@ -227,6 +281,7 @@ class _CvScreenState extends State<CvScreen> {
       final uri = Uri.tryParse(
         download ? document.downloadUrl : document.viewUrl,
       );
+
       if (uri == null) {
         throw Exception('File unavailable.');
       }
@@ -236,13 +291,16 @@ class _CvScreenState extends State<CvScreen> {
         mode: LaunchMode.platformDefault,
         webOnlyWindowName: '_blank',
       );
+
       if (!launched && mounted) {
         messenger.showSnackBar(
           const SnackBar(content: Text('Could not open the document.')),
         );
       }
     } catch (e) {
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       messenger.showSnackBar(SnackBar(content: Text(_documentErrorMessage(e))));
     }
   }
@@ -252,597 +310,359 @@ class _CvScreenState extends State<CvScreen> {
     final cvProvider = context.watch<CvProvider>();
     final cv = cvProvider.cv;
 
-    return Scaffold(
-      backgroundColor: softGray,
-      appBar: AppBar(
-        title: Text(
-          'My CV',
-          style: GoogleFonts.poppins(
-            fontWeight: FontWeight.w600,
-            color: strongBlue,
+    final sections = _buildSections(cv);
+    final completeSections = sections
+        .where((section) => section.complete)
+        .length;
+    final totalTrackableSections = sections
+        .where((section) => section.trackInCompletion)
+        .length;
+    final completionRatio = totalTrackableSections == 0
+        ? 0.0
+        : completeSections / totalTrackableSections;
+    final completionLabel = '${(completionRatio * 100).round()}%';
+
+    return SettingsPageScaffold(
+      title: 'CV Builder',
+      actions: [
+        IconButton(
+          onPressed: _reload,
+          icon: const Icon(
+            Icons.refresh_rounded,
+            color: SettingsFlowPalette.textPrimary,
           ),
         ),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: strongBlue),
-      ),
-      body: cvProvider.isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                _buildStatusCard(cv),
-                const SizedBox(height: 16),
-                _buildBuiltCvSection(cv),
-                const SizedBox(height: 16),
-                _buildPrimaryCvSection(cv),
-                const SizedBox(height: 16),
-                _buildApplicationDefaultCard(cv),
-                const SizedBox(height: 24),
-              ],
-            ),
-    );
-  }
-
-  Widget _buildStatusCard(CvModel? cv) {
-    String statusText;
-    IconData statusIcon;
-    Color statusColor;
-
-    if (cv == null || (!cv.hasBuilderContent && !cv.hasUploadedCv)) {
-      statusText =
-          'No CV yet — get started by editing your content or uploading a file';
-      statusIcon = Icons.info_outline;
-      statusColor = mediumBlue;
-    } else if (cv.hasBuilderContent && cv.hasUploadedCv) {
-      statusText =
-          'Hybrid CV — you have both builder content and an uploaded file';
-      statusIcon = Icons.check_circle_outline;
-      statusColor = Colors.green;
-    } else if (cv.hasBuilderContent) {
-      statusText = cv.templateId.trim().isNotEmpty
-          ? 'Builder CV with ${CvTemplateConfig.getTemplate(cv.templateId).name} template'
-          : 'Builder CV — choose a template to preview and export';
-      statusIcon = Icons.description_outlined;
-      statusColor = strongBlue;
-    } else {
-      statusText = 'Uploaded CV: ${cv.uploadedFileName}';
-      statusIcon = Icons.upload_file;
-      statusColor = strongBlue;
-    }
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Icon(statusIcon, color: statusColor, size: 28),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              statusText,
-              style: GoogleFonts.poppins(
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
-                color: strongBlue,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBuiltCvSection(CvModel? cv) {
-    final hasBuilderContent = cv?.hasBuilderContent ?? false;
-    final hasExportedPdf = cv?.hasExportedPdf ?? false;
-    final templateName = cv != null && cv.templateId.trim().isNotEmpty
-        ? CvTemplateConfig.getTemplate(cv.templateId).name
-        : 'No template selected';
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildSectionHeader(
-          title: 'Built CV',
-          subtitle: 'Your structured profile CV and exported PDF.',
-        ),
-        const SizedBox(height: 10),
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.04),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                hasBuilderContent
-                    ? 'Template: $templateName'
-                    : 'No built CV content yet',
-                style: GoogleFonts.poppins(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: strongBlue,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                hasBuilderContent
-                    ? hasExportedPdf
-                          ? 'Your built CV is ready and exported as a PDF.'
-                          : 'Your built CV content is ready. Export it to generate the PDF recruiters can open.'
-                    : 'Add your details to create a professional built CV and export it as PDF.',
-                style: GoogleFonts.poppins(
-                  fontSize: 12,
-                  height: 1.5,
-                  color: mediumBlue,
-                ),
-              ),
-              const SizedBox(height: 14),
-              _buildActionCard(
-                icon: Icons.edit_note,
-                title: 'Edit CV Content',
-                subtitle: hasBuilderContent
-                    ? 'Update your information, education, and experience'
-                    : 'Fill in your information to get started',
-                onTap: _navigateToEdit,
-              ),
-              const SizedBox(height: 10),
-              _buildActionCard(
-                icon: Icons.style_outlined,
-                title: 'Choose Template',
-                subtitle: templateName,
-                onTap: () {
-                  if (cv == null || !cv.hasBuilderContent) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Please fill in your CV content first'),
-                      ),
-                    );
-                    return;
-                  }
-                  _navigateToTemplateSelector(cv);
-                },
-                enabled: hasBuilderContent,
-              ),
-              const SizedBox(height: 10),
-              _buildActionCard(
-                icon: Icons.picture_as_pdf_outlined,
-                title: 'Preview & Export PDF',
-                subtitle: hasExportedPdf
-                    ? 'Refresh or review the built CV PDF'
-                    : 'Generate a PDF from your built CV',
-                onTap: () {
-                  if (cv == null || !cv.hasBuilderContent) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Please fill in your CV content first'),
-                      ),
-                    );
-                    return;
-                  }
-                  _navigateToPreview(cv);
-                },
-                enabled: hasBuilderContent,
-              ),
-              if (hasExportedPdf) ...[
-                const SizedBox(height: 14),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildDocumentButton(
-                        label: 'View Built CV',
-                        icon: Icons.visibility_outlined,
-                        color: strongBlue,
-                        onPressed: () =>
-                            _openSecureCv(variant: 'built', requirePdf: true),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: _buildDocumentButton(
-                        label: 'Download Built CV',
-                        icon: Icons.download_outlined,
-                        color: vibrantOrange,
-                        onPressed: () =>
-                            _openSecureCv(variant: 'built', download: true),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ],
-          ),
-        ),
-        if (cv != null &&
-            cv.hasBuilderContent &&
-            cv.templateId.trim().isNotEmpty) ...[
-          const SizedBox(height: 10),
-          _buildTemplatePreviewCard(cv),
-        ],
       ],
-    );
-  }
-
-  Widget _buildPrimaryCvSection(CvModel? cv) {
-    final hasPrimaryCv = cv?.hasUploadedCv ?? false;
-    final uploadedAt = cv?.uploadedCvUploadedAt;
-    final uploadedAtLabel = uploadedAt == null
-        ? 'Not available'
-        : DateFormat('MMM d, yyyy').format(uploadedAt.toDate());
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildSectionHeader(
-          title: 'Primary CV',
-          subtitle:
-              'The uploaded PDF file recruiters and admins can review directly.',
-        ),
-        const SizedBox(height: 10),
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.04),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
+      child: cvProvider.isLoading
+          ? const Padding(
+              padding: EdgeInsets.only(top: 120),
+              child: Center(
+                child: CircularProgressIndicator(
+                  color: SettingsFlowPalette.primary,
+                ),
               ),
-            ],
-          ),
-          child: hasPrimaryCv
-              ? Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      cv!.uploadedCvDisplayName,
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: strongBlue,
+            )
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SettingsPanel(
+                  padding: const EdgeInsets.all(18),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          final compact = constraints.maxWidth < 360;
+
+                          return compact
+                              ? Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Build a sharper student CV',
+                                      style: SettingsFlowTheme.heroTitle(),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      'Track what is filled in, edit structured sections, and export a polished PDF when your profile is ready.',
+                                      style: SettingsFlowTheme.caption(),
+                                    ),
+                                    const SizedBox(height: 14),
+                                    Align(
+                                      alignment: Alignment.centerRight,
+                                      child: _CompletionBadge(
+                                        completionLabel: completionLabel,
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              : Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Build a sharper student CV',
+                                            style:
+                                                SettingsFlowTheme.heroTitle(),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Text(
+                                            'Track what is filled in, edit structured sections, and export a polished PDF when your profile is ready.',
+                                            style: SettingsFlowTheme.caption(),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    _CompletionBadge(
+                                      completionLabel: completionLabel,
+                                    ),
+                                  ],
+                                );
+                        },
+                      ),
+                      const SizedBox(height: 18),
+                      Wrap(
+                        spacing: 10,
+                        runSpacing: 10,
+                        children: [
+                          SettingsStatusPill(
+                            label: cv?.templateId.trim().isNotEmpty == true
+                                ? CvTemplateConfig.getTemplate(
+                                    cv!.templateId,
+                                  ).name
+                                : 'No template selected',
+                            color: SettingsFlowPalette.secondary,
+                          ),
+                          SettingsStatusPill(
+                            label: cv?.hasUploadedCv == true
+                                ? 'Primary PDF ready'
+                                : 'Primary PDF missing',
+                            color: cv?.hasUploadedCv == true
+                                ? SettingsFlowPalette.success
+                                : SettingsFlowPalette.warning,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 18),
+                      SettingsButtonGroup(
+                        children: [
+                          SettingsPrimaryButton(
+                            label: 'Edit CV',
+                            icon: Icons.edit_outlined,
+                            onPressed: _navigateToEdit,
+                          ),
+                          SettingsSecondaryButton(
+                            label: 'Generate CV',
+                            icon: Icons.picture_as_pdf_outlined,
+                            onPressed: cvProvider.isExporting
+                                ? null
+                                : () => _generateCv(cv),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      SettingsSecondaryButton(
+                        label: 'Preview PDF',
+                        icon: Icons.visibility_outlined,
+                        onPressed: cv != null && cv.hasBuilderContent
+                            ? () => _navigateToPreview(cv)
+                            : null,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 18),
+                const SettingsSectionHeading(
+                  title: 'Builder Blocks',
+                  subtitle:
+                      'Every section below reflects the current CV data and stays connected to the existing editor.',
+                ),
+                const SizedBox(height: 10),
+                ...sections.map(
+                  (section) => Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: SettingsPanel(
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          final compact = constraints.maxWidth < 320;
+                          final statusPill = SettingsStatusPill(
+                            label: section.statusLabel,
+                            color: section.complete
+                                ? SettingsFlowPalette.success
+                                : section.trackInCompletion
+                                ? SettingsFlowPalette.warning
+                                : SettingsFlowPalette.textSecondary,
+                          );
+
+                          return Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SettingsIconBox(
+                                icon: section.icon,
+                                color: section.color,
+                              ),
+                              const SizedBox(width: 14),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    if (compact) ...[
+                                      Text(
+                                        section.title,
+                                        style: SettingsFlowTheme.cardTitle(),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      statusPill,
+                                    ] else
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              section.title,
+                                              style:
+                                                  SettingsFlowTheme.cardTitle(),
+                                            ),
+                                          ),
+                                          statusPill,
+                                        ],
+                                      ),
+                                    const SizedBox(height: 6),
+                                    Text(
+                                      section.description,
+                                      style: SettingsFlowTheme.caption(),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          );
+                        },
                       ),
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Uploaded: $uploadedAtLabel',
-                      style: GoogleFonts.poppins(
-                        fontSize: 12,
-                        color: mediumBlue,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                SettingsPanel(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SettingsSectionHeading(
+                        title: 'Template & Export',
+                        subtitle:
+                            'Choose the layout you want recruiters to see and preview the output before sharing it.',
                       ),
-                    ),
-                    const SizedBox(height: 10),
-                    if (!cv.isUploadedCvPdf)
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.orange.withValues(alpha: 0.08),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: Colors.orange.withValues(alpha: 0.2),
-                          ),
-                        ),
-                        child: Text(
-                          'This uploaded file is not a valid PDF. Please replace it with a PDF so it can be viewed by recruiters and admins.',
-                          style: GoogleFonts.poppins(
-                            fontSize: 12,
-                            height: 1.5,
-                            color: Colors.orange.shade800,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    const SizedBox(height: 14),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _buildDocumentButton(
-                            label: 'View Primary CV',
-                            icon: Icons.visibility_outlined,
-                            color: strongBlue,
-                            onPressed: cv.isUploadedCvPdf
-                                ? () => _openSecureCv(
-                                    variant: 'primary',
-                                    requirePdf: true,
-                                  )
+                      const SizedBox(height: 12),
+                      SettingsButtonGroup(
+                        children: [
+                          SettingsSecondaryButton(
+                            label: 'Choose Template',
+                            icon: Icons.style_outlined,
+                            onPressed: cv != null && cv.hasBuilderContent
+                                ? () => _navigateToTemplateSelector(cv)
                                 : null,
                           ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: _buildDocumentButton(
-                            label: 'Download Primary CV',
-                            icon: Icons.download_outlined,
-                            color: vibrantOrange,
-                            onPressed: () => _openSecureCv(
-                              variant: 'primary',
-                              download: true,
+                          SettingsSecondaryButton(
+                            label: 'Preview PDF',
+                            icon: Icons.remove_red_eye_outlined,
+                            onPressed: cv != null && cv.hasBuilderContent
+                                ? () => _navigateToPreview(cv)
+                                : null,
+                          ),
+                        ],
+                      ),
+                      if (cv != null &&
+                          cv.hasBuilderContent &&
+                          cv.templateId.trim().isNotEmpty) ...[
+                        const SizedBox(height: 14),
+                        Container(
+                          height: 190,
+                          decoration: BoxDecoration(
+                            color: SettingsFlowPalette.background,
+                            borderRadius: SettingsFlowTheme.radius(22),
+                            border: Border.all(
+                              color: SettingsFlowPalette.border,
+                            ),
+                          ),
+                          child: ClipRRect(
+                            borderRadius: SettingsFlowTheme.radius(22),
+                            child: CvTemplatePreview(
+                              cv: cv,
+                              templateId: cv.templateId,
                             ),
                           ),
                         ),
                       ],
-                    ),
-                    const SizedBox(height: 10),
-                    _buildActionCard(
-                      icon: Icons.upload_file,
-                      title: 'Replace Primary CV',
-                      subtitle: 'Upload a newer PDF version of your primary CV',
-                      onTap: _uploadExistingCv,
-                    ),
-                  ],
-                )
-              : Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'No primary CV uploaded yet',
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: strongBlue,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      'Upload a PDF CV so companies and admins can view the original file directly.',
-                      style: GoogleFonts.poppins(
-                        fontSize: 12,
-                        height: 1.5,
-                        color: mediumBlue,
-                      ),
-                    ),
-                    const SizedBox(height: 14),
-                    _buildActionCard(
-                      icon: Icons.upload_file,
-                      title: 'Upload Primary CV',
-                      subtitle: 'Upload your main CV as a PDF file',
-                      onTap: _uploadExistingCv,
-                    ),
-                  ],
-                ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildApplicationDefaultCard(CvModel? cv) {
-    if (cv == null || (!cv.hasUploadedCv && !cv.hasExportedPdf)) {
-      return const SizedBox.shrink();
-    }
-
-    final usesUploadedCv = cv.primaryCvMode == 'uploaded' && cv.hasUploadedCv;
-    final activeLabel = usesUploadedCv || !cv.hasExportedPdf
-        ? 'Applications currently use: Primary CV'
-        : 'Applications currently use: Built CV PDF';
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Application Default',
-            style: GoogleFonts.poppins(
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-              color: strongBlue,
-            ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            activeLabel,
-            style: GoogleFonts.poppins(fontSize: 12, color: mediumBlue),
-          ),
-          if (cv.hasUploadedCv && cv.hasExportedPdf) ...[
-            const SizedBox(height: 12),
-            _buildActionCard(
-              icon: Icons.swap_horiz,
-              title: 'Switch Primary CV',
-              subtitle: usesUploadedCv
-                  ? 'Currently using the uploaded PDF'
-                  : 'Currently using the built CV PDF',
-              onTap: () => _togglePrimaryCvMode(cv),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSectionHeader({
-    required String title,
-    required String subtitle,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: GoogleFonts.poppins(
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
-            color: strongBlue,
-          ),
-        ),
-        const SizedBox(height: 2),
-        Text(
-          subtitle,
-          style: GoogleFonts.poppins(fontSize: 12, color: mediumBlue),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildTemplatePreviewCard(CvModel cv) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-            child: Row(
-              children: [
-                Icon(
-                  CvTemplateConfig.getTemplate(cv.templateId).icon,
-                  color: strongBlue,
-                  size: 18,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  '${CvTemplateConfig.getTemplate(cv.templateId).name} Template',
-                  style: GoogleFonts.poppins(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: strongBlue,
+                    ],
                   ),
+                ),
+                const SizedBox(height: 18),
+                _PrimaryCvPanel(
+                  cv: cv,
+                  onUpload: _uploadExistingCv,
+                  onViewPrimary: () =>
+                      _openSecureCv(variant: 'primary', requirePdf: true),
+                  onDownloadPrimary: () =>
+                      _openSecureCv(variant: 'primary', download: true),
+                  onViewBuilt: () =>
+                      _openSecureCv(variant: 'built', requirePdf: true),
+                  onDownloadBuilt: () =>
+                      _openSecureCv(variant: 'built', download: true),
+                  onToggleDefault:
+                      cv != null && cv.hasUploadedCv && cv.hasExportedPdf
+                      ? () => _togglePrimaryCvMode(cv)
+                      : null,
                 ),
               ],
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-            child: Container(
-              height: 200,
-              decoration: BoxDecoration(
-                border: Border.all(color: softGray),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: CvTemplatePreview(cv: cv, templateId: cv.templateId),
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 
-  Widget _buildActionCard({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required VoidCallback onTap,
-    bool enabled = true,
-  }) {
-    return GestureDetector(
-      onTap: enabled ? onTap : null,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Icon(icon, color: enabled ? strongBlue : Colors.grey, size: 24),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: GoogleFonts.poppins(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: enabled ? strongBlue : Colors.grey,
-                    ),
-                  ),
-                  Text(
-                    subtitle,
-                    style: GoogleFonts.poppins(
-                      fontSize: 11,
-                      color: enabled
-                          ? strongBlue.withValues(alpha: 0.6)
-                          : Colors.grey,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Icon(
-              Icons.chevron_right,
-              color: enabled
-                  ? strongBlue.withValues(alpha: 0.4)
-                  : Colors.grey.withValues(alpha: 0.3),
-              size: 20,
-            ),
-          ],
-        ),
+  List<_CvSectionStatus> _buildSections(CvModel? cv) {
+    return [
+      _CvSectionStatus(
+        title: 'Personal Info',
+        description: cv == null || cv.fullName.trim().isEmpty
+            ? 'Add your name, email, phone, and address to get started.'
+            : '${cv.fullName} - ${[cv.email, cv.phone].where((value) => value.trim().isNotEmpty).join(' - ')}',
+        icon: Icons.person_outline_rounded,
+        color: SettingsFlowPalette.primary,
+        complete:
+            cv != null &&
+            cv.fullName.trim().isNotEmpty &&
+            cv.email.trim().isNotEmpty,
       ),
-    );
-  }
-
-  Widget _buildDocumentButton({
-    required String label,
-    required IconData icon,
-    required Color color,
-    required VoidCallback? onPressed,
-  }) {
-    return ElevatedButton.icon(
-      onPressed: onPressed,
-      icon: Icon(icon, size: 18),
-      label: Text(label),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: color,
-        foregroundColor: Colors.white,
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      _CvSectionStatus(
+        title: 'Education',
+        description: cv == null || cv.education.isEmpty
+            ? 'No education added yet.'
+            : '${cv.education.length} education entr${cv.education.length == 1 ? 'y' : 'ies'} ready.',
+        icon: Icons.school_outlined,
+        color: SettingsFlowPalette.secondary,
+        complete: cv?.education.isNotEmpty == true,
       ),
-    );
+      _CvSectionStatus(
+        title: 'Experience',
+        description: cv == null || cv.experience.isEmpty
+            ? 'No experience added yet.'
+            : '${cv.experience.length} experience entr${cv.experience.length == 1 ? 'y' : 'ies'} ready.',
+        icon: Icons.work_outline_rounded,
+        color: SettingsFlowPalette.accent,
+        complete: cv?.experience.isNotEmpty == true,
+      ),
+      _CvSectionStatus(
+        title: 'Skills',
+        description: cv == null || cv.skills.isEmpty
+            ? 'List your strongest skills for recruiters.'
+            : '${cv.skills.length} skill${cv.skills.length == 1 ? '' : 's'} added.',
+        icon: Icons.auto_awesome_outlined,
+        color: SettingsFlowPalette.primaryDark,
+        complete: cv?.skills.isNotEmpty == true,
+      ),
+      _CvSectionStatus(
+        title: 'Languages',
+        description: cv == null || cv.languages.isEmpty
+            ? 'No languages added yet.'
+            : '${cv.languages.length} language${cv.languages.length == 1 ? '' : 's'} added.',
+        icon: Icons.translate_rounded,
+        color: SettingsFlowPalette.success,
+        complete: cv?.languages.isNotEmpty == true,
+      ),
+      const _CvSectionStatus(
+        title: 'Certifications',
+        description:
+            'Dedicated certification entries are not connected to the current CV model yet, so this block is ready for future support.',
+        icon: Icons.workspace_premium_outlined,
+        color: SettingsFlowPalette.textSecondary,
+        complete: false,
+        trackInCompletion: false,
+        statusLabelOverride: 'Soon',
+      ),
+    ];
   }
 
   String _documentErrorMessage(Object error) {
@@ -856,4 +676,194 @@ class _CvScreenState extends State<CvScreen> {
 
     return 'Could not open the document right now.';
   }
+}
+
+class _PrimaryCvPanel extends StatelessWidget {
+  final CvModel? cv;
+  final VoidCallback onUpload;
+  final VoidCallback onViewPrimary;
+  final VoidCallback onDownloadPrimary;
+  final VoidCallback onViewBuilt;
+  final VoidCallback onDownloadBuilt;
+  final VoidCallback? onToggleDefault;
+
+  const _PrimaryCvPanel({
+    required this.cv,
+    required this.onUpload,
+    required this.onViewPrimary,
+    required this.onDownloadPrimary,
+    required this.onViewBuilt,
+    required this.onDownloadBuilt,
+    this.onToggleDefault,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final uploadedAt = cv?.uploadedCvUploadedAt;
+    final uploadedLabel = uploadedAt == null
+        ? 'Not uploaded yet'
+        : DateFormat('MMM d, yyyy').format(uploadedAt.toDate());
+
+    final usesUploaded =
+        cv != null && (cv!.primaryCvMode == 'uploaded' || !cv!.hasExportedPdf);
+
+    return SettingsPanel(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SettingsSectionHeading(
+            title: 'Primary CV Access',
+            subtitle:
+                'Keep the original uploaded PDF available for applications, recruiters, and admin review.',
+          ),
+          const SizedBox(height: 12),
+          SettingsListRow(
+            icon: Icons.upload_file_outlined,
+            iconColor: SettingsFlowPalette.primary,
+            title: cv?.hasUploadedCv == true
+                ? 'Uploaded Primary CV'
+                : 'No Primary CV Uploaded',
+            subtitle: cv?.hasUploadedCv == true
+                ? '${cv!.uploadedCvDisplayName} - Uploaded $uploadedLabel'
+                : 'Upload a PDF to keep a recruiter-ready primary file on hand.',
+            onTap: onUpload,
+            trailing: SettingsStatusPill(
+              label: cv?.hasUploadedCv == true ? 'Ready' : 'Upload',
+              color: cv?.hasUploadedCv == true
+                  ? SettingsFlowPalette.success
+                  : SettingsFlowPalette.warning,
+            ),
+          ),
+          const SizedBox(height: 12),
+          SettingsButtonGroup(
+            children: [
+              SettingsSecondaryButton(
+                label: 'Upload Primary CV',
+                icon: Icons.upload_outlined,
+                onPressed: onUpload,
+              ),
+              SettingsSecondaryButton(
+                label: 'View Primary CV',
+                icon: Icons.visibility_outlined,
+                onPressed: cv?.hasUploadedCv == true && cv!.isUploadedCvPdf
+                    ? onViewPrimary
+                    : null,
+              ),
+            ],
+          ),
+          if (cv?.hasUploadedCv == true) ...[
+            const SizedBox(height: 12),
+            SettingsSecondaryButton(
+              label: 'Download Primary CV',
+              icon: Icons.download_outlined,
+              onPressed: onDownloadPrimary,
+            ),
+          ],
+          if (cv?.hasExportedPdf == true) ...[
+            const SizedBox(height: 16),
+            SettingsListRow(
+              icon: Icons.picture_as_pdf_outlined,
+              iconColor: SettingsFlowPalette.secondary,
+              title: 'Built CV PDF',
+              subtitle: 'Open or download the PDF exported from the builder.',
+              trailing: SettingsStatusPill(
+                label: usesUploaded ? 'Secondary' : 'Default',
+                color: usesUploaded
+                    ? SettingsFlowPalette.warning
+                    : SettingsFlowPalette.success,
+              ),
+            ),
+            const SizedBox(height: 12),
+            SettingsButtonGroup(
+              children: [
+                SettingsSecondaryButton(
+                  label: 'View Built CV',
+                  icon: Icons.visibility_outlined,
+                  onPressed: onViewBuilt,
+                ),
+                SettingsSecondaryButton(
+                  label: 'Download Built CV',
+                  icon: Icons.download_outlined,
+                  onPressed: onDownloadBuilt,
+                ),
+              ],
+            ),
+          ],
+          if (onToggleDefault != null) ...[
+            const SizedBox(height: 14),
+            SettingsPrimaryButton(
+              label: usesUploaded
+                  ? 'Use Built CV for Applications'
+                  : 'Use Uploaded CV for Applications',
+              icon: Icons.swap_horiz_rounded,
+              onPressed: onToggleDefault,
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _CompletionBadge extends StatelessWidget {
+  final String completionLabel;
+
+  const _CompletionBadge({required this.completionLabel});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 72,
+      height: 72,
+      decoration: BoxDecoration(
+        gradient: SettingsFlowPalette.primaryGradient,
+        borderRadius: SettingsFlowTheme.radius(24),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            completionLabel,
+            style: SettingsFlowTheme.heroTitle(
+              Colors.white,
+            ).copyWith(fontSize: 22),
+          ),
+          Text(
+            'Ready',
+            style: SettingsFlowTheme.micro(
+              Colors.white.withValues(alpha: 0.86),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CvSectionStatus {
+  final String title;
+  final String description;
+  final IconData icon;
+  final Color color;
+  final bool complete;
+  final bool trackInCompletion;
+  final String? statusLabelOverride;
+
+  const _CvSectionStatus({
+    required this.title,
+    required this.description,
+    required this.icon,
+    required this.color,
+    required this.complete,
+    this.trackInCompletion = true,
+    this.statusLabelOverride,
+  });
+
+  String get statusLabel =>
+      statusLabelOverride ??
+      (complete
+          ? 'Complete'
+          : trackInCompletion
+          ? 'Needs details'
+          : 'Info');
 }

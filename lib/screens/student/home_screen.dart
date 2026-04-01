@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 
-import '../../providers/auth_provider.dart';
 import 'student_dashboard_screen.dart';
 import 'opportunities_screen.dart';
 import 'scholarships_screen.dart';
@@ -12,6 +10,7 @@ import 'saved_screen.dart';
 import 'cv_screen.dart';
 import 'profile_screen.dart';
 import '../settings/settings_screen.dart';
+import '../settings/logout_confirmation_sheet.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -229,9 +228,7 @@ class _MoreScreen extends StatelessWidget {
             icon: Icons.logout,
             title: 'Logout',
             isDestructive: true,
-            onTap: () {
-              context.read<AuthProvider>().logout();
-            },
+            onTap: () => showLogoutConfirmationSheet(context),
           ),
         ],
       ),
