@@ -42,6 +42,10 @@ service cloud.firestore {
       return /databases/$(database)/documents/opportunities/$(opportunityId);
     }
 
+    function projectIdeaPath(ideaId) {
+      return /databases/$(database)/documents/projectIdeas/$(ideaId);
+    }
+
     function applicationPath(applicationId) {
       return /databases/$(database)/documents/applications/$(applicationId);
     }
@@ -176,6 +180,12 @@ service cloud.firestore {
       return value == 'pending' ||
           value == 'approved' ||
           value == 'rejected';
+    }
+
+    function isProjectIdeaInteractionType(value) {
+      return value == 'spark' ||
+          value == 'interest' ||
+          value == 'save';
     }
 
     function isAcademicLevel(value) {
@@ -927,9 +937,29 @@ service cloud.firestore {
             'domain',
             'level',
             'tools',
+            'tagline',
+            'shortDescription',
+            'category',
+            'tags',
+            'stage',
+            'skillsNeeded',
+            'teamNeeded',
+            'targetAudience',
+            'problemStatement',
+            'solution',
+            'resourcesNeeded',
+            'benefits',
+            'imageUrl',
+            'attachmentUrl',
+            'isPublic',
+            'submittedByName',
+            'authorAvatar',
+            'authorPhotoType',
+            'authorAvatarId',
             'status',
             'submittedBy',
-            'createdAt'
+            'createdAt',
+            'updatedAt'
           ]) &&
           request.resource.data.id == ideaId &&
           request.resource.data.submittedBy == request.auth.uid &&
@@ -957,7 +987,27 @@ service cloud.firestore {
           resource.data.submittedBy == request.auth.uid &&
           resource.data.status == 'pending' &&
           request.resource.data.diff(resource.data).changedKeys().hasOnly([
-            'title', 'description', 'domain', 'level', 'tools'
+            'title',
+            'description',
+            'domain',
+            'level',
+            'tools',
+            'tagline',
+            'shortDescription',
+            'category',
+            'tags',
+            'stage',
+            'skillsNeeded',
+            'teamNeeded',
+            'targetAudience',
+            'problemStatement',
+            'solution',
+            'resourcesNeeded',
+            'benefits',
+            'imageUrl',
+            'attachmentUrl',
+            'isPublic',
+            'updatedAt'
           ]) &&
           request.resource.data.id == resource.data.id &&
           request.resource.data.status == resource.data.status &&
@@ -968,6 +1018,42 @@ service cloud.firestore {
 
       allow delete: if isAdmin() ||
           (isStudent() && resource.data.submittedBy == request.auth.uid);
+    }
+
+    match /projectIdeaInteractions/{interactionId} {
+      allow read: if signedIn() &&
+          (
+            isAdmin() ||
+            (
+              exists(projectIdeaPath(resource.data.ideaId)) &&
+              (
+                get(projectIdeaPath(resource.data.ideaId)).data.status == 'approved' ||
+                get(projectIdeaPath(resource.data.ideaId)).data.submittedBy == request.auth.uid
+              )
+            )
+          );
+
+      allow create: if isStudent() &&
+          request.resource.data.keys().hasOnly([
+            'id',
+            'ideaId',
+            'userId',
+            'type',
+            'createdAt'
+          ]) &&
+          request.resource.data.id == interactionId &&
+          request.resource.data.userId == request.auth.uid &&
+          isProjectIdeaInteractionType(request.resource.data.type) &&
+          exists(projectIdeaPath(request.resource.data.ideaId)) &&
+          (
+            get(projectIdeaPath(request.resource.data.ideaId)).data.status == 'approved' ||
+            get(projectIdeaPath(request.resource.data.ideaId)).data.submittedBy == request.auth.uid
+          );
+
+      allow update: if false;
+
+      allow delete: if isAdmin() ||
+          (isStudent() && resource.data.userId == request.auth.uid);
     }
 
     match /scholarships/{scholarshipId} {

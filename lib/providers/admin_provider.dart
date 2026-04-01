@@ -281,18 +281,7 @@ class AdminProvider extends ChangeNotifier {
       final idx = _allProjectIdeas.indexWhere((i) => i.id == id);
       if (didUpdate && idx != -1) {
         final old = _allProjectIdeas[idx];
-        _allProjectIdeas[idx] = ProjectIdeaModel(
-          id: old.id,
-          title: old.title,
-          description: old.description,
-          domain: old.domain,
-          level: old.level,
-          tools: old.tools,
-          status: status,
-          submittedBy: old.submittedBy,
-          submittedByName: old.submittedByName,
-          createdAt: old.createdAt,
-        );
+        _allProjectIdeas[idx] = old.copyWith(status: status);
         notifyListeners();
       }
       return null;

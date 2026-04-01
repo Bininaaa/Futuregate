@@ -418,6 +418,25 @@ function normalizeIdeaValue(value, { lowerCase = false } = {}) {
   return lowerCase ? normalized.toLowerCase() : normalized;
 }
 
+function normalizeIdeaList(value) {
+  if (Array.isArray(value)) {
+    return [...new Set(value.map((item) => normalizeIdeaValue(item)).filter(Boolean))];
+  }
+
+  if (typeof value === "string") {
+    return [
+      ...new Set(
+        value
+          .split(",")
+          .map((item) => normalizeIdeaValue(item))
+          .filter(Boolean),
+      ),
+    ];
+  }
+
+  return [];
+}
+
 async function stableProjectIdeaIdentity({
   submittedBy,
   title,
@@ -425,6 +444,9 @@ async function stableProjectIdeaIdentity({
   domain,
   level,
   tools,
+  stage,
+  skillsNeeded,
+  teamNeeded,
 }) {
   const fingerprintSource = [
     normalizeIdeaValue(submittedBy, { lowerCase: true }),
@@ -433,6 +455,9 @@ async function stableProjectIdeaIdentity({
     normalizeIdeaValue(domain, { lowerCase: true }),
     normalizeIdeaValue(level, { lowerCase: true }),
     normalizeIdeaValue(tools, { lowerCase: true }),
+    normalizeIdeaValue(stage, { lowerCase: true }),
+    normalizeIdeaList(skillsNeeded).join(","),
+    normalizeIdeaList(teamNeeded).join(","),
   ].join("|");
 
   const digest = await crypto.subtle.digest(
@@ -2495,6 +2520,25 @@ async function handleSubmitProjectIdea(request, env) {
   const domain = normalizeIdeaValue(body.domain);
   const level = normalizeIdeaValue(body.level, { lowerCase: true });
   const tools = normalizeIdeaValue(body.tools);
+  const tagline = normalizeIdeaValue(body.tagline);
+  const shortDescription =
+    normalizeIdeaValue(body.shortDescription) || tagline || description;
+  const category = normalizeIdeaValue(body.category) || domain;
+  const tags = normalizeIdeaList(body.tags);
+  const stage = normalizeIdeaValue(body.stage) || "Concept";
+  const skillsNeeded = normalizeIdeaList(body.skillsNeeded);
+  const teamNeeded = normalizeIdeaList(body.teamNeeded);
+  const targetAudience = normalizeIdeaValue(body.targetAudience);
+  const problemStatement = normalizeIdeaValue(body.problemStatement);
+  const solution = normalizeIdeaValue(body.solution);
+  const resourcesNeeded = normalizeIdeaValue(body.resourcesNeeded);
+  const benefits = normalizeIdeaValue(body.benefits);
+  const imageUrl = normalizeIdeaValue(body.imageUrl);
+  const attachmentUrl = normalizeIdeaValue(body.attachmentUrl);
+  const isPublic =
+    body.isPublic === false || String(body.isPublic).toLowerCase() === "false"
+      ? false
+      : true;
 
   if (!title) {
     return err("A project idea title is required.");
@@ -2516,6 +2560,9 @@ async function handleSubmitProjectIdea(request, env) {
     domain,
     level,
     tools,
+    stage,
+    skillsNeeded,
+    teamNeeded,
   });
 
   const ideaData = {
@@ -2525,10 +2572,29 @@ async function handleSubmitProjectIdea(request, env) {
     domain,
     level,
     tools,
+    tagline,
+    shortDescription,
+    category,
+    tags,
+    stage,
+    skillsNeeded,
+    teamNeeded,
+    targetAudience,
+    problemStatement,
+    solution,
+    resourcesNeeded,
+    benefits,
+    imageUrl,
+    attachmentUrl,
+    isPublic,
     status: "pending",
     submittedBy: auth.user.uid,
     submittedByName: displayNameForUser(auth.profile),
+    authorAvatar: trim(auth.profile?.profileImage),
+    authorPhotoType: trim(auth.profile?.photoType),
+    authorAvatarId: trim(auth.profile?.avatarId),
     createdAt: new Date(),
+    updatedAt: new Date(),
     dedupeKey,
   };
 

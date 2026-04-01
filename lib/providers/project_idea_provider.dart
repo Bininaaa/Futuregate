@@ -1,22 +1,29 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+
 import '../models/project_idea_model.dart';
 import '../services/project_idea_service.dart';
-import 'package:flutter/foundation.dart';
 
 class ProjectIdeaProvider extends ChangeNotifier {
-  final ProjectIdeaService _service = ProjectIdeaService();
+  ProjectIdeaProvider({ProjectIdeaService? service})
+    : _service = service ?? ProjectIdeaService();
 
-  List<ProjectIdeaModel> _approvedIdeas = [];
-  List<ProjectIdeaModel> _myIdeas = [];
+  final ProjectIdeaService _service;
+
+  List<ProjectIdeaModel> _approvedIdeas = <ProjectIdeaModel>[];
+  List<ProjectIdeaModel> _myIdeas = <ProjectIdeaModel>[];
   bool _isLoading = false;
-
+  String _currentUserId = '';
   String? _filterDomain;
   String? _filterStatus;
+  final Set<String> _busyInteractionKeys = <String>{};
 
   List<ProjectIdeaModel> get approvedIdeas {
     var list = _approvedIdeas;
     if (_filterDomain != null && _filterDomain!.isNotEmpty) {
-      list = list.where((i) => i.domain == _filterDomain).toList();
+      list = list
+          .where((idea) => idea.displayCategory == _filterDomain)
+          .toList(growable: false);
     }
     return list;
   }
@@ -24,21 +31,23 @@ class ProjectIdeaProvider extends ChangeNotifier {
   List<ProjectIdeaModel> get myIdeas {
     var list = _myIdeas;
     if (_filterDomain != null && _filterDomain!.isNotEmpty) {
-      list = list.where((i) => i.domain == _filterDomain).toList();
+      list = list
+          .where((idea) => idea.displayCategory == _filterDomain)
+          .toList(growable: false);
     }
     if (_filterStatus != null && _filterStatus!.isNotEmpty) {
-      list = list.where((i) => i.status == _filterStatus).toList();
+      list = list
+          .where((idea) => idea.status == _filterStatus)
+          .toList(growable: false);
     }
     return list;
   }
 
   List<String> get availableDomains {
-    final allIdeas = [..._approvedIdeas, ..._myIdeas];
-    final domains = allIdeas
-        .map((i) => i.domain)
-        .where((d) => d.isNotEmpty)
-        .toSet()
-        .toList();
+    final domains = <String>{
+      ..._approvedIdeas.map((idea) => idea.displayCategory),
+      ..._myIdeas.map((idea) => idea.displayCategory),
+    }.where((domain) => domain.trim().isNotEmpty).toList();
     domains.sort();
     return domains;
   }
@@ -46,14 +55,32 @@ class ProjectIdeaProvider extends ChangeNotifier {
   String? get filterDomain => _filterDomain;
   String? get filterStatus => _filterStatus;
   bool get isLoading => _isLoading;
+  String get currentUserId => _currentUserId;
+  int get totalMyIdeaSparks =>
+      _myIdeas.fold<int>(0, (sum, idea) => sum + idea.sparksCount);
+  int get totalMyIdeaInterested =>
+      _myIdeas.fold<int>(0, (sum, idea) => sum + idea.interestedCount);
+
+  bool isInteractionBusy(String ideaId, ProjectIdeaInteractionType type) {
+    return _busyInteractionKeys.contains('${type.name}:$ideaId');
+  }
+
+  ProjectIdeaModel? findIdeaById(String ideaId) {
+    for (final idea in <ProjectIdeaModel>[..._approvedIdeas, ..._myIdeas]) {
+      if (idea.id == ideaId) {
+        return idea;
+      }
+    }
+    return null;
+  }
 
   void setFilterDomain(String? domain) {
-    _filterDomain = domain;
+    _filterDomain = (domain ?? '').trim().isEmpty ? null : domain?.trim();
     notifyListeners();
   }
 
   void setFilterStatus(String? status) {
-    _filterStatus = status;
+    _filterStatus = (status ?? '').trim().isEmpty ? null : status?.trim();
     notifyListeners();
   }
 
@@ -68,6 +95,7 @@ class ProjectIdeaProvider extends ChangeNotifier {
       _isLoading = true;
       notifyListeners();
       _approvedIdeas = await _service.getApprovedProjectIdeas();
+      await _hydrateEngagement();
     } catch (e) {
       debugPrint('fetchApprovedIdeas error: $e');
     } finally {
@@ -78,9 +106,11 @@ class ProjectIdeaProvider extends ChangeNotifier {
 
   Future<void> fetchMyProjectIdeas(String studentId) async {
     try {
+      _currentUserId = studentId.trim();
       _isLoading = true;
       notifyListeners();
-      _myIdeas = await _service.getProjectIdeasByStudent(studentId);
+      _myIdeas = await _service.getProjectIdeasByStudent(_currentUserId);
+      await _hydrateEngagement();
     } catch (e) {
       debugPrint('fetchMyProjectIdeas error: $e');
     } finally {
@@ -89,34 +119,44 @@ class ProjectIdeaProvider extends ChangeNotifier {
     }
   }
 
-  /// Fetches both approved ideas (public) and the student's own ideas independently.
-  /// Each fetch is isolated so a failure in one does not prevent the other from loading.
   Future<void> fetchIdeas(String studentId) async {
+    _currentUserId = studentId.trim();
     _isLoading = true;
     notifyListeners();
 
-    // Fetch both independently — a failure in approved ideas must never hide the
-    // student's own ideas, and vice-versa.
-    await Future.wait([
-      _service
-          .getApprovedProjectIdeas()
-          .then((result) {
-            _approvedIdeas = result;
-          })
-          .catchError((e) {
-            debugPrint('fetchApprovedIdeas error: $e');
-          }),
-      _service
-          .getProjectIdeasByStudent(studentId)
-          .then((result) {
-            _myIdeas = result;
-          })
-          .catchError((e) {
-            debugPrint('fetchMyIdeas error: $e');
-          }),
-    ]);
+    try {
+      List<ProjectIdeaModel> approved = const <ProjectIdeaModel>[];
+      List<ProjectIdeaModel> mine = const <ProjectIdeaModel>[];
 
-    _isLoading = false;
+      await Future.wait([
+        _service
+            .getApprovedProjectIdeas()
+            .then((result) => approved = result)
+            .catchError((Object error) {
+              debugPrint('fetchApprovedIdeas error: $error');
+              return const <ProjectIdeaModel>[];
+            }),
+        if (_currentUserId.isNotEmpty)
+          _service
+              .getProjectIdeasByStudent(_currentUserId)
+              .then((result) => mine = result)
+              .catchError((Object error) {
+                debugPrint('fetchMyIdeas error: $error');
+                return const <ProjectIdeaModel>[];
+              }),
+      ]);
+
+      _approvedIdeas = approved;
+      _myIdeas = mine;
+      await _hydrateEngagement();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> refreshIdeaEngagement() async {
+    await _hydrateEngagement();
     notifyListeners();
   }
 
@@ -127,6 +167,21 @@ class ProjectIdeaProvider extends ChangeNotifier {
     required String level,
     required String tools,
     required String submittedBy,
+    String tagline = '',
+    String shortDescription = '',
+    String category = '',
+    List<String> tags = const <String>[],
+    String stage = '',
+    List<String> skillsNeeded = const <String>[],
+    List<String> teamNeeded = const <String>[],
+    String targetAudience = '',
+    String problemStatement = '',
+    String solution = '',
+    String resourcesNeeded = '',
+    String benefits = '',
+    String imageUrl = '',
+    String attachmentUrl = '',
+    bool isPublic = true,
   }) async {
     try {
       _isLoading = true;
@@ -138,6 +193,21 @@ class ProjectIdeaProvider extends ChangeNotifier {
         domain: domain,
         level: level,
         tools: tools,
+        tagline: tagline,
+        shortDescription: shortDescription,
+        category: category,
+        tags: tags,
+        stage: stage,
+        skillsNeeded: skillsNeeded,
+        teamNeeded: teamNeeded,
+        targetAudience: targetAudience,
+        problemStatement: problemStatement,
+        solution: solution,
+        resourcesNeeded: resourcesNeeded,
+        benefits: benefits,
+        imageUrl: imageUrl,
+        attachmentUrl: attachmentUrl,
+        isPublic: isPublic,
       );
 
       await fetchIdeas(submittedBy);
@@ -158,6 +228,21 @@ class ProjectIdeaProvider extends ChangeNotifier {
     required String level,
     required String tools,
     required String submittedBy,
+    String tagline = '',
+    String shortDescription = '',
+    String category = '',
+    List<String> tags = const <String>[],
+    String stage = '',
+    List<String> skillsNeeded = const <String>[],
+    List<String> teamNeeded = const <String>[],
+    String targetAudience = '',
+    String problemStatement = '',
+    String solution = '',
+    String resourcesNeeded = '',
+    String benefits = '',
+    String imageUrl = '',
+    String attachmentUrl = '',
+    bool isPublic = true,
   }) async {
     try {
       _isLoading = true;
@@ -170,9 +255,23 @@ class ProjectIdeaProvider extends ChangeNotifier {
         domain: domain,
         level: level,
         tools: tools,
+        tagline: tagline,
+        shortDescription: shortDescription,
+        category: category,
+        tags: tags,
+        stage: stage,
+        skillsNeeded: skillsNeeded,
+        teamNeeded: teamNeeded,
+        targetAudience: targetAudience,
+        problemStatement: problemStatement,
+        solution: solution,
+        resourcesNeeded: resourcesNeeded,
+        benefits: benefits,
+        imageUrl: imageUrl,
+        attachmentUrl: attachmentUrl,
+        isPublic: isPublic,
       );
 
-      // Refresh so UI reflects the update immediately
       await fetchIdeas(submittedBy);
       return null;
     } catch (e) {
@@ -192,6 +291,149 @@ class ProjectIdeaProvider extends ChangeNotifier {
       return null;
     } catch (e) {
       return e.toString();
+    }
+  }
+
+  Future<String?> toggleSpark(ProjectIdeaModel idea, String userId) {
+    return _toggleInteraction(
+      idea: idea,
+      userId: userId,
+      type: ProjectIdeaInteractionType.spark,
+      isEnabled: idea.isSparkedByCurrentUser,
+    );
+  }
+
+  Future<String?> toggleInterest(ProjectIdeaModel idea, String userId) {
+    return _toggleInteraction(
+      idea: idea,
+      userId: userId,
+      type: ProjectIdeaInteractionType.interest,
+      isEnabled: idea.isJoinedByCurrentUser,
+    );
+  }
+
+  Future<String?> toggleSave(ProjectIdeaModel idea, String userId) {
+    return _toggleInteraction(
+      idea: idea,
+      userId: userId,
+      type: ProjectIdeaInteractionType.save,
+      isEnabled: idea.isSavedByCurrentUser,
+    );
+  }
+
+  Future<String?> _toggleInteraction({
+    required ProjectIdeaModel idea,
+    required String userId,
+    required ProjectIdeaInteractionType type,
+    required bool isEnabled,
+  }) async {
+    final normalizedUserId = userId.trim();
+    if (normalizedUserId.isEmpty) {
+      return 'You need to be signed in.';
+    }
+
+    final busyKey = '${type.name}:${idea.id}';
+    if (_busyInteractionKeys.contains(busyKey)) {
+      return null;
+    }
+
+    _busyInteractionKeys.add(busyKey);
+    _applyInteractionLocally(ideaId: idea.id, type: type, enabled: !isEnabled);
+    notifyListeners();
+
+    try {
+      await _service.setInteraction(
+        ideaId: idea.id,
+        userId: normalizedUserId,
+        type: type,
+        enabled: !isEnabled,
+      );
+      return null;
+    } catch (e) {
+      _applyInteractionLocally(ideaId: idea.id, type: type, enabled: isEnabled);
+      notifyListeners();
+      return e.toString();
+    } finally {
+      _busyInteractionKeys.remove(busyKey);
+      notifyListeners();
+    }
+  }
+
+  Future<void> _hydrateEngagement() async {
+    final allIdeas = <ProjectIdeaModel>[..._approvedIdeas, ..._myIdeas];
+    final ideaIds = allIdeas.map((idea) => idea.id).toSet().toList();
+    if (ideaIds.isEmpty) {
+      return;
+    }
+
+    final engagement = await _service.getEngagementForIdeas(
+      ideaIds: ideaIds,
+      currentUserId: _currentUserId,
+    );
+
+    _approvedIdeas = _applyEngagement(_approvedIdeas, engagement);
+    _myIdeas = _applyEngagement(_myIdeas, engagement);
+  }
+
+  List<ProjectIdeaModel> _applyEngagement(
+    List<ProjectIdeaModel> ideas,
+    ProjectIdeaEngagementSnapshot engagement,
+  ) {
+    return ideas
+        .map(
+          (idea) => idea.copyWith(
+            sparksCount: engagement.sparksByIdeaId[idea.id] ?? idea.sparksCount,
+            interestedCount:
+                engagement.interestedByIdeaId[idea.id] ?? idea.interestedCount,
+            isSavedByCurrentUser: engagement.savedIdeaIds.contains(idea.id),
+            isSparkedByCurrentUser: engagement.sparkedIdeaIds.contains(idea.id),
+            isJoinedByCurrentUser: engagement.joinedIdeaIds.contains(idea.id),
+          ),
+        )
+        .toList(growable: false);
+  }
+
+  void _applyInteractionLocally({
+    required String ideaId,
+    required ProjectIdeaInteractionType type,
+    required bool enabled,
+  }) {
+    _approvedIdeas = _approvedIdeas
+        .map(
+          (idea) =>
+              idea.id == ideaId ? _withInteraction(idea, type, enabled) : idea,
+        )
+        .toList(growable: false);
+    _myIdeas = _myIdeas
+        .map(
+          (idea) =>
+              idea.id == ideaId ? _withInteraction(idea, type, enabled) : idea,
+        )
+        .toList(growable: false);
+  }
+
+  ProjectIdeaModel _withInteraction(
+    ProjectIdeaModel idea,
+    ProjectIdeaInteractionType type,
+    bool enabled,
+  ) {
+    switch (type) {
+      case ProjectIdeaInteractionType.spark:
+        return idea.copyWith(
+          sparksCount: enabled
+              ? idea.sparksCount + 1
+              : (idea.sparksCount > 0 ? idea.sparksCount - 1 : 0),
+          isSparkedByCurrentUser: enabled,
+        );
+      case ProjectIdeaInteractionType.interest:
+        return idea.copyWith(
+          interestedCount: enabled
+              ? idea.interestedCount + 1
+              : (idea.interestedCount > 0 ? idea.interestedCount - 1 : 0),
+          isJoinedByCurrentUser: enabled,
+        );
+      case ProjectIdeaInteractionType.save:
+        return idea.copyWith(isSavedByCurrentUser: enabled);
     }
   }
 }
