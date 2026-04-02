@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import '../../utils/company_dashboard_palette.dart';
 import 'company_dashboard_screen.dart';
 import 'my_opportunities_screen.dart';
 import 'applications_screen.dart';
@@ -15,9 +17,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
-
-  static const Color vibrantOrange = Color(0xFFFF6700);
-  static const Color mediumBlue = Color(0xFF3A6EA5);
 
   final List<Widget> _screens = const [
     CompanyDashboardScreen(),
@@ -47,8 +46,8 @@ class _HomeScreenState extends State<HomeScreen> {
           onTap: (index) => setState(() => _currentIndex = index),
           type: BottomNavigationBarType.fixed,
           backgroundColor: Colors.white,
-          selectedItemColor: vibrantOrange,
-          unselectedItemColor: mediumBlue,
+          selectedItemColor: CompanyDashboardPalette.primary,
+          unselectedItemColor: CompanyDashboardPalette.textMuted,
           selectedLabelStyle: GoogleFonts.poppins(
             fontSize: 11,
             fontWeight: FontWeight.w600,

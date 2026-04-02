@@ -148,16 +148,20 @@ class CompanyService {
     final apps = await getCompanyApplications(companyId);
 
     int pendingCount = 0;
-    int acceptedCount = 0;
+    int approvedCount = 0;
     int rejectedCount = 0;
 
     for (final app in apps) {
-      if (app.status == 'pending') {
-        pendingCount++;
-      } else if (app.status == 'accepted') {
-        acceptedCount++;
-      } else if (app.status == 'rejected') {
-        rejectedCount++;
+      switch (ApplicationStatus.parse(app.status)) {
+        case ApplicationStatus.pending:
+          pendingCount++;
+          break;
+        case ApplicationStatus.accepted:
+          approvedCount++;
+          break;
+        case ApplicationStatus.rejected:
+          rejectedCount++;
+          break;
       }
     }
 
@@ -165,7 +169,8 @@ class CompanyService {
       'totalOpportunities': opps.length,
       'totalApplications': apps.length,
       'pendingApplications': pendingCount,
-      'acceptedApplications': acceptedCount,
+      'approvedApplications': approvedCount,
+      'acceptedApplications': approvedCount,
       'rejectedApplications': rejectedCount,
       'openOpportunities': opps.where((o) => o.status == 'open').length,
       'closedOpportunities': opps.where((o) => o.status == 'closed').length,

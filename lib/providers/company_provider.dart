@@ -5,6 +5,7 @@ import '../models/opportunity_model.dart';
 import '../models/application_model.dart';
 import '../models/cv_model.dart';
 import '../services/company_service.dart';
+import '../utils/application_status.dart';
 
 class CompanyProvider extends ChangeNotifier {
   final CompanyService _service = CompanyService();
@@ -40,6 +41,41 @@ class CompanyProvider extends ChangeNotifier {
   String? get mutationError => _mutationError;
   bool isAppBusy(String appId) => _busyAppIds.contains(appId);
 
+  void _rebuildStats() {
+    int pendingCount = 0;
+    int approvedCount = 0;
+    int rejectedCount = 0;
+
+    for (final app in _applications) {
+      switch (ApplicationStatus.parse(app.status)) {
+        case ApplicationStatus.pending:
+          pendingCount++;
+          break;
+        case ApplicationStatus.accepted:
+          approvedCount++;
+          break;
+        case ApplicationStatus.rejected:
+          rejectedCount++;
+          break;
+      }
+    }
+
+    _stats = {
+      'totalOpportunities': _opportunities.length,
+      'totalApplications': _applications.length,
+      'pendingApplications': pendingCount,
+      'approvedApplications': approvedCount,
+      'acceptedApplications': approvedCount,
+      'rejectedApplications': rejectedCount,
+      'openOpportunities': _opportunities
+          .where((o) => o.status == 'open')
+          .length,
+      'closedOpportunities': _opportunities
+          .where((o) => o.status == 'closed')
+          .length,
+    };
+  }
+
   Future<void> loadDashboard(String companyId) async {
     _dashboardLoading = true;
     _dashboardError = null;
@@ -48,33 +84,7 @@ class CompanyProvider extends ChangeNotifier {
     try {
       _opportunities = await _service.getCompanyOpportunities(companyId);
       _applications = await _service.getCompanyApplications(companyId);
-
-      int pendingCount = 0;
-      int acceptedCount = 0;
-      int rejectedCount = 0;
-      for (final app in _applications) {
-        if (app.status == 'pending') {
-          pendingCount++;
-        } else if (app.status == 'accepted') {
-          acceptedCount++;
-        } else if (app.status == 'rejected') {
-          rejectedCount++;
-        }
-      }
-
-      _stats = {
-        'totalOpportunities': _opportunities.length,
-        'totalApplications': _applications.length,
-        'pendingApplications': pendingCount,
-        'acceptedApplications': acceptedCount,
-        'rejectedApplications': rejectedCount,
-        'openOpportunities': _opportunities
-            .where((o) => o.status == 'open')
-            .length,
-        'closedOpportunities': _opportunities
-            .where((o) => o.status == 'closed')
-            .length,
-      };
+      _rebuildStats();
     } catch (e) {
       _dashboardError = e.toString();
     } finally {
@@ -90,6 +100,7 @@ class CompanyProvider extends ChangeNotifier {
 
     try {
       _opportunities = await _service.getCompanyOpportunities(companyId);
+      _rebuildStats();
     } catch (e) {
       _opportunitiesError = e.toString();
     } finally {
@@ -105,6 +116,7 @@ class CompanyProvider extends ChangeNotifier {
 
     try {
       _applications = await _service.getCompanyApplications(companyId);
+      _rebuildStats();
     } catch (e) {
       _applicationsError = e.toString();
     } finally {
@@ -182,6 +194,13 @@ class CompanyProvider extends ChangeNotifier {
     notifyListeners();
     try {
       await _service.updateApplicationStatus(appId: appId, status: status);
+      final index = _applications.indexWhere((app) => app.id == appId);
+      if (index != -1) {
+        _applications[index] = _applications[index].copyWith(
+          status: ApplicationStatus.parse(status),
+        );
+        _rebuildStats();
+      }
       return null;
     } catch (e) {
       _mutationError = e.toString();

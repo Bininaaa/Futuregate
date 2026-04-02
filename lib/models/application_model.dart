@@ -48,4 +48,26 @@ class ApplicationModel {
       'appliedAt': appliedAt,
     };
   }
+
+  ApplicationModel copyWith({
+    String? id,
+    String? studentId,
+    String? studentName,
+    String? opportunityId,
+    String? companyId,
+    String? cvId,
+    String? status,
+    Timestamp? appliedAt,
+  }) {
+    return ApplicationModel(
+      id: id ?? this.id,
+      studentId: studentId ?? this.studentId,
+      studentName: studentName ?? this.studentName,
+      opportunityId: opportunityId ?? this.opportunityId,
+      companyId: companyId ?? this.companyId,
+      cvId: cvId ?? this.cvId,
+      status: status ?? this.status,
+      appliedAt: appliedAt ?? this.appliedAt,
+    );
+  }
 }
