@@ -780,7 +780,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
       borderRadius: BorderRadius.circular(16),
       onTap: onTap,
       child: Container(
-        height: 68,
+        height: 78,
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           color: background,
@@ -794,30 +794,30 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
             ),
           ],
         ),
-        child: Row(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Container(
-              width: 24,
-              height: 24,
+              width: 26,
+              height: 26,
               decoration: BoxDecoration(
                 color: foreground.withValues(alpha: 0.10),
                 shape: BoxShape.circle,
               ),
-              child: Icon(icon, size: 15, color: foreground),
+              child: Icon(icon, size: 16, color: foreground),
             ),
-            const SizedBox(width: 8),
-            Flexible(
+            const SizedBox(height: 6),
+            Expanded(
               child: Text(
                 label,
                 maxLines: 2,
                 softWrap: true,
-                textAlign: TextAlign.left,
+                textAlign: TextAlign.center,
                 style: GoogleFonts.poppins(
-                  fontSize: 12.5,
+                  fontSize: 11.5,
                   fontWeight: FontWeight.w700,
-                  height: 1.15,
+                  height: 1.1,
                   color: foreground,
                 ),
               ),
