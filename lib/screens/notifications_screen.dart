@@ -284,7 +284,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             'project_idea',
           }.contains(notif.type)) {
         final adminTab = switch (notif.type) {
-          'application' => AdminContentCenterScreen.applicationsTab,
+          'application' => AdminContentCenterScreen.opportunitiesTab,
           'opportunity' => AdminContentCenterScreen.opportunitiesTab,
           'scholarship' => AdminContentCenterScreen.scholarshipsTab,
           'training' => AdminContentCenterScreen.trainingsTab,

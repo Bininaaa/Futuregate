@@ -9,187 +9,152 @@ import '../../models/user_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/company_provider.dart';
 import '../../services/document_access_service.dart';
+import '../../utils/company_dashboard_palette.dart';
 import '../../utils/document_upload_validator.dart';
 import '../../widgets/profile_avatar.dart';
+import '../settings/about_avenirdz_screen.dart';
+import '../settings/help_center_screen.dart';
+import '../settings/logout_confirmation_sheet.dart';
+import '../settings/settings_flow_theme.dart';
+import '../settings/settings_flow_widgets.dart';
 import '../settings/settings_screen.dart';
 
 class CompanyProfileScreen extends StatelessWidget {
   const CompanyProfileScreen({super.key});
 
-  static const Color vibrantOrange = Color(0xFFFF6700);
-  static const Color strongBlue = Color(0xFF004E98);
-  static const Color mediumBlue = Color(0xFF3A6EA5);
-  static const Color softGray = Color(0xFFEBEBEB);
-
   @override
   Widget build(BuildContext context) {
     final user = context.watch<AuthProvider>().userModel;
-
     if (user == null) {
       return const Scaffold(body: Center(child: Text('Not logged in')));
     }
 
+    final companyName = _companyName(user);
+    final description = _companyDescription(user);
+    final websiteUri = _websiteUri(user.website ?? '');
+
     return Scaffold(
-      backgroundColor: softGray,
+      backgroundColor: const Color(0xFFF4F7FB),
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
+        scrolledUnderElevation: 0,
+        elevation: 0,
+        iconTheme: const IconThemeData(
+          color: CompanyDashboardPalette.textPrimary,
+        ),
         title: Text(
           'Company Profile',
-          style: GoogleFonts.poppins(
-            fontWeight: FontWeight.w600,
-            color: strongBlue,
+          style: SettingsFlowTheme.appBarTitle(
+            CompanyDashboardPalette.textPrimary,
           ),
         ),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        automaticallyImplyLeading: false,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.settings_outlined, color: mediumBlue),
-            onPressed: () {
-              Navigator.push(
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: _HeaderIconButton(
+              icon: Icons.widgets_outlined,
+              onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const SettingsScreen()),
-              );
-            },
+              ),
+            ),
           ),
-          IconButton(
-            icon: const Icon(Icons.edit_outlined, color: vibrantOrange),
-            onPressed: () {
-              Navigator.push(
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: _HeaderIconButton(
+              icon: Icons.edit_outlined,
+              filled: true,
+              color: CompanyDashboardPalette.accent,
+              onTap: () => Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const _EditProfileScreen()),
-              );
-            },
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            ProfileAvatar(user: user, radius: 45),
-            const SizedBox(height: 14),
-            Text(
-              user.companyName ?? user.fullName,
-              style: GoogleFonts.poppins(
-                fontSize: 22,
-                fontWeight: FontWeight.w700,
-                color: strongBlue,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            if ((user.sector ?? '').isNotEmpty) ...[
-              const SizedBox(height: 4),
-              Text(
-                user.sector!,
-                style: GoogleFonts.poppins(fontSize: 14, color: mediumBlue),
-              ),
-            ],
-            const SizedBox(height: 24),
-            _buildInfoCard(
-              'Description',
-              user.description ?? 'Not set',
-              Icons.info_outline,
-            ),
-            const SizedBox(height: 12),
-            _buildInfoCard('Email', user.email, Icons.email_outlined),
-            const SizedBox(height: 12),
-            _buildInfoCard(
-              'Phone',
-              user.phone.isNotEmpty ? user.phone : 'Not set',
-              Icons.phone_outlined,
-            ),
-            const SizedBox(height: 12),
-            _buildInfoCard(
-              'Location',
-              user.location.isNotEmpty ? user.location : 'Not set',
-              Icons.location_on_outlined,
-            ),
-            const SizedBox(height: 12),
-            _buildInfoCard(
-              'Website',
-              user.website ?? 'Not set',
-              Icons.language_outlined,
-            ),
-            const SizedBox(height: 12),
-            _buildCommercialRegisterCard(context, user),
-            const SizedBox(height: 30),
-            SizedBox(
-              width: double.infinity,
-              height: 48,
-              child: ElevatedButton.icon(
-                onPressed: () => context.read<AuthProvider>().logout(),
-                icon: const Icon(Icons.logout, size: 20),
-                label: Text(
-                  'Logout',
-                  style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  elevation: 0,
+                MaterialPageRoute(
+                  builder: (_) => const EditCompanyProfileScreen(),
                 ),
               ),
             ),
-            const SizedBox(height: 20),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildInfoCard(String label, String value, IconData icon) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
           ),
         ],
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      body: Stack(
         children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: strongBlue.withValues(alpha: 0.08),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(icon, color: strongBlue, size: 20),
+          const Positioned(
+            top: -120,
+            right: -80,
+            child: _BackdropOrb(220, Color(0x1414B8A6)),
           ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: GoogleFonts.poppins(
-                    fontSize: 11,
-                    color: mediumBlue,
-                    fontWeight: FontWeight.w500,
+          const Positioned(
+            top: 190,
+            left: -70,
+            child: _BackdropOrb(160, Color(0x124328D8)),
+          ),
+          SafeArea(
+            top: false,
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 28),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildHeroCard(
+                    context,
+                    user: user,
+                    companyName: companyName,
+                    description: description,
+                    websiteUri: websiteUri,
                   ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  value,
-                  style: GoogleFonts.poppins(
-                    fontSize: 14,
-                    color: strongBlue,
-                    fontWeight: FontWeight.w500,
+                  const SizedBox(height: 18),
+                  const SettingsSectionHeading(
+                    title: 'Brand Story',
+                    subtitle:
+                        'A sharper company story makes the profile feel more confident and trustworthy.',
                   ),
-                ),
-              ],
+                  const SizedBox(height: 10),
+                  SettingsPanel(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          description,
+                          style: GoogleFonts.poppins(
+                            fontSize: 14,
+                            height: 1.7,
+                            fontWeight: FontWeight.w500,
+                            color: CompanyDashboardPalette.textPrimary,
+                          ),
+                        ),
+                        if ((user.description ?? '').trim().isEmpty) ...[
+                          const SizedBox(height: 14),
+                          const SettingsInfoBanner(
+                            icon: Icons.edit_note_rounded,
+                            title: 'Story still missing',
+                            message:
+                                'Add a few lines about what your company builds and what students can expect from your team.',
+                            color: CompanyDashboardPalette.accent,
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  const SettingsSectionHeading(
+                    title: 'Details',
+                    subtitle:
+                        'The essentials students and applicants usually look for first.',
+                  ),
+                  const SizedBox(height: 10),
+                  _buildDetailsGrid(context, user, websiteUri),
+                  const SizedBox(height: 18),
+                  const SettingsSectionHeading(
+                    title: 'Verification',
+                    subtitle:
+                        'Keep your company presence trusted with an up-to-date commercial register.',
+                  ),
+                  const SizedBox(height: 10),
+                  _buildCommercialRegisterCard(context, user),
+                  const SizedBox(height: 18),
+                  _buildQuickLinks(context),
+                ],
+              ),
             ),
           ),
         ],
@@ -197,24 +162,81 @@ class CompanyProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCommercialRegisterCard(BuildContext context, UserModel user) {
-    final hasDocument = user.hasCommercialRegister;
-    final uploadedAt = user.commercialRegisterUploadedAt;
-    final uploadedAtLabel = uploadedAt == null
-        ? 'Not available'
-        : DateFormat('MMM d, yyyy').format(uploadedAt.toDate());
+  String _companyName(UserModel user) {
+    final companyName = (user.companyName ?? '').trim();
+    if (companyName.isNotEmpty) {
+      return companyName;
+    }
+    return user.fullName.trim().isNotEmpty ? user.fullName.trim() : 'Company';
+  }
 
+  String _companyDescription(UserModel user) {
+    final description = (user.description ?? '').trim();
+    if (description.isNotEmpty) {
+      return description;
+    }
+    return 'Build a strong first impression with a short company story, clear contact details, and a polished visual identity.';
+  }
+
+  Uri? _websiteUri(String rawValue) {
+    final trimmed = rawValue.trim();
+    if (trimmed.isEmpty) {
+      return null;
+    }
+    final normalized = trimmed.contains('://') ? trimmed : 'https://$trimmed';
+    return Uri.tryParse(normalized);
+  }
+
+  int _profileCompletion(UserModel user) {
+    final values = [
+      _companyName(user).isNotEmpty,
+      (user.sector ?? '').trim().isNotEmpty,
+      (user.description ?? '').trim().isNotEmpty,
+      user.phone.trim().isNotEmpty,
+      user.location.trim().isNotEmpty,
+      (user.website ?? '').trim().isNotEmpty,
+      (user.logo ?? '').trim().isNotEmpty,
+      user.hasCommercialRegister,
+    ];
+    return ((values.where((v) => v).length / values.length) * 100).round();
+  }
+
+  int _contactCount(UserModel user) {
+    return [
+      user.email.trim().isNotEmpty,
+      user.phone.trim().isNotEmpty,
+      user.location.trim().isNotEmpty,
+      (user.website ?? '').trim().isNotEmpty,
+    ].where((v) => v).length;
+  }
+
+  Widget _buildHeroCard(
+    BuildContext context, {
+    required UserModel user,
+    required String companyName,
+    required String description,
+    required Uri? websiteUri,
+  }) {
+    final hasRegister = user.hasCommercialRegister;
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        gradient: const LinearGradient(
+          colors: [
+            CompanyDashboardPalette.primaryDark,
+            CompanyDashboardPalette.primary,
+            CompanyDashboardPalette.secondary,
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: SettingsFlowTheme.radius(32),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
+            color: CompanyDashboardPalette.primary.withValues(alpha: 0.22),
+            blurRadius: 28,
+            offset: const Offset(0, 18),
           ),
         ],
       ),
@@ -225,119 +247,457 @@ class CompanyProfileScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(
-                  color: strongBlue.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.white.withValues(alpha: 0.16),
+                  shape: BoxShape.circle,
                 ),
-                child: const Icon(
-                  Icons.verified_user_outlined,
-                  color: strongBlue,
-                  size: 20,
-                ),
+                child: ProfileAvatar(user: user, radius: 42),
               ),
-              const SizedBox(width: 14),
+              const SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'سجل تجاري',
+                      companyName,
                       style: GoogleFonts.poppins(
-                        fontSize: 14,
+                        fontSize: 24,
                         fontWeight: FontWeight.w700,
-                        color: strongBlue,
+                        color: Colors.white,
+                        height: 1.08,
                       ),
                     ),
-                    const SizedBox(height: 2),
+                    if ((user.sector ?? '').trim().isNotEmpty) ...[
+                      const SizedBox(height: 6),
+                      Text(
+                        (user.sector ?? '').trim(),
+                        style: GoogleFonts.poppins(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white.withValues(alpha: 0.82),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              _StatusBadge(
+                label: hasRegister ? 'Verified' : 'Needs docs',
+                icon: hasRegister
+                    ? Icons.verified_rounded
+                    : Icons.pending_actions_rounded,
+                backgroundColor: hasRegister
+                    ? const Color(0xFFF0FDF4)
+                    : const Color(0xFFFFF7ED),
+                foregroundColor: hasRegister
+                    ? CompanyDashboardPalette.success
+                    : CompanyDashboardPalette.accent,
+              ),
+            ],
+          ),
+          const SizedBox(height: 18),
+          Text(
+            description,
+            maxLines: 4,
+            overflow: TextOverflow.ellipsis,
+            style: GoogleFonts.poppins(
+              fontSize: 13.5,
+              height: 1.7,
+              fontWeight: FontWeight.w500,
+              color: Colors.white.withValues(alpha: 0.88),
+            ),
+          ),
+          const SizedBox(height: 18),
+          SettingsButtonGroup(
+            children: [
+              _HeroActionButton(
+                label: 'Edit profile',
+                icon: Icons.edit_outlined,
+                filled: true,
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const EditCompanyProfileScreen(),
+                  ),
+                ),
+              ),
+              _HeroActionButton(
+                label: websiteUri == null ? 'Open More' : 'Visit website',
+                icon: websiteUri == null
+                    ? Icons.widgets_outlined
+                    : Icons.open_in_new_rounded,
+                onPressed: () {
+                  if (websiteUri != null) {
+                    _launchUri(
+                      context,
+                      websiteUri,
+                      failureMessage: 'Could not open the website.',
+                    );
+                    return;
+                  }
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const SettingsScreen()),
+                  );
+                },
+              ),
+            ],
+          ),
+          const SizedBox(height: 18),
+          Row(
+            children: [
+              Expanded(
+                child: _heroMetric(
+                  '${_profileCompletion(user)}%',
+                  'Profile complete',
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: _heroMetric(
+                  '${_contactCount(user)}/4',
+                  'Contact channels',
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: _heroMetric(
+                  hasRegister ? 'Ready' : 'Pending',
+                  'Register',
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _heroMetric(String value, String label) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.12),
+        borderRadius: SettingsFlowTheme.radius(20),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            value,
+            style: GoogleFonts.poppins(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: GoogleFonts.poppins(
+              fontSize: 10.5,
+              fontWeight: FontWeight.w600,
+              color: Colors.white.withValues(alpha: 0.8),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDetailsGrid(
+    BuildContext context,
+    UserModel user,
+    Uri? websiteUri,
+  ) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxWidth < 540;
+        final width = compact
+            ? constraints.maxWidth
+            : (constraints.maxWidth - 12) / 2;
+        return Wrap(
+          spacing: 12,
+          runSpacing: 12,
+          children: [
+            SizedBox(
+              width: width,
+              child: _DetailTile(
+                icon: Icons.mail_outline_rounded,
+                label: 'Email',
+                value: user.email,
+                accentColor: CompanyDashboardPalette.primary,
+                onTap: user.email.trim().isEmpty
+                    ? null
+                    : () => _launchUri(
+                        context,
+                        Uri(scheme: 'mailto', path: user.email.trim()),
+                        failureMessage: 'Could not open email right now.',
+                      ),
+              ),
+            ),
+            SizedBox(
+              width: width,
+              child: _DetailTile(
+                icon: Icons.phone_outlined,
+                label: 'Phone',
+                value: user.phone.trim().isNotEmpty
+                    ? user.phone.trim()
+                    : 'Add a company phone number',
+                accentColor: CompanyDashboardPalette.secondary,
+              ),
+            ),
+            SizedBox(
+              width: width,
+              child: _DetailTile(
+                icon: Icons.location_on_outlined,
+                label: 'Location',
+                value: user.location.trim().isNotEmpty
+                    ? user.location.trim()
+                    : 'Add your company location',
+                accentColor: CompanyDashboardPalette.info,
+              ),
+            ),
+            SizedBox(
+              width: width,
+              child: _DetailTile(
+                icon: Icons.language_rounded,
+                label: 'Website',
+                value: (user.website ?? '').trim().isNotEmpty
+                    ? (user.website ?? '').trim()
+                    : 'Add your website',
+                accentColor: CompanyDashboardPalette.accent,
+                onTap: websiteUri == null
+                    ? null
+                    : () => _launchUri(
+                        context,
+                        websiteUri,
+                        failureMessage: 'Could not open the website.',
+                      ),
+              ),
+            ),
+            SizedBox(
+              width: width,
+              child: _DetailTile(
+                icon: Icons.factory_outlined,
+                label: 'Sector',
+                value: (user.sector ?? '').trim().isNotEmpty
+                    ? (user.sector ?? '').trim()
+                    : 'Add a sector or specialty',
+                accentColor: CompanyDashboardPalette.primaryDark,
+              ),
+            ),
+            SizedBox(
+              width: width,
+              child: _DetailTile(
+                icon: Icons.verified_user_outlined,
+                label: 'Account',
+                value: user.isEmailProvider
+                    ? 'Email and password sign-in'
+                    : 'Google sign-in',
+                accentColor: CompanyDashboardPalette.success,
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildCommercialRegisterCard(BuildContext context, UserModel user) {
+    final uploadedAt = user.commercialRegisterUploadedAt;
+    final uploadedAtLabel = uploadedAt == null
+        ? 'Not available'
+        : DateFormat('MMM d, yyyy').format(uploadedAt.toDate());
+    return SettingsPanel(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SettingsIconBox(
+                icon: user.hasCommercialRegister
+                    ? Icons.verified_user_outlined
+                    : Icons.file_upload_outlined,
+                color: user.hasCommercialRegister
+                    ? CompanyDashboardPalette.success
+                    : CompanyDashboardPalette.accent,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                     Text(
                       'Commercial Register',
-                      style: GoogleFonts.poppins(
-                        fontSize: 12,
-                        color: mediumBlue,
-                      ),
+                      style: SettingsFlowTheme.sectionTitle(),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      user.hasCommercialRegister
+                          ? 'Verification is attached to your company profile.'
+                          : 'Upload a current document to keep the company profile complete and trusted.',
+                      style: SettingsFlowTheme.caption(),
                     ),
                   ],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
-          if (hasDocument) ...[
-            Text(
-              user.commercialRegisterFileName.isNotEmpty
-                  ? user.commercialRegisterFileName
-                  : 'Document uploaded',
-              style: GoogleFonts.poppins(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: strongBlue,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Uploaded: $uploadedAtLabel',
-              style: GoogleFonts.poppins(fontSize: 12, color: mediumBlue),
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: () =>
-                        _openCommercialRegister(context, companyId: user.uid),
-                    icon: const Icon(Icons.visibility_outlined, size: 18),
-                    label: const Text('View'),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: strongBlue,
-                      side: BorderSide(
-                        color: strongBlue.withValues(alpha: 0.24),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () => _openCommercialRegister(
-                      context,
-                      companyId: user.uid,
-                      download: true,
-                    ),
-                    icon: const Icon(Icons.download_outlined, size: 18),
-                    label: const Text('Download'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: vibrantOrange,
-                      foregroundColor: Colors.white,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ] else
+          const SizedBox(height: 16),
+          if (user.hasCommercialRegister) ...[
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: Colors.orange.withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(
-                  color: Colors.orange.withValues(alpha: 0.22),
-                ),
+                color: SettingsFlowPalette.background,
+                borderRadius: SettingsFlowTheme.radius(20),
+                border: Border.all(color: SettingsFlowPalette.border),
               ),
-              child: Text(
-                'No سجل تجاري uploaded yet. Please add it from Edit Profile to keep your company profile complete.',
-                style: GoogleFonts.poppins(
-                  fontSize: 12,
-                  height: 1.5,
-                  color: Colors.orange.shade800,
-                  fontWeight: FontWeight.w500,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    user.commercialRegisterFileName.trim().isNotEmpty
+                        ? user.commercialRegisterFileName.trim()
+                        : 'Document uploaded',
+                    style: SettingsFlowTheme.cardTitle(),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    'Uploaded: $uploadedAtLabel',
+                    style: SettingsFlowTheme.caption(),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 14),
+            SettingsButtonGroup(
+              children: [
+                SettingsSecondaryButton(
+                  label: 'View',
+                  icon: Icons.visibility_outlined,
+                  color: CompanyDashboardPalette.primary,
+                  onPressed: () =>
+                      _openCommercialRegister(context, companyId: user.uid),
+                ),
+                SettingsPrimaryButton(
+                  label: 'Download',
+                  icon: Icons.download_outlined,
+                  backgroundColor: CompanyDashboardPalette.accent,
+                  onPressed: () => _openCommercialRegister(
+                    context,
+                    companyId: user.uid,
+                    download: true,
+                  ),
+                ),
+              ],
+            ),
+          ] else ...[
+            const SettingsInfoBanner(
+              icon: Icons.info_outline_rounded,
+              title: 'Document missing',
+              message:
+                  'A current commercial register reinforces trust and helps keep the company profile ready for review.',
+              color: CompanyDashboardPalette.accent,
+            ),
+            const SizedBox(height: 14),
+            SettingsPrimaryButton(
+              label: 'Update profile',
+              icon: Icons.edit_outlined,
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const EditCompanyProfileScreen(),
                 ),
               ),
             ),
+          ],
         ],
       ),
     );
+  }
+
+  Widget _buildQuickLinks(BuildContext context) {
+    return SettingsPanel(
+      child: Column(
+        children: [
+          SettingsListRow(
+            icon: Icons.edit_outlined,
+            iconColor: CompanyDashboardPalette.primary,
+            title: 'Edit Company Profile',
+            subtitle: 'Refresh your story, contact details, and assets',
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const EditCompanyProfileScreen(),
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          SettingsListRow(
+            icon: Icons.widgets_outlined,
+            iconColor: CompanyDashboardPalette.secondary,
+            title: 'More',
+            subtitle: 'Open your company workspace hub',
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const SettingsScreen()),
+            ),
+          ),
+          const SizedBox(height: 10),
+          SettingsListRow(
+            icon: Icons.help_outline_rounded,
+            iconColor: CompanyDashboardPalette.accent,
+            title: 'Help Center',
+            subtitle: 'Support, FAQs, and contact options',
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const HelpCenterScreen()),
+            ),
+          ),
+          const SizedBox(height: 10),
+          SettingsListRow(
+            icon: Icons.info_outline_rounded,
+            iconColor: CompanyDashboardPalette.info,
+            title: 'About AvenirDZ',
+            subtitle: 'Platform mission and version details',
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const AboutAvenirDzScreen()),
+            ),
+          ),
+          const SizedBox(height: 10),
+          SettingsListRow(
+            icon: Icons.logout_rounded,
+            iconColor: SettingsFlowPalette.error,
+            title: 'Logout',
+            subtitle: 'Sign out of the company workspace',
+            destructive: true,
+            onTap: () => showLogoutConfirmationSheet(context),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _launchUri(
+    BuildContext context,
+    Uri uri, {
+    required String failureMessage,
+  }) async {
+    final launched = await launchUrl(
+      uri,
+      mode: LaunchMode.platformDefault,
+      webOnlyWindowName: '_blank',
+    );
+    if (!launched && context.mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(failureMessage)));
+    }
   }
 
   Future<void> _openCommercialRegister(
@@ -346,57 +706,56 @@ class CompanyProfileScreen extends StatelessWidget {
     bool download = false,
   }) async {
     final messenger = ScaffoldMessenger.of(context);
-
     try {
       final document = await DocumentAccessService()
           .getCompanyCommercialRegister(companyId: companyId);
-      final url = download ? document.downloadUrl : document.viewUrl;
-      final uri = Uri.tryParse(url);
-
+      final uri = Uri.tryParse(
+        download ? document.downloadUrl : document.viewUrl,
+      );
       if (uri == null) {
         throw Exception('File unavailable.');
       }
-
       final launched = await launchUrl(
         uri,
         mode: LaunchMode.platformDefault,
         webOnlyWindowName: '_blank',
       );
-      if (!launched) {
+      if (!launched && context.mounted) {
         messenger.showSnackBar(
           const SnackBar(content: Text('Could not open the document.')),
         );
       }
-    } catch (e) {
-      messenger.showSnackBar(SnackBar(content: Text(_documentErrorMessage(e))));
+    } catch (error) {
+      if (!context.mounted) {
+        return;
+      }
+      messenger.showSnackBar(
+        SnackBar(content: Text(_documentErrorMessage(error))),
+      );
     }
   }
 
   String _documentErrorMessage(Object error) {
-    final message = error.toString();
+    final message = error.toString().toLowerCase();
     if (message.contains('permission') || message.contains('403')) {
       return 'Permission denied while opening the document.';
     }
     if (message.contains('404') || message.contains('not found')) {
       return 'The requested document is no longer available.';
     }
-
     return 'Could not open the document right now.';
   }
 }
 
-class _EditProfileScreen extends StatefulWidget {
-  const _EditProfileScreen();
+class EditCompanyProfileScreen extends StatefulWidget {
+  const EditCompanyProfileScreen({super.key});
 
   @override
-  State<_EditProfileScreen> createState() => _EditProfileScreenState();
+  State<EditCompanyProfileScreen> createState() =>
+      _EditCompanyProfileScreenState();
 }
 
-class _EditProfileScreenState extends State<_EditProfileScreen> {
-  static const Color vibrantOrange = Color(0xFFFF6700);
-  static const Color strongBlue = Color(0xFF004E98);
-  static const Color softGray = Color(0xFFEBEBEB);
-
+class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   final _companyNameController = TextEditingController();
   final _sectorController = TextEditingController();
@@ -404,9 +763,9 @@ class _EditProfileScreenState extends State<_EditProfileScreen> {
   final _phoneController = TextEditingController();
   final _locationController = TextEditingController();
   final _websiteController = TextEditingController();
+
   PlatformFile? _commercialRegisterFile;
   String? _commercialRegisterError;
-
   bool _saving = false;
   bool _uploadingLogo = false;
 
@@ -437,119 +796,325 @@ class _EditProfileScreenState extends State<_EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final user = context.watch<AuthProvider>().userModel;
+    if (user == null) {
+      return const Scaffold(body: Center(child: Text('Not logged in')));
+    }
+
     return Scaffold(
-      backgroundColor: softGray,
+      backgroundColor: const Color(0xFFF4F7FB),
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
+        scrolledUnderElevation: 0,
+        elevation: 0,
+        iconTheme: const IconThemeData(
+          color: CompanyDashboardPalette.textPrimary,
+        ),
         title: Text(
-          'Edit Profile',
-          style: GoogleFonts.poppins(
-            fontWeight: FontWeight.w600,
-            color: strongBlue,
+          'Edit Company Profile',
+          style: SettingsFlowTheme.appBarTitle(
+            CompanyDashboardPalette.textPrimary,
           ),
         ),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: strongBlue),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              _buildField('Company Name', _companyNameController),
-              const SizedBox(height: 14),
-              _buildField('Sector', _sectorController),
-              const SizedBox(height: 14),
-              _buildField('Description', _descriptionController, maxLines: 4),
-              const SizedBox(height: 14),
-              _buildField('Phone', _phoneController),
-              const SizedBox(height: 14),
-              _buildField('Location', _locationController),
-              const SizedBox(height: 14),
-              _buildField('Website', _websiteController),
-              const SizedBox(height: 18),
-              _buildLogoUploadSection(),
-              const SizedBox(height: 18),
-              _buildCommercialRegisterSection(),
-              const SizedBox(height: 28),
-              SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton(
-                  onPressed: _saving ? null : _save,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: vibrantOrange,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border(top: BorderSide(color: SettingsFlowPalette.border)),
+          ),
+          child: ElevatedButton.icon(
+            onPressed: _saving ? null : _save,
+            icon: _saving
+                ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
                     ),
-                    elevation: 0,
-                  ),
-                  child: _saving
-                      ? const SizedBox(
-                          width: 22,
-                          height: 22,
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2,
-                          ),
-                        )
-                      : Text(
-                          'Save Changes',
-                          style: GoogleFonts.poppins(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                  )
+                : const Icon(Icons.check_rounded),
+            label: Text(
+              _saving ? 'Saving changes...' : 'Save Changes',
+              style: GoogleFonts.poppins(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            style: ElevatedButton.styleFrom(
+              minimumSize: const Size.fromHeight(54),
+              elevation: 0,
+              backgroundColor: CompanyDashboardPalette.primary,
+              foregroundColor: Colors.white,
+              disabledBackgroundColor: CompanyDashboardPalette.primary
+                  .withValues(alpha: 0.45),
+              shape: RoundedRectangleBorder(
+                borderRadius: SettingsFlowTheme.radius(20),
+              ),
+            ),
+          ),
+        ),
+      ),
+      body: Stack(
+        children: [
+          const Positioned(
+            top: -110,
+            right: -72,
+            child: _BackdropOrb(210, Color(0x1214B8A6)),
+          ),
+          SafeArea(
+            top: false,
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 110),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildEditorIntro(user),
+                    const SizedBox(height: 18),
+                    _buildIdentitySection(),
+                    const SizedBox(height: 18),
+                    _buildContactSection(),
+                    const SizedBox(height: 18),
+                    _buildLogoSection(user),
+                    const SizedBox(height: 18),
+                    _buildRegisterSection(user),
+                  ],
                 ),
               ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
 
-  Widget _buildField(
-    String label,
-    TextEditingController controller, {
+  Widget _buildEditorIntro(UserModel user) {
+    return SettingsPanel(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Polish your public company presence',
+            style: SettingsFlowTheme.heroTitle(),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Keep the profile crisp, trustworthy, and ready for students to explore.',
+            style: SettingsFlowTheme.caption(),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              ProfileAvatar(user: user, radius: 30),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      (user.companyName ?? user.fullName).trim(),
+                      style: SettingsFlowTheme.cardTitle(),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      user.hasCommercialRegister
+                          ? 'Verification document is already attached.'
+                          : 'Commercial register still needs attention.',
+                      style: SettingsFlowTheme.caption(),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildIdentitySection() {
+    return _panel(
+      title: 'Basic Identity',
+      subtitle: 'Shape the first impression students get from your company.',
+      icon: Icons.apartment_rounded,
+      child: Column(
+        children: [
+          _field(
+            label: 'Company Name',
+            hint: 'Your public company name',
+            icon: Icons.business_rounded,
+            controller: _companyNameController,
+            validator: (value) {
+              if ((value ?? '').trim().isEmpty) {
+                return 'Company name is required.';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 14),
+          _field(
+            label: 'Sector',
+            hint: 'Technology, finance, design, education...',
+            icon: Icons.factory_outlined,
+            controller: _sectorController,
+          ),
+          const SizedBox(height: 14),
+          _field(
+            label: 'Description',
+            hint:
+                'What does your company build, who do you serve, and what can students expect?',
+            icon: Icons.notes_rounded,
+            controller: _descriptionController,
+            maxLines: 5,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildContactSection() {
+    return _panel(
+      title: 'Contact & Presence',
+      subtitle:
+          'Make it easy for students to understand where your company is and how to reach it.',
+      icon: Icons.public_rounded,
+      child: Column(
+        children: [
+          _field(
+            label: 'Phone',
+            hint: 'Company phone number',
+            icon: Icons.phone_outlined,
+            controller: _phoneController,
+            keyboardType: TextInputType.phone,
+          ),
+          const SizedBox(height: 14),
+          _field(
+            label: 'Location',
+            hint: 'City, region, or headquarters',
+            icon: Icons.location_on_outlined,
+            controller: _locationController,
+          ),
+          const SizedBox(height: 14),
+          _field(
+            label: 'Website',
+            hint: 'https://www.yourcompany.com',
+            icon: Icons.language_rounded,
+            controller: _websiteController,
+            keyboardType: TextInputType.url,
+            validator: (value) {
+              final trimmed = (value ?? '').trim();
+              if (trimmed.isEmpty) {
+                return null;
+              }
+              if (trimmed.contains(' ')) {
+                return 'Website cannot contain spaces.';
+              }
+              return _websiteUri(trimmed) == null
+                  ? 'Enter a valid website.'
+                  : null;
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _panel({
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required Widget child,
+  }) {
+    return SettingsPanel(
+      padding: const EdgeInsets.all(18),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SettingsIconBox(
+                icon: icon,
+                color: CompanyDashboardPalette.primary,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title, style: SettingsFlowTheme.sectionTitle()),
+                    const SizedBox(height: 4),
+                    Text(subtitle, style: SettingsFlowTheme.caption()),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 18),
+          child,
+        ],
+      ),
+    );
+  }
+
+  Widget _field({
+    required String label,
+    required String hint,
+    required IconData icon,
+    required TextEditingController controller,
+    TextInputType keyboardType = TextInputType.text,
     int maxLines = 1,
+    String? Function(String?)? validator,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: GoogleFonts.poppins(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: strongBlue,
-          ),
-        ),
-        const SizedBox(height: 6),
+        Text(label, style: SettingsFlowTheme.cardTitle()),
+        const SizedBox(height: 8),
         TextFormField(
           controller: controller,
+          keyboardType: keyboardType,
           maxLines: maxLines,
-          style: GoogleFonts.poppins(fontSize: 14),
+          validator: validator,
+          style: GoogleFonts.poppins(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: CompanyDashboardPalette.textPrimary,
+          ),
           decoration: InputDecoration(
+            hintText: hint,
+            hintStyle: SettingsFlowTheme.caption(),
+            prefixIcon: Icon(
+              icon,
+              color: CompanyDashboardPalette.primary.withValues(alpha: 0.82),
+            ),
             filled: true,
             fillColor: Colors.white,
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
-              vertical: 14,
+              vertical: 16,
             ),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: BorderSide.none,
+              borderRadius: SettingsFlowTheme.radius(18),
+              borderSide: const BorderSide(color: SettingsFlowPalette.border),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: BorderSide(color: Colors.grey.shade200),
+              borderRadius: SettingsFlowTheme.radius(18),
+              borderSide: const BorderSide(color: SettingsFlowPalette.border),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: vibrantOrange),
+              borderRadius: SettingsFlowTheme.radius(18),
+              borderSide: const BorderSide(
+                color: CompanyDashboardPalette.primary,
+                width: 1.4,
+              ),
             ),
           ),
         ),
@@ -557,78 +1122,159 @@ class _EditProfileScreenState extends State<_EditProfileScreen> {
     );
   }
 
-  Widget _buildLogoUploadSection() {
-    final user = context.watch<AuthProvider>().userModel;
-    final hasLogo = user != null && (user.logo ?? '').isNotEmpty;
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: strongBlue.withValues(alpha: 0.18)),
+  Widget _buildLogoSection(UserModel user) {
+    final hasLogo = (user.logo ?? '').trim().isNotEmpty;
+    return _panel(
+      title: 'Logo & Visual Identity',
+      subtitle:
+          'A strong logo or company photo makes the profile feel more polished and recognizable.',
+      icon: Icons.image_outlined,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: SettingsFlowPalette.background,
+          borderRadius: SettingsFlowTheme.radius(22),
+          border: Border.all(color: SettingsFlowPalette.border),
+        ),
+        child: Column(
+          children: [
+            ProfileAvatar(user: user, radius: 42),
+            const SizedBox(height: 12),
+            Text(
+              hasLogo
+                  ? 'Your current company visual is live.'
+                  : 'No logo yet. Add one to make the profile feel more complete.',
+              style: SettingsFlowTheme.body(),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'Accepted formats: JPG, PNG, or WebP. Maximum size: 5 MB.',
+              style: SettingsFlowTheme.caption(),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            SettingsButtonGroup(
+              children: [
+                OutlinedButton.icon(
+                  onPressed: _uploadingLogo ? null : _pickAndUploadLogo,
+                  icon: _uploadingLogo
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.upload_outlined, size: 18),
+                  label: Text(
+                    _uploadingLogo
+                        ? 'Uploading...'
+                        : hasLogo
+                        ? 'Replace Logo'
+                        : 'Upload Logo',
+                    style: GoogleFonts.poppins(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size.fromHeight(50),
+                    foregroundColor: CompanyDashboardPalette.primary,
+                    side: const BorderSide(
+                      color: CompanyDashboardPalette.primary,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: SettingsFlowTheme.radius(18),
+                    ),
+                  ),
+                ),
+                if (hasLogo)
+                  OutlinedButton.icon(
+                    onPressed: _uploadingLogo ? null : _removeLogo,
+                    icon: const Icon(Icons.delete_outline_rounded, size: 18),
+                    label: Text(
+                      'Remove Logo',
+                      style: GoogleFonts.poppins(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      minimumSize: const Size.fromHeight(50),
+                      foregroundColor: SettingsFlowPalette.error,
+                      side: const BorderSide(color: SettingsFlowPalette.error),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: SettingsFlowTheme.radius(18),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ],
+        ),
       ),
+    );
+  }
+
+  Widget _buildRegisterSection(UserModel user) {
+    final selectedFile = _commercialRegisterFile;
+    final uploadedAt = user.commercialRegisterUploadedAt;
+    final uploadedAtLabel = uploadedAt == null
+        ? 'Not available'
+        : DateFormat('MMM d, yyyy').format(uploadedAt.toDate());
+
+    return _panel(
+      title: 'Commercial Register',
+      subtitle:
+          'Keep a current verification document attached to maintain a trustworthy company profile.',
+      icon: Icons.verified_user_outlined,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Company Logo / Picture',
-            style: GoogleFonts.poppins(
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-              color: strongBlue,
+          if (selectedFile != null)
+            _documentCard(
+              title: selectedFile.name,
+              subtitle:
+                  '${(selectedFile.size / (1024 * 1024)).toStringAsFixed(2)} MB selected',
+              primaryLabel: 'Replace',
+              primaryAction: _pickCommercialRegister,
+            )
+          else if (user.hasCommercialRegister)
+            _documentCard(
+              title: user.commercialRegisterFileName.trim().isNotEmpty
+                  ? user.commercialRegisterFileName.trim()
+                  : 'Document uploaded',
+              subtitle: 'Uploaded: $uploadedAtLabel',
+              primaryLabel: 'Replace',
+              primaryAction: _pickCommercialRegister,
+              secondaryLabel: 'View',
+              secondaryAction: () =>
+                  _openCommercialRegister(companyId: user.uid),
+            )
+          else ...[
+            const SettingsInfoBanner(
+              icon: Icons.upload_file_outlined,
+              title: 'No document uploaded yet',
+              message:
+                  'Upload a PDF, JPG, or PNG document up to 10 MB to complete this part of the profile.',
+              color: CompanyDashboardPalette.accent,
             ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            'Upload a logo or company photo. JPG, PNG or WebP. Max 5 MB.',
-            style: GoogleFonts.poppins(
-              fontSize: 12,
-              color: Colors.grey.shade700,
+            const SizedBox(height: 14),
+            SettingsPrimaryButton(
+              label: 'Upload Document',
+              icon: Icons.upload_file_outlined,
+              backgroundColor: CompanyDashboardPalette.accent,
+              onPressed: _pickCommercialRegister,
             ),
-          ),
-          const SizedBox(height: 12),
-          Center(child: ProfileAvatar(user: user, radius: 36)),
-          const SizedBox(height: 12),
-          SizedBox(
-            width: double.infinity,
-            child: OutlinedButton.icon(
-              onPressed: _uploadingLogo ? null : _pickAndUploadLogo,
-              icon: _uploadingLogo
-                  ? const SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Icon(Icons.upload_outlined),
-              label: Text(
-                _uploadingLogo
-                    ? 'Uploading...'
-                    : hasLogo
-                    ? 'Replace Logo'
-                    : 'Upload Logo',
-                style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
-              ),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: strongBlue,
-                side: BorderSide(color: strongBlue.withValues(alpha: 0.2)),
-                padding: const EdgeInsets.symmetric(vertical: 12),
-              ),
-            ),
-          ),
-          if (hasLogo) ...[
-            const SizedBox(height: 10),
-            SizedBox(
-              width: double.infinity,
-              child: TextButton.icon(
-                onPressed: _uploadingLogo ? null : _removeLogo,
-                icon: const Icon(Icons.delete_outline, size: 18),
-                label: Text(
-                  'Remove Logo',
-                  style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
-                ),
-                style: TextButton.styleFrom(foregroundColor: Colors.red),
+          ],
+          if (_commercialRegisterError != null) ...[
+            const SizedBox(height: 12),
+            Text(
+              _commercialRegisterError!,
+              style: GoogleFonts.poppins(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: SettingsFlowPalette.error,
               ),
             ),
           ],
@@ -637,34 +1283,107 @@ class _EditProfileScreenState extends State<_EditProfileScreen> {
     );
   }
 
+  Widget _documentCard({
+    required String title,
+    required String subtitle,
+    required String primaryLabel,
+    required VoidCallback primaryAction,
+    String? secondaryLabel,
+    VoidCallback? secondaryAction,
+  }) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: SettingsFlowPalette.background,
+        borderRadius: SettingsFlowTheme.radius(22),
+        border: Border.all(color: SettingsFlowPalette.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SettingsIconBox(
+                icon: Icons.insert_drive_file_outlined,
+                color: CompanyDashboardPalette.primary,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title, style: SettingsFlowTheme.cardTitle()),
+                    const SizedBox(height: 4),
+                    Text(subtitle, style: SettingsFlowTheme.caption()),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          SettingsButtonGroup(
+            children: [
+              if (secondaryLabel != null && secondaryAction != null)
+                SettingsSecondaryButton(
+                  label: secondaryLabel,
+                  icon: Icons.visibility_outlined,
+                  color: CompanyDashboardPalette.primary,
+                  onPressed: secondaryAction,
+                ),
+              SettingsSecondaryButton(
+                label: primaryLabel,
+                icon: Icons.upload_file_outlined,
+                color: CompanyDashboardPalette.accent,
+                onPressed: primaryAction,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Uri? _websiteUri(String rawValue) {
+    final trimmed = rawValue.trim();
+    if (trimmed.isEmpty) {
+      return null;
+    }
+    final normalized = trimmed.contains('://') ? trimmed : 'https://$trimmed';
+    return Uri.tryParse(normalized);
+  }
+
   Future<void> _pickAndUploadLogo() async {
+    final messenger = ScaffoldMessenger.of(context);
+    final authProvider = context.read<AuthProvider>();
+    final companyProvider = context.read<CompanyProvider>();
+    final user = authProvider.userModel;
+    if (user == null) {
+      return;
+    }
+
     final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['jpg', 'jpeg', 'png', 'webp'],
       withData: true,
     );
-
-    if (result == null || result.files.isEmpty) return;
+    if (result == null || result.files.isEmpty) {
+      return;
+    }
 
     final file = result.files.single;
     if (file.size > 5 * 1024 * 1024) {
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Image must be smaller than 5 MB')),
+        const SnackBar(content: Text('Image must be smaller than 5 MB.')),
       );
       return;
     }
 
-    if (!mounted) return;
-    final authProvider = context.read<AuthProvider>();
-    final user = authProvider.userModel;
-    if (user == null) return;
-
     setState(() => _uploadingLogo = true);
-
-    final companyProvider = context.read<CompanyProvider>();
-    final messenger = ScaffoldMessenger.of(context);
-
     try {
       final error = await companyProvider.uploadCompanyLogo(
         uid: user.uid,
@@ -672,44 +1391,13 @@ class _EditProfileScreenState extends State<_EditProfileScreen> {
         filePath: file.path ?? '',
         fileBytes: file.bytes,
       );
-
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       if (error != null) {
         messenger.showSnackBar(SnackBar(content: Text(error)));
         return;
       }
-
-      await authProvider.loadCurrentUser();
-    } catch (e) {
-      if (!mounted) return;
-      messenger.showSnackBar(
-        SnackBar(content: Text('Failed to upload logo: $e')),
-      );
-    } finally {
-      if (mounted) setState(() => _uploadingLogo = false);
-    }
-  }
-
-  Future<void> _removeLogo() async {
-    final authProvider = context.read<AuthProvider>();
-    final companyProvider = context.read<CompanyProvider>();
-    final user = authProvider.userModel;
-    if (user == null || _uploadingLogo) return;
-
-    setState(() => _uploadingLogo = true);
-
-    try {
-      final error = await companyProvider.removeCompanyLogo(user.uid);
-
-      if (!mounted) return;
-
-      if (error != null) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(error)));
-        return;
-      }
-
       await authProvider.loadCurrentUser();
     } finally {
       if (mounted) {
@@ -718,193 +1406,33 @@ class _EditProfileScreenState extends State<_EditProfileScreen> {
     }
   }
 
-  Widget _buildCommercialRegisterSection() {
-    final currentUser = context.read<AuthProvider>().userModel;
-    final selectedFile = _commercialRegisterFile;
-    final hasExistingDocument = currentUser?.hasCommercialRegister ?? false;
-    final uploadedAt = currentUser?.commercialRegisterUploadedAt;
-    final uploadedAtLabel = uploadedAt == null
-        ? 'Not available'
-        : DateFormat('MMM d, yyyy').format(uploadedAt.toDate());
+  Future<void> _removeLogo() async {
+    final authProvider = context.read<AuthProvider>();
+    final user = authProvider.userModel;
+    if (user == null || _uploadingLogo) {
+      return;
+    }
 
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: (_commercialRegisterError == null ? strongBlue : Colors.red)
-              .withValues(alpha: 0.18),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'سجل تجاري',
-            style: GoogleFonts.poppins(
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-              color: strongBlue,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            'Commercial Register',
-            style: GoogleFonts.poppins(
-              fontSize: 12,
-              color: Colors.grey.shade600,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Upload a current company registration document in PDF, JPG, or PNG format. Maximum size: 10 MB.',
-            style: GoogleFonts.poppins(
-              fontSize: 12,
-              height: 1.5,
-              color: Colors.grey.shade700,
-            ),
-          ),
-          const SizedBox(height: 12),
-          if (selectedFile != null) ...[
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: softGray,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Row(
-                children: [
-                  const Icon(
-                    Icons.insert_drive_file_outlined,
-                    color: strongBlue,
-                    size: 20,
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          selectedFile.name,
-                          style: GoogleFonts.poppins(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            color: strongBlue,
-                          ),
-                        ),
-                        Text(
-                          '${(selectedFile.size / (1024 * 1024)).toStringAsFixed(2)} MB',
-                          style: GoogleFonts.poppins(
-                            fontSize: 11,
-                            color: Colors.grey.shade600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: _pickCommercialRegister,
-                    child: const Text('Replace'),
-                  ),
-                ],
-              ),
-            ),
-          ] else if (hasExistingDocument) ...[
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: softGray,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    currentUser!.commercialRegisterFileName.isNotEmpty
-                        ? currentUser.commercialRegisterFileName
-                        : 'Document uploaded',
-                    style: GoogleFonts.poppins(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: strongBlue,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Uploaded: $uploadedAtLabel',
-                    style: GoogleFonts.poppins(
-                      fontSize: 11,
-                      color: Colors.grey.shade600,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          onPressed: () => _openCommercialRegister(
-                            companyId: currentUser.uid,
-                          ),
-                          icon: const Icon(Icons.visibility_outlined, size: 18),
-                          label: const Text('View'),
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: strongBlue,
-                            side: BorderSide(
-                              color: strongBlue.withValues(alpha: 0.2),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          onPressed: _pickCommercialRegister,
-                          icon: const Icon(
-                            Icons.upload_file_outlined,
-                            size: 18,
-                          ),
-                          label: const Text('Replace'),
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: vibrantOrange,
-                            side: BorderSide(
-                              color: vibrantOrange.withValues(alpha: 0.2),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ] else
-            OutlinedButton.icon(
-              onPressed: _pickCommercialRegister,
-              icon: const Icon(Icons.upload_file_outlined),
-              label: const Text('Upload سجل تجاري'),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: strongBlue,
-                side: BorderSide(color: strongBlue.withValues(alpha: 0.2)),
-              ),
-            ),
-          if (_commercialRegisterError != null) ...[
-            const SizedBox(height: 10),
-            Text(
-              _commercialRegisterError!,
-              style: GoogleFonts.poppins(
-                fontSize: 12,
-                color: Colors.red,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
+    setState(() => _uploadingLogo = true);
+    try {
+      final error = await context.read<CompanyProvider>().removeCompanyLogo(
+        user.uid,
+      );
+      if (!mounted) {
+        return;
+      }
+      if (error != null) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(error)));
+        return;
+      }
+      await authProvider.loadCurrentUser();
+    } finally {
+      if (mounted) {
+        setState(() => _uploadingLogo = false);
+      }
+    }
   }
 
   Future<void> _pickCommercialRegister() async {
@@ -913,7 +1441,6 @@ class _EditProfileScreenState extends State<_EditProfileScreen> {
       allowedExtensions: ['pdf', 'png', 'jpg', 'jpeg'],
       withData: true,
     );
-
     if (result == null || result.files.isEmpty) {
       return;
     }
@@ -923,7 +1450,6 @@ class _EditProfileScreenState extends State<_EditProfileScreen> {
       fileName: file.name,
       sizeInBytes: file.size,
     );
-
     setState(() {
       _commercialRegisterFile = file;
       _commercialRegisterError = validationError;
@@ -931,6 +1457,11 @@ class _EditProfileScreenState extends State<_EditProfileScreen> {
   }
 
   Future<void> _save() async {
+    final form = _formKey.currentState;
+    if (form == null || !form.validate()) {
+      return;
+    }
+
     setState(() => _saving = true);
 
     final user = context.read<AuthProvider>().userModel;
@@ -946,7 +1477,7 @@ class _EditProfileScreenState extends State<_EditProfileScreen> {
             sizeInBytes: selectedFile.size,
           )
         : (!user.hasCommercialRegister
-              ? 'سجل تجاري is required for company profiles.'
+              ? 'Commercial register is required for company profiles.'
               : null);
 
     if (commercialRegisterError != null) {
@@ -974,7 +1505,9 @@ class _EditProfileScreenState extends State<_EditProfileScreen> {
       commercialRegisterBytes: selectedFile?.bytes,
     );
 
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
 
     setState(() => _saving = false);
 
@@ -982,11 +1515,14 @@ class _EditProfileScreenState extends State<_EditProfileScreen> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(error)));
-    } else {
-      await context.read<AuthProvider>().loadCurrentUser();
-      if (!mounted) return;
-      Navigator.pop(context);
+      return;
     }
+
+    await context.read<AuthProvider>().loadCurrentUser();
+    if (!mounted) {
+      return;
+    }
+    Navigator.pop(context);
   }
 
   Future<void> _openCommercialRegister({
@@ -994,7 +1530,6 @@ class _EditProfileScreenState extends State<_EditProfileScreen> {
     bool download = false,
   }) async {
     final messenger = ScaffoldMessenger.of(context);
-
     try {
       final document = await DocumentAccessService()
           .getCompanyCommercialRegister(companyId: companyId);
@@ -1004,7 +1539,6 @@ class _EditProfileScreenState extends State<_EditProfileScreen> {
       if (uri == null) {
         throw Exception('File unavailable.');
       }
-
       final launched = await launchUrl(
         uri,
         mode: LaunchMode.platformDefault,
@@ -1015,21 +1549,229 @@ class _EditProfileScreenState extends State<_EditProfileScreen> {
           const SnackBar(content: Text('Could not open the document.')),
         );
       }
-    } catch (e) {
-      if (!mounted) return;
-      messenger.showSnackBar(SnackBar(content: Text(_documentErrorMessage(e))));
+    } catch (error) {
+      if (!mounted) {
+        return;
+      }
+      messenger.showSnackBar(
+        SnackBar(content: Text(_documentErrorMessage(error))),
+      );
     }
   }
 
   String _documentErrorMessage(Object error) {
-    final message = error.toString();
+    final message = error.toString().toLowerCase();
     if (message.contains('permission') || message.contains('403')) {
       return 'Permission denied while opening the document.';
     }
     if (message.contains('404') || message.contains('not found')) {
       return 'The requested document is no longer available.';
     }
-
     return 'Could not open the document right now.';
+  }
+}
+
+class _BackdropOrb extends StatelessWidget {
+  final double size;
+  final Color color;
+
+  const _BackdropOrb(this.size, this.color);
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+      ),
+    );
+  }
+}
+
+class _HeaderIconButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+  final bool filled;
+  final Color color;
+
+  const _HeaderIconButton({
+    required this.icon,
+    required this.onTap,
+    this.filled = false,
+    this.color = CompanyDashboardPalette.primary,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: SettingsFlowTheme.radius(16),
+      child: Ink(
+        width: 42,
+        height: 42,
+        decoration: BoxDecoration(
+          color: filled ? color : Colors.white,
+          borderRadius: SettingsFlowTheme.radius(16),
+          border: Border.all(
+            color: filled ? color : SettingsFlowPalette.border,
+          ),
+          boxShadow: SettingsFlowTheme.softShadow(0.06),
+        ),
+        child: Icon(icon, size: 20, color: filled ? Colors.white : color),
+      ),
+    );
+  }
+}
+
+class _HeroActionButton extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final VoidCallback onPressed;
+  final bool filled;
+
+  const _HeroActionButton({
+    required this.label,
+    required this.icon,
+    required this.onPressed,
+    this.filled = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final style = GoogleFonts.poppins(
+      fontSize: 13,
+      fontWeight: FontWeight.w600,
+    );
+    if (filled) {
+      return ElevatedButton.icon(
+        onPressed: onPressed,
+        icon: Icon(icon, size: 18),
+        label: Text(label, style: style),
+        style: ElevatedButton.styleFrom(
+          minimumSize: const Size.fromHeight(50),
+          elevation: 0,
+          backgroundColor: Colors.white,
+          foregroundColor: CompanyDashboardPalette.primaryDark,
+          shape: RoundedRectangleBorder(
+            borderRadius: SettingsFlowTheme.radius(18),
+          ),
+        ),
+      );
+    }
+    return OutlinedButton.icon(
+      onPressed: onPressed,
+      icon: Icon(icon, size: 18),
+      label: Text(label, style: style),
+      style: OutlinedButton.styleFrom(
+        minimumSize: const Size.fromHeight(50),
+        foregroundColor: Colors.white,
+        side: BorderSide(color: Colors.white.withValues(alpha: 0.28)),
+        backgroundColor: Colors.white.withValues(alpha: 0.06),
+        shape: RoundedRectangleBorder(
+          borderRadius: SettingsFlowTheme.radius(18),
+        ),
+      ),
+    );
+  }
+}
+
+class _DetailTile extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+  final Color accentColor;
+  final VoidCallback? onTap;
+
+  const _DetailTile({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.accentColor,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: SettingsFlowTheme.radius(24),
+      child: Ink(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: SettingsFlowTheme.radius(24),
+          border: Border.all(color: SettingsFlowPalette.border),
+          boxShadow: SettingsFlowTheme.softShadow(0.05),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SettingsIconBox(
+              icon: icon,
+              color: accentColor,
+              backgroundColor: accentColor.withValues(alpha: 0.12),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(label, style: SettingsFlowTheme.micro(accentColor)),
+                  const SizedBox(height: 6),
+                  Text(value, style: SettingsFlowTheme.body()),
+                ],
+              ),
+            ),
+            if (onTap != null)
+              Icon(
+                Icons.open_in_new_rounded,
+                size: 18,
+                color: accentColor.withValues(alpha: 0.72),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _StatusBadge extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final Color backgroundColor;
+  final Color foregroundColor;
+
+  const _StatusBadge({
+    required this.label,
+    required this.icon,
+    required this.backgroundColor,
+    required this.foregroundColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: SettingsFlowTheme.radius(999),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14, color: foregroundColor),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: GoogleFonts.poppins(
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              color: foregroundColor,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

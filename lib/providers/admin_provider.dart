@@ -45,11 +45,21 @@ class AdminProvider extends ChangeNotifier {
   String? get dashboardError => _dashboardError;
 
   List<UserModel> get allUsers => _filteredUsers;
+  List<UserModel> get rawUsers => List.unmodifiable(_allUsers);
   String get userRoleFilter => _userRoleFilter;
   String get userLevelFilter => _userLevelFilter;
   String get userSearch => _userSearch;
   bool get usersLoading => _usersLoading;
   String? get usersError => _usersError;
+  int get totalUsersCount => _allUsers.length;
+  int get activeUsersCount => _allUsers.where((user) => user.isActive).length;
+  int get blockedUsersCount => _allUsers.where((user) => !user.isActive).length;
+  int get adminUsersCount =>
+      _allUsers.where((user) => user.role == 'admin').length;
+  int get companyUsersCount =>
+      _allUsers.where((user) => user.role == 'company').length;
+  int get studentUsersCount =>
+      _allUsers.where((user) => user.role == 'student').length;
 
   List<ProjectIdeaModel> get allProjectIdeas => _allProjectIdeas;
   List<AdminApplicationItemModel> get allApplications => _allApplications;

@@ -4,10 +4,14 @@ import 'package:provider/provider.dart';
 
 import '../../models/admin_activity_model.dart';
 import '../../providers/admin_provider.dart';
+import '../../utils/admin_palette.dart';
+import '../../widgets/admin/admin_ui.dart';
 import 'admin_content_center_screen.dart';
 
 class AdminActivityCenterScreen extends StatefulWidget {
-  const AdminActivityCenterScreen({super.key});
+  final bool embedded;
+
+  const AdminActivityCenterScreen({super.key, this.embedded = false});
 
   @override
   State<AdminActivityCenterScreen> createState() =>
@@ -15,8 +19,6 @@ class AdminActivityCenterScreen extends StatefulWidget {
 }
 
 class _AdminActivityCenterScreenState extends State<AdminActivityCenterScreen> {
-  static const Color _primaryColor = Color(0xFF2D1B4E);
-  static const Color _accentColor = Color(0xFFFF8C00);
   final TextEditingController _searchController = TextEditingController();
 
   @override
@@ -41,112 +43,156 @@ class _AdminActivityCenterScreenState extends State<AdminActivityCenterScreen> {
         .where((activity) => activity.matchesQuery(_searchController.text))
         .toList();
 
+    final pendingCount = activities
+        .where((activity) => activity.status == 'pending')
+        .length;
+    final applicationCount = activities
+        .where((activity) => activity.type == 'application')
+        .length;
+    final opportunityCount = activities
+        .where((activity) => activity.type == 'opportunity')
+        .length;
+
+    final content = provider.activityLoading && provider.recentActivity.isEmpty
+        ? const Center(
+            child: CircularProgressIndicator(color: AdminPalette.primary),
+          )
+        : provider.activityError != null && provider.recentActivity.isEmpty
+        ? AdminEmptyState(
+            icon: Icons.error_outline_rounded,
+            title: 'Activity could not be loaded',
+            message: provider.activityError!,
+            action: FilledButton(
+              onPressed: () => provider.loadActivityFeed(reset: true),
+              child: const Text('Retry'),
+            ),
+          )
+        : RefreshIndicator(
+            color: AdminPalette.primary,
+            onRefresh: () => provider.loadActivityFeed(reset: true),
+            child: CustomScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                    child: AdminSurface(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const AdminSectionHeader(
+                            eyebrow: 'Live Feed',
+                            title: 'Recent Platform Activity',
+                            subtitle:
+                                'Browse the latest moderation and publishing events, then jump straight into the matching admin queue.',
+                          ),
+                          const SizedBox(height: 14),
+                          Wrap(
+                            spacing: 10,
+                            runSpacing: 10,
+                            children: [
+                              AdminPill(
+                                label: '${activities.length} visible events',
+                                color: AdminPalette.primary,
+                                icon: Icons.bolt_rounded,
+                              ),
+                              AdminPill(
+                                label: '$pendingCount pending',
+                                color: AdminPalette.warning,
+                                icon: Icons.hourglass_top_rounded,
+                              ),
+                              AdminPill(
+                                label: '$applicationCount applications',
+                                color: AdminPalette.activity,
+                                icon: Icons.assignment_outlined,
+                              ),
+                              AdminPill(
+                                label: '$opportunityCount opportunities',
+                                color: AdminPalette.accent,
+                                icon: Icons.work_outline_rounded,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                    child: AdminSearchField(
+                      controller: _searchController,
+                      hintText: 'Search by type, title, actor, or status...',
+                      onChanged: (_) => setState(() {}),
+                      onClear: () {
+                        _searchController.clear();
+                        setState(() {});
+                      },
+                    ),
+                  ),
+                ),
+                if (activities.isEmpty)
+                  const SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: AdminEmptyState(
+                      icon: Icons.history_toggle_off_rounded,
+                      title: 'No activity matches this search',
+                      message:
+                          'Try a broader query or refresh to load the latest events.',
+                    ),
+                  )
+                else
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+                    sliver: SliverList(
+                      delegate: SliverChildBuilderDelegate((context, index) {
+                        if (index == activities.length) {
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 4),
+                            child: OutlinedButton(
+                              onPressed: provider.activityLoadingMore
+                                  ? null
+                                  : provider.loadMoreActivityFeed,
+                              child: Text(
+                                provider.activityLoadingMore
+                                    ? 'Loading...'
+                                    : 'Load More',
+                              ),
+                            ),
+                          );
+                        }
+
+                        final activity = activities[index];
+                        return _ActivityTile(
+                          activity: activity,
+                          onOpen: () => _openActivity(activity),
+                        );
+                      }, childCount: activities.length + 1),
+                    ),
+                  ),
+              ],
+            ),
+          );
+
+    if (widget.embedded) {
+      return content;
+    }
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F1FB),
+      backgroundColor: AdminPalette.background,
       appBar: AppBar(
         title: const Text('Recent Activity'),
         backgroundColor: Colors.white,
-        foregroundColor: _primaryColor,
+        foregroundColor: AdminPalette.textPrimary,
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: TextField(
-              controller: _searchController,
-              onChanged: (_) => setState(() {}),
-              decoration: InputDecoration(
-                hintText: 'Search by type, title, actor, or status...',
-                prefixIcon: const Icon(Icons.search, color: _accentColor),
-                filled: true,
-                fillColor: Colors.white,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide.none,
-                ),
-              ),
-            ),
-          ),
-          Expanded(
-            child: provider.activityLoading && provider.recentActivity.isEmpty
-                ? const Center(
-                    child: CircularProgressIndicator(color: _accentColor),
-                  )
-                : provider.activityError != null &&
-                      provider.recentActivity.isEmpty
-                ? Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(
-                          Icons.error_outline,
-                          size: 48,
-                          color: Colors.red,
-                        ),
-                        const SizedBox(height: 12),
-                        const Text(
-                          'Failed to load recent activity',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            color: _primaryColor,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        TextButton(
-                          onPressed: () =>
-                              provider.loadActivityFeed(reset: true),
-                          child: const Text('Retry'),
-                        ),
-                      ],
-                    ),
-                  )
-                : RefreshIndicator(
-                    color: _accentColor,
-                    onRefresh: () => provider.loadActivityFeed(reset: true),
-                    child: activities.isEmpty
-                        ? ListView(
-                            children: const [
-                              SizedBox(height: 180),
-                              Center(child: Text('No recent activity')),
-                            ],
-                          )
-                        : ListView.builder(
-                            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                            itemCount: activities.length + 1,
-                            itemBuilder: (context, index) {
-                              if (index == activities.length) {
-                                return Padding(
-                                  padding: const EdgeInsets.only(top: 12),
-                                  child: OutlinedButton(
-                                    onPressed: provider.activityLoadingMore
-                                        ? null
-                                        : provider.loadMoreActivityFeed,
-                                    child: Text(
-                                      provider.activityLoadingMore
-                                          ? 'Loading...'
-                                          : 'Load More',
-                                    ),
-                                  ),
-                                );
-                              }
-
-                              final activity = activities[index];
-                              return _ActivityTile(
-                                activity: activity,
-                                onOpen: () => _openActivity(activity),
-                              );
-                            },
-                          ),
-                  ),
-          ),
-        ],
-      ),
+      body: SafeArea(child: content),
     );
   }
 
   Future<void> _openActivity(AdminActivityModel activity) {
     final target = switch (activity.type) {
-      'application' => AdminContentCenterScreen.applicationsTab,
+      'application' => AdminContentCenterScreen.opportunitiesTab,
       'opportunity' => AdminContentCenterScreen.opportunitiesTab,
       'scholarship' => AdminContentCenterScreen.scholarshipsTab,
       'training' => AdminContentCenterScreen.trainingsTab,
@@ -175,96 +221,94 @@ class _ActivityTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final accentColor = _colorForType(activity.type);
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: accentColor.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(12),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: AdminSurface(
+        radius: 22,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: accentColor.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Icon(_iconForType(activity.type), color: accentColor),
             ),
-            child: Icon(_iconForType(activity.type), color: accentColor),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  activity.title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 15,
-                    color: Color(0xFF2D1B4E),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    activity.title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 15,
+                      color: AdminPalette.textPrimary,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  activity.description,
-                  style: TextStyle(fontSize: 13, color: Colors.grey[700]),
-                ),
-                const SizedBox(height: 8),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 6,
-                  children: [
-                    _metaChip(activity.type.replaceAll('_', ' '), accentColor),
-                    if (activity.actorName.trim().isNotEmpty)
-                      _metaChip(activity.actorName, const Color(0xFF3A6EA5)),
-                    if (activity.status.trim().isNotEmpty)
-                      _metaChip(activity.status, _statusColor(activity.status)),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  activity.createdAt == null
-                      ? 'Unknown time'
-                      : DateFormat(
-                          'MMM d, yyyy • HH:mm',
-                        ).format(activity.createdAt!.toDate()),
-                  style: TextStyle(fontSize: 12, color: Colors.grey[500]),
-                ),
-              ],
+                  const SizedBox(height: 4),
+                  Text(
+                    activity.description,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      color: AdminPalette.textSecondary,
+                      height: 1.45,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      _metaChip(
+                        activity.type.replaceAll('_', ' '),
+                        accentColor,
+                      ),
+                      if (activity.actorName.trim().isNotEmpty)
+                        _metaChip(activity.actorName, AdminPalette.info),
+                      if (activity.status.trim().isNotEmpty)
+                        _metaChip(
+                          activity.status,
+                          _statusColor(activity.status),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    activity.createdAt == null
+                        ? 'Unknown time'
+                        : DateFormat(
+                            'MMM d, yyyy - HH:mm',
+                          ).format(activity.createdAt!.toDate()),
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: AdminPalette.textMuted,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(width: 8),
-          TextButton(onPressed: onOpen, child: const Text('Open')),
-        ],
+            const SizedBox(width: 8),
+            FilledButton.tonalIcon(
+              onPressed: onOpen,
+              icon: const Icon(Icons.open_in_new_rounded, size: 18),
+              label: const Text('Open'),
+              style: FilledButton.styleFrom(
+                foregroundColor: AdminPalette.primary,
+                backgroundColor: AdminPalette.primarySoft,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   static Widget _metaChip(String label, Color color) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w600,
-          color: color,
-        ),
-      ),
-    );
+    return AdminPill(label: label, color: color);
   }
 
   static IconData _iconForType(String type) {
@@ -285,13 +329,13 @@ class _ActivityTile extends StatelessWidget {
   static Color _colorForType(String type) {
     switch (type) {
       case 'application':
-        return Colors.deepPurple;
+        return AdminPalette.activity;
       case 'opportunity':
-        return const Color(0xFFFF8C00);
+        return AdminPalette.accent;
       case 'scholarship':
         return Colors.pink;
       case 'training':
-        return Colors.cyan;
+        return AdminPalette.secondary;
       default:
         return Colors.amber.shade700;
     }
@@ -302,11 +346,11 @@ class _ActivityTile extends StatelessWidget {
       case 'approved':
       case 'accepted':
       case 'open':
-        return Colors.green;
+        return AdminPalette.success;
       case 'rejected':
-        return Colors.red;
+        return AdminPalette.danger;
       default:
-        return Colors.orange;
+        return AdminPalette.warning;
     }
   }
 }

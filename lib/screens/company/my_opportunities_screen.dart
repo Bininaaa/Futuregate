@@ -1171,8 +1171,8 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
 class _OpportunityPalette {
   static const Color primary = CompanyDashboardPalette.primary;
   static const Color primarySoft = CompanyDashboardPalette.primarySoft;
-  static const Color accent = CompanyDashboardPalette.accent;
-  static const Color accentSoft = Color(0xFFFFF7E6);
+  static const Color accent = Color(0xFFE9B05A);
+  static const Color accentSoft = Color(0xFFFFF8EE);
   static const Color background = Color(0xFFF8FAFC);
   static const Color surface = CompanyDashboardPalette.surface;
   static const Color border = CompanyDashboardPalette.border;
@@ -1510,7 +1510,7 @@ class _TypeFilterGroup extends StatelessWidget {
         _TypeFilterChip(
           label: 'Sponsored',
           selected: selectedFilter == _OpportunityTypeFilter.sponsored,
-          foreground: OpportunityType.sponsoringColor,
+          foreground: _OpportunityPalette.accent,
           background: _OpportunityPalette.accentSoft,
           onTap: () => onSelected(_OpportunityTypeFilter.sponsored),
         ),
@@ -1744,183 +1744,233 @@ class _OpportunityCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(30),
             child: Container(
               decoration: BoxDecoration(
-                color: _OpportunityPalette.surface,
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.white,
+                    tone.background.withValues(alpha: 0.78),
+                    Colors.white,
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  stops: const [0, 0.64, 1],
+                ),
                 borderRadius: BorderRadius.circular(30),
+                border: Border.all(
+                  color: tone.foreground.withValues(alpha: 0.08),
+                ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
-                    blurRadius: 28,
-                    offset: const Offset(0, 16),
+                    color: tone.foreground.withValues(alpha: 0.07),
+                    blurRadius: 30,
+                    offset: const Offset(0, 18),
+                  ),
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.035),
+                    blurRadius: 18,
+                    offset: const Offset(0, 10),
                   ),
                 ],
               ),
-              child: Column(
+              child: Stack(
                 children: [
-                  Container(
-                    width: double.infinity,
-                    height: 6,
-                    decoration: BoxDecoration(
-                      color: tone.foreground.withValues(alpha: 0.18),
-                      borderRadius: const BorderRadius.vertical(
-                        top: Radius.circular(30),
-                      ),
+                  Positioned(
+                    top: -34,
+                    right: -24,
+                    child: _CardAura(
+                      size: 116,
+                      color: tone.foreground.withValues(alpha: 0.07),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
+                  Positioned(
+                    bottom: -44,
+                    left: -28,
+                    child: _CardAura(
+                      size: 108,
+                      color: tone.background.withValues(alpha: 0.92),
+                    ),
+                  ),
+                  Column(
+                    children: [
+                      Container(
+                        width: double.infinity,
+                        height: 6,
+                        decoration: BoxDecoration(
+                          color: tone.foreground.withValues(alpha: 0.18),
+                          borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(30),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Container(
-                              width: 56,
-                              height: 56,
-                              decoration: BoxDecoration(
-                                color: tone.background,
-                                borderRadius: BorderRadius.circular(18),
-                              ),
-                              child: Icon(
-                                OpportunityType.icon(opportunity.type),
-                                color: tone.foreground,
-                                size: 28,
-                              ),
-                            ),
-                            const SizedBox(width: 14),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Wrap(
-                                    spacing: 8,
-                                    runSpacing: 8,
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  width: 56,
+                                  height: 56,
+                                  decoration: BoxDecoration(
+                                    color: tone.background,
+                                    borderRadius: BorderRadius.circular(18),
+                                  ),
+                                  child: Icon(
+                                    OpportunityType.icon(opportunity.type),
+                                    color: tone.foreground,
+                                    size: 28,
+                                  ),
+                                ),
+                                const SizedBox(width: 14),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      _MiniPill(
-                                        label: OpportunityType.label(
-                                          opportunity.type,
-                                        ),
-                                        background: tone.background,
-                                        foreground: tone.foreground,
+                                      Wrap(
+                                        spacing: 8,
+                                        runSpacing: 8,
+                                        children: [
+                                          _MiniPill(
+                                            label: OpportunityType.label(
+                                              opportunity.type,
+                                            ),
+                                            background: tone.background,
+                                            foreground: tone.foreground,
+                                          ),
+                                          _MiniPill(
+                                            label: statusLabel,
+                                            background: statusTone.background,
+                                            foreground: statusTone.foreground,
+                                          ),
+                                        ],
                                       ),
-                                      _MiniPill(
-                                        label: statusLabel,
-                                        background: statusTone.background,
-                                        foreground: statusTone.foreground,
+                                      const SizedBox(height: 10),
+                                      Text(
+                                        opportunity.title,
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w700,
+                                          color:
+                                              _OpportunityPalette.textPrimary,
+                                          height: 1.2,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Row(
+                                        children: [
+                                          const Icon(
+                                            Icons.place_rounded,
+                                            size: 16,
+                                            color:
+                                                _OpportunityPalette.textMuted,
+                                          ),
+                                          const SizedBox(width: 6),
+                                          Expanded(
+                                            child: Text(
+                                              opportunity.location
+                                                      .trim()
+                                                      .isEmpty
+                                                  ? 'Location pending'
+                                                  : opportunity.location.trim(),
+                                              style: GoogleFonts.poppins(
+                                                fontSize: 13,
+                                                color: _OpportunityPalette
+                                                    .textSecondary,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ],
                                   ),
-                                  const SizedBox(height: 10),
-                                  Text(
-                                    opportunity.title,
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w700,
-                                      color: _OpportunityPalette.textPrimary,
-                                      height: 1.2,
+                                ),
+                                const SizedBox(width: 10),
+                                Container(
+                                  width: 42,
+                                  height: 42,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withValues(alpha: 0.72),
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: tone.foreground.withValues(
+                                        alpha: 0.10,
+                                      ),
                                     ),
                                   ),
-                                  const SizedBox(height: 8),
-                                  Row(
-                                    children: [
-                                      const Icon(
-                                        Icons.place_rounded,
-                                        size: 16,
-                                        color: _OpportunityPalette.textMuted,
-                                      ),
-                                      const SizedBox(width: 6),
-                                      Expanded(
-                                        child: Text(
-                                          opportunity.location.trim().isEmpty
-                                              ? 'Location pending'
-                                              : opportunity.location.trim(),
-                                          style: GoogleFonts.poppins(
-                                            fontSize: 13,
-                                            color: _OpportunityPalette
-                                                .textSecondary,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                                  child: const Icon(
+                                    Icons.arrow_forward_rounded,
+                                    color: _OpportunityPalette.primary,
+                                    size: 22,
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                            const SizedBox(width: 10),
+                            if (metadata.isNotEmpty) ...[
+                              const SizedBox(height: 14),
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: metadata
+                                    .map((item) => _MetaChip(label: item))
+                                    .toList(growable: false),
+                              ),
+                            ],
+                            const SizedBox(height: 16),
                             Container(
-                              width: 42,
-                              height: 42,
-                              decoration: const BoxDecoration(
-                                color: _OpportunityPalette.primarySoft,
-                                shape: BoxShape.circle,
+                              height: 1,
+                              color: _OpportunityPalette.border.withValues(
+                                alpha: 0.75,
                               ),
-                              child: const Icon(
-                                Icons.arrow_forward_rounded,
-                                color: _OpportunityPalette.primary,
-                                size: 22,
-                              ),
+                            ),
+                            const SizedBox(height: 14),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: _StatBlock(
+                                    label: 'Applicants',
+                                    value: '$applicantCount',
+                                    icon: Icons.groups_rounded,
+                                    tone: const _OpportunityTone(
+                                      background:
+                                          _OpportunityPalette.primarySoft,
+                                      foreground: _OpportunityPalette.primary,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: _StatBlock(
+                                    label: 'Timeline',
+                                    value: timeLeftLabel,
+                                    icon: Icons.schedule_rounded,
+                                    tone: const _OpportunityTone(
+                                      background:
+                                          _OpportunityPalette.accentSoft,
+                                      foreground: _OpportunityPalette.accent,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: _StatBlock(
+                                    label: 'Updated',
+                                    value: postedLabel,
+                                    icon: Icons.update_rounded,
+                                    tone: const _OpportunityTone(
+                                      background: Color(0xFFF1F5F9),
+                                      foreground:
+                                          _OpportunityPalette.textSecondary,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
-                        if (metadata.isNotEmpty) ...[
-                          const SizedBox(height: 14),
-                          Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
-                            children: metadata
-                                .map((item) => _MetaChip(label: item))
-                                .toList(growable: false),
-                          ),
-                        ],
-                        const SizedBox(height: 16),
-                        Container(
-                          height: 1,
-                          color: _OpportunityPalette.border.withValues(
-                            alpha: 0.75,
-                          ),
-                        ),
-                        const SizedBox(height: 14),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _StatBlock(
-                                label: 'Applicants',
-                                value: '$applicantCount',
-                                icon: Icons.groups_rounded,
-                                tone: const _OpportunityTone(
-                                  background: _OpportunityPalette.primarySoft,
-                                  foreground: _OpportunityPalette.primary,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: _StatBlock(
-                                label: 'Timeline',
-                                value: timeLeftLabel,
-                                icon: Icons.schedule_rounded,
-                                tone: const _OpportunityTone(
-                                  background: _OpportunityPalette.accentSoft,
-                                  foreground: _OpportunityPalette.accent,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: _StatBlock(
-                                label: 'Updated',
-                                value: postedLabel,
-                                icon: Icons.update_rounded,
-                                tone: const _OpportunityTone(
-                                  background: Color(0xFFF1F5F9),
-                                  foreground: _OpportunityPalette.textSecondary,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -1968,182 +2018,253 @@ class _OpportunityListTile extends StatelessWidget {
             borderRadius: BorderRadius.circular(24),
             child: Container(
               decoration: BoxDecoration(
-                color: _OpportunityPalette.surface,
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.white,
+                    tone.background.withValues(alpha: 0.74),
+                    Colors.white,
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  stops: const [0, 0.66, 1],
+                ),
                 borderRadius: BorderRadius.circular(24),
+                border: Border.all(
+                  color: tone.foreground.withValues(alpha: 0.08),
+                ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.035),
-                    blurRadius: 20,
-                    offset: const Offset(0, 10),
+                    color: tone.foreground.withValues(alpha: 0.06),
+                    blurRadius: 22,
+                    offset: const Offset(0, 12),
+                  ),
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.03),
+                    blurRadius: 14,
+                    offset: const Offset(0, 8),
                   ),
                 ],
               ),
-              child: Column(
+              child: Stack(
                 children: [
-                  Container(
-                    width: double.infinity,
-                    height: 5,
-                    color: tone.foreground.withValues(alpha: 0.16),
+                  Positioned(
+                    top: -28,
+                    right: -20,
+                    child: _CardAura(
+                      size: 92,
+                      color: tone.foreground.withValues(alpha: 0.06),
+                    ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                  Positioned(
+                    bottom: -34,
+                    left: -20,
+                    child: _CardAura(
+                      size: 84,
+                      color: tone.background.withValues(alpha: 0.90),
+                    ),
+                  ),
+                  Column(
+                    children: [
+                      Container(
+                        width: double.infinity,
+                        height: 5,
+                        color: tone.foreground.withValues(alpha: 0.16),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
                           children: [
-                            Container(
-                              width: 48,
-                              height: 48,
-                              decoration: BoxDecoration(
-                                color: tone.background,
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: Icon(
-                                OpportunityType.icon(opportunity.type),
-                                color: tone.foreground,
-                                size: 24,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Wrap(
-                                    spacing: 6,
-                                    runSpacing: 6,
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  width: 48,
+                                  height: 48,
+                                  decoration: BoxDecoration(
+                                    color: tone.background,
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  child: Icon(
+                                    OpportunityType.icon(opportunity.type),
+                                    color: tone.foreground,
+                                    size: 24,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      _MiniPill(
-                                        label: OpportunityType.label(
-                                          opportunity.type,
-                                        ),
-                                        background: tone.background,
-                                        foreground: tone.foreground,
+                                      Wrap(
+                                        spacing: 6,
+                                        runSpacing: 6,
+                                        children: [
+                                          _MiniPill(
+                                            label: OpportunityType.label(
+                                              opportunity.type,
+                                            ),
+                                            background: tone.background,
+                                            foreground: tone.foreground,
+                                          ),
+                                          _MiniPill(
+                                            label: statusLabel,
+                                            background: statusTone.background,
+                                            foreground: statusTone.foreground,
+                                          ),
+                                        ],
                                       ),
-                                      _MiniPill(
-                                        label: statusLabel,
-                                        background: statusTone.background,
-                                        foreground: statusTone.foreground,
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        opportunity.title,
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w700,
+                                          color:
+                                              _OpportunityPalette.textPrimary,
+                                          height: 1.2,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 6),
+                                      Row(
+                                        children: [
+                                          const Icon(
+                                            Icons.place_rounded,
+                                            size: 15,
+                                            color:
+                                                _OpportunityPalette.textMuted,
+                                          ),
+                                          const SizedBox(width: 5),
+                                          Expanded(
+                                            child: Text(
+                                              opportunity.location
+                                                      .trim()
+                                                      .isEmpty
+                                                  ? 'Location pending'
+                                                  : opportunity.location.trim(),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: GoogleFonts.poppins(
+                                                fontSize: 12.5,
+                                                color: _OpportunityPalette
+                                                    .textSecondary,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ],
                                   ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    opportunity.title,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w700,
-                                      color: _OpportunityPalette.textPrimary,
-                                      height: 1.2,
+                                ),
+                                const SizedBox(width: 10),
+                                Container(
+                                  width: 38,
+                                  height: 38,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withValues(alpha: 0.72),
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: tone.foreground.withValues(
+                                        alpha: 0.10,
+                                      ),
                                     ),
                                   ),
-                                  const SizedBox(height: 6),
-                                  Row(
-                                    children: [
-                                      const Icon(
-                                        Icons.place_rounded,
-                                        size: 15,
-                                        color: _OpportunityPalette.textMuted,
-                                      ),
-                                      const SizedBox(width: 5),
-                                      Expanded(
-                                        child: Text(
-                                          opportunity.location.trim().isEmpty
-                                              ? 'Location pending'
-                                              : opportunity.location.trim(),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: GoogleFonts.poppins(
-                                            fontSize: 12.5,
-                                            color: _OpportunityPalette
-                                                .textSecondary,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                                  child: const Icon(
+                                    Icons.arrow_forward_rounded,
+                                    color: _OpportunityPalette.primary,
+                                    size: 20,
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                            const SizedBox(width: 10),
-                            Container(
-                              width: 38,
-                              height: 38,
-                              decoration: const BoxDecoration(
-                                color: _OpportunityPalette.primarySoft,
-                                shape: BoxShape.circle,
+                            if (metadata.isNotEmpty) ...[
+                              const SizedBox(height: 12),
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: Wrap(
+                                  spacing: 8,
+                                  runSpacing: 8,
+                                  children: metadata
+                                      .map((item) => _MetaChip(label: item))
+                                      .toList(growable: false),
+                                ),
                               ),
-                              child: const Icon(
-                                Icons.arrow_forward_rounded,
-                                color: _OpportunityPalette.primary,
-                                size: 20,
-                              ),
+                            ],
+                            const SizedBox(height: 12),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: _CompactInfoRow(
+                                    icon: Icons.groups_rounded,
+                                    tone: const _OpportunityTone(
+                                      background:
+                                          _OpportunityPalette.primarySoft,
+                                      foreground: _OpportunityPalette.primary,
+                                    ),
+                                    label: 'Applicants',
+                                    value: '$applicantCount',
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: _CompactInfoRow(
+                                    icon: Icons.schedule_rounded,
+                                    tone: const _OpportunityTone(
+                                      background:
+                                          _OpportunityPalette.accentSoft,
+                                      foreground: _OpportunityPalette.accent,
+                                    ),
+                                    label: 'Timeline',
+                                    value: timeLeftLabel,
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: _CompactInfoRow(
+                                    icon: Icons.update_rounded,
+                                    tone: const _OpportunityTone(
+                                      background: Color(0xFFF1F5F9),
+                                      foreground:
+                                          _OpportunityPalette.textSecondary,
+                                    ),
+                                    label: 'Updated',
+                                    value: postedLabel,
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
-                        if (metadata.isNotEmpty) ...[
-                          const SizedBox(height: 12),
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Wrap(
-                              spacing: 8,
-                              runSpacing: 8,
-                              children: metadata
-                                  .map((item) => _MetaChip(label: item))
-                                  .toList(growable: false),
-                            ),
-                          ),
-                        ],
-                        const SizedBox(height: 12),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _CompactInfoRow(
-                                icon: Icons.groups_rounded,
-                                tone: const _OpportunityTone(
-                                  background: _OpportunityPalette.primarySoft,
-                                  foreground: _OpportunityPalette.primary,
-                                ),
-                                label: 'Applicants',
-                                value: '$applicantCount',
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: _CompactInfoRow(
-                                icon: Icons.schedule_rounded,
-                                tone: const _OpportunityTone(
-                                  background: _OpportunityPalette.accentSoft,
-                                  foreground: _OpportunityPalette.accent,
-                                ),
-                                label: 'Timeline',
-                                value: timeLeftLabel,
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: _CompactInfoRow(
-                                icon: Icons.update_rounded,
-                                tone: const _OpportunityTone(
-                                  background: Color(0xFFF1F5F9),
-                                  foreground: _OpportunityPalette.textSecondary,
-                                ),
-                                label: 'Updated',
-                                value: postedLabel,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _CardAura extends StatelessWidget {
+  final double size;
+  final Color color;
+
+  const _CardAura({required this.size, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: RadialGradient(colors: [color, color.withValues(alpha: 0)]),
         ),
       ),
     );

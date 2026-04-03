@@ -12,16 +12,17 @@ import '../../models/training_model.dart';
 import '../../providers/admin_provider.dart';
 import '../../services/company_service.dart';
 import '../../services/document_access_service.dart';
+import '../../utils/admin_palette.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
+import '../../widgets/admin/admin_ui.dart';
 import '../../widgets/profile_avatar.dart';
 
 class AdminContentCenterScreen extends StatefulWidget {
   static const int projectIdeasTab = 0;
-  static const int applicationsTab = 1;
-  static const int opportunitiesTab = 2;
-  static const int scholarshipsTab = 3;
-  static const int trainingsTab = 4;
+  static const int opportunitiesTab = 1;
+  static const int scholarshipsTab = 2;
+  static const int trainingsTab = 3;
 
   final int initialTab;
   final String initialTargetId;
@@ -41,8 +42,8 @@ class AdminContentCenterScreen extends StatefulWidget {
 
 class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     with SingleTickerProviderStateMixin {
-  static const Color _primaryColor = Color(0xFF2D1B4E);
-  static const Color _accentColor = Color(0xFFFF8C00);
+  static const Color _primaryColor = AdminPalette.textPrimary;
+  static const Color _accentColor = AdminPalette.primary;
 
   final CompanyService _companyService = CompanyService();
   final DocumentAccessService _documentAccessService = DocumentAccessService();
@@ -56,9 +57,9 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
   void initState() {
     super.initState();
     _tabController = TabController(
-      length: 5,
+      length: 4,
       vsync: this,
-      initialIndex: widget.initialTab.clamp(0, 4),
+      initialIndex: widget.initialTab.clamp(0, 3),
     );
     _tabController.addListener(() {
       if (!_tabController.indexIsChanging) {
@@ -82,6 +83,9 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<AdminProvider>();
+    final pendingIdeas = provider.allProjectIdeas
+        .where((idea) => idea.status == 'pending')
+        .length;
 
     if (!provider.moderationLoading &&
         !_openedInitialTarget &&
@@ -93,138 +97,165 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       });
     }
 
-    final content = Column(
-      children: [
-        Container(
-          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.92),
-            borderRadius: BorderRadius.circular(14),
-          ),
-          child: TabBar(
-            controller: _tabController,
-            labelColor: Colors.white,
-            unselectedLabelColor: _primaryColor,
-            indicatorSize: TabBarIndicatorSize.tab,
-            dividerColor: Colors.transparent,
-            isScrollable: true,
-            tabAlignment: TabAlignment.start,
-            indicator: BoxDecoration(
-              color: _accentColor,
-              borderRadius: BorderRadius.circular(14),
-            ),
-            tabs: [
-              _buildTab(
-                icon: Icons.lightbulb,
-                label: 'Ideas',
-                badgeCount: provider.allProjectIdeas
-                    .where((idea) => idea.status == 'pending')
-                    .length,
-              ),
-              _buildTab(icon: Icons.assignment_outlined, label: 'Applications'),
-              _buildTab(icon: Icons.work_outline, label: 'Opportunities'),
-              _buildTab(icon: Icons.card_giftcard, label: 'Scholarships'),
-              _buildTab(
-                icon: Icons.cast_for_education_outlined,
-                label: 'Trainings',
-              ),
-            ],
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.92),
-              borderRadius: BorderRadius.circular(14),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 6,
-                  offset: const Offset(0, 2),
+    final content = provider.moderationLoading
+        ? const Center(child: CircularProgressIndicator(color: _accentColor))
+        : provider.moderationError != null &&
+              provider.allProjectIdeas.isEmpty &&
+              provider.allApplications.isEmpty &&
+              provider.allOpportunities.isEmpty &&
+              provider.allScholarships.isEmpty &&
+              provider.allTrainings.isEmpty
+        ? Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.error_outline, size: 48, color: Colors.red),
+                const SizedBox(height: 12),
+                const Text(
+                  'Failed to load admin content',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: _primaryColor,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                TextButton(
+                  onPressed: provider.loadModerationData,
+                  child: const Text('Retry'),
                 ),
               ],
             ),
-            child: TextField(
-              controller: _searchController,
-              onChanged: (_) => setState(() {}),
-              decoration: InputDecoration(
-                hintText: _searchHintForCurrentTab(),
-                prefixIcon: const Icon(Icons.search, color: _accentColor),
-                border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 14,
-                ),
-                suffixIcon: _searchController.text.trim().isEmpty
-                    ? null
-                    : IconButton(
-                        onPressed: () {
-                          _searchController.clear();
-                          setState(() {});
-                        },
-                        icon: const Icon(Icons.clear),
-                      ),
-              ),
-            ),
-          ),
-        ),
-        Expanded(
-          child: provider.moderationLoading
-              ? const Center(
-                  child: CircularProgressIndicator(color: _accentColor),
-                )
-              : provider.moderationError != null &&
-                    provider.allProjectIdeas.isEmpty &&
-                    provider.allApplications.isEmpty &&
-                    provider.allOpportunities.isEmpty &&
-                    provider.allScholarships.isEmpty &&
-                    provider.allTrainings.isEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(
-                        Icons.error_outline,
-                        size: 48,
-                        color: Colors.red,
-                      ),
-                      const SizedBox(height: 12),
-                      const Text(
-                        'Failed to load admin content',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: _primaryColor,
+          )
+        : NestedScrollView(
+            headerSliverBuilder: (context, innerBoxIsScrolled) => [
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                  child: AdminSurface(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const AdminSectionHeader(
+                          eyebrow: 'Moderation',
+                          title: 'Content Workspace',
+                          subtitle:
+                              'Review submissions, monitor queues, and move between content types without losing context.',
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      TextButton(
-                        onPressed: provider.loadModerationData,
-                        child: const Text('Retry'),
-                      ),
-                    ],
+                        const SizedBox(height: 14),
+                        Wrap(
+                          spacing: 10,
+                          runSpacing: 10,
+                          children: [
+                            AdminPill(
+                              label: '$pendingIdeas pending ideas',
+                              color: AdminPalette.warning,
+                              icon: Icons.hourglass_top_rounded,
+                            ),
+                            AdminPill(
+                              label:
+                                  '${provider.allApplications.length} applications',
+                              color: AdminPalette.activity,
+                              icon: Icons.assignment_outlined,
+                            ),
+                            AdminPill(
+                              label:
+                                  '${provider.allOpportunities.length} opportunities',
+                              color: AdminPalette.accent,
+                              icon: Icons.work_outline_rounded,
+                            ),
+                            AdminPill(
+                              label:
+                                  '${provider.allTrainings.length} trainings',
+                              color: AdminPalette.secondary,
+                              icon: Icons.cast_for_education_outlined,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                )
-              : TabBarView(
-                  controller: _tabController,
-                  children: [
-                    _buildProjectIdeasTab(provider),
-                    _buildApplicationsTab(provider),
-                    _buildOpportunitiesTab(provider),
-                    _buildScholarshipsTab(provider),
-                    _buildTrainingsTab(provider),
-                  ],
                 ),
-        ),
-      ],
-    );
+              ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                  child: AdminSearchField(
+                    controller: _searchController,
+                    hintText: _searchHintForCurrentTab(),
+                    onChanged: (_) => setState(() {}),
+                    onClear: () {
+                      _searchController.clear();
+                      setState(() {});
+                    },
+                  ),
+                ),
+              ),
+              SliverPersistentHeader(
+                pinned: true,
+                delegate: _AdminTabBarHeaderDelegate(
+                  child: Container(
+                    color: AdminPalette.background,
+                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 6),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.96),
+                        borderRadius: BorderRadius.circular(22),
+                        border: Border.all(color: AdminPalette.border),
+                      ),
+                      child: TabBar(
+                        controller: _tabController,
+                        labelColor: Colors.white,
+                        unselectedLabelColor: _primaryColor,
+                        indicatorSize: TabBarIndicatorSize.tab,
+                        dividerColor: Colors.transparent,
+                        isScrollable: true,
+                        tabAlignment: TabAlignment.start,
+                        indicator: BoxDecoration(
+                          color: _accentColor,
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        tabs: [
+                          _buildTab(
+                            icon: Icons.lightbulb,
+                            label: 'Ideas',
+                            badgeCount: pendingIdeas,
+                          ),
+                          _buildTab(
+                            icon: Icons.work_outline,
+                            label: 'Opportunities',
+                          ),
+                          _buildTab(
+                            icon: Icons.card_giftcard,
+                            label: 'Scholarships',
+                          ),
+                          _buildTab(
+                            icon: Icons.cast_for_education_outlined,
+                            label: 'Trainings',
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+            body: TabBarView(
+              controller: _tabController,
+              children: [
+                _buildProjectIdeasTab(provider),
+                _buildOpportunitiesTab(provider),
+                _buildScholarshipsTab(provider),
+                _buildTrainingsTab(provider),
+              ],
+            ),
+          );
 
     if (widget.embedded) {
       return content;
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F1FB),
+      backgroundColor: AdminPalette.background,
       appBar: AppBar(
         title: const Text('Admin Content Center'),
         backgroundColor: Colors.white,
@@ -301,8 +332,10 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
           if (index == 0) {
             return Padding(
               padding: const EdgeInsets.only(bottom: 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: Wrap(
+                spacing: 10,
+                runSpacing: 10,
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
                   Text(
                     _showPendingOnly
@@ -313,28 +346,13 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                       color: _primaryColor,
                     ),
                   ),
-                  GestureDetector(
+                  AdminFilterChip(
+                    label: _showPendingOnly ? 'Show All' : 'Pending Only',
+                    selected: false,
+                    icon: Icons.swap_horiz_rounded,
                     onTap: () => setState(() {
                       _showPendingOnly = !_showPendingOnly;
                     }),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: _primaryColor.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        _showPendingOnly ? 'Show All' : 'Pending Only',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: _primaryColor,
-                        ),
-                      ),
-                    ),
                   ),
                 ],
               ),
@@ -343,254 +361,196 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
 
           final idea = ideas[index - 1];
           final isIdeaBusy = provider.busyIdeaIds.contains(idea.id);
-          final statusColor = _statusColor(idea.status);
           final submitterLabel = idea.submittedByName.trim().isNotEmpty
               ? idea.submittedByName
               : idea.submittedBy;
 
-          return Container(
-            margin: const EdgeInsets.only(bottom: 10),
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.92),
-              borderRadius: BorderRadius.circular(14),
-              border: idea.id == widget.initialTargetId
-                  ? Border.all(color: _accentColor, width: 1.4)
-                  : null,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 6,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: InkWell(
-              borderRadius: BorderRadius.circular(14),
-              onTap: () => _showProjectIdeaDetails(idea),
-              child: Padding(
-                padding: const EdgeInsets.all(14),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            idea.title,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: _primaryColor,
-                            ),
-                          ),
-                        ),
-                        _statusBadge(idea.status, statusColor),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      idea.description,
-                      style: TextStyle(fontSize: 13, color: Colors.grey[700]),
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 10),
-                    Wrap(
-                      spacing: 6,
-                      runSpacing: 4,
-                      children: [
-                        _buildChip(idea.domain, Colors.blue),
-                        _buildChip(idea.level, Colors.purple),
-                        if (idea.tools.isNotEmpty)
-                          _buildChip(idea.tools, Colors.teal),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      'Submitted by: $submitterLabel',
-                      style: TextStyle(fontSize: 11, color: Colors.grey[500]),
-                    ),
-                    if (idea.createdAt != null)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 4),
-                        child: Text(
-                          _formatTimestamp(idea.createdAt),
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: Colors.grey[500],
-                          ),
-                        ),
-                      ),
-                    if (idea.status == 'pending') ...[
-                      const SizedBox(height: 12),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: ElevatedButton.icon(
-                              onPressed: isIdeaBusy
-                                  ? null
-                                  : () async {
-                                      final error = await provider
-                                          .updateProjectIdeaStatus(
-                                            idea.id,
-                                            'approved',
-                                          );
-                                      if (error != null && context.mounted) {
-                                        ScaffoldMessenger.of(
-                                          context,
-                                        ).showSnackBar(
-                                          SnackBar(content: Text(error)),
-                                        );
-                                      }
-                                    },
-                              icon: const Icon(Icons.check, size: 18),
-                              label: Text(
-                                isIdeaBusy ? 'Working...' : 'Approve',
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.green,
-                                foregroundColor: Colors.white,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: ElevatedButton.icon(
-                              onPressed: isIdeaBusy
-                                  ? null
-                                  : () async {
-                                      final error = await provider
-                                          .updateProjectIdeaStatus(
-                                            idea.id,
-                                            'rejected',
-                                          );
-                                      if (error != null && context.mounted) {
-                                        ScaffoldMessenger.of(
-                                          context,
-                                        ).showSnackBar(
-                                          SnackBar(content: Text(error)),
-                                        );
-                                      }
-                                    },
-                              icon: const Icon(Icons.close, size: 18),
-                              label: Text(isIdeaBusy ? 'Working...' : 'Reject'),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.red,
-                                foregroundColor: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ],
-                ),
+          return _buildContentCard(
+            id: idea.id,
+            leading: Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                color: Colors.amber.shade100,
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Icon(
+                Icons.lightbulb_outline_rounded,
+                color: Colors.amber.shade800,
               ),
             ),
+            title: idea.title,
+            subtitle: 'Submitted by $submitterLabel',
+            description: idea.description,
+            badges: [
+              _BadgeData(idea.status, _statusColor(idea.status)),
+              _BadgeData(idea.domain, Colors.blue),
+              _BadgeData(idea.level, Colors.purple),
+              if (idea.tools.isNotEmpty) _BadgeData(idea.tools, Colors.teal),
+            ],
+            metaText: idea.createdAt == null
+                ? null
+                : _formatTimestamp(idea.createdAt),
+            onTap: () => _showProjectIdeaDetails(idea),
+            footer: idea.status == 'pending'
+                ? _buildResponsiveActionGroup([
+                    FilledButton.icon(
+                      onPressed: isIdeaBusy
+                          ? null
+                          : () async {
+                              final error = await provider
+                                  .updateProjectIdeaStatus(idea.id, 'approved');
+                              if (error != null && context.mounted) {
+                                ScaffoldMessenger.of(
+                                  context,
+                                ).showSnackBar(SnackBar(content: Text(error)));
+                              }
+                            },
+                      icon: const Icon(Icons.check, size: 18),
+                      label: Text(isIdeaBusy ? 'Working...' : 'Approve'),
+                      style: FilledButton.styleFrom(
+                        backgroundColor: AdminPalette.success,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
+                    ),
+                    FilledButton.icon(
+                      onPressed: isIdeaBusy
+                          ? null
+                          : () async {
+                              final error = await provider
+                                  .updateProjectIdeaStatus(idea.id, 'rejected');
+                              if (error != null && context.mounted) {
+                                ScaffoldMessenger.of(
+                                  context,
+                                ).showSnackBar(SnackBar(content: Text(error)));
+                              }
+                            },
+                      icon: const Icon(Icons.close, size: 18),
+                      label: Text(isIdeaBusy ? 'Working...' : 'Reject'),
+                      style: FilledButton.styleFrom(
+                        backgroundColor: AdminPalette.danger,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
+                    ),
+                  ])
+                : null,
           );
         },
       ),
     );
   }
 
-  Widget _buildApplicationsTab(AdminProvider provider) {
-    final applications = provider.allApplications
-        .where(
-          (application) => application.matchesQuery(_searchController.text),
-        )
+  List<AdminApplicationItemModel> _applicationsForOpportunity(
+    AdminProvider provider,
+    String opportunityId,
+  ) {
+    final matches = provider.allApplications
+        .where((application) => application.opportunityId == opportunityId)
         .toList();
 
-    if (provider.allApplications.isEmpty) {
-      return _buildEmptyState(Icons.assignment_outlined, 'No applications yet');
-    }
+    matches.sort((a, b) {
+      final aTime = a.appliedAt?.millisecondsSinceEpoch ?? 0;
+      final bTime = b.appliedAt?.millisecondsSinceEpoch ?? 0;
+      return bTime.compareTo(aTime);
+    });
 
-    if (applications.isEmpty) {
-      return _buildEmptyState(
-        Icons.search_off_outlined,
-        'No applications match your search',
-      );
-    }
+    return matches;
+  }
 
-    return RefreshIndicator(
-      color: _accentColor,
-      onRefresh: provider.loadModerationData,
-      child: ListView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        itemCount: applications.length,
-        itemBuilder: (context, index) {
-          final item = applications[index];
-          final statusColor = _statusColor(item.status);
+  void _showOpportunityApplications(
+    Map<String, dynamic> opportunity,
+    List<AdminApplicationItemModel> applications,
+  ) {
+    final opportunityTitle = (opportunity['title'] ?? 'Opportunity').toString();
 
-          return Container(
-            margin: const EdgeInsets.only(bottom: 10),
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.92),
-              borderRadius: BorderRadius.circular(14),
-              border: item.id == widget.initialTargetId
-                  ? Border.all(color: _accentColor, width: 1.4)
-                  : null,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 6,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: ListTile(
-              onTap: () => _showApplicationDetails(item),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 10,
-              ),
-              leading: ProfileAvatar(
-                radius: 20,
-                userId: item.application.studentId,
-                fallbackName: item.studentName,
-                role: 'student',
-              ),
-              title: Text(
-                item.studentName,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 15,
-                  color: _primaryColor,
-                ),
-              ),
-              subtitle: Column(
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      builder: (_) => DraggableScrollableSheet(
+        initialChildSize: 0.72,
+        minChildSize: 0.4,
+        maxChildSize: 0.94,
+        expand: false,
+        builder: (context, scrollController) => ListView(
+          controller: scrollController,
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+          children: [
+            _buildSheetHandle(),
+            const SizedBox(height: 16),
+            AdminSurface(
+              radius: 24,
+              gradient: AdminPalette.heroGradient(AdminPalette.activity),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 4),
-                  Text(
-                    item.opportunityTitle.isNotEmpty
-                        ? item.opportunityTitle
-                        : 'Unknown opportunity',
-                    style: TextStyle(fontSize: 12, color: Colors.grey[700]),
+                  const Icon(
+                    Icons.assignment_outlined,
+                    color: Colors.white,
+                    size: 28,
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 12),
                   Text(
-                    item.companyName.isNotEmpty
-                        ? item.companyName
-                        : 'Unknown company',
-                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                    'Applications for $opportunityTitle',
+                    style: const TextStyle(
+                      fontSize: 21,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
                   ),
-                ],
-              ),
-              trailing: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  _statusBadge(item.status, statusColor),
                   const SizedBox(height: 6),
                   Text(
-                    _formatTimestamp(item.appliedAt),
-                    style: TextStyle(fontSize: 10, color: Colors.grey[500]),
+                    '${applications.length} application${applications.length == 1 ? '' : 's'} linked to this opportunity.',
+                    style: const TextStyle(fontSize: 13, color: Colors.white70),
                   ),
                 ],
               ),
             ),
-          );
-        },
+            const SizedBox(height: 14),
+            if (applications.isEmpty)
+              const AdminEmptyState(
+                icon: Icons.assignment_late_outlined,
+                title: 'No applications yet',
+                message:
+                    'This opportunity does not have any submitted applications right now.',
+              )
+            else
+              ...applications.map((item) {
+                final statusColor = _statusColor(item.status);
+                return _buildContentCard(
+                  id: item.id,
+                  leading: ProfileAvatar(
+                    radius: 18,
+                    userId: item.application.studentId,
+                    fallbackName: item.studentName,
+                    role: 'student',
+                  ),
+                  title: item.studentName,
+                  subtitle: item.companyName.isNotEmpty
+                      ? item.companyName
+                      : 'Application',
+                  badges: [
+                    _BadgeData(item.status, statusColor),
+                    if (item.appliedAt != null)
+                      _BadgeData(
+                        DateFormat('MMM d').format(item.appliedAt!.toDate()),
+                        AdminPalette.info,
+                      ),
+                  ],
+                  metaText: _formatTimestamp(item.appliedAt),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _showApplicationDetails(item);
+                  },
+                );
+              }),
+          ],
+        ),
       ),
     );
   }
@@ -619,6 +579,11 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
         itemCount: opportunities.length,
         itemBuilder: (context, index) {
           final opportunity = opportunities[index];
+          final opportunityId = opportunity['id'].toString();
+          final applications = _applicationsForOpportunity(
+            provider,
+            opportunityId,
+          );
           final opportunityModel = OpportunityModel.fromMap(opportunity);
           final metadata = OpportunityMetadata.buildMetadataItems(
             type: opportunityModel.type,
@@ -637,13 +602,17 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             (opportunity['type'] ?? '').toString(),
           );
           return _buildMapListTile(
-            id: opportunity['id'].toString(),
+            id: opportunityId,
             icon: Icons.work,
             iconColor: _accentColor,
             title: (opportunity['title'] ?? 'No title').toString(),
             subtitle: (opportunity['companyName'] ?? 'Unknown company')
                 .toString(),
             badges: [
+              _BadgeData(
+                '${applications.length} app${applications.length == 1 ? '' : 's'}',
+                AdminPalette.activity,
+              ),
               _BadgeData(
                 OpportunityType.label(opportunityType),
                 OpportunityType.color(opportunityType),
@@ -657,15 +626,31 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               ...metadata.map((item) => _BadgeData(item, Colors.indigo)),
             ],
             onTap: () => _showOpportunityDetails(opportunity),
-            trailing: IconButton(
-              icon: const Icon(Icons.delete_outline, color: Colors.red),
-              onPressed: () => _showDeleteDialog(
+            footer: OutlinedButton.icon(
+              onPressed: () =>
+                  _showOpportunityApplications(opportunity, applications),
+              icon: const Icon(Icons.assignment_outlined, size: 18),
+              label: Text(
+                applications.isEmpty
+                    ? 'No Applications Yet'
+                    : 'View Applications (${applications.length})',
+              ),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AdminPalette.activity,
+                side: BorderSide(
+                  color: AdminPalette.activity.withValues(alpha: 0.24),
+                ),
+                padding: const EdgeInsets.symmetric(vertical: 14),
+              ),
+            ),
+            trailing: _buildCompactCardAction(
+              icon: Icons.delete_outline_rounded,
+              color: AdminPalette.danger,
+              onTap: () => _showDeleteDialog(
                 'Delete Opportunity',
                 'Are you sure you want to delete "${opportunity['title']}"?',
                 () async {
-                  final error = await provider.deleteOpportunity(
-                    opportunity['id'].toString(),
-                  );
+                  final error = await provider.deleteOpportunity(opportunityId);
                   if (error != null && context.mounted) {
                     ScaffoldMessenger.of(
                       context,
@@ -718,9 +703,10 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 _BadgeData('Due: ${scholarship['deadline']}', Colors.orange),
             ],
             onTap: () => _showScholarshipDetails(scholarship),
-            trailing: IconButton(
-              icon: const Icon(Icons.delete_outline, color: Colors.red),
-              onPressed: () => _showDeleteDialog(
+            trailing: _buildCompactCardAction(
+              icon: Icons.delete_outline_rounded,
+              color: AdminPalette.danger,
+              onTap: () => _showDeleteDialog(
                 'Delete Scholarship',
                 'Are you sure you want to delete "${scholarship['title']}"?',
                 () async {
@@ -778,10 +764,8 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     switch (_tabController.index) {
       case AdminContentCenterScreen.projectIdeasTab:
         return 'Search ideas by title, domain, submitter, or status...';
-      case AdminContentCenterScreen.applicationsTab:
-        return 'Search applications by student, opportunity, company, or status...';
       case AdminContentCenterScreen.opportunitiesTab:
-        return 'Search opportunities by title, company, location, or status...';
+        return 'Search opportunities by title, company, location, status, or compensation...';
       case AdminContentCenterScreen.scholarshipsTab:
         return 'Search scholarships by title, provider, or deadline...';
       case AdminContentCenterScreen.trainingsTab:
@@ -889,15 +873,6 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
           _showProjectIdeaDetails(idea);
         }
         break;
-      case AdminContentCenterScreen.applicationsTab:
-        final matches = provider.allApplications
-            .where((item) => item.id == targetId)
-            .toList();
-        final application = matches.isEmpty ? null : matches.first;
-        if (application != null) {
-          _showApplicationDetails(application);
-        }
-        break;
       case AdminContentCenterScreen.opportunitiesTab:
         final matches = provider.allOpportunities
             .where((item) => item['id'] == targetId)
@@ -905,6 +880,17 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
         final opportunity = matches.isEmpty ? null : matches.first;
         if (opportunity != null) {
           _showOpportunityDetails(opportunity);
+          break;
+        }
+
+        final matchingApplications = provider.allApplications
+            .where((item) => item.id == targetId)
+            .toList();
+        final application = matchingApplications.isEmpty
+            ? null
+            : matchingApplications.first;
+        if (application != null) {
+          _showApplicationDetails(application);
         }
         break;
       case AdminContentCenterScreen.scholarshipsTab:
@@ -928,6 +914,192 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     }
   }
 
+  Widget _buildCompactCardAction({
+    required IconData icon,
+    required Color color,
+    required VoidCallback? onTap,
+  }) {
+    return Material(
+      color: color.withValues(alpha: 0.1),
+      borderRadius: BorderRadius.circular(12),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: SizedBox(
+          width: 34,
+          height: 34,
+          child: Icon(icon, size: 18, color: color),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContentCard({
+    required String id,
+    required Widget leading,
+    required String title,
+    required String subtitle,
+    required List<_BadgeData> badges,
+    required VoidCallback onTap,
+    String? description,
+    String? metaText,
+    Widget? action,
+    Widget? footer,
+  }) {
+    final borderColor = id == widget.initialTargetId
+        ? _accentColor
+        : AdminPalette.border;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(20),
+          child: AdminSurface(
+            padding: const EdgeInsets.fromLTRB(14, 12, 12, 12),
+            radius: 20,
+            border: Border.all(
+              color: borderColor,
+              width: id == widget.initialTargetId ? 1.4 : 1,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    leading,
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            title,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 14,
+                              color: AdminPalette.textPrimary,
+                            ),
+                          ),
+                          if (subtitle.trim().isNotEmpty) ...[
+                            const SizedBox(height: 4),
+                            Text(
+                              subtitle,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 11.5,
+                                color: AdminPalette.textMuted,
+                                height: 1.35,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    action ??
+                        const Icon(
+                          Icons.chevron_right_rounded,
+                          color: AdminPalette.textMuted,
+                        ),
+                  ],
+                ),
+                if ((description ?? '').trim().isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    description!,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 12.5,
+                      height: 1.45,
+                      color: AdminPalette.textSecondary,
+                    ),
+                  ),
+                ],
+                if (badges.isNotEmpty) ...[
+                  const SizedBox(height: 10),
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 6,
+                    children: badges
+                        .map((badge) => _statusBadge(badge.label, badge.color))
+                        .toList(),
+                  ),
+                ],
+                if ((metaText ?? '').trim().isNotEmpty) ...[
+                  const SizedBox(height: 10),
+                  Text(
+                    metaText!,
+                    style: const TextStyle(
+                      fontSize: 11.5,
+                      color: AdminPalette.textMuted,
+                    ),
+                  ),
+                ],
+                if (footer != null) ...[const SizedBox(height: 12), footer],
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildResponsiveActionGroup(List<Widget> buttons) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (buttons.isEmpty) {
+          return const SizedBox.shrink();
+        }
+
+        if (buttons.length == 1) {
+          return SizedBox(width: double.infinity, child: buttons.first);
+        }
+
+        if (constraints.maxWidth < 440) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              for (var index = 0; index < buttons.length; index++) ...[
+                buttons[index],
+                if (index < buttons.length - 1) const SizedBox(height: 10),
+              ],
+            ],
+          );
+        }
+
+        return Row(
+          children: [
+            for (var index = 0; index < buttons.length; index++) ...[
+              Expanded(child: buttons[index]),
+              if (index < buttons.length - 1) const SizedBox(width: 10),
+            ],
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildSheetHandle() {
+    return Center(
+      child: Container(
+        width: 46,
+        height: 5,
+        decoration: BoxDecoration(
+          color: AdminPalette.border,
+          borderRadius: BorderRadius.circular(999),
+        ),
+      ),
+    );
+  }
+
   Widget _buildMapListTile({
     required String id,
     required IconData icon,
@@ -937,61 +1109,25 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     required List<_BadgeData> badges,
     required VoidCallback onTap,
     Widget? trailing,
+    Widget? footer,
   }) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.92),
-        borderRadius: BorderRadius.circular(14),
-        border: id == widget.initialTargetId
-            ? Border.all(color: _accentColor, width: 1.4)
-            : null,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
-        ],
+    return _buildContentCard(
+      id: id,
+      leading: Container(
+        width: 42,
+        height: 42,
+        decoration: BoxDecoration(
+          color: iconColor.withValues(alpha: 0.12),
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Icon(icon, color: iconColor, size: 22),
       ),
-      child: ListTile(
-        onTap: onTap,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        leading: Container(
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: iconColor.withValues(alpha: 0.12),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Icon(icon, color: iconColor, size: 22),
-        ),
-        title: Text(
-          title,
-          style: const TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 15,
-            color: _primaryColor,
-          ),
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              subtitle,
-              style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-            ),
-            const SizedBox(height: 4),
-            Wrap(
-              spacing: 6,
-              runSpacing: 4,
-              children: badges
-                  .map((badge) => _statusBadge(badge.label, badge.color))
-                  .toList(),
-            ),
-          ],
-        ),
-        trailing: trailing ?? const Icon(Icons.chevron_right),
-      ),
+      title: title,
+      subtitle: subtitle,
+      badges: badges,
+      onTap: onTap,
+      action: trailing,
+      footer: footer,
     );
   }
 
@@ -1120,10 +1256,24 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                       ),
                     ),
                     const SizedBox(height: 6),
-                    Text(
-                      '${cv.email} • ${cv.phone}',
-                      style: const TextStyle(fontSize: 13, color: Colors.grey),
-                    ),
+                    if (cv.email.isNotEmpty)
+                      Text(
+                        cv.email,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    if (cv.phone.isNotEmpty) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        cv.phone,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
                     const SizedBox(height: 18),
                     _buildApplicationDocumentCard(
                       title: 'Primary CV PDF',
@@ -1321,38 +1471,32 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
           ],
           if (hasActions) ...[
             const SizedBox(height: 12),
-            Row(
-              children: [
-                if (onView != null)
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: onView,
-                      icon: const Icon(Icons.visibility_outlined, size: 18),
-                      label: const Text('View CV'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: accentColor,
-                        foregroundColor: Colors.white,
-                      ),
-                    ),
+            _buildResponsiveActionGroup([
+              if (onView != null)
+                FilledButton.icon(
+                  onPressed: onView,
+                  icon: const Icon(Icons.visibility_outlined, size: 18),
+                  label: const Text('View CV'),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: accentColor,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
-                if (onView != null && onDownload != null)
-                  const SizedBox(width: 10),
-                if (onDownload != null)
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: onDownload,
-                      icon: const Icon(Icons.download_outlined, size: 18),
-                      label: const Text('Download CV'),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: accentColor,
-                        side: BorderSide(
-                          color: accentColor.withValues(alpha: 0.22),
-                        ),
-                      ),
+                ),
+              if (onDownload != null)
+                OutlinedButton.icon(
+                  onPressed: onDownload,
+                  icon: const Icon(Icons.download_outlined, size: 18),
+                  label: const Text('Download CV'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: accentColor,
+                    side: BorderSide(
+                      color: accentColor.withValues(alpha: 0.22),
                     ),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
-              ],
-            ),
+                ),
+            ]),
           ],
         ],
       ),
@@ -1380,6 +1524,9 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
   }
 
   void _showOpportunityDetails(Map<String, dynamic> opportunity) {
+    final provider = context.read<AdminProvider>();
+    final opportunityId = (opportunity['id'] ?? '').toString();
+    final applications = _applicationsForOpportunity(provider, opportunityId);
     final opportunityModel = OpportunityModel.fromMap(opportunity);
     final compensationLabel = OpportunityMetadata.buildCompensationLabel(
       salaryMin: opportunityModel.salaryMin,
@@ -1428,7 +1575,20 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
           'Requirements',
           (opportunity['requirements'] ?? '').toString(),
         ),
+        _SheetDetailLine(
+          'Applications',
+          '${applications.length} application${applications.length == 1 ? '' : 's'}',
+        ),
       ].where((line) => line.value.trim().isNotEmpty).toList(),
+      actionLabel: applications.isEmpty
+          ? null
+          : 'View Applications (${applications.length})',
+      onAction: applications.isEmpty
+          ? null
+          : () {
+              Navigator.pop(context);
+              _showOpportunityApplications(opportunity, applications);
+            },
     );
   }
 
@@ -1480,60 +1640,116 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     String? actionLabel,
     VoidCallback? onAction,
   }) {
+    final visibleDetails = detailLines
+        .where((line) => line.value.trim().isNotEmpty)
+        .toList();
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
-      builder: (_) => Padding(
-        padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
+      builder: (_) => DraggableScrollableSheet(
+        initialChildSize: 0.72,
+        minChildSize: 0.4,
+        maxChildSize: 0.94,
+        expand: false,
+        builder: (context, scrollController) => ListView(
+          controller: scrollController,
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
           children: [
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-                color: _primaryColor,
+            _buildSheetHandle(),
+            const SizedBox(height: 16),
+            AdminSurface(
+              radius: 24,
+              gradient: AdminPalette.heroGradient(_accentColor),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Icon(
+                    Icons.auto_awesome_mosaic_rounded,
+                    color: Colors.white,
+                    size: 28,
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 21,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                  ),
+                  if (subtitle.trim().isNotEmpty) ...[
+                    const SizedBox(height: 6),
+                    Text(
+                      subtitle,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: Colors.white70,
+                        height: 1.45,
+                      ),
+                    ),
+                  ],
+                ],
               ),
             ),
-            if (subtitle.trim().isNotEmpty) ...[
-              const SizedBox(height: 6),
-              Text(
-                subtitle,
-                style: TextStyle(fontSize: 13, color: Colors.grey[600]),
-              ),
-            ],
             if (description.trim().isNotEmpty) ...[
-              const SizedBox(height: 16),
-              Text(
-                description,
-                style: TextStyle(fontSize: 14, color: Colors.grey[800]),
+              const SizedBox(height: 14),
+              AdminSurface(
+                radius: 20,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Description',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: AdminPalette.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      description,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        height: 1.5,
+                        color: AdminPalette.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
-            const SizedBox(height: 16),
-            ...detailLines
-                .where((line) => line.value.trim().isNotEmpty)
-                .map(
-                  (line) => Padding(
-                    padding: const EdgeInsets.only(bottom: 10),
-                    child: _buildDetailLine(line.label, line.value),
-                  ),
+            if (visibleDetails.isNotEmpty) ...[
+              const SizedBox(height: 14),
+              const AdminSectionHeader(
+                eyebrow: 'Details',
+                title: 'Item Metadata',
+                subtitle:
+                    'Important fields are grouped here in a more readable admin detail layout.',
+              ),
+              const SizedBox(height: 12),
+              ...visibleDetails.map(
+                (line) => Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: _buildDetailLine(line.label, line.value),
                 ),
+              ),
+            ],
             if (actionLabel != null && onAction != null) ...[
               const SizedBox(height: 8),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: onAction,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: _accentColor,
-                    foregroundColor: Colors.white,
-                  ),
-                  child: Text(actionLabel),
+              FilledButton.icon(
+                onPressed: onAction,
+                icon: const Icon(Icons.open_in_new_rounded),
+                label: Text(actionLabel),
+                style: FilledButton.styleFrom(
+                  backgroundColor: _accentColor,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 15),
                 ),
               ),
             ],
@@ -1621,27 +1837,30 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
   }
 
   Widget _buildDetailLine(String label, String value) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          width: 90,
-          child: Text(
-            '$label:',
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: Colors.grey[700],
+    return AdminSurface(
+      radius: 18,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 11.5,
+              fontWeight: FontWeight.w700,
+              color: AdminPalette.textMuted,
             ),
           ),
-        ),
-        Expanded(
-          child: Text(
+          const SizedBox(height: 6),
+          Text(
             value.trim().isEmpty ? 'Not available' : value,
-            style: TextStyle(fontSize: 13, color: Colors.grey[800]),
+            style: const TextStyle(
+              fontSize: 13.5,
+              height: 1.45,
+              color: AdminPalette.textPrimary,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -1663,38 +1882,11 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     );
   }
 
-  Widget _buildChip(String label, Color color) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w500,
-          color: color,
-        ),
-      ),
-    );
-  }
-
   Widget _buildEmptyState(IconData icon, String message) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, size: 64, color: Colors.grey[400]),
-          const SizedBox(height: 12),
-          Text(
-            message,
-            style: TextStyle(fontSize: 16, color: Colors.grey[500]),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
+    return AdminEmptyState(
+      icon: icon,
+      title: 'Nothing to show here',
+      message: message,
     );
   }
 
@@ -1702,7 +1894,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(title),
         content: Text(content),
         actions: [
@@ -1715,10 +1907,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               Navigator.pop(ctx);
               onConfirm();
             },
-            child: const Text(
-              'Delete',
-              style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
-            ),
+            child: const Text('Delete'),
           ),
         ],
       ),
@@ -1770,4 +1959,30 @@ class _SheetDetailLine {
   final String value;
 
   const _SheetDetailLine(this.label, this.value);
+}
+
+class _AdminTabBarHeaderDelegate extends SliverPersistentHeaderDelegate {
+  final Widget child;
+
+  const _AdminTabBarHeaderDelegate({required this.child});
+
+  @override
+  double get minExtent => 68;
+
+  @override
+  double get maxExtent => 68;
+
+  @override
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    return child;
+  }
+
+  @override
+  bool shouldRebuild(covariant _AdminTabBarHeaderDelegate oldDelegate) {
+    return child != oldDelegate.child;
+  }
 }

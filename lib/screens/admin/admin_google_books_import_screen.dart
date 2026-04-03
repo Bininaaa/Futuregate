@@ -8,6 +8,8 @@ import '../../providers/auth_provider.dart';
 import '../../providers/training_provider.dart';
 import '../../services/google_books_service.dart';
 import '../../services/training_service.dart';
+import '../../utils/admin_palette.dart';
+import '../../widgets/admin/admin_ui.dart';
 
 class AdminGoogleBooksImportScreen extends StatefulWidget {
   const AdminGoogleBooksImportScreen({super.key});
@@ -26,6 +28,9 @@ class _AdminGoogleBooksImportScreenState
 
   bool _isSearching = false;
   bool _isImporting = false;
+  bool _hasSearched = false;
+  String? _searchError;
+  String _importingBookId = '';
 
   List<TrainingModel> _results = [];
 
@@ -80,6 +85,8 @@ class _AdminGoogleBooksImportScreenState
 
     setState(() {
       _isSearching = true;
+      _hasSearched = true;
+      _searchError = null;
     });
 
     try {
@@ -94,11 +101,19 @@ class _AdminGoogleBooksImportScreenState
 
       setState(() {
         _results = results;
+        _searchError = null;
       });
     } catch (e) {
       if (!mounted) {
         return;
       }
+
+      final message =
+          'Something went wrong while searching books. Please try again.';
+      setState(() {
+        _results = [];
+        _searchError = message;
+      });
 
       ScaffoldMessenger.of(
         context,
@@ -124,6 +139,7 @@ class _AdminGoogleBooksImportScreenState
 
     setState(() {
       _isImporting = true;
+      _importingBookId = book.id;
     });
 
     try {
@@ -159,6 +175,7 @@ class _AdminGoogleBooksImportScreenState
       if (mounted) {
         setState(() {
           _isImporting = false;
+          _importingBookId = '';
         });
       }
     }
@@ -346,423 +363,481 @@ class _AdminGoogleBooksImportScreenState
   }
 
   Widget _buildSearchForm() {
-    final orange = const Color(0xFFFF8C00);
-
     return Padding(
       padding: const EdgeInsets.all(16),
-      child: Card(
-        elevation: 2,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        child: Padding(
-          padding: const EdgeInsets.all(14),
-          child: Column(
-            children: [
-              TextField(
-                controller: _searchController,
-                decoration: InputDecoration(
-                  hintText: 'Search books, for example: algorithms',
-                  prefixIcon: const Icon(Icons.search),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
+      child: AdminSurface(
+        child: Column(
+          children: [
+            const AdminSectionHeader(
+              eyebrow: 'Google Books',
+              title: 'Import Books',
+              subtitle:
+                  'Search by topic, domain, level, and language before publishing a curated resource into the library.',
+            ),
+            const SizedBox(height: 14),
+            TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: 'Search books, for example: algorithms',
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
                 ),
-                onSubmitted: (_) => _searchBooks(),
               ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: DropdownButtonFormField<String>(
-                      initialValue: _selectedDomain,
-                      decoration: const InputDecoration(
-                        labelText: 'Domain',
-                        border: OutlineInputBorder(),
-                      ),
-                      items: _domains
-                          .map(
-                            (item) => DropdownMenuItem(
-                              value: item,
-                              child: Text(item),
-                            ),
-                          )
-                          .toList(),
-                      onChanged: (value) {
-                        if (value == null) {
-                          return;
-                        }
-
-                        setState(() {
-                          _selectedDomain = value;
-                        });
-                      },
+              onSubmitted: (_) => _searchBooks(),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: DropdownButtonFormField<String>(
+                    initialValue: _selectedDomain,
+                    decoration: const InputDecoration(
+                      labelText: 'Domain',
+                      border: OutlineInputBorder(),
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: DropdownButtonFormField<String>(
-                      initialValue: _selectedLevel,
-                      decoration: const InputDecoration(
-                        labelText: 'Level',
-                        border: OutlineInputBorder(),
-                      ),
-                      items: _levels
-                          .map(
-                            (item) => DropdownMenuItem(
-                              value: item,
-                              child: Text(item),
-                            ),
-                          )
-                          .toList(),
-                      onChanged: (value) {
-                        if (value == null) {
-                          return;
-                        }
-
-                        setState(() {
-                          _selectedLevel = value;
-                        });
-                      },
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              DropdownButtonFormField<String>(
-                initialValue: _selectedLanguage,
-                decoration: const InputDecoration(
-                  labelText: 'Language',
-                  border: OutlineInputBorder(),
-                ),
-                items: _languages
-                    .map(
-                      (item) => DropdownMenuItem(
-                        value: item,
-                        child: Text(item.isEmpty ? 'Any' : item),
-                      ),
-                    )
-                    .toList(),
-                onChanged: (value) {
-                  if (value == null) {
-                    return;
-                  }
-
-                  setState(() {
-                    _selectedLanguage = value;
-                  });
-                },
-              ),
-              const SizedBox(height: 12),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: _isSearching ? null : _searchBooks,
-                  icon: _isSearching
-                      ? const SizedBox(
-                          width: 18,
-                          height: 18,
-                          child: CircularProgressIndicator(strokeWidth: 2),
+                    items: _domains
+                        .map(
+                          (item) =>
+                              DropdownMenuItem(value: item, child: Text(item)),
                         )
-                      : const Icon(Icons.search),
-                  label: Text(_isSearching ? 'Searching...' : 'Search'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: orange,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
+                        .toList(),
+                    onChanged: (value) {
+                      if (value == null) {
+                        return;
+                      }
+
+                      setState(() {
+                        _selectedDomain = value;
+                      });
+                    },
                   ),
                 ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: DropdownButtonFormField<String>(
+                    initialValue: _selectedLevel,
+                    decoration: const InputDecoration(
+                      labelText: 'Level',
+                      border: OutlineInputBorder(),
+                    ),
+                    items: _levels
+                        .map(
+                          (item) =>
+                              DropdownMenuItem(value: item, child: Text(item)),
+                        )
+                        .toList(),
+                    onChanged: (value) {
+                      if (value == null) {
+                        return;
+                      }
+
+                      setState(() {
+                        _selectedLevel = value;
+                      });
+                    },
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            DropdownButtonFormField<String>(
+              initialValue: _selectedLanguage,
+              decoration: const InputDecoration(
+                labelText: 'Language',
+                border: OutlineInputBorder(),
               ),
-            ],
-          ),
+              items: _languages
+                  .map(
+                    (item) => DropdownMenuItem(
+                      value: item,
+                      child: Text(item.isEmpty ? 'Any' : item),
+                    ),
+                  )
+                  .toList(),
+              onChanged: (value) {
+                if (value == null) {
+                  return;
+                }
+
+                setState(() {
+                  _selectedLanguage = value;
+                });
+              },
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: _isSearching ? null : _searchBooks,
+                icon: _isSearching
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.search),
+                label: Text(_isSearching ? 'Searching...' : 'Search'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AdminPalette.primary,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
   Widget _buildSearchResults() {
-    final strongPurple = const Color(0xFF2D1B4E);
-
-    if (_results.isEmpty) {
-      return const Center(child: Text('No Google Books results yet'));
+    if (_isSearching && _results.isEmpty) {
+      return const SliverFillRemaining(
+        hasScrollBody: false,
+        child: Center(
+          child: CircularProgressIndicator(color: AdminPalette.primary),
+        ),
+      );
     }
 
-    return ListView.builder(
-      padding: const EdgeInsets.only(bottom: 20),
-      itemCount: _results.length,
-      itemBuilder: (context, index) {
-        final book = _results[index];
-
-        return Card(
-          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(18),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(14),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildBookCover(book),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        book.title,
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
-                          color: strongPurple,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        book.authors.isNotEmpty
-                            ? book.authors.join(', ')
-                            : book.provider,
-                        style: TextStyle(
-                          color: Colors.grey.shade700,
-                          fontSize: 13,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      if (book.description.trim().isNotEmpty)
-                        Text(
-                          book.description,
-                          maxLines: 3,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color: Colors.grey.shade800,
-                            fontSize: 13,
-                          ),
-                        ),
-                      const SizedBox(height: 8),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.blue.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            child: const Text(
-                              'BOOK',
-                              style: TextStyle(
-                                color: Colors.blue,
-                                fontWeight: FontWeight.w700,
-                                fontSize: 11,
-                              ),
-                            ),
-                          ),
-                          if (book.language.trim().isNotEmpty)
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.green.withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                              child: Text(
-                                book.language.toUpperCase(),
-                                style: const TextStyle(
-                                  color: Colors.green,
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 11,
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 10),
-                ElevatedButton(
-                  onPressed: _isImporting ? null : () => _importBook(book),
-                  child: const Text('Import'),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildManageTab(TrainingProvider provider) {
-    if (provider.isLoading && provider.trainings.isEmpty) {
-      return const Center(child: CircularProgressIndicator());
+    if (!_hasSearched) {
+      return const SliverFillRemaining(
+        hasScrollBody: false,
+        child: AdminEmptyState(
+          icon: Icons.menu_book_rounded,
+          title: 'No Google Books results yet',
+          message:
+              'Run a search with a topic, domain, or language filter to start importing curated books.',
+        ),
+      );
     }
 
-    if (provider.errorMessage != null && provider.trainings.isEmpty) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(provider.errorMessage!, textAlign: TextAlign.center),
-              const SizedBox(height: 12),
-              ElevatedButton(
-                onPressed: () => provider.fetchTrainings(),
-                child: const Text('Retry'),
-              ),
-            ],
+    if (_searchError != null) {
+      return SliverFillRemaining(
+        hasScrollBody: false,
+        child: AdminEmptyState(
+          icon: Icons.error_outline_rounded,
+          title: 'Search failed',
+          message: _searchError!,
+          action: FilledButton.icon(
+            onPressed: _searchBooks,
+            icon: const Icon(Icons.refresh),
+            label: const Text('Retry'),
           ),
         ),
       );
     }
 
-    if (provider.trainings.isEmpty) {
-      return RefreshIndicator(
-        onRefresh: provider.fetchTrainings,
-        child: ListView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          children: const [
-            SizedBox(height: 180),
-            Center(child: Text('No imported resources found yet')),
-          ],
+    if (_results.isEmpty) {
+      return const SliverFillRemaining(
+        hasScrollBody: false,
+        child: AdminEmptyState(
+          icon: Icons.search_off_rounded,
+          title: 'No books found',
+          message:
+              'Try a broader query or change the language and domain filters before searching again.',
+        ),
+      );
+    }
+
+    return SliverPadding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+      sliver: SliverList(
+        delegate: SliverChildBuilderDelegate((context, index) {
+          final book = _results[index];
+          final isImportingBook = _importingBookId == book.id;
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: _buildSearchResultCard(
+              book: book,
+              isImportingBook: isImportingBook,
+            ),
+          );
+        }, childCount: _results.length),
+      ),
+    );
+  }
+
+  Widget _buildManageTab(TrainingProvider provider) {
+    final books = provider.trainings
+        .where((training) => training.source == 'google_books')
+        .toList();
+
+    if (provider.isLoading && books.isEmpty) {
+      return const Center(
+        child: CircularProgressIndicator(color: AdminPalette.primary),
+      );
+    }
+
+    if (provider.errorMessage != null && books.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: AdminEmptyState(
+            icon: Icons.error_outline_rounded,
+            title: 'Book library unavailable',
+            message: provider.errorMessage!,
+            action: FilledButton.icon(
+              onPressed: provider.fetchTrainings,
+              icon: const Icon(Icons.refresh_rounded),
+              label: const Text('Retry'),
+            ),
+          ),
         ),
       );
     }
 
     return RefreshIndicator(
       onRefresh: provider.fetchTrainings,
-      child: ListView.builder(
+      child: ListView(
         physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.all(16),
-        itemCount: provider.trainings.length,
-        itemBuilder: (context, index) {
-          final training = provider.trainings[index];
-          final isBusy = provider.isTrainingBusy(training.id);
-
-          return Card(
-            margin: const EdgeInsets.only(bottom: 12),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(18),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(14),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildTrainingThumbnail(training),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: Text(
-                                training.title,
-                                style: const TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ),
-                            if (isBusy)
-                              const SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              ),
-                          ],
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          training.authors.isNotEmpty
-                              ? training.authors.join(', ')
-                              : training.provider,
-                          style: TextStyle(
-                            color: Colors.grey.shade700,
-                            fontSize: 13,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: [
-                            _AdminChip(
-                              label: training.type.toUpperCase(),
-                              color: Colors.blue,
-                            ),
-                            if (training.source.trim().isNotEmpty)
-                              _AdminChip(
-                                label: training.source.replaceAll('_', ' '),
-                                color: Colors.teal,
-                              ),
-                            if (training.domain.trim().isNotEmpty)
-                              _AdminChip(
-                                label: training.domain,
-                                color: Colors.deepPurple,
-                              ),
-                            if (training.isFeatured)
-                              _AdminChip(
-                                label: 'featured',
-                                color: Colors.amber.shade800,
-                              ),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: [
-                            OutlinedButton.icon(
-                              onPressed: isBusy
-                                  ? null
-                                  : () => _toggleFeatured(training),
-                              icon: Icon(
-                                training.isFeatured
-                                    ? Icons.star_outline_rounded
-                                    : Icons.star_rounded,
-                              ),
-                              label: Text(
-                                training.isFeatured ? 'Unfeature' : 'Feature',
-                              ),
-                            ),
-                            OutlinedButton.icon(
-                              onPressed:
-                                  isBusy || training.displayLink.trim().isEmpty
-                                  ? null
-                                  : () => _openLink(training.displayLink),
-                              icon: const Icon(Icons.open_in_new),
-                              label: const Text('Open'),
-                            ),
-                            OutlinedButton.icon(
-                              onPressed: isBusy
-                                  ? null
-                                  : () => _deleteTraining(training),
-                              style: OutlinedButton.styleFrom(
-                                foregroundColor: Colors.red,
-                              ),
-                              icon: const Icon(Icons.delete_outline),
-                              label: const Text('Delete'),
-                            ),
-                          ],
-                        ),
-                      ],
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+        children: [
+          AdminSurface(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const AdminSectionHeader(
+                  eyebrow: 'Library',
+                  title: 'Manage Imported Books',
+                  subtitle:
+                      'Only Google Books imports appear here, so the workspace stays focused on book curation.',
+                ),
+                const SizedBox(height: 14),
+                Wrap(
+                  spacing: 10,
+                  runSpacing: 10,
+                  children: [
+                    AdminPill(
+                      label: '${books.length} imported books',
+                      color: AdminPalette.info,
+                      icon: Icons.menu_book_rounded,
                     ),
-                  ),
-                ],
-              ),
+                    AdminPill(
+                      label:
+                          '${books.where((book) => book.isFeatured).length} featured',
+                      color: AdminPalette.accent,
+                      icon: Icons.star_rounded,
+                    ),
+                    AdminPill(
+                      label: provider.isLoading ? 'Syncing' : 'Synced',
+                      color: provider.isLoading
+                          ? AdminPalette.warning
+                          : AdminPalette.success,
+                      icon: provider.isLoading
+                          ? Icons.sync_rounded
+                          : Icons.check_circle_outline_rounded,
+                    ),
+                  ],
+                ),
+              ],
             ),
-          );
-        },
+          ),
+          const SizedBox(height: 12),
+          if (books.isEmpty)
+            const Padding(
+              padding: EdgeInsets.only(top: 60),
+              child: AdminEmptyState(
+                icon: Icons.menu_book_rounded,
+                title: 'No imported books yet',
+                message:
+                    'Import a few Google Books results first, then manage featuring, opening, and deleting from here.',
+              ),
+            )
+          else
+            ...books.map((training) {
+              final isBusy = provider.isTrainingBusy(training.id);
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: _buildManageResourceCard(
+                  training: training,
+                  isBusy: isBusy,
+                ),
+              );
+            }),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSearchResultCard({
+    required TrainingModel book,
+    required bool isImportingBook,
+  }) {
+    return AdminSurface(
+      radius: 22,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildBookCover(book),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  book.title,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: AdminPalette.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  book.authors.isNotEmpty
+                      ? book.authors.join(', ')
+                      : book.provider,
+                  style: TextStyle(color: Colors.grey.shade700, fontSize: 13),
+                ),
+                const SizedBox(height: 6),
+                if (book.description.trim().isNotEmpty)
+                  Text(
+                    book.description,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(color: Colors.grey.shade800, fontSize: 13),
+                  ),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    const AdminPill(label: 'BOOK', color: AdminPalette.info),
+                    if (book.language.trim().isNotEmpty)
+                      AdminPill(
+                        label: book.language.toUpperCase(),
+                        color: AdminPalette.success,
+                      ),
+                    if (book.domain.trim().isNotEmpty)
+                      AdminPill(
+                        label: book.domain,
+                        color: AdminPalette.activity,
+                      ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 10),
+          ElevatedButton(
+            onPressed: _isImporting ? null : () => _importBook(book),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AdminPalette.primary,
+              foregroundColor: Colors.white,
+            ),
+            child: Text(isImportingBook ? 'Importing...' : 'Import'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildManageResourceCard({
+    required TrainingModel training,
+    required bool isBusy,
+  }) {
+    return AdminSurface(
+      radius: 22,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildTrainingThumbnail(training),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        training.title,
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                    if (isBusy)
+                      const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  training.authors.isNotEmpty
+                      ? training.authors.join(', ')
+                      : training.provider,
+                  style: TextStyle(color: Colors.grey.shade700, fontSize: 13),
+                ),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    _AdminChip(
+                      label: training.type.toUpperCase(),
+                      color: AdminPalette.info,
+                    ),
+                    if (training.domain.trim().isNotEmpty)
+                      _AdminChip(
+                        label: training.domain,
+                        color: AdminPalette.activity,
+                      ),
+                    if (training.isFeatured)
+                      _AdminChip(
+                        label: 'featured',
+                        color: Colors.amber.shade800,
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    OutlinedButton.icon(
+                      onPressed: isBusy
+                          ? null
+                          : () => _toggleFeatured(training),
+                      icon: Icon(
+                        training.isFeatured
+                            ? Icons.star_outline_rounded
+                            : Icons.star_rounded,
+                      ),
+                      label: Text(
+                        training.isFeatured ? 'Unfeature' : 'Feature',
+                      ),
+                    ),
+                    OutlinedButton.icon(
+                      onPressed: isBusy || training.displayLink.trim().isEmpty
+                          ? null
+                          : () => _openLink(training.displayLink),
+                      icon: const Icon(Icons.open_in_new),
+                      label: const Text('Open'),
+                    ),
+                    OutlinedButton.icon(
+                      onPressed: isBusy
+                          ? null
+                          : () => _deleteTraining(training),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AdminPalette.danger,
+                      ),
+                      icon: const Icon(Icons.delete_outline),
+                      label: const Text('Delete'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -780,9 +855,14 @@ class _AdminGoogleBooksImportScreenState
     return DefaultTabController(
       length: 2,
       child: Scaffold(
+        backgroundColor: AdminPalette.background,
         appBar: AppBar(
           title: const Text('Import Google Books'),
+          backgroundColor: Colors.white,
+          foregroundColor: AdminPalette.textPrimary,
           bottom: const TabBar(
+            labelColor: AdminPalette.primary,
+            indicatorColor: AdminPalette.primary,
             tabs: [
               Tab(text: 'Search'),
               Tab(text: 'Manage'),
@@ -791,10 +871,51 @@ class _AdminGoogleBooksImportScreenState
         ),
         body: TabBarView(
           children: [
-            Column(
-              children: [
-                _buildSearchForm(),
-                Expanded(child: _buildSearchResults()),
+            CustomScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                    child: AdminSurface(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const AdminSectionHeader(
+                            eyebrow: 'Studio',
+                            title: 'Book Import Workspace',
+                            subtitle:
+                                'Search and import books in one continuous flow instead of working inside separate fixed windows.',
+                          ),
+                          const SizedBox(height: 14),
+                          Wrap(
+                            spacing: 10,
+                            runSpacing: 10,
+                            children: [
+                              AdminPill(
+                                label: '${_results.length} results',
+                                color: AdminPalette.info,
+                                icon: Icons.manage_search_rounded,
+                              ),
+                              AdminPill(
+                                label: _selectedDomain,
+                                color: AdminPalette.activity,
+                              ),
+                              AdminPill(
+                                label: _selectedLanguage.isEmpty
+                                    ? 'Any language'
+                                    : _selectedLanguage.toUpperCase(),
+                                color: AdminPalette.success,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                SliverToBoxAdapter(child: _buildSearchForm()),
+                _buildSearchResults(),
               ],
             ),
             _buildManageTab(provider),

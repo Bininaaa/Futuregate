@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/auth_provider.dart';
 import '../../providers/notification_provider.dart';
+import '../../utils/admin_palette.dart';
+import '../../widgets/admin/admin_ui.dart';
 import '../notifications_screen.dart';
 import 'admin_activity_center_screen.dart';
 import 'admin_content_center_screen.dart';
 import 'admin_dashboard_screen.dart';
+import 'admin_library_screen.dart';
 import 'users_screen.dart';
-import 'admin_google_books_import_screen.dart';
-import 'admin_youtube_import_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -20,318 +22,340 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
+  final Set<int> _visitedIndexes = <int>{0};
 
-  final List<Widget> _screens = const [
-    AdminDashboardScreen(),
-    UsersScreen(),
-    AdminContentCenterScreen(embedded: true),
+  late final List<_AdminDestination> _destinations = [
+    const _AdminDestination(
+      title: 'Dashboard',
+      subtitle: 'Platform pulse, moderation load, and quick control points.',
+      icon: Icons.space_dashboard_rounded,
+      navLabel: 'Dashboard',
+      navIcon: Icons.space_dashboard_outlined,
+      activeNavIcon: Icons.space_dashboard_rounded,
+    ),
+    const _AdminDestination(
+      title: 'Users',
+      subtitle: 'Search users, review profiles, and manage account status.',
+      icon: Icons.group_rounded,
+      navLabel: 'Users',
+      navIcon: Icons.groups_outlined,
+      activeNavIcon: Icons.groups_rounded,
+    ),
+    const _AdminDestination(
+      title: 'Content',
+      subtitle:
+          'Moderate ideas, applications, listings, scholarships, and training.',
+      icon: Icons.auto_awesome_mosaic_rounded,
+      navLabel: 'Content',
+      navIcon: Icons.view_quilt_outlined,
+      activeNavIcon: Icons.view_quilt_rounded,
+    ),
+    const _AdminDestination(
+      title: 'Activity',
+      subtitle:
+          'Track platform changes and jump straight into the right queue.',
+      icon: Icons.timeline_rounded,
+      navLabel: 'Activity',
+      navIcon: Icons.timeline_outlined,
+      activeNavIcon: Icons.timeline_rounded,
+    ),
+    const _AdminDestination(
+      title: 'Library',
+      subtitle: 'Curate imported books and video resources from one place.',
+      icon: Icons.menu_book_rounded,
+      navLabel: 'Library',
+      navIcon: Icons.library_books_outlined,
+      activeNavIcon: Icons.library_books_rounded,
+    ),
   ];
 
   @override
   Widget build(BuildContext context) {
     final unreadCount = context.watch<NotificationProvider>().unreadCount;
+    final destination = _destinations[_currentIndex];
+    final isCompactHeader = MediaQuery.sizeOf(context).width < 720;
 
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFFE8E0F0), Color(0xFFFDE8D8), Color(0xFFF8D8E0)],
-          ),
-        ),
+      backgroundColor: AdminPalette.background,
+      body: AdminShellBackground(
         child: SafeArea(
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF2D1B4E),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.admin_panel_settings,
-                            color: Color(0xFFFF8C00),
-                            size: 24,
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 10),
+                child: AdminSurface(
+                  padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+                  radius: 22,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          gradient: AdminPalette.heroGradient(
+                            destination.title == 'Library'
+                                ? AdminPalette.secondary
+                                : AdminPalette.accent,
                           ),
-                          SizedBox(width: 8),
-                          Icon(Icons.people, color: Colors.white70, size: 20),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    const Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Admin Panel',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF2D1B4E),
-                            ),
-                          ),
-                          Text(
-                            'AvenirDZ Management',
-                            style: TextStyle(fontSize: 12, color: Colors.grey),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Flexible(
-                      child: Align(
-                        alignment: Alignment.centerRight,
-                        child: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              _HeaderCircleButton(
-                                tooltip: 'Recent Activity',
-                                icon: Icons.timeline,
-                                color: const Color(0xFF2D1B4E),
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) =>
-                                          const AdminActivityCenterScreen(),
-                                    ),
-                                  );
-                                },
-                              ),
-                              const SizedBox(width: 8),
-                              _HeaderBadgeButton(
-                                tooltip: 'Notification Center',
-                                icon: Icons.notifications_outlined,
-                                badgeCount: unreadCount,
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) =>
-                                          const NotificationsScreen(),
-                                    ),
-                                  );
-                                },
-                              ),
-                              const SizedBox(width: 8),
-                              IconButton(
-                                tooltip: 'Import Google Books',
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) =>
-                                          const AdminGoogleBooksImportScreen(),
-                                    ),
-                                  );
-                                },
-                                icon: const Icon(
-                                  Icons.menu_book_rounded,
-                                  color: Color(0xFF2D1B4E),
-                                ),
-                              ),
-                              IconButton(
-                                tooltip: 'Import YouTube Videos',
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) =>
-                                          const AdminYoutubeImportScreen(),
-                                    ),
-                                  );
-                                },
-                                icon: const Icon(
-                                  Icons.ondemand_video_rounded,
-                                  color: Color(0xFF2D1B4E),
-                                ),
-                              ),
-                              _HeaderCircleButton(
-                                tooltip: 'Logout',
-                                icon: Icons.logout,
-                                color: const Color(0xFF2D1B4E),
-                                onTap: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (ctx) => AlertDialog(
-                                      title: const Text('Logout'),
-                                      content: const Text(
-                                        'Are you sure you want to logout?',
-                                      ),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () => Navigator.pop(ctx),
-                                          child: const Text('Cancel'),
-                                        ),
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.pop(ctx);
-                                            context
-                                                .read<AuthProvider>()
-                                                .logout();
-                                          },
-                                          child: const Text(
-                                            'Logout',
-                                            style: TextStyle(color: Colors.red),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Icon(
+                          destination.icon,
+                          color: Colors.white,
+                          size: 22,
                         ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Row(
+                              children: [
+                                Text(
+                                  destination.title,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.w700,
+                                    color: AdminPalette.textPrimary,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: AdminPalette.primarySoft,
+                                    borderRadius: BorderRadius.circular(999),
+                                  ),
+                                  child: Text(
+                                    'Admin',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 10.5,
+                                      fontWeight: FontWeight.w700,
+                                      color: AdminPalette.primary,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            if (!isCompactHeader) ...[
+                              const SizedBox(height: 2),
+                              Text(
+                                destination.subtitle,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.poppins(
+                                  fontSize: 11.5,
+                                  fontWeight: FontWeight.w500,
+                                  color: AdminPalette.textMuted,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          AdminIconActionButton(
+                            icon: Icons.notifications_outlined,
+                            tooltip: 'Notification Center',
+                            badgeCount: unreadCount,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const NotificationsScreen(),
+                                ),
+                              );
+                            },
+                          ),
+                          const SizedBox(width: 8),
+                          AdminIconActionButton(
+                            icon: Icons.logout_rounded,
+                            tooltip: 'Logout',
+                            color: AdminPalette.danger,
+                            onTap: _showLogoutDialog,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              Expanded(child: _screens[_currentIndex]),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: IndexedStack(
+                    index: _currentIndex,
+                    children: List<Widget>.generate(
+                      _destinations.length,
+                      (index) => _visitedIndexes.contains(index)
+                          ? _screenForIndex(index)
+                          : const SizedBox.shrink(),
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
       ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
-              blurRadius: 10,
-              offset: const Offset(0, -2),
-            ),
-          ],
-        ),
-        child: BottomNavigationBar(
-          currentIndex: _currentIndex,
-          onTap: (index) => setState(() => _currentIndex = index),
-          selectedItemColor: const Color(0xFFFF8C00),
-          unselectedItemColor: Colors.grey,
-          backgroundColor: Colors.white,
-          type: BottomNavigationBarType.fixed,
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.dashboard),
-              label: 'Dashboard',
-            ),
-            BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Users'),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.view_compact_outlined),
-              label: 'Content',
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _HeaderCircleButton extends StatelessWidget {
-  final String tooltip;
-  final IconData icon;
-  final Color color;
-  final VoidCallback onTap;
-
-  const _HeaderCircleButton({
-    required this.tooltip,
-    required this.icon,
-    required this.color,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.white.withValues(alpha: 0.92),
-      borderRadius: BorderRadius.circular(14),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(14),
-        child: Tooltip(
-          message: tooltip,
-          child: SizedBox(
-            width: 42,
-            height: 42,
-            child: Icon(icon, color: color),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _HeaderBadgeButton extends StatelessWidget {
-  final String tooltip;
-  final IconData icon;
-  final int badgeCount;
-  final VoidCallback onTap;
-
-  const _HeaderBadgeButton({
-    required this.tooltip,
-    required this.icon,
-    required this.badgeCount,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.white.withValues(alpha: 0.92),
-      borderRadius: BorderRadius.circular(14),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(14),
-        child: Tooltip(
-          message: tooltip,
-          child: SizedBox(
-            width: 42,
-            height: 42,
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                Icon(icon, color: const Color(0xFF2D1B4E)),
-                if (badgeCount > 0)
-                  Positioned(
-                    top: 7,
-                    right: 7,
-                    child: Container(
-                      padding: const EdgeInsets.all(3),
-                      decoration: const BoxDecoration(
-                        color: Color(0xFFFF8C00),
-                        shape: BoxShape.circle,
-                      ),
-                      constraints: const BoxConstraints(
-                        minWidth: 16,
-                        minHeight: 16,
-                      ),
-                      child: Text(
-                        badgeCount > 9 ? '9+' : '$badgeCount',
-                        style: const TextStyle(
-                          fontSize: 9,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ),
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(30),
+              border: Border.all(color: AdminPalette.border),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.08),
+                  blurRadius: 28,
+                  offset: const Offset(0, 16),
+                ),
               ],
             ),
+            child: Row(
+              children: List<Widget>.generate(
+                _destinations.length,
+                (index) => Expanded(
+                  child: _AdminBottomNavItem(
+                    destination: _destinations[index],
+                    selected: _currentIndex == index,
+                    onTap: () => _selectIndex(index),
+                  ),
+                ),
+              ),
+            ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _screenForIndex(int index) {
+    switch (index) {
+      case 0:
+        return const AdminDashboardScreen();
+      case 1:
+        return const UsersScreen();
+      case 2:
+        return const AdminContentCenterScreen(embedded: true);
+      case 3:
+        return const AdminActivityCenterScreen(embedded: true);
+      default:
+        return const AdminLibraryScreen();
+    }
+  }
+
+  void _selectIndex(int index) {
+    setState(() {
+      _currentIndex = index;
+      _visitedIndexes.add(index);
+    });
+  }
+
+  void _showLogoutDialog() {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text('Logout'),
+        content: const Text('Are you sure you want to logout?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: AdminPalette.danger),
+            onPressed: () {
+              Navigator.pop(ctx);
+              context.read<AuthProvider>().logout();
+            },
+            child: const Text('Logout'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AdminDestination {
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final String navLabel;
+  final IconData navIcon;
+  final IconData activeNavIcon;
+
+  const _AdminDestination({
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.navLabel,
+    required this.navIcon,
+    required this.activeNavIcon,
+  });
+}
+
+class _AdminBottomNavItem extends StatelessWidget {
+  final _AdminDestination destination;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _AdminBottomNavItem({
+    required this.destination,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(22),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        curve: Curves.easeOutCubic,
+        margin: const EdgeInsets.symmetric(horizontal: 2),
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+        decoration: BoxDecoration(
+          color: selected ? AdminPalette.primarySoft : Colors.transparent,
+          borderRadius: BorderRadius.circular(22),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              selected ? destination.activeNavIcon : destination.navIcon,
+              size: 22,
+              color: selected ? AdminPalette.primary : AdminPalette.textMuted,
+            ),
+            const SizedBox(height: 5),
+            Text(
+              destination.navLabel.toUpperCase(),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.poppins(
+                fontSize: 10.2,
+                fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
+                color: selected ? AdminPalette.primary : AdminPalette.textMuted,
+                letterSpacing: 0.25,
+              ),
+            ),
+          ],
         ),
       ),
     );

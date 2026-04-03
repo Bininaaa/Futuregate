@@ -8,6 +8,8 @@ import '../../models/cv_model.dart';
 import '../../models/user_model.dart';
 import '../../services/cv_service.dart';
 import '../../services/document_access_service.dart';
+import '../../utils/admin_palette.dart';
+import '../../widgets/admin/admin_ui.dart';
 import '../../widgets/profile_avatar.dart';
 
 class UsersScreen extends StatefulWidget {
@@ -41,320 +43,449 @@ class _UsersScreenState extends State<UsersScreen> {
   Widget build(BuildContext context) {
     final provider = context.watch<AdminProvider>();
 
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.92),
-              borderRadius: BorderRadius.circular(14),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 6,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: TextField(
-              controller: _searchController,
-              onChanged: (val) => provider.setUserSearch(val),
-              decoration: InputDecoration(
-                hintText: 'Search by name or email...',
-                prefixIcon: const Icon(Icons.search, color: Color(0xFFFF8C00)),
-                border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 14,
-                ),
-                suffixIcon: _searchController.text.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Icons.clear, size: 20),
-                        onPressed: () {
-                          _searchController.clear();
-                          provider.setUserSearch('');
-                        },
-                      )
-                    : null,
-              ),
-            ),
-          ),
+    if (provider.usersLoading) {
+      return const Center(
+        child: CircularProgressIndicator(color: AdminPalette.primary),
+      );
+    }
+
+    if (provider.usersError != null && provider.allUsers.isEmpty) {
+      return AdminEmptyState(
+        icon: Icons.group_off_rounded,
+        title: 'Users could not be loaded',
+        message: provider.usersError!,
+        action: FilledButton(
+          onPressed: provider.loadAllUsers,
+          child: const Text('Retry'),
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                _buildRoleChip('All', 'all', provider),
-                const SizedBox(width: 8),
-                _buildRoleChip('Students', 'student', provider),
-                const SizedBox(width: 8),
-                _buildRoleChip('Companies', 'company', provider),
-                const SizedBox(width: 8),
-                _buildRoleChip('Admins', 'admin', provider),
-                const SizedBox(width: 8),
-              ],
-            ),
-          ),
-        ),
-        if (provider.userRoleFilter == 'student' ||
-            provider.userRoleFilter == 'all')
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  Text(
-                    'Level: ',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey[600],
-                      fontWeight: FontWeight.w500,
+      );
+    }
+
+    return RefreshIndicator(
+      color: AdminPalette.primary,
+      onRefresh: provider.loadAllUsers,
+      child: CustomScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        slivers: [
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+              child: AdminSurface(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const AdminSectionHeader(
+                      eyebrow: 'Control',
+                      title: 'User Management',
+                      subtitle:
+                          'Search quickly, filter by role or level, and review account status without jumping around the admin area.',
                     ),
-                  ),
-                  const SizedBox(width: 4),
-                  _buildLevelChip('All', 'all', provider),
-                  const SizedBox(width: 6),
-                  _buildLevelChip('Bac', 'bac', provider),
-                  const SizedBox(width: 6),
-                  _buildLevelChip('Licence', 'licence', provider),
-                  const SizedBox(width: 6),
-                  _buildLevelChip('Master', 'master', provider),
-                  const SizedBox(width: 6),
-                  _buildLevelChip('Doctorat', 'doctorat', provider),
-                ],
+                    const SizedBox(height: 14),
+                    Wrap(
+                      spacing: 10,
+                      runSpacing: 10,
+                      children: [
+                        AdminPill(
+                          label: '${provider.totalUsersCount} users',
+                          color: AdminPalette.primary,
+                          icon: Icons.people_alt_outlined,
+                        ),
+                        AdminPill(
+                          label: '${provider.activeUsersCount} active',
+                          color: AdminPalette.success,
+                          icon: Icons.check_circle_outline_rounded,
+                        ),
+                        AdminPill(
+                          label: '${provider.blockedUsersCount} blocked',
+                          color: AdminPalette.danger,
+                          icon: Icons.block_outlined,
+                        ),
+                        AdminPill(
+                          label: '${provider.adminUsersCount} admins',
+                          color: AdminPalette.accent,
+                          icon: Icons.admin_panel_settings_outlined,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
-        const SizedBox(height: 4),
-        Expanded(
-          child: provider.usersLoading
-              ? const Center(
-                  child: CircularProgressIndicator(color: Color(0xFFFF8C00)),
-                )
-              : provider.allUsers.isEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+              child: AdminSearchField(
+                controller: _searchController,
+                hintText: 'Search by name or email...',
+                onChanged: provider.setUserSearch,
+                onClear: () {
+                  _searchController.clear();
+                  provider.setUserSearch('');
+                },
+              ),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    _buildRoleChip('All', 'all', provider),
+                    const SizedBox(width: 8),
+                    _buildRoleChip('Students', 'student', provider),
+                    const SizedBox(width: 8),
+                    _buildRoleChip('Companies', 'company', provider),
+                    const SizedBox(width: 8),
+                    _buildRoleChip('Admins', 'admin', provider),
+                    const SizedBox(width: 8),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          if (provider.userRoleFilter == 'student' ||
+              provider.userRoleFilter == 'all')
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
                     children: [
-                      Icon(
-                        Icons.people_outline,
-                        size: 64,
-                        color: Colors.grey[400],
+                      const AdminPill(
+                        label: 'Level filters',
+                        color: AdminPalette.info,
+                        icon: Icons.school_outlined,
                       ),
-                      const SizedBox(height: 12),
-                      Text(
-                        'No users found',
-                        style: TextStyle(fontSize: 16, color: Colors.grey[500]),
-                      ),
+                      const SizedBox(width: 4),
+                      _buildLevelChip('All', 'all', provider),
+                      const SizedBox(width: 6),
+                      _buildLevelChip('Bac', 'bac', provider),
+                      const SizedBox(width: 6),
+                      _buildLevelChip('Licence', 'licence', provider),
+                      const SizedBox(width: 6),
+                      _buildLevelChip('Master', 'master', provider),
+                      const SizedBox(width: 6),
+                      _buildLevelChip('Doctorat', 'doctorat', provider),
                     ],
                   ),
-                )
-              : RefreshIndicator(
-                  color: const Color(0xFFFF8C00),
-                  onRefresh: provider.loadAllUsers,
-                  child: ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    itemCount: provider.allUsers.length,
-                    itemBuilder: (context, index) {
-                      return _buildUserCard(provider.allUsers[index], provider);
-                    },
-                  ),
                 ),
-        ),
-      ],
+              ),
+            ),
+          if (provider.allUsers.isEmpty)
+            const SliverFillRemaining(
+              hasScrollBody: false,
+              child: AdminEmptyState(
+                icon: Icons.people_outline_rounded,
+                title: 'No users found',
+                message:
+                    'Try another search or relax the current role and level filters.',
+              ),
+            )
+          else
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+              sliver: SliverList(
+                delegate: SliverChildBuilderDelegate((context, index) {
+                  return _buildUserCard(provider.allUsers[index], provider);
+                }, childCount: provider.allUsers.length),
+              ),
+            ),
+        ],
+      ),
     );
   }
 
   Widget _buildRoleChip(String label, String value, AdminProvider provider) {
     final isSelected = provider.userRoleFilter == value;
-    return GestureDetector(
+    return AdminFilterChip(
+      label: label,
+      selected: isSelected,
       onTap: () => provider.setUserRoleFilter(value),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? const Color(0xFFFF8C00)
-              : Colors.white.withValues(alpha: 0.92),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: isSelected
-                ? const Color(0xFFFF8C00)
-                : Colors.grey.withValues(alpha: 0.3),
-          ),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            color: isSelected ? Colors.white : const Color(0xFF2D1B4E),
-            fontWeight: FontWeight.w600,
-            fontSize: 13,
-          ),
-        ),
-      ),
+      icon: switch (value) {
+        'student' => Icons.school_outlined,
+        'company' => Icons.business_outlined,
+        'admin' => Icons.admin_panel_settings_outlined,
+        _ => Icons.filter_list_rounded,
+      },
     );
   }
 
   Widget _buildLevelChip(String label, String value, AdminProvider provider) {
     final isSelected = provider.userLevelFilter == value;
-    return GestureDetector(
+    return AdminFilterChip(
+      label: label,
+      selected: isSelected,
       onTap: () => provider.setUserLevelFilter(value),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? const Color(0xFF2D1B4E)
-              : Colors.white.withValues(alpha: 0.8),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isSelected
-                ? const Color(0xFF2D1B4E)
-                : Colors.grey.withValues(alpha: 0.3),
-          ),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            color: isSelected ? Colors.white : Colors.grey[700],
-            fontWeight: FontWeight.w500,
-            fontSize: 12,
-          ),
-        ),
-      ),
+      icon: Icons.school_outlined,
     );
   }
 
   Widget _buildUserCard(UserModel user, AdminProvider provider) {
-    return Container(
+    final academicLevel = user.academicLevel?.trim() ?? '';
+    final statusColor = user.isActive
+        ? AdminPalette.success
+        : AdminPalette.danger;
+
+    return AdminSurface(
       margin: const EdgeInsets.only(bottom: 10),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.92),
-        borderRadius: BorderRadius.circular(14),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-        leading: ProfileAvatar(user: user, radius: 20),
-        title: Text(
-          user.fullName,
-          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              user.email,
-              style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-            ),
-            const SizedBox(height: 4),
-            Row(
+      padding: EdgeInsets.zero,
+      radius: 20,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(20),
+          onTap: () => _showUserDetails(user),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(14, 12, 10, 12),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildRoleBadge(user.role),
-                if (user.role == 'student' &&
-                    user.academicLevel != null &&
-                    user.academicLevel!.isNotEmpty) ...[
-                  const SizedBox(width: 6),
-                  _buildLevelBadge(user.academicLevel!),
-                ],
-              ],
-            ),
-          ],
-        ),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 10,
-              height: 10,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: user.isActive ? Colors.green : Colors.red,
-              ),
-            ),
-            const SizedBox(width: 8),
-            PopupMenuButton<String>(
-              icon: const Icon(Icons.more_vert, size: 20),
-              onSelected: (value) {
-                if (value == 'toggle') {
-                  _showToggleDialog(user, provider);
-                } else if (value == 'details') {
-                  _showUserDetails(user);
-                }
-              },
-              itemBuilder: (context) => [
-                const PopupMenuItem(
-                  value: 'details',
-                  child: Row(
+                ProfileAvatar(user: user, radius: 18),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(Icons.info_outline, size: 18),
-                      SizedBox(width: 8),
-                      Text('View Details'),
-                    ],
-                  ),
-                ),
-                PopupMenuItem(
-                  value: 'toggle',
-                  child: Row(
-                    children: [
-                      Icon(
-                        user.isActive ? Icons.block : Icons.check_circle,
-                        size: 18,
-                        color: user.isActive ? Colors.red : Colors.green,
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              user.fullName,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 14,
+                                color: AdminPalette.textPrimary,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          _buildMiniActionButton(
+                            icon: Icons.more_horiz_rounded,
+                            tooltip: 'User actions',
+                            onTap: () => _showUserActionsSheet(user, provider),
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 8),
-                      Text(user.isActive ? 'Block User' : 'Unblock User'),
+                      const SizedBox(height: 4),
+                      Text(
+                        user.email,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 11.5,
+                          color: AdminPalette.textMuted,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 6,
+                        runSpacing: 6,
+                        children: [
+                          _buildRoleBadge(user.role),
+                          if (user.role == 'student' &&
+                              academicLevel.isNotEmpty)
+                            _buildLevelBadge(academicLevel),
+                          AdminPill(
+                            label: user.isActive ? 'Active' : 'Blocked',
+                            color: statusColor,
+                            icon: user.isActive
+                                ? Icons.check_circle_outline_rounded
+                                : Icons.block_outlined,
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),
               ],
             ),
-          ],
+          ),
         ),
-        onTap: () => _showUserDetails(user),
       ),
     );
   }
 
   Widget _buildRoleBadge(String role) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-      decoration: BoxDecoration(
-        color: _roleColor(role).withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Text(
-        role,
-        style: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w600,
-          color: _roleColor(role),
+    return AdminPill(label: role, color: _roleColor(role));
+  }
+
+  Widget _buildLevelBadge(String level) {
+    return AdminPill(label: level, color: Colors.purple);
+  }
+
+  Widget _buildMiniActionButton({
+    required IconData icon,
+    required String tooltip,
+    required VoidCallback onTap,
+  }) {
+    return Tooltip(
+      message: tooltip,
+      child: Material(
+        color: AdminPalette.surfaceMuted,
+        borderRadius: BorderRadius.circular(12),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(12),
+          child: SizedBox(
+            width: 34,
+            height: 34,
+            child: Icon(icon, size: 18, color: AdminPalette.textPrimary),
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildLevelBadge(String level) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-      decoration: BoxDecoration(
-        color: Colors.purple.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(8),
+  void _showUserActionsSheet(UserModel user, AdminProvider provider) {
+    final actionLabel = user.isActive ? 'Block User' : 'Unblock User';
+    final actionColor = user.isActive
+        ? AdminPalette.danger
+        : AdminPalette.success;
+
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
-      child: Text(
-        level,
-        style: const TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w600,
-          color: Colors.purple,
+      builder: (sheetContext) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(18, 12, 18, 22),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildSheetHandle(),
+              const SizedBox(height: 16),
+              AdminSurface(
+                padding: const EdgeInsets.all(12),
+                radius: 18,
+                child: Row(
+                  children: [
+                    ProfileAvatar(user: user, radius: 18),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            user.fullName,
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700,
+                              color: AdminPalette.textPrimary,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            user.email,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: AdminPalette.textMuted,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+              _buildActionSheetTile(
+                icon: Icons.person_outline_rounded,
+                title: 'View Profile',
+                subtitle: 'Open the full admin profile sheet for this user.',
+                color: AdminPalette.primary,
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  _showUserDetails(user);
+                },
+              ),
+              const SizedBox(height: 10),
+              _buildActionSheetTile(
+                icon: user.isActive
+                    ? Icons.block_outlined
+                    : Icons.check_circle_outline_rounded,
+                title: actionLabel,
+                subtitle: user.isActive
+                    ? 'Temporarily disable account access.'
+                    : 'Restore the account and let the user access the app again.',
+                color: actionColor,
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  _showToggleDialog(user, provider);
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActionSheetTile({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(18),
+        child: AdminSurface(
+          padding: const EdgeInsets.all(14),
+          radius: 18,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Icon(icon, size: 22, color: color),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: AdminPalette.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AdminPalette.textMuted,
+                        height: 1.45,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              Icon(Icons.chevron_right_rounded, color: color),
+            ],
+          ),
         ),
       ),
     );
@@ -407,190 +538,191 @@ class _UsersScreenState extends State<UsersScreen> {
       context: context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
       builder: (ctx) {
         return DraggableScrollableSheet(
-          initialChildSize: 0.6,
-          minChildSize: 0.3,
-          maxChildSize: 0.85,
+          initialChildSize: 0.76,
+          minChildSize: 0.45,
+          maxChildSize: 0.94,
           expand: false,
           builder: (context, scrollController) {
-            return SingleChildScrollView(
+            return ListView(
               controller: scrollController,
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Container(
-                      width: 40,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[300],
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+              children: [
+                _buildSheetHandle(),
+                const SizedBox(height: 16),
+                AdminSurface(
+                  radius: 24,
+                  gradient: AdminPalette.heroGradient(_roleColor(user.role)),
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.12),
                   ),
-                  const SizedBox(height: 20),
-                  Center(
-                    child: ProfileAvatar(user: user, radius: 40),
-                  ),
-                  const SizedBox(height: 16),
-                  Center(
-                    child: Text(
-                      user.fullName,
-                      style: const TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF2D1B4E),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Center(
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        _buildRoleBadge(user.role),
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: (user.isActive ? Colors.green : Colors.red)
-                                .withValues(alpha: 0.12),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            user.isActive ? 'Active' : 'Blocked',
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w600,
-                              color: user.isActive ? Colors.green : Colors.red,
-                            ),
-                          ),
+                  child: Column(
+                    children: [
+                      ProfileAvatar(user: user, radius: 42),
+                      const SizedBox(height: 14),
+                      Text(
+                        user.fullName,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
                         ),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(height: 8),
+                      Wrap(
+                        alignment: WrapAlignment.center,
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          AdminPill(label: user.role, color: Colors.white),
+                          AdminPill(
+                            label: user.isActive ? 'Active' : 'Blocked',
+                            color: user.isActive
+                                ? Colors.greenAccent.shade100
+                                : Colors.red.shade100,
+                            icon: user.isActive
+                                ? Icons.check_circle_outline_rounded
+                                : Icons.block_outlined,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        user.email,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: Colors.white70,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 24),
-                  _buildDetailRow(Icons.email, 'Email', user.email),
+                ),
+                const SizedBox(height: 18),
+                const AdminSectionHeader(
+                  eyebrow: 'Profile',
+                  title: 'User Details',
+                  subtitle:
+                      'Review identity, academic, and company information in a cleaner admin profile layout.',
+                ),
+                const SizedBox(height: 12),
+                _buildDetailRow(Icons.email_outlined, 'Email', user.email),
+                _buildDetailRow(
+                  Icons.phone_outlined,
+                  'Phone',
+                  user.phone.isNotEmpty ? user.phone : 'Not provided',
+                ),
+                _buildDetailRow(
+                  Icons.location_on_outlined,
+                  'Location',
+                  user.location.isNotEmpty ? user.location : 'Not provided',
+                ),
+                if (user.role == 'student') ...[
                   _buildDetailRow(
-                    Icons.phone,
-                    'Phone',
-                    user.phone.isNotEmpty ? user.phone : 'Not provided',
+                    Icons.school_outlined,
+                    'Academic Level',
+                    user.academicLevel?.isNotEmpty == true
+                        ? user.academicLevel!
+                        : 'Not set',
                   ),
                   _buildDetailRow(
-                    Icons.location_on,
-                    'Location',
-                    user.location.isNotEmpty ? user.location : 'Not provided',
+                    Icons.account_balance_outlined,
+                    'University',
+                    user.university?.isNotEmpty == true
+                        ? user.university!
+                        : 'Not set',
                   ),
-                  if (user.role == 'student') ...[
-                    _buildDetailRow(
-                      Icons.school,
-                      'Academic Level',
-                      user.academicLevel?.isNotEmpty == true
-                          ? user.academicLevel!
-                          : 'Not set',
-                    ),
-                    _buildDetailRow(
-                      Icons.account_balance,
-                      'University',
-                      user.university?.isNotEmpty == true
-                          ? user.university!
-                          : 'Not set',
-                    ),
-                    _buildDetailRow(
-                      Icons.subject,
-                      'Field of Study',
-                      user.fieldOfStudy?.isNotEmpty == true
-                          ? user.fieldOfStudy!
-                          : 'Not set',
-                    ),
-                  ],
-                  if (user.role == 'student' &&
-                      user.academicLevel == 'doctorat') ...[
-                    _buildDetailRow(
-                      Icons.science,
-                      'Research Topic',
-                      user.researchTopic?.isNotEmpty == true
-                          ? user.researchTopic!
-                          : 'Not set',
-                    ),
-                    _buildDetailRow(
-                      Icons.biotech,
-                      'Laboratory',
-                      user.laboratory?.isNotEmpty == true
-                          ? user.laboratory!
-                          : 'Not set',
-                    ),
-                    _buildDetailRow(
-                      Icons.person_outline,
-                      'Supervisor',
-                      user.supervisor?.isNotEmpty == true
-                          ? user.supervisor!
-                          : 'Not set',
-                    ),
-                    _buildDetailRow(
-                      Icons.category,
-                      'Research Domain',
-                      user.researchDomain?.isNotEmpty == true
-                          ? user.researchDomain!
-                          : 'Not set',
-                    ),
-                  ],
-                  if (user.role == 'company') ...[
-                    _buildDetailRow(
-                      Icons.business,
-                      'Company',
-                      user.companyName?.isNotEmpty == true
-                          ? user.companyName!
-                          : 'Not set',
-                    ),
-                    _buildDetailRow(
-                      Icons.category,
-                      'Sector',
-                      user.sector?.isNotEmpty == true
-                          ? user.sector!
-                          : 'Not set',
-                    ),
-                    _buildDetailRow(
-                      Icons.language,
-                      'Website',
-                      user.website?.isNotEmpty == true
-                          ? user.website!
-                          : 'Not set',
-                    ),
-                  ],
-                  if (user.role == 'student') ...[
-                    const SizedBox(height: 8),
-                    FutureBuilder<CvModel?>(
-                      future: _cvService.getCvByStudentId(user.uid),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 12),
-                            child: LinearProgressIndicator(),
-                          );
-                        }
-
-                        return _buildStudentCvSection(user, snapshot.data);
-                      },
-                    ),
-                  ],
-                  if (user.role == 'company') ...[
-                    const SizedBox(height: 8),
-                    _buildCompanyCommercialRegisterSection(user),
-                  ],
-                  if (user.bio?.isNotEmpty == true)
-                    _buildDetailRow(Icons.person, 'Bio', user.bio!),
-                  const SizedBox(height: 16),
+                  _buildDetailRow(
+                    Icons.subject_outlined,
+                    'Field of Study',
+                    user.fieldOfStudy?.isNotEmpty == true
+                        ? user.fieldOfStudy!
+                        : 'Not set',
+                  ),
                 ],
-              ),
+                if (user.role == 'student' &&
+                    user.academicLevel == 'doctorat') ...[
+                  _buildDetailRow(
+                    Icons.science_outlined,
+                    'Research Topic',
+                    user.researchTopic?.isNotEmpty == true
+                        ? user.researchTopic!
+                        : 'Not set',
+                  ),
+                  _buildDetailRow(
+                    Icons.biotech_outlined,
+                    'Laboratory',
+                    user.laboratory?.isNotEmpty == true
+                        ? user.laboratory!
+                        : 'Not set',
+                  ),
+                  _buildDetailRow(
+                    Icons.person_outline_rounded,
+                    'Supervisor',
+                    user.supervisor?.isNotEmpty == true
+                        ? user.supervisor!
+                        : 'Not set',
+                  ),
+                  _buildDetailRow(
+                    Icons.category_outlined,
+                    'Research Domain',
+                    user.researchDomain?.isNotEmpty == true
+                        ? user.researchDomain!
+                        : 'Not set',
+                  ),
+                ],
+                if (user.role == 'company') ...[
+                  _buildDetailRow(
+                    Icons.business_outlined,
+                    'Company',
+                    user.companyName?.isNotEmpty == true
+                        ? user.companyName!
+                        : 'Not set',
+                  ),
+                  _buildDetailRow(
+                    Icons.category_outlined,
+                    'Sector',
+                    user.sector?.isNotEmpty == true ? user.sector! : 'Not set',
+                  ),
+                  _buildDetailRow(
+                    Icons.language_outlined,
+                    'Website',
+                    user.website?.isNotEmpty == true
+                        ? user.website!
+                        : 'Not set',
+                  ),
+                ],
+                if (user.role == 'student') ...[
+                  const SizedBox(height: 6),
+                  FutureBuilder<CvModel?>(
+                    future: _cvService.getCvByStudentId(user.uid),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 12),
+                          child: LinearProgressIndicator(),
+                        );
+                      }
+
+                      return _buildStudentCvSection(user, snapshot.data);
+                    },
+                  ),
+                ],
+                if (user.role == 'company') ...[
+                  const SizedBox(height: 6),
+                  _buildCompanyCommercialRegisterSection(user),
+                ],
+                if (user.bio?.isNotEmpty == true)
+                  _buildDetailRow(
+                    Icons.person_outline_rounded,
+                    'Bio',
+                    user.bio!,
+                  ),
+              ],
             );
           },
         );
@@ -598,40 +730,137 @@ class _UsersScreenState extends State<UsersScreen> {
     );
   }
 
-  Widget _buildStudentCvSection(UserModel user, CvModel? cv) {
-    return Container(
-      width: double.infinity,
-      margin: const EdgeInsets.only(bottom: 14),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: const Color(0xFFFF8C00).withValues(alpha: 0.14),
+  Widget _buildSheetHandle() {
+    return Center(
+      child: Container(
+        width: 46,
+        height: 5,
+        decoration: BoxDecoration(
+          color: AdminPalette.border,
+          borderRadius: BorderRadius.circular(999),
         ),
       ),
+    );
+  }
+
+  Widget _buildAdaptiveActionGroup(List<Widget> buttons) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (buttons.isEmpty) {
+          return const SizedBox.shrink();
+        }
+
+        if (buttons.length == 1) {
+          return SizedBox(width: double.infinity, child: buttons.first);
+        }
+
+        if (constraints.maxWidth < 440) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              for (var index = 0; index < buttons.length; index++) ...[
+                buttons[index],
+                if (index < buttons.length - 1) const SizedBox(height: 10),
+              ],
+            ],
+          );
+        }
+
+        return Row(
+          children: [
+            for (var index = 0; index < buttons.length; index++) ...[
+              Expanded(child: buttons[index]),
+              if (index < buttons.length - 1) const SizedBox(width: 10),
+            ],
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildDocumentButton({
+    required String label,
+    required IconData icon,
+    required VoidCallback? onPressed,
+    required Color color,
+    bool outlined = false,
+  }) {
+    if (outlined) {
+      return OutlinedButton.icon(
+        onPressed: onPressed,
+        icon: Icon(icon, size: 18),
+        label: Text(label),
+        style: OutlinedButton.styleFrom(
+          foregroundColor: color,
+          side: BorderSide(color: color.withValues(alpha: 0.24)),
+          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 14),
+        ),
+      );
+    }
+
+    return FilledButton.icon(
+      onPressed: onPressed,
+      icon: Icon(icon, size: 18),
+      label: Text(label),
+      style: FilledButton.styleFrom(
+        backgroundColor: color,
+        foregroundColor: Colors.white,
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 14),
+      ),
+    );
+  }
+
+  Widget _buildSectionCopy(String title, String value) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+            color: AdminPalette.textPrimary,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 12.5,
+            height: 1.5,
+            color: AdminPalette.textSecondary,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStudentCvSection(UserModel user, CvModel? cv) {
+    return AdminSurface(
+      margin: const EdgeInsets.only(bottom: 14),
+      padding: const EdgeInsets.all(16),
+      radius: 20,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Applicant CV',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-              color: Color(0xFF2D1B4E),
-            ),
+          const AdminSectionHeader(
+            eyebrow: 'Documents',
+            title: 'Student CV',
+            subtitle:
+                'Review the uploaded CV and the built CV export without leaving the user profile.',
           ),
-          const SizedBox(height: 8),
-          Text(
+          const SizedBox(height: 14),
+          _buildSectionCopy(
+            'Primary CV',
             cv == null
                 ? 'No CV has been created for this user yet.'
                 : cv.hasUploadedCv
                 ? 'Primary CV: ${cv.uploadedCvDisplayName}'
                 : 'No primary CV uploaded',
-            style: TextStyle(fontSize: 12, color: Colors.grey[700]),
           ),
           const SizedBox(height: 6),
-          Text(
+          _buildSectionCopy(
+            'Built CV',
             cv == null
                 ? 'Built CV unavailable'
                 : cv.hasExportedPdf
@@ -639,56 +868,41 @@ class _UsersScreenState extends State<UsersScreen> {
                 : cv.hasBuilderContent
                 ? 'Built CV information available'
                 : 'Built CV unavailable',
-            style: TextStyle(fontSize: 12, color: Colors.grey[700]),
           ),
           if (cv != null && cv.hasUploadedCv) ...[
             const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: cv.isUploadedCvPdf
-                        ? () => _openUserCvDocument(
-                            user.uid,
-                            variant: 'primary',
-                            requirePdf: true,
-                          )
-                        : null,
-                    icon: const Icon(Icons.visibility_outlined, size: 18),
-                    label: const Text('View CV'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFFF8C00),
-                      foregroundColor: Colors.white,
-                    ),
-                  ),
+            _buildAdaptiveActionGroup([
+              _buildDocumentButton(
+                label: 'View CV',
+                icon: Icons.visibility_outlined,
+                onPressed: cv.isUploadedCvPdf
+                    ? () => _openUserCvDocument(
+                        user.uid,
+                        variant: 'primary',
+                        requirePdf: true,
+                      )
+                    : null,
+                color: AdminPalette.accent,
+              ),
+              _buildDocumentButton(
+                label: 'Download CV',
+                icon: Icons.download_outlined,
+                onPressed: () => _openUserCvDocument(
+                  user.uid,
+                  variant: 'primary',
+                  download: true,
                 ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: () => _openUserCvDocument(
-                      user.uid,
-                      variant: 'primary',
-                      download: true,
-                    ),
-                    icon: const Icon(Icons.download_outlined, size: 18),
-                    label: const Text('Download CV'),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: const Color(0xFFFF8C00),
-                      side: BorderSide(
-                        color: const Color(0xFFFF8C00).withValues(alpha: 0.24),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+                color: AdminPalette.accent,
+                outlined: true,
+              ),
+            ]),
             if (!cv.isUploadedCvPdf) ...[
               const SizedBox(height: 10),
-              Text(
+              const Text(
                 'The uploaded file is not a valid PDF.',
                 style: TextStyle(
                   fontSize: 12,
-                  color: Colors.orange.shade800,
+                  color: AdminPalette.warning,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -696,43 +910,29 @@ class _UsersScreenState extends State<UsersScreen> {
           ],
           if (cv != null && cv.hasExportedPdf) ...[
             const SizedBox(height: 10),
-            Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () => _openUserCvDocument(
-                      user.uid,
-                      variant: 'built',
-                      requirePdf: true,
-                    ),
-                    icon: const Icon(Icons.picture_as_pdf_outlined, size: 18),
-                    label: const Text('View Built CV'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF2D1B4E),
-                      foregroundColor: Colors.white,
-                    ),
-                  ),
+            _buildAdaptiveActionGroup([
+              _buildDocumentButton(
+                label: 'View Built CV',
+                icon: Icons.picture_as_pdf_outlined,
+                onPressed: () => _openUserCvDocument(
+                  user.uid,
+                  variant: 'built',
+                  requirePdf: true,
                 ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: () => _openUserCvDocument(
-                      user.uid,
-                      variant: 'built',
-                      download: true,
-                    ),
-                    icon: const Icon(Icons.download_outlined, size: 18),
-                    label: const Text('Download Built CV'),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: const Color(0xFF2D1B4E),
-                      side: BorderSide(
-                        color: const Color(0xFF2D1B4E).withValues(alpha: 0.24),
-                      ),
-                    ),
-                  ),
+                color: AdminPalette.primaryDark,
+              ),
+              _buildDocumentButton(
+                label: 'Download Built CV',
+                icon: Icons.download_outlined,
+                onPressed: () => _openUserCvDocument(
+                  user.uid,
+                  variant: 'built',
+                  download: true,
                 ),
-              ],
-            ),
+                color: AdminPalette.primaryDark,
+                outlined: true,
+              ),
+            ]),
           ],
         ],
       ),
@@ -916,12 +1116,22 @@ class _UsersScreenState extends State<UsersScreen> {
   }
 
   Widget _buildDetailRow(IconData icon, String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 14),
+    return AdminSurface(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(14),
+      radius: 18,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 20, color: const Color(0xFFFF8C00)),
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: AdminPalette.primarySoft,
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Icon(icon, size: 20, color: AdminPalette.primary),
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -929,18 +1139,19 @@ class _UsersScreenState extends State<UsersScreen> {
               children: [
                 Text(
                   label,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[600],
-                    fontWeight: FontWeight.w500,
+                  style: const TextStyle(
+                    fontSize: 11.5,
+                    color: AdminPalette.textMuted,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: 4),
                 Text(
                   value,
                   style: const TextStyle(
-                    fontSize: 15,
-                    color: Color(0xFF2D1B4E),
+                    fontSize: 14,
+                    height: 1.4,
+                    color: AdminPalette.textPrimary,
                   ),
                 ),
               ],
@@ -954,13 +1165,13 @@ class _UsersScreenState extends State<UsersScreen> {
   Color _roleColor(String role) {
     switch (role) {
       case 'student':
-        return Colors.blue;
+        return AdminPalette.info;
       case 'company':
-        return Colors.teal;
+        return AdminPalette.secondary;
       case 'admin':
-        return const Color(0xFFFF8C00);
+        return AdminPalette.accent;
       default:
-        return Colors.grey;
+        return AdminPalette.textMuted;
     }
   }
 }

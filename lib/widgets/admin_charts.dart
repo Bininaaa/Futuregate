@@ -1,6 +1,8 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
+import '../utils/admin_palette.dart';
+
 class UsersByLevelBarChart extends StatelessWidget {
   final int bacCount;
   final int licenceCount;
@@ -27,29 +29,24 @@ class UsersByLevelBarChart extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.92),
-        borderRadius: BorderRadius.circular(14),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        color: AdminPalette.surface,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AdminPalette.border.withValues(alpha: 0.92)),
+        boxShadow: AdminPalette.softShadow,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Row(
             children: [
-              Icon(Icons.bar_chart, color: Color(0xFFFF8C00), size: 20),
+              Icon(Icons.bar_chart, color: AdminPalette.accent, size: 20),
               SizedBox(width: 8),
               Text(
-                'Students by Level Diagram',
+                'Students by Level',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF2D1B4E),
+                  color: AdminPalette.textPrimary,
                 ),
               ),
             ],
@@ -62,10 +59,7 @@ class UsersByLevelBarChart extends StatelessWidget {
                 alignment: BarChartAlignment.spaceAround,
                 maxY: _calculateMaxY(values),
                 borderData: FlBorderData(show: false),
-                gridData: FlGridData(
-                  show: true,
-                  drawVerticalLine: false,
-                ),
+                gridData: FlGridData(show: true, drawVerticalLine: false),
                 titlesData: FlTitlesData(
                   topTitles: const AxisTitles(
                     sideTitles: SideTitles(showTitles: false),
@@ -84,22 +78,34 @@ class UsersByLevelBarChart extends StatelessWidget {
                           case 0:
                             return const Padding(
                               padding: EdgeInsets.only(top: 8),
-                              child: Text('Bac', style: TextStyle(fontSize: 11)),
+                              child: Text(
+                                'Bac',
+                                style: TextStyle(fontSize: 11),
+                              ),
                             );
                           case 1:
                             return const Padding(
                               padding: EdgeInsets.only(top: 8),
-                              child: Text('Licence', style: TextStyle(fontSize: 11)),
+                              child: Text(
+                                'Licence',
+                                style: TextStyle(fontSize: 11),
+                              ),
                             );
                           case 2:
                             return const Padding(
                               padding: EdgeInsets.only(top: 8),
-                              child: Text('Master', style: TextStyle(fontSize: 11)),
+                              child: Text(
+                                'Master',
+                                style: TextStyle(fontSize: 11),
+                              ),
                             );
                           case 3:
                             return const Padding(
                               padding: EdgeInsets.only(top: 8),
-                              child: Text('Doctorat', style: TextStyle(fontSize: 11)),
+                              child: Text(
+                                'Doctorat',
+                                style: TextStyle(fontSize: 11),
+                              ),
                             );
                           default:
                             return const SizedBox.shrink();
@@ -187,29 +193,24 @@ class UsersRolePieChart extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.92),
-        borderRadius: BorderRadius.circular(14),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        color: AdminPalette.surface,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AdminPalette.border.withValues(alpha: 0.92)),
+        boxShadow: AdminPalette.softShadow,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Row(
             children: [
-              Icon(Icons.pie_chart, color: Colors.deepPurple, size: 20),
+              Icon(Icons.pie_chart, color: AdminPalette.activity, size: 20),
               SizedBox(width: 8),
               Text(
-                'Users Distribution Diagram',
+                'Users Distribution',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF2D1B4E),
+                  color: AdminPalette.textPrimary,
                 ),
               ),
             ],
@@ -249,7 +250,7 @@ class UsersRolePieChart extends StatelessWidget {
                     ),
                   ),
                   PieChartSectionData(
-                    color: const Color(0xFFFF8C00),
+                    color: AdminPalette.accent,
                     value: admins.toDouble(),
                     title: total == 0
                         ? '0%'
@@ -272,7 +273,7 @@ class UsersRolePieChart extends StatelessWidget {
             children: [
               _legendItem(Colors.blue, 'Students', students),
               _legendItem(Colors.teal, 'Companies', companies),
-              _legendItem(const Color(0xFFFF8C00), 'Admins', admins),
+              _legendItem(AdminPalette.accent, 'Admins', admins),
             ],
           ),
         ],
@@ -302,39 +303,31 @@ class UsersRolePieChart extends StatelessWidget {
 class MonthlyRegistrationsLineChart extends StatelessWidget {
   final List<dynamic> monthlyData;
 
-  const MonthlyRegistrationsLineChart({
-    super.key,
-    required this.monthlyData,
-  });
+  const MonthlyRegistrationsLineChart({super.key, required this.monthlyData});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.92),
-        borderRadius: BorderRadius.circular(14),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        color: AdminPalette.surface,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AdminPalette.border.withValues(alpha: 0.92)),
+        boxShadow: AdminPalette.softShadow,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Row(
             children: [
-              Icon(Icons.show_chart, color: Colors.green, size: 20),
+              Icon(Icons.show_chart, color: AdminPalette.success, size: 20),
               SizedBox(width: 8),
               Text(
-                'Monthly Registrations Diagram',
+                'Monthly Registrations',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF2D1B4E),
+                  color: AdminPalette.textPrimary,
                 ),
               ),
             ],
@@ -345,7 +338,9 @@ class MonthlyRegistrationsLineChart extends StatelessWidget {
             child: LineChart(
               LineChartData(
                 minX: 0,
-                maxX: monthlyData.isEmpty ? 11 : (monthlyData.length - 1).toDouble(),
+                maxX: monthlyData.isEmpty
+                    ? 11
+                    : (monthlyData.length - 1).toDouble(),
                 minY: 0,
                 maxY: _maxY(monthlyData),
                 gridData: FlGridData(show: true, drawVerticalLine: false),
@@ -384,21 +379,18 @@ class MonthlyRegistrationsLineChart extends StatelessWidget {
                 lineBarsData: [
                   LineChartBarData(
                     isCurved: true,
-                    color: Colors.green,
+                    color: AdminPalette.success,
                     barWidth: 3,
-                    spots: List.generate(
-                      monthlyData.length,
-                      (index) {
-                        final item = monthlyData[index] as Map<String, dynamic>;
-                        return FlSpot(
-                          index.toDouble(),
-                          (item['count'] ?? 0).toDouble(),
-                        );
-                      },
-                    ),
+                    spots: List.generate(monthlyData.length, (index) {
+                      final item = monthlyData[index] as Map<String, dynamic>;
+                      return FlSpot(
+                        index.toDouble(),
+                        (item['count'] ?? 0).toDouble(),
+                      );
+                    }),
                     belowBarData: BarAreaData(
                       show: true,
-                      color: Colors.green.withValues(alpha: 0.10),
+                      color: AdminPalette.success.withValues(alpha: 0.10),
                     ),
                     dotData: const FlDotData(show: true),
                   ),

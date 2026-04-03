@@ -84,8 +84,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 Expanded(
                   child: _CompanyBottomNavItem(
-                    label: 'SETTINGS',
-                    icon: Icons.settings_outlined,
+                    label: 'MORE',
+                    icon: Icons.widgets_outlined,
                     selected: _currentIndex == 4,
                     onTap: () => setState(() => _currentIndex = 4),
                   ),

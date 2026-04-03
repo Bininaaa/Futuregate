@@ -24,9 +24,12 @@ class SettingsPageScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final canPop = Navigator.of(context).canPop();
+
     return Scaffold(
       backgroundColor: backgroundColor ?? SettingsFlowPalette.background,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         centerTitle: centerTitle,
         backgroundColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,
@@ -34,13 +37,15 @@ class SettingsPageScaffold extends StatelessWidget {
         scrolledUnderElevation: 0,
         leading:
             leading ??
-            IconButton(
-              onPressed: () => Navigator.maybePop(context),
-              icon: const Icon(
-                Icons.arrow_back_ios_new_rounded,
-                color: SettingsFlowPalette.textPrimary,
-              ),
-            ),
+            (canPop
+                ? IconButton(
+                    onPressed: () => Navigator.maybePop(context),
+                    icon: const Icon(
+                      Icons.arrow_back_ios_new_rounded,
+                      color: SettingsFlowPalette.textPrimary,
+                    ),
+                  )
+                : null),
         title: Text(title, style: SettingsFlowTheme.appBarTitle()),
         actions: actions,
       ),
