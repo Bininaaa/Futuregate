@@ -166,94 +166,78 @@ class AdminHeroCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AdminSurface(
-      padding: const EdgeInsets.all(22),
+      padding: const EdgeInsets.all(18),
       gradient: AdminPalette.heroGradient(accentColor),
       border: Border.all(color: Colors.white.withValues(alpha: 0.14)),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final isCompact = constraints.maxWidth < 420;
+
+          return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(999),
-                      ),
-                      child: Text(
-                        'ADMIN WORKSPACE',
-                        style: GoogleFonts.poppins(
-                          fontSize: 10.5,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 0.9,
-                          color: Colors.white,
+              if (isCompact) ...[
+                _HeroIcon(icon: icon),
+                const SizedBox(height: 16),
+              ],
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          style: GoogleFonts.poppins(
+                            fontSize: isCompact ? 19 : 22,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
+                            height: 1.15,
+                          ),
                         ),
-                      ),
+                        const SizedBox(height: 8),
+                        Text(
+                          subtitle,
+                          style: GoogleFonts.poppins(
+                            fontSize: isCompact ? 11.8 : 12.4,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.white.withValues(alpha: 0.86),
+                            height: 1.5,
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 18),
-                    Text(
-                      title,
-                      style: GoogleFonts.poppins(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                        height: 1.15,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      subtitle,
-                      style: GoogleFonts.poppins(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white.withValues(alpha: 0.86),
-                        height: 1.55,
-                      ),
-                    ),
+                  ),
+                  if (!isCompact) ...[
+                    const SizedBox(width: 16),
+                    _HeroIcon(icon: icon),
                   ],
-                ),
+                ],
               ),
-              const SizedBox(width: 16),
-              Container(
-                width: 62,
-                height: 62,
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.14),
-                  borderRadius: BorderRadius.circular(22),
+              if (stats.isNotEmpty) ...[
+                const SizedBox(height: 16),
+                Wrap(
+                  spacing: 10,
+                  runSpacing: 10,
+                  children: stats
+                      .map(
+                        (stat) => _HeroStatChip(
+                          label: stat.label,
+                          value: stat.value,
+                          color: stat.color,
+                        ),
+                      )
+                      .toList(),
                 ),
-                child: Icon(icon, color: Colors.white, size: 30),
-              ),
+              ],
+              if (actions.isNotEmpty) ...[
+                const SizedBox(height: 16),
+                Wrap(spacing: 8, runSpacing: 8, children: actions),
+              ],
             ],
-          ),
-          if (stats.isNotEmpty) ...[
-            const SizedBox(height: 20),
-            Wrap(
-              spacing: 12,
-              runSpacing: 12,
-              children: stats
-                  .map(
-                    (stat) => _HeroStatChip(
-                      label: stat.label,
-                      value: stat.value,
-                      color: stat.color,
-                    ),
-                  )
-                  .toList(),
-            ),
-          ],
-          if (actions.isNotEmpty) ...[
-            const SizedBox(height: 20),
-            Wrap(spacing: 10, runSpacing: 10, children: actions),
-          ],
-        ],
+          );
+        },
       ),
     );
   }
@@ -661,6 +645,25 @@ class _GlowOrb extends StatelessWidget {
   }
 }
 
+class _HeroIcon extends StatelessWidget {
+  final IconData icon;
+
+  const _HeroIcon({required this.icon});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 54,
+      height: 54,
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.14),
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Icon(icon, color: Colors.white, size: 26),
+    );
+  }
+}
+
 class _HeroStatChip extends StatelessWidget {
   final String label;
   final String value;
@@ -675,11 +678,11 @@ class _HeroStatChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      constraints: const BoxConstraints(minWidth: 110),
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      constraints: const BoxConstraints(minWidth: 96),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.11),
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
       ),
       child: Column(
@@ -689,16 +692,16 @@ class _HeroStatChip extends StatelessWidget {
           Text(
             value,
             style: GoogleFonts.poppins(
-              fontSize: 18,
+              fontSize: 16.5,
               fontWeight: FontWeight.w700,
               color: color,
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 3),
           Text(
             label,
             style: GoogleFonts.poppins(
-              fontSize: 11,
+              fontSize: 10.5,
               fontWeight: FontWeight.w500,
               color: Colors.white.withValues(alpha: 0.84),
             ),

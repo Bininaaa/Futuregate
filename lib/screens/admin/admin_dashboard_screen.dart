@@ -435,7 +435,15 @@ class _DashboardMetricGrid extends StatelessWidget {
             ? 4
             : constraints.maxWidth >= 620
             ? 3
+            : constraints.maxWidth < 260
+            ? 1
             : 2;
+        final childAspectRatio = switch (crossAxisCount) {
+          1 => 2.7,
+          2 => constraints.maxWidth < 420 ? 1.16 : 1.22,
+          3 => 1.16,
+          _ => 1.2,
+        };
 
         return GridView.builder(
           shrinkWrap: true,
@@ -444,7 +452,7 @@ class _DashboardMetricGrid extends StatelessWidget {
             crossAxisCount: crossAxisCount,
             crossAxisSpacing: 12,
             mainAxisSpacing: 12,
-            childAspectRatio: 1.28,
+            childAspectRatio: childAspectRatio,
           ),
           itemCount: items.length,
           itemBuilder: (context, index) {
@@ -479,42 +487,51 @@ class _InsightTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return AdminSurface(
       radius: 22,
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: iconColor.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: Icon(icon, color: iconColor, size: 24),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    color: AdminPalette.textMuted,
-                    fontWeight: FontWeight.w500,
-                  ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final isCompact = constraints.maxWidth < 420;
+
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: EdgeInsets.all(isCompact ? 10 : 12),
+                decoration: BoxDecoration(
+                  color: iconColor.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(14),
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  value,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: AdminPalette.textPrimary,
-                  ),
+                child: Icon(icon, color: iconColor, size: isCompact ? 22 : 24),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: AdminPalette.textMuted,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      value,
+                      softWrap: true,
+                      style: TextStyle(
+                        fontSize: isCompact ? 15 : 16,
+                        fontWeight: FontWeight.bold,
+                        color: AdminPalette.textPrimary,
+                        height: 1.35,
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
-        ],
+              ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -546,12 +563,16 @@ class _RankedListCard extends StatelessWidget {
             children: [
               Icon(icon, color: color, size: 20),
               const SizedBox(width: 8),
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: AdminPalette.textPrimary,
+              Expanded(
+                child: Text(
+                  title,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: AdminPalette.textPrimary,
+                  ),
                 ),
               ),
             ],
@@ -566,38 +587,10 @@ class _RankedListCard extends StatelessWidget {
             final item = entry.value as Map<String, dynamic>;
             return Padding(
               padding: const EdgeInsets.only(bottom: 10),
-              child: Row(
-                children: [
-                  Container(
-                    width: 30,
-                    height: 30,
-                    decoration: BoxDecoration(
-                      color: color.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      '#${entry.key + 1}',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: color,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      item['title'] ?? 'Unknown',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: AdminPalette.textPrimary,
-                      ),
-                    ),
-                  ),
-                  Container(
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final isCompact = constraints.maxWidth < 360;
+                  final badge = Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 10,
                       vertical: 4,
@@ -614,8 +607,53 @@ class _RankedListCard extends StatelessWidget {
                         color: color,
                       ),
                     ),
-                  ),
-                ],
+                  );
+
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 30,
+                        height: 30,
+                        decoration: BoxDecoration(
+                          color: color.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          '#${entry.key + 1}',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: color,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              item['title'] ?? 'Unknown',
+                              maxLines: isCompact ? 2 : 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: AdminPalette.textPrimary,
+                              ),
+                            ),
+                            if (isCompact) ...[
+                              const SizedBox(height: 8),
+                              badge,
+                            ],
+                          ],
+                        ),
+                      ),
+                      if (!isCompact) ...[const SizedBox(width: 10), badge],
+                    ],
+                  );
+                },
               ),
             );
           }),
@@ -744,7 +782,15 @@ class _QuickAccessGrid extends StatelessWidget {
             ? 4
             : constraints.maxWidth >= 620
             ? 3
+            : constraints.maxWidth < 250
+            ? 1
             : 2;
+        final childAspectRatio = switch (crossAxisCount) {
+          1 => 2.6,
+          2 => constraints.maxWidth < 420 ? 1.14 : 1.2,
+          3 => 1.14,
+          _ => 1.18,
+        };
 
         return GridView.builder(
           shrinkWrap: true,
@@ -753,7 +799,7 @@ class _QuickAccessGrid extends StatelessWidget {
             crossAxisCount: crossAxisCount,
             crossAxisSpacing: 12,
             mainAxisSpacing: 12,
-            childAspectRatio: 1.26,
+            childAspectRatio: childAspectRatio,
           ),
           itemCount: items.length,
           itemBuilder: (context, index) {
@@ -765,67 +811,84 @@ class _QuickAccessGrid extends StatelessWidget {
                 onTap: item.onTap,
                 borderRadius: BorderRadius.circular(24),
                 child: AdminSurface(
-                  radius: 24,
-                  child: Padding(
-                    padding: const EdgeInsets.all(2),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
+                  radius: 22,
+                  padding: const EdgeInsets.fromLTRB(12, 12, 12, 10),
+                  child: LayoutBuilder(
+                    builder: (context, itemConstraints) {
+                      final isCompact = itemConstraints.maxWidth < 170;
+
+                      return Padding(
+                        padding: const EdgeInsets.all(2),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Container(
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: item.color.withValues(alpha: 0.12),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Icon(item.icon, color: item.color),
+                            Row(
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.all(isCompact ? 7 : 8),
+                                  decoration: BoxDecoration(
+                                    color: item.color.withValues(alpha: 0.12),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Icon(
+                                    item.icon,
+                                    color: item.color,
+                                    size: isCompact ? 17 : 19,
+                                  ),
+                                ),
+                                const Spacer(),
+                                if (item.badgeCount > 0)
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 7,
+                                      vertical: 3,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: AdminPalette.accent.withValues(
+                                        alpha: 0.12,
+                                      ),
+                                      borderRadius: BorderRadius.circular(999),
+                                    ),
+                                    child: Text(
+                                      item.badgeCount > 9
+                                          ? '9+'
+                                          : '${item.badgeCount}',
+                                      style: const TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w700,
+                                        color: AdminPalette.accent,
+                                      ),
+                                    ),
+                                  ),
+                              ],
                             ),
                             const Spacer(),
-                            if (item.badgeCount > 0)
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: AdminPalette.accent.withValues(
-                                    alpha: 0.12,
-                                  ),
-                                  borderRadius: BorderRadius.circular(999),
-                                ),
-                                child: Text(
-                                  item.badgeCount > 9
-                                      ? '9+'
-                                      : '${item.badgeCount}',
-                                  style: const TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w700,
-                                    color: AdminPalette.accent,
-                                  ),
-                                ),
+                            Text(
+                              item.title,
+                              maxLines: isCompact ? 2 : 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: isCompact ? 12.8 : 13.6,
+                                fontWeight: FontWeight.w700,
+                                color: AdminPalette.textPrimary,
+                                height: 1.18,
                               ),
+                            ),
+                            const SizedBox(height: 3),
+                            Text(
+                              item.subtitle,
+                              maxLines: isCompact ? 2 : 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: isCompact ? 10.4 : 10.8,
+                                color: AdminPalette.textMuted,
+                                height: 1.22,
+                              ),
+                            ),
                           ],
                         ),
-                        const Spacer(),
-                        Text(
-                          item.title,
-                          style: const TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w700,
-                            color: AdminPalette.textPrimary,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          item.subtitle,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: AdminPalette.textMuted,
-                          ),
-                        ),
-                      ],
-                    ),
+                      );
+                    },
                   ),
                 ),
               ),
@@ -889,73 +952,94 @@ class _RecentActivityCard extends StatelessWidget {
                   child: InkWell(
                     onTap: () => onOpenActivity(activity),
                     borderRadius: BorderRadius.circular(14),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 4,
-                        vertical: 6,
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: color.withValues(alpha: 0.12),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Icon(
-                              _activityIcon(activity.type),
-                              size: 18,
-                              color: color,
-                            ),
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        final isCompact = constraints.maxWidth < 420;
+
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 4,
+                            vertical: 6,
                           ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  activity.title,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w700,
-                                    color: AdminPalette.textPrimary,
-                                  ),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: color.withValues(alpha: 0.12),
+                                  borderRadius: BorderRadius.circular(12),
                                 ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  activity.description,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                    color: AdminPalette.textSecondary,
-                                  ),
+                                child: Icon(
+                                  _activityIcon(activity.type),
+                                  size: 18,
+                                  color: color,
                                 ),
-                                if (actorAndStatus.isNotEmpty) ...[
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    actorAndStatus,
-                                    style: const TextStyle(
-                                      fontSize: 11,
-                                      color: AdminPalette.textMuted,
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      activity.title,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w700,
+                                        color: AdminPalette.textPrimary,
+                                      ),
                                     ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      activity.description,
+                                      maxLines: isCompact ? 3 : 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        color: AdminPalette.textSecondary,
+                                      ),
+                                    ),
+                                    if (actorAndStatus.isNotEmpty) ...[
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        actorAndStatus,
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                          fontSize: 11,
+                                          color: AdminPalette.textMuted,
+                                        ),
+                                      ),
+                                    ],
+                                    if (isCompact) ...[
+                                      const SizedBox(height: 6),
+                                      Text(
+                                        dateLabel,
+                                        style: const TextStyle(
+                                          fontSize: 11,
+                                          color: AdminPalette.textMuted,
+                                        ),
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                              ),
+                              if (!isCompact) ...[
+                                const SizedBox(width: 10),
+                                Text(
+                                  dateLabel,
+                                  style: const TextStyle(
+                                    fontSize: 11,
+                                    color: AdminPalette.textMuted,
                                   ),
-                                ],
+                                ),
                               ],
-                            ),
+                            ],
                           ),
-                          const SizedBox(width: 10),
-                          Text(
-                            dateLabel,
-                            style: const TextStyle(
-                              fontSize: 11,
-                              color: AdminPalette.textMuted,
-                            ),
-                          ),
-                        ],
-                      ),
+                        );
+                      },
                     ),
                   ),
                 );
@@ -1000,34 +1084,50 @@ class _RecentUsersCard extends StatelessWidget {
           ...users.map(
             (user) => Padding(
               padding: const EdgeInsets.only(bottom: 10),
-              child: Row(
-                children: [
-                  ProfileAvatar(user: user, radius: 18),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          user.fullName,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: AdminPalette.textPrimary,
-                          ),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final isCompact = constraints.maxWidth < 380;
+                  final pill = AdminPill(
+                    label: user.role,
+                    color: _roleColor(user.role),
+                  );
+
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ProfileAvatar(user: user, radius: 18),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              user.fullName,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: AdminPalette.textPrimary,
+                              ),
+                            ),
+                            Text(
+                              user.email,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: AdminPalette.textMuted,
+                              ),
+                            ),
+                            if (isCompact) ...[const SizedBox(height: 8), pill],
+                          ],
                         ),
-                        Text(
-                          user.email,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: AdminPalette.textMuted,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  AdminPill(label: user.role, color: _roleColor(user.role)),
-                ],
+                      ),
+                      if (!isCompact) ...[const SizedBox(width: 10), pill],
+                    ],
+                  );
+                },
               ),
             ),
           ),
@@ -1072,50 +1172,63 @@ class _RecentOpportunitiesCard extends StatelessWidget {
           ...opportunities.map(
             (offer) => Padding(
               padding: const EdgeInsets.only(bottom: 10),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: AdminPalette.accent.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: const Icon(
-                      Icons.work_outline_rounded,
-                      size: 18,
-                      color: AdminPalette.accent,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          offer['title'] ?? 'No title',
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: AdminPalette.textPrimary,
-                          ),
-                        ),
-                        Text(
-                          offer['companyName'] ?? 'Unknown',
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: AdminPalette.textMuted,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  AdminPill(
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final isCompact = constraints.maxWidth < 380;
+                  final pill = AdminPill(
                     label: offer['type'] ?? '',
                     color: offer['type'] == 'job'
                         ? AdminPalette.info
                         : AdminPalette.success,
-                  ),
-                ],
+                  );
+
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: AdminPalette.accent.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const Icon(
+                          Icons.work_outline_rounded,
+                          size: 18,
+                          color: AdminPalette.accent,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              offer['title'] ?? 'No title',
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: AdminPalette.textPrimary,
+                              ),
+                            ),
+                            Text(
+                              offer['companyName'] ?? 'Unknown',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: AdminPalette.textMuted,
+                              ),
+                            ),
+                            if (isCompact) ...[const SizedBox(height: 8), pill],
+                          ],
+                        ),
+                      ),
+                      if (!isCompact) ...[const SizedBox(width: 10), pill],
+                    ],
+                  );
+                },
               ),
             ),
           ),

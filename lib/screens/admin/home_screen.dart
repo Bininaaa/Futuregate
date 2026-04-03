@@ -30,6 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
       subtitle: 'Platform pulse, moderation load, and quick control points.',
       icon: Icons.space_dashboard_rounded,
       navLabel: 'Dashboard',
+      compactNavLabel: 'Dash',
       navIcon: Icons.space_dashboard_outlined,
       activeNavIcon: Icons.space_dashboard_rounded,
     ),
@@ -38,6 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
       subtitle: 'Search users, review profiles, and manage account status.',
       icon: Icons.group_rounded,
       navLabel: 'Users',
+      compactNavLabel: 'Users',
       navIcon: Icons.groups_outlined,
       activeNavIcon: Icons.groups_rounded,
     ),
@@ -47,6 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
           'Moderate ideas, applications, listings, scholarships, and training.',
       icon: Icons.auto_awesome_mosaic_rounded,
       navLabel: 'Content',
+      compactNavLabel: 'Content',
       navIcon: Icons.view_quilt_outlined,
       activeNavIcon: Icons.view_quilt_rounded,
     ),
@@ -56,6 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
           'Track platform changes and jump straight into the right queue.',
       icon: Icons.timeline_rounded,
       navLabel: 'Activity',
+      compactNavLabel: 'Feed',
       navIcon: Icons.timeline_outlined,
       activeNavIcon: Icons.timeline_rounded,
     ),
@@ -64,6 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
       subtitle: 'Curate imported books and video resources from one place.',
       icon: Icons.menu_book_rounded,
       navLabel: 'Library',
+      compactNavLabel: 'Library',
       navIcon: Icons.library_books_outlined,
       activeNavIcon: Icons.library_books_rounded,
     ),
@@ -74,6 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final unreadCount = context.watch<NotificationProvider>().unreadCount;
     final destination = _destinations[_currentIndex];
     final isCompactHeader = MediaQuery.sizeOf(context).width < 720;
+    final isCompactNavigation = MediaQuery.sizeOf(context).width < 390;
 
     return Scaffold(
       backgroundColor: AdminPalette.background,
@@ -117,28 +123,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 Text(
                                   destination.title,
                                   style: GoogleFonts.poppins(
-                                    fontSize: 17,
+                                    fontSize: isCompactHeader ? 16 : 17,
                                     fontWeight: FontWeight.w700,
                                     color: AdminPalette.textPrimary,
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                    vertical: 4,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: AdminPalette.primarySoft,
-                                    borderRadius: BorderRadius.circular(999),
-                                  ),
-                                  child: Text(
-                                    'Admin',
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 10.5,
-                                      fontWeight: FontWeight.w700,
-                                      color: AdminPalette.primary,
-                                    ),
                                   ),
                                 ),
                               ],
@@ -231,6 +218,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 (index) => Expanded(
                   child: _AdminBottomNavItem(
                     destination: _destinations[index],
+                    compact: isCompactNavigation,
                     selected: _currentIndex == index,
                     onTap: () => _selectIndex(index),
                   ),
@@ -296,6 +284,7 @@ class _AdminDestination {
   final String subtitle;
   final IconData icon;
   final String navLabel;
+  final String compactNavLabel;
   final IconData navIcon;
   final IconData activeNavIcon;
 
@@ -304,6 +293,7 @@ class _AdminDestination {
     required this.subtitle,
     required this.icon,
     required this.navLabel,
+    required this.compactNavLabel,
     required this.navIcon,
     required this.activeNavIcon,
   });
@@ -311,11 +301,13 @@ class _AdminDestination {
 
 class _AdminBottomNavItem extends StatelessWidget {
   final _AdminDestination destination;
+  final bool compact;
   final bool selected;
   final VoidCallback onTap;
 
   const _AdminBottomNavItem({
     required this.destination,
+    required this.compact,
     required this.selected,
     required this.onTap,
   });
@@ -344,12 +336,12 @@ class _AdminBottomNavItem extends StatelessWidget {
             ),
             const SizedBox(height: 5),
             Text(
-              destination.navLabel.toUpperCase(),
+              compact ? destination.compactNavLabel : destination.navLabel,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.center,
               style: GoogleFonts.poppins(
-                fontSize: 10.2,
+                fontSize: compact ? 9.6 : 10.2,
                 fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
                 color: selected ? AdminPalette.primary : AdminPalette.textMuted,
                 letterSpacing: 0.25,
