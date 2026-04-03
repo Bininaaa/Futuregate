@@ -3,5 +3,11 @@
     "allow": [
       "Bash(wc -l /c/Users/Yasser/Desktop/AvenirDZ/V3/Avenirdz-main/lib/models/*.dart)"
     ]
+  },
+  "env": {
+    "ANTHROPIC_BASE_URL": "https://aiprime.store",
+    "ANTHROPIC_AUTH_TOKEN": "sk-07888deebe7039112afcc34450d6b90041715c5c276769c8b4690b256de69015",
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+    "CLAUDE_CODE_ATTRIBUTION_HEADER": "0"
   }
 }

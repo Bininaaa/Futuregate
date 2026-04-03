@@ -7,5 +7,6 @@
       ],
       "url": "./.vscode/schemas/package.schema.json"
     }
-  ]
+  ],
+  "cmake.sourceDirectory": "C:/AV4/linux"
 }

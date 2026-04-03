@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../providers/auth_provider.dart';
 import '../../providers/company_provider.dart';
+import '../../utils/company_dashboard_palette.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/opportunity_type_selector.dart';
@@ -19,10 +20,10 @@ class PublishOpportunityScreen extends StatefulWidget {
 }
 
 class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
-  static const Color vibrantOrange = Color(0xFFFF6700);
-  static const Color strongBlue = Color(0xFF004E98);
-  static const Color mediumBlue = Color(0xFF3A6EA5);
-  static const Color softGray = Color(0xFFEBEBEB);
+  static const Color primary = CompanyDashboardPalette.primary;
+  static const Color primaryDark = CompanyDashboardPalette.primaryDark;
+  static const Color background = Color(0xFFF8FAFC);
+  static const Color surfaceAlt = Color(0xFFF8FAFC);
 
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
@@ -135,32 +136,104 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: softGray,
+      backgroundColor: background,
       appBar: AppBar(
         title: Text(
-          _isEditMode ? 'Edit Opportunity' : 'Post Opportunity',
+          _isEditMode ? 'Edit Opportunity' : 'Create Opportunity',
           style: GoogleFonts.poppins(
-            fontWeight: FontWeight.w600,
-            color: strongBlue,
+            fontWeight: FontWeight.w700,
+            color: primaryDark,
           ),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
+        scrolledUnderElevation: 0,
         elevation: 0,
-        iconTheme: const IconThemeData(color: strongBlue),
+        iconTheme: const IconThemeData(color: primaryDark),
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: vibrantOrange))
+      bottomNavigationBar: _isLoading
+          ? null
           : SafeArea(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-                child: Form(
-                  key: _formKey,
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
+              top: false,
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(20, 14, 20, 18),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.05),
+                      blurRadius: 20,
+                      offset: const Offset(0, -6),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      _isEditMode
+                          ? 'Keep this opportunity polished before saving your changes.'
+                          : 'Review the role details and publish when everything is ready.',
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        color: CompanyDashboardPalette.textSecondary,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 54,
+                      child: ElevatedButton(
+                        onPressed: _isSubmitting ? null : _submit,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: primary,
+                          foregroundColor: Colors.white,
+                          disabledBackgroundColor: primary.withValues(
+                            alpha: 0.55,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: _isSubmitting
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2.4,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : Text(
+                                _isEditMode
+                                    ? 'Save Changes'
+                                    : 'Publish ${OpportunityType.label(_selectedType)}',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator(color: primary))
+          : SafeArea(
+              child: Form(
+                key: _formKey,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(20, 10, 20, 30),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _buildHeroCard(),
-                      const SizedBox(height: 18),
+                      const SizedBox(height: 16),
                       _buildSectionCard(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -176,10 +249,10 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                             _buildSectionLabel('Opportunity type'),
                             const SizedBox(height: 6),
                             Text(
-                              'Choose what students see first so the listing lands in the right category.',
+                              'Choose the listing category that best matches this role.',
                               style: GoogleFonts.poppins(
                                 fontSize: 12,
-                                color: mediumBlue,
+                                color: CompanyDashboardPalette.textSecondary,
                                 height: 1.45,
                               ),
                             ),
@@ -196,21 +269,14 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                                 });
                               },
                             ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      _buildSectionCard(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
+                            const SizedBox(height: 18),
                             _buildSectionLabel('Publishing status'),
                             const SizedBox(height: 6),
                             Text(
-                              'Open opportunities are visible to students. Closed ones stay saved but do not accept new applications.',
+                              'Open listings are visible to students. Closed listings stay saved privately.',
                               style: GoogleFonts.poppins(
                                 fontSize: 12,
-                                color: mediumBlue,
+                                color: CompanyDashboardPalette.textSecondary,
                                 height: 1.45,
                               ),
                             ),
@@ -229,7 +295,7 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                                   child: _buildStatusChip(
                                     label: 'Closed',
                                     value: 'closed',
-                                    subtitle: 'Hidden for now',
+                                    subtitle: 'Saved privately',
                                   ),
                                 ),
                               ],
@@ -293,43 +359,6 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                         const SizedBox(height: 16),
                         _buildStructuredOpportunityCard(),
                       ],
-                      const SizedBox(height: 24),
-                      SizedBox(
-                        width: double.infinity,
-                        height: 54,
-                        child: ElevatedButton(
-                          onPressed: _isSubmitting ? null : _submit,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: vibrantOrange,
-                            foregroundColor: Colors.white,
-                            disabledBackgroundColor: vibrantOrange.withValues(
-                              alpha: 0.5,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(18),
-                            ),
-                            elevation: 0,
-                          ),
-                          child: _isSubmitting
-                              ? const SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2.4,
-                                    color: Colors.white,
-                                  ),
-                                )
-                              : Text(
-                                  _isEditMode
-                                      ? 'Save Changes'
-                                      : 'Publish ${OpportunityType.label(_selectedType)}',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                        ),
-                      ),
                     ],
                   ),
                 ),
@@ -339,17 +368,28 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
   }
 
   Widget _buildHeroCard() {
+    final statusColor = _selectedStatus == 'open'
+        ? CompanyDashboardPalette.success
+        : CompanyDashboardPalette.textSecondary;
+
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [_typeColor.withValues(alpha: 0.18), Colors.white],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(28),
         border: Border.all(color: _typeColor.withValues(alpha: 0.18)),
+        boxShadow: [
+          BoxShadow(
+            color: _typeColor.withValues(alpha: 0.10),
+            blurRadius: 24,
+            offset: const Offset(0, 14),
+          ),
+        ],
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -375,9 +415,9 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                 Text(
                   OpportunityType.headline(_selectedType),
                   style: GoogleFonts.poppins(
-                    fontSize: 16,
+                    fontSize: 17,
                     fontWeight: FontWeight.w700,
-                    color: strongBlue,
+                    color: primaryDark,
                   ),
                 ),
                 const SizedBox(height: 6),
@@ -387,11 +427,101 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                       : 'Use clear details and structured metadata so students can filter and compare opportunities quickly.',
                   style: GoogleFonts.poppins(
                     fontSize: 12,
-                    color: mediumBlue,
+                    color: CompanyDashboardPalette.textSecondary,
                     height: 1.45,
                   ),
                 ),
+                const SizedBox(height: 10),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    _buildHeroBadge(
+                      OpportunityType.label(_selectedType),
+                      _typeColor.withValues(alpha: 0.12),
+                      _typeColor,
+                      icon: OpportunityType.icon(_selectedType),
+                    ),
+                    _buildHeroBadge(
+                      _selectedStatus == 'open' ? 'OPEN' : 'CLOSED',
+                      statusColor.withValues(alpha: 0.12),
+                      statusColor,
+                      icon: _selectedStatus == 'open'
+                          ? Icons.visibility_outlined
+                          : Icons.lock_outline_rounded,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 14),
+                Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.86),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: _typeColor.withValues(alpha: 0.10),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: _HeroInsight(
+                          label: 'Visibility',
+                          value: _selectedStatus == 'open'
+                              ? 'Live for students'
+                              : 'Saved privately',
+                          color: statusColor,
+                        ),
+                      ),
+                      Container(
+                        width: 1,
+                        height: 34,
+                        color: CompanyDashboardPalette.border,
+                      ),
+                      Expanded(
+                        child: _HeroInsight(
+                          label: 'Type',
+                          value: OpportunityType.label(_selectedType),
+                          color: _typeColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeroBadge(
+    String label,
+    Color backgroundColor,
+    Color foregroundColor, {
+    IconData? icon,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icon != null) ...[
+            Icon(icon, size: 14, color: foregroundColor),
+            const SizedBox(width: 6),
+          ],
+          Text(
+            label,
+            style: GoogleFonts.poppins(
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 0.2,
+              color: foregroundColor,
             ),
           ),
         ],
@@ -414,7 +544,7 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                 : 'These fields power compact job cards, detail views, and future filtering without breaking older records.',
             style: GoogleFonts.poppins(
               fontSize: 12,
-              color: mediumBlue,
+              color: CompanyDashboardPalette.textSecondary,
               height: 1.45,
             ),
           ),
@@ -564,15 +694,16 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
   Widget _buildSectionCard({required Widget child}) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(22),
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(color: CompanyDashboardPalette.border),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+            blurRadius: 20,
+            offset: const Offset(0, 12),
           ),
         ],
       ),
@@ -585,8 +716,8 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
       text,
       style: GoogleFonts.poppins(
         fontSize: 14,
-        fontWeight: FontWeight.w600,
-        color: strongBlue,
+        fontWeight: FontWeight.w700,
+        color: primaryDark,
       ),
     );
   }
@@ -608,7 +739,10 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
       onTap: onTap,
       readOnly: readOnly,
       keyboardType: keyboardType,
-      style: GoogleFonts.poppins(fontSize: 14),
+      style: GoogleFonts.poppins(
+        fontSize: 14,
+        color: CompanyDashboardPalette.textPrimary,
+      ),
       decoration: _fieldDecoration(hint: hint, suffixIcon: suffixIcon),
     );
   }
@@ -624,12 +758,21 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
       isExpanded: true,
       items: items,
       onChanged: onChanged,
-      style: GoogleFonts.poppins(fontSize: 14, color: Colors.black87),
-      icon: const Icon(Icons.keyboard_arrow_down_rounded),
+      style: GoogleFonts.poppins(
+        fontSize: 14,
+        color: CompanyDashboardPalette.textPrimary,
+      ),
+      icon: const Icon(
+        Icons.keyboard_arrow_down_rounded,
+        color: CompanyDashboardPalette.textSecondary,
+      ),
       decoration: _fieldDecoration(hint: hint),
       hint: Text(
         hint,
-        style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 13),
+        style: GoogleFonts.poppins(
+          color: CompanyDashboardPalette.textMuted,
+          fontSize: 13,
+        ),
       ),
       dropdownColor: Colors.white,
     );
@@ -638,10 +781,13 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
   InputDecoration _fieldDecoration({required String hint, Widget? suffixIcon}) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 13),
+      hintStyle: GoogleFonts.poppins(
+        color: CompanyDashboardPalette.textMuted,
+        fontSize: 13,
+      ),
       suffixIcon: suffixIcon,
       filled: true,
-      fillColor: softGray.withValues(alpha: 0.45),
+      fillColor: surfaceAlt,
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
@@ -649,7 +795,7 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: BorderSide(color: Colors.grey.shade200),
+        borderSide: const BorderSide(color: CompanyDashboardPalette.border),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
@@ -672,7 +818,9 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
     required String subtitle,
   }) {
     final isSelected = _selectedStatus == value;
-    final chipColor = value == 'open' ? Colors.green : Colors.grey;
+    final chipColor = value == 'open'
+        ? CompanyDashboardPalette.success
+        : CompanyDashboardPalette.textSecondary;
 
     return Material(
       color: Colors.transparent,
@@ -683,12 +831,10 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
           duration: const Duration(milliseconds: 180),
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-            color: isSelected
-                ? chipColor.withValues(alpha: 0.12)
-                : softGray.withValues(alpha: 0.45),
+            color: isSelected ? chipColor.withValues(alpha: 0.12) : surfaceAlt,
             borderRadius: BorderRadius.circular(18),
             border: Border.all(
-              color: isSelected ? chipColor : Colors.grey.shade300,
+              color: isSelected ? chipColor : CompanyDashboardPalette.border,
               width: isSelected ? 1.4 : 1,
             ),
           ),
@@ -700,7 +846,9 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                 style: GoogleFonts.poppins(
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
-                  color: isSelected ? chipColor : mediumBlue,
+                  color: isSelected
+                      ? chipColor
+                      : CompanyDashboardPalette.textPrimary,
                 ),
               ),
               const SizedBox(height: 4),
@@ -710,7 +858,7 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                   fontSize: 11,
                   color: isSelected
                       ? chipColor.withValues(alpha: 0.85)
-                      : Colors.grey.shade600,
+                      : CompanyDashboardPalette.textSecondary,
                 ),
               ),
             ],
@@ -1041,5 +1189,49 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
               '${part[0].toUpperCase()}${part.substring(1).toLowerCase()}',
         )
         .join(' ');
+  }
+}
+
+class _HeroInsight extends StatelessWidget {
+  final String label;
+  final String value;
+  final Color color;
+
+  const _HeroInsight({
+    required this.label,
+    required this.value,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: GoogleFonts.poppins(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: CompanyDashboardPalette.textMuted,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: GoogleFonts.poppins(
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+              color: color,
+              height: 1.3,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
