@@ -46,12 +46,12 @@ class CompanyService {
 
   Future<void> createOpportunity(Map<String, dynamic> data) async {
     final docRef = _firestore.collection('opportunities').doc();
-    final docData = _normalizeOpportunityPayload(data, isCreate: true);
+    final docData = normalizeOpportunityPayload(data, isCreate: true);
     docData['id'] = docRef.id;
     docData['createdAt'] = FieldValue.serverTimestamp();
     docData['updatedAt'] = FieldValue.serverTimestamp();
     await docRef.set(docData);
-    if (_shouldNotifyStudentsAboutOpportunity(docData)) {
+    if (shouldNotifyStudentsAboutOpportunity(docData)) {
       await _notificationWorker.notifyOpportunityCreated(docRef.id);
     }
   }
@@ -63,13 +63,13 @@ class CompanyService {
     final docRef = _firestore.collection('opportunities').doc(oppId);
     final currentSnapshot = await docRef.get();
     final currentData = currentSnapshot.data() ?? const <String, dynamic>{};
-    final nextData = _normalizeOpportunityPayload(data, isCreate: false);
+    final nextData = normalizeOpportunityPayload(data, isCreate: false);
     nextData['updatedAt'] = FieldValue.serverTimestamp();
 
     await docRef.update(nextData);
 
     final mergedData = <String, dynamic>{...currentData, ...nextData};
-    if (_shouldNotifyStudentsAboutOpportunity(mergedData)) {
+    if (shouldNotifyStudentsAboutOpportunity(mergedData)) {
       await _notificationWorker.notifyOpportunityCreated(oppId);
     }
   }
@@ -370,20 +370,20 @@ class CompanyService {
     return url;
   }
 
-  bool _shouldNotifyStudentsAboutOpportunity(Map<String, dynamic> data) {
+  static bool shouldNotifyStudentsAboutOpportunity(Map<String, dynamic> data) {
     final type = OpportunityType.parse(data['type']?.toString());
-    final status = _normalizeOpportunityStatus(data['status']);
+    final status = normalizeOpportunityStatus(data['status']);
 
     return OpportunityType.supportsStudentPostNotification(type) &&
         status == 'open';
   }
 
-  String _normalizeOpportunityStatus(Object? rawStatus) {
+  static String normalizeOpportunityStatus(Object? rawStatus) {
     final normalized = (rawStatus ?? '').toString().trim().toLowerCase();
     return normalized == 'closed' ? 'closed' : 'open';
   }
 
-  Map<String, dynamic> _normalizeOpportunityPayload(
+  static Map<String, dynamic> normalizeOpportunityPayload(
     Map<String, dynamic> data, {
     required bool isCreate,
   }) {
@@ -411,7 +411,7 @@ class CompanyService {
     }
 
     if (nextData.containsKey('status') || isCreate) {
-      nextData['status'] = _normalizeOpportunityStatus(nextData['status']);
+      nextData['status'] = normalizeOpportunityStatus(nextData['status']);
     }
 
     if (nextData.containsKey('salaryMin')) {

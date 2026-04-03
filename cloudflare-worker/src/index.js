@@ -2464,6 +2464,54 @@ async function handleNotifyApplicationStatusChanged(request, env) {
   return json(result);
 }
 
+async function handleNotifyCompanyRegistration(request, env) {
+  const auth = await requireUser(request, env, { roles: ["company"] });
+  if (auth.error) {
+    return auth.error;
+  }
+
+  const body = await request.json();
+  const companyId = trim(body.companyId) || auth.user.uid;
+  if (!companyId) {
+    return err("companyId is required.");
+  }
+  if (companyId !== auth.user.uid) {
+    return err(
+      "You can only notify for your own company registration.",
+      403,
+    );
+  }
+
+  const companyDoc = await firestoreGet(env, "users", companyId);
+  if (!companyDoc) {
+    return err("Company not found.", 404);
+  }
+
+  const company = companyDoc.data || {};
+  if (trim(company.role) !== "company") {
+    return err("Only company accounts can trigger this notification.", 400);
+  }
+
+  const companyName =
+    trim(company.companyName) || displayNameForUser(company) || "New company";
+  const admins = await getActiveUsersByRole(env, "admin");
+  const actorTokens = collectRecipientTokens(auth.profile);
+
+  const result = await notifyRecipients(env, admins, {
+    title: "New Company Review",
+    message: `${companyName} registered and is waiting for approval.`,
+    type: "company_review",
+    targetId: companyId,
+    eventKey: `company-registration:${companyId}`,
+    actorUserId: auth.user.uid,
+    excludeUserIds: [auth.user.uid],
+    excludeTokens: actorTokens,
+    logLabel: `[notifyCompanyRegistration:${companyId}]`,
+  });
+
+  return json(result);
+}
+
 async function handleNotifyProjectIdeaSubmitted(request, env) {
   const auth = await requireUser(request, env, { roles: ["student"] });
   if (auth.error) {
@@ -2813,6 +2861,9 @@ function matchRoute(method, path) {
   if (method === "POST" && path === "/api/notify/scholarship") {
     return { handler: "notifyScholarship" };
   }
+  if (method === "POST" && path === "/api/notify/company-registration") {
+    return { handler: "notifyCompanyRegistration" };
+  }
   if (method === "POST" && path === "/api/notify/application-submitted") {
     return { handler: "notifyApplicationSubmitted" };
   }
@@ -2965,6 +3016,9 @@ export default {
           break;
         case "notifyScholarship":
           response = await handleNotifyScholarship(request, env);
+          break;
+        case "notifyCompanyRegistration":
+          response = await handleNotifyCompanyRegistration(request, env);
           break;
         case "notifyApplicationSubmitted":
           response = await handleNotifyApplicationSubmitted(request, env);

@@ -13,6 +13,7 @@ import 'auth/academic_level_selection_screen.dart';
 import 'auth/email_verification_screen.dart';
 import 'student/home_screen.dart' as student;
 import 'company/home_screen.dart' as company;
+import 'company/company_approval_status_screen.dart';
 import 'admin/home_screen.dart' as admin;
 
 class AuthWrapper extends StatefulWidget {
@@ -41,9 +42,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
     final notificationProvider = context.read<NotificationProvider>();
 
     if (!connectivityProvider.isConnected) {
-      return NoInternetScreen(
-        onRetry: () => connectivityProvider.checkNow(),
-      );
+      return NoInternetScreen(onRetry: () => connectivityProvider.checkNow());
     }
 
     if (!authProvider.isInitialLoadDone && authProvider.isLoading) {
@@ -109,8 +108,14 @@ class _AuthWrapperState extends State<AuthWrapper> {
     // Email verification gate: only for non-admin email/password users.
     // Admins are identified by their Firestore role and bypass this check
     // so they are never locked out by unverified Firebase Auth email status.
-    if (user.isEmailProvider && !user.isAdmin && !authProvider.isEmailVerified) {
+    if (user.isEmailProvider &&
+        !user.isAdmin &&
+        !authProvider.isEmailVerified) {
       return const EmailVerificationScreen();
+    }
+
+    if (user.isCompany && !user.isCompanyApproved) {
+      return const CompanyApprovalStatusScreen();
     }
 
     if (user.needsAcademicLevel) {

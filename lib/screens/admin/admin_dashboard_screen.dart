@@ -13,6 +13,7 @@ import '../notifications_screen.dart';
 import 'admin_activity_center_screen.dart';
 import 'admin_content_center_screen.dart';
 import 'admin_library_screen.dart';
+import 'users_screen.dart';
 
 class AdminDashboardScreen extends StatefulWidget {
   const AdminDashboardScreen({super.key});
@@ -83,12 +84,20 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                   value: '${stats['activeUsers'] ?? 0}',
                 ),
                 AdminHeroStat(
+                  label: 'Pending Companies',
+                  value: '${stats['pendingCompanies'] ?? 0}',
+                ),
+                AdminHeroStat(
                   label: 'Pending Ideas',
                   value: '${stats['pendingIdeas'] ?? 0}',
                 ),
-                AdminHeroStat(label: 'Unread', value: '$unreadCount'),
               ],
               actions: [
+                AdminActionChip(
+                  label: 'Review Companies',
+                  icon: Icons.verified_user_outlined,
+                  onTap: _openUsers,
+                ),
                 AdminActionChip(
                   label: 'Review Content',
                   icon: Icons.auto_awesome_mosaic_rounded,
@@ -141,6 +150,12 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                   value: '${stats['companies'] ?? 0}',
                   icon: Icons.business_center_outlined,
                   color: AdminPalette.secondary,
+                ),
+                _DashboardMetric(
+                  title: 'Pending Reviews',
+                  value: '${stats['pendingCompanies'] ?? 0}',
+                  icon: Icons.pending_actions_rounded,
+                  color: AdminPalette.warning,
                 ),
               ],
             ),
@@ -358,6 +373,23 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             foregroundColor: AdminPalette.textPrimary,
           ),
           body: const SafeArea(child: AdminLibraryScreen()),
+        ),
+      ),
+    );
+  }
+
+  void _openUsers() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => Scaffold(
+          backgroundColor: AdminPalette.background,
+          appBar: AppBar(
+            title: const Text('User Management'),
+            backgroundColor: Colors.white,
+            foregroundColor: AdminPalette.textPrimary,
+          ),
+          body: const SafeArea(child: UsersScreen()),
         ),
       ),
     );

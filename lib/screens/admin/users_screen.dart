@@ -13,7 +13,16 @@ import '../../widgets/admin/admin_ui.dart';
 import '../../widgets/profile_avatar.dart';
 
 class UsersScreen extends StatefulWidget {
-  const UsersScreen({super.key});
+  const UsersScreen({
+    super.key,
+    this.initialRoleFilter = 'all',
+    this.initialCompanyApprovalFilter = 'all',
+    this.initialTargetId = '',
+  });
+
+  final String initialRoleFilter;
+  final String initialCompanyApprovalFilter;
+  final String initialTargetId;
 
   @override
   State<UsersScreen> createState() => _UsersScreenState();
@@ -23,13 +32,20 @@ class _UsersScreenState extends State<UsersScreen> {
   final TextEditingController _searchController = TextEditingController();
   final CvService _cvService = CvService();
   final DocumentAccessService _documentAccessService = DocumentAccessService();
+  bool _didOpenInitialTarget = false;
 
   @override
   void initState() {
     super.initState();
     Future.microtask(() {
       if (!mounted) return;
-      context.read<AdminProvider>().loadAllUsers();
+      final provider = context.read<AdminProvider>();
+      provider.setUserRoleFilter(widget.initialRoleFilter);
+      if (widget.initialRoleFilter == 'company' ||
+          widget.initialRoleFilter == 'all') {
+        provider.setCompanyApprovalFilter(widget.initialCompanyApprovalFilter);
+      }
+      provider.loadAllUsers().then((_) => _openInitialTargetIfNeeded());
     });
   }
 
@@ -37,6 +53,33 @@ class _UsersScreenState extends State<UsersScreen> {
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+
+  void _openInitialTargetIfNeeded() {
+    final targetId = widget.initialTargetId.trim();
+    if (_didOpenInitialTarget || targetId.isEmpty || !mounted) {
+      return;
+    }
+
+    final provider = context.read<AdminProvider>();
+    UserModel? targetUser;
+    for (final user in provider.rawUsers) {
+      if (user.uid == targetId) {
+        targetUser = user;
+        break;
+      }
+    }
+    if (targetUser == null) {
+      return;
+    }
+
+    _didOpenInitialTarget = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
+      _showUserDetails(targetUser!);
+    });
   }
 
   @override
@@ -104,6 +147,12 @@ class _UsersScreenState extends State<UsersScreen> {
                           label: '${provider.adminUsersCount} admins',
                           color: AdminPalette.accent,
                           icon: Icons.admin_panel_settings_outlined,
+                        ),
+                        AdminPill(
+                          label:
+                              '${provider.pendingCompanyUsersCount} company reviews',
+                          color: AdminPalette.warning,
+                          icon: Icons.pending_actions_rounded,
                         ),
                       ],
                     ),
@@ -175,6 +224,41 @@ class _UsersScreenState extends State<UsersScreen> {
                 ),
               ),
             ),
+          if (provider.userRoleFilter == 'company' ||
+              provider.userRoleFilter == 'all')
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      const AdminPill(
+                        label: 'Company review',
+                        color: AdminPalette.warning,
+                        icon: Icons.verified_user_outlined,
+                      ),
+                      const SizedBox(width: 4),
+                      _buildCompanyApprovalChip('All', 'all', provider),
+                      const SizedBox(width: 6),
+                      _buildCompanyApprovalChip('Pending', 'pending', provider),
+                      const SizedBox(width: 6),
+                      _buildCompanyApprovalChip(
+                        'Approved',
+                        'approved',
+                        provider,
+                      ),
+                      const SizedBox(width: 6),
+                      _buildCompanyApprovalChip(
+                        'Rejected',
+                        'rejected',
+                        provider,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           if (provider.allUsers.isEmpty)
             const SliverFillRemaining(
               hasScrollBody: false,
@@ -221,6 +305,25 @@ class _UsersScreenState extends State<UsersScreen> {
       selected: isSelected,
       onTap: () => provider.setUserLevelFilter(value),
       icon: Icons.school_outlined,
+    );
+  }
+
+  Widget _buildCompanyApprovalChip(
+    String label,
+    String value,
+    AdminProvider provider,
+  ) {
+    final isSelected = provider.companyApprovalFilter == value;
+    return AdminFilterChip(
+      label: label,
+      selected: isSelected,
+      onTap: () => provider.setCompanyApprovalFilter(value),
+      icon: switch (value) {
+        'pending' => Icons.pending_actions_rounded,
+        'approved' => Icons.verified_rounded,
+        'rejected' => Icons.gpp_bad_outlined,
+        _ => Icons.filter_list_rounded,
+      },
     );
   }
 
@@ -289,6 +392,8 @@ class _UsersScreenState extends State<UsersScreen> {
                         runSpacing: 6,
                         children: [
                           _buildRoleBadge(user.role),
+                          if (user.role == 'company')
+                            _buildApprovalBadge(user.normalizedApprovalStatus),
                           if (user.role == 'student' &&
                               academicLevel.isNotEmpty)
                             _buildLevelBadge(academicLevel),
@@ -318,6 +423,30 @@ class _UsersScreenState extends State<UsersScreen> {
 
   Widget _buildLevelBadge(String level) {
     return AdminPill(label: level, color: Colors.purple);
+  }
+
+  Widget _buildApprovalBadge(String status) {
+    final normalized = status.trim().toLowerCase();
+    final color = switch (normalized) {
+      'pending' => AdminPalette.warning,
+      'rejected' => AdminPalette.danger,
+      _ => AdminPalette.success,
+    };
+    final label = switch (normalized) {
+      'pending' => 'Pending review',
+      'rejected' => 'Rejected',
+      _ => 'Approved',
+    };
+
+    return AdminPill(
+      label: label,
+      color: color,
+      icon: switch (normalized) {
+        'pending' => Icons.pending_actions_rounded,
+        'rejected' => Icons.gpp_bad_outlined,
+        _ => Icons.verified_rounded,
+      },
+    );
   }
 
   Widget _buildMiniActionButton({
@@ -408,6 +537,48 @@ class _UsersScreenState extends State<UsersScreen> {
                   _showUserDetails(user);
                 },
               ),
+              if (user.role == 'company' && !user.isCompanyApproved) ...[
+                const SizedBox(height: 10),
+                _buildActionSheetTile(
+                  icon: Icons.verified_rounded,
+                  title: 'Approve Company',
+                  subtitle:
+                      'Unlock the company workspace and let this organization use the platform.',
+                  color: AdminPalette.success,
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    _showCompanyApprovalDialog(user, provider, 'approved');
+                  },
+                ),
+              ],
+              if (user.role == 'company' && !user.isCompanyRejected) ...[
+                const SizedBox(height: 10),
+                _buildActionSheetTile(
+                  icon: Icons.gpp_bad_outlined,
+                  title: 'Reject Company',
+                  subtitle:
+                      'Keep the company blocked from the workspace until the profile is corrected.',
+                  color: AdminPalette.danger,
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    _showCompanyApprovalDialog(user, provider, 'rejected');
+                  },
+                ),
+              ],
+              if (user.role == 'company' && !user.isCompanyPendingApproval) ...[
+                const SizedBox(height: 10),
+                _buildActionSheetTile(
+                  icon: Icons.pending_actions_rounded,
+                  title: 'Mark Pending Review',
+                  subtitle:
+                      'Move the company back into the review queue without blocking the account entirely.',
+                  color: AdminPalette.warning,
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    _showCompanyApprovalDialog(user, provider, 'pending');
+                  },
+                ),
+              ],
               const SizedBox(height: 10),
               _buildActionSheetTile(
                 icon: user.isActive
@@ -426,6 +597,59 @@ class _UsersScreenState extends State<UsersScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  void _showCompanyApprovalDialog(
+    UserModel user,
+    AdminProvider provider,
+    String nextStatus,
+  ) {
+    final actionLabel = switch (nextStatus) {
+      'approved' => 'Approve',
+      'rejected' => 'Reject',
+      _ => 'Mark Pending',
+    };
+    final actionColor = switch (nextStatus) {
+      'approved' => Colors.green,
+      'rejected' => Colors.red,
+      _ => Colors.orange,
+    };
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+        title: Text('$actionLabel Company'),
+        content: Text(
+          'Are you sure you want to ${actionLabel.toLowerCase()} ${user.companyName?.trim().isNotEmpty == true ? user.companyName!.trim() : user.fullName}?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(ctx);
+              final error = await provider.updateCompanyApprovalStatus(
+                user.uid,
+                nextStatus,
+              );
+              if (!mounted) return;
+              if (error != null && context.mounted) {
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text(error)));
+              }
+            },
+            child: Text(
+              actionLabel,
+              style: TextStyle(color: actionColor, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -682,6 +906,15 @@ class _UsersScreenState extends State<UsersScreen> {
                     user.companyName?.isNotEmpty == true
                         ? user.companyName!
                         : 'Not set',
+                  ),
+                  _buildDetailRow(
+                    Icons.verified_user_outlined,
+                    'Approval Status',
+                    switch (user.normalizedApprovalStatus) {
+                      'pending' => 'Pending review',
+                      'rejected' => 'Rejected',
+                      _ => 'Approved',
+                    },
                   ),
                   _buildDetailRow(
                     Icons.category_outlined,

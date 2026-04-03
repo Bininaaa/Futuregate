@@ -4,12 +4,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../models/user_model.dart';
+import 'notification_worker_service.dart';
 import 'storage_service.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
+  final NotificationWorkerService _notificationWorker =
+      NotificationWorkerService();
   final StorageService _storageService = StorageService();
 
   bool _googleInitialized = false;
@@ -79,6 +82,7 @@ class AuthService {
       'laboratory': laboratory,
       'supervisor': supervisor,
       'researchDomain': researchDomain,
+      'approvalStatus': '',
       'isActive': true,
       'createdAt': FieldValue.serverTimestamp(),
       'provider': 'email',
@@ -160,6 +164,7 @@ class AuthService {
       'commercialRegisterMimeType': uploadedCommercialRegister.mimeType,
       'commercialRegisterStoragePath': uploadedCommercialRegister.objectKey,
       'commercialRegisterUploadedAt': FieldValue.serverTimestamp(),
+      'approvalStatus': 'pending',
       'isActive': true,
       'createdAt': FieldValue.serverTimestamp(),
       'provider': 'email',
@@ -167,6 +172,7 @@ class AuthService {
 
     try {
       await _firestore.collection('users').doc(uid).set(userData);
+      await _notificationWorker.notifyCompanyRegistration(uid);
     } catch (e) {
       if (uploadedCommercialRegister.storagePath.trim().isNotEmpty) {
         try {
@@ -233,6 +239,7 @@ class AuthService {
         'laboratory': '',
         'supervisor': '',
         'researchDomain': '',
+        'approvalStatus': '',
         'isActive': true,
         'createdAt': FieldValue.serverTimestamp(),
         'provider': 'google',

@@ -20,6 +20,7 @@ class AdminProvider extends ChangeNotifier {
   List<UserModel> _filteredUsers = [];
   String _userRoleFilter = 'all';
   String _userLevelFilter = 'all';
+  String _companyApprovalFilter = 'all';
   String _userSearch = '';
   bool _usersLoading = false;
   String? _usersError;
@@ -48,6 +49,7 @@ class AdminProvider extends ChangeNotifier {
   List<UserModel> get rawUsers => List.unmodifiable(_allUsers);
   String get userRoleFilter => _userRoleFilter;
   String get userLevelFilter => _userLevelFilter;
+  String get companyApprovalFilter => _companyApprovalFilter;
   String get userSearch => _userSearch;
   bool get usersLoading => _usersLoading;
   String? get usersError => _usersError;
@@ -58,6 +60,13 @@ class AdminProvider extends ChangeNotifier {
       _allUsers.where((user) => user.role == 'admin').length;
   int get companyUsersCount =>
       _allUsers.where((user) => user.role == 'company').length;
+  int get pendingCompanyUsersCount =>
+      _allUsers.where((user) => user.isCompanyPendingApproval).length;
+  int get approvedCompanyUsersCount => _allUsers
+      .where((user) => user.role == 'company' && user.isCompanyApproved)
+      .length;
+  int get rejectedCompanyUsersCount =>
+      _allUsers.where((user) => user.isCompanyRejected).length;
   int get studentUsersCount =>
       _allUsers.where((user) => user.role == 'student').length;
 
@@ -123,12 +132,21 @@ class AdminProvider extends ChangeNotifier {
     if (role != 'student') {
       _userLevelFilter = 'all';
     }
+    if (role != 'company' && role != 'all') {
+      _companyApprovalFilter = 'all';
+    }
     _applyUserFilters();
     notifyListeners();
   }
 
   void setUserLevelFilter(String level) {
     _userLevelFilter = level;
+    _applyUserFilters();
+    notifyListeners();
+  }
+
+  void setCompanyApprovalFilter(String status) {
+    _companyApprovalFilter = status;
     _applyUserFilters();
     notifyListeners();
   }
@@ -148,10 +166,19 @@ class AdminProvider extends ChangeNotifier {
           (user.academicLevel ?? '') != _userLevelFilter) {
         return false;
       }
+      if (_companyApprovalFilter != 'all') {
+        if (user.role != 'company') {
+          return false;
+        }
+        if (user.normalizedApprovalStatus != _companyApprovalFilter) {
+          return false;
+        }
+      }
       if (_userSearch.isNotEmpty) {
         final q = _userSearch.toLowerCase();
         return user.fullName.toLowerCase().contains(q) ||
-            user.email.toLowerCase().contains(q);
+            user.email.toLowerCase().contains(q) ||
+            (user.companyName ?? '').toLowerCase().contains(q);
       }
       return true;
     }).toList();
@@ -162,39 +189,7 @@ class AdminProvider extends ChangeNotifier {
       await _adminService.toggleUserActive(uid, isActive);
       final idx = _allUsers.indexWhere((u) => u.uid == uid);
       if (idx != -1) {
-        final old = _allUsers[idx];
-        _allUsers[idx] = UserModel(
-          uid: old.uid,
-          fullName: old.fullName,
-          email: old.email,
-          role: old.role,
-          phone: old.phone,
-          location: old.location,
-          profileImage: old.profileImage,
-          isActive: isActive,
-          academicLevel: old.academicLevel,
-          university: old.university,
-          fieldOfStudy: old.fieldOfStudy,
-          bio: old.bio,
-          companyName: old.companyName,
-          sector: old.sector,
-          description: old.description,
-          website: old.website,
-          logo: old.logo,
-          adminLevel: old.adminLevel,
-          researchTopic: old.researchTopic,
-          laboratory: old.laboratory,
-          supervisor: old.supervisor,
-          researchDomain: old.researchDomain,
-          photoType: old.photoType,
-          avatarId: old.avatarId,
-          commercialRegisterUrl: old.commercialRegisterUrl,
-          commercialRegisterFileName: old.commercialRegisterFileName,
-          commercialRegisterMimeType: old.commercialRegisterMimeType,
-          commercialRegisterStoragePath: old.commercialRegisterStoragePath,
-          commercialRegisterUploadedAt: old.commercialRegisterUploadedAt,
-          provider: old.provider,
-        );
+        _allUsers[idx] = _allUsers[idx].copyWith(isActive: isActive);
         _applyUserFilters();
         notifyListeners();
       }
@@ -202,6 +197,22 @@ class AdminProvider extends ChangeNotifier {
     } catch (e) {
       debugPrint('toggleUserActive error: $e');
       return 'Failed to update user status';
+    }
+  }
+
+  Future<String?> updateCompanyApprovalStatus(String uid, String status) async {
+    try {
+      await _adminService.updateCompanyApprovalStatus(uid, status);
+      final idx = _allUsers.indexWhere((user) => user.uid == uid);
+      if (idx != -1) {
+        _allUsers[idx] = _allUsers[idx].copyWith(approvalStatus: status);
+        _applyUserFilters();
+        notifyListeners();
+      }
+      return null;
+    } catch (e) {
+      debugPrint('updateCompanyApprovalStatus error: $e');
+      return 'Failed to update company approval status';
     }
   }
 
@@ -304,6 +315,78 @@ class AdminProvider extends ChangeNotifier {
     }
   }
 
+  Future<String?> createAdminProjectIdea(Map<String, dynamic> data) async {
+    try {
+      final created = await _adminService.createAdminProjectIdea(data);
+      _allProjectIdeas = [created, ..._allProjectIdeas];
+      notifyListeners();
+      return null;
+    } catch (e) {
+      debugPrint('createAdminProjectIdea error: $e');
+      return 'Failed to create project idea';
+    }
+  }
+
+  Future<String?> updateAdminProjectIdea(
+    String id,
+    Map<String, dynamic> data,
+  ) async {
+    try {
+      final updated = await _adminService.updateAdminProjectIdea(id, data);
+      final index = _allProjectIdeas.indexWhere((idea) => idea.id == id);
+      if (index != -1) {
+        _allProjectIdeas[index] = updated;
+        notifyListeners();
+      }
+      return null;
+    } catch (e) {
+      debugPrint('updateAdminProjectIdea error: $e');
+      return 'Failed to update project idea';
+    }
+  }
+
+  Future<String?> deleteProjectIdea(String id) async {
+    try {
+      await _adminService.deleteProjectIdea(id);
+      _allProjectIdeas.removeWhere((idea) => idea.id == id);
+      notifyListeners();
+      return null;
+    } catch (e) {
+      debugPrint('deleteProjectIdea error: $e');
+      return 'Failed to delete project idea';
+    }
+  }
+
+  Future<String?> createAdminOpportunity(Map<String, dynamic> data) async {
+    try {
+      final created = await _adminService.createAdminOpportunity(data);
+      _allOpportunities = [created, ..._allOpportunities];
+      notifyListeners();
+      return null;
+    } catch (e) {
+      debugPrint('createAdminOpportunity error: $e');
+      return 'Failed to create opportunity';
+    }
+  }
+
+  Future<String?> updateAdminOpportunity(
+    String id,
+    Map<String, dynamic> data,
+  ) async {
+    try {
+      final updated = await _adminService.updateAdminOpportunity(id, data);
+      final index = _allOpportunities.indexWhere((item) => item['id'] == id);
+      if (index != -1) {
+        _allOpportunities[index] = updated;
+        notifyListeners();
+      }
+      return null;
+    } catch (e) {
+      debugPrint('updateAdminOpportunity error: $e');
+      return 'Failed to update opportunity';
+    }
+  }
+
   Future<String?> deleteOpportunity(String id) async {
     try {
       await _adminService.deleteOpportunity(id);
@@ -313,6 +396,36 @@ class AdminProvider extends ChangeNotifier {
     } catch (e) {
       debugPrint('deleteOpportunity error: $e');
       return 'Failed to delete opportunity';
+    }
+  }
+
+  Future<String?> createScholarship(Map<String, dynamic> data) async {
+    try {
+      final created = await _adminService.createScholarship(data);
+      _allScholarships = [created, ..._allScholarships];
+      notifyListeners();
+      return null;
+    } catch (e) {
+      debugPrint('createScholarship error: $e');
+      return 'Failed to create scholarship';
+    }
+  }
+
+  Future<String?> updateScholarship(
+    String id,
+    Map<String, dynamic> data,
+  ) async {
+    try {
+      final updated = await _adminService.updateScholarship(id, data);
+      final index = _allScholarships.indexWhere((item) => item['id'] == id);
+      if (index != -1) {
+        _allScholarships[index] = updated;
+        notifyListeners();
+      }
+      return null;
+    } catch (e) {
+      debugPrint('updateScholarship error: $e');
+      return 'Failed to update scholarship';
     }
   }
 

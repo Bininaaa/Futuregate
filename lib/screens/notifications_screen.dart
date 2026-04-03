@@ -13,6 +13,7 @@ import '../providers/notification_provider.dart';
 import 'admin/admin_content_center_screen.dart';
 import 'company/applications_screen.dart';
 import 'company/chat_screen.dart' as company_chat;
+import 'admin/users_screen.dart';
 import 'settings/settings_flow_theme.dart';
 import 'settings/settings_flow_widgets.dart';
 import 'student/chat_screen.dart' as student_chat;
@@ -274,6 +275,33 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   ) async {
     try {
       final role = context.read<AuthProvider>().userModel?.role ?? '';
+
+      if (role == 'admin' && notif.type == 'company_review') {
+        if (!context.mounted) {
+          return;
+        }
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => Scaffold(
+              backgroundColor: SettingsFlowPalette.background,
+              appBar: AppBar(
+                title: const Text('Company Reviews'),
+                backgroundColor: Colors.white,
+                foregroundColor: SettingsFlowPalette.textPrimary,
+              ),
+              body: SafeArea(
+                child: UsersScreen(
+                  initialRoleFilter: 'company',
+                  initialCompanyApprovalFilter: 'pending',
+                  initialTargetId: notif.targetId,
+                ),
+              ),
+            ),
+          ),
+        );
+        return;
+      }
 
       if (role == 'admin' &&
           const {
@@ -633,6 +661,8 @@ class _NotificationCard extends StatelessWidget {
         return Icons.assignment_outlined;
       case 'project_idea':
         return Icons.lightbulb_outline_rounded;
+      case 'company_review':
+        return Icons.verified_user_outlined;
       default:
         return Icons.notifications_none_rounded;
     }
@@ -652,6 +682,8 @@ class _NotificationCard extends StatelessWidget {
         return SettingsFlowPalette.warning;
       case 'project_idea':
         return SettingsFlowPalette.primaryDark;
+      case 'company_review':
+        return SettingsFlowPalette.warning;
       default:
         return SettingsFlowPalette.textSecondary;
     }
@@ -671,6 +703,8 @@ class _NotificationCard extends StatelessWidget {
         return 'Training';
       case 'project_idea':
         return 'Idea';
+      case 'company_review':
+        return 'Company review';
       default:
         return 'Update';
     }

@@ -235,6 +235,10 @@ service cloud.firestore {
       return data.keys().hasAny(['adminLevel']);
     }
 
+    function hasApprovalStatusField(data) {
+      return data.keys().hasAny(['approvalStatus']);
+    }
+
     function hasCreatedAtField(data) {
       return data.keys().hasAny(['createdAt']);
     }
@@ -264,6 +268,12 @@ service cloud.firestore {
               request.auth.token.firebase.sign_in_provider == 'password') ||
           (value == 'google' &&
               request.auth.token.firebase.sign_in_provider == 'google.com');
+    }
+
+    function isCompanyApprovalStatus(value) {
+      return value == 'pending' ||
+          value == 'approved' ||
+          value == 'rejected';
     }
 
     function hasCompatibleAcademicLevel(newData, oldData) {
@@ -302,6 +312,37 @@ service cloud.firestore {
         hasAdminLevelField(newData) &&
         !hasAdminLevelField(oldData) &&
         newData.adminLevel == ''
+      );
+    }
+
+    function hasCompatibleApprovalStatus(newData, oldData) {
+      return (
+        !hasApprovalStatusField(newData) &&
+        !hasApprovalStatusField(oldData)
+      ) || (
+        hasApprovalStatusField(newData) &&
+        hasApprovalStatusField(oldData) &&
+        (
+          newData.approvalStatus == oldData.approvalStatus ||
+          (
+            oldData.role == 'company' &&
+            isCompanyApprovalStatus(oldData.approvalStatus) &&
+            isCompanyApprovalStatus(newData.approvalStatus)
+          )
+        )
+      ) || (
+        hasApprovalStatusField(newData) &&
+        !hasApprovalStatusField(oldData) &&
+        (
+          (
+            oldData.role == 'company' &&
+            isCompanyApprovalStatus(newData.approvalStatus)
+          ) ||
+          (
+            oldData.role != 'company' &&
+            newData.approvalStatus == ''
+          )
+        )
       );
     }
 
@@ -507,6 +548,7 @@ service cloud.firestore {
             'commercialRegisterMimeType',
             'commercialRegisterStoragePath',
             'commercialRegisterUploadedAt',
+            'approvalStatus',
             'isOnline',
             'lastSeenAt',
             'isActive',
@@ -542,6 +584,11 @@ service cloud.firestore {
               request.resource.data.academicLevel == '' ||
               isAcademicLevel(request.resource.data.academicLevel)) &&
           request.resource.data.adminLevel == '' &&
+          (
+            request.resource.data.role == 'company'
+                ? request.resource.data.approvalStatus == 'pending'
+                : request.resource.data.approvalStatus == ''
+          ) &&
           request.resource.data.isActive == true;
 
       allow read: if signedIn() && (isSelf(uid) || isAdmin());
@@ -591,6 +638,10 @@ service cloud.firestore {
               request.resource.data,
               resource.data
             ) &&
+            hasCompatibleApprovalStatus(
+              request.resource.data,
+              resource.data
+            ) &&
             hasCompatibleIsActive(
               request.resource.data,
               resource.data
@@ -621,7 +672,8 @@ service cloud.firestore {
           (
             isAdmin() &&
             request.resource.data.diff(resource.data).changedKeys().hasOnly([
-              'isActive'
+              'isActive',
+              'approvalStatus'
             ]) &&
             request.resource.data.uid == resource.data.uid &&
             request.resource.data.email == resource.data.email &&
@@ -631,6 +683,10 @@ service cloud.firestore {
               resource.data
             ) &&
             hasCompatibleAdminLevel(
+              request.resource.data,
+              resource.data
+            ) &&
+            hasCompatibleApprovalStatus(
               request.resource.data,
               resource.data
             ) &&
@@ -691,7 +747,7 @@ service cloud.firestore {
               ) ||
               resource.data.status == 'open');
 
-      allow create: if isCompany() &&
+      allow create: if (isCompany() || isAdmin()) &&
           request.resource.data.keys().hasOnly([
             'id',
             'companyId',
@@ -724,7 +780,38 @@ service cloud.firestore {
           hasValidOpportunityMetadata(request.resource.data);
 
       allow update: if (
-          isAdmin() ||
+          (
+            isAdmin() &&
+            resource.data.companyId == request.auth.uid &&
+            request.resource.data.diff(resource.data).changedKeys().hasOnly([
+              'companyName',
+              'companyLogo',
+              'title',
+              'description',
+              'type',
+              'location',
+              'requirements',
+              'status',
+              'deadline',
+              'updatedAt',
+              'salaryMin',
+              'salaryMax',
+              'salaryCurrency',
+              'salaryPeriod',
+              'compensationText',
+              'employmentType',
+              'workMode',
+              'isPaid',
+              'duration',
+              'applicationDeadline'
+            ]) &&
+            request.resource.data.id == resource.data.id &&
+            request.resource.data.companyId == resource.data.companyId &&
+            request.resource.data.createdAt == resource.data.createdAt &&
+            isOpportunityType(request.resource.data.type) &&
+            isOpportunityStatus(request.resource.data.status) &&
+            hasValidOpportunityMetadata(request.resource.data)
+          ) ||
           (
             isCompany() &&
             resource.data.companyId == request.auth.uid &&
@@ -929,7 +1016,7 @@ service cloud.firestore {
           || (signedIn() && resource.data.submittedBy == request.auth.uid)
           || (signedIn() && resource.data.status == 'approved');
 
-      allow create: if isStudent() &&
+      allow create: if (isStudent() || isAdmin()) &&
           request.resource.data.keys().hasOnly([
             'id',
             'title',
@@ -963,7 +1050,16 @@ service cloud.firestore {
           ]) &&
           request.resource.data.id == ideaId &&
           request.resource.data.submittedBy == request.auth.uid &&
-          request.resource.data.status == 'pending' &&
+          (
+            (
+              isStudent() &&
+              request.resource.data.status == 'pending'
+            ) ||
+            (
+              isAdmin() &&
+              request.resource.data.status == 'approved'
+            )
+          ) &&
           isAcademicLevel(request.resource.data.level);
 
       allow update: if (
@@ -981,6 +1077,39 @@ service cloud.firestore {
           request.resource.data.submittedBy == resource.data.submittedBy &&
           request.resource.data.createdAt == resource.data.createdAt &&
           isProjectIdeaStatus(request.resource.data.status)
+        ) || (
+          // Admin can edit ideas they created
+          isAdmin() &&
+          resource.data.submittedBy == request.auth.uid &&
+          request.resource.data.diff(resource.data).changedKeys().hasOnly([
+            'title',
+            'description',
+            'domain',
+            'level',
+            'tools',
+            'tagline',
+            'shortDescription',
+            'category',
+            'tags',
+            'stage',
+            'skillsNeeded',
+            'teamNeeded',
+            'targetAudience',
+            'problemStatement',
+            'solution',
+            'resourcesNeeded',
+            'benefits',
+            'imageUrl',
+            'attachmentUrl',
+            'isPublic',
+            'status',
+            'updatedAt'
+          ]) &&
+          request.resource.data.id == resource.data.id &&
+          request.resource.data.submittedBy == resource.data.submittedBy &&
+          request.resource.data.createdAt == resource.data.createdAt &&
+          isProjectIdeaStatus(request.resource.data.status) &&
+          isAcademicLevel(request.resource.data.level)
         ) || (
           // Owner can edit content fields while idea is still pending
           isStudent() &&

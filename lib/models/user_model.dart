@@ -29,6 +29,7 @@ class UserModel {
   final String commercialRegisterMimeType;
   final String commercialRegisterStoragePath;
   final Timestamp? commercialRegisterUploadedAt;
+  final String approvalStatus;
   final bool isOnline;
   final Timestamp? lastSeenAt;
   final bool isActive;
@@ -37,6 +38,7 @@ class UserModel {
   bool get isEmailProvider => provider == 'email';
   bool get isGoogleProvider => provider == 'google';
   bool get isAdmin => role == 'admin';
+  bool get isCompany => role == 'company';
 
   UserModel({
     required this.uid,
@@ -69,6 +71,7 @@ class UserModel {
     this.commercialRegisterMimeType = '',
     this.commercialRegisterStoragePath = '',
     this.commercialRegisterUploadedAt,
+    this.approvalStatus = '',
     this.isOnline = false,
     this.lastSeenAt,
   });
@@ -76,12 +79,32 @@ class UserModel {
   bool get needsAcademicLevel =>
       role == 'student' && (academicLevel == null || academicLevel!.isEmpty);
 
+  String get normalizedApprovalStatus {
+    final normalized = approvalStatus.trim().toLowerCase();
+    if (normalized.isNotEmpty) {
+      return normalized;
+    }
+
+    return isCompany ? 'approved' : '';
+  }
+
+  bool get isCompanyApproved =>
+      !isCompany || normalizedApprovalStatus == 'approved';
+
+  bool get isCompanyPendingApproval =>
+      isCompany && normalizedApprovalStatus == 'pending';
+
+  bool get isCompanyRejected =>
+      isCompany && normalizedApprovalStatus == 'rejected';
+
   factory UserModel.fromMap(Map<String, dynamic> map) {
+    final role = (map['role'] ?? '').toString();
+
     return UserModel(
       uid: map['uid'] ?? '',
       fullName: map['fullName'] ?? '',
       email: map['email'] ?? '',
-      role: map['role'] ?? '',
+      role: role,
       phone: map['phone'] ?? '',
       location: map['location'] ?? '',
       profileImage: map['profileImage'] ?? '',
@@ -107,6 +130,10 @@ class UserModel {
       commercialRegisterStoragePath: map['commercialRegisterStoragePath'] ?? '',
       commercialRegisterUploadedAt: _parseTimestamp(
         map['commercialRegisterUploadedAt'],
+      ),
+      approvalStatus: _normalizeApprovalStatus(
+        map['approvalStatus'],
+        role: role,
       ),
       isOnline: map['isOnline'] == true,
       lastSeenAt: _parseTimestamp(map['lastSeenAt']),
@@ -145,11 +172,89 @@ class UserModel {
       'commercialRegisterMimeType': commercialRegisterMimeType,
       'commercialRegisterStoragePath': commercialRegisterStoragePath,
       'commercialRegisterUploadedAt': commercialRegisterUploadedAt,
+      'approvalStatus': approvalStatus,
       'isOnline': isOnline,
       'lastSeenAt': lastSeenAt,
       'isActive': isActive,
       'provider': provider,
     };
+  }
+
+  UserModel copyWith({
+    String? uid,
+    String? fullName,
+    String? email,
+    String? role,
+    String? phone,
+    String? location,
+    String? profileImage,
+    String? academicLevel,
+    String? university,
+    String? fieldOfStudy,
+    String? bio,
+    String? companyName,
+    String? sector,
+    String? description,
+    String? website,
+    String? logo,
+    String? adminLevel,
+    String? researchTopic,
+    String? laboratory,
+    String? supervisor,
+    String? researchDomain,
+    String? photoType,
+    String? avatarId,
+    String? commercialRegisterUrl,
+    String? commercialRegisterFileName,
+    String? commercialRegisterMimeType,
+    String? commercialRegisterStoragePath,
+    Timestamp? commercialRegisterUploadedAt,
+    String? approvalStatus,
+    bool? isOnline,
+    Timestamp? lastSeenAt,
+    bool? isActive,
+    String? provider,
+  }) {
+    return UserModel(
+      uid: uid ?? this.uid,
+      fullName: fullName ?? this.fullName,
+      email: email ?? this.email,
+      role: role ?? this.role,
+      phone: phone ?? this.phone,
+      location: location ?? this.location,
+      profileImage: profileImage ?? this.profileImage,
+      academicLevel: academicLevel ?? this.academicLevel,
+      university: university ?? this.university,
+      fieldOfStudy: fieldOfStudy ?? this.fieldOfStudy,
+      bio: bio ?? this.bio,
+      companyName: companyName ?? this.companyName,
+      sector: sector ?? this.sector,
+      description: description ?? this.description,
+      website: website ?? this.website,
+      logo: logo ?? this.logo,
+      adminLevel: adminLevel ?? this.adminLevel,
+      researchTopic: researchTopic ?? this.researchTopic,
+      laboratory: laboratory ?? this.laboratory,
+      supervisor: supervisor ?? this.supervisor,
+      researchDomain: researchDomain ?? this.researchDomain,
+      photoType: photoType ?? this.photoType,
+      avatarId: avatarId ?? this.avatarId,
+      commercialRegisterUrl:
+          commercialRegisterUrl ?? this.commercialRegisterUrl,
+      commercialRegisterFileName:
+          commercialRegisterFileName ?? this.commercialRegisterFileName,
+      commercialRegisterMimeType:
+          commercialRegisterMimeType ?? this.commercialRegisterMimeType,
+      commercialRegisterStoragePath:
+          commercialRegisterStoragePath ?? this.commercialRegisterStoragePath,
+      commercialRegisterUploadedAt:
+          commercialRegisterUploadedAt ?? this.commercialRegisterUploadedAt,
+      approvalStatus: approvalStatus ?? this.approvalStatus,
+      isOnline: isOnline ?? this.isOnline,
+      lastSeenAt: lastSeenAt ?? this.lastSeenAt,
+      isActive: isActive ?? this.isActive,
+      provider: provider ?? this.provider,
+    );
   }
 
   bool get hasCommercialRegister =>
@@ -190,5 +295,19 @@ class UserModel {
     }
 
     return null;
+  }
+
+  static String _normalizeApprovalStatus(
+    dynamic value, {
+    required String role,
+  }) {
+    final normalized = (value ?? '').toString().trim().toLowerCase();
+    if (normalized == 'pending' ||
+        normalized == 'approved' ||
+        normalized == 'rejected') {
+      return normalized;
+    }
+
+    return role == 'company' ? 'approved' : '';
   }
 }

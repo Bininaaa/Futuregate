@@ -5,20 +5,24 @@ import 'worker_api_service.dart';
 class NotificationWorkerService {
   final WorkerApiService _workerApi = WorkerApiService();
 
-  Future<void> notifyOpportunityCreated(String opportunityId) {
+  Future<void> notifyCompanyRegistration(String companyId) {
     return _postBestEffort(
-      '/api/notify/opportunity',
-      {'opportunityId': opportunityId},
-      contextLabel: 'opportunity notification',
+      '/api/notify/company-registration',
+      {'companyId': companyId},
+      contextLabel: 'company registration notification',
     );
   }
 
+  Future<void> notifyOpportunityCreated(String opportunityId) {
+    return _postBestEffort('/api/notify/opportunity', {
+      'opportunityId': opportunityId,
+    }, contextLabel: 'opportunity notification');
+  }
+
   Future<void> notifyScholarshipCreated(String scholarshipId) {
-    return _postBestEffort(
-      '/api/notify/scholarship',
-      {'scholarshipId': scholarshipId},
-      contextLabel: 'scholarship notification',
-    );
+    return _postBestEffort('/api/notify/scholarship', {
+      'scholarshipId': scholarshipId,
+    }, contextLabel: 'scholarship notification');
   }
 
   Future<void> notifyApplicationSubmitted(String applicationId) {
@@ -58,15 +62,11 @@ class NotificationWorkerService {
     required String messageId,
     required String message,
   }) {
-    return _postBestEffort(
-      '/api/notify/chat-message',
-      {
-        'conversationId': conversationId,
-        'messageId': messageId,
-        'message': message,
-      },
-      contextLabel: 'chat notification',
-    );
+    return _postBestEffort('/api/notify/chat-message', {
+      'conversationId': conversationId,
+      'messageId': messageId,
+      'message': message,
+    }, contextLabel: 'chat notification');
   }
 
   Future<void> _postBestEffort(

@@ -8,6 +8,7 @@ import '../../models/admin_application_item_model.dart';
 import '../../models/cv_model.dart';
 import '../../models/opportunity_model.dart';
 import '../../models/project_idea_model.dart';
+import '../../providers/auth_provider.dart';
 import '../../models/training_model.dart';
 import '../../providers/admin_provider.dart';
 import '../../services/company_service.dart';
@@ -17,6 +18,9 @@ import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/admin/admin_ui.dart';
 import '../../widgets/profile_avatar.dart';
+import 'admin_opportunity_editor_screen.dart';
+import 'admin_project_idea_editor_screen.dart';
+import 'admin_scholarship_editor_screen.dart';
 
 class AdminContentCenterScreen extends StatefulWidget {
   static const int projectIdeasTab = 0;
@@ -302,6 +306,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
   }
 
   Widget _buildProjectIdeasTab(AdminProvider provider) {
+    final adminId = context.read<AuthProvider>().userModel?.uid.trim() ?? '';
     final allIdeas = provider.allProjectIdeas
         .where(_matchesIdeaSearch)
         .toList();
@@ -310,7 +315,21 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
         : allIdeas;
 
     if (provider.allProjectIdeas.isEmpty) {
-      return _buildEmptyState(Icons.lightbulb_outline, 'No project ideas yet');
+      return AdminEmptyState(
+        icon: Icons.lightbulb_outline,
+        title: 'No project ideas yet',
+        message:
+            'Create the first admin idea to seed the innovation feed and make the space feel alive immediately.',
+        action: FilledButton.icon(
+          onPressed: () => _openIdeaEditor(),
+          icon: const Icon(Icons.add_rounded),
+          label: const Text('Post Admin Idea'),
+          style: FilledButton.styleFrom(
+            backgroundColor: Colors.amber.shade700,
+            foregroundColor: Colors.white,
+          ),
+        ),
+      );
     }
 
     if (ideas.isEmpty) {
@@ -354,6 +373,15 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                       _showPendingOnly = !_showPendingOnly;
                     }),
                   ),
+                  FilledButton.icon(
+                    onPressed: () => _openIdeaEditor(),
+                    icon: const Icon(Icons.add_rounded, size: 18),
+                    label: const Text('Post Admin Idea'),
+                    style: FilledButton.styleFrom(
+                      backgroundColor: Colors.amber.shade700,
+                      foregroundColor: Colors.white,
+                    ),
+                  ),
                 ],
               ),
             );
@@ -361,6 +389,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
 
           final idea = ideas[index - 1];
           final isIdeaBusy = provider.busyIdeaIds.contains(idea.id);
+          final canEditIdea = adminId.isNotEmpty && idea.submittedBy == adminId;
           final submitterLabel = idea.submittedByName.trim().isNotEmpty
               ? idea.submittedByName
               : idea.submittedBy;
@@ -392,6 +421,30 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 ? null
                 : _formatTimestamp(idea.createdAt),
             onTap: () => _showProjectIdeaDetails(idea),
+            action: _buildCardActionRow([
+              if (canEditIdea)
+                _buildCompactCardAction(
+                  icon: Icons.edit_outlined,
+                  color: AdminPalette.primary,
+                  onTap: () => _openIdeaEditor(idea: idea),
+                ),
+              _buildCompactCardAction(
+                icon: Icons.delete_outline_rounded,
+                color: AdminPalette.danger,
+                onTap: () => _showDeleteDialog(
+                  'Delete Project Idea',
+                  'Are you sure you want to delete "${idea.title}"?',
+                  () async {
+                    final error = await provider.deleteProjectIdea(idea.id);
+                    if (error != null && context.mounted) {
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text(error)));
+                    }
+                  },
+                ),
+              ),
+            ]),
             footer: idea.status == 'pending'
                 ? _buildResponsiveActionGroup([
                     FilledButton.icon(
@@ -556,12 +609,23 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
   }
 
   Widget _buildOpportunitiesTab(AdminProvider provider) {
+    final adminId = context.read<AuthProvider>().userModel?.uid.trim() ?? '';
     final opportunities = provider.allOpportunities
         .where(_matchesOpportunitySearch)
         .toList();
 
     if (provider.allOpportunities.isEmpty) {
-      return _buildEmptyState(Icons.work_outline, 'No opportunities yet');
+      return AdminEmptyState(
+        icon: Icons.work_outline,
+        title: 'No opportunities yet',
+        message:
+            'Publish the first admin opportunity so students have something to discover right away.',
+        action: FilledButton.icon(
+          onPressed: () => _openOpportunityEditor(),
+          icon: const Icon(Icons.add_rounded),
+          label: const Text('Post Opportunity'),
+        ),
+      );
     }
 
     if (opportunities.isEmpty) {
@@ -576,10 +640,42 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       onRefresh: provider.loadModerationData,
       child: ListView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        itemCount: opportunities.length,
+        itemCount: opportunities.length + 1,
         itemBuilder: (context, index) {
-          final opportunity = opportunities[index];
+          if (index == 0) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Wrap(
+                spacing: 10,
+                runSpacing: 10,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  Text(
+                    'All Opportunities (${opportunities.length})',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: _primaryColor,
+                    ),
+                  ),
+                  FilledButton.icon(
+                    onPressed: () => _openOpportunityEditor(),
+                    icon: const Icon(Icons.add_rounded, size: 18),
+                    label: const Text('Post Opportunity'),
+                    style: FilledButton.styleFrom(
+                      backgroundColor: _accentColor,
+                      foregroundColor: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          final opportunity = opportunities[index - 1];
           final opportunityId = opportunity['id'].toString();
+          final isOwnedByAdmin =
+              adminId.isNotEmpty &&
+              (opportunity['companyId'] ?? '').toString().trim() == adminId;
           final applications = _applicationsForOpportunity(
             provider,
             opportunityId,
@@ -609,6 +705,8 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             subtitle: (opportunity['companyName'] ?? 'Unknown company')
                 .toString(),
             badges: [
+              if (isOwnedByAdmin)
+                _BadgeData('Admin post', AdminPalette.primary),
               _BadgeData(
                 '${applications.length} app${applications.length == 1 ? '' : 's'}',
                 AdminPalette.activity,
@@ -643,22 +741,32 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 padding: const EdgeInsets.symmetric(vertical: 14),
               ),
             ),
-            trailing: _buildCompactCardAction(
-              icon: Icons.delete_outline_rounded,
-              color: AdminPalette.danger,
-              onTap: () => _showDeleteDialog(
-                'Delete Opportunity',
-                'Are you sure you want to delete "${opportunity['title']}"?',
-                () async {
-                  final error = await provider.deleteOpportunity(opportunityId);
-                  if (error != null && context.mounted) {
-                    ScaffoldMessenger.of(
-                      context,
-                    ).showSnackBar(SnackBar(content: Text(error)));
-                  }
-                },
+            trailing: _buildCardActionRow([
+              if (isOwnedByAdmin)
+                _buildCompactCardAction(
+                  icon: Icons.edit_outlined,
+                  color: AdminPalette.primary,
+                  onTap: () => _openOpportunityEditor(opportunity: opportunity),
+                ),
+              _buildCompactCardAction(
+                icon: Icons.delete_outline_rounded,
+                color: AdminPalette.danger,
+                onTap: () => _showDeleteDialog(
+                  'Delete Opportunity',
+                  'Are you sure you want to delete "${opportunity['title']}"?',
+                  () async {
+                    final error = await provider.deleteOpportunity(
+                      opportunityId,
+                    );
+                    if (error != null && context.mounted) {
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text(error)));
+                    }
+                  },
+                ),
               ),
-            ),
+            ]),
           );
         },
       ),
@@ -671,7 +779,21 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
         .toList();
 
     if (provider.allScholarships.isEmpty) {
-      return _buildEmptyState(Icons.card_giftcard, 'No scholarships yet');
+      return AdminEmptyState(
+        icon: Icons.card_giftcard,
+        title: 'No scholarships yet',
+        message:
+            'Publish the first scholarship and start shaping the student discovery catalog from the admin side.',
+        action: FilledButton.icon(
+          onPressed: () => _openScholarshipEditor(),
+          icon: const Icon(Icons.add_rounded),
+          label: const Text('Post Scholarship'),
+          style: FilledButton.styleFrom(
+            backgroundColor: Colors.pink,
+            foregroundColor: Colors.white,
+          ),
+        ),
+      );
     }
 
     if (scholarships.isEmpty) {
@@ -686,9 +808,38 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       onRefresh: provider.loadModerationData,
       child: ListView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        itemCount: scholarships.length,
+        itemCount: scholarships.length + 1,
         itemBuilder: (context, index) {
-          final scholarship = scholarships[index];
+          if (index == 0) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Wrap(
+                spacing: 10,
+                runSpacing: 10,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  Text(
+                    'All Scholarships (${scholarships.length})',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: _primaryColor,
+                    ),
+                  ),
+                  FilledButton.icon(
+                    onPressed: () => _openScholarshipEditor(),
+                    icon: const Icon(Icons.add_rounded, size: 18),
+                    label: const Text('Post Scholarship'),
+                    style: FilledButton.styleFrom(
+                      backgroundColor: Colors.pink,
+                      foregroundColor: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          final scholarship = scholarships[index - 1];
           return _buildMapListTile(
             id: scholarship['id'].toString(),
             icon: Icons.card_giftcard,
@@ -703,24 +854,31 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 _BadgeData('Due: ${scholarship['deadline']}', Colors.orange),
             ],
             onTap: () => _showScholarshipDetails(scholarship),
-            trailing: _buildCompactCardAction(
-              icon: Icons.delete_outline_rounded,
-              color: AdminPalette.danger,
-              onTap: () => _showDeleteDialog(
-                'Delete Scholarship',
-                'Are you sure you want to delete "${scholarship['title']}"?',
-                () async {
-                  final error = await provider.deleteScholarship(
-                    scholarship['id'].toString(),
-                  );
-                  if (error != null && context.mounted) {
-                    ScaffoldMessenger.of(
-                      context,
-                    ).showSnackBar(SnackBar(content: Text(error)));
-                  }
-                },
+            trailing: _buildCardActionRow([
+              _buildCompactCardAction(
+                icon: Icons.edit_outlined,
+                color: AdminPalette.primary,
+                onTap: () => _openScholarshipEditor(scholarship: scholarship),
               ),
-            ),
+              _buildCompactCardAction(
+                icon: Icons.delete_outline_rounded,
+                color: AdminPalette.danger,
+                onTap: () => _showDeleteDialog(
+                  'Delete Scholarship',
+                  'Are you sure you want to delete "${scholarship['title']}"?',
+                  () async {
+                    final error = await provider.deleteScholarship(
+                      scholarship['id'].toString(),
+                    );
+                    if (error != null && context.mounted) {
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text(error)));
+                    }
+                  },
+                ),
+              ),
+            ]),
           );
         },
       ),
@@ -912,6 +1070,52 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
         }
         break;
     }
+  }
+
+  Future<void> _openIdeaEditor({ProjectIdeaModel? idea}) async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => AdminProjectIdeaEditorScreen(initialIdea: idea),
+      ),
+    );
+  }
+
+  Future<void> _openOpportunityEditor({
+    Map<String, dynamic>? opportunity,
+  }) async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) =>
+            AdminOpportunityEditorScreen(initialOpportunity: opportunity),
+      ),
+    );
+  }
+
+  Future<void> _openScholarshipEditor({
+    Map<String, dynamic>? scholarship,
+  }) async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) =>
+            AdminScholarshipEditorScreen(initialScholarship: scholarship),
+      ),
+    );
+  }
+
+  Widget _buildCardActionRow(List<Widget> actions) {
+    if (actions.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        for (var index = 0; index < actions.length; index++) ...[
+          actions[index],
+          if (index < actions.length - 1) const SizedBox(width: 8),
+        ],
+      ],
+    );
   }
 
   Widget _buildCompactCardAction({

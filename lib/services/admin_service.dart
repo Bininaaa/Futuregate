@@ -6,6 +6,7 @@ import '../models/application_model.dart';
 import '../models/training_model.dart';
 import '../models/user_model.dart';
 import '../models/project_idea_model.dart';
+import 'company_service.dart';
 import 'notification_worker_service.dart';
 
 class AdminService {
@@ -45,6 +46,9 @@ class AdminService {
     int doctoratCount = 0;
     int companyCount = 0;
     int adminCount = 0;
+    int pendingCompanyCount = 0;
+    int approvedCompanyCount = 0;
+    int rejectedCompanyCount = 0;
     int activeUsersCount = 0;
     int inactiveUsersCount = 0;
 
@@ -83,6 +87,16 @@ class AdminService {
         }
       } else if (role == 'company') {
         companyCount++;
+        final approvalStatus = _normalizeCompanyApprovalStatus(
+          data['approvalStatus'],
+        );
+        if (approvalStatus == 'pending') {
+          pendingCompanyCount++;
+        } else if (approvalStatus == 'rejected') {
+          rejectedCompanyCount++;
+        } else {
+          approvedCompanyCount++;
+        }
       } else if (role == 'admin') {
         adminCount++;
       }
@@ -172,6 +186,9 @@ class AdminService {
       'licence': licenceCount,
       'master': masterCount,
       'companies': companyCount,
+      'pendingCompanies': pendingCompanyCount,
+      'approvedCompanies': approvedCompanyCount,
+      'rejectedCompanies': rejectedCompanyCount,
       'doctorat': doctoratCount,
       'admins': adminCount,
       'activeUsers': activeUsersCount,
@@ -493,6 +510,12 @@ class AdminService {
     });
   }
 
+  Future<void> updateCompanyApprovalStatus(String uid, String status) async {
+    await _firestore.collection('users').doc(uid).update({
+      'approvalStatus': _normalizeCompanyApprovalStatus(status),
+    });
+  }
+
   Future<List<ProjectIdeaModel>> getAllProjectIdeas() async {
     final snapshot = await _firestore
         .collection('projectIdeas')
@@ -578,8 +601,116 @@ class AdminService {
     return didUpdate;
   }
 
+  Future<ProjectIdeaModel> createAdminProjectIdea(
+    Map<String, dynamic> data,
+  ) async {
+    final docRef = _firestore.collection('projectIdeas').doc();
+    final nextData = _normalizeProjectIdeaPayload(data, isCreate: true);
+    nextData['id'] = docRef.id;
+    nextData['createdAt'] = FieldValue.serverTimestamp();
+    nextData['updatedAt'] = FieldValue.serverTimestamp();
+
+    await docRef.set(nextData);
+
+    final snapshot = await docRef.get();
+    return ProjectIdeaModel.fromMap({...?snapshot.data(), 'id': docRef.id});
+  }
+
+  Future<ProjectIdeaModel> updateAdminProjectIdea(
+    String id,
+    Map<String, dynamic> data,
+  ) async {
+    final docRef = _firestore.collection('projectIdeas').doc(id);
+    final nextData = _normalizeProjectIdeaPayload(data, isCreate: false);
+    nextData['updatedAt'] = FieldValue.serverTimestamp();
+
+    await docRef.update(nextData);
+
+    final snapshot = await docRef.get();
+    return ProjectIdeaModel.fromMap({...?snapshot.data(), 'id': docRef.id});
+  }
+
+  Future<void> deleteProjectIdea(String id) async {
+    await _firestore.collection('projectIdeas').doc(id).delete();
+  }
+
+  Future<Map<String, dynamic>> createAdminOpportunity(
+    Map<String, dynamic> data,
+  ) async {
+    final docRef = _firestore.collection('opportunities').doc();
+    final nextData = CompanyService.normalizeOpportunityPayload(
+      data,
+      isCreate: true,
+    );
+    nextData['id'] = docRef.id;
+    nextData['createdAt'] = FieldValue.serverTimestamp();
+    nextData['updatedAt'] = FieldValue.serverTimestamp();
+
+    await docRef.set(nextData);
+
+    if (CompanyService.shouldNotifyStudentsAboutOpportunity(nextData)) {
+      await _notificationWorker.notifyOpportunityCreated(docRef.id);
+    }
+
+    final snapshot = await docRef.get();
+    return {...?snapshot.data(), 'id': docRef.id};
+  }
+
+  Future<Map<String, dynamic>> updateAdminOpportunity(
+    String id,
+    Map<String, dynamic> data,
+  ) async {
+    final docRef = _firestore.collection('opportunities').doc(id);
+    final currentSnapshot = await docRef.get();
+    final currentData = currentSnapshot.data() ?? const <String, dynamic>{};
+    final nextData = CompanyService.normalizeOpportunityPayload(
+      data,
+      isCreate: false,
+    );
+    nextData['updatedAt'] = FieldValue.serverTimestamp();
+
+    await docRef.update(nextData);
+
+    final mergedData = <String, dynamic>{...currentData, ...nextData};
+    if (CompanyService.shouldNotifyStudentsAboutOpportunity(mergedData)) {
+      await _notificationWorker.notifyOpportunityCreated(id);
+    }
+
+    final snapshot = await docRef.get();
+    return {...?snapshot.data(), 'id': docRef.id};
+  }
+
   Future<void> deleteOpportunity(String id) async {
     await _firestore.collection('opportunities').doc(id).delete();
+  }
+
+  Future<Map<String, dynamic>> createScholarship(
+    Map<String, dynamic> data,
+  ) async {
+    final docRef = _firestore.collection('scholarships').doc();
+    final nextData = _normalizeScholarshipPayload(data, isCreate: true);
+    nextData['id'] = docRef.id;
+    nextData['createdAt'] = FieldValue.serverTimestamp();
+
+    await docRef.set(nextData);
+    await _notificationWorker.notifyScholarshipCreated(docRef.id);
+
+    final snapshot = await docRef.get();
+    return {...?snapshot.data(), 'id': docRef.id};
+  }
+
+  Future<Map<String, dynamic>> updateScholarship(
+    String id,
+    Map<String, dynamic> data,
+  ) async {
+    final docRef = _firestore.collection('scholarships').doc(id);
+    final nextData = _normalizeScholarshipPayload(data, isCreate: false);
+    nextData['updatedAt'] = FieldValue.serverTimestamp();
+
+    await docRef.update(nextData);
+
+    final snapshot = await docRef.get();
+    return {...?snapshot.data(), 'id': docRef.id};
   }
 
   Future<void> deleteScholarship(String id) async {
@@ -679,5 +810,161 @@ class AdminService {
       return -1;
     }
     return bTime.compareTo(aTime);
+  }
+
+  Map<String, dynamic> _normalizeProjectIdeaPayload(
+    Map<String, dynamic> data, {
+    required bool isCreate,
+  }) {
+    final nextData = Map<String, dynamic>.from(data);
+
+    for (final field in const [
+      'title',
+      'description',
+      'domain',
+      'level',
+      'tools',
+      'tagline',
+      'shortDescription',
+      'category',
+      'stage',
+      'targetAudience',
+      'problemStatement',
+      'solution',
+      'resourcesNeeded',
+      'benefits',
+      'imageUrl',
+      'attachmentUrl',
+      'submittedBy',
+      'submittedByName',
+      'authorAvatar',
+      'authorPhotoType',
+      'authorAvatarId',
+    ]) {
+      if (!nextData.containsKey(field)) {
+        continue;
+      }
+      nextData[field] = (nextData[field] ?? '').toString().trim();
+    }
+
+    if (nextData.containsKey('tags') || isCreate) {
+      nextData['tags'] = _stringList(nextData['tags']);
+    }
+
+    if (nextData.containsKey('skillsNeeded') || isCreate) {
+      nextData['skillsNeeded'] = _stringList(nextData['skillsNeeded']);
+    }
+
+    if (nextData.containsKey('teamNeeded') || isCreate) {
+      nextData['teamNeeded'] = _stringList(nextData['teamNeeded']);
+    }
+
+    if (nextData.containsKey('isPublic') || isCreate) {
+      nextData['isPublic'] = nextData['isPublic'] != false;
+    }
+
+    if (nextData.containsKey('status') || isCreate) {
+      nextData['status'] = _normalizeProjectIdeaStatus(nextData['status']);
+    }
+
+    return nextData;
+  }
+
+  Map<String, dynamic> _normalizeScholarshipPayload(
+    Map<String, dynamic> data, {
+    required bool isCreate,
+  }) {
+    final nextData = Map<String, dynamic>.from(data);
+
+    for (final field in const [
+      'title',
+      'description',
+      'provider',
+      'eligibility',
+      'deadline',
+      'link',
+      'createdBy',
+      'createdByRole',
+      'country',
+      'city',
+      'location',
+      'imageUrl',
+      'fundingType',
+      'category',
+      'level',
+    ]) {
+      if (!nextData.containsKey(field)) {
+        continue;
+      }
+      nextData[field] = (nextData[field] ?? '').toString().trim();
+    }
+
+    if (nextData.containsKey('tags') || isCreate) {
+      nextData['tags'] = _stringList(nextData['tags']);
+    }
+
+    if (nextData.containsKey('featured') || isCreate) {
+      nextData['featured'] = nextData['featured'] == true;
+    }
+
+    if (nextData.containsKey('amount') || isCreate) {
+      nextData['amount'] = _parseAmount(nextData['amount']);
+    }
+
+    return nextData;
+  }
+
+  String _normalizeCompanyApprovalStatus(Object? rawStatus) {
+    final normalized = (rawStatus ?? '').toString().trim().toLowerCase();
+    if (normalized == 'pending' ||
+        normalized == 'approved' ||
+        normalized == 'rejected') {
+      return normalized;
+    }
+
+    return 'approved';
+  }
+
+  String _normalizeProjectIdeaStatus(Object? rawStatus) {
+    final normalized = (rawStatus ?? '').toString().trim().toLowerCase();
+    if (normalized == 'pending' ||
+        normalized == 'approved' ||
+        normalized == 'rejected') {
+      return normalized;
+    }
+
+    return 'approved';
+  }
+
+  List<String> _stringList(Object? rawValue) {
+    if (rawValue is Iterable) {
+      return rawValue
+          .map((item) => item.toString().trim())
+          .where((item) => item.isNotEmpty)
+          .toSet()
+          .toList(growable: false);
+    }
+
+    final value = (rawValue ?? '').toString();
+    return value
+        .replaceAll('\n', ',')
+        .split(',')
+        .map((item) => item.trim())
+        .where((item) => item.isNotEmpty)
+        .toSet()
+        .toList(growable: false);
+  }
+
+  num _parseAmount(Object? rawValue) {
+    if (rawValue is num) {
+      return rawValue;
+    }
+
+    final normalized = (rawValue ?? '')
+        .toString()
+        .replaceAll(RegExp(r'[^0-9.\-]'), '')
+        .trim();
+
+    return num.tryParse(normalized) ?? 0;
   }
 }

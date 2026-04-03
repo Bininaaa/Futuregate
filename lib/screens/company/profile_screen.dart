@@ -217,7 +217,26 @@ class CompanyProfileScreen extends StatelessWidget {
     required String description,
     required Uri? websiteUri,
   }) {
-    final hasRegister = user.hasCommercialRegister;
+    final approvalLabel = switch (user.normalizedApprovalStatus) {
+      'pending' => 'Pending review',
+      'rejected' => 'Rejected',
+      _ => 'Approved',
+    };
+    final approvalIcon = switch (user.normalizedApprovalStatus) {
+      'pending' => Icons.pending_actions_rounded,
+      'rejected' => Icons.gpp_bad_outlined,
+      _ => Icons.verified_rounded,
+    };
+    final approvalBackgroundColor = switch (user.normalizedApprovalStatus) {
+      'pending' => const Color(0xFFFFF7ED),
+      'rejected' => const Color(0xFFFEF2F2),
+      _ => const Color(0xFFF0FDF4),
+    };
+    final approvalForegroundColor = switch (user.normalizedApprovalStatus) {
+      'pending' => CompanyDashboardPalette.accent,
+      'rejected' => CompanyDashboardPalette.error,
+      _ => CompanyDashboardPalette.success,
+    };
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(22),
@@ -283,16 +302,10 @@ class CompanyProfileScreen extends StatelessWidget {
                 ),
               ),
               _StatusBadge(
-                label: hasRegister ? 'Verified' : 'Needs docs',
-                icon: hasRegister
-                    ? Icons.verified_rounded
-                    : Icons.pending_actions_rounded,
-                backgroundColor: hasRegister
-                    ? const Color(0xFFF0FDF4)
-                    : const Color(0xFFFFF7ED),
-                foregroundColor: hasRegister
-                    ? CompanyDashboardPalette.success
-                    : CompanyDashboardPalette.accent,
+                label: approvalLabel,
+                icon: approvalIcon,
+                backgroundColor: approvalBackgroundColor,
+                foregroundColor: approvalForegroundColor,
               ),
             ],
           ),
@@ -361,12 +374,7 @@ class CompanyProfileScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 10),
-              Expanded(
-                child: _heroMetric(
-                  hasRegister ? 'Ready' : 'Pending',
-                  'Register',
-                ),
-              ),
+              Expanded(child: _heroMetric(approvalLabel, 'Approval')),
             ],
           ),
         ],
@@ -510,6 +518,36 @@ class CompanyProfileScreen extends StatelessWidget {
     final uploadedAtLabel = uploadedAt == null
         ? 'Not available'
         : DateFormat('MMM d, yyyy').format(uploadedAt.toDate());
+    final registerSummary = switch (user.normalizedApprovalStatus) {
+      'pending' =>
+        'The required document is attached and waiting for admin review.',
+      'rejected' =>
+        'The required document is attached, but the company approval still needs attention.',
+      _ => 'The required document is attached and the company is approved.',
+    };
+    final approvalTitle = switch (user.normalizedApprovalStatus) {
+      'pending' => 'Approval pending',
+      'rejected' => 'Approval needs changes',
+      _ => 'Company approved',
+    };
+    final approvalMessage = switch (user.normalizedApprovalStatus) {
+      'pending' =>
+        'Your commercial register is uploaded and the admin team still needs to review this company account.',
+      'rejected' =>
+        'Your document is uploaded, but the company account still needs corrections before it can be approved.',
+      _ =>
+        'Your commercial register is uploaded and the company account is approved.',
+    };
+    final approvalColor = switch (user.normalizedApprovalStatus) {
+      'pending' => CompanyDashboardPalette.accent,
+      'rejected' => CompanyDashboardPalette.error,
+      _ => CompanyDashboardPalette.success,
+    };
+    final approvalIcon = switch (user.normalizedApprovalStatus) {
+      'pending' => Icons.pending_actions_rounded,
+      'rejected' => Icons.gpp_bad_outlined,
+      _ => Icons.verified_rounded,
+    };
     return SettingsPanel(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -537,7 +575,7 @@ class CompanyProfileScreen extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       user.hasCommercialRegister
-                          ? 'Verification is attached to your company profile.'
+                          ? registerSummary
                           : 'Upload a current document to keep the company profile complete and trusted.',
                       style: SettingsFlowTheme.caption(),
                     ),
@@ -546,6 +584,15 @@ class CompanyProfileScreen extends StatelessWidget {
               ),
             ],
           ),
+          if (user.hasCommercialRegister && !user.isCompanyApproved) ...[
+            const SizedBox(height: 16),
+            SettingsInfoBanner(
+              icon: approvalIcon,
+              title: approvalTitle,
+              message: approvalMessage,
+              color: approvalColor,
+            ),
+          ],
           const SizedBox(height: 16),
           if (user.hasCommercialRegister) ...[
             Container(
