@@ -9,6 +9,7 @@ import '../../models/user_model.dart';
 import '../../services/cv_service.dart';
 import '../../services/document_access_service.dart';
 import '../../utils/admin_palette.dart';
+import '../../utils/display_text.dart';
 import '../../widgets/admin/admin_ui.dart';
 import '../../widgets/profile_avatar.dart';
 
@@ -85,6 +86,7 @@ class _UsersScreenState extends State<UsersScreen> {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<AdminProvider>();
+    final isLevelFilterActive = provider.userLevelFilter != 'all';
 
     if (provider.usersLoading) {
       return const Center(
@@ -233,12 +235,22 @@ class _UsersScreenState extends State<UsersScreen> {
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: [
-                      const AdminPill(
+                      AdminPill(
                         label: 'Company review',
                         color: AdminPalette.warning,
-                        icon: Icons.verified_user_outlined,
+                        icon: isLevelFilterActive
+                            ? Icons.lock_outline_rounded
+                            : Icons.verified_user_outlined,
                       ),
                       const SizedBox(width: 4),
+                      if (isLevelFilterActive) ...[
+                        const AdminPill(
+                          label: 'Disabled while level filter is active',
+                          color: AdminPalette.textMuted,
+                          icon: Icons.info_outline_rounded,
+                        ),
+                        const SizedBox(width: 6),
+                      ],
                       _buildCompanyApprovalChip('All', 'all', provider),
                       const SizedBox(width: 6),
                       _buildCompanyApprovalChip('Pending', 'pending', provider),
@@ -314,9 +326,11 @@ class _UsersScreenState extends State<UsersScreen> {
     AdminProvider provider,
   ) {
     final isSelected = provider.companyApprovalFilter == value;
+    final isEnabled = provider.userLevelFilter == 'all';
     return AdminFilterChip(
       label: label,
       selected: isSelected,
+      enabled: isEnabled,
       onTap: () => provider.setCompanyApprovalFilter(value),
       icon: switch (value) {
         'pending' => Icons.pending_actions_rounded,
@@ -329,9 +343,13 @@ class _UsersScreenState extends State<UsersScreen> {
 
   Widget _buildUserCard(UserModel user, AdminProvider provider) {
     final academicLevel = user.academicLevel?.trim() ?? '';
-    final statusColor = user.isActive
-        ? AdminPalette.success
-        : AdminPalette.danger;
+    final approvalStatus = user.normalizedApprovalStatus;
+    final statusColor = _statusColorForUser(user);
+    final roleColor = _roleColor(user.role);
+    final roleLabel = _roleDisplayLabel(user.role);
+    final levelLabel = user.role == 'student' && academicLevel.isNotEmpty
+        ? DisplayText.capitalizeLeadingLabel(academicLevel)
+        : '';
 
     return AdminSurface(
       margin: const EdgeInsets.only(bottom: 10),
@@ -347,7 +365,30 @@ class _UsersScreenState extends State<UsersScreen> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ProfileAvatar(user: user, radius: 18),
+                Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    ProfileAvatar(user: user, radius: 19),
+                    Positioned(
+                      right: -1,
+                      bottom: -1,
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white, width: 2),
+                        ),
+                        child: Container(
+                          width: 11,
+                          height: 11,
+                          decoration: BoxDecoration(
+                            color: statusColor,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
@@ -357,15 +398,64 @@ class _UsersScreenState extends State<UsersScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Expanded(
-                            child: Text(
-                              user.fullName,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w700,
-                                fontSize: 14,
-                                color: AdminPalette.textPrimary,
-                              ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        user.fullName,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 14.2,
+                                          color: AdminPalette.textPrimary,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 3.5,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: roleColor.withValues(alpha: 0.1),
+                                        borderRadius: BorderRadius.circular(
+                                          999,
+                                        ),
+                                        border: Border.all(
+                                          color: roleColor.withValues(
+                                            alpha: 0.16,
+                                          ),
+                                        ),
+                                      ),
+                                      child: Text(
+                                        roleLabel,
+                                        style: TextStyle(
+                                          fontSize: 10.3,
+                                          fontWeight: FontWeight.w700,
+                                          color: roleColor,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  user.email,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontSize: 11.5,
+                                    color: AdminPalette.textMuted,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                           const SizedBox(width: 8),
@@ -376,36 +466,27 @@ class _UsersScreenState extends State<UsersScreen> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        user.email,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 11.5,
-                          color: AdminPalette.textMuted,
-                        ),
-                      ),
                       const SizedBox(height: 8),
                       Wrap(
                         spacing: 6,
                         runSpacing: 6,
                         children: [
-                          _buildRoleBadge(user.role),
+                          if (levelLabel.isNotEmpty)
+                            AdminPill(
+                              label: levelLabel,
+                              color: AdminPalette.info,
+                              icon: Icons.school_outlined,
+                            ),
                           if (user.role == 'company')
-                            _buildApprovalBadge(user.normalizedApprovalStatus),
-                          if (user.role == 'student' &&
-                              academicLevel.isNotEmpty)
-                            _buildLevelBadge(academicLevel),
-                          AdminPill(
-                            label: user.isActive ? 'Active' : 'Blocked',
-                            color: statusColor,
-                            icon: user.isActive
-                                ? Icons.check_circle_outline_rounded
-                                : Icons.block_outlined,
-                          ),
+                            _buildApprovalBadge(approvalStatus),
+                          if (_shouldShowAccountStateBadge(user))
+                            _buildAccountStateBadge(user, color: statusColor),
                         ],
                       ),
+                      if (user.role == 'company') ...[
+                        const SizedBox(height: 10),
+                        _buildCompanyQuickActions(user, provider),
+                      ],
                     ],
                   ),
                 ),
@@ -417,36 +498,351 @@ class _UsersScreenState extends State<UsersScreen> {
     );
   }
 
-  Widget _buildRoleBadge(String role) {
-    return AdminPill(label: role, color: _roleColor(role));
+  bool _shouldShowAccountStateBadge(UserModel user) {
+    if (user.role != 'company') {
+      return true;
+    }
+
+    if (!user.isActive) {
+      return true;
+    }
+
+    return user.normalizedApprovalStatus == 'approved';
   }
 
-  Widget _buildLevelBadge(String level) {
-    return AdminPill(label: level, color: Colors.purple);
-  }
+  Color _statusColorForUser(UserModel user) {
+    if (!user.isActive) {
+      return AdminPalette.danger;
+    }
 
-  Widget _buildApprovalBadge(String status) {
-    final normalized = status.trim().toLowerCase();
-    final color = switch (normalized) {
+    if (user.role != 'company') {
+      return AdminPalette.success;
+    }
+
+    return switch (user.normalizedApprovalStatus) {
       'pending' => AdminPalette.warning,
       'rejected' => AdminPalette.danger,
       _ => AdminPalette.success,
     };
-    final label = switch (normalized) {
+  }
+
+  Widget _buildAccountStateBadge(UserModel user, {required Color color}) {
+    final isCompany = user.role == 'company';
+
+    return AdminPill(
+      label: isCompany
+          ? (user.isActive ? 'Active' : 'Blocked')
+          : (user.isActive ? 'Active' : 'Blocked'),
+      color: color,
+      icon: user.isActive
+          ? Icons.check_circle_outline_rounded
+          : Icons.block_outlined,
+    );
+  }
+
+  Widget _buildCompanyQuickActions(UserModel user, AdminProvider provider) {
+    final actions = <Widget>[
+      if (!user.isCompanyApproved)
+        _buildCompanyQuickActionButton(
+          label: 'Approve',
+          icon: Icons.verified_rounded,
+          color: AdminPalette.success,
+          filled: true,
+          onPressed: () =>
+              _showCompanyApprovalDialog(user, provider, 'approved'),
+        ),
+      if (user.isCompanyPendingApproval)
+        _buildCompanyQuickActionButton(
+          label: 'Reject',
+          icon: Icons.gpp_bad_outlined,
+          color: AdminPalette.danger,
+          onPressed: () =>
+              _showCompanyApprovalDialog(user, provider, 'rejected'),
+        ),
+    ];
+
+    if (actions.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    if (actions.length == 1) {
+      return SizedBox(width: double.infinity, child: actions.first);
+    }
+
+    return Row(
+      children: [
+        Expanded(child: actions[0]),
+        const SizedBox(width: 8),
+        Expanded(child: actions[1]),
+      ],
+    );
+  }
+
+  Widget _buildCompanyQuickActionButton({
+    required String label,
+    required IconData icon,
+    required Color color,
+    required VoidCallback onPressed,
+    bool filled = false,
+  }) {
+    final style = filled
+        ? FilledButton.styleFrom(
+            backgroundColor: color,
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
+          )
+        : OutlinedButton.styleFrom(
+            foregroundColor: color,
+            side: BorderSide(color: color.withValues(alpha: 0.22)),
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
+          );
+
+    final child = Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(icon, size: 16),
+        const SizedBox(width: 6),
+        Flexible(
+          child: Text(
+            label,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
+          ),
+        ),
+      ],
+    );
+
+    if (filled) {
+      return FilledButton(onPressed: onPressed, style: style, child: child);
+    }
+
+    return OutlinedButton(onPressed: onPressed, style: style, child: child);
+  }
+
+  String _approvalDisplayLabel(String status) {
+    final normalized = status.trim().toLowerCase();
+
+    return switch (normalized) {
       'pending' => 'Pending review',
       'rejected' => 'Rejected',
       _ => 'Approved',
     };
+  }
 
-    return AdminPill(
-      label: label,
-      color: color,
-      icon: switch (normalized) {
-        'pending' => Icons.pending_actions_rounded,
-        'rejected' => Icons.gpp_bad_outlined,
-        _ => Icons.verified_rounded,
-      },
+  Color _approvalDisplayColor(String status) {
+    final normalized = status.trim().toLowerCase();
+
+    return switch (normalized) {
+      'pending' => AdminPalette.warning,
+      'rejected' => AdminPalette.danger,
+      _ => AdminPalette.success,
+    };
+  }
+
+  IconData _approvalDisplayIcon(String status) {
+    final normalized = status.trim().toLowerCase();
+
+    return switch (normalized) {
+      'pending' => Icons.pending_actions_rounded,
+      'rejected' => Icons.gpp_bad_outlined,
+      _ => Icons.verified_rounded,
+    };
+  }
+
+  IconData _roleIcon(String role) {
+    return switch (role) {
+      'student' => Icons.school_outlined,
+      'company' => Icons.business_outlined,
+      'admin' => Icons.admin_panel_settings_outlined,
+      _ => Icons.person_outline_rounded,
+    };
+  }
+
+  Widget _buildOverlayUserHeaderCard({
+    required UserModel user,
+    required String eyebrow,
+    required String subtitle,
+    bool compact = false,
+  }) {
+    final roleLabel = _roleDisplayLabel(user.role);
+    final approvalLabel = user.role == 'company'
+        ? _approvalDisplayLabel(user.normalizedApprovalStatus)
+        : null;
+    final avatarRadius = compact ? 20.0 : 42.0;
+
+    final chips = <Widget>[
+      AdminPill(
+        label: roleLabel,
+        color: Colors.white,
+        icon: _roleIcon(user.role),
+      ),
+      if (approvalLabel != null)
+        AdminPill(
+          label: approvalLabel,
+          color: Colors.white,
+          icon: _approvalDisplayIcon(user.normalizedApprovalStatus),
+        ),
+      AdminPill(
+        label: user.isActive ? 'Active' : 'Blocked',
+        color: Colors.white,
+        icon: user.isActive
+            ? Icons.check_circle_outline_rounded
+            : Icons.block_outlined,
+      ),
+    ];
+
+    return AdminSurface(
+      radius: compact ? 22 : 24,
+      padding: EdgeInsets.fromLTRB(
+        compact ? 16 : 18,
+        compact ? 16 : 20,
+        compact ? 16 : 18,
+        compact ? 16 : 20,
+      ),
+      gradient: AdminPalette.heroGradient(_roleColor(user.role)),
+      border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
+      child: compact
+          ? Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildOverlayAvatar(
+                  user: user,
+                  radius: avatarRadius,
+                  compact: true,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        eyebrow,
+                        style: const TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.7,
+                          color: Colors.white70,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        user.fullName,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        subtitle,
+                        style: const TextStyle(
+                          fontSize: 12.2,
+                          color: Colors.white70,
+                          height: 1.4,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Wrap(spacing: 8, runSpacing: 8, children: chips),
+                    ],
+                  ),
+                ),
+              ],
+            )
+          : Column(
+              children: [
+                Text(
+                  eyebrow,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.8,
+                    color: Colors.white70,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                _buildOverlayAvatar(user: user, radius: avatarRadius),
+                const SizedBox(height: 14),
+                Text(
+                  user.fullName,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  subtitle,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 12.8,
+                    color: Colors.white70,
+                    height: 1.45,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Wrap(
+                  alignment: WrapAlignment.center,
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: chips,
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  user.email,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 13, color: Colors.white70),
+                ),
+              ],
+            ),
     );
+  }
+
+  Widget _buildOverlayAvatar({
+    required UserModel user,
+    required double radius,
+    bool compact = false,
+  }) {
+    final shellPadding = compact ? 3.5 : 5.0;
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.white.withValues(alpha: 0.96),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF0F172A).withValues(alpha: 0.12),
+            blurRadius: 22,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(shellPadding),
+        child: ProfileAvatar(user: user, radius: radius),
+      ),
+    );
+  }
+
+  Widget _buildApprovalBadge(String status) {
+    return AdminPill(
+      label: _approvalDisplayLabel(status),
+      color: _approvalDisplayColor(status),
+      icon: _approvalDisplayIcon(status),
+    );
+  }
+
+  String _roleDisplayLabel(String role) {
+    return DisplayText.capitalizeLeadingLabel(role);
   }
 
   Widget _buildMiniActionButton({
@@ -480,121 +876,108 @@ class _UsersScreenState extends State<UsersScreen> {
 
     showModalBottomSheet(
       context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
-      builder: (sheetContext) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(18, 12, 18, 22),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildSheetHandle(),
-              const SizedBox(height: 16),
-              AdminSurface(
-                padding: const EdgeInsets.all(12),
-                radius: 18,
-                child: Row(
-                  children: [
-                    ProfileAvatar(user: user, radius: 18),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            user.fullName,
-                            style: const TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w700,
-                              color: AdminPalette.textPrimary,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            user.email,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: AdminPalette.textMuted,
-                            ),
-                          ),
-                        ],
-                      ),
+      builder: (sheetContext) => DraggableScrollableSheet(
+        initialChildSize: 0.66,
+        minChildSize: 0.36,
+        maxChildSize: 0.9,
+        expand: false,
+        builder: (context, scrollController) => ClipRRect(
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+          child: Material(
+            color: AdminPalette.background,
+            child: SafeArea(
+              top: false,
+              child: ListView(
+                controller: scrollController,
+                padding: const EdgeInsets.fromLTRB(18, 12, 18, 22),
+                children: [
+                  _buildSheetHandle(),
+                  const SizedBox(height: 16),
+                  _buildOverlayUserHeaderCard(
+                    user: user,
+                    compact: true,
+                    eyebrow: 'Quick actions',
+                    subtitle:
+                        'Choose the next moderation step or open the full profile.',
+                  ),
+                  const SizedBox(height: 12),
+                  _buildActionSheetTile(
+                    icon: Icons.person_outline_rounded,
+                    title: 'View Profile',
+                    subtitle:
+                        'Open the full admin profile sheet for this user.',
+                    color: AdminPalette.primary,
+                    onTap: () {
+                      Navigator.pop(sheetContext);
+                      _showUserDetails(user);
+                    },
+                  ),
+                  if (user.role == 'company' && !user.isCompanyApproved) ...[
+                    const SizedBox(height: 10),
+                    _buildActionSheetTile(
+                      icon: Icons.verified_rounded,
+                      title: 'Approve Company',
+                      subtitle:
+                          'Unlock the company workspace and move it into the approved state.',
+                      color: AdminPalette.success,
+                      onTap: () {
+                        Navigator.pop(sheetContext);
+                        _showCompanyApprovalDialog(user, provider, 'approved');
+                      },
                     ),
                   ],
-                ),
+                  if (user.role == 'company' && !user.isCompanyRejected) ...[
+                    const SizedBox(height: 10),
+                    _buildActionSheetTile(
+                      icon: Icons.gpp_bad_outlined,
+                      title: 'Reject Company',
+                      subtitle:
+                          'Keep the company out of the workspace until the profile is corrected.',
+                      color: AdminPalette.danger,
+                      onTap: () {
+                        Navigator.pop(sheetContext);
+                        _showCompanyApprovalDialog(user, provider, 'rejected');
+                      },
+                    ),
+                  ],
+                  if (user.role == 'company' &&
+                      !user.isCompanyPendingApproval) ...[
+                    const SizedBox(height: 10),
+                    _buildActionSheetTile(
+                      icon: Icons.pending_actions_rounded,
+                      title: 'Mark Pending Review',
+                      subtitle:
+                          'Move the company back into the review queue for another check.',
+                      color: AdminPalette.warning,
+                      onTap: () {
+                        Navigator.pop(sheetContext);
+                        _showCompanyApprovalDialog(user, provider, 'pending');
+                      },
+                    ),
+                  ],
+                  const SizedBox(height: 10),
+                  _buildActionSheetTile(
+                    icon: user.isActive
+                        ? Icons.block_outlined
+                        : Icons.check_circle_outline_rounded,
+                    title: actionLabel,
+                    subtitle: user.isActive
+                        ? 'Temporarily remove access to this account.'
+                        : 'Restore access and let the user sign in again.',
+                    color: actionColor,
+                    onTap: () {
+                      Navigator.pop(sheetContext);
+                      _showToggleDialog(user, provider);
+                    },
+                  ),
+                ],
               ),
-              const SizedBox(height: 12),
-              _buildActionSheetTile(
-                icon: Icons.person_outline_rounded,
-                title: 'View Profile',
-                subtitle: 'Open the full admin profile sheet for this user.',
-                color: AdminPalette.primary,
-                onTap: () {
-                  Navigator.pop(sheetContext);
-                  _showUserDetails(user);
-                },
-              ),
-              if (user.role == 'company' && !user.isCompanyApproved) ...[
-                const SizedBox(height: 10),
-                _buildActionSheetTile(
-                  icon: Icons.verified_rounded,
-                  title: 'Approve Company',
-                  subtitle:
-                      'Unlock the company workspace and let this organization use the platform.',
-                  color: AdminPalette.success,
-                  onTap: () {
-                    Navigator.pop(sheetContext);
-                    _showCompanyApprovalDialog(user, provider, 'approved');
-                  },
-                ),
-              ],
-              if (user.role == 'company' && !user.isCompanyRejected) ...[
-                const SizedBox(height: 10),
-                _buildActionSheetTile(
-                  icon: Icons.gpp_bad_outlined,
-                  title: 'Reject Company',
-                  subtitle:
-                      'Keep the company blocked from the workspace until the profile is corrected.',
-                  color: AdminPalette.danger,
-                  onTap: () {
-                    Navigator.pop(sheetContext);
-                    _showCompanyApprovalDialog(user, provider, 'rejected');
-                  },
-                ),
-              ],
-              if (user.role == 'company' && !user.isCompanyPendingApproval) ...[
-                const SizedBox(height: 10),
-                _buildActionSheetTile(
-                  icon: Icons.pending_actions_rounded,
-                  title: 'Mark Pending Review',
-                  subtitle:
-                      'Move the company back into the review queue without blocking the account entirely.',
-                  color: AdminPalette.warning,
-                  onTap: () {
-                    Navigator.pop(sheetContext);
-                    _showCompanyApprovalDialog(user, provider, 'pending');
-                  },
-                ),
-              ],
-              const SizedBox(height: 10),
-              _buildActionSheetTile(
-                icon: user.isActive
-                    ? Icons.block_outlined
-                    : Icons.check_circle_outline_rounded,
-                title: actionLabel,
-                subtitle: user.isActive
-                    ? 'Temporarily disable account access.'
-                    : 'Restore the account and let the user access the app again.',
-                color: actionColor,
-                onTap: () {
-                  Navigator.pop(sheetContext);
-                  _showToggleDialog(user, provider);
-                },
-              ),
-            ],
+            ),
           ),
         ),
       ),
@@ -606,50 +989,213 @@ class _UsersScreenState extends State<UsersScreen> {
     AdminProvider provider,
     String nextStatus,
   ) {
+    final companyLabel = user.companyName?.trim().isNotEmpty == true
+        ? user.companyName!.trim()
+        : user.fullName;
     final actionLabel = switch (nextStatus) {
-      'approved' => 'Approve',
-      'rejected' => 'Reject',
-      _ => 'Mark Pending',
+      'approved' => 'Approve Company',
+      'rejected' => 'Reject Company',
+      _ => 'Mark Pending Review',
     };
     final actionColor = switch (nextStatus) {
-      'approved' => Colors.green,
-      'rejected' => Colors.red,
-      _ => Colors.orange,
+      'approved' => AdminPalette.success,
+      'rejected' => AdminPalette.danger,
+      _ => AdminPalette.warning,
+    };
+    final actionIcon = switch (nextStatus) {
+      'approved' => Icons.verified_rounded,
+      'rejected' => Icons.gpp_bad_outlined,
+      _ => Icons.pending_actions_rounded,
+    };
+    final message = switch (nextStatus) {
+      'approved' =>
+        'This will unlock the workspace and let the company use its approved features right away.',
+      'rejected' =>
+        'This will keep the company out of the workspace until the profile details are corrected.',
+      _ =>
+        'This will move the company back into the review queue for another moderation pass.',
     };
 
+    _showConfirmationDialog(
+      eyebrow: 'Company moderation',
+      title: actionLabel,
+      message: message,
+      targetLabel: companyLabel,
+      targetHint: 'Selected company',
+      icon: actionIcon,
+      accentColor: actionColor,
+      confirmLabel: switch (nextStatus) {
+        'approved' => 'Approve',
+        'rejected' => 'Reject',
+        _ => 'Set Pending',
+      },
+      onConfirm: () =>
+          provider.updateCompanyApprovalStatus(user.uid, nextStatus),
+    );
+  }
+
+  void _showConfirmationDialog({
+    required String eyebrow,
+    required String title,
+    required String message,
+    required String targetLabel,
+    required String targetHint,
+    required IconData icon,
+    required Color accentColor,
+    required String confirmLabel,
+    required Future<String?> Function() onConfirm,
+  }) {
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: Text('$actionLabel Company'),
-        content: Text(
-          'Are you sure you want to ${actionLabel.toLowerCase()} ${user.companyName?.trim().isNotEmpty == true ? user.companyName!.trim() : user.fullName}?',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () async {
-              Navigator.pop(ctx);
-              final error = await provider.updateCompanyApprovalStatus(
-                user.uid,
-                nextStatus,
-              );
-              if (!mounted) return;
-              if (error != null && context.mounted) {
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(SnackBar(content: Text(error)));
-              }
-            },
-            child: Text(
-              actionLabel,
-              style: TextStyle(color: actionColor, fontWeight: FontWeight.bold),
+      barrierColor: const Color(0xFF0F172A).withValues(alpha: 0.4),
+      builder: (ctx) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 420),
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(28),
+              border: Border.all(color: accentColor.withValues(alpha: 0.16)),
+              boxShadow: AdminPalette.softShadow,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 50,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        color: accentColor.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Icon(icon, color: accentColor, size: 24),
+                    ),
+                    const Spacer(),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AdminPalette.surfaceMuted,
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                      child: Text(
+                        eyebrow,
+                        style: const TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: AdminPalette.textMuted,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
+                    color: AdminPalette.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  message,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    height: 1.5,
+                    color: AdminPalette.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: 14),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: AdminPalette.surfaceMuted,
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(
+                      color: AdminPalette.border.withValues(alpha: 0.92),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 38,
+                        height: 38,
+                        decoration: BoxDecoration(
+                          color: accentColor.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Icon(icon, color: accentColor, size: 18),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              targetHint,
+                              style: const TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                color: AdminPalette.textMuted,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              targetLabel,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 13.5,
+                                fontWeight: FontWeight.w700,
+                                color: AdminPalette.textPrimary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 18),
+                _buildAdaptiveActionGroup([
+                  _buildDocumentButton(
+                    label: 'Cancel',
+                    icon: Icons.close_rounded,
+                    onPressed: () => Navigator.pop(ctx),
+                    color: AdminPalette.textMuted,
+                    outlined: true,
+                  ),
+                  _buildDocumentButton(
+                    label: confirmLabel,
+                    icon: icon,
+                    onPressed: () async {
+                      Navigator.pop(ctx);
+                      final error = await onConfirm();
+                      if (!mounted) return;
+                      if (error != null && context.mounted) {
+                        ScaffoldMessenger.of(
+                          context,
+                        ).showSnackBar(SnackBar(content: Text(error)));
+                      }
+                    },
+                    color: accentColor,
+                  ),
+                ]),
+              ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }
@@ -717,49 +1263,29 @@ class _UsersScreenState extends State<UsersScreen> {
 
   void _showToggleDialog(UserModel user, AdminProvider provider) {
     final action = user.isActive ? 'Block' : 'Unblock';
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-        title: Text('$action User'),
-        content: Text(
-          'Are you sure you want to ${action.toLowerCase()} ${user.fullName}?',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () async {
-              Navigator.pop(ctx);
-              final error = await provider.toggleUserActive(
-                user.uid,
-                !user.isActive,
-              );
-              if (!mounted) return;
-              if (error != null && context.mounted) {
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(SnackBar(content: Text(error)));
-              }
-            },
-            child: Text(
-              action,
-              style: TextStyle(
-                color: user.isActive ? Colors.red : Colors.green,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ],
-      ),
+    _showConfirmationDialog(
+      eyebrow: 'Account access',
+      title: '$action User',
+      message: user.isActive
+          ? 'This will immediately remove access to the app until you restore the account later.'
+          : 'This will restore access and let the user sign in and use the app again.',
+      targetLabel: user.fullName,
+      targetHint: 'Selected account',
+      icon: user.isActive
+          ? Icons.block_outlined
+          : Icons.check_circle_outline_rounded,
+      accentColor: user.isActive ? AdminPalette.danger : AdminPalette.success,
+      confirmLabel: action,
+      onConfirm: () => provider.toggleUserActive(user.uid, !user.isActive),
     );
   }
 
   void _showUserDetails(UserModel user) {
+    final provider = context.read<AdminProvider>();
+
     showModalBottomSheet(
       context: context,
+      backgroundColor: Colors.transparent,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
@@ -771,191 +1297,148 @@ class _UsersScreenState extends State<UsersScreen> {
           maxChildSize: 0.94,
           expand: false,
           builder: (context, scrollController) {
-            return ListView(
-              controller: scrollController,
-              padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
-              children: [
-                _buildSheetHandle(),
-                const SizedBox(height: 16),
-                AdminSurface(
-                  radius: 24,
-                  gradient: AdminPalette.heroGradient(_roleColor(user.role)),
-                  border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.12),
-                  ),
-                  child: Column(
-                    children: [
-                      ProfileAvatar(user: user, radius: 42),
-                      const SizedBox(height: 14),
-                      Text(
-                        user.fullName,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                        ),
+            return ClipRRect(
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(28),
+              ),
+              child: Material(
+                color: AdminPalette.background,
+                child: ListView(
+                  controller: scrollController,
+                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+                  children: [
+                    _buildSheetHandle(),
+                    const SizedBox(height: 16),
+                    _buildOverlayUserHeaderCard(
+                      user: user,
+                      eyebrow: 'Profile overview',
+                      subtitle:
+                          'Review identity, status, and submitted information in one place.',
+                    ),
+                    const SizedBox(height: 18),
+                    const AdminSectionHeader(
+                      eyebrow: 'Profile',
+                      title: 'User Details',
+                      subtitle:
+                          'Review contact info, account status, and role-specific details in one clean profile view.',
+                    ),
+                    const SizedBox(height: 12),
+                    _buildDetailRow(Icons.email_outlined, 'Email', user.email),
+                    _buildOptionalDetailRow(
+                      Icons.phone_outlined,
+                      'Phone',
+                      user.phone,
+                      'No phone number added',
+                    ),
+                    _buildOptionalDetailRow(
+                      Icons.location_on_outlined,
+                      'Location',
+                      user.location,
+                      'No location added',
+                    ),
+                    if (user.role == 'student') ...[
+                      _buildOptionalDetailRow(
+                        Icons.school_outlined,
+                        'Academic Level',
+                        user.academicLevel,
+                        'No academic level added',
                       ),
-                      const SizedBox(height: 8),
-                      Wrap(
-                        alignment: WrapAlignment.center,
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: [
-                          AdminPill(label: user.role, color: Colors.white),
-                          AdminPill(
-                            label: user.isActive ? 'Active' : 'Blocked',
-                            color: user.isActive
-                                ? Colors.greenAccent.shade100
-                                : Colors.red.shade100,
-                            icon: user.isActive
-                                ? Icons.check_circle_outline_rounded
-                                : Icons.block_outlined,
-                          ),
-                        ],
+                      _buildOptionalDetailRow(
+                        Icons.account_balance_outlined,
+                        'University',
+                        user.university,
+                        'No university added',
                       ),
-                      const SizedBox(height: 12),
-                      Text(
-                        user.email,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontSize: 13,
-                          color: Colors.white70,
-                        ),
+                      _buildOptionalDetailRow(
+                        Icons.subject_outlined,
+                        'Field of Study',
+                        user.fieldOfStudy,
+                        'No field of study added',
                       ),
                     ],
-                  ),
-                ),
-                const SizedBox(height: 18),
-                const AdminSectionHeader(
-                  eyebrow: 'Profile',
-                  title: 'User Details',
-                  subtitle:
-                      'Review identity, academic, and company information in a cleaner admin profile layout.',
-                ),
-                const SizedBox(height: 12),
-                _buildDetailRow(Icons.email_outlined, 'Email', user.email),
-                _buildDetailRow(
-                  Icons.phone_outlined,
-                  'Phone',
-                  user.phone.isNotEmpty ? user.phone : 'Not provided',
-                ),
-                _buildDetailRow(
-                  Icons.location_on_outlined,
-                  'Location',
-                  user.location.isNotEmpty ? user.location : 'Not provided',
-                ),
-                if (user.role == 'student') ...[
-                  _buildDetailRow(
-                    Icons.school_outlined,
-                    'Academic Level',
-                    user.academicLevel?.isNotEmpty == true
-                        ? user.academicLevel!
-                        : 'Not set',
-                  ),
-                  _buildDetailRow(
-                    Icons.account_balance_outlined,
-                    'University',
-                    user.university?.isNotEmpty == true
-                        ? user.university!
-                        : 'Not set',
-                  ),
-                  _buildDetailRow(
-                    Icons.subject_outlined,
-                    'Field of Study',
-                    user.fieldOfStudy?.isNotEmpty == true
-                        ? user.fieldOfStudy!
-                        : 'Not set',
-                  ),
-                ],
-                if (user.role == 'student' &&
-                    user.academicLevel == 'doctorat') ...[
-                  _buildDetailRow(
-                    Icons.science_outlined,
-                    'Research Topic',
-                    user.researchTopic?.isNotEmpty == true
-                        ? user.researchTopic!
-                        : 'Not set',
-                  ),
-                  _buildDetailRow(
-                    Icons.biotech_outlined,
-                    'Laboratory',
-                    user.laboratory?.isNotEmpty == true
-                        ? user.laboratory!
-                        : 'Not set',
-                  ),
-                  _buildDetailRow(
-                    Icons.person_outline_rounded,
-                    'Supervisor',
-                    user.supervisor?.isNotEmpty == true
-                        ? user.supervisor!
-                        : 'Not set',
-                  ),
-                  _buildDetailRow(
-                    Icons.category_outlined,
-                    'Research Domain',
-                    user.researchDomain?.isNotEmpty == true
-                        ? user.researchDomain!
-                        : 'Not set',
-                  ),
-                ],
-                if (user.role == 'company') ...[
-                  _buildDetailRow(
-                    Icons.business_outlined,
-                    'Company',
-                    user.companyName?.isNotEmpty == true
-                        ? user.companyName!
-                        : 'Not set',
-                  ),
-                  _buildDetailRow(
-                    Icons.verified_user_outlined,
-                    'Approval Status',
-                    switch (user.normalizedApprovalStatus) {
-                      'pending' => 'Pending review',
-                      'rejected' => 'Rejected',
-                      _ => 'Approved',
-                    },
-                  ),
-                  _buildDetailRow(
-                    Icons.category_outlined,
-                    'Sector',
-                    user.sector?.isNotEmpty == true ? user.sector! : 'Not set',
-                  ),
-                  _buildDetailRow(
-                    Icons.language_outlined,
-                    'Website',
-                    user.website?.isNotEmpty == true
-                        ? user.website!
-                        : 'Not set',
-                  ),
-                ],
-                if (user.role == 'student') ...[
-                  const SizedBox(height: 6),
-                  FutureBuilder<CvModel?>(
-                    future: _cvService.getCvByStudentId(user.uid),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 12),
-                          child: LinearProgressIndicator(),
-                        );
-                      }
+                    if (user.role == 'student' &&
+                        user.academicLevel == 'doctorat') ...[
+                      _buildOptionalDetailRow(
+                        Icons.science_outlined,
+                        'Research Topic',
+                        user.researchTopic,
+                        'No research topic added',
+                      ),
+                      _buildOptionalDetailRow(
+                        Icons.biotech_outlined,
+                        'Laboratory',
+                        user.laboratory,
+                        'No laboratory added',
+                      ),
+                      _buildOptionalDetailRow(
+                        Icons.person_outline_rounded,
+                        'Supervisor',
+                        user.supervisor,
+                        'No supervisor assigned',
+                      ),
+                      _buildOptionalDetailRow(
+                        Icons.category_outlined,
+                        'Research Domain',
+                        user.researchDomain,
+                        'No research domain added',
+                      ),
+                    ],
+                    if (user.role == 'company') ...[
+                      _buildOptionalDetailRow(
+                        Icons.business_outlined,
+                        'Company',
+                        user.companyName,
+                        'No company name added',
+                      ),
+                      _buildDetailRow(
+                        Icons.verified_user_outlined,
+                        'Approval Status',
+                        _approvalDisplayLabel(user.normalizedApprovalStatus),
+                      ),
+                      _buildCompanyModerationPanel(user, provider),
+                      _buildOptionalDetailRow(
+                        Icons.category_outlined,
+                        'Sector',
+                        user.sector,
+                        'No sector added',
+                      ),
+                      _buildOptionalDetailRow(
+                        Icons.language_outlined,
+                        'Website',
+                        user.website,
+                        'No website added',
+                      ),
+                    ],
+                    if (user.role == 'student') ...[
+                      const SizedBox(height: 6),
+                      FutureBuilder<CvModel?>(
+                        future: _cvService.getCvByStudentId(user.uid),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 12),
+                              child: LinearProgressIndicator(),
+                            );
+                          }
 
-                      return _buildStudentCvSection(user, snapshot.data);
-                    },
-                  ),
-                ],
-                if (user.role == 'company') ...[
-                  const SizedBox(height: 6),
-                  _buildCompanyCommercialRegisterSection(user),
-                ],
-                if (user.bio?.isNotEmpty == true)
-                  _buildDetailRow(
-                    Icons.person_outline_rounded,
-                    'Bio',
-                    user.bio!,
-                  ),
-              ],
+                          return _buildStudentCvSection(user, snapshot.data);
+                        },
+                      ),
+                    ],
+                    if (user.role == 'company') ...[
+                      const SizedBox(height: 6),
+                      _buildCompanyCommercialRegisterSection(user),
+                    ],
+                    if (user.bio?.isNotEmpty == true)
+                      _buildDetailRow(
+                        Icons.person_outline_rounded,
+                        'Bio',
+                        user.bio!,
+                      ),
+                  ],
+                ),
+              ),
             );
           },
         );
@@ -1008,6 +1491,62 @@ class _UsersScreenState extends State<UsersScreen> {
           ],
         );
       },
+    );
+  }
+
+  Widget _buildCompanyModerationPanel(UserModel user, AdminProvider provider) {
+    final buttons = <Widget>[
+      if (!user.isCompanyApproved)
+        _buildDocumentButton(
+          label: 'Approve Company',
+          icon: Icons.verified_rounded,
+          onPressed: () =>
+              _showCompanyApprovalDialog(user, provider, 'approved'),
+          color: AdminPalette.success,
+        ),
+      if (!user.isCompanyRejected)
+        _buildDocumentButton(
+          label: 'Reject Company',
+          icon: Icons.gpp_bad_outlined,
+          onPressed: () =>
+              _showCompanyApprovalDialog(user, provider, 'rejected'),
+          color: AdminPalette.danger,
+          outlined: true,
+        ),
+    ];
+
+    if (buttons.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return AdminSurface(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
+      radius: 18,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Moderation Actions',
+            style: TextStyle(
+              fontSize: 13.5,
+              fontWeight: FontWeight.w700,
+              color: AdminPalette.textPrimary,
+            ),
+          ),
+          const SizedBox(height: 4),
+          const Text(
+            'Update the company approval state from here without leaving the profile.',
+            style: TextStyle(
+              fontSize: 12,
+              height: 1.45,
+              color: AdminPalette.textMuted,
+            ),
+          ),
+          const SizedBox(height: 12),
+          _buildAdaptiveActionGroup(buttons),
+        ],
+      ),
     );
   }
 
@@ -1348,7 +1887,28 @@ class _UsersScreenState extends State<UsersScreen> {
     return 'Could not open the document right now.';
   }
 
-  Widget _buildDetailRow(IconData icon, String label, String value) {
+  Widget _buildOptionalDetailRow(
+    IconData icon,
+    String label,
+    String? value,
+    String placeholder,
+  ) {
+    final trimmedValue = (value ?? '').trim();
+
+    return _buildDetailRow(
+      icon,
+      label,
+      trimmedValue.isNotEmpty ? trimmedValue : placeholder,
+      mutedValue: trimmedValue.isEmpty,
+    );
+  }
+
+  Widget _buildDetailRow(
+    IconData icon,
+    String label,
+    String value, {
+    bool mutedValue = false,
+  }) {
     return AdminSurface(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
@@ -1381,10 +1941,13 @@ class _UsersScreenState extends State<UsersScreen> {
                 const SizedBox(height: 4),
                 Text(
                   value,
-                  style: const TextStyle(
-                    fontSize: 14,
+                  style: TextStyle(
+                    fontSize: mutedValue ? 13.2 : 14,
                     height: 1.4,
-                    color: AdminPalette.textPrimary,
+                    color: mutedValue
+                        ? AdminPalette.textMuted
+                        : AdminPalette.textPrimary,
+                    fontWeight: mutedValue ? FontWeight.w500 : FontWeight.w600,
                   ),
                 ),
               ],

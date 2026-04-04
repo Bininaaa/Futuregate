@@ -32,6 +32,7 @@ class AdminProvider extends ChangeNotifier {
   List<TrainingModel> _allTrainings = [];
   final Set<String> _busyIdeaIds = <String>{};
   bool _moderationLoading = false;
+  bool _moderationInitialized = false;
   String? _moderationError;
   bool _activityLoading = false;
   bool _activityLoadingMore = false;
@@ -77,6 +78,7 @@ class AdminProvider extends ChangeNotifier {
   List<TrainingModel> get allTrainings => _allTrainings;
   Set<String> get busyIdeaIds => Set.unmodifiable(_busyIdeaIds);
   bool get moderationLoading => _moderationLoading;
+  bool get moderationInitialized => _moderationInitialized;
   String? get moderationError => _moderationError;
   bool get activityLoading => _activityLoading;
   bool get activityLoadingMore => _activityLoadingMore;
@@ -141,11 +143,21 @@ class AdminProvider extends ChangeNotifier {
 
   void setUserLevelFilter(String level) {
     _userLevelFilter = level;
+    if (level != 'all') {
+      _companyApprovalFilter = 'all';
+    }
     _applyUserFilters();
     notifyListeners();
   }
 
   void setCompanyApprovalFilter(String status) {
+    if (_userLevelFilter != 'all') {
+      _companyApprovalFilter = 'all';
+      _applyUserFilters();
+      notifyListeners();
+      return;
+    }
+
     _companyApprovalFilter = status;
     _applyUserFilters();
     notifyListeners();
@@ -240,6 +252,7 @@ class AdminProvider extends ChangeNotifier {
       debugPrint('loadModerationData error: $e');
     } finally {
       _moderationLoading = false;
+      _moderationInitialized = true;
       notifyListeners();
     }
   }

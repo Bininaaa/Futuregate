@@ -22,6 +22,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
+  int _contentSessionId = 0;
   final Set<int> _visitedIndexes = <int>{0};
 
   late final List<_AdminDestination> _destinations = [
@@ -80,6 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final destination = _destinations[_currentIndex];
     final isCompactHeader = MediaQuery.sizeOf(context).width < 720;
     final isCompactNavigation = MediaQuery.sizeOf(context).width < 390;
+    final keyboardVisible = MediaQuery.viewInsetsOf(context).bottom > 0;
 
     return Scaffold(
       backgroundColor: AdminPalette.background,
@@ -194,40 +196,45 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(30),
-              border: Border.all(color: AdminPalette.border),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.08),
-                  blurRadius: 28,
-                  offset: const Offset(0, 16),
-                ),
-              ],
-            ),
-            child: Row(
-              children: List<Widget>.generate(
-                _destinations.length,
-                (index) => Expanded(
-                  child: _AdminBottomNavItem(
-                    destination: _destinations[index],
-                    compact: isCompactNavigation,
-                    selected: _currentIndex == index,
-                    onTap: () => _selectIndex(index),
+      bottomNavigationBar: keyboardVisible
+          ? null
+          : SafeArea(
+              top: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 10,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(30),
+                    border: Border.all(color: AdminPalette.border),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.08),
+                        blurRadius: 28,
+                        offset: const Offset(0, 16),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: List<Widget>.generate(
+                      _destinations.length,
+                      (index) => Expanded(
+                        child: _AdminBottomNavItem(
+                          destination: _destinations[index],
+                          compact: isCompactNavigation,
+                          selected: _currentIndex == index,
+                          onTap: () => _selectIndex(index),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ),
-      ),
     );
   }
 
@@ -238,7 +245,11 @@ class _HomeScreenState extends State<HomeScreen> {
       case 1:
         return const UsersScreen();
       case 2:
-        return const AdminContentCenterScreen(embedded: true);
+        return AdminContentCenterScreen(
+          key: ValueKey('embedded-content-$_contentSessionId'),
+          embedded: true,
+          resetToken: _contentSessionId,
+        );
       case 3:
         return const AdminActivityCenterScreen(embedded: true);
       default:
@@ -247,7 +258,11 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _selectIndex(int index) {
+    FocusManager.instance.primaryFocus?.unfocus();
     setState(() {
+      if (index == 2 && _currentIndex != 2) {
+        _contentSessionId++;
+      }
       _currentIndex = index;
       _visitedIndexes.add(index);
     });

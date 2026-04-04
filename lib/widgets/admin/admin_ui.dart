@@ -380,6 +380,7 @@ class AdminFilterChip extends StatelessWidget {
   final VoidCallback? onTap;
   final IconData? icon;
   final int? badgeCount;
+  final bool enabled;
 
   const AdminFilterChip({
     super.key,
@@ -388,74 +389,87 @@ class AdminFilterChip extends StatelessWidget {
     this.onTap,
     this.icon,
     this.badgeCount,
+    this.enabled = true,
   });
 
   @override
   Widget build(BuildContext context) {
-    final background = selected ? AdminPalette.primary : AdminPalette.surface;
-    final foreground = selected ? Colors.white : AdminPalette.textSecondary;
+    final background = !enabled
+        ? selected
+              ? AdminPalette.primarySoft
+              : AdminPalette.surfaceMuted
+        : selected
+        ? AdminPalette.primary
+        : AdminPalette.surface;
+    final foreground = !enabled
+        ? selected
+              ? AdminPalette.primary
+              : AdminPalette.textMuted
+        : selected
+        ? Colors.white
+        : AdminPalette.textSecondary;
+    final borderColor = !enabled
+        ? selected
+              ? AdminPalette.primary.withValues(alpha: 0.18)
+              : AdminPalette.border.withValues(alpha: 0.9)
+        : selected
+        ? Colors.transparent
+        : AdminPalette.border.withValues(alpha: 0.92);
 
     return InkWell(
-      onTap: onTap,
+      onTap: enabled ? onTap : null,
       borderRadius: BorderRadius.circular(999),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
-        curve: Curves.easeOutCubic,
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-        decoration: BoxDecoration(
-          color: background,
-          borderRadius: BorderRadius.circular(999),
-          border: Border.all(
-            color: selected
-                ? Colors.transparent
-                : AdminPalette.border.withValues(alpha: 0.92),
+      child: Opacity(
+        opacity: enabled ? 1 : 0.55,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          curve: Curves.easeOutCubic,
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          decoration: BoxDecoration(
+            color: background,
+            borderRadius: BorderRadius.circular(999),
+            border: Border.all(color: borderColor),
           ),
-          boxShadow: selected
-              ? [
-                  BoxShadow(
-                    color: AdminPalette.primary.withValues(alpha: 0.24),
-                    blurRadius: 16,
-                    offset: const Offset(0, 10),
-                  ),
-                ]
-              : null,
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (icon != null) ...[
-              Icon(icon, size: 15, color: foreground),
-              const SizedBox(width: 7),
-            ],
-            Text(
-              label,
-              style: GoogleFonts.poppins(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: foreground,
-              ),
-            ),
-            if ((badgeCount ?? 0) > 0) ...[
-              const SizedBox(width: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: selected
-                      ? Colors.white.withValues(alpha: 0.18)
-                      : AdminPalette.primarySoft,
-                  borderRadius: BorderRadius.circular(999),
-                ),
-                child: Text(
-                  '${badgeCount!}',
-                  style: GoogleFonts.poppins(
-                    fontSize: 10.5,
-                    fontWeight: FontWeight.w700,
-                    color: selected ? Colors.white : AdminPalette.primary,
-                  ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (icon != null) ...[
+                Icon(icon, size: 15, color: foreground),
+                const SizedBox(width: 7),
+              ],
+              Text(
+                label,
+                style: GoogleFonts.poppins(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: foreground,
                 ),
               ),
+              if ((badgeCount ?? 0) > 0) ...[
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: selected
+                        ? Colors.white.withValues(alpha: 0.18)
+                        : AdminPalette.primarySoft,
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Text(
+                    '${badgeCount!}',
+                    style: GoogleFonts.poppins(
+                      fontSize: 10.5,
+                      fontWeight: FontWeight.w700,
+                      color: selected ? Colors.white : AdminPalette.primary,
+                    ),
+                  ),
+                ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );
