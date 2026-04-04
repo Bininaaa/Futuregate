@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -5,8 +6,11 @@ import '../../models/admin_activity_model.dart';
 import '../../providers/admin_provider.dart';
 import '../../providers/notification_provider.dart';
 import '../../utils/admin_palette.dart';
+import '../../utils/display_text.dart';
+import '../../utils/opportunity_type.dart';
 import '../../widgets/admin/admin_ui.dart';
 import '../../widgets/admin_charts.dart';
+import '../../widgets/opportunity_type_badge.dart';
 import '../../widgets/profile_avatar.dart';
 import '../../widgets/stat_card.dart';
 import '../notifications_screen.dart';
@@ -69,29 +73,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             AdminHeroCard(
-              title: 'Command Center for Platform Operations',
+              title: 'Admin Control Room',
               subtitle:
-                  'Keep moderation, growth, activity, and curation in one focused admin workspace with faster paths into the queues that need attention.',
+                  'Review companies, content, and platform activity from one focused workspace.',
               icon: Icons.admin_panel_settings_rounded,
               accentColor: AdminPalette.secondary,
-              stats: [
-                AdminHeroStat(
-                  label: 'Users',
-                  value: '${stats['totalUsers'] ?? 0}',
-                ),
-                AdminHeroStat(
-                  label: 'Active',
-                  value: '${stats['activeUsers'] ?? 0}',
-                ),
-                AdminHeroStat(
-                  label: 'Pending Companies',
-                  value: '${stats['pendingCompanies'] ?? 0}',
-                ),
-                AdminHeroStat(
-                  label: 'Pending Ideas',
-                  value: '${stats['pendingIdeas'] ?? 0}',
-                ),
-              ],
               actions: [
                 AdminActionChip(
                   label: 'Review Companies',
@@ -117,7 +103,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 22),
+            const SizedBox(height: 18),
             const AdminSectionHeader(
               eyebrow: 'Snapshot',
               title: 'Platform Overview',
@@ -310,7 +296,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               eyebrow: 'Actions',
               title: 'Quick Access',
               subtitle:
-                  'The most common admin destinations are one tap away from here.',
+                  'Jump straight into the admin areas you open most often.',
             ),
             const SizedBox(height: 12),
             _QuickAccessGrid(
@@ -327,14 +313,14 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             ),
             const SizedBox(height: 12),
             _RecentActivityCard(
-              activities: provider.recentActivity.take(8).toList(),
+              activities: provider.recentActivity.take(6).toList(),
               onOpenActivity: _openActivityItem,
             ),
             const SizedBox(height: 16),
-            _RecentUsersCard(users: provider.recentUsers),
+            _RecentUsersCard(users: provider.recentUsers.take(6).toList()),
             const SizedBox(height: 16),
             _RecentOpportunitiesCard(
-              opportunities: provider.recentOpportunities,
+              opportunities: provider.recentOpportunities.take(6).toList(),
             ),
           ],
         ),
@@ -440,9 +426,14 @@ class _DashboardMetricGrid extends StatelessWidget {
             : 2;
         final childAspectRatio = switch (crossAxisCount) {
           1 => 2.7,
-          2 => constraints.maxWidth < 420 ? 1.16 : 1.22,
-          3 => 1.16,
-          _ => 1.2,
+          2 =>
+            constraints.maxWidth < 360
+                ? 1.72
+                : constraints.maxWidth < 420
+                ? 1.58
+                : 1.42,
+          3 => 1.28,
+          _ => 1.32,
         };
 
         return GridView.builder(
@@ -450,8 +441,8 @@ class _DashboardMetricGrid extends StatelessWidget {
           physics: const NeverScrollableScrollPhysics(),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: crossAxisCount,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
             childAspectRatio: childAspectRatio,
           ),
           itemCount: items.length,
@@ -589,24 +580,36 @@ class _RankedListCard extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: 10),
               child: LayoutBuilder(
                 builder: (context, constraints) {
-                  final isCompact = constraints.maxWidth < 360;
+                  final normalizedTitle = (item['title'] ?? '')
+                      .toString()
+                      .trim();
+                  if (normalizedTitle.isEmpty) {
+                    return const SizedBox.shrink();
+                  }
+                  final countLabel = DisplayText.capitalizeLeadingLabel(
+                    '${item['count']} $suffixLabel',
+                  );
                   final badge = Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 10,
-                      vertical: 4,
+                      vertical: 5,
                     ),
                     decoration: BoxDecoration(
                       color: color.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(999),
                     ),
                     child: Text(
-                      '${item['count']} $suffixLabel',
+                      countLabel,
                       style: TextStyle(
-                        fontSize: 11.5,
+                        fontSize: 11.3,
                         fontWeight: FontWeight.w700,
                         color: color,
                       ),
                     ),
+                  );
+                  final typeBadge = OpportunityTypeBadge(
+                    type: (item['type'] ?? '').toString(),
+                    fontSize: 10.4,
                   );
 
                   return Row(
@@ -635,22 +638,24 @@ class _RankedListCard extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              item['title'] ?? 'Unknown',
-                              maxLines: isCompact ? 2 : 1,
+                              normalizedTitle,
+                              maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
                                 fontSize: 14,
+                                fontWeight: FontWeight.w600,
                                 color: AdminPalette.textPrimary,
                               ),
                             ),
-                            if (isCompact) ...[
-                              const SizedBox(height: 8),
-                              badge,
-                            ],
+                            const SizedBox(height: 8),
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              children: [typeBadge, badge],
+                            ),
                           ],
                         ),
                       ),
-                      if (!isCompact) ...[const SizedBox(width: 10), badge],
                     ],
                   );
                 },
@@ -678,8 +683,8 @@ class _QuickAccessGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     final items = [
       _QuickAccessItem(
-        title: 'Opportunity Apps',
-        subtitle: 'Review submissions inside offers',
+        title: 'Applications',
+        subtitle: 'Review offer submissions',
         icon: Icons.assignment_outlined,
         color: AdminPalette.activity,
         onTap: () => Navigator.push(
@@ -693,7 +698,7 @@ class _QuickAccessGrid extends StatelessWidget {
       ),
       _QuickAccessItem(
         title: 'Opportunities',
-        subtitle: 'Manage published offers',
+        subtitle: 'Manage live offers',
         icon: Icons.work_outline_rounded,
         color: AdminPalette.accent,
         onTap: () => Navigator.push(
@@ -707,7 +712,7 @@ class _QuickAccessGrid extends StatelessWidget {
       ),
       _QuickAccessItem(
         title: 'Scholarships',
-        subtitle: 'Open scholarship queue',
+        subtitle: 'Review funding queue',
         icon: Icons.card_giftcard_outlined,
         color: Colors.pink,
         onTap: () => Navigator.push(
@@ -721,7 +726,7 @@ class _QuickAccessGrid extends StatelessWidget {
       ),
       _QuickAccessItem(
         title: 'Trainings',
-        subtitle: 'Browse learning content',
+        subtitle: 'Browse learning hub',
         icon: Icons.cast_for_education_outlined,
         color: AdminPalette.secondary,
         onTap: () => Navigator.push(
@@ -735,7 +740,7 @@ class _QuickAccessGrid extends StatelessWidget {
       ),
       _QuickAccessItem(
         title: 'Project Ideas',
-        subtitle: 'Moderate pending ideas',
+        subtitle: 'Moderate idea queue',
         icon: Icons.lightbulb_outline_rounded,
         color: Colors.amber.shade700,
         onTap: () => Navigator.push(
@@ -749,7 +754,7 @@ class _QuickAccessGrid extends StatelessWidget {
       ),
       _QuickAccessItem(
         title: 'Activity',
-        subtitle: 'See latest events',
+        subtitle: 'Track latest events',
         icon: Icons.timeline_rounded,
         color: AdminPalette.info,
         onTap: onOpenActivity,
@@ -757,8 +762,8 @@ class _QuickAccessGrid extends StatelessWidget {
       _QuickAccessItem(
         title: 'Notifications',
         subtitle: unreadCount > 0
-            ? '$unreadCount unread notifications'
-            : 'Open notification center',
+            ? '$unreadCount unread alerts'
+            : 'Open alert center',
         icon: Icons.notifications_outlined,
         color: AdminPalette.primary,
         badgeCount: unreadCount,
@@ -769,7 +774,7 @@ class _QuickAccessGrid extends StatelessWidget {
       ),
       _QuickAccessItem(
         title: 'Library',
-        subtitle: 'Curate imported resources',
+        subtitle: 'Curate resource hub',
         icon: Icons.menu_book_rounded,
         color: AdminPalette.secondary,
         onTap: onOpenLibrary,
@@ -787,9 +792,9 @@ class _QuickAccessGrid extends StatelessWidget {
             : 2;
         final childAspectRatio = switch (crossAxisCount) {
           1 => 2.6,
-          2 => constraints.maxWidth < 420 ? 1.14 : 1.2,
-          3 => 1.14,
-          _ => 1.18,
+          2 => constraints.maxWidth < 420 ? 1.22 : 1.26,
+          3 => 1.18,
+          _ => 1.22,
         };
 
         return GridView.builder(
@@ -797,8 +802,8 @@ class _QuickAccessGrid extends StatelessWidget {
           physics: const NeverScrollableScrollPhysics(),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: crossAxisCount,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
             childAspectRatio: childAspectRatio,
           ),
           itemCount: items.length,
@@ -812,28 +817,28 @@ class _QuickAccessGrid extends StatelessWidget {
                 borderRadius: BorderRadius.circular(24),
                 child: AdminSurface(
                   radius: 22,
-                  padding: const EdgeInsets.fromLTRB(12, 12, 12, 10),
+                  padding: const EdgeInsets.fromLTRB(13, 13, 13, 12),
                   child: LayoutBuilder(
                     builder: (context, itemConstraints) {
-                      final isCompact = itemConstraints.maxWidth < 170;
+                      final isCompact = itemConstraints.maxWidth < 172;
 
                       return Padding(
-                        padding: const EdgeInsets.all(2),
+                        padding: const EdgeInsets.all(1),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
                               children: [
                                 Container(
-                                  padding: EdgeInsets.all(isCompact ? 7 : 8),
+                                  padding: EdgeInsets.all(isCompact ? 8 : 9),
                                   decoration: BoxDecoration(
                                     color: item.color.withValues(alpha: 0.12),
-                                    borderRadius: BorderRadius.circular(10),
+                                    borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: Icon(
                                     item.icon,
                                     color: item.color,
-                                    size: isCompact ? 17 : 19,
+                                    size: isCompact ? 16.5 : 18.5,
                                   ),
                                 ),
                                 const Spacer(),
@@ -862,27 +867,27 @@ class _QuickAccessGrid extends StatelessWidget {
                                   ),
                               ],
                             ),
-                            const Spacer(),
+                            SizedBox(height: isCompact ? 13 : 15),
                             Text(
                               item.title,
-                              maxLines: isCompact ? 2 : 1,
+                              maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
-                                fontSize: isCompact ? 12.8 : 13.6,
+                                fontSize: isCompact ? 13.2 : 14.0,
                                 fontWeight: FontWeight.w700,
                                 color: AdminPalette.textPrimary,
-                                height: 1.18,
+                                height: 1.14,
                               ),
                             ),
-                            const SizedBox(height: 3),
+                            SizedBox(height: isCompact ? 4 : 5),
                             Text(
                               item.subtitle,
-                              maxLines: isCompact ? 2 : 2,
+                              maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
-                                fontSize: isCompact ? 10.4 : 10.8,
-                                color: AdminPalette.textMuted,
-                                height: 1.22,
+                                fontSize: isCompact ? 10.9 : 11.2,
+                                color: AdminPalette.textSecondary,
+                                height: 1.26,
                               ),
                             ),
                           ],
@@ -937,114 +942,191 @@ class _RecentActivityCard extends StatelessWidget {
               style: TextStyle(color: AdminPalette.textMuted),
             )
           : Column(
-              children: activities.map((activity) {
+              children: activities.asMap().entries.map((entry) {
+                final activity = entry.value;
                 final color = _activityColor(activity.type);
-                final dateLabel = activity.createdAt == null
-                    ? 'Unknown time'
-                    : '${activity.createdAt!.toDate().day}/${activity.createdAt!.toDate().month}/${activity.createdAt!.toDate().year}';
-                final actorAndStatus = [
-                  if (activity.actorName.trim().isNotEmpty) activity.actorName,
-                  if (activity.status.trim().isNotEmpty) activity.status,
-                ].join(' - ');
+                final title = DisplayText.capitalizeLeadingLabel(
+                  activity.title,
+                );
+                final description = DisplayText.capitalizeLeadingLabel(
+                  activity.description,
+                );
+                final actorName = activity.actorName.trim();
+                final status = DisplayText.capitalizeLeadingLabel(
+                  activity.status,
+                );
+                final dateLabel = _formatActivityDate(activity.createdAt);
 
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: InkWell(
-                    onTap: () => onOpenActivity(activity),
-                    borderRadius: BorderRadius.circular(14),
-                    child: LayoutBuilder(
-                      builder: (context, constraints) {
-                        final isCompact = constraints.maxWidth < 420;
-
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 4,
-                            vertical: 6,
-                          ),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  color: color.withValues(alpha: 0.12),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Icon(
-                                  _activityIcon(activity.type),
-                                  size: 18,
-                                  color: color,
+                return Column(
+                  children: [
+                    if (entry.key > 0)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: Divider(
+                          height: 1,
+                          thickness: 1,
+                          color: AdminPalette.border.withValues(alpha: 0.72),
+                        ),
+                      ),
+                    InkWell(
+                      onTap: () => onOpenActivity(activity),
+                      borderRadius: BorderRadius.circular(18),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 2,
+                          vertical: 10,
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: color.withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(14),
+                                border: Border.all(
+                                  color: color.withValues(alpha: 0.14),
                                 ),
                               ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      activity.title,
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w700,
-                                        color: AdminPalette.textPrimary,
-                                      ),
+                              child: Icon(
+                                _activityIcon(activity.type),
+                                size: 18,
+                                color: color,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    title,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontSize: 13.6,
+                                      fontWeight: FontWeight.w700,
+                                      color: AdminPalette.textPrimary,
+                                      height: 1.2,
                                     ),
-                                    const SizedBox(height: 2),
-                                    Text(
-                                      activity.description,
-                                      maxLines: isCompact ? 3 : 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        color: AdminPalette.textSecondary,
-                                      ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    description,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: AdminPalette.textSecondary,
+                                      height: 1.35,
                                     ),
-                                    if (actorAndStatus.isNotEmpty) ...[
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        actorAndStatus,
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: const TextStyle(
-                                          fontSize: 11,
-                                          color: AdminPalette.textMuted,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Wrap(
+                                    spacing: 8,
+                                    runSpacing: 8,
+                                    crossAxisAlignment:
+                                        WrapCrossAlignment.center,
+                                    children: [
+                                      if (actorName.isNotEmpty)
+                                        _ActivityMetaChip(
+                                          label: actorName,
+                                          color: AdminPalette.primary,
+                                          icon: Icons.person_outline_rounded,
                                         ),
-                                      ),
-                                    ],
-                                    if (isCompact) ...[
-                                      const SizedBox(height: 6),
+                                      if (status.isNotEmpty)
+                                        _ActivityMetaChip(
+                                          label: status,
+                                          color: _activityStatusColor(
+                                            activity.status,
+                                          ),
+                                        ),
                                       Text(
                                         dateLabel,
                                         style: const TextStyle(
-                                          fontSize: 11,
+                                          fontSize: 11.2,
+                                          fontWeight: FontWeight.w500,
                                           color: AdminPalette.textMuted,
                                         ),
                                       ),
                                     ],
-                                  ],
-                                ),
-                              ),
-                              if (!isCompact) ...[
-                                const SizedBox(width: 10),
-                                Text(
-                                  dateLabel,
-                                  style: const TextStyle(
-                                    fontSize: 11,
-                                    color: AdminPalette.textMuted,
                                   ),
-                                ),
-                              ],
-                            ],
-                          ),
-                        );
-                      },
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 );
               }).toList(),
             ),
+    );
+  }
+
+  String _formatActivityDate(Timestamp? timestamp) {
+    if (timestamp == null) {
+      return 'Unknown time';
+    }
+
+    final date = timestamp.toDate();
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+
+    return '${date.day} ${months[date.month - 1]} ${date.year}';
+  }
+}
+
+class _ActivityMetaChip extends StatelessWidget {
+  final String label;
+  final Color color;
+  final IconData? icon;
+
+  const _ActivityMetaChip({
+    required this.label,
+    required this.color,
+    this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: color.withValues(alpha: 0.12)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icon != null) ...[
+            Icon(icon, size: 12, color: color),
+            const SizedBox(width: 5),
+          ],
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 10.8,
+              fontWeight: FontWeight.w600,
+              color: color,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -1081,56 +1163,102 @@ class _RecentUsersCard extends StatelessWidget {
               'No recent users',
               style: TextStyle(color: AdminPalette.textMuted),
             ),
-          ...users.map(
-            (user) => Padding(
-              padding: const EdgeInsets.only(bottom: 10),
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  final isCompact = constraints.maxWidth < 380;
-                  final pill = AdminPill(
-                    label: user.role,
-                    color: _roleColor(user.role),
-                  );
+          ...users.asMap().entries.map((entry) {
+            final user = entry.value;
+            final roleColor = _roleColor(user.role);
+            final roleLabel = DisplayText.capitalizeLeadingLabel(user.role);
+            final email = (user.email).toString().trim();
+            final roleIcon = user.role == 'company'
+                ? Icons.business_outlined
+                : user.role == 'student'
+                ? Icons.school_outlined
+                : Icons.shield_outlined;
 
-                  return Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ProfileAvatar(user: user, radius: 18),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              user.fullName,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: AdminPalette.textPrimary,
-                              ),
+            return Column(
+              children: [
+                if (entry.key > 0)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Divider(
+                      height: 1,
+                      thickness: 1,
+                      color: AdminPalette.border.withValues(alpha: 0.72),
+                    ),
+                  ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final isCompact = constraints.maxWidth < 360;
+
+                      return Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: roleColor.withValues(alpha: 0.08),
+                                  blurRadius: 14,
+                                  offset: const Offset(0, 6),
+                                ),
+                              ],
                             ),
-                            Text(
-                              user.email,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                fontSize: 12,
-                                color: AdminPalette.textMuted,
-                              ),
+                            child: ProfileAvatar(user: user, radius: 20),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(top: 2),
+                                        child: Text(
+                                          user.fullName,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: const TextStyle(
+                                            fontSize: 14.2,
+                                            fontWeight: FontWeight.w700,
+                                            color: AdminPalette.textPrimary,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(width: isCompact ? 6 : 8),
+                                    _ActivityMetaChip(
+                                      label: roleLabel,
+                                      color: roleColor,
+                                      icon: roleIcon,
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 5),
+                                Text(
+                                  email,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontSize: 11.8,
+                                    color: AdminPalette.textMuted,
+                                  ),
+                                ),
+                              ],
                             ),
-                            if (isCompact) ...[const SizedBox(height: 8), pill],
-                          ],
-                        ),
-                      ),
-                      if (!isCompact) ...[const SizedBox(width: 10), pill],
-                    ],
-                  );
-                },
-              ),
-            ),
-          ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ),
+              ],
+            );
+          }),
         ],
       ),
     );
@@ -1169,69 +1297,99 @@ class _RecentOpportunitiesCard extends StatelessWidget {
               'No opportunities yet',
               style: TextStyle(color: AdminPalette.textMuted),
             ),
-          ...opportunities.map(
-            (offer) => Padding(
-              padding: const EdgeInsets.only(bottom: 10),
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  final isCompact = constraints.maxWidth < 380;
-                  final pill = AdminPill(
-                    label: offer['type'] ?? '',
-                    color: offer['type'] == 'job'
-                        ? AdminPalette.info
-                        : AdminPalette.success,
-                  );
+          ...opportunities.asMap().entries.map((entry) {
+            final offer = entry.value;
+            final type = (offer['type'] ?? '').toString();
+            final title = (offer['title'] ?? '').toString().trim();
+            final companyName = (offer['companyName'] ?? '').toString().trim();
 
-                  return Row(
+            return Column(
+              children: [
+                if (entry.key > 0)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Divider(
+                      height: 1,
+                      thickness: 1,
+                      color: AdminPalette.border.withValues(alpha: 0.72),
+                    ),
+                  ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
-                          color: AdminPalette.accent.withValues(alpha: 0.12),
-                          borderRadius: BorderRadius.circular(10),
+                          color: OpportunityType.color(
+                            type,
+                          ).withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(
+                            color: OpportunityType.color(
+                              type,
+                            ).withValues(alpha: 0.14),
+                          ),
                         ),
-                        child: const Icon(
-                          Icons.work_outline_rounded,
+                        child: Icon(
+                          OpportunityType.icon(type),
                           size: 18,
-                          color: AdminPalette.accent,
+                          color: OpportunityType.color(type),
                         ),
                       ),
-                      const SizedBox(width: 10),
+                      const SizedBox(width: 12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              offer['title'] ?? 'No title',
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: AdminPalette.textPrimary,
-                              ),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(top: 2),
+                                    child: Text(
+                                      title.isNotEmpty ? title : 'No title',
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        fontSize: 14.2,
+                                        fontWeight: FontWeight.w700,
+                                        color: AdminPalette.textPrimary,
+                                        height: 1.18,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                OpportunityTypeBadge(
+                                  type: type,
+                                  fontSize: 10.2,
+                                ),
+                              ],
                             ),
+                            const SizedBox(height: 5),
                             Text(
-                              offer['companyName'] ?? 'Unknown',
+                              companyName.isNotEmpty
+                                  ? companyName
+                                  : 'No company name',
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
-                                fontSize: 12,
+                                fontSize: 11.8,
                                 color: AdminPalette.textMuted,
                               ),
                             ),
-                            if (isCompact) ...[const SizedBox(height: 8), pill],
                           ],
                         ),
                       ),
-                      if (!isCompact) ...[const SizedBox(width: 10), pill],
                     ],
-                  );
-                },
-              ),
-            ),
-          ),
+                  ),
+                ),
+              ],
+            );
+          }),
         ],
       ),
     );
@@ -1278,5 +1436,20 @@ Color _activityColor(String type) {
       return AdminPalette.secondary;
     default:
       return Colors.amber.shade700;
+  }
+}
+
+Color _activityStatusColor(String status) {
+  switch (status.trim().toLowerCase()) {
+    case 'approved':
+    case 'accepted':
+    case 'featured':
+      return AdminPalette.success;
+    case 'pending':
+      return AdminPalette.warning;
+    case 'rejected':
+      return AdminPalette.danger;
+    default:
+      return AdminPalette.primary;
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../utils/admin_palette.dart';
+import '../../utils/display_text.dart';
 
 class AdminShellBackground extends StatelessWidget {
   final Widget child;
@@ -232,8 +233,8 @@ class AdminHeroCard extends StatelessWidget {
                 ),
               ],
               if (actions.isNotEmpty) ...[
-                const SizedBox(height: 16),
-                Wrap(spacing: 8, runSpacing: 8, children: actions),
+                const SizedBox(height: 14),
+                Wrap(spacing: 6, runSpacing: 6, children: actions),
               ],
             ],
           );
@@ -282,7 +283,7 @@ class AdminActionChip extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(999),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           color: background,
           borderRadius: BorderRadius.circular(999),
@@ -295,12 +296,12 @@ class AdminActionChip extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 16, color: foreground),
-            const SizedBox(width: 8),
+            Icon(icon, size: 15, color: foreground),
+            const SizedBox(width: 6),
             Text(
               label,
               style: GoogleFonts.poppins(
-                fontSize: 12,
+                fontSize: 11.5,
                 fontWeight: FontWeight.w600,
                 color: foreground,
               ),
@@ -475,6 +476,8 @@ class AdminPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final displayLabel = DisplayText.capitalizeLeadingLabel(label);
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
@@ -489,7 +492,7 @@ class AdminPill extends StatelessWidget {
             const SizedBox(width: 6),
           ],
           Text(
-            label,
+            displayLabel,
             style: GoogleFonts.poppins(
               fontSize: 11,
               fontWeight: FontWeight.w700,

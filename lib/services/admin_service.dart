@@ -6,6 +6,7 @@ import '../models/application_model.dart';
 import '../models/training_model.dart';
 import '../models/user_model.dart';
 import '../models/project_idea_model.dart';
+import '../utils/opportunity_type.dart';
 import 'company_service.dart';
 import 'notification_worker_service.dart';
 
@@ -127,42 +128,75 @@ class AdminService {
 
     final Map<String, int> applicationCounts = {};
     final Map<String, String> opportunityTitles = {};
+    final Map<String, String> opportunityTypes = {};
+    final Map<String, String> savedOpportunityTitles = {};
+    final Map<String, String> savedOpportunityTypes = {};
     for (final doc in opportunitiesSnapshot.docs) {
       final data = doc.data();
-      opportunityTitles[doc.id] = data['title'] ?? 'Untitled';
+      opportunityTitles[doc.id] = _resolveOpportunityTitle(data);
+      opportunityTypes[doc.id] = OpportunityType.parse(
+        data['type']?.toString(),
+      );
     }
     for (final doc in applicationsSnapshot.docs) {
       final data = doc.data();
-      final oppId = data['opportunityId'] ?? '';
+      final oppId = (data['opportunityId'] ?? '').toString().trim();
+      if (oppId.isEmpty) {
+        continue;
+      }
       applicationCounts[oppId] = (applicationCounts[oppId] ?? 0) + 1;
     }
 
     final Map<String, int> saveCounts = {};
     for (final doc in savedSnapshot.docs) {
       final data = doc.data();
-      final oppId = data['opportunityId'] ?? '';
+      final oppId = (data['opportunityId'] ?? '').toString().trim();
+      if (oppId.isEmpty) {
+        continue;
+      }
+      final savedTitle = _cleanLabel(data['title']);
+      if (savedTitle.isNotEmpty) {
+        savedOpportunityTitles[oppId] = savedTitle;
+      }
+      savedOpportunityTypes[oppId] = OpportunityType.parse(
+        data['type']?.toString(),
+      );
       saveCounts[oppId] = (saveCounts[oppId] ?? 0) + 1;
     }
 
     final sortedByApplications = applicationCounts.entries.toList()
       ..sort((a, b) => b.value.compareTo(a.value));
-    final topApplied = sortedByApplications.take(3).map((e) {
-      return {
-        'id': e.key,
-        'title': opportunityTitles[e.key] ?? 'Unknown',
-        'count': e.value,
-      };
-    }).toList();
+    final topApplied = sortedByApplications
+        .map(
+          (e) => _buildRankedOpportunityItem(
+            id: e.key,
+            count: e.value,
+            liveTitles: opportunityTitles,
+            liveTypes: opportunityTypes,
+            savedTitles: savedOpportunityTitles,
+            savedTypes: savedOpportunityTypes,
+          ),
+        )
+        .whereType<Map<String, dynamic>>()
+        .take(3)
+        .toList();
 
     final sortedBySaves = saveCounts.entries.toList()
       ..sort((a, b) => b.value.compareTo(a.value));
-    final topSaved = sortedBySaves.take(3).map((e) {
-      return {
-        'id': e.key,
-        'title': opportunityTitles[e.key] ?? 'Unknown',
-        'count': e.value,
-      };
-    }).toList();
+    final topSaved = sortedBySaves
+        .map(
+          (e) => _buildRankedOpportunityItem(
+            id: e.key,
+            count: e.value,
+            liveTitles: opportunityTitles,
+            liveTypes: opportunityTypes,
+            savedTitles: savedOpportunityTitles,
+            savedTypes: savedOpportunityTypes,
+          ),
+        )
+        .whereType<Map<String, dynamic>>()
+        .take(3)
+        .toList();
 
     int pendingIdeas = 0;
     int approvedIdeas = 0;
@@ -338,7 +372,7 @@ class AdminService {
     final snapshot = await _firestore
         .collection('opportunities')
         .orderBy('createdAt', descending: true)
-        .limit(5)
+        .limit(6)
         .get();
 
     return snapshot.docs.map((doc) => {...doc.data(), 'id': doc.id}).toList();
@@ -934,6 +968,42 @@ class AdminService {
     }
 
     return 'approved';
+  }
+
+  String _resolveOpportunityTitle(Map<String, dynamic> data) {
+    for (final key in const ['title', 'position', 'role', 'name']) {
+      final value = _cleanLabel(data[key]);
+      if (value.isNotEmpty) {
+        return value;
+      }
+    }
+
+    return '';
+  }
+
+  String _cleanLabel(Object? rawValue) {
+    return (rawValue ?? '').toString().trim();
+  }
+
+  Map<String, dynamic>? _buildRankedOpportunityItem({
+    required String id,
+    required int count,
+    required Map<String, String> liveTitles,
+    required Map<String, String> liveTypes,
+    required Map<String, String> savedTitles,
+    required Map<String, String> savedTypes,
+  }) {
+    final resolvedTitle = liveTitles[id] ?? savedTitles[id] ?? '';
+    if (resolvedTitle.trim().isEmpty) {
+      return null;
+    }
+
+    return {
+      'id': id,
+      'title': resolvedTitle,
+      'type': liveTypes[id] ?? savedTypes[id] ?? OpportunityType.job,
+      'count': count,
+    };
   }
 
   List<String> _stringList(Object? rawValue) {

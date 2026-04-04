@@ -45,14 +45,14 @@ class ChatProvider extends ChangeNotifier {
 
   List<ConversationModel> get conversations =>
       List<ConversationModel>.unmodifiable(_conversations);
-  List<MessageModel> get messages =>
-      List<MessageModel>.unmodifiable(_messages);
+  List<MessageModel> get messages => List<MessageModel>.unmodifiable(_messages);
   bool get isLoading => _isLoading;
   bool get isSending => _isSending;
   String? get error => _error;
   bool get hasHydratedConversationState => _hasHydratedConversationState;
 
-  int unreadCountFor(String conversationId) => _unreadCounts[conversationId] ?? 0;
+  int unreadCountFor(String conversationId) =>
+      _unreadCounts[conversationId] ?? 0;
 
   bool isConversationArchivedFor(
     ConversationModel conversation,
@@ -77,10 +77,7 @@ class ChatProvider extends ChangeNotifier {
         _legacyMutedConversationIds.contains(conversation.id);
   }
 
-  bool isConversationDeletedFor(
-    ConversationModel conversation,
-    String userId,
-  ) {
+  bool isConversationDeletedFor(ConversationModel conversation, String userId) {
     final override = _deletedConversationOverrides[conversation.id];
     if (override != null) {
       return override;
@@ -250,7 +247,10 @@ class ChatProvider extends ChangeNotifier {
 
   void _syncUnreadStreams(List<ConversationModel> conversations) {
     final visibleConversationIds = conversations
-        .where((conversation) => !isConversationDeletedFor(conversation, _currentUserId))
+        .where(
+          (conversation) =>
+              !isConversationDeletedFor(conversation, _currentUserId),
+        )
         .map((conversation) => conversation.id)
         .toSet();
 
@@ -406,8 +406,12 @@ class ChatProvider extends ChangeNotifier {
       currentUserId: resolvedCurrentUserId,
     );
 
-    final restoredArchived = _legacyArchivedConversationIds.remove(conversation.id);
-    final restoredDeleted = _legacyDeletedConversationIds.remove(conversation.id);
+    final restoredArchived = _legacyArchivedConversationIds.remove(
+      conversation.id,
+    );
+    final restoredDeleted = _legacyDeletedConversationIds.remove(
+      conversation.id,
+    );
     final didRestoreVisibility = restoredArchived || restoredDeleted;
     _archivedConversationOverrides[conversation.id] = false;
     _deletedConversationOverrides[conversation.id] = false;

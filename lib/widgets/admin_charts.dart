@@ -313,6 +313,8 @@ class MonthlyRegistrationsLineChart extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final isCompact = constraints.maxWidth < 420;
+        final maxY = _maxY(monthlyData);
+        final yInterval = _leftAxisInterval(maxY);
 
         return Container(
           padding: const EdgeInsets.all(16),
@@ -351,8 +353,13 @@ class MonthlyRegistrationsLineChart extends StatelessWidget {
                         ? 11
                         : (monthlyData.length - 1).toDouble(),
                     minY: 0,
-                    maxY: _maxY(monthlyData),
-                    gridData: FlGridData(show: true, drawVerticalLine: false),
+                    maxY: maxY,
+                    clipData: const FlClipData.all(),
+                    gridData: FlGridData(
+                      show: true,
+                      drawVerticalLine: false,
+                      horizontalInterval: yInterval,
+                    ),
                     borderData: FlBorderData(show: false),
                     titlesData: FlTitlesData(
                       topTitles: const AxisTitles(
@@ -364,7 +371,26 @@ class MonthlyRegistrationsLineChart extends StatelessWidget {
                       leftTitles: AxisTitles(
                         sideTitles: SideTitles(
                           showTitles: true,
-                          reservedSize: isCompact ? 24 : 30,
+                          reservedSize: isCompact ? 34 : 40,
+                          interval: yInterval,
+                          getTitlesWidget: (value, meta) {
+                            if (value < 0 || value > maxY) {
+                              return const SizedBox.shrink();
+                            }
+
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 8),
+                              child: Text(
+                                value.toInt().toString(),
+                                textAlign: TextAlign.right,
+                                style: TextStyle(
+                                  fontSize: isCompact ? 10 : 11,
+                                  color: AdminPalette.textSecondary,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            );
+                          },
                         ),
                       ),
                       bottomTitles: AxisTitles(
@@ -402,6 +428,9 @@ class MonthlyRegistrationsLineChart extends StatelessWidget {
                     lineBarsData: [
                       LineChartBarData(
                         isCurved: true,
+                        curveSmoothness: 0.18,
+                        preventCurveOverShooting: true,
+                        preventCurveOvershootingThreshold: 4,
                         color: AdminPalette.success,
                         barWidth: 3,
                         spots: List.generate(monthlyData.length, (index) {
@@ -430,7 +459,7 @@ class MonthlyRegistrationsLineChart extends StatelessWidget {
   }
 
   double _maxY(List<dynamic> data) {
-    double max = 5;
+    double max = 0;
     for (final item in data) {
       if (item is Map<String, dynamic>) {
         final value = (item['count'] ?? 0).toDouble();
@@ -439,6 +468,31 @@ class MonthlyRegistrationsLineChart extends StatelessWidget {
         }
       }
     }
-    return max + 2;
+
+    if (max <= 5) {
+      return 5;
+    }
+
+    final interval = _leftAxisInterval(max);
+    return (max / interval).ceil() * interval;
+  }
+
+  double _leftAxisInterval(double max) {
+    if (max <= 5) {
+      return 1;
+    }
+    if (max <= 12) {
+      return 2;
+    }
+    if (max <= 30) {
+      return 5;
+    }
+    if (max <= 60) {
+      return 10;
+    }
+    if (max <= 120) {
+      return 20;
+    }
+    return 50;
   }
 }
