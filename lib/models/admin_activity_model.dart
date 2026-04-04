@@ -38,3 +38,15 @@ class AdminActivityModel {
         status.toLowerCase().contains(normalizedQuery);
   }
 }
+
+class AdminActivityBatch {
+  final List<AdminActivityModel> activities;
+  final DocumentSnapshot<Map<String, dynamic>>? lastDocument;
+  final bool hasMore;
+
+  const AdminActivityBatch({
+    required this.activities,
+    required this.lastDocument,
+    required this.hasMore,
+  });
+}

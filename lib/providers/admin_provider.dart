@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../models/admin_activity_model.dart';
 import '../models/admin_application_item_model.dart';
@@ -7,6 +8,10 @@ import '../models/training_model.dart';
 import '../services/admin_service.dart';
 
 class AdminProvider extends ChangeNotifier {
+  static const int _dashboardActivityPerCollectionLimit = 4;
+  static const int _activityPageSize = 10;
+  static const int _activityBatchSize = 8;
+
   final AdminService _adminService = AdminService();
 
   Map<String, dynamic> _stats = {};
@@ -37,8 +42,10 @@ class AdminProvider extends ChangeNotifier {
   String? _moderationError;
   bool _activityLoading = false;
   bool _activityLoadingMore = false;
+  bool _activityHasMore = true;
   String? _activityError;
-  int _activityPerCollectionLimit = 4;
+  Map<String, _AdminActivitySourceState> _activitySources =
+      _createActivitySourceStates();
 
   Map<String, dynamic> get stats => _stats;
   List<UserModel> get recentUsers => _recentUsers;
@@ -84,6 +91,7 @@ class AdminProvider extends ChangeNotifier {
   String? get moderationError => _moderationError;
   bool get activityLoading => _activityLoading;
   bool get activityLoadingMore => _activityLoadingMore;
+  bool get activityHasMore => _activityHasMore;
   String? get activityError => _activityError;
 
   Future<void> loadDashboardData() async {
@@ -97,7 +105,7 @@ class AdminProvider extends ChangeNotifier {
         _adminService.getRecentUsers(),
         _adminService.getRecentOpportunities(),
         _adminService.getAdminActivities(
-          perCollectionLimit: _activityPerCollectionLimit,
+          perCollectionLimit: _dashboardActivityPerCollectionLimit,
         ),
       ]);
 
@@ -261,17 +269,19 @@ class AdminProvider extends ChangeNotifier {
 
   Future<void> loadActivityFeed({bool reset = false}) async {
     try {
-      if (reset) {
-        _activityPerCollectionLimit = 4;
-      }
-
       _activityLoading = true;
       _activityError = null;
+      if (reset) {
+        _resetActivityPagination();
+      }
       notifyListeners();
 
-      _recentActivity = await _adminService.getAdminActivities(
-        perCollectionLimit: _activityPerCollectionLimit,
-      );
+      if (_recentActivity.isEmpty || _activitySources.isEmpty) {
+        _resetActivityPagination();
+      }
+
+      _recentActivity = await _consumeActivityPage(_activityPageSize);
+      _activityHasMore = _hasMoreActivityAvailable();
     } catch (e) {
       _activityError = 'Failed to load recent activity';
       debugPrint('loadActivityFeed error: $e');
@@ -282,19 +292,20 @@ class AdminProvider extends ChangeNotifier {
   }
 
   Future<void> loadMoreActivityFeed() async {
-    if (_activityLoadingMore) {
+    if (_activityLoadingMore || !_activityHasMore) {
       return;
     }
 
     try {
       _activityLoadingMore = true;
       _activityError = null;
-      _activityPerCollectionLimit += 4;
       notifyListeners();
 
-      _recentActivity = await _adminService.getAdminActivities(
-        perCollectionLimit: _activityPerCollectionLimit,
-      );
+      final nextPage = await _consumeActivityPage(_activityPageSize);
+      if (nextPage.isNotEmpty) {
+        _recentActivity = [..._recentActivity, ...nextPage];
+      }
+      _activityHasMore = _hasMoreActivityAvailable();
     } catch (e) {
       _activityError = 'Failed to load more activity';
       debugPrint('loadMoreActivityFeed error: $e');
@@ -302,6 +313,114 @@ class AdminProvider extends ChangeNotifier {
       _activityLoadingMore = false;
       notifyListeners();
     }
+  }
+
+  Future<List<AdminActivityModel>> _consumeActivityPage(int pageSize) async {
+    final page = <AdminActivityModel>[];
+
+    await _ensureActivitySourceHeads();
+
+    while (page.length < pageSize) {
+      final sourceKey = _selectNewestActivitySource();
+      if (sourceKey == null) {
+        break;
+      }
+
+      final source = _activitySources[sourceKey]!;
+      page.add(source.buffer.removeAt(0));
+
+      if (source.buffer.isEmpty && source.hasMore) {
+        await _fetchActivitySourceBatch(sourceKey);
+      }
+    }
+
+    return page;
+  }
+
+  Future<void> _ensureActivitySourceHeads() async {
+    final pendingSources = _activitySources.entries
+        .where(
+          (entry) =>
+              !entry.value.isInitialized ||
+              (entry.value.buffer.isEmpty && entry.value.hasMore),
+        )
+        .map((entry) => entry.key)
+        .toList();
+
+    if (pendingSources.isEmpty) {
+      return;
+    }
+
+    await Future.wait(pendingSources.map(_fetchActivitySourceBatch));
+  }
+
+  Future<void> _fetchActivitySourceBatch(String sourceKey) async {
+    final source = _activitySources[sourceKey];
+    if (source == null) {
+      return;
+    }
+
+    final batch = await _adminService.getAdminActivityBatch(
+      source: sourceKey,
+      limit: _activityBatchSize,
+      startAfterDocument: source.lastDocument,
+    );
+
+    source
+      ..isInitialized = true
+      ..hasMore = batch.hasMore
+      ..lastDocument = batch.lastDocument;
+    source.buffer.addAll(batch.activities);
+  }
+
+  String? _selectNewestActivitySource() {
+    String? selectedSource;
+    AdminActivityModel? selectedActivity;
+
+    for (final entry in _activitySources.entries) {
+      if (entry.value.buffer.isEmpty) {
+        continue;
+      }
+
+      final candidate = entry.value.buffer.first;
+      if (selectedActivity == null ||
+          _compareActivityByTimestampDesc(candidate, selectedActivity) < 0) {
+        selectedSource = entry.key;
+        selectedActivity = candidate;
+      }
+    }
+
+    return selectedSource;
+  }
+
+  bool _hasMoreActivityAvailable() {
+    return _activitySources.values.any(
+      (source) => source.buffer.isNotEmpty || source.hasMore,
+    );
+  }
+
+  int _compareActivityByTimestampDesc(
+    AdminActivityModel a,
+    AdminActivityModel b,
+  ) {
+    final aTime = a.createdAt;
+    final bTime = b.createdAt;
+    if (aTime == null && bTime == null) {
+      return 0;
+    }
+    if (aTime == null) {
+      return 1;
+    }
+    if (bTime == null) {
+      return -1;
+    }
+    return bTime.compareTo(aTime);
+  }
+
+  void _resetActivityPagination() {
+    _recentActivity = [];
+    _activityHasMore = true;
+    _activitySources = _createActivitySourceStates();
   }
 
   Future<String?> updateProjectIdeaStatus(String id, String status) async {
@@ -561,4 +680,21 @@ class AdminProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+}
+
+Map<String, _AdminActivitySourceState> _createActivitySourceStates() {
+  return {
+    AdminService.activitySourceApplications: _AdminActivitySourceState(),
+    AdminService.activitySourceOpportunities: _AdminActivitySourceState(),
+    AdminService.activitySourceScholarships: _AdminActivitySourceState(),
+    AdminService.activitySourceTrainings: _AdminActivitySourceState(),
+    AdminService.activitySourceProjectIdeas: _AdminActivitySourceState(),
+  };
+}
+
+class _AdminActivitySourceState {
+  final List<AdminActivityModel> buffer = <AdminActivityModel>[];
+  DocumentSnapshot<Map<String, dynamic>>? lastDocument;
+  bool isInitialized = false;
+  bool hasMore = true;
 }

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -5,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../../models/admin_activity_model.dart';
 import '../../providers/admin_provider.dart';
 import '../../utils/admin_palette.dart';
+import '../../utils/display_text.dart';
 import '../../widgets/admin/admin_ui.dart';
 import 'admin_content_center_screen.dart';
 
@@ -39,19 +41,10 @@ class _AdminActivityCenterScreenState extends State<AdminActivityCenterScreen> {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<AdminProvider>();
+    final query = _searchController.text.trim();
     final activities = provider.recentActivity
-        .where((activity) => activity.matchesQuery(_searchController.text))
+        .where((activity) => activity.matchesQuery(query))
         .toList();
-
-    final pendingCount = activities
-        .where((activity) => activity.status == 'pending')
-        .length;
-    final applicationCount = activities
-        .where((activity) => activity.type == 'application')
-        .length;
-    final opportunityCount = activities
-        .where((activity) => activity.type == 'opportunity')
-        .length;
 
     final content = provider.activityLoading && provider.recentActivity.isEmpty
         ? const Center(
@@ -80,38 +73,34 @@ class _AdminActivityCenterScreenState extends State<AdminActivityCenterScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const AdminSectionHeader(
+                          AdminSectionHeader(
                             eyebrow: 'Live Feed',
                             title: 'Recent Platform Activity',
                             subtitle:
-                                'Browse the latest moderation and publishing events, then jump straight into the matching admin queue.',
-                          ),
-                          const SizedBox(height: 14),
-                          Wrap(
-                            spacing: 10,
-                            runSpacing: 10,
-                            children: [
-                              AdminPill(
-                                label: '${activities.length} visible events',
-                                color: AdminPalette.primary,
-                                icon: Icons.bolt_rounded,
+                                'Review the latest moderation updates, publishing changes, and submissions from one clean queue.',
+                            trailing: IconButton(
+                              tooltip: 'Refresh activity feed',
+                              onPressed: provider.activityLoading
+                                  ? null
+                                  : () =>
+                                        provider.loadActivityFeed(reset: true),
+                              style: IconButton.styleFrom(
+                                foregroundColor: AdminPalette.primary,
+                                backgroundColor: AdminPalette.primarySoft,
+                                disabledForegroundColor: AdminPalette.textMuted,
+                                disabledBackgroundColor:
+                                    AdminPalette.surfaceMuted,
                               ),
-                              AdminPill(
-                                label: '$pendingCount pending',
-                                color: AdminPalette.warning,
-                                icon: Icons.hourglass_top_rounded,
-                              ),
-                              AdminPill(
-                                label: '$applicationCount applications',
-                                color: AdminPalette.activity,
-                                icon: Icons.assignment_outlined,
-                              ),
-                              AdminPill(
-                                label: '$opportunityCount opportunities',
-                                color: AdminPalette.accent,
-                                icon: Icons.work_outline_rounded,
-                              ),
-                            ],
+                              icon: provider.activityLoading
+                                  ? const SizedBox(
+                                      width: 18,
+                                      height: 18,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                      ),
+                                    )
+                                  : const Icon(Icons.refresh_rounded),
+                            ),
                           ),
                         ],
                       ),
@@ -132,6 +121,48 @@ class _AdminActivityCenterScreenState extends State<AdminActivityCenterScreen> {
                     ),
                   ),
                 ),
+                if (activities.isNotEmpty)
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(7),
+                            decoration: BoxDecoration(
+                              color: AdminPalette.primarySoft,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Icon(
+                              Icons.timeline_rounded,
+                              size: 16,
+                              color: AdminPalette.primary,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            query.isEmpty
+                                ? '${activities.length} recent activities'
+                                : '${activities.length} matching activities',
+                            style: const TextStyle(
+                              fontSize: 12.5,
+                              fontWeight: FontWeight.w700,
+                              color: AdminPalette.textPrimary,
+                            ),
+                          ),
+                          const Spacer(),
+                          const Text(
+                            'Newest first',
+                            style: TextStyle(
+                              fontSize: 11.5,
+                              fontWeight: FontWeight.w600,
+                              color: AdminPalette.textMuted,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 if (activities.isEmpty)
                   const SliverFillRemaining(
                     hasScrollBody: false,
@@ -142,35 +173,26 @@ class _AdminActivityCenterScreenState extends State<AdminActivityCenterScreen> {
                           'Try a broader query or refresh to load the latest events.',
                     ),
                   )
-                else
+                else ...[
                   SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
                     sliver: SliverList(
                       delegate: SliverChildBuilderDelegate((context, index) {
-                        if (index == activities.length) {
-                          return Padding(
-                            padding: const EdgeInsets.only(top: 4),
-                            child: OutlinedButton(
-                              onPressed: provider.activityLoadingMore
-                                  ? null
-                                  : provider.loadMoreActivityFeed,
-                              child: Text(
-                                provider.activityLoadingMore
-                                    ? 'Loading...'
-                                    : 'Load More',
-                              ),
-                            ),
-                          );
-                        }
-
                         final activity = activities[index];
                         return _ActivityTile(
                           activity: activity,
                           onOpen: () => _openActivity(activity),
                         );
-                      }, childCount: activities.length + 1),
+                      }, childCount: activities.length),
                     ),
                   ),
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 2, 16, 24),
+                      child: _ActivityFeedFooter(provider: provider),
+                    ),
+                  ),
+                ],
               ],
             ),
           );
@@ -220,95 +242,164 @@ class _ActivityTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final accentColor = _colorForType(activity.type);
+    final typeLabel = DisplayText.capitalizeLeadingLabel(
+      activity.type.replaceAll('_', ' '),
+    );
+    final title = DisplayText.capitalizeLeadingLabel(activity.title);
+    final description = DisplayText.capitalizeLeadingLabel(
+      activity.description,
+    );
+    final actorName = DisplayText.capitalizeLeadingLabel(
+      activity.actorName.trim(),
+    );
+    final status = DisplayText.capitalizeLeadingLabel(activity.status.trim());
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.only(bottom: 10),
       child: AdminSurface(
-        radius: 22,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: accentColor.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: Icon(_iconForType(activity.type), color: accentColor),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    activity.title,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 15,
-                      color: AdminPalette.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    activity.description,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      color: AdminPalette.textSecondary,
-                      height: 1.45,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      _metaChip(
-                        activity.type.replaceAll('_', ' '),
-                        accentColor,
+        radius: 20,
+        padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
+        border: Border.all(color: accentColor.withValues(alpha: 0.16)),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF0F172A).withValues(alpha: 0.04),
+            blurRadius: 24,
+            offset: const Offset(0, 12),
+          ),
+        ],
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final isCompact = constraints.maxWidth < 360;
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: accentColor.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(14),
                       ),
-                      if (activity.actorName.trim().isNotEmpty)
-                        _metaChip(activity.actorName, AdminPalette.info),
-                      if (activity.status.trim().isNotEmpty)
-                        _metaChip(
-                          activity.status,
-                          _statusColor(activity.status),
-                        ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    activity.createdAt == null
-                        ? 'Unknown time'
-                        : DateFormat(
-                            'MMM d, yyyy - HH:mm',
-                          ).format(activity.createdAt!.toDate()),
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: AdminPalette.textMuted,
+                      child: Icon(
+                        _iconForType(activity.type),
+                        size: 20,
+                        color: accentColor,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 8),
-            FilledButton.tonalIcon(
-              onPressed: onOpen,
-              icon: const Icon(Icons.open_in_new_rounded, size: 18),
-              label: const Text('Open'),
-              style: FilledButton.styleFrom(
-                foregroundColor: AdminPalette.primary,
-                backgroundColor: AdminPalette.primarySoft,
-              ),
-            ),
-          ],
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _ActivityHeaderLine(
+                            typeLabel: typeLabel,
+                            actorName: actorName,
+                            color: accentColor,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            title,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 14.3,
+                              color: AdminPalette.textPrimary,
+                              height: 1.2,
+                            ),
+                          ),
+                          if (description.isNotEmpty) ...[
+                            const SizedBox(height: 4),
+                            Text(
+                              description,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 12.5,
+                                color: AdminPalette.textSecondary,
+                                height: 1.35,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                    if (!isCompact) ...[
+                      const SizedBox(width: 10),
+                      _ActivityOpenButton(
+                        color: accentColor,
+                        onPressed: onOpen,
+                      ),
+                    ],
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Wrap(
+                        spacing: 10,
+                        runSpacing: 8,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          if (status.isNotEmpty)
+                            _ActivityStatusBadge(
+                              label: status,
+                              color: _statusColor(activity.status),
+                            ),
+                          _ActivityInlineInfo(
+                            icon: Icons.schedule_rounded,
+                            label: _formatTimestamp(activity.createdAt),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (isCompact) ...[
+                      const SizedBox(width: 10),
+                      _ActivityOpenButton(
+                        color: accentColor,
+                        onPressed: onOpen,
+                        compact: true,
+                      ),
+                    ],
+                  ],
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
   }
 
-  static Widget _metaChip(String label, Color color) {
-    return AdminPill(label: label, color: color);
+  static String _formatTimestamp(Timestamp? createdAt) {
+    if (createdAt == null) {
+      return 'Unknown time';
+    }
+
+    final date = createdAt.toDate();
+    final now = DateTime.now();
+    final difference = now.difference(date);
+
+    if (difference.inMinutes < 1) {
+      return 'Just now';
+    }
+    if (difference.inHours < 1) {
+      return '${difference.inMinutes}m ago';
+    }
+    if (difference.inDays < 1) {
+      return '${difference.inHours}h ago';
+    }
+    if (difference.inDays < 7) {
+      return '${difference.inDays}d ago';
+    }
+
+    return DateFormat('MMM d, yyyy').format(date);
   }
 
   static IconData _iconForType(String type) {
@@ -316,13 +407,13 @@ class _ActivityTile extends StatelessWidget {
       case 'application':
         return Icons.assignment_outlined;
       case 'opportunity':
-        return Icons.work_outline;
+        return Icons.work_outline_rounded;
       case 'scholarship':
-        return Icons.card_giftcard;
+        return Icons.card_giftcard_rounded;
       case 'training':
         return Icons.cast_for_education_outlined;
       default:
-        return Icons.lightbulb_outline;
+        return Icons.lightbulb_outline_rounded;
     }
   }
 
@@ -342,15 +433,279 @@ class _ActivityTile extends StatelessWidget {
   }
 
   static Color _statusColor(String status) {
-    switch (status) {
+    switch (status.trim().toLowerCase()) {
       case 'approved':
       case 'accepted':
       case 'open':
+      case 'featured':
         return AdminPalette.success;
       case 'rejected':
         return AdminPalette.danger;
       default:
         return AdminPalette.warning;
     }
+  }
+}
+
+class _ActivityInlineInfo extends StatelessWidget {
+  final IconData icon;
+  final String label;
+
+  const _ActivityInlineInfo({required this.icon, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 13, color: AdminPalette.textMuted),
+        const SizedBox(width: 4),
+        Text(
+          label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(
+            fontSize: 11.4,
+            fontWeight: FontWeight.w600,
+            color: AdminPalette.textMuted,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ActivityHeaderLine extends StatelessWidget {
+  final String typeLabel;
+  final String actorName;
+  final Color color;
+
+  const _ActivityHeaderLine({
+    required this.typeLabel,
+    required this.actorName,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Flexible(
+          flex: 0,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.10),
+              borderRadius: BorderRadius.circular(999),
+            ),
+            child: Text(
+              typeLabel.toUpperCase(),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 10.2,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 0.45,
+                color: color,
+              ),
+            ),
+          ),
+        ),
+        if (actorName.isNotEmpty) ...[
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              actorName,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 11.3,
+                fontWeight: FontWeight.w600,
+                color: AdminPalette.textMuted,
+              ),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+class _ActivityStatusBadge extends StatelessWidget {
+  final String label;
+  final Color color;
+
+  const _ActivityStatusBadge({required this.label, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: color.withValues(alpha: 0.14)),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: 10.8,
+          fontWeight: FontWeight.w700,
+          color: color,
+        ),
+      ),
+    );
+  }
+}
+
+class _ActivityOpenButton extends StatelessWidget {
+  final Color color;
+  final VoidCallback onPressed;
+  final bool compact;
+
+  const _ActivityOpenButton({
+    required this.color,
+    required this.onPressed,
+    this.compact = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      tooltip: 'Open activity',
+      onPressed: onPressed,
+      style: IconButton.styleFrom(
+        foregroundColor: color,
+        backgroundColor: color.withValues(alpha: 0.10),
+        minimumSize: Size(compact ? 36 : 40, compact ? 36 : 40),
+        padding: EdgeInsets.all(compact ? 8 : 10),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      ),
+      icon: const Icon(Icons.arrow_outward_rounded, size: 18),
+    );
+  }
+}
+
+class _ActivityFeedFooter extends StatelessWidget {
+  final AdminProvider provider;
+
+  const _ActivityFeedFooter({required this.provider});
+
+  @override
+  Widget build(BuildContext context) {
+    if (!provider.activityHasMore && provider.activityError == null) {
+      return const Padding(
+        padding: EdgeInsets.only(top: 6, bottom: 6),
+        child: Center(
+          child: Text(
+            'You have reached the end of the recent activity feed.',
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: AdminPalette.textMuted,
+            ),
+          ),
+        ),
+      );
+    }
+
+    final isRetryState = provider.activityError != null;
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isCompact = constraints.maxWidth < 340;
+
+        final button = FilledButton.tonalIcon(
+          onPressed: provider.activityLoadingMore
+              ? null
+              : provider.loadMoreActivityFeed,
+          icon: provider.activityLoadingMore
+              ? const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : Icon(
+                  isRetryState
+                      ? Icons.refresh_rounded
+                      : Icons.expand_more_rounded,
+                  size: 18,
+                ),
+          label: Text(
+            provider.activityLoadingMore
+                ? 'Loading'
+                : isRetryState
+                ? 'Try Again'
+                : 'Older Activity',
+          ),
+          style: FilledButton.styleFrom(
+            foregroundColor: AdminPalette.primary,
+            backgroundColor: AdminPalette.primarySoft,
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
+          ),
+        );
+
+        final copy = Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              isRetryState
+                  ? 'Could not load older activity'
+                  : 'Need more activity?',
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: AdminPalette.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              isRetryState
+                  ? provider.activityError!
+                  : provider.activityLoadingMore
+                  ? 'Fetching older updates from across the platform.'
+                  : 'Load older updates from submissions, listings, trainings, scholarships, and project ideas.',
+              style: TextStyle(
+                fontSize: 11.8,
+                fontWeight: FontWeight.w500,
+                color: isRetryState
+                    ? AdminPalette.danger
+                    : AdminPalette.textMuted,
+                height: 1.35,
+              ),
+            ),
+          ],
+        );
+
+        return AdminSurface(
+          radius: 18,
+          padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+          color: AdminPalette.surfaceMuted,
+          border: Border.all(color: AdminPalette.border.withValues(alpha: 0.9)),
+          boxShadow: const [],
+          child: isCompact
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    copy,
+                    const SizedBox(height: 12),
+                    SizedBox(width: double.infinity, child: button),
+                  ],
+                )
+              : Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(child: copy),
+                    const SizedBox(width: 12),
+                    button,
+                  ],
+                ),
+        );
+      },
+    );
   }
 }

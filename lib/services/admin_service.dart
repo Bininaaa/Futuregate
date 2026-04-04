@@ -11,6 +11,12 @@ import 'company_service.dart';
 import 'notification_worker_service.dart';
 
 class AdminService {
+  static const String activitySourceApplications = 'applications';
+  static const String activitySourceOpportunities = 'opportunities';
+  static const String activitySourceScholarships = 'scholarships';
+  static const String activitySourceTrainings = 'trainings';
+  static const String activitySourceProjectIdeas = 'projectIdeas';
+
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final NotificationWorkerService _notificationWorker =
       NotificationWorkerService();
@@ -378,6 +384,46 @@ class AdminService {
     return snapshot.docs.map((doc) => {...doc.data(), 'id': doc.id}).toList();
   }
 
+  Future<AdminActivityBatch> getAdminActivityBatch({
+    required String source,
+    int limit = 8,
+    DocumentSnapshot<Map<String, dynamic>>? startAfterDocument,
+  }) async {
+    switch (source) {
+      case activitySourceApplications:
+        return _getApplicationActivityBatch(
+          limit: limit,
+          startAfterDocument: startAfterDocument,
+        );
+      case activitySourceOpportunities:
+        return _getOpportunityActivityBatch(
+          limit: limit,
+          startAfterDocument: startAfterDocument,
+        );
+      case activitySourceScholarships:
+        return _getScholarshipActivityBatch(
+          limit: limit,
+          startAfterDocument: startAfterDocument,
+        );
+      case activitySourceTrainings:
+        return _getTrainingActivityBatch(
+          limit: limit,
+          startAfterDocument: startAfterDocument,
+        );
+      case activitySourceProjectIdeas:
+        return _getProjectIdeaActivityBatch(
+          limit: limit,
+          startAfterDocument: startAfterDocument,
+        );
+      default:
+        throw ArgumentError.value(
+          source,
+          'source',
+          'Unknown admin activity source',
+        );
+    }
+  }
+
   Future<List<AdminActivityModel>> getAdminActivities({
     int perCollectionLimit = 4,
   }) async {
@@ -527,6 +573,214 @@ class AdminService {
 
     activities.sort(_compareByTimestampDesc);
     return activities;
+  }
+
+  Future<AdminActivityBatch> _getApplicationActivityBatch({
+    required int limit,
+    DocumentSnapshot<Map<String, dynamic>>? startAfterDocument,
+  }) async {
+    final safeLimit = limit < 1 ? 1 : limit;
+    final snapshot = await _getActivitySnapshot(
+      collection: activitySourceApplications,
+      orderField: 'appliedAt',
+      limit: safeLimit,
+      startAfterDocument: startAfterDocument,
+    );
+    final pageDocs = _pageDocs(snapshot.docs, safeLimit);
+    final opportunityInfo = await _fetchOpportunityInfo(
+      pageDocs
+          .map((doc) => (doc.data()['opportunityId'] ?? '').toString())
+          .where((id) => id.isNotEmpty)
+          .toSet(),
+    );
+
+    final activities = pageDocs.map((doc) {
+      final data = doc.data();
+      final opportunityId = (data['opportunityId'] ?? '').toString();
+      final opportunityMeta = opportunityInfo[opportunityId];
+      final opportunityTitle = (opportunityMeta?['title'] ?? '')
+          .toString()
+          .trim();
+      final companyName = (opportunityMeta?['companyName'] ?? '')
+          .toString()
+          .trim();
+
+      return AdminActivityModel(
+        id: 'application_${doc.id}',
+        type: 'application',
+        relatedId: doc.id,
+        relatedCollection: activitySourceApplications,
+        title: opportunityTitle.isNotEmpty
+            ? opportunityTitle
+            : 'New application submitted',
+        description: companyName.isNotEmpty
+            ? 'Application submitted to $companyName'
+            : 'A student submitted a new application',
+        actorId: (data['studentId'] ?? '').toString(),
+        actorName: (data['studentName'] ?? 'Student').toString(),
+        status: (data['status'] ?? '').toString(),
+        createdAt: data['appliedAt'] as Timestamp?,
+      );
+    }).toList();
+
+    return AdminActivityBatch(
+      activities: activities,
+      lastDocument: pageDocs.isEmpty ? startAfterDocument : pageDocs.last,
+      hasMore: snapshot.docs.length > safeLimit,
+    );
+  }
+
+  Future<AdminActivityBatch> _getOpportunityActivityBatch({
+    required int limit,
+    DocumentSnapshot<Map<String, dynamic>>? startAfterDocument,
+  }) async {
+    final safeLimit = limit < 1 ? 1 : limit;
+    final snapshot = await _getActivitySnapshot(
+      collection: activitySourceOpportunities,
+      orderField: 'createdAt',
+      limit: safeLimit,
+      startAfterDocument: startAfterDocument,
+    );
+    final pageDocs = _pageDocs(snapshot.docs, safeLimit);
+
+    final activities = pageDocs.map((doc) {
+      final data = doc.data();
+      return AdminActivityModel(
+        id: 'opportunity_${doc.id}',
+        type: 'opportunity',
+        relatedId: doc.id,
+        relatedCollection: activitySourceOpportunities,
+        title: (data['title'] ?? 'Untitled opportunity').toString(),
+        description: 'New opportunity created',
+        actorId: (data['companyId'] ?? '').toString(),
+        actorName: (data['companyName'] ?? 'Company').toString(),
+        status: (data['status'] ?? '').toString(),
+        createdAt: data['createdAt'] as Timestamp?,
+      );
+    }).toList();
+
+    return AdminActivityBatch(
+      activities: activities,
+      lastDocument: pageDocs.isEmpty ? startAfterDocument : pageDocs.last,
+      hasMore: snapshot.docs.length > safeLimit,
+    );
+  }
+
+  Future<AdminActivityBatch> _getScholarshipActivityBatch({
+    required int limit,
+    DocumentSnapshot<Map<String, dynamic>>? startAfterDocument,
+  }) async {
+    final safeLimit = limit < 1 ? 1 : limit;
+    final snapshot = await _getActivitySnapshot(
+      collection: activitySourceScholarships,
+      orderField: 'createdAt',
+      limit: safeLimit,
+      startAfterDocument: startAfterDocument,
+    );
+    final pageDocs = _pageDocs(snapshot.docs, safeLimit);
+
+    final activities = pageDocs.map((doc) {
+      final data = doc.data();
+      return AdminActivityModel(
+        id: 'scholarship_${doc.id}',
+        type: 'scholarship',
+        relatedId: doc.id,
+        relatedCollection: activitySourceScholarships,
+        title: (data['title'] ?? 'Untitled scholarship').toString(),
+        description: 'New scholarship published',
+        actorId: (data['createdBy'] ?? '').toString(),
+        actorName: (data['provider'] ?? 'Provider').toString(),
+        createdAt: data['createdAt'] as Timestamp?,
+      );
+    }).toList();
+
+    return AdminActivityBatch(
+      activities: activities,
+      lastDocument: pageDocs.isEmpty ? startAfterDocument : pageDocs.last,
+      hasMore: snapshot.docs.length > safeLimit,
+    );
+  }
+
+  Future<AdminActivityBatch> _getTrainingActivityBatch({
+    required int limit,
+    DocumentSnapshot<Map<String, dynamic>>? startAfterDocument,
+  }) async {
+    final safeLimit = limit < 1 ? 1 : limit;
+    final snapshot = await _getActivitySnapshot(
+      collection: activitySourceTrainings,
+      orderField: 'createdAt',
+      limit: safeLimit,
+      startAfterDocument: startAfterDocument,
+    );
+    final pageDocs = _pageDocs(snapshot.docs, safeLimit);
+
+    final activities = pageDocs.map((doc) {
+      final data = doc.data();
+      return AdminActivityModel(
+        id: 'training_${doc.id}',
+        type: 'training',
+        relatedId: doc.id,
+        relatedCollection: activitySourceTrainings,
+        title: (data['title'] ?? 'Untitled training').toString(),
+        description: 'New training published',
+        actorId: (data['createdBy'] ?? '').toString(),
+        actorName: (data['provider'] ?? 'Provider').toString(),
+        status: (data['isFeatured'] == true) ? 'featured' : '',
+        createdAt: data['createdAt'] as Timestamp?,
+      );
+    }).toList();
+
+    return AdminActivityBatch(
+      activities: activities,
+      lastDocument: pageDocs.isEmpty ? startAfterDocument : pageDocs.last,
+      hasMore: snapshot.docs.length > safeLimit,
+    );
+  }
+
+  Future<AdminActivityBatch> _getProjectIdeaActivityBatch({
+    required int limit,
+    DocumentSnapshot<Map<String, dynamic>>? startAfterDocument,
+  }) async {
+    final safeLimit = limit < 1 ? 1 : limit;
+    final snapshot = await _getActivitySnapshot(
+      collection: activitySourceProjectIdeas,
+      orderField: 'createdAt',
+      limit: safeLimit,
+      startAfterDocument: startAfterDocument,
+    );
+    final pageDocs = _pageDocs(snapshot.docs, safeLimit);
+    final ownerNames = await _fetchUserDisplayNames(
+      pageDocs
+          .map((doc) => (doc.data()['submittedBy'] ?? '').toString())
+          .where((id) => id.isNotEmpty)
+          .toSet(),
+    );
+
+    final activities = pageDocs.map((doc) {
+      final data = doc.data();
+      final ownerId = (data['submittedBy'] ?? '').toString();
+      final ownerName = (data['submittedByName'] ?? '').toString().trim();
+      return AdminActivityModel(
+        id: 'project_idea_${doc.id}',
+        type: 'project_idea',
+        relatedId: doc.id,
+        relatedCollection: activitySourceProjectIdeas,
+        title: (data['title'] ?? 'Untitled project idea').toString(),
+        description: 'New project idea submitted for review',
+        actorId: ownerId,
+        actorName: ownerName.isNotEmpty
+            ? ownerName
+            : (ownerNames[ownerId] ?? 'Student'),
+        status: (data['status'] ?? '').toString(),
+        createdAt: data['createdAt'] as Timestamp?,
+      );
+    }).toList();
+
+    return AdminActivityBatch(
+      activities: activities,
+      lastDocument: pageDocs.isEmpty ? startAfterDocument : pageDocs.last,
+      hasMore: snapshot.docs.length > safeLimit,
+    );
   }
 
   Future<List<UserModel>> getAllUsers() async {
@@ -854,6 +1108,35 @@ class AdminService {
     );
 
     return Map<String, String>.fromEntries(results);
+  }
+
+  Future<QuerySnapshot<Map<String, dynamic>>> _getActivitySnapshot({
+    required String collection,
+    required String orderField,
+    required int limit,
+    DocumentSnapshot<Map<String, dynamic>>? startAfterDocument,
+  }) {
+    Query<Map<String, dynamic>> query = _firestore
+        .collection(collection)
+        .orderBy(orderField, descending: true)
+        .limit(limit + 1);
+
+    if (startAfterDocument != null) {
+      query = query.startAfterDocument(startAfterDocument);
+    }
+
+    return query.get();
+  }
+
+  List<QueryDocumentSnapshot<Map<String, dynamic>>> _pageDocs(
+    List<QueryDocumentSnapshot<Map<String, dynamic>>> docs,
+    int limit,
+  ) {
+    if (docs.length <= limit) {
+      return docs;
+    }
+
+    return docs.take(limit).toList();
   }
 
   Future<Map<String, Map<String, dynamic>>> _fetchOpportunityInfo(
