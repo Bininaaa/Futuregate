@@ -2833,6 +2833,106 @@ async function handleNotifyChatMessage(request, env) {
   return json(result);
 }
 
+// ── AI Message Processing (Groq) ─────────────────────────────────────
+
+const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
+const GROQ_MODEL = "llama-3.3-70b-versatile";
+const AI_MAX_TEXT_LENGTH = 2000;
+
+const AI_SYSTEM_PROMPTS = {
+  formal: [
+    "You are a message assistant. Rewrite the following message to be professional, polite, and concise.",
+    "Keep the original meaning. Do NOT invent any experience, qualifications, or facts.",
+    "Return ONLY the rewritten message, nothing else.",
+  ].join(" "),
+  correct: [
+    "You are a grammar and spelling assistant. Fix grammar, spelling, and clarity in the following message.",
+    "Keep the same language. Do NOT change the meaning or add new information.",
+    "Return ONLY the corrected message, nothing else.",
+  ].join(" "),
+  translate: [
+    "You are a translation assistant. Translate the following message to TARGET_LANGUAGE.",
+    "Keep it natural, professional, and accurate. Preserve the original meaning.",
+    "Return ONLY the translated message, nothing else.",
+  ].join(" "),
+};
+
+async function handleAiMessage(request, env) {
+  const apiKey = env.GROQ_API_KEY;
+  if (!apiKey) {
+    return err("AI service not configured", 500);
+  }
+
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return err("Invalid JSON body");
+  }
+
+  const task = trim(body.task).toLowerCase();
+  const text = trim(body.text);
+  const targetLanguage = trim(body.targetLanguage);
+
+  if (!["formal", "correct", "translate"].includes(task)) {
+    return err("Invalid task. Must be: formal, correct, or translate");
+  }
+
+  if (!text) {
+    return err("Text is required");
+  }
+
+  if (text.length > AI_MAX_TEXT_LENGTH) {
+    return err(`Text exceeds maximum length of ${AI_MAX_TEXT_LENGTH} characters`);
+  }
+
+  if (task === "translate" && !targetLanguage) {
+    return err("targetLanguage is required for translate task");
+  }
+
+  let systemPrompt = AI_SYSTEM_PROMPTS[task];
+  if (task === "translate") {
+    systemPrompt = systemPrompt.replace("TARGET_LANGUAGE", targetLanguage);
+  }
+
+  try {
+    const groqResponse = await fetch(GROQ_API_URL, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: GROQ_MODEL,
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: text },
+        ],
+        temperature: 0.3,
+        max_tokens: 1024,
+      }),
+    });
+
+    if (!groqResponse.ok) {
+      const errorBody = await groqResponse.text();
+      console.error("[aiMessage] Groq API error:", groqResponse.status, errorBody);
+      return err("AI processing failed", 502);
+    }
+
+    const groqData = await groqResponse.json();
+    const result = groqData?.choices?.[0]?.message?.content;
+
+    if (!result) {
+      return err("AI returned empty result", 502);
+    }
+
+    return json({ success: true, result: result.trim() });
+  } catch (error) {
+    console.error("[aiMessage] Error:", error?.message ?? error);
+    return err("AI processing failed", 500);
+  }
+}
+
 function matchRoute(method, path) {
   if (method === "GET" && path === "/api/health") {
     return { handler: "health" };
@@ -2881,6 +2981,9 @@ function matchRoute(method, path) {
   }
   if (method === "GET" && path === "/api/chat/contacts") {
     return { handler: "searchChatContacts" };
+  }
+  if (method === "POST" && path === "/api/ai/message") {
+    return { handler: "aiMessage" };
   }
 
   const applicationCvRoute = path.match(/^\/api\/applications\/([^/]+)\/cv$/);
@@ -3037,6 +3140,9 @@ export default {
           break;
         case "searchChatContacts":
           response = await handleSearchChatContacts(request, env);
+          break;
+        case "aiMessage":
+          response = await handleAiMessage(request, env);
           break;
         case "getApplicationCv":
           response = await handleGetApplicationCv(request, env, route.id);

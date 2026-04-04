@@ -29,6 +29,7 @@ class ChatInputBar extends StatelessWidget {
   final TextEditingController controller;
   final bool isSending;
   final bool isEditing;
+  final bool isAiProcessing;
   final PendingChatAttachment? pendingAttachment;
   final VoidCallback onSend;
   final VoidCallback onPickImage;
@@ -36,12 +37,18 @@ class ChatInputBar extends StatelessWidget {
   final VoidCallback onCancelEdit;
   final VoidCallback onRemoveAttachment;
   final VoidCallback onEmojiTap;
+  final bool showAiTools;
+  final VoidCallback onAiFormalize;
+  final VoidCallback onAiCorrect;
+  final VoidCallback onAiTranslate;
 
   const ChatInputBar({
     super.key,
     required this.controller,
     required this.isSending,
     required this.isEditing,
+    this.isAiProcessing = false,
+    this.showAiTools = false,
     required this.pendingAttachment,
     required this.onSend,
     required this.onPickImage,
@@ -49,6 +56,9 @@ class ChatInputBar extends StatelessWidget {
     required this.onCancelEdit,
     required this.onRemoveAttachment,
     required this.onEmojiTap,
+    required this.onAiFormalize,
+    required this.onAiCorrect,
+    required this.onAiTranslate,
   });
 
   @override
@@ -81,6 +91,38 @@ class ChatInputBar extends StatelessWidget {
                     onRemove: onRemoveAttachment,
                   ),
                 const SizedBox(height: 8),
+              ],
+              if (showAiTools) ...[
+                if (isAiProcessing)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: _AiProcessingIndicator(),
+                  )
+                else
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 6),
+                    child: Row(
+                      children: [
+                        _AiChip(
+                          icon: Icons.auto_awesome_outlined,
+                          label: 'Formalize',
+                          onTap: onAiFormalize,
+                        ),
+                        const SizedBox(width: 6),
+                        _AiChip(
+                          icon: Icons.spellcheck_rounded,
+                          label: 'Correct',
+                          onTap: onAiCorrect,
+                        ),
+                        const SizedBox(width: 6),
+                        _AiChip(
+                          icon: Icons.translate_rounded,
+                          label: 'Translate',
+                          onTap: onAiTranslate,
+                        ),
+                      ],
+                    ),
+                  ),
               ],
               Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -317,6 +359,82 @@ class _AttachmentPreview extends StatelessWidget {
             child: const Padding(
               padding: EdgeInsets.all(2),
               child: Icon(Icons.close_rounded, size: 16, color: ChatThemePalette.textSecondary),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AiChip extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  const _AiChip({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        decoration: BoxDecoration(
+          color: ChatThemePalette.primary.withValues(alpha: 0.07),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: ChatThemePalette.primary.withValues(alpha: 0.15),
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 13, color: ChatThemePalette.primary),
+            const SizedBox(width: 4),
+            Text(
+              label,
+              style: ChatThemeStyles.meta(ChatThemePalette.primary).copyWith(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _AiProcessingIndicator extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: ChatThemePalette.primary.withValues(alpha: 0.07),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            width: 14,
+            height: 14,
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              color: ChatThemePalette.primary.withValues(alpha: 0.7),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            'AI is processing...',
+            style: ChatThemeStyles.meta(ChatThemePalette.primary).copyWith(
+              fontWeight: FontWeight.w600,
             ),
           ),
         ],

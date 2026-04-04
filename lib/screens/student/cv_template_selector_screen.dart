@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../config/cv_template_config.dart';
 import '../../models/cv_model.dart';
+import '../../screens/settings/settings_flow_theme.dart';
 import '../../widgets/cv_templates/cv_template_preview.dart';
 
 class CvTemplateSelectorScreen extends StatefulWidget {
@@ -23,10 +23,6 @@ class CvTemplateSelectorScreen extends StatefulWidget {
 class _CvTemplateSelectorScreenState extends State<CvTemplateSelectorScreen> {
   late String _selectedId;
 
-  static const Color strongBlue = Color(0xFF004E98);
-  static const Color vibrantOrange = Color(0xFFFF6700);
-  static const Color softGray = Color(0xFFEBEBEB);
-
   @override
   void initState() {
     super.initState();
@@ -36,27 +32,27 @@ class _CvTemplateSelectorScreenState extends State<CvTemplateSelectorScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: softGray,
+      backgroundColor: SettingsFlowPalette.background,
       appBar: AppBar(
-        title: Text(
-          'Choose Template',
-          style: GoogleFonts.poppins(
-            fontWeight: FontWeight.w600,
-            color: strongBlue,
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        leading: IconButton(
+          onPressed: () => Navigator.maybePop(context),
+          icon: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: SettingsFlowPalette.textPrimary,
           ),
         ),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: strongBlue),
+        title: Text('Choose Template', style: SettingsFlowTheme.appBarTitle()),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, _selectedId),
             child: Text(
               'Apply',
-              style: GoogleFonts.poppins(
-                fontWeight: FontWeight.w600,
-                color: vibrantOrange,
-              ),
+              style: SettingsFlowTheme.body(SettingsFlowPalette.primary),
             ),
           ),
         ],
@@ -80,16 +76,19 @@ class _CvTemplateSelectorScreenState extends State<CvTemplateSelectorScreen> {
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
+                  color: SettingsFlowPalette.surface,
+                  borderRadius: SettingsFlowTheme.radius(18),
                   border: Border.all(
-                    color: isSelected ? vibrantOrange : Colors.transparent,
-                    width: 2.5,
+                    color: isSelected
+                        ? SettingsFlowPalette.primary
+                        : SettingsFlowPalette.border,
+                    width: isSelected ? 2.5 : 1,
                   ),
                   boxShadow: [
                     BoxShadow(
                       color: isSelected
-                          ? vibrantOrange.withValues(alpha: 0.15)
+                          ? SettingsFlowPalette.primary
+                              .withValues(alpha: 0.12)
                           : Colors.black.withValues(alpha: 0.04),
                       blurRadius: isSelected ? 12 : 8,
                       offset: const Offset(0, 2),
@@ -98,11 +97,10 @@ class _CvTemplateSelectorScreenState extends State<CvTemplateSelectorScreen> {
                 ),
                 child: Column(
                   children: [
-                    // Preview
                     Expanded(
                       child: ClipRRect(
-                        borderRadius: const BorderRadius.vertical(
-                          top: Radius.circular(14),
+                        borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(isSelected ? 15.5 : 17),
                         ),
                         child: CvTemplatePreview(
                           cv: widget.cv,
@@ -110,19 +108,19 @@ class _CvTemplateSelectorScreenState extends State<CvTemplateSelectorScreen> {
                         ),
                       ),
                     ),
-                    // Label
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 10,
-                        vertical: 8,
+                        vertical: 10,
                       ),
                       decoration: BoxDecoration(
                         color: isSelected
-                            ? vibrantOrange.withValues(alpha: 0.06)
-                            : Colors.white,
-                        borderRadius: const BorderRadius.vertical(
-                          bottom: Radius.circular(14),
+                            ? SettingsFlowPalette.primary
+                                .withValues(alpha: 0.06)
+                            : SettingsFlowPalette.surface,
+                        borderRadius: BorderRadius.vertical(
+                          bottom: Radius.circular(isSelected ? 15.5 : 17),
                         ),
                       ),
                       child: Row(
@@ -130,16 +128,18 @@ class _CvTemplateSelectorScreenState extends State<CvTemplateSelectorScreen> {
                           Icon(
                             template.icon,
                             size: 16,
-                            color: isSelected ? vibrantOrange : strongBlue,
+                            color: isSelected
+                                ? SettingsFlowPalette.primary
+                                : SettingsFlowPalette.textPrimary,
                           ),
                           const SizedBox(width: 6),
                           Expanded(
                             child: Text(
                               template.name,
-                              style: GoogleFonts.poppins(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                                color: isSelected ? vibrantOrange : strongBlue,
+                              style: SettingsFlowTheme.cardTitle(
+                                isSelected
+                                    ? SettingsFlowPalette.primary
+                                    : SettingsFlowPalette.textPrimary,
                               ),
                             ),
                           ),
@@ -147,7 +147,7 @@ class _CvTemplateSelectorScreenState extends State<CvTemplateSelectorScreen> {
                             const Icon(
                               Icons.check_circle,
                               size: 18,
-                              color: vibrantOrange,
+                              color: SettingsFlowPalette.primary,
                             ),
                         ],
                       ),

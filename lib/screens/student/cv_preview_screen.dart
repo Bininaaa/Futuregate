@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:printing/printing.dart';
 import 'package:provider/provider.dart';
 
@@ -9,6 +8,8 @@ import '../../config/cv_template_config.dart';
 import '../../models/cv_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/cv_provider.dart';
+import '../../screens/settings/settings_flow_theme.dart';
+import '../../screens/settings/settings_flow_widgets.dart';
 import '../../services/cv_pdf_service.dart';
 
 class CvPreviewScreen extends StatefulWidget {
@@ -21,9 +22,6 @@ class CvPreviewScreen extends StatefulWidget {
 }
 
 class _CvPreviewScreenState extends State<CvPreviewScreen> {
-  static const Color strongBlue = Color(0xFF004E98);
-  static const Color vibrantOrange = Color(0xFFFF6700);
-
   Future<Uint8List>? _pdfFuture;
 
   @override
@@ -43,12 +41,25 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
 
     if (error == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('CV exported and saved successfully')),
+        SnackBar(
+          content: Text(
+            'CV exported and saved',
+            style: SettingsFlowTheme.body(Colors.white),
+          ),
+          backgroundColor: SettingsFlowPalette.success,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: SettingsFlowTheme.radius(12),
+          ),
+        ),
       );
       Navigator.pop(context, true);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(error)),
+        SnackBar(
+          content: Text(error),
+          backgroundColor: SettingsFlowPalette.error,
+        ),
       );
     }
   }
@@ -67,24 +78,31 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
     final cvProvider = context.watch<CvProvider>();
 
     return Scaffold(
+      backgroundColor: SettingsFlowPalette.background,
       appBar: AppBar(
-        title: Text(
-          'Preview CV',
-          style: GoogleFonts.poppins(
-            fontWeight: FontWeight.w600,
-            color: strongBlue,
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        leading: IconButton(
+          onPressed: () => Navigator.maybePop(context),
+          icon: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: SettingsFlowPalette.textPrimary,
           ),
         ),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: strongBlue),
+        title: Text('Preview', style: SettingsFlowTheme.appBarTitle()),
         actions: [
           FutureBuilder<Uint8List>(
             future: _pdfFuture,
             builder: (context, snapshot) {
               if (!snapshot.hasData) return const SizedBox.shrink();
               return IconButton(
-                icon: const Icon(Icons.share),
+                icon: const Icon(
+                  Icons.share_outlined,
+                  color: SettingsFlowPalette.textPrimary,
+                ),
                 tooltip: 'Share PDF',
                 onPressed: () => _share(snapshot.data!),
               );
@@ -94,19 +112,23 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
       ),
       body: Column(
         children: [
-          // PDF Preview
           Expanded(
             child: FutureBuilder<Uint8List>(
               future: _pdfFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
+                  return Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        CircularProgressIndicator(),
-                        SizedBox(height: 12),
-                        Text('Generating PDF...'),
+                        const CircularProgressIndicator(
+                          color: SettingsFlowPalette.primary,
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          'Generating PDF...',
+                          style: SettingsFlowTheme.caption(),
+                        ),
                       ],
                     ),
                   );
@@ -114,28 +136,29 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
 
                 if (snapshot.hasError) {
                   return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.error_outline,
-                            size: 48, color: Colors.red),
-                        const SizedBox(height: 12),
-                        Text(
-                          'Failed to generate PDF',
-                          style: GoogleFonts.poppins(
-                            fontWeight: FontWeight.w500,
+                    child: Padding(
+                      padding: const EdgeInsets.all(32),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.error_outline_rounded,
+                            size: 48,
+                            color: SettingsFlowPalette.error,
                           ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          snapshot.error.toString(),
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey,
+                          const SizedBox(height: 12),
+                          Text(
+                            'Failed to generate PDF',
+                            style: SettingsFlowTheme.sectionTitle(),
                           ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
+                          const SizedBox(height: 4),
+                          Text(
+                            snapshot.error.toString(),
+                            style: SettingsFlowTheme.caption(),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
                     ),
                   );
                 }
@@ -152,13 +175,11 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
               },
             ),
           ),
-
-          // Export button
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: SettingsFlowPalette.surface,
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.06),
@@ -171,27 +192,15 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
                 ? const Center(
                     child: Padding(
                       padding: EdgeInsets.symmetric(vertical: 8),
-                      child: CircularProgressIndicator(),
+                      child: CircularProgressIndicator(
+                        color: SettingsFlowPalette.primary,
+                      ),
                     ),
                   )
-                : ElevatedButton.icon(
+                : SettingsPrimaryButton(
+                    label: 'Export & Save CV',
+                    icon: Icons.cloud_upload_outlined,
                     onPressed: _exportAndUpload,
-                    icon: const Icon(Icons.cloud_upload_outlined),
-                    label: Text(
-                      'Export & Save CV',
-                      style: GoogleFonts.poppins(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15,
-                      ),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: vibrantOrange,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
                   ),
           ),
         ],

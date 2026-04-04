@@ -8,6 +8,7 @@ import '../../models/message_model.dart';
 import '../../models/user_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/chat_provider.dart';
+import '../../services/ai_message_service.dart';
 import '../../services/public_profile_service.dart';
 import '../../widgets/chat/chat_formatters.dart';
 import '../../widgets/chat/chat_confirmation_dialog.dart';
@@ -57,6 +58,9 @@ class _ConversationScreenState extends State<ConversationScreen> {
   String _profileUserId = '';
   late final Stream<ConversationModel?> _conversationStream;
   int _lastMessageCount = 0;
+
+  final AiMessageService _aiService = AiMessageService();
+  bool _isAiProcessing = false;
 
   @override
   void initState() {
@@ -183,6 +187,89 @@ class _ConversationScreenState extends State<ConversationScreen> {
     _messageController.selection = TextSelection.collapsed(
       offset: _messageController.text.length,
     );
+  }
+
+  Future<void> _handleAiTask(String task, {String? targetLanguage}) async {
+    final text = _messageController.text.trim();
+    if (text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Type a message first')),
+      );
+      return;
+    }
+
+    setState(() => _isAiProcessing = true);
+    try {
+      final result = await _aiService.processMessage(
+        task: task,
+        text: text,
+        targetLanguage: targetLanguage,
+      );
+      if (!mounted) return;
+      _messageController.text = result;
+      _messageController.selection = TextSelection.collapsed(
+        offset: _messageController.text.length,
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(_readableError(e.toString()))),
+      );
+    } finally {
+      if (mounted) setState(() => _isAiProcessing = false);
+    }
+  }
+
+  void _showTranslateSheet() {
+    final text = _messageController.text.trim();
+    if (text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Type a message first')),
+      );
+      return;
+    }
+
+    showModalBottomSheet<String>(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Translate to',
+                style: ChatThemeStyles.cardTitle().copyWith(fontSize: 16),
+              ),
+              const SizedBox(height: 14),
+              _TranslateOption(
+                label: 'Arabic',
+                flag: '\u{1F1E9}\u{1F1FF}',
+                onTap: () => Navigator.pop(ctx, 'Arabic'),
+              ),
+              _TranslateOption(
+                label: 'French',
+                flag: '\u{1F1EB}\u{1F1F7}',
+                onTap: () => Navigator.pop(ctx, 'French'),
+              ),
+              _TranslateOption(
+                label: 'English',
+                flag: '\u{1F1EC}\u{1F1E7}',
+                onTap: () => Navigator.pop(ctx, 'English'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ).then((language) {
+      if (language != null) {
+        _handleAiTask('translate', targetLanguage: language);
+      }
+    });
   }
 
   void _startEdit(MessageModel message) {
@@ -545,6 +632,8 @@ class _ConversationScreenState extends State<ConversationScreen> {
                       controller: _messageController,
                       isSending: chatProvider.isSending,
                       isEditing: _editingMessageId != null,
+                      isAiProcessing: _isAiProcessing,
+                      showAiTools: auth?.role == 'student',
                       pendingAttachment: _pendingAttachment,
                       onSend: () => _sendMessage(conversation),
                       onPickImage: _pickImage,
@@ -559,6 +648,9 @@ class _ConversationScreenState extends State<ConversationScreen> {
                         setState(() => _pendingAttachment = null);
                       },
                       onEmojiTap: () {},
+                      onAiFormalize: () => _handleAiTask('formal'),
+                      onAiCorrect: () => _handleAiTask('correct'),
+                      onAiTranslate: _showTranslateSheet,
                     ),
                   ],
                 ),
@@ -927,6 +1019,42 @@ class _EmptyConversationState extends StatelessWidget {
                 ),
               ),
             ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _TranslateOption extends StatelessWidget {
+  final String label;
+  final String flag;
+  final VoidCallback onTap;
+
+  const _TranslateOption({
+    required this.label,
+    required this.flag,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+        child: Row(
+          children: [
+            Text(flag, style: const TextStyle(fontSize: 20)),
+            const SizedBox(width: 12),
+            Text(
+              label,
+              style: ChatThemeStyles.body().copyWith(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ],
         ),
       ),

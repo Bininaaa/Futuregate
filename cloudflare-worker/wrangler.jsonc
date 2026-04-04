@@ -12,6 +12,7 @@
   //   ALLOWED_ORIGINS               (comma-separated origins, e.g. "https://admin.example.com,http://localhost:5000")
   //   STORAGE_API_BASE_URL          (e.g. "https://avenirdz-storage-api.example.workers.dev")
   //   FILE_ACCESS_SECRET            (shared HMAC secret with the storage worker for secure document links)
+  //   GROQ_API_KEY                  (API key from console.groq.com for AI message processing)
 
   // Production environment override (optional)
   "env": {
