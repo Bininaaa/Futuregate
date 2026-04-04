@@ -31,6 +31,7 @@ class AdminProvider extends ChangeNotifier {
   List<Map<String, dynamic>> _allScholarships = [];
   List<TrainingModel> _allTrainings = [];
   final Set<String> _busyIdeaIds = <String>{};
+  final Set<String> _busyContentKeys = <String>{};
   bool _moderationLoading = false;
   bool _moderationInitialized = false;
   String? _moderationError;
@@ -77,6 +78,7 @@ class AdminProvider extends ChangeNotifier {
   List<Map<String, dynamic>> get allScholarships => _allScholarships;
   List<TrainingModel> get allTrainings => _allTrainings;
   Set<String> get busyIdeaIds => Set.unmodifiable(_busyIdeaIds);
+  Set<String> get busyContentKeys => Set.unmodifiable(_busyContentKeys);
   bool get moderationLoading => _moderationLoading;
   bool get moderationInitialized => _moderationInitialized;
   String? get moderationError => _moderationError;
@@ -370,6 +372,34 @@ class AdminProvider extends ChangeNotifier {
     }
   }
 
+  Future<String?> setProjectIdeaHidden(String id, bool isHidden) async {
+    final key = 'idea:$id';
+    if (_busyContentKeys.contains(key)) {
+      return 'Idea visibility update is already in progress';
+    }
+
+    try {
+      _busyContentKeys.add(key);
+      notifyListeners();
+
+      await _adminService.setProjectIdeaHidden(id, isHidden);
+      final index = _allProjectIdeas.indexWhere((idea) => idea.id == id);
+      if (index != -1) {
+        _allProjectIdeas[index] = _allProjectIdeas[index].copyWith(
+          isHidden: isHidden,
+        );
+        notifyListeners();
+      }
+      return null;
+    } catch (e) {
+      debugPrint('setProjectIdeaHidden error: $e');
+      return 'Failed to update idea visibility';
+    } finally {
+      _busyContentKeys.remove(key);
+      notifyListeners();
+    }
+  }
+
   Future<String?> createAdminOpportunity(Map<String, dynamic> data) async {
     try {
       final created = await _adminService.createAdminOpportunity(data);
@@ -412,6 +442,32 @@ class AdminProvider extends ChangeNotifier {
     }
   }
 
+  Future<String?> setOpportunityHidden(String id, bool isHidden) async {
+    final key = 'opportunity:$id';
+    if (_busyContentKeys.contains(key)) {
+      return 'Opportunity visibility update is already in progress';
+    }
+
+    try {
+      _busyContentKeys.add(key);
+      notifyListeners();
+
+      final updated = await _adminService.setOpportunityHidden(id, isHidden);
+      final index = _allOpportunities.indexWhere((item) => item['id'] == id);
+      if (index != -1) {
+        _allOpportunities[index] = updated;
+        notifyListeners();
+      }
+      return null;
+    } catch (e) {
+      debugPrint('setOpportunityHidden error: $e');
+      return 'Failed to update opportunity visibility';
+    } finally {
+      _busyContentKeys.remove(key);
+      notifyListeners();
+    }
+  }
+
   Future<String?> createScholarship(Map<String, dynamic> data) async {
     try {
       final created = await _adminService.createScholarship(data);
@@ -451,6 +507,58 @@ class AdminProvider extends ChangeNotifier {
     } catch (e) {
       debugPrint('deleteScholarship error: $e');
       return 'Failed to delete scholarship';
+    }
+  }
+
+  Future<String?> setScholarshipHidden(String id, bool isHidden) async {
+    final key = 'scholarship:$id';
+    if (_busyContentKeys.contains(key)) {
+      return 'Scholarship visibility update is already in progress';
+    }
+
+    try {
+      _busyContentKeys.add(key);
+      notifyListeners();
+
+      final updated = await _adminService.setScholarshipHidden(id, isHidden);
+      final index = _allScholarships.indexWhere((item) => item['id'] == id);
+      if (index != -1) {
+        _allScholarships[index] = updated;
+        notifyListeners();
+      }
+      return null;
+    } catch (e) {
+      debugPrint('setScholarshipHidden error: $e');
+      return 'Failed to update scholarship visibility';
+    } finally {
+      _busyContentKeys.remove(key);
+      notifyListeners();
+    }
+  }
+
+  Future<String?> setTrainingHidden(String id, bool isHidden) async {
+    final key = 'training:$id';
+    if (_busyContentKeys.contains(key)) {
+      return 'Training visibility update is already in progress';
+    }
+
+    try {
+      _busyContentKeys.add(key);
+      notifyListeners();
+
+      final updated = await _adminService.setTrainingHidden(id, isHidden);
+      final index = _allTrainings.indexWhere((training) => training.id == id);
+      if (index != -1) {
+        _allTrainings[index] = updated;
+        notifyListeners();
+      }
+      return null;
+    } catch (e) {
+      debugPrint('setTrainingHidden error: $e');
+      return 'Failed to update training visibility';
+    } finally {
+      _busyContentKeys.remove(key);
+      notifyListeners();
     }
   }
 }

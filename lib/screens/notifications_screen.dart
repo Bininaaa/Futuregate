@@ -344,6 +344,14 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             return;
           }
           final data = doc.data()!;
+          if (data['isHidden'] == true) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('This opportunity is currently hidden'),
+              ),
+            );
+            return;
+          }
           data['id'] = doc.id;
           final opportunity = OpportunityModel.fromMap(data);
           Navigator.push(
@@ -363,6 +371,14 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             return;
           }
           final data = doc.data()!;
+          if (data['isHidden'] == true) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('This scholarship is currently hidden'),
+              ),
+            );
+            return;
+          }
           data['id'] = doc.id;
           final scholarship = ScholarshipModel.fromMap(data);
           Navigator.push(
@@ -379,6 +395,14 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               .doc(notif.targetId)
               .get();
           if (!doc.exists || !context.mounted) {
+            return;
+          }
+          if ((doc.data()?['isHidden'] ?? false) == true) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('This training is currently hidden'),
+              ),
+            );
             return;
           }
           final training = TrainingModel.fromMap({
@@ -442,6 +466,14 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             return;
           }
           final oppData = oppDoc.data()!;
+          if (oppData['isHidden'] == true) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('This opportunity is currently hidden'),
+              ),
+            );
+            return;
+          }
           oppData['id'] = oppDoc.id;
           Navigator.push(
             context,

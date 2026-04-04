@@ -635,6 +635,20 @@ class AdminService {
     return didUpdate;
   }
 
+  Future<ProjectIdeaModel> setProjectIdeaHidden(
+    String id,
+    bool isHidden,
+  ) async {
+    final docRef = _firestore.collection('projectIdeas').doc(id);
+    await docRef.update({
+      'isHidden': isHidden,
+      'updatedAt': FieldValue.serverTimestamp(),
+    });
+
+    final snapshot = await docRef.get();
+    return ProjectIdeaModel.fromMap({...?snapshot.data(), 'id': docRef.id});
+  }
+
   Future<ProjectIdeaModel> createAdminProjectIdea(
     Map<String, dynamic> data,
   ) async {
@@ -718,6 +732,20 @@ class AdminService {
     await _firestore.collection('opportunities').doc(id).delete();
   }
 
+  Future<Map<String, dynamic>> setOpportunityHidden(
+    String id,
+    bool isHidden,
+  ) async {
+    final docRef = _firestore.collection('opportunities').doc(id);
+    await docRef.update({
+      'isHidden': isHidden,
+      'updatedAt': FieldValue.serverTimestamp(),
+    });
+
+    final snapshot = await docRef.get();
+    return {...?snapshot.data(), 'id': docRef.id};
+  }
+
   Future<Map<String, dynamic>> createScholarship(
     Map<String, dynamic> data,
   ) async {
@@ -751,6 +779,20 @@ class AdminService {
     await _firestore.collection('scholarships').doc(id).delete();
   }
 
+  Future<Map<String, dynamic>> setScholarshipHidden(
+    String id,
+    bool isHidden,
+  ) async {
+    final docRef = _firestore.collection('scholarships').doc(id);
+    await docRef.update({
+      'isHidden': isHidden,
+      'updatedAt': FieldValue.serverTimestamp(),
+    });
+
+    final snapshot = await docRef.get();
+    return {...?snapshot.data(), 'id': docRef.id};
+  }
+
   Future<List<Map<String, dynamic>>> getAllOpportunities() async {
     final snapshot = await _firestore
         .collection('opportunities')
@@ -778,6 +820,14 @@ class AdminService {
     return snapshot.docs
         .map((doc) => TrainingModel.fromMap({...doc.data(), 'id': doc.id}))
         .toList();
+  }
+
+  Future<TrainingModel> setTrainingHidden(String id, bool isHidden) async {
+    final docRef = _firestore.collection('trainings').doc(id);
+    await docRef.update({'isHidden': isHidden});
+
+    final snapshot = await docRef.get();
+    return TrainingModel.fromMap({...?snapshot.data(), 'id': docRef.id});
   }
 
   Future<Map<String, String>> _fetchUserDisplayNames(
@@ -897,6 +947,10 @@ class AdminService {
       nextData['isPublic'] = nextData['isPublic'] != false;
     }
 
+    if (nextData.containsKey('isHidden')) {
+      nextData['isHidden'] = nextData['isHidden'] == true;
+    }
+
     if (nextData.containsKey('status') || isCreate) {
       nextData['status'] = _normalizeProjectIdeaStatus(nextData['status']);
     }
@@ -939,6 +993,10 @@ class AdminService {
 
     if (nextData.containsKey('featured') || isCreate) {
       nextData['featured'] = nextData['featured'] == true;
+    }
+
+    if (nextData.containsKey('isHidden')) {
+      nextData['isHidden'] = nextData['isHidden'] == true;
     }
 
     if (nextData.containsKey('amount') || isCreate) {

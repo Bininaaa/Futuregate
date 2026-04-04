@@ -4,7 +4,9 @@ import '../models/saved_opportunity_model.dart';
 class SavedOpportunityService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<List<SavedOpportunityModel>> getSavedOpportunities(String studentId) async {
+  Future<List<SavedOpportunityModel>> getSavedOpportunities(
+    String studentId,
+  ) async {
     QuerySnapshot<Map<String, dynamic>> snapshot;
     try {
       snapshot = await _firestore
@@ -27,6 +29,14 @@ class SavedOpportunityService {
     final results = snapshot.docs
         .map((doc) => SavedOpportunityModel.fromMap(doc.data()))
         .toList();
+
+    final visibleOpportunityIds = await _resolveVisibleOpportunityIds(
+      results.map((item) => item.opportunityId).toSet(),
+    );
+
+    results.removeWhere(
+      (item) => !visibleOpportunityIds.contains(item.opportunityId),
+    );
 
     if (results.length > 1) {
       results.sort((a, b) {
@@ -82,7 +92,10 @@ class SavedOpportunityService {
     await _firestore.collection('savedOpportunities').doc(id).delete();
   }
 
-  Future<bool> isOpportunitySaved(String studentId, String opportunityId) async {
+  Future<bool> isOpportunitySaved(
+    String studentId,
+    String opportunityId,
+  ) async {
     final snapshot = await _firestore
         .collection('savedOpportunities')
         .where('studentId', isEqualTo: studentId)
@@ -90,5 +103,40 @@ class SavedOpportunityService {
         .get();
 
     return snapshot.docs.isNotEmpty;
+  }
+
+  Future<Set<String>> _resolveVisibleOpportunityIds(
+    Set<String> opportunityIds,
+  ) async {
+    final normalizedIds = opportunityIds
+        .map((opportunityId) => opportunityId.trim())
+        .where((opportunityId) => opportunityId.isNotEmpty)
+        .toSet();
+
+    if (normalizedIds.isEmpty) {
+      return const <String>{};
+    }
+
+    final visibleIds = <String>{};
+    final docs = await Future.wait(
+      normalizedIds.map(
+        (opportunityId) =>
+            _firestore.collection('opportunities').doc(opportunityId).get(),
+      ),
+    );
+
+    for (final doc in docs) {
+      if (!doc.exists || doc.data() == null) {
+        continue;
+      }
+
+      if (doc.data()!['isHidden'] == true) {
+        continue;
+      }
+
+      visibleIds.add(doc.id);
+    }
+
+    return visibleIds;
   }
 }

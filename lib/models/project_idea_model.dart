@@ -27,6 +27,7 @@ class ProjectIdeaModel {
   final String imageUrl;
   final String attachmentUrl;
   final bool isPublic;
+  final bool isHidden;
   final String authorAvatarUrl;
   final String authorPhotoType;
   final String authorAvatarId;
@@ -64,6 +65,7 @@ class ProjectIdeaModel {
     this.imageUrl = '',
     this.attachmentUrl = '',
     this.isPublic = true,
+    this.isHidden = false,
     this.authorAvatarUrl = '',
     this.authorPhotoType = '',
     this.authorAvatarId = '',
@@ -110,6 +112,7 @@ class ProjectIdeaModel {
       imageUrl: (map['imageUrl'] ?? '').toString().trim(),
       attachmentUrl: (map['attachmentUrl'] ?? '').toString().trim(),
       isPublic: _parseBool(map['isPublic'], fallback: true),
+      isHidden: _parseBool(map['isHidden']),
       authorAvatarUrl: (map['authorAvatar'] ?? map['authorAvatarUrl'] ?? '')
           .toString()
           .trim(),
@@ -153,6 +156,7 @@ class ProjectIdeaModel {
     String? imageUrl,
     String? attachmentUrl,
     bool? isPublic,
+    bool? isHidden,
     String? authorAvatarUrl,
     String? authorPhotoType,
     String? authorAvatarId,
@@ -190,6 +194,7 @@ class ProjectIdeaModel {
       imageUrl: imageUrl ?? this.imageUrl,
       attachmentUrl: attachmentUrl ?? this.attachmentUrl,
       isPublic: isPublic ?? this.isPublic,
+      isHidden: isHidden ?? this.isHidden,
       authorAvatarUrl: authorAvatarUrl ?? this.authorAvatarUrl,
       authorPhotoType: authorPhotoType ?? this.authorPhotoType,
       authorAvatarId: authorAvatarId ?? this.authorAvatarId,
@@ -232,6 +237,7 @@ class ProjectIdeaModel {
       if (imageUrl.isNotEmpty) 'imageUrl': imageUrl,
       if (attachmentUrl.isNotEmpty) 'attachmentUrl': attachmentUrl,
       'isPublic': isPublic,
+      'isHidden': isHidden,
       if (authorAvatarUrl.isNotEmpty) 'authorAvatar': authorAvatarUrl,
       if (authorPhotoType.isNotEmpty) 'authorPhotoType': authorPhotoType,
       if (authorAvatarId.isNotEmpty) 'authorAvatarId': authorAvatarId,

@@ -18,6 +18,7 @@ class OpportunityModel {
   final Timestamp? createdAt;
   final Timestamp? updatedAt;
   final bool isFeatured;
+  final bool isHidden;
   final num? salaryMin;
   final num? salaryMax;
   final String? salaryCurrency;
@@ -48,6 +49,7 @@ class OpportunityModel {
     this.createdAt,
     this.updatedAt,
     this.isFeatured = false,
+    this.isHidden = false,
     this.salaryMin,
     this.salaryMax,
     this.salaryCurrency,
@@ -82,6 +84,7 @@ class OpportunityModel {
       createdAt: _timestampFromValue(data['createdAt']),
       updatedAt: _timestampFromValue(data['updatedAt']),
       isFeatured: data['isFeatured'] == true,
+      isHidden: data['isHidden'] == true,
       salaryMin: OpportunityMetadata.extractSalaryMin(data),
       salaryMax: OpportunityMetadata.extractSalaryMax(data),
       salaryCurrency: OpportunityMetadata.extractSalaryCurrency(data),
@@ -137,6 +140,7 @@ class OpportunityModel {
       'createdAt': createdAt,
       'updatedAt': updatedAt,
       'isFeatured': isFeatured,
+      'isHidden': isHidden,
       'salaryMin': salaryMin,
       'salaryMax': salaryMax,
       'salaryCurrency': salaryCurrency,

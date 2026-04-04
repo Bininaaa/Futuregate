@@ -20,6 +20,7 @@ class ScholarshipModel {
   final String? category;
   final String? level;
   final bool isFeatured;
+  final bool isHidden;
   final List<String> tags;
   final Map<String, dynamic> rawData;
 
@@ -43,6 +44,7 @@ class ScholarshipModel {
     this.category,
     this.level,
     this.isFeatured = false,
+    this.isHidden = false,
     this.tags = const [],
     this.rawData = const {},
   });
@@ -105,6 +107,7 @@ class ScholarshipModel {
         'degreeLevel',
       ]),
       isFeatured: _readBool(rawData['featured']) ?? false,
+      isHidden: _readBool(rawData['isHidden']) ?? false,
       tags: _readStringList(rawData['tags']),
       rawData: rawData,
     );
@@ -132,6 +135,7 @@ class ScholarshipModel {
       'category': category,
       'level': level,
       'featured': isFeatured,
+      'isHidden': isHidden,
       'tags': tags,
     };
   }
@@ -145,10 +149,7 @@ class ScholarshipModel {
     return text.isEmpty ? null : text;
   }
 
-  static String? _readFirstString(
-    Map<String, dynamic> map,
-    List<String> keys,
-  ) {
+  static String? _readFirstString(Map<String, dynamic> map, List<String> keys) {
     for (final key in keys) {
       final value = _readString(map[key]);
       if (value != null) {

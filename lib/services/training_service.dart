@@ -48,6 +48,7 @@ class TrainingService {
             'id': (doc.data()['id'] ?? doc.id).toString(),
           }),
         )
+        .where((training) => !training.isHidden)
         .toList();
 
     items.sort((a, b) {
@@ -66,10 +67,11 @@ class TrainingService {
       return null;
     }
 
-    return TrainingModel.fromMap({
+    final training = TrainingModel.fromMap({
       ...doc.data()!,
       'id': (doc.data()!['id'] ?? doc.id).toString(),
     });
+    return training.isHidden ? null : training;
   }
 
   // ── Admin writes (via Cloudflare Worker) ────────────────────────────
@@ -204,13 +206,21 @@ class TrainingService {
       snapshot = await _savedTrainingsCollection(userId).get();
     }
 
-    return snapshot.docs
+    final savedItems = snapshot.docs
         .map(
           (doc) => TrainingModel.fromMap({
             ...doc.data(),
             'id': (doc.data()['id'] ?? doc.id).toString(),
           }),
         )
+        .toList();
+
+    final visibleTrainingIds = await _resolveVisibleTrainingIds(
+      savedItems.map((training) => training.id).toSet(),
+    );
+
+    return savedItems
+        .where((training) => visibleTrainingIds.contains(training.id))
         .toList();
   }
 
@@ -219,5 +229,39 @@ class TrainingService {
   int? _parsePageCount(String duration) {
     final match = RegExp(r'(\d+)\s*pages?').firstMatch(duration);
     return match != null ? int.tryParse(match.group(1)!) : null;
+  }
+
+  Future<Set<String>> _resolveVisibleTrainingIds(
+    Set<String> trainingIds,
+  ) async {
+    final normalizedIds = trainingIds
+        .map((trainingId) => trainingId.trim())
+        .where((trainingId) => trainingId.isNotEmpty)
+        .toSet();
+
+    if (normalizedIds.isEmpty) {
+      return const <String>{};
+    }
+
+    final visibleIds = <String>{};
+    final docs = await Future.wait(
+      normalizedIds.map(
+        (trainingId) => _trainingsCollection.doc(trainingId).get(),
+      ),
+    );
+
+    for (final doc in docs) {
+      if (!doc.exists || doc.data() == null) {
+        continue;
+      }
+
+      if (doc.data()!['isHidden'] == true) {
+        continue;
+      }
+
+      visibleIds.add(doc.id);
+    }
+
+    return visibleIds;
   }
 }

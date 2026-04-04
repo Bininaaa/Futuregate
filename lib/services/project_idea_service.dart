@@ -58,6 +58,7 @@ class ProjectIdeaService {
 
     return _sortIdeas(
       snapshot.docs
+          .where((doc) => doc.data()['isHidden'] != true)
           .map((doc) => ProjectIdeaModel.fromMap({...doc.data(), 'id': doc.id}))
           .toList(),
     );
@@ -75,6 +76,7 @@ class ProjectIdeaService {
 
     return _sortIdeas(
       snapshot.docs
+          .where((doc) => doc.data()['isHidden'] != true)
           .map((doc) => ProjectIdeaModel.fromMap({...doc.data(), 'id': doc.id}))
           .toList(),
     );

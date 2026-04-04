@@ -782,6 +782,16 @@ service cloud.firestore {
       allow update: if (
           (
             isAdmin() &&
+            request.resource.data.diff(resource.data).changedKeys().hasOnly([
+              'isHidden',
+              'updatedAt'
+            ]) &&
+            request.resource.data.id == resource.data.id &&
+            request.resource.data.companyId == resource.data.companyId &&
+            request.resource.data.createdAt == resource.data.createdAt
+          ) ||
+          (
+            isAdmin() &&
             resource.data.companyId == request.auth.uid &&
             request.resource.data.diff(resource.data).changedKeys().hasOnly([
               'companyName',
@@ -1077,6 +1087,22 @@ service cloud.firestore {
           request.resource.data.submittedBy == resource.data.submittedBy &&
           request.resource.data.createdAt == resource.data.createdAt &&
           isProjectIdeaStatus(request.resource.data.status)
+        ) || (
+          // Admin can hide or restore ideas without changing the content
+          isAdmin() &&
+          request.resource.data.diff(resource.data).changedKeys().hasOnly([
+            'isHidden',
+            'updatedAt'
+          ]) &&
+          request.resource.data.id == resource.data.id &&
+          request.resource.data.title == resource.data.title &&
+          request.resource.data.description == resource.data.description &&
+          request.resource.data.domain == resource.data.domain &&
+          request.resource.data.level == resource.data.level &&
+          request.resource.data.tools == resource.data.tools &&
+          request.resource.data.status == resource.data.status &&
+          request.resource.data.submittedBy == resource.data.submittedBy &&
+          request.resource.data.createdAt == resource.data.createdAt
         ) || (
           // Admin can edit ideas they created
           isAdmin() &&

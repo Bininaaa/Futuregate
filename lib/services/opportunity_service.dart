@@ -10,11 +10,14 @@ class OpportunityService {
         .where('status', isEqualTo: 'open')
         .get();
 
-    final opportunities = snapshot.docs.map((doc) {
-      final data = doc.data();
-      data['id'] = doc.id;
-      return OpportunityModel.fromMap(data);
-    }).toList();
+    final opportunities = snapshot.docs
+        .map((doc) {
+          final data = doc.data();
+          data['id'] = doc.id;
+          return OpportunityModel.fromMap(data);
+        })
+        .where((opportunity) => !opportunity.isHidden)
+        .toList();
 
     opportunities.sort((a, b) {
       final aTime = a.createdAt;
@@ -41,7 +44,8 @@ class OpportunityService {
 
     final data = doc.data()!;
     data['id'] = doc.id;
-    return OpportunityModel.fromMap(data);
+    final opportunity = OpportunityModel.fromMap(data);
+    return opportunity.isHidden ? null : opportunity;
   }
 
   Future<List<OpportunityModel>> getFeaturedOpportunities() async {
@@ -51,11 +55,14 @@ class OpportunityService {
         .where('isFeatured', isEqualTo: true)
         .get();
 
-    final opportunities = snapshot.docs.map((doc) {
-      final data = doc.data();
-      data['id'] = doc.id;
-      return OpportunityModel.fromMap(data);
-    }).toList();
+    final opportunities = snapshot.docs
+        .map((doc) {
+          final data = doc.data();
+          data['id'] = doc.id;
+          return OpportunityModel.fromMap(data);
+        })
+        .where((opportunity) => !opportunity.isHidden)
+        .toList();
 
     opportunities.sort((a, b) {
       final aTime = a.createdAt;

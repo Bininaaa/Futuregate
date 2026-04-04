@@ -22,6 +22,7 @@ class TrainingModel {
   final String previewLink;
   final bool isApproved;
   final bool isFeatured;
+  final bool isHidden;
   final double? rating;
   final int? learnerCount;
   final String learnerCountLabel;
@@ -49,6 +50,7 @@ class TrainingModel {
     this.previewLink = '',
     this.isApproved = true,
     this.isFeatured = false,
+    this.isHidden = false,
     this.rating,
     this.learnerCount,
     this.learnerCountLabel = '',
@@ -87,6 +89,7 @@ class TrainingModel {
       previewLink: (map['previewLink'] ?? '').toString(),
       isApproved: map['isApproved'] is bool ? map['isApproved'] as bool : true,
       isFeatured: map['isFeatured'] is bool ? map['isFeatured'] as bool : false,
+      isHidden: map['isHidden'] is bool ? map['isHidden'] as bool : false,
       rating: _parseDouble(map['rating']),
       learnerCount: parsedLearnerCount,
       learnerCountLabel: _parseLearnerCountLabel(
@@ -124,6 +127,7 @@ class TrainingModel {
       'previewLink': previewLink,
       'isApproved': isApproved,
       'isFeatured': isFeatured,
+      'isHidden': isHidden,
       'rating': rating,
       'learnerCount': learnerCount,
       'learnerCountLabel': learnerCountLabel,
@@ -155,6 +159,7 @@ class TrainingModel {
     String? previewLink,
     bool? isApproved,
     bool? isFeatured,
+    bool? isHidden,
     double? rating,
     int? learnerCount,
     String? learnerCountLabel,
@@ -182,6 +187,7 @@ class TrainingModel {
       previewLink: previewLink ?? this.previewLink,
       isApproved: isApproved ?? this.isApproved,
       isFeatured: isFeatured ?? this.isFeatured,
+      isHidden: isHidden ?? this.isHidden,
       rating: rating ?? this.rating,
       learnerCount: learnerCount ?? this.learnerCount,
       learnerCountLabel: learnerCountLabel ?? this.learnerCountLabel,

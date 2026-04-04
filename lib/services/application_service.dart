@@ -51,6 +51,11 @@ class ApplicationService {
 
     final opportunityData = opportunitySnapshot.data();
     final status = opportunityData?['status'] as String? ?? '';
+    final isHidden = opportunityData?['isHidden'] == true;
+
+    if (isHidden) {
+      return ApplicationEligibilityStatus.unavailable;
+    }
 
     if (status != 'open') {
       return ApplicationEligibilityStatus.closed;
@@ -123,9 +128,14 @@ class ApplicationService {
 
     final opportunityData = opportunitySnapshot.data();
     final status = opportunityData?['status'] as String? ?? '';
+    final isHidden = opportunityData?['isHidden'] == true;
     final resolvedCompanyId = (opportunityData?['companyId'] ?? '')
         .toString()
         .trim();
+
+    if (isHidden) {
+      throw Exception('This opportunity is no longer available');
+    }
 
     if (status != 'open') {
       throw Exception('This opportunity is closed');
