@@ -1038,12 +1038,7 @@ class _SavedIdeaCard extends StatelessWidget {
                 tone: innovationStageColor(item.idea.displayStage),
               ),
               StudentOpportunityMetaPill(
-                icon: Icons.flash_on_outlined,
-                label: '${item.idea.sparksCount} sparks',
-                tone: StudentOpportunityHubPalette.accent,
-              ),
-              StudentOpportunityMetaPill(
-                icon: Icons.groups_rounded,
+                icon: Icons.people_outline_rounded,
                 label: '${item.idea.interestedCount} interested',
                 tone: StudentOpportunityHubPalette.secondary,
               ),

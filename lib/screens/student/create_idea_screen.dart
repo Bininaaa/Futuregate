@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/project_idea_model.dart';
+import '../../providers/admin_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/project_idea_provider.dart';
 import '../../services/file_storage_service.dart';
@@ -12,8 +13,14 @@ import '../../widgets/ideas/innovation_hub_theme.dart';
 class CreateIdeaScreen extends StatefulWidget {
   final ProjectIdeaModel? idea;
   final bool isEditMode;
+  final bool isAdmin;
 
-  const CreateIdeaScreen({super.key, this.idea, this.isEditMode = false});
+  const CreateIdeaScreen({
+    super.key,
+    this.idea,
+    this.isEditMode = false,
+    this.isAdmin = false,
+  });
 
   @override
   State<CreateIdeaScreen> createState() => _CreateIdeaScreenState();
@@ -43,8 +50,10 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
   late String _imageUrl;
   late String _uploadedImageName;
   bool _isUploadingImage = false;
+  late String _adminStatus;
 
   bool get _isLocked =>
+      !widget.isAdmin &&
       widget.isEditMode &&
       (widget.idea?.status.toLowerCase() ?? '') != 'pending';
 
@@ -87,6 +96,9 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
     _selectedRoles = {...?idea?.displayTeamNeeded};
     _imageUrl = (idea?.imageUrl ?? '').trim();
     _uploadedImageName = _deriveImageLabel(_imageUrl);
+    _adminStatus = idea != null
+        ? (idea.status == 'rejected' ? 'rejected' : 'approved')
+        : 'approved';
   }
 
   @override
@@ -137,54 +149,95 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
     final description = _overviewController.text.trim();
     final tagline = _taglineController.text.trim();
 
-    final error = widget.isEditMode && widget.idea != null
-        ? await provider.updateProjectIdea(
-            id: widget.idea!.id,
-            title: _titleController.text.trim(),
-            description: description,
-            domain: category,
-            level: _selectedLevel,
-            tools: skills.join(', '),
-            submittedBy: currentUser.uid,
-            tagline: tagline,
-            shortDescription: tagline.isNotEmpty ? tagline : description,
-            category: category,
-            tags: skills.take(3).toList(growable: false),
-            stage: stage,
-            skillsNeeded: skills,
-            teamNeeded: roles,
-            targetAudience: _audienceController.text.trim(),
-            problemStatement: _problemController.text.trim(),
-            solution: _solutionController.text.trim(),
-            resourcesNeeded: _resourcesController.text.trim(),
-            benefits: _benefitsController.text.trim(),
-            imageUrl: _imageUrl.trim(),
-            attachmentUrl: _attachmentUrlController.text.trim(),
-            isPublic: _isPublic,
-          )
-        : await provider.submitProjectIdea(
-            title: _titleController.text.trim(),
-            description: description,
-            domain: category,
-            level: _selectedLevel,
-            tools: skills.join(', '),
-            submittedBy: currentUser.uid,
-            tagline: tagline,
-            shortDescription: tagline.isNotEmpty ? tagline : description,
-            category: category,
-            tags: skills.take(3).toList(growable: false),
-            stage: stage,
-            skillsNeeded: skills,
-            teamNeeded: roles,
-            targetAudience: _audienceController.text.trim(),
-            problemStatement: _problemController.text.trim(),
-            solution: _solutionController.text.trim(),
-            resourcesNeeded: _resourcesController.text.trim(),
-            benefits: _benefitsController.text.trim(),
-            imageUrl: _imageUrl.trim(),
-            attachmentUrl: _attachmentUrlController.text.trim(),
-            isPublic: _isPublic,
-          );
+    final String? error;
+
+    if (widget.isAdmin) {
+      final payload = <String, dynamic>{
+        'title': _titleController.text.trim(),
+        'tagline': tagline,
+        'shortDescription': tagline.isNotEmpty ? tagline : description,
+        'description': description,
+        'domain': category,
+        'level': _selectedLevel,
+        'category': category,
+        'stage': stage,
+        'tools': skills.join(', '),
+        'tags': skills.take(3).toList(growable: false),
+        'skillsNeeded': skills,
+        'teamNeeded': roles,
+        'targetAudience': _audienceController.text.trim(),
+        'problemStatement': _problemController.text.trim(),
+        'solution': _solutionController.text.trim(),
+        'resourcesNeeded': _resourcesController.text.trim(),
+        'benefits': _benefitsController.text.trim(),
+        'imageUrl': _imageUrl.trim(),
+        'attachmentUrl': _attachmentUrlController.text.trim(),
+        'isPublic': _isPublic,
+        'status': _adminStatus,
+        'submittedBy': currentUser.uid,
+        'submittedByName': currentUser.fullName.trim(),
+        'authorAvatar': currentUser.profileImage.trim(),
+        'authorPhotoType': (currentUser.photoType ?? '').trim(),
+        'authorAvatarId': (currentUser.avatarId ?? '').trim(),
+      };
+
+      final adminProvider = context.read<AdminProvider>();
+      error = widget.isEditMode && widget.idea != null
+          ? await adminProvider.updateAdminProjectIdea(
+              widget.idea!.id,
+              payload,
+            )
+          : await adminProvider.createAdminProjectIdea(payload);
+    } else if (widget.isEditMode && widget.idea != null) {
+      error = await provider.updateProjectIdea(
+        id: widget.idea!.id,
+        title: _titleController.text.trim(),
+        description: description,
+        domain: category,
+        level: _selectedLevel,
+        tools: skills.join(', '),
+        submittedBy: currentUser.uid,
+        tagline: tagline,
+        shortDescription: tagline.isNotEmpty ? tagline : description,
+        category: category,
+        tags: skills.take(3).toList(growable: false),
+        stage: stage,
+        skillsNeeded: skills,
+        teamNeeded: roles,
+        targetAudience: _audienceController.text.trim(),
+        problemStatement: _problemController.text.trim(),
+        solution: _solutionController.text.trim(),
+        resourcesNeeded: _resourcesController.text.trim(),
+        benefits: _benefitsController.text.trim(),
+        imageUrl: _imageUrl.trim(),
+        attachmentUrl: _attachmentUrlController.text.trim(),
+        isPublic: _isPublic,
+      );
+    } else {
+      error = await provider.submitProjectIdea(
+        title: _titleController.text.trim(),
+        description: description,
+        domain: category,
+        level: _selectedLevel,
+        tools: skills.join(', '),
+        submittedBy: currentUser.uid,
+        tagline: tagline,
+        shortDescription: tagline.isNotEmpty ? tagline : description,
+        category: category,
+        tags: skills.take(3).toList(growable: false),
+        stage: stage,
+        skillsNeeded: skills,
+        teamNeeded: roles,
+        targetAudience: _audienceController.text.trim(),
+        problemStatement: _problemController.text.trim(),
+        solution: _solutionController.text.trim(),
+        resourcesNeeded: _resourcesController.text.trim(),
+        benefits: _benefitsController.text.trim(),
+        imageUrl: _imageUrl.trim(),
+        attachmentUrl: _attachmentUrlController.text.trim(),
+        isPublic: _isPublic,
+      );
+    }
 
     if (!mounted) {
       return;
@@ -196,7 +249,9 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
           content: Text(
             widget.isEditMode
                 ? 'Idea updated successfully.'
-                : 'Idea submitted successfully.',
+                : widget.isAdmin
+                    ? 'Idea published successfully.'
+                    : 'Idea submitted successfully.',
           ),
         ),
       );
@@ -336,7 +391,11 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
           elevation: 0,
           centerTitle: false,
           title: Text(
-            widget.isEditMode ? 'Edit Idea' : 'Create Idea',
+            widget.isEditMode
+                ? 'Edit Idea'
+                : widget.isAdmin
+                    ? 'Publish Idea'
+                    : 'Create Idea',
             style: InnovationHubTypography.section(size: 20),
           ),
         ),
@@ -376,7 +435,9 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                           ? 'Editing locked after review'
                           : widget.isEditMode
                           ? 'Save Changes'
-                          : 'Publish Idea',
+                          : widget.isAdmin
+                          ? 'Publish Idea'
+                          : 'Submit Idea',
                       style: InnovationHubTypography.label(
                         color: Colors.white,
                         size: 14,
@@ -396,6 +457,43 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                 if (_isLocked) ...[
                   const SizedBox(height: 16),
                   _buildLockNotice(),
+                ],
+                if (widget.isAdmin) ...[
+                  const SizedBox(height: 18),
+                  _SectionCard(
+                    title: 'Publishing',
+                    subtitle:
+                        'Choose whether the idea is visible in discovery.',
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _AdminChoiceCard(
+                                label: 'Visible',
+                                subtitle: 'Show in discovery',
+                                selected: _adminStatus == 'approved',
+                                icon: Icons.visibility_outlined,
+                                onTap: () =>
+                                    setState(() => _adminStatus = 'approved'),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: _AdminChoiceCard(
+                                label: 'Hidden',
+                                subtitle: 'Keep out of discovery',
+                                selected: _adminStatus == 'rejected',
+                                icon: Icons.visibility_off_outlined,
+                                onTap: () =>
+                                    setState(() => _adminStatus = 'rejected'),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
                 const SizedBox(height: 18),
                 _SectionCard(
@@ -897,12 +995,16 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
           Text(
             widget.isEditMode
                 ? 'Refine your idea'
-                : 'Launch your next breakthrough',
+                : widget.isAdmin
+                    ? 'Publish an idea'
+                    : 'Launch your next breakthrough',
             style: InnovationHubTypography.title(color: Colors.white, size: 26),
           ),
           const SizedBox(height: 10),
           Text(
-            'Build an idea profile that feels ready for collaborators, feedback, and student momentum.',
+            widget.isAdmin
+                ? 'Add a platform-curated idea with a strong story and clear metadata.'
+                : 'Build an idea profile that feels ready for collaborators, feedback, and student momentum.',
             style: InnovationHubTypography.body(
               color: Colors.white.withValues(alpha: 0.86),
               size: 14.5,
@@ -1223,6 +1325,73 @@ class _SelectionWrap extends StatelessWidget {
           ),
         ],
       ],
+    );
+  }
+}
+
+class _AdminChoiceCard extends StatelessWidget {
+  final String label;
+  final String subtitle;
+  final bool selected;
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const _AdminChoiceCard({
+    required this.label,
+    required this.subtitle,
+    required this.selected,
+    required this.icon,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(18),
+        child: Ink(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: selected
+                ? InnovationHubPalette.primary.withValues(alpha: 0.08)
+                : InnovationHubPalette.cardTint,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: selected
+                  ? InnovationHubPalette.primary.withValues(alpha: 0.3)
+                  : InnovationHubPalette.border,
+            ),
+          ),
+          child: Column(
+            children: [
+              Icon(
+                icon,
+                color: selected
+                    ? InnovationHubPalette.primary
+                    : InnovationHubPalette.textSecondary,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                label,
+                style: InnovationHubTypography.label(
+                  color: selected
+                      ? InnovationHubPalette.primary
+                      : InnovationHubPalette.textPrimary,
+                  size: 13,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                subtitle,
+                textAlign: TextAlign.center,
+                style: InnovationHubTypography.body(size: 11.5),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../models/project_idea_model.dart';
-import 'idea_metrics_row.dart';
 import 'innovation_hub_theme.dart';
 
 class IdeaCard extends StatelessWidget {
@@ -26,86 +25,80 @@ class IdeaCard extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(26),
+        borderRadius: BorderRadius.circular(20),
         child: Ink(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
             color: InnovationHubPalette.surface,
-            borderRadius: BorderRadius.circular(26),
+            borderRadius: BorderRadius.circular(20),
             border: Border.all(color: InnovationHubPalette.border),
-            boxShadow: InnovationHubPalette.softShadow(0.05),
+            boxShadow: InnovationHubPalette.softShadow(0.04),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    width: 46,
-                    height: 46,
+                    width: 36,
+                    height: 36,
                     decoration: BoxDecoration(
                       color: categoryColor.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(11),
                     ),
                     child: Icon(
                       innovationCategoryIcon(idea.displayCategory),
                       color: categoryColor,
-                      size: 22,
+                      size: 18,
                     ),
                   ),
                   const Spacer(),
-                  if (trailingAction != null) ...[
-                    trailingAction!,
-                    const SizedBox(width: 8),
-                  ],
-                  _MiniBadge(
-                    label: idea.displayStage,
-                    color: innovationStageColor(idea.displayStage),
-                  ),
+                  ?trailingAction,
                 ],
               ),
-              const SizedBox(height: 14),
+              const SizedBox(height: 10),
               Text(
                 idea.title,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: InnovationHubTypography.section(size: 17),
+                style: InnovationHubTypography.section(size: 14),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 4),
               Text(
                 idea.cardSummary,
-                maxLines: 3,
+                maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: InnovationHubTypography.body(size: 13.5),
+                style: InnovationHubTypography.body(size: 12),
               ),
-              const SizedBox(height: 12),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  _TagChip(label: idea.displayCategory, color: categoryColor),
-                  ...idea.cardTags
-                      .take(1)
-                      .map(
-                        (tag) => _TagChip(
-                          label: tag,
-                          color: InnovationHubPalette.secondary,
-                        ),
-                      ),
-                ],
+              const SizedBox(height: 10),
+              _MiniBadge(
+                label: idea.displayStage,
+                color: innovationStageColor(idea.displayStage),
               ),
               if (showStatus) ...[
-                const SizedBox(height: 10),
+                const SizedBox(height: 6),
                 _MiniBadge(
                   label: idea.statusLabel,
                   color: innovationStatusColor(idea.status),
                 ),
               ],
-              const SizedBox(height: 14),
-              IdeaMetricsRow(
-                sparksCount: idea.sparksCount,
-                interestedCount: idea.interestedCount,
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Icon(
+                    Icons.people_outline_rounded,
+                    size: 14,
+                    color: InnovationHubPalette.primary,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    '${idea.interestedCount}',
+                    style: InnovationHubTypography.label(
+                      color: InnovationHubPalette.textSecondary,
+                      size: 11,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -115,12 +108,12 @@ class IdeaCard extends StatelessWidget {
   }
 }
 
-class FeaturedIdeaCard extends StatelessWidget {
+class IdeaListCard extends StatelessWidget {
   final ProjectIdeaModel idea;
   final VoidCallback onTap;
   final Widget? trailingAction;
 
-  const FeaturedIdeaCard({
+  const IdeaListCard({
     super.key,
     required this.idea,
     required this.onTap,
@@ -129,117 +122,90 @@ class FeaturedIdeaCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final categoryColor = innovationCategoryColor(idea.displayCategory);
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(30),
+        borderRadius: BorderRadius.circular(20),
         child: Ink(
-          padding: const EdgeInsets.all(22),
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            gradient: InnovationHubPalette.featuredGradient,
-            borderRadius: BorderRadius.circular(30),
-            boxShadow: [
-              BoxShadow(
-                color: InnovationHubPalette.primary.withValues(alpha: 0.28),
-                blurRadius: 24,
-                offset: const Offset(0, 12),
-              ),
-            ],
+            color: InnovationHubPalette.surface,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: InnovationHubPalette.border),
+            boxShadow: InnovationHubPalette.softShadow(0.04),
           ),
-          child: Column(
+          child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Container(
-                    width: 52,
-                    height: 52,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.16),
-                      borderRadius: BorderRadius.circular(18),
-                    ),
-                    child: Icon(
-                      innovationCategoryIcon(idea.displayCategory),
-                      color: Colors.white,
-                      size: 24,
-                    ),
-                  ),
-                  const Spacer(),
-                  if (trailingAction != null) ...[
-                    trailingAction!,
-                    const SizedBox(width: 8),
-                  ],
-                  _GlassBadge(label: 'Featured'),
-                ],
-              ),
-              const SizedBox(height: 18),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  _GlassBadge(label: idea.displayCategory),
-                  _GlassBadge(label: idea.displayStage),
-                ],
-              ),
-              const SizedBox(height: 14),
-              Text(
-                idea.title,
-                style: InnovationHubTypography.title(
-                  color: Colors.white,
-                  size: 24,
+              Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: categoryColor.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(13),
+                ),
+                child: Icon(
+                  innovationCategoryIcon(idea.displayCategory),
+                  color: categoryColor,
+                  size: 20,
                 ),
               ),
-              const SizedBox(height: 10),
-              Text(
-                idea.featuredSummary,
-                maxLines: 4,
-                overflow: TextOverflow.ellipsis,
-                style: InnovationHubTypography.body(
-                  color: Colors.white.withValues(alpha: 0.86),
-                  size: 14.5,
-                ),
-              ),
-              const SizedBox(height: 16),
-              IdeaMetricsRow(
-                sparksCount: idea.sparksCount,
-                interestedCount: idea.interestedCount,
-                inverted: true,
-              ),
-              const SizedBox(height: 18),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(999),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      idea.title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: InnovationHubTypography.section(size: 15),
                     ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
+                    const SizedBox(height: 4),
+                    Text(
+                      idea.cardSummary,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: InnovationHubTypography.body(size: 12.5),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
                       children: [
-                        Text(
-                          'View Project',
-                          style: InnovationHubTypography.label(
-                            color: InnovationHubPalette.primary,
-                            size: 12.5,
-                          ),
+                        _MiniBadge(
+                          label: idea.displayStage,
+                          color: innovationStageColor(idea.displayStage),
                         ),
-                        const SizedBox(width: 8),
-                        const Icon(
-                          Icons.arrow_forward_rounded,
+                        const SizedBox(width: 6),
+                        _MiniBadge(
+                          label: idea.statusLabel,
+                          color: innovationStatusColor(idea.status),
+                        ),
+                        const Spacer(),
+                        Icon(
+                          Icons.people_outline_rounded,
+                          size: 14,
                           color: InnovationHubPalette.primary,
-                          size: 18,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          '${idea.interestedCount}',
+                          style: InnovationHubTypography.label(
+                            color: InnovationHubPalette.textSecondary,
+                            size: 11,
+                          ),
                         ),
                       ],
                     ),
-                  ),
+                  ],
                 ),
               ),
+              if (trailingAction != null) ...[
+                const SizedBox(width: 8),
+                trailingAction!,
+              ],
             ],
           ),
         ),
@@ -267,12 +233,12 @@ class IdeaWorkspaceCard extends StatelessWidget {
     final categoryColor = innovationCategoryColor(idea.displayCategory);
 
     return Container(
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: InnovationHubPalette.surface,
-        borderRadius: BorderRadius.circular(28),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(color: InnovationHubPalette.border),
-        boxShadow: InnovationHubPalette.softShadow(0.05),
+        boxShadow: InnovationHubPalette.softShadow(0.04),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -280,15 +246,16 @@ class IdeaWorkspaceCard extends StatelessWidget {
           Row(
             children: [
               Container(
-                width: 48,
-                height: 48,
+                width: 42,
+                height: 42,
                 decoration: BoxDecoration(
                   color: categoryColor.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(13),
                 ),
                 child: Icon(
                   innovationCategoryIcon(idea.displayCategory),
                   color: categoryColor,
+                  size: 20,
                 ),
               ),
               const SizedBox(width: 12),
@@ -298,29 +265,17 @@ class IdeaWorkspaceCard extends StatelessWidget {
                   children: [
                     Text(
                       idea.title,
-                      maxLines: 2,
+                      maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: InnovationHubTypography.section(size: 18),
+                      style: InnovationHubTypography.section(size: 15),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 3),
                     Text(
                       idea.lastUpdatedLabel,
-                      style: InnovationHubTypography.body(size: 12.5),
+                      style: InnovationHubTypography.body(size: 12),
                     ),
                   ],
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              _TagChip(label: idea.displayCategory, color: categoryColor),
-              _MiniBadge(
-                label: idea.displayStage,
-                color: innovationStageColor(idea.displayStage),
               ),
               _MiniBadge(
                 label: idea.statusLabel,
@@ -328,19 +283,42 @@ class IdeaWorkspaceCard extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 10),
           Text(
             idea.cardSummary,
-            maxLines: 3,
+            maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: InnovationHubTypography.body(),
+            style: InnovationHubTypography.body(size: 13),
           ),
-          const SizedBox(height: 14),
-          IdeaMetricsRow(
-            sparksCount: idea.sparksCount,
-            interestedCount: idea.interestedCount,
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              _MiniBadge(
+                label: idea.displayStage,
+                color: innovationStageColor(idea.displayStage),
+              ),
+              const SizedBox(width: 6),
+              _MiniBadge(
+                label: idea.displayCategory,
+                color: categoryColor,
+              ),
+              const Spacer(),
+              Icon(
+                Icons.people_outline_rounded,
+                size: 14,
+                color: InnovationHubPalette.primary,
+              ),
+              const SizedBox(width: 4),
+              Text(
+                '${idea.interestedCount}',
+                style: InnovationHubTypography.label(
+                  color: InnovationHubPalette.textSecondary,
+                  size: 11,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           Row(
             children: [
               Expanded(
@@ -350,14 +328,14 @@ class IdeaWorkspaceCard extends StatelessWidget {
                   filled: true,
                 ),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 8),
               Expanded(
                 child: _ActionChipButton(label: 'Edit', onTap: onEdit),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 8),
               Expanded(
                 child: _ActionChipButton(
-                  label: 'Manage Team',
+                  label: 'Team',
                   onTap: onManageTeam,
                 ),
               ),
@@ -393,14 +371,14 @@ class _ActionChipButton extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         child: Ink(
-          padding: const EdgeInsets.symmetric(vertical: 12),
+          padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
             color: onTap == null
                 ? backgroundColor.withValues(alpha: 0.5)
                 : backgroundColor,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(12),
             border: filled
                 ? null
                 : Border.all(color: InnovationHubPalette.border),
@@ -421,28 +399,6 @@ class _ActionChipButton extends StatelessWidget {
   }
 }
 
-class _TagChip extends StatelessWidget {
-  final String label;
-  final Color color;
-
-  const _TagChip({required this.label, required this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Text(
-        label,
-        style: InnovationHubTypography.label(color: color, size: 11.5),
-      ),
-    );
-  }
-}
-
 class _MiniBadge extends StatelessWidget {
   final String label;
   final Color color;
@@ -452,36 +408,14 @@ class _MiniBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(999),
       ),
       child: Text(
         label,
-        style: InnovationHubTypography.label(color: color, size: 11),
-      ),
-    );
-  }
-}
-
-class _GlassBadge extends StatelessWidget {
-  final String label;
-
-  const _GlassBadge({required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.14),
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.14)),
-      ),
-      child: Text(
-        label,
-        style: InnovationHubTypography.label(color: Colors.white, size: 11.5),
+        style: InnovationHubTypography.label(color: color, size: 10.5),
       ),
     );
   }

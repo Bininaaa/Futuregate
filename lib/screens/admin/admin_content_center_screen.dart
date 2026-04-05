@@ -22,7 +22,7 @@ import '../../widgets/admin/admin_ui.dart';
 import '../../widgets/profile_avatar.dart';
 import 'admin_library_screen.dart';
 import 'admin_opportunity_editor_screen.dart';
-import 'admin_project_idea_editor_screen.dart';
+import '../student/create_idea_screen.dart';
 import 'admin_scholarship_editor_screen.dart';
 
 class AdminContentCenterScreen extends StatefulWidget {
@@ -2177,7 +2177,11 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
   Future<void> _openIdeaEditor({ProjectIdeaModel? idea}) async {
     await Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => AdminProjectIdeaEditorScreen(initialIdea: idea),
+        builder: (_) => CreateIdeaScreen(
+          idea: idea,
+          isEditMode: idea != null,
+          isAdmin: true,
+        ),
       ),
     );
   }

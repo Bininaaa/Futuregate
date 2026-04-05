@@ -16,6 +16,8 @@ import 'create_idea_screen.dart';
 import 'idea_details_screen.dart';
 import 'profile_screen.dart';
 
+enum _IdeaFilter { all, approved, pending, rejected, interested }
+
 class ProjectIdeasScreen extends StatefulWidget {
   const ProjectIdeasScreen({super.key});
 
@@ -27,6 +29,7 @@ class _ProjectIdeasScreenState extends State<ProjectIdeasScreen> {
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
   IdeasHubSegment _segment = IdeasHubSegment.discover;
+  _IdeaFilter _filter = _IdeaFilter.all;
   String _loadedUserId = '';
 
   @override
@@ -37,9 +40,7 @@ class _ProjectIdeasScreenState extends State<ProjectIdeasScreen> {
     if (currentUid.isNotEmpty && currentUid != _loadedUserId) {
       _loadedUserId = currentUid;
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!mounted) {
-          return;
-        }
+        if (!mounted) return;
         provider.fetchIdeas(currentUid);
       });
     } else if (currentUid.isEmpty &&
@@ -47,9 +48,7 @@ class _ProjectIdeasScreenState extends State<ProjectIdeasScreen> {
         provider.approvedIdeas.isEmpty &&
         !provider.isLoading) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!mounted) {
-          return;
-        }
+        if (!mounted) return;
         provider.fetchApprovedIdeas();
       });
     }
@@ -66,8 +65,14 @@ class _ProjectIdeasScreenState extends State<ProjectIdeasScreen> {
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>().userModel;
     final provider = context.watch<ProjectIdeaProvider>();
-    final discoverIdeas = _filterIdeas(provider.approvedIdeas);
-    final myIdeas = _filterIdeas(provider.myIdeas);
+    final discoverIdeas = _applyFilters(
+      _searchIdeas(provider.approvedIdeas),
+      isDiscover: true,
+    );
+    final myIdeas = _applyFilters(
+      _searchIdeas(provider.myIdeas),
+      isDiscover: false,
+    );
     final categories = _buildCategoryList(provider);
 
     return AppShellBackground(
@@ -95,36 +100,39 @@ class _ProjectIdeasScreenState extends State<ProjectIdeasScreen> {
                       ),
                       SliverToBoxAdapter(
                         child: Padding(
-                          padding: const EdgeInsets.fromLTRB(20, 22, 20, 0),
-                          child: _buildHero(),
-                        ),
-                      ),
-                      SliverToBoxAdapter(
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
+                          padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
                           child: MyIdeasToggle(
                             selected: _segment,
                             onChanged: (value) {
-                              setState(() => _segment = value);
+                              setState(() {
+                                _segment = value;
+                                _filter = _IdeaFilter.all;
+                              });
                             },
                           ),
                         ),
                       ),
                       SliverToBoxAdapter(
                         child: Padding(
-                          padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
+                          padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
                           child: _buildSearchBar(),
                         ),
                       ),
                       SliverToBoxAdapter(
                         child: Padding(
-                          padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+                          padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
                           child: _buildCategoryChips(provider, categories),
                         ),
                       ),
                       SliverToBoxAdapter(
                         child: Padding(
-                          padding: const EdgeInsets.fromLTRB(20, 18, 20, 28),
+                          padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+                          child: _buildFilterChips(),
+                        ),
+                      ),
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
                           child: AnimatedSwitcher(
                             duration: const Duration(milliseconds: 240),
                             switchInCurve: Curves.easeOutCubic,
@@ -149,7 +157,6 @@ class _ProjectIdeasScreenState extends State<ProjectIdeasScreen> {
                                 : _MyIdeasSection(
                                     key: const ValueKey<String>('mine'),
                                     ideas: myIdeas,
-                                    totalSparks: provider.totalMyIdeaSparks,
                                     totalInterested:
                                         provider.totalMyIdeaInterested,
                                     onCreateTap: _openCreateIdea,
@@ -196,31 +203,11 @@ class _ProjectIdeasScreenState extends State<ProjectIdeasScreen> {
     );
   }
 
-  Widget _buildHero() {
-    final isDiscover = _segment == IdeasHubSegment.discover;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          isDiscover ? 'Discover Ideas' : 'Build Your Ideas',
-          style: InnovationHubTypography.title(size: 33),
-        ),
-        const SizedBox(height: 10),
-        Text(
-          isDiscover
-              ? 'Explore the next generation of student-led breakthroughs.'
-              : 'Track the concepts you are shaping and the collaborators they attract.',
-          style: InnovationHubTypography.body(size: 15),
-        ),
-      ],
-    );
-  }
-
   Widget _buildSearchBar() {
     return Container(
       decoration: BoxDecoration(
         color: InnovationHubPalette.searchTint,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(18),
         border: Border.all(color: InnovationHubPalette.border),
       ),
       child: TextField(
@@ -229,15 +216,18 @@ class _ProjectIdeasScreenState extends State<ProjectIdeasScreen> {
         onChanged: (_) => setState(() {}),
         style: InnovationHubTypography.body(
           color: InnovationHubPalette.textPrimary,
+          size: 13.5,
         ),
         decoration: InputDecoration(
-          hintText: 'Search innovation...',
+          hintText: 'Search ideas...',
           hintStyle: InnovationHubTypography.body(
             color: InnovationHubPalette.textSecondary.withValues(alpha: 0.82),
+            size: 13.5,
           ),
           prefixIcon: const Icon(
             Icons.search_rounded,
             color: InnovationHubPalette.primary,
+            size: 20,
           ),
           suffixIcon: _searchController.text.trim().isEmpty
               ? null
@@ -246,10 +236,10 @@ class _ProjectIdeasScreenState extends State<ProjectIdeasScreen> {
                     _searchController.clear();
                     setState(() {});
                   },
-                  icon: const Icon(Icons.close_rounded),
+                  icon: const Icon(Icons.close_rounded, size: 18),
                 ),
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(vertical: 18),
+          contentPadding: const EdgeInsets.symmetric(vertical: 13),
         ),
       ),
     );
@@ -259,58 +249,106 @@ class _ProjectIdeasScreenState extends State<ProjectIdeasScreen> {
     ProjectIdeaProvider provider,
     List<String> categories,
   ) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: categories
-            .map(
-              (category) => Padding(
-                padding: const EdgeInsets.only(right: 10),
-                child: FilterChip(
-                  label: Text(category),
-                  selected: provider.filterDomain == category,
-                  onSelected: (_) {
-                    provider.setFilterDomain(
-                      provider.filterDomain == category ? null : category,
-                    );
-                  },
-                  showCheckmark: false,
-                  selectedColor: InnovationHubPalette.primary,
-                  backgroundColor: InnovationHubPalette.chipTint,
-                  side: BorderSide(
-                    color: provider.filterDomain == category
-                        ? Colors.transparent
-                        : InnovationHubPalette.border,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(999),
-                  ),
-                  labelStyle: InnovationHubTypography.label(
-                    color: provider.filterDomain == category
-                        ? Colors.white
-                        : InnovationHubPalette.textPrimary,
-                    size: 12.5,
-                  ),
+    return SizedBox(
+      height: 34,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: categories.length,
+        separatorBuilder: (_, _) => const SizedBox(width: 6),
+        itemBuilder: (_, index) {
+          final category = categories[index];
+          final selected = provider.filterDomain == category;
+          return FilterChip(
+            label: Text(category),
+            selected: selected,
+            onSelected: (_) {
+              provider.setFilterDomain(selected ? null : category);
+            },
+            showCheckmark: false,
+            selectedColor: InnovationHubPalette.primary,
+            backgroundColor: InnovationHubPalette.chipTint,
+            side: BorderSide(
+              color:
+                  selected ? Colors.transparent : InnovationHubPalette.border,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(999),
+            ),
+            labelStyle: InnovationHubTypography.label(
+              color: selected ? Colors.white : InnovationHubPalette.textPrimary,
+              size: 11.5,
+            ),
+            visualDensity: VisualDensity.compact,
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildFilterChips() {
+    final filters = <_IdeaFilter, String>{
+      _IdeaFilter.all: 'All',
+      _IdeaFilter.approved: 'Approved',
+      _IdeaFilter.pending: 'Pending',
+      _IdeaFilter.rejected: 'Rejected',
+      _IdeaFilter.interested: 'Interested',
+    };
+
+    return SizedBox(
+      height: 32,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: filters.length,
+        separatorBuilder: (_, _) => const SizedBox(width: 6),
+        itemBuilder: (_, index) {
+          final entry = filters.entries.elementAt(index);
+          final selected = _filter == entry.key;
+          return GestureDetector(
+            onTap: () => setState(() => _filter = entry.key),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 180),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: selected
+                    ? InnovationHubPalette.primary.withValues(alpha: 0.1)
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(999),
+                border: Border.all(
+                  color: selected
+                      ? InnovationHubPalette.primary.withValues(alpha: 0.3)
+                      : InnovationHubPalette.border,
                 ),
               ),
-            )
-            .toList(),
+              child: Text(
+                entry.value,
+                style: InnovationHubTypography.label(
+                  color: selected
+                      ? InnovationHubPalette.primary
+                      : InnovationHubPalette.textSecondary,
+                  size: 11.5,
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
 
   Widget _buildFab() {
     return Container(
-      width: 62,
-      height: 62,
+      width: 56,
+      height: 56,
       decoration: BoxDecoration(
         gradient: InnovationHubPalette.primaryGradient,
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
             color: InnovationHubPalette.primary.withValues(alpha: 0.28),
-            blurRadius: 22,
-            offset: const Offset(0, 10),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
@@ -318,26 +356,23 @@ class _ProjectIdeasScreenState extends State<ProjectIdeasScreen> {
         onPressed: _openCreateIdea,
         backgroundColor: Colors.transparent,
         elevation: 0,
-        child: const Icon(Icons.add_rounded, color: Colors.white, size: 30),
+        child: const Icon(Icons.add_rounded, color: Colors.white, size: 26),
       ),
     );
   }
 
   List<String> _buildCategoryList(ProjectIdeaProvider provider) {
-    final categories = <String>[
+    return <String>[
       ...innovationHubDefaultCategories,
       ...provider.availableDomains.where(
         (category) => !innovationHubDefaultCategories.contains(category),
       ),
     ];
-    return categories;
   }
 
-  List<ProjectIdeaModel> _filterIdeas(List<ProjectIdeaModel> source) {
+  List<ProjectIdeaModel> _searchIdeas(List<ProjectIdeaModel> source) {
     final query = _searchController.text.trim().toLowerCase();
-    if (query.isEmpty) {
-      return source;
-    }
+    if (query.isEmpty) return source;
 
     return source
         .where((idea) {
@@ -360,6 +395,34 @@ class _ProjectIdeasScreenState extends State<ProjectIdeasScreen> {
         .toList(growable: false);
   }
 
+  List<ProjectIdeaModel> _applyFilters(
+    List<ProjectIdeaModel> source, {
+    required bool isDiscover,
+  }) {
+    if (_filter == _IdeaFilter.all) return source;
+
+    switch (_filter) {
+      case _IdeaFilter.approved:
+        return source
+            .where((i) => i.status.toLowerCase() == 'approved')
+            .toList(growable: false);
+      case _IdeaFilter.pending:
+        return source
+            .where((i) => i.status.toLowerCase() == 'pending')
+            .toList(growable: false);
+      case _IdeaFilter.rejected:
+        return source
+            .where((i) => i.status.toLowerCase() == 'rejected')
+            .toList(growable: false);
+      case _IdeaFilter.interested:
+        return source
+            .where((i) => i.isJoinedByCurrentUser)
+            .toList(growable: false);
+      case _IdeaFilter.all:
+        return source;
+    }
+  }
+
   Future<void> _openCreateIdea() async {
     final result = await Navigator.push<bool>(
       context,
@@ -372,9 +435,7 @@ class _ProjectIdeasScreenState extends State<ProjectIdeasScreen> {
   }
 
   Future<void> _openEditIdea(ProjectIdeaModel idea) async {
-    if (idea.status.toLowerCase() != 'pending') {
-      return;
-    }
+    if (idea.status.toLowerCase() != 'pending') return;
 
     final result = await Navigator.push<bool>(
       context,
@@ -399,9 +460,7 @@ class _ProjectIdeasScreenState extends State<ProjectIdeasScreen> {
 
   Future<void> _toggleSaveIdea(ProjectIdeaModel idea) async {
     final auth = context.read<AuthProvider>().userModel;
-    if (auth == null) {
-      return;
-    }
+    if (auth == null) return;
 
     final error = await context.read<ProjectIdeaProvider>().toggleSave(
       idea,
@@ -409,9 +468,9 @@ class _ProjectIdeasScreenState extends State<ProjectIdeasScreen> {
     );
 
     if (error != null && mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(error)));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(error)),
+      );
     }
   }
 
@@ -440,25 +499,22 @@ class _ProjectIdeasScreenState extends State<ProjectIdeasScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            Text(idea.title, style: InnovationHubTypography.section(size: 20)),
+            Text(idea.title, style: InnovationHubTypography.section(size: 18)),
             const SizedBox(height: 8),
-            IdeaMetricsRow(
-              sparksCount: idea.sparksCount,
-              interestedCount: idea.interestedCount,
-            ),
+            IdeaMetricsRow(interestedCount: idea.interestedCount),
             if (idea.displayTeamNeeded.isNotEmpty) ...[
               const SizedBox(height: 14),
               Text(
                 'Open Roles',
                 style: InnovationHubTypography.label(
                   color: InnovationHubPalette.textSecondary,
-                  size: 12.5,
+                  size: 12,
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 8),
               Wrap(
-                spacing: 8,
-                runSpacing: 8,
+                spacing: 6,
+                runSpacing: 6,
                 children: idea.displayTeamNeeded
                     .map((role) => _SheetChip(label: role))
                     .toList(),
@@ -470,13 +526,13 @@ class _ProjectIdeasScreenState extends State<ProjectIdeasScreen> {
                 'Skills',
                 style: InnovationHubTypography.label(
                   color: InnovationHubPalette.textSecondary,
-                  size: 12.5,
+                  size: 12,
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 8),
               Wrap(
-                spacing: 8,
-                runSpacing: 8,
+                spacing: 6,
+                runSpacing: 6,
                 children: idea.displaySkills
                     .map((skill) => _SheetChip(label: skill))
                     .toList(),
@@ -506,66 +562,28 @@ class _DiscoverIdeasSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (ideas.isEmpty) {
-      return _PremiumEmptyState(
+      return _EmptyState(
         icon: Icons.auto_awesome_outlined,
-        title: 'No ideas match your search',
-        subtitle:
-            'Try a different keyword or create a new concept to kick the hub forward.',
+        title: 'No ideas found',
+        subtitle: 'Try a different filter or create a new idea.',
         ctaLabel: 'Create an idea',
         onTap: onCreateTap,
       );
     }
 
-    final featuredIdea = ideas.length > 2 ? ideas[2] : ideas.first;
-    final cards = ideas.where((idea) => idea.id != featuredIdea.id).toList();
-
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final compactWidth = (constraints.maxWidth - 12) / 2;
-        final widgets = <Widget>[];
-
-        for (var i = 0; i < cards.length; i++) {
-          if (i == 2) {
-            widgets.add(
-              SizedBox(
-                width: constraints.maxWidth,
-                child: FeaturedIdeaCard(
-                  idea: featuredIdea,
-                  onTap: () => onIdeaTap(featuredIdea),
-                  trailingAction: trailingActionBuilder?.call(featuredIdea),
-                ),
-              ),
-            );
-          }
-
-          widgets.add(
-            SizedBox(
-              width: compactWidth,
-              child: IdeaCard(
-                idea: cards[i],
-                onTap: () => onIdeaTap(cards[i]),
-                trailingAction: trailingActionBuilder?.call(cards[i]),
+    return Column(
+      children: ideas
+          .map(
+            (idea) => Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: IdeaListCard(
+                idea: idea,
+                onTap: () => onIdeaTap(idea),
+                trailingAction: trailingActionBuilder?.call(idea),
               ),
             ),
-          );
-        }
-
-        if (cards.length <= 2) {
-          widgets.insert(
-            widgets.length,
-            SizedBox(
-              width: constraints.maxWidth,
-              child: FeaturedIdeaCard(
-                idea: featuredIdea,
-                onTap: () => onIdeaTap(featuredIdea),
-                trailingAction: trailingActionBuilder?.call(featuredIdea),
-              ),
-            ),
-          );
-        }
-
-        return Wrap(spacing: 12, runSpacing: 12, children: widgets);
-      },
+          )
+          .toList(),
     );
   }
 }
@@ -583,42 +601,27 @@ class _IdeaSaveButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: isBusy ? null : onTap,
-        borderRadius: BorderRadius.circular(14),
-        child: Ink(
-          width: 38,
-          height: 38,
-          decoration: BoxDecoration(
-            color: isSaved
-                ? InnovationHubPalette.primary.withValues(alpha: 0.12)
-                : InnovationHubPalette.surface,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(
-              color: isSaved
-                  ? InnovationHubPalette.primary.withValues(alpha: 0.18)
-                  : InnovationHubPalette.border,
-            ),
-          ),
-          child: Center(
-            child: isBusy
-                ? const SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : Icon(
-                    isSaved
-                        ? Icons.bookmark_rounded
-                        : Icons.bookmark_outline_rounded,
-                    size: 18,
-                    color: isSaved
-                        ? InnovationHubPalette.primary
-                        : InnovationHubPalette.textPrimary,
-                  ),
-          ),
+    return GestureDetector(
+      onTap: isBusy ? null : onTap,
+      child: SizedBox(
+        width: 32,
+        height: 32,
+        child: Center(
+          child: isBusy
+              ? const SizedBox(
+                  width: 14,
+                  height: 14,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : Icon(
+                  isSaved
+                      ? Icons.bookmark_rounded
+                      : Icons.bookmark_outline_rounded,
+                  size: 20,
+                  color: isSaved
+                      ? InnovationHubPalette.primary
+                      : InnovationHubPalette.textSecondary,
+                ),
         ),
       ),
     );
@@ -627,7 +630,6 @@ class _IdeaSaveButton extends StatelessWidget {
 
 class _MyIdeasSection extends StatelessWidget {
   final List<ProjectIdeaModel> ideas;
-  final int totalSparks;
   final int totalInterested;
   final VoidCallback onCreateTap;
   final ValueChanged<ProjectIdeaModel> onIdeaTap;
@@ -637,7 +639,6 @@ class _MyIdeasSection extends StatelessWidget {
   const _MyIdeasSection({
     super.key,
     required this.ideas,
-    required this.totalSparks,
     required this.totalInterested,
     required this.onCreateTap,
     required this.onIdeaTap,
@@ -648,11 +649,10 @@ class _MyIdeasSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (ideas.isEmpty) {
-      return _PremiumEmptyState(
+      return _EmptyState(
         icon: Icons.lightbulb_outline_rounded,
-        title: 'Your idea board is still empty',
-        subtitle:
-            'Start your first concept and turn it into something teammates can rally around.',
+        title: 'No ideas here',
+        subtitle: 'Create your first idea or adjust the filters.',
         ctaLabel: 'Create your first idea',
         onTap: onCreateTap,
       );
@@ -664,25 +664,21 @@ class _MyIdeasSection extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: _StatCard(label: 'Total Ideas', value: '${ideas.length}'),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: _StatCard(label: 'Total Sparks', value: '$totalSparks'),
+              child: _StatCard(label: 'Ideas', value: '${ideas.length}'),
             ),
             const SizedBox(width: 10),
             Expanded(
               child: _StatCard(
-                label: 'Active Collaborators',
+                label: 'Interested',
                 value: '$totalInterested',
               ),
             ),
           ],
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 12),
         ...ideas.map(
           (idea) => Padding(
-            padding: const EdgeInsets.only(bottom: 12),
+            padding: const EdgeInsets.only(bottom: 10),
             child: IdeaWorkspaceCard(
               idea: idea,
               onView: () => onIdeaTap(idea),
@@ -698,14 +694,14 @@ class _MyIdeasSection extends StatelessWidget {
   }
 }
 
-class _PremiumEmptyState extends StatelessWidget {
+class _EmptyState extends StatelessWidget {
   final IconData icon;
   final String title;
   final String subtitle;
   final String ctaLabel;
   final VoidCallback onTap;
 
-  const _PremiumEmptyState({
+  const _EmptyState({
     required this.icon,
     required this.title,
     required this.subtitle,
@@ -717,37 +713,36 @@ class _PremiumEmptyState extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
       decoration: BoxDecoration(
         color: InnovationHubPalette.surface,
-        borderRadius: BorderRadius.circular(30),
+        borderRadius: BorderRadius.circular(22),
         border: Border.all(color: InnovationHubPalette.border),
-        boxShadow: InnovationHubPalette.softShadow(0.05),
       ),
       child: Column(
         children: [
           Container(
-            width: 72,
-            height: 72,
+            width: 56,
+            height: 56,
             decoration: BoxDecoration(
               gradient: InnovationHubPalette.primaryGradient,
-              borderRadius: BorderRadius.circular(24),
+              borderRadius: BorderRadius.circular(18),
             ),
-            child: Icon(icon, color: Colors.white, size: 34),
+            child: Icon(icon, color: Colors.white, size: 26),
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: 14),
           Text(
             title,
             textAlign: TextAlign.center,
-            style: InnovationHubTypography.section(size: 20),
+            style: InnovationHubTypography.section(size: 17),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 6),
           Text(
             subtitle,
             textAlign: TextAlign.center,
-            style: InnovationHubTypography.body(size: 14),
+            style: InnovationHubTypography.body(size: 13),
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: 14),
           ElevatedButton(
             onPressed: onTap,
             style: ElevatedButton.styleFrom(
@@ -755,15 +750,15 @@ class _PremiumEmptyState extends StatelessWidget {
               foregroundColor: Colors.white,
               elevation: 0,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(14),
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
             ),
             child: Text(
               ctaLabel,
               style: InnovationHubTypography.label(
                 color: Colors.white,
-                size: 13,
+                size: 12.5,
               ),
             ),
           ),
@@ -784,12 +779,13 @@ class _HeaderActionButton extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: InnovationHubPalette.surface,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(14),
         border: Border.all(color: InnovationHubPalette.border),
       ),
       child: IconButton(
         onPressed: onTap,
-        icon: Icon(icon, color: InnovationHubPalette.textPrimary),
+        icon: Icon(icon, color: InnovationHubPalette.textPrimary, size: 20),
+        visualDensity: VisualDensity.compact,
       ),
     );
   }
@@ -804,19 +800,18 @@ class _StatCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
       decoration: BoxDecoration(
         color: InnovationHubPalette.surface,
-        borderRadius: BorderRadius.circular(22),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: InnovationHubPalette.border),
-        boxShadow: InnovationHubPalette.softShadow(0.04),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(value, style: InnovationHubTypography.section(size: 20)),
-          const SizedBox(height: 6),
-          Text(label, style: InnovationHubTypography.body(size: 12.5)),
+          const SizedBox(height: 4),
+          Text(label, style: InnovationHubTypography.body(size: 12)),
         ],
       ),
     );
@@ -831,7 +826,7 @@ class _SheetChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
       decoration: BoxDecoration(
         color: InnovationHubPalette.cardTint,
         borderRadius: BorderRadius.circular(999),
@@ -840,7 +835,7 @@ class _SheetChip extends StatelessWidget {
         label,
         style: InnovationHubTypography.label(
           color: InnovationHubPalette.textPrimary,
-          size: 11.5,
+          size: 11,
         ),
       ),
     );
