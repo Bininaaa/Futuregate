@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/admin_chart_data.dart';
 import '../models/admin_activity_model.dart';
+import '../models/admin_activity_preview_model.dart';
 import '../models/admin_application_item_model.dart';
 import '../models/application_model.dart';
 import '../models/training_model.dart';
@@ -575,6 +576,112 @@ class AdminService {
     return activities;
   }
 
+  Future<AdminActivityPreviewModel?> getActivityPreview(
+    AdminActivityModel activity,
+  ) async {
+    switch (activity.type) {
+      case 'application':
+        final applicationData = await _getDocumentData(
+          activitySourceApplications,
+          activity.relatedId,
+        );
+        if (applicationData == null) {
+          return null;
+        }
+
+        final opportunityId = (applicationData['opportunityId'] ?? '')
+            .toString()
+            .trim();
+        final opportunityData = await _getDocumentData(
+          activitySourceOpportunities,
+          opportunityId,
+        );
+
+        if ((applicationData['studentName'] ?? '').toString().trim().isEmpty &&
+            activity.actorName.trim().isNotEmpty) {
+          applicationData['studentName'] = activity.actorName.trim();
+        }
+
+        return AdminActivityPreviewModel(
+          collection: activitySourceApplications,
+          documentId: activity.relatedId,
+          data: applicationData,
+          relatedCollection: activitySourceOpportunities,
+          relatedDocumentId: opportunityId,
+          relatedData: opportunityData,
+        );
+      case 'opportunity':
+        final results = await Future.wait([
+          _getDocumentData(activitySourceOpportunities, activity.relatedId),
+          _firestore
+              .collection(activitySourceApplications)
+              .where('opportunityId', isEqualTo: activity.relatedId)
+              .get(),
+        ]);
+        final opportunityData = results[0] as Map<String, dynamic>?;
+        final applicationsSnapshot =
+            results[1] as QuerySnapshot<Map<String, dynamic>>;
+        if (opportunityData == null) {
+          return null;
+        }
+        opportunityData['activityApplicationCount'] = applicationsSnapshot.size;
+
+        return AdminActivityPreviewModel(
+          collection: activitySourceOpportunities,
+          documentId: activity.relatedId,
+          data: opportunityData,
+        );
+      case 'scholarship':
+        final scholarshipData = await _getDocumentData(
+          activitySourceScholarships,
+          activity.relatedId,
+        );
+        if (scholarshipData == null) {
+          return null;
+        }
+
+        return AdminActivityPreviewModel(
+          collection: activitySourceScholarships,
+          documentId: activity.relatedId,
+          data: scholarshipData,
+        );
+      case 'training':
+        final trainingData = await _getDocumentData(
+          activitySourceTrainings,
+          activity.relatedId,
+        );
+        if (trainingData == null) {
+          return null;
+        }
+
+        return AdminActivityPreviewModel(
+          collection: activitySourceTrainings,
+          documentId: activity.relatedId,
+          data: trainingData,
+        );
+      case 'project_idea':
+      default:
+        final ideaData = await _getDocumentData(
+          activitySourceProjectIdeas,
+          activity.relatedId,
+        );
+        if (ideaData == null) {
+          return null;
+        }
+
+        if ((ideaData['submittedByName'] ?? '').toString().trim().isEmpty &&
+            activity.actorName.trim().isNotEmpty) {
+          ideaData['submittedByName'] = activity.actorName.trim();
+        }
+
+        return AdminActivityPreviewModel(
+          collection: activitySourceProjectIdeas,
+          documentId: activity.relatedId,
+          data: ideaData,
+        );
+    }
+  }
+
   Future<AdminActivityBatch> _getApplicationActivityBatch({
     required int limit,
     DocumentSnapshot<Map<String, dynamic>>? startAfterDocument,
@@ -1108,6 +1215,27 @@ class AdminService {
     );
 
     return Map<String, String>.fromEntries(results);
+  }
+
+  Future<Map<String, dynamic>?> _getDocumentData(
+    String collection,
+    String id,
+  ) async {
+    final normalizedCollection = collection.trim();
+    final normalizedId = id.trim();
+    if (normalizedCollection.isEmpty || normalizedId.isEmpty) {
+      return null;
+    }
+
+    final snapshot = await _firestore
+        .collection(normalizedCollection)
+        .doc(normalizedId)
+        .get();
+    if (!snapshot.exists) {
+      return null;
+    }
+
+    return {...?snapshot.data(), 'id': snapshot.id};
   }
 
   Future<QuerySnapshot<Map<String, dynamic>>> _getActivitySnapshot({

@@ -35,6 +35,7 @@ class AdminContentCenterScreen extends StatefulWidget {
   final String initialTargetId;
   final bool embedded;
   final int resetToken;
+  final VoidCallback? onOpenLibrary;
 
   const AdminContentCenterScreen({
     super.key,
@@ -42,6 +43,7 @@ class AdminContentCenterScreen extends StatefulWidget {
     this.initialTargetId = '',
     this.embedded = false,
     this.resetToken = 0,
+    this.onOpenLibrary,
   });
 
   @override
@@ -2239,6 +2241,11 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
   }
 
   Future<void> _openTrainingLibrary() async {
+    if (widget.onOpenLibrary != null) {
+      widget.onOpenLibrary!();
+      return;
+    }
+
     await Navigator.of(
       context,
     ).push(MaterialPageRoute(builder: (_) => const AdminLibraryScreen()));

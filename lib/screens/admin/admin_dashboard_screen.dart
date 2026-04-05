@@ -8,6 +8,7 @@ import '../../providers/notification_provider.dart';
 import '../../utils/admin_palette.dart';
 import '../../utils/display_text.dart';
 import '../../utils/opportunity_type.dart';
+import '../../widgets/admin/admin_activity_preview_sheet.dart';
 import '../../widgets/admin/admin_ui.dart';
 import '../../widgets/admin_charts.dart';
 import '../../widgets/opportunity_type_badge.dart';
@@ -421,8 +422,28 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       'training' => AdminContentCenterScreen.trainingsTab,
       _ => AdminContentCenterScreen.projectIdeasTab,
     };
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      builder: (_) => AdminActivityPreviewSheet(
+        activity: activity,
+        manageLabel: _manageLabelForActivity(activity),
+        onManage: () => _openContent(targetTab, targetId: activity.relatedId),
+      ),
+    );
+  }
 
-    _openContent(targetTab, targetId: activity.relatedId);
+  String _manageLabelForActivity(AdminActivityModel activity) {
+    return switch (activity.type) {
+      'application' => 'Manage Application',
+      'opportunity' => 'Manage Opportunity',
+      'scholarship' => 'Manage Scholarship',
+      'training' => 'Manage Training',
+      _ => 'Manage Project Idea',
+    };
   }
 }
 

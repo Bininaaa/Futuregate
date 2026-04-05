@@ -7,6 +7,7 @@ import '../../models/admin_activity_model.dart';
 import '../../providers/admin_provider.dart';
 import '../../utils/admin_palette.dart';
 import '../../utils/display_text.dart';
+import '../../widgets/admin/admin_activity_preview_sheet.dart';
 import '../../widgets/admin/admin_ui.dart';
 import 'admin_content_center_screen.dart';
 
@@ -226,20 +227,45 @@ class _AdminActivityCenterScreenState extends State<AdminActivityCenterScreen> {
       _ => AdminContentCenterScreen.projectIdeasTab,
     };
 
+    return showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      builder: (_) => AdminActivityPreviewSheet(
+        activity: activity,
+        manageLabel: _manageLabelForActivity(activity),
+        onManage: () => _openContent(target, targetId: activity.relatedId),
+      ),
+    );
+  }
+
+  void _openContent(int tab, {String targetId = ''}) {
     if (widget.onOpenContent != null) {
-      widget.onOpenContent!(target, targetId: activity.relatedId);
-      return Future<void>.value();
+      widget.onOpenContent!(tab, targetId: targetId);
+      return;
     }
 
-    return Navigator.push(
+    Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => AdminContentCenterScreen(
-          initialTab: target,
-          initialTargetId: activity.relatedId,
+          initialTab: tab,
+          initialTargetId: targetId,
         ),
       ),
     );
+  }
+
+  String _manageLabelForActivity(AdminActivityModel activity) {
+    return switch (activity.type) {
+      'application' => 'Manage Application',
+      'opportunity' => 'Manage Opportunity',
+      'scholarship' => 'Manage Scholarship',
+      'training' => 'Manage Training',
+      _ => 'Manage Project Idea',
+    };
   }
 }
 

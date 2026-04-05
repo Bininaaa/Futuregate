@@ -258,6 +258,7 @@ class _HomeScreenState extends State<HomeScreen> {
           initialTab: _contentInitialTab,
           initialTargetId: _contentInitialTargetId,
           resetToken: _contentSessionId,
+          onOpenLibrary: _openLibraryTab,
         );
       case 3:
         return AdminActivityCenterScreen(
