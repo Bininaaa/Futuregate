@@ -478,6 +478,131 @@ function isDuplicateWriteError(code) {
   return code === 6 || code === 9;
 }
 
+function normalizeIdeaInteractionType(value) {
+  const normalized = trim(value).toLowerCase();
+  return ["spark", "interest", "save"].includes(normalized) ? normalized : "";
+}
+
+function buildProjectIdeaInteractionId({ ideaId, userId, type }) {
+  return `${type}_${userId}_${ideaId}`;
+}
+
+function chunkList(values, chunkSize) {
+  const normalizedChunkSize =
+    Number.isInteger(chunkSize) && chunkSize > 0 ? chunkSize : 10;
+  const chunks = [];
+
+  for (let index = 0; index < values.length; index += normalizedChunkSize) {
+    chunks.push(values.slice(index, index + normalizedChunkSize));
+  }
+
+  return chunks;
+}
+
+function canAccessProjectIdea(ideaData, userId, role) {
+  if (trim(role).toLowerCase() === "admin") {
+    return true;
+  }
+
+  return (
+    trim(ideaData?.status).toLowerCase() === "approved" ||
+    trim(ideaData?.submittedBy) === trim(userId)
+  );
+}
+
+async function resolveAccessibleIdeaIds(env, ideaIds, auth) {
+  const normalizedIdeaIds = uniqueTrimmedStrings(ideaIds);
+  if (normalizedIdeaIds.length === 0) {
+    return [];
+  }
+
+  if (trim(auth.profile?.role).toLowerCase() === "admin") {
+    return normalizedIdeaIds;
+  }
+
+  const ideaDocs = await Promise.all(
+    normalizedIdeaIds.map((ideaId) => firestoreGet(env, "projectIdeas", ideaId)),
+  );
+
+  return normalizedIdeaIds.filter((ideaId, index) => {
+    const ideaDoc = ideaDocs[index];
+    if (!ideaDoc) {
+      return false;
+    }
+
+    return canAccessProjectIdea(
+      ideaDoc.data || {},
+      auth.user.uid,
+      auth.profile?.role,
+    );
+  });
+}
+
+async function listIdeaInteractionDocs(env, ideaIds) {
+  const normalizedIdeaIds = uniqueTrimmedStrings(ideaIds);
+  if (normalizedIdeaIds.length === 0) {
+    return [];
+  }
+
+  const interactionDocs = [];
+  for (const chunk of chunkList(normalizedIdeaIds, 10)) {
+    const chunkDocs = await firestoreQuery(env, "projectIdeaInteractions", [
+      { field: "ideaId", op: "IN", value: chunk },
+    ]);
+    interactionDocs.push(...chunkDocs);
+  }
+
+  return interactionDocs;
+}
+
+function buildIdeaEngagementSnapshot(interactionDocs, currentUserId) {
+  const normalizedUserId = trim(currentUserId);
+  const sparksByIdeaId = {};
+  const interestedByIdeaId = {};
+  const savedIdeaIds = new Set();
+  const sparkedIdeaIds = new Set();
+  const joinedIdeaIds = new Set();
+
+  for (const doc of Array.isArray(interactionDocs) ? interactionDocs : []) {
+    const data = doc?.data && typeof doc.data === "object" ? doc.data : {};
+    const ideaId = trim(data.ideaId);
+    const userId = trim(data.userId);
+    const type = normalizeIdeaInteractionType(data.type);
+
+    if (!ideaId || !type) {
+      continue;
+    }
+
+    switch (type) {
+      case "spark":
+        sparksByIdeaId[ideaId] = (sparksByIdeaId[ideaId] || 0) + 1;
+        if (userId === normalizedUserId) {
+          sparkedIdeaIds.add(ideaId);
+        }
+        break;
+      case "interest":
+        interestedByIdeaId[ideaId] = (interestedByIdeaId[ideaId] || 0) + 1;
+        if (userId === normalizedUserId) {
+          joinedIdeaIds.add(ideaId);
+        }
+        break;
+      case "save":
+        if (userId === normalizedUserId) {
+          savedIdeaIds.add(ideaId);
+        }
+        break;
+    }
+  }
+
+  return {
+    sparksByIdeaId,
+    interestedByIdeaId,
+    savedIdeaIds: [...savedIdeaIds],
+    sparkedIdeaIds: [...sparkedIdeaIds],
+    joinedIdeaIds: [...joinedIdeaIds],
+  };
+}
+
 function collectRecipientTokens(recipientData) {
   const tokens = [];
   const primaryToken = trim(recipientData?.fcmToken);
@@ -2699,6 +2824,154 @@ async function handleSubmitProjectIdea(request, env) {
   });
 }
 
+async function handleGetProjectIdeaEngagement(request, env) {
+  const auth = await requireUser(request, env, {
+    roles: ["student", "admin"],
+  });
+  if (auth.error) {
+    return auth.error;
+  }
+
+  const url = new URL(request.url);
+  const ideaIds = uniqueTrimmedStrings(
+    trim(url.searchParams.get("ideaIds"))
+      .split(",")
+      .map((value) => trim(value)),
+  );
+
+  if (ideaIds.length === 0) {
+    return json(buildIdeaEngagementSnapshot([], auth.user.uid));
+  }
+
+  const accessibleIdeaIds = await resolveAccessibleIdeaIds(env, ideaIds, auth);
+  if (accessibleIdeaIds.length === 0) {
+    return json(buildIdeaEngagementSnapshot([], auth.user.uid));
+  }
+
+  const interactionDocs = await listIdeaInteractionDocs(env, accessibleIdeaIds);
+  return json(buildIdeaEngagementSnapshot(interactionDocs, auth.user.uid));
+}
+
+async function handleGetSavedProjectIdeas(request, env) {
+  const auth = await requireUser(request, env, {
+    roles: ["student", "admin"],
+  });
+  if (auth.error) {
+    return auth.error;
+  }
+
+  const interactionDocs = await firestoreQuery(env, "projectIdeaInteractions", [
+    { field: "userId", op: "EQUAL", value: auth.user.uid },
+  ]);
+
+  const saveDocs = interactionDocs.filter((doc) => {
+    const data = doc?.data && typeof doc.data === "object" ? doc.data : {};
+    return normalizeIdeaInteractionType(data.type) === "save";
+  });
+
+  const ideaDocs = await Promise.all(
+    saveDocs.map((doc) => {
+      const ideaId = trim(doc?.data?.ideaId);
+      return ideaId ? firestoreGet(env, "projectIdeas", ideaId) : null;
+    }),
+  );
+
+  const savedItems = saveDocs
+    .map((doc, index) => {
+      const data = doc?.data && typeof doc.data === "object" ? doc.data : {};
+      const ideaId = trim(data.ideaId);
+      const ideaDoc = ideaDocs[index];
+
+      if (!ideaId || !ideaDoc) {
+        return null;
+      }
+
+      if (
+        !canAccessProjectIdea(
+          ideaDoc.data || {},
+          auth.user.uid,
+          auth.profile?.role,
+        )
+      ) {
+        return null;
+      }
+
+      return {
+        id: trim(doc.id),
+        ideaId,
+        createdAt: data.createdAt || null,
+      };
+    })
+    .filter(Boolean)
+    .sort(
+      (left, right) =>
+        parseDocumentTimestamp(right.createdAt) -
+        parseDocumentTimestamp(left.createdAt),
+    );
+
+  return json({ savedItems });
+}
+
+async function handleSetProjectIdeaInteraction(request, env) {
+  const auth = await requireUser(request, env, {
+    roles: ["student", "admin"],
+  });
+  if (auth.error) {
+    return auth.error;
+  }
+
+  const body = await request.json();
+  const ideaId = trim(body.ideaId);
+  const type = normalizeIdeaInteractionType(body.type);
+  const enabled =
+    body.enabled === false || String(body.enabled).toLowerCase() === "false"
+      ? false
+      : true;
+
+  if (!ideaId) {
+    return err("ideaId is required.");
+  }
+  if (!type) {
+    return err("A valid project idea interaction type is required.");
+  }
+
+  const ideaDoc = await firestoreGet(env, "projectIdeas", ideaId);
+  if (!ideaDoc) {
+    return err("Project idea not found.", 404);
+  }
+
+  if (
+    !canAccessProjectIdea(ideaDoc.data || {}, auth.user.uid, auth.profile?.role)
+  ) {
+    return err("You do not have permission to interact with this idea.", 403);
+  }
+
+  const interactionId = buildProjectIdeaInteractionId({
+    ideaId,
+    userId: auth.user.uid,
+    type,
+  });
+
+  if (enabled) {
+    await firestoreSet(env, "projectIdeaInteractions", interactionId, {
+      id: interactionId,
+      ideaId,
+      userId: auth.user.uid,
+      type,
+      createdAt: new Date(),
+    });
+  } else {
+    await firestoreDelete(env, "projectIdeaInteractions", interactionId);
+  }
+
+  return json({
+    id: interactionId,
+    ideaId,
+    type,
+    enabled,
+  });
+}
+
 async function handleNotifyIdeaStatusChanged(request, env) {
   const auth = await requireUser(request, env, { roles: ["admin"] });
   if (auth.error) {
@@ -2940,6 +3213,15 @@ function matchRoute(method, path) {
   if (method === "POST" && path === "/api/project-ideas/submit") {
     return { handler: "submitProjectIdea" };
   }
+  if (method === "GET" && path === "/api/project-ideas/engagement") {
+    return { handler: "getProjectIdeaEngagement" };
+  }
+  if (method === "GET" && path === "/api/project-ideas/saved") {
+    return { handler: "getSavedProjectIdeas" };
+  }
+  if (method === "POST" && path === "/api/project-ideas/interactions") {
+    return { handler: "setProjectIdeaInteraction" };
+  }
   if (method === "POST" && path === "/api/search/google-books") {
     return { handler: "searchBooks" };
   }
@@ -3092,6 +3374,15 @@ export default {
           break;
         case "submitProjectIdea":
           response = await handleSubmitProjectIdea(request, env);
+          break;
+        case "getProjectIdeaEngagement":
+          response = await handleGetProjectIdeaEngagement(request, env);
+          break;
+        case "getSavedProjectIdeas":
+          response = await handleGetSavedProjectIdeas(request, env);
+          break;
+        case "setProjectIdeaInteraction":
+          response = await handleSetProjectIdeaInteraction(request, env);
           break;
         case "searchBooks":
           response = await handleSearchBooks(request, env);

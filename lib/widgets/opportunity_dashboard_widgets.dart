@@ -42,13 +42,13 @@ class OpportunitySectionHeader extends StatelessWidget {
                         shape: BoxShape.circle,
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 7),
                   ],
                   Flexible(
                     child: Text(
                       title,
                       style: GoogleFonts.poppins(
-                        fontSize: 18,
+                        fontSize: 17,
                         fontWeight: FontWeight.w700,
                         color: OpportunityDashboardPalette.textPrimary,
                       ),
@@ -56,12 +56,12 @@ class OpportunitySectionHeader extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: 3),
               Text(
                 subtitle,
                 style: GoogleFonts.poppins(
-                  fontSize: 12,
-                  height: 1.45,
+                  fontSize: 11.2,
+                  height: 1.35,
                   color: OpportunityDashboardPalette.textSecondary,
                 ),
               ),
@@ -69,19 +69,41 @@ class OpportunitySectionHeader extends StatelessWidget {
           ),
         ),
         if (actionLabel != null && onAction != null)
-          TextButton(
-            onPressed: onAction,
-            style: TextButton.styleFrom(
-              foregroundColor: OpportunityDashboardPalette.primary,
-              minimumSize: Size.zero,
-              padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 6),
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              textStyle: GoogleFonts.poppins(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
+          Padding(
+            padding: const EdgeInsets.only(left: 12),
+            child: TextButton(
+              onPressed: onAction,
+              style: TextButton.styleFrom(
+                foregroundColor: OpportunityDashboardPalette.primary,
+                backgroundColor: OpportunityDashboardPalette.surface,
+                minimumSize: Size.zero,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 7,
+                ),
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                side: BorderSide(
+                  color: OpportunityDashboardPalette.primary.withValues(
+                    alpha: 0.14,
+                  ),
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                textStyle: GoogleFonts.poppins(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(actionLabel!),
+                  const SizedBox(width: 3),
+                  const Icon(Icons.arrow_outward_rounded, size: 13),
+                ],
               ),
             ),
-            child: Text(actionLabel!),
           ),
       ],
     );
@@ -108,42 +130,84 @@ class TrendingOpportunitySectionHeader extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
-          child: Column(
+          child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                title,
-                style: GoogleFonts.poppins(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  color: OpportunityDashboardPalette.textPrimary,
+              Container(
+                width: 34,
+                height: 34,
+                decoration: BoxDecoration(
+                  color: OpportunityDashboardPalette.primary.withValues(
+                    alpha: 0.09,
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(
+                  Icons.local_fire_department_rounded,
+                  color: OpportunityDashboardPalette.primary,
+                  size: 18,
                 ),
               ),
-              const SizedBox(height: 3),
-              Text(
-                subtitle,
-                style: GoogleFonts.poppins(
-                  fontSize: 11.5,
-                  height: 1.35,
-                  color: OpportunityDashboardPalette.textSecondary,
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: GoogleFonts.poppins(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w700,
+                        color: OpportunityDashboardPalette.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      subtitle,
+                      style: GoogleFonts.poppins(
+                        fontSize: 11.2,
+                        height: 1.35,
+                        color: OpportunityDashboardPalette.textSecondary,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
         ),
-        TextButton(
-          onPressed: onAction,
-          style: TextButton.styleFrom(
-            foregroundColor: OpportunityDashboardPalette.primary,
-            minimumSize: Size.zero,
-            padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            textStyle: GoogleFonts.poppins(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
+        Padding(
+          padding: const EdgeInsets.only(left: 12),
+          child: TextButton(
+            onPressed: onAction,
+            style: TextButton.styleFrom(
+              foregroundColor: OpportunityDashboardPalette.primary,
+              backgroundColor: OpportunityDashboardPalette.surface,
+              minimumSize: Size.zero,
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              side: BorderSide(
+                color: OpportunityDashboardPalette.primary.withValues(
+                  alpha: 0.14,
+                ),
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(999),
+              ),
+              textStyle: GoogleFonts.poppins(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(actionLabel),
+                const SizedBox(width: 3),
+                const Icon(Icons.arrow_outward_rounded, size: 13),
+              ],
             ),
           ),
-          child: Text(actionLabel),
         ),
       ],
     );
@@ -534,12 +598,60 @@ class TrainingProgramsCard extends StatelessWidget {
   }
 }
 
+class _OpportunityTypeTone {
+  final Color accent;
+  final Color strongAccent;
+  final Color softBackground;
+  final Color borderColor;
+  final Color glowColor;
+
+  const _OpportunityTypeTone({
+    required this.accent,
+    required this.strongAccent,
+    required this.softBackground,
+    required this.borderColor,
+    required this.glowColor,
+  });
+}
+
+_OpportunityTypeTone _toneForOpportunityType(String rawType) {
+  switch (OpportunityType.parse(rawType)) {
+    case OpportunityType.internship:
+      return _OpportunityTypeTone(
+        accent: OpportunityType.internshipColor,
+        strongAccent: const Color(0xFF0F766E),
+        softBackground: OpportunityType.softBackground(rawType),
+        borderColor: OpportunityType.softBorder(rawType),
+        glowColor: OpportunityType.internshipColor.withValues(alpha: 0.12),
+      );
+    case OpportunityType.sponsoring:
+      return _OpportunityTypeTone(
+        accent: OpportunityType.sponsoringColor,
+        strongAccent: const Color(0xFFF97316),
+        softBackground: OpportunityType.softBackground(rawType),
+        borderColor: OpportunityType.softBorder(rawType),
+        glowColor: OpportunityType.sponsoringColor.withValues(alpha: 0.12),
+      );
+    case OpportunityType.job:
+    default:
+      return _OpportunityTypeTone(
+        accent: OpportunityType.jobColor,
+        strongAccent: const Color(0xFF4F46E5),
+        softBackground: OpportunityType.softBackground(rawType),
+        borderColor: OpportunityType.softBorder(rawType),
+        glowColor: OpportunityType.jobColor.withValues(alpha: 0.12),
+      );
+  }
+}
+
 class TrendingOpportunityCard extends StatelessWidget {
   final OpportunityModel opportunity;
-  final String badgeLabel;
+  final int rank;
+  final String typeLabel;
+  final String trendLabel;
   final String? companyName;
   final String? locationText;
-  final String? metadataText;
+  final List<String> detailChips;
   final String? compensationText;
   final bool isSaved;
   final bool isBusy;
@@ -549,10 +661,12 @@ class TrendingOpportunityCard extends StatelessWidget {
   const TrendingOpportunityCard({
     super.key,
     required this.opportunity,
-    required this.badgeLabel,
+    required this.rank,
+    required this.typeLabel,
+    required this.trendLabel,
     required this.companyName,
     required this.locationText,
-    required this.metadataText,
+    required this.detailChips,
     required this.compensationText,
     required this.isSaved,
     required this.isBusy,
@@ -560,177 +674,204 @@ class TrendingOpportunityCard extends StatelessWidget {
     this.onToggleSaved,
   });
 
-  Color _badgeColor() {
-    final normalized = badgeLabel.trim().toUpperCase();
+  List<String> _metaItems() {
+    final seen = <String>{};
+    final result = <String>[];
 
-    if (normalized.contains('TECH')) {
-      return OpportunityDashboardPalette.secondary;
-    }
-    if (normalized.contains('DESIGN')) {
-      return OpportunityDashboardPalette.primary;
-    }
-    if (normalized.contains('FINANCE')) {
-      return OpportunityDashboardPalette.warning;
-    }
-    if (normalized.contains('BUSINESS')) {
-      return OpportunityDashboardPalette.accent;
-    }
+    for (final item in [trendLabel, ...detailChips]) {
+      final trimmed = item.trim();
+      if (trimmed.isEmpty) {
+        continue;
+      }
 
-    return switch (opportunity.type) {
-      'internship' => OpportunityDashboardPalette.secondary,
-      'sponsoring' => OpportunityDashboardPalette.accent,
-      _ => OpportunityDashboardPalette.primary,
-    };
-  }
+      if (seen.add(trimmed.toLowerCase())) {
+        result.add(trimmed);
+      }
 
-  String? _companyLocationLine() {
-    final parts = [
-      if (companyName != null && companyName!.trim().isNotEmpty)
-        companyName!.trim(),
-      if (locationText != null && locationText!.trim().isNotEmpty)
-        locationText!.trim(),
-    ];
-    if (parts.isEmpty) {
-      return null;
+      if (result.length == 2) {
+        break;
+      }
     }
 
-    final separator = ' ${String.fromCharCode(8226)} ';
-    return parts.join(separator);
+    return result;
   }
 
   @override
   Widget build(BuildContext context) {
-    final badgeColor = _badgeColor();
-    final companyLine = _companyLocationLine();
+    final tone = _toneForOpportunityType(opportunity.type);
     final textScale = MediaQuery.textScalerOf(context).scale(1);
     final isCompactLayout =
         MediaQuery.sizeOf(context).width < 380 || textScale > 1.08;
-    final cardWidth = isCompactLayout ? 208.0 : 216.0;
-    final topSpacing = isCompactLayout ? 10.0 : 12.0;
-    final detailSpacing = isCompactLayout ? 5.0 : 6.0;
-    final metadataMaxLines = isCompactLayout ? 1 : 2;
+    final companyLabel = companyName?.trim().isNotEmpty == true
+        ? companyName!.trim()
+        : 'AvenirDZ partner';
+    final locationLabel = locationText?.trim();
+    final metaItems = _metaItems();
+    final cardWidth = isCompactLayout ? 206.0 : 220.0;
 
     return Material(
       color: Colors.transparent,
-      borderRadius: BorderRadius.circular(28),
+      borderRadius: BorderRadius.circular(22),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(28),
+        borderRadius: BorderRadius.circular(22),
         child: Ink(
           width: cardWidth,
-          padding: const EdgeInsets.fromLTRB(16, 16, 14, 16),
+          padding: const EdgeInsets.fromLTRB(14, 13, 14, 12),
           decoration: BoxDecoration(
             color: OpportunityDashboardPalette.surface,
-            borderRadius: BorderRadius.circular(28),
-            border: Border.all(color: OpportunityDashboardPalette.border),
+            borderRadius: BorderRadius.circular(22),
+            border: Border.all(color: tone.borderColor),
+            boxShadow: [
+              BoxShadow(
+                color: tone.glowColor.withValues(alpha: 0.48),
+                blurRadius: 16,
+                offset: const Offset(0, 6),
+              ),
+            ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _TrendingIdentityCircle(
-                companyName: opportunity.companyName,
-                logoUrl: opportunity.companyLogo,
-                fallbackIcon: OpportunityType.icon(opportunity.type),
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 5,
+                    ),
+                    decoration: BoxDecoration(
+                      color: tone.softBackground,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      '#$rank',
+                      style: GoogleFonts.poppins(
+                        fontSize: 9.8,
+                        fontWeight: FontWeight.w700,
+                        color: tone.strongAccent,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: _OpportunityAccentChip(
+                      label: typeLabel,
+                      foreground: tone.strongAccent,
+                      background: tone.accent.withValues(alpha: 0.12),
+                      icon: OpportunityType.icon(opportunity.type),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Container(
+                    width: 30,
+                    height: 30,
+                    decoration: BoxDecoration(
+                      color: tone.softBackground,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: _OpportunitySaveButton(
+                      isBusy: isBusy,
+                      isSaved: isSaved,
+                      onPressed: onToggleSaved,
+                      boxSize: 30,
+                      iconSize: 16,
+                      activeColor: tone.strongAccent,
+                    ),
+                  ),
+                ],
               ),
-              SizedBox(height: topSpacing),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 4,
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  _OpportunityCompanyAvatar(
+                    companyName: opportunity.companyName,
+                    logoUrl: opportunity.companyLogo,
+                    size: 36,
+                    accentColor: tone.strongAccent,
+                    backgroundColor: tone.accent.withValues(alpha: 0.11),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          companyLabel,
+                          style: GoogleFonts.poppins(
+                            fontSize: 11.2,
+                            fontWeight: FontWeight.w600,
+                            color: OpportunityDashboardPalette.textPrimary,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        if (locationLabel != null &&
+                            locationLabel.isNotEmpty) ...[
+                          const SizedBox(height: 2),
+                          Text(
+                            locationLabel,
+                            style: GoogleFonts.poppins(
+                              fontSize: 10.1,
+                              color: OpportunityDashboardPalette.textSecondary,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Text(
+                opportunity.title,
+                style: GoogleFonts.poppins(
+                  fontSize: 14.3,
+                  fontWeight: FontWeight.w700,
+                  color: OpportunityDashboardPalette.textPrimary,
+                  height: 1.24,
                 ),
-                decoration: BoxDecoration(
-                  color: badgeColor.withValues(alpha: 0.16),
-                  borderRadius: BorderRadius.circular(999),
-                ),
-                child: Text(
-                  badgeLabel,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              if (compensationText != null &&
+                  compensationText!.trim().isNotEmpty) ...[
+                const SizedBox(height: 7),
+                Text(
+                  compensationText!,
                   style: GoogleFonts.poppins(
-                    fontSize: 9.5,
+                    fontSize: 13,
                     fontWeight: FontWeight.w700,
-                    color: badgeColor,
-                    letterSpacing: 0.5,
+                    color: tone.strongAccent,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-              ),
-              SizedBox(height: topSpacing),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              ],
+              if (metaItems.isNotEmpty) ...[
+                const SizedBox(height: 8),
+                Row(
                   children: [
-                    Text(
-                      opportunity.title,
-                      style: GoogleFonts.poppins(
-                        fontSize: 14.5,
-                        fontWeight: FontWeight.w700,
-                        color: OpportunityDashboardPalette.textPrimary,
-                        height: 1.24,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
+                    Icon(
+                      Icons.trending_up_rounded,
+                      size: 13,
+                      color: tone.strongAccent,
                     ),
-                    if (companyLine != null) ...[
-                      SizedBox(height: detailSpacing + 1),
-                      Text(
-                        companyLine,
-                        style: GoogleFonts.poppins(
-                          fontSize: 11.5,
-                          color: OpportunityDashboardPalette.textSecondary,
-                          height: 1.35,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                    const SizedBox(width: 5),
+                    Expanded(
+                      child: _OpportunityMetadataText(
+                        items: metaItems,
+                        color: tone.strongAccent,
+                        fontSize: 10.4,
                       ),
-                    ],
-                    if (metadataText != null &&
-                        metadataText!.trim().isNotEmpty) ...[
-                      SizedBox(height: detailSpacing),
-                      Text(
-                        metadataText!,
-                        style: GoogleFonts.poppins(
-                          fontSize: 10.8,
-                          fontWeight: FontWeight.w600,
-                          color: OpportunityDashboardPalette.textSecondary,
-                          height: 1.35,
-                        ),
-                        maxLines: metadataMaxLines,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                    const Spacer(),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        if (compensationText != null &&
-                            compensationText!.trim().isNotEmpty)
-                          Expanded(
-                            child: Text(
-                              compensationText!,
-                              style: GoogleFonts.poppins(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w700,
-                                color: OpportunityDashboardPalette.primary,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          )
-                        else
-                          const Spacer(),
-                        _OpportunitySaveButton(
-                          isBusy: isBusy,
-                          isSaved: isSaved,
-                          onPressed: onToggleSaved,
-                          boxSize: 24,
-                          iconSize: 18,
-                        ),
-                      ],
                     ),
                   ],
                 ),
-              ),
+              ],
             ],
           ),
         ),
@@ -739,52 +880,12 @@ class TrendingOpportunityCard extends StatelessWidget {
   }
 }
 
-class _TrendingIdentityCircle extends StatelessWidget {
-  final String companyName;
-  final String logoUrl;
-  final IconData fallbackIcon;
-
-  const _TrendingIdentityCircle({
-    required this.companyName,
-    required this.logoUrl,
-    required this.fallbackIcon,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final hasLogo = logoUrl.trim().isNotEmpty;
-
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        _OpportunityCompanyAvatar(
-          companyName: companyName,
-          logoUrl: logoUrl,
-          size: 44,
-        ),
-        if (!hasLogo)
-          Positioned.fill(
-            child: IgnorePointer(
-              child: Center(
-                child: Icon(
-                  fallbackIcon,
-                  size: 15,
-                  color: OpportunityDashboardPalette.primary.withValues(
-                    alpha: 0.86,
-                  ),
-                ),
-              ),
-            ),
-          ),
-      ],
-    );
-  }
-}
-
 class OpportunityListTile extends StatelessWidget {
   final OpportunityModel opportunity;
+  final String typeLabel;
   final String companyLocationText;
-  final List<String> statusItems;
+  final List<String> detailChips;
+  final String? compensationText;
   final String? badgeText;
   final Color? badgeColor;
   final Color? statusColor;
@@ -796,8 +897,10 @@ class OpportunityListTile extends StatelessWidget {
   const OpportunityListTile({
     super.key,
     required this.opportunity,
+    required this.typeLabel,
     required this.companyLocationText,
-    required this.statusItems,
+    required this.detailChips,
+    required this.compensationText,
     required this.isSaved,
     required this.isBusy,
     required this.onTap,
@@ -809,22 +912,36 @@ class OpportunityListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tone = _toneForOpportunityType(opportunity.type);
     final effectiveBadgeColor =
         badgeColor ?? OpportunityDashboardPalette.primary;
+    final effectiveEdgeColor = statusColor ?? tone.strongAccent;
 
     return Material(
       color: Colors.transparent,
-      borderRadius: BorderRadius.circular(22),
+      borderRadius: BorderRadius.circular(20),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(22),
+        borderRadius: BorderRadius.circular(20),
         child: Ink(
-          padding: const EdgeInsets.all(14),
+          padding: const EdgeInsets.fromLTRB(12, 12, 12, 11),
           decoration: BoxDecoration(
             color: OpportunityDashboardPalette.surface,
-            borderRadius: BorderRadius.circular(22),
-            border: Border.all(color: OpportunityDashboardPalette.border),
+            borderRadius: BorderRadius.circular(20),
+            border: Border(
+              left: BorderSide(color: effectiveEdgeColor, width: 3),
+              top: BorderSide(color: tone.borderColor),
+              right: BorderSide(color: tone.borderColor),
+              bottom: BorderSide(color: tone.borderColor),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: tone.glowColor.withValues(alpha: 0.42),
+                blurRadius: 14,
+                offset: const Offset(0, 5),
+              ),
+            ],
           ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -832,86 +949,100 @@ class OpportunityListTile extends StatelessWidget {
               _OpportunityCompanyAvatar(
                 companyName: opportunity.companyName,
                 logoUrl: opportunity.companyLogo,
-                size: 46,
+                size: 40,
+                accentColor: tone.strongAccent,
+                backgroundColor: tone.accent.withValues(alpha: 0.10),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 10),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
+                    Wrap(
+                      spacing: 6,
+                      runSpacing: 6,
+                      children: [
+                        _OpportunityAccentChip(
+                          label: typeLabel,
+                          foreground: tone.strongAccent,
+                          background: tone.accent.withValues(alpha: 0.12),
+                          icon: OpportunityType.icon(opportunity.type),
+                        ),
+                        if (badgeText != null && badgeText!.isNotEmpty)
+                          _OpportunityAccentChip(
+                            label: badgeText!,
+                            foreground: effectiveBadgeColor,
+                            background: effectiveBadgeColor.withValues(
+                              alpha: 0.12,
+                            ),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 7),
                     Text(
                       opportunity.title,
                       style: GoogleFonts.poppins(
-                        fontSize: 14.5,
+                        fontSize: 14.2,
                         fontWeight: FontWeight.w700,
                         color: OpportunityDashboardPalette.textPrimary,
-                        height: 1.2,
+                        height: 1.22,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 5),
+                    const SizedBox(height: 4),
                     Text(
                       companyLocationText,
                       style: GoogleFonts.poppins(
-                        fontSize: 12,
+                        fontSize: 11,
                         color: OpportunityDashboardPalette.textSecondary,
-                        height: 1.4,
+                        height: 1.3,
                       ),
-                      maxLines: 2,
+                      maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    if (statusItems.isNotEmpty) ...[
-                      const SizedBox(height: 8),
+                    if (compensationText != null &&
+                        compensationText!.trim().isNotEmpty) ...[
+                      const SizedBox(height: 5),
                       Text(
-                        statusItems.join('  |  '),
+                        compensationText!,
                         style: GoogleFonts.poppins(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                          height: 1.4,
-                          color:
-                              statusColor ??
-                              OpportunityDashboardPalette.textSecondary,
+                          fontSize: 12.4,
+                          fontWeight: FontWeight.w700,
+                          color: tone.strongAccent,
                         ),
-                        maxLines: 2,
+                        maxLines: 1,
                         overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                    if (detailChips.isNotEmpty) ...[
+                      const SizedBox(height: 5),
+                      _OpportunityMetadataText(
+                        items: detailChips,
+                        color: OpportunityDashboardPalette.textSecondary,
+                        fontSize: 10.4,
                       ),
                     ],
                   ],
                 ),
               ),
               const SizedBox(width: 8),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  _OpportunitySaveButton(
-                    isBusy: isBusy,
-                    isSaved: isSaved,
-                    onPressed: onToggleSaved,
-                  ),
-                  if (badgeText != null && badgeText!.isNotEmpty) ...[
-                    const SizedBox(height: 10),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 5,
-                      ),
-                      decoration: BoxDecoration(
-                        color: effectiveBadgeColor.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(999),
-                      ),
-                      child: Text(
-                        badgeText!,
-                        style: GoogleFonts.poppins(
-                          fontSize: 9.5,
-                          fontWeight: FontWeight.w700,
-                          color: effectiveBadgeColor,
-                          letterSpacing: 0.2,
-                        ),
-                      ),
-                    ),
-                  ],
-                ],
+              Container(
+                width: 30,
+                height: 30,
+                decoration: BoxDecoration(
+                  color: tone.softBackground,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: _OpportunitySaveButton(
+                  isBusy: isBusy,
+                  isSaved: isSaved,
+                  onPressed: onToggleSaved,
+                  boxSize: 30,
+                  iconSize: 16,
+                  activeColor: tone.strongAccent,
+                ),
               ),
             ],
           ),
@@ -982,6 +1113,45 @@ class OpportunityDashboardEmptyState extends StatelessWidget {
   }
 }
 
+class _OpportunityMetadataText extends StatelessWidget {
+  final List<String> items;
+  final Color color;
+  final double fontSize;
+
+  const _OpportunityMetadataText({
+    required this.items,
+    required this.color,
+    this.fontSize = 10.6,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final visibleItems = items
+        .map((item) => item.trim())
+        .where((item) => item.isNotEmpty)
+        .take(2)
+        .toList(growable: false);
+
+    if (visibleItems.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    final separator = ' ${String.fromCharCode(8226)} ';
+
+    return Text(
+      visibleItems.join(separator),
+      style: GoogleFonts.poppins(
+        fontSize: fontSize,
+        fontWeight: FontWeight.w500,
+        color: color,
+        height: 1.25,
+      ),
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+    );
+  }
+}
+
 class OpportunityDashboardLoadingSkeleton extends StatelessWidget {
   const OpportunityDashboardLoadingSkeleton({super.key});
 
@@ -1021,21 +1191,21 @@ class OpportunityDashboardLoadingSkeleton extends StatelessWidget {
         _SkeletonLine(widthFactor: 0.62, height: 14),
         SizedBox(height: 14),
         SizedBox(
-          height: 232,
+          height: 194,
           child: Row(
             children: [
-              Expanded(child: _SkeletonBlock(height: 232, radius: 24)),
+              Expanded(child: _SkeletonBlock(height: 194, radius: 22)),
               SizedBox(width: 12),
-              Expanded(child: _SkeletonBlock(height: 232, radius: 24)),
+              Expanded(child: _SkeletonBlock(height: 194, radius: 22)),
             ],
           ),
         ),
         SizedBox(height: 28),
         _SkeletonLine(widthFactor: 0.48, height: 18),
         SizedBox(height: 14),
-        _SkeletonBlock(height: 94, radius: 22),
+        _SkeletonBlock(height: 108, radius: 20),
         SizedBox(height: 12),
-        _SkeletonBlock(height: 94, radius: 22),
+        _SkeletonBlock(height: 108, radius: 20),
       ],
     );
   }
@@ -1045,23 +1215,31 @@ class _OpportunityCompanyAvatar extends StatelessWidget {
   final String companyName;
   final String logoUrl;
   final double size;
+  final Color? accentColor;
+  final Color? backgroundColor;
 
   const _OpportunityCompanyAvatar({
     required this.companyName,
     required this.logoUrl,
     this.size = 48,
+    this.accentColor,
+    this.backgroundColor,
   });
 
   @override
   Widget build(BuildContext context) {
     final trimmedName = companyName.trim();
     final label = trimmedName.isNotEmpty ? trimmedName[0].toUpperCase() : 'A';
+    final resolvedAccent = accentColor ?? OpportunityDashboardPalette.primary;
+    final resolvedBackground =
+        backgroundColor ??
+        OpportunityDashboardPalette.primary.withValues(alpha: 0.08);
 
     return Container(
       width: size,
       height: size,
       decoration: BoxDecoration(
-        color: OpportunityDashboardPalette.primary.withValues(alpha: 0.08),
+        color: resolvedBackground,
         shape: BoxShape.circle,
       ),
       clipBehavior: Clip.antiAlias,
@@ -1072,7 +1250,7 @@ class _OpportunityCompanyAvatar extends StatelessWidget {
                 style: GoogleFonts.poppins(
                   fontSize: size * 0.34,
                   fontWeight: FontWeight.w700,
-                  color: OpportunityDashboardPalette.primary,
+                  color: resolvedAccent,
                 ),
               ),
             )
@@ -1085,7 +1263,7 @@ class _OpportunityCompanyAvatar extends StatelessWidget {
                   style: GoogleFonts.poppins(
                     fontSize: size * 0.34,
                     fontWeight: FontWeight.w700,
-                    color: OpportunityDashboardPalette.primary,
+                    color: resolvedAccent,
                   ),
                 ),
               ),
@@ -1107,6 +1285,7 @@ class _OpportunitySaveButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final double boxSize;
   final double iconSize;
+  final Color? activeColor;
 
   const _OpportunitySaveButton({
     required this.isBusy,
@@ -1114,6 +1293,7 @@ class _OpportunitySaveButton extends StatelessWidget {
     required this.onPressed,
     this.boxSize = 28,
     this.iconSize = 20,
+    this.activeColor,
   });
 
   @override
@@ -1147,8 +1327,53 @@ class _OpportunitySaveButton extends StatelessWidget {
         isSaved ? Icons.bookmark_rounded : Icons.bookmark_outline_rounded,
         size: iconSize,
         color: isSaved
-            ? OpportunityDashboardPalette.primary
+            ? (activeColor ?? OpportunityDashboardPalette.primary)
             : OpportunityDashboardPalette.textSecondary,
+      ),
+    );
+  }
+}
+
+class _OpportunityAccentChip extends StatelessWidget {
+  final String label;
+  final Color foreground;
+  final Color background;
+  final IconData? icon;
+
+  const _OpportunityAccentChip({
+    required this.label,
+    required this.foreground,
+    required this.background,
+    this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.fromLTRB(icon == null ? 8 : 7, 5, 8, 5),
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icon != null) ...[
+            Icon(icon, size: 12, color: foreground),
+            const SizedBox(width: 5),
+          ],
+          Text(
+            label,
+            style: GoogleFonts.poppins(
+              fontSize: 9.5,
+              fontWeight: FontWeight.w700,
+              color: foreground,
+              letterSpacing: 0.12,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
       ),
     );
   }

@@ -31,6 +31,8 @@ class OpportunitiesScreen extends StatefulWidget {
 }
 
 class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
+  static const int _latestItemsLimit = 5;
+
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
   final ScrollController _scrollController = ScrollController();
@@ -726,6 +728,18 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
     return DateFormat('MMM d').format(createdAt);
   }
 
+  String _toTitleCase(String value) {
+    return value
+        .split(RegExp(r'\s+'))
+        .where((word) => word.isNotEmpty)
+        .map(
+          (word) => word.length == 1
+              ? word.toUpperCase()
+              : '${word[0].toUpperCase()}${word.substring(1).toLowerCase()}',
+        )
+        .join(' ');
+  }
+
   bool _isNewOpportunity(OpportunityModel opportunity) {
     final createdAt = _postedAt(opportunity);
     if (createdAt == null) {
@@ -851,21 +865,183 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
     };
   }
 
-  List<OpportunityModel> _buildTrendingItems(List<OpportunityModel> visible) {
-    final featured = visible.where((item) => item.isFeatured).toList();
-    final items = <OpportunityModel>[...featured];
+  DateTime? _recencyFor(OpportunityModel opportunity) {
+    return opportunity.updatedAt?.toDate() ?? _postedAt(opportunity);
+  }
 
-    for (final opportunity in visible) {
-      if (items.any((item) => item.id == opportunity.id)) {
-        continue;
-      }
-      items.add(opportunity);
-      if (items.length >= 6) {
-        break;
+  int _trendingScore(OpportunityModel opportunity) {
+    var score = 0;
+
+    if (opportunity.isFeatured) {
+      score += 40;
+    }
+    if (_isNewOpportunity(opportunity)) {
+      score += 28;
+    }
+    if (_compensationText(opportunity) != null) {
+      score += 12;
+    }
+
+    final workMode = _workModeLabel(opportunity);
+    if (workMode == 'Remote') {
+      score += 10;
+    } else if (workMode == 'Hybrid') {
+      score += 6;
+    }
+
+    final deadline = _deadlineFor(opportunity);
+    if (deadline != null) {
+      final difference = deadline.difference(DateTime.now());
+      if (!difference.isNegative && difference.inDays <= 10) {
+        score += 8;
       }
     }
 
-    return items.take(6).toList();
+    score += math.min(opportunity.tags.length, 3) * 2;
+    return score;
+  }
+
+  String _trendingSignalLabel(OpportunityModel opportunity) {
+    if (opportunity.isFeatured) {
+      return 'Partner pick';
+    }
+    if (_isNewOpportunity(opportunity)) {
+      return 'New this week';
+    }
+
+    final deadline = _deadlineFor(opportunity);
+    if (deadline != null) {
+      final difference = deadline.difference(DateTime.now());
+      if (!difference.isNegative && difference.inDays <= 7) {
+        return 'Closing soon';
+      }
+    }
+
+    final workMode = _workModeLabel(opportunity);
+    if (workMode == 'Remote') {
+      return 'Remote friendly';
+    }
+    if (workMode == 'Hybrid') {
+      return 'Hybrid setup';
+    }
+
+    final compensation = _compensationText(opportunity)?.toLowerCase() ?? '';
+    if (compensation.isNotEmpty && compensation != 'unpaid') {
+      return 'Paid track';
+    }
+
+    final explicitTag = _explicitCategoryTag(opportunity);
+    if (explicitTag != null && explicitTag.isNotEmpty) {
+      return _toTitleCase(explicitTag);
+    }
+
+    return switch (OpportunityType.parse(opportunity.type)) {
+      OpportunityType.internship => 'Student growth',
+      OpportunityType.sponsoring => 'Sponsored support',
+      OpportunityType.job => 'Career move',
+      _ => 'Open role',
+    };
+  }
+
+  List<String> _compactDetailItems(
+    OpportunityModel opportunity, {
+    int maxItems = 2,
+  }) {
+    final items = <String>[];
+    final employment = _employmentTypeLabel(opportunity);
+    final workMode = _workModeLabel(opportunity);
+    final duration = OpportunityMetadata.normalizeDuration(
+      opportunity.duration,
+    );
+    final deadline = _deadlineFor(opportunity);
+    final postedAt = _postedAt(opportunity);
+
+    if (workMode != null) {
+      items.add(workMode);
+    }
+
+    if (OpportunityType.parse(opportunity.type) == OpportunityType.internship &&
+        duration != null) {
+      items.add(duration);
+    }
+
+    if (deadline != null) {
+      final difference = deadline.difference(DateTime.now());
+      if (!difference.isNegative && difference.inDays <= 10) {
+        items.add(_closingSoonText(opportunity));
+      }
+    }
+
+    if (postedAt != null) {
+      items.add(_relativePostedTime(opportunity));
+    }
+
+    if (employment != null &&
+        employment.toLowerCase() !=
+            OpportunityType.label(opportunity.type).toLowerCase()) {
+      items.add(employment);
+    }
+
+    if (items.isEmpty && deadline != null) {
+      items.add('Deadline ${_formatDeadlineDisplay(opportunity)}');
+    }
+
+    if (items.isEmpty) {
+      items.add(OpportunityType.label(opportunity.type));
+    }
+
+    return _uniqueValues(items).take(maxItems).toList(growable: false);
+  }
+
+  List<String> _trendingDetailChips(OpportunityModel opportunity) {
+    return _compactDetailItems(opportunity, maxItems: 1);
+  }
+
+  List<OpportunityModel> _buildTrendingItems(List<OpportunityModel> visible) {
+    final items = <OpportunityModel>[...visible];
+    items.sort((left, right) {
+      final scoreDiff = _trendingScore(right).compareTo(_trendingScore(left));
+      if (scoreDiff != 0) {
+        return scoreDiff;
+      }
+
+      final rightTime = _recencyFor(right);
+      final leftTime = _recencyFor(left);
+      if (leftTime == null && rightTime == null) {
+        return 0;
+      }
+      if (leftTime == null) {
+        return 1;
+      }
+      if (rightTime == null) {
+        return -1;
+      }
+
+      return rightTime.compareTo(leftTime);
+    });
+
+    return items.take(6).toList(growable: false);
+  }
+
+  List<OpportunityModel> _buildLatestItems(List<OpportunityModel> visible) {
+    final items = <OpportunityModel>[...visible];
+    items.sort((left, right) {
+      final rightTime = _recencyFor(right);
+      final leftTime = _recencyFor(left);
+      if (leftTime == null && rightTime == null) {
+        return 0;
+      }
+      if (leftTime == null) {
+        return 1;
+      }
+      if (rightTime == null) {
+        return -1;
+      }
+
+      return rightTime.compareTo(leftTime);
+    });
+
+    return items.take(_latestItemsLimit).toList(growable: false);
   }
 
   List<OpportunityModel> _buildClosingSoonItems(
@@ -1094,31 +1270,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
   }
 
   List<String> _latestStatusItems(OpportunityModel opportunity) {
-    final items = <String>[];
-    final deadline = _deadlineFor(opportunity);
-    final postedAt = _postedAt(opportunity);
-    final metadataItems = _metadataItems(opportunity, maxItems: 3);
-
-    items.addAll(metadataItems);
-
-    if (deadline != null) {
-      final difference = deadline.difference(DateTime.now());
-      if (!difference.isNegative && difference.inDays <= 14) {
-        items.add(_closingSoonText(opportunity));
-      } else if (postedAt == null) {
-        items.add('Deadline ${_formatDeadlineDisplay(opportunity)}');
-      }
-    }
-
-    if (postedAt != null && metadataItems.length < 2) {
-      items.add('Posted ${_relativePostedTime(opportunity)}');
-    }
-
-    if (items.isEmpty) {
-      items.add(_typeLabel(opportunity.type));
-    }
-
-    return _uniqueValues(items).take(4).toList();
+    return _compactDetailItems(opportunity);
   }
 
   String? _employmentTypeLabel(OpportunityModel opportunity) {
@@ -1342,7 +1494,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
     final trainingProvider = context.watch<TrainingProvider>();
     final savedProvider = context.watch<SavedOpportunityProvider>();
     final textScale = MediaQuery.textScalerOf(context).scale(1);
-    final trendingCardHeight = textScale > 1.08 ? 244.0 : 232.0;
+    final trendingCardHeight = textScale > 1.08 ? 210.0 : 194.0;
 
     final allOpportunities = opportunityProvider.opportunities;
     final visibleOpportunities = _applyFilters(allOpportunities);
@@ -1370,6 +1522,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
         .where((training) => training.isApproved)
         .toList();
     final trendingItems = _buildTrendingItems(visibleOpportunities);
+    final latestItems = _buildLatestItems(visibleOpportunities);
     final closingSoonItems = _buildClosingSoonItems(visibleOpportunities);
     final savedIds = savedProvider.savedOpportunities
         .map((item) => item.opportunityId)
@@ -1545,7 +1698,8 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                         key: _trendingSectionKey,
                         child: TrendingOpportunitySectionHeader(
                           title: 'Trending Opportunities',
-                          subtitle: 'Based on student activity this week',
+                          subtitle:
+                              'Featured, fresh, and high-signal picks from live data',
                           actionLabel: 'View All',
                           onAction: () async {
                             _setFilter(_OpportunityDashboardFilter.all);
@@ -1581,26 +1735,20 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
 
                                     return TrendingOpportunityCard(
                                       opportunity: opportunity,
-                                      badgeLabel: _deriveTrendingTag(
+                                      rank: index + 1,
+                                      typeLabel: OpportunityType.label(
+                                        opportunity.type,
+                                      ),
+                                      trendLabel: _trendingSignalLabel(
                                         opportunity,
                                       ),
                                       companyName: _companyNameOrNull(
                                         opportunity,
                                       ),
                                       locationText: _locationLabel(opportunity),
-                                      metadataText:
-                                          OpportunityMetadata.uniqueNonEmpty(
-                                            _metadataItems(
-                                              opportunity,
-                                              maxItems: 3,
-                                            ).where(
-                                              (item) =>
-                                                  item !=
-                                                  _compensationText(
-                                                    opportunity,
-                                                  ),
-                                            ),
-                                          ).join(' | '),
+                                      detailChips: _trendingDetailChips(
+                                        opportunity,
+                                      ),
                                       compensationText: _compensationText(
                                         opportunity,
                                       ),
@@ -1622,15 +1770,15 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                       padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
                       sliver: SliverToBoxAdapter(
                         key: _latestSectionKey,
-                        child: const OpportunitySectionHeader(
+                        child: OpportunitySectionHeader(
                           title: 'Latest Opportunities',
                           subtitle:
-                              'Fresh roles, internships, and sponsored tracks for quick exploration',
+                              'The $_latestItemsLimit newest roles, internships, and sponsored tracks',
                           accentColor: OpportunityDashboardPalette.success,
                         ),
                       ),
                     ),
-                    if (visibleOpportunities.isEmpty)
+                    if (latestItems.isEmpty)
                       SliverPadding(
                         padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
                         sliver: SliverToBoxAdapter(
@@ -1647,17 +1795,21 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                       SliverPadding(
                         padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
                         sliver: SliverList.separated(
-                          itemCount: visibleOpportunities.length,
+                          itemCount: latestItems.length,
                           separatorBuilder: (context, index) =>
-                              const SizedBox(height: 10),
+                              const SizedBox(height: 8),
                           itemBuilder: (context, index) {
-                            final opportunity = visibleOpportunities[index];
+                            final opportunity = latestItems[index];
                             return OpportunityListTile(
                               opportunity: opportunity,
+                              typeLabel: OpportunityType.label(
+                                opportunity.type,
+                              ),
                               companyLocationText: _companyLocationText(
                                 opportunity,
                               ),
-                              statusItems: _latestStatusItems(opportunity),
+                              compensationText: _compensationText(opportunity),
+                              detailChips: _latestStatusItems(opportunity),
                               badgeText: _isNewOpportunity(opportunity)
                                   ? 'NEW'
                                   : null,
@@ -1706,12 +1858,25 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
 
                                 return OpportunityListTile(
                                   opportunity: opportunity,
+                                  typeLabel: OpportunityType.label(
+                                    opportunity.type,
+                                  ),
                                   companyLocationText: _companyLocationText(
                                     opportunity,
                                   ),
-                                  statusItems: [
+                                  compensationText: _compensationText(
+                                    opportunity,
+                                  ),
+                                  detailChips: [
                                     _closingSoonText(opportunity),
-                                    ..._metadataItems(opportunity, maxItems: 2),
+                                    ..._metadataItems(
+                                      opportunity,
+                                      maxItems: 3,
+                                    ).where(
+                                      (item) =>
+                                          item !=
+                                          _compensationText(opportunity),
+                                    ),
                                   ],
                                   badgeText: 'URGENT',
                                   badgeColor: urgencyColor,

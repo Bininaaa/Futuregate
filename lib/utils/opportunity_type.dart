@@ -32,6 +32,26 @@ class OpportunityType {
     }
   }
 
+  static Color softBackground(String type) {
+    switch (parse(type)) {
+      case internship:
+        return const Color(0xFFEAFBF7);
+      case sponsoring:
+        return const Color(0xFFFFF4E8);
+      case job:
+      default:
+        return const Color(0xFFF2EEFF);
+    }
+  }
+
+  static Color softAccent(String type, {double opacity = 0.14}) {
+    return color(type).withValues(alpha: opacity);
+  }
+
+  static Color softBorder(String type, {double opacity = 0.22}) {
+    return color(type).withValues(alpha: opacity);
+  }
+
   // Icons
   static IconData icon(String type) {
     switch (parse(type)) {
