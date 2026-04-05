@@ -20,7 +20,18 @@ import 'admin_library_screen.dart';
 import 'users_screen.dart';
 
 class AdminDashboardScreen extends StatefulWidget {
-  const AdminDashboardScreen({super.key});
+  final VoidCallback? onOpenUsers;
+  final void Function(int tab, {String targetId})? onOpenContent;
+  final VoidCallback? onOpenActivity;
+  final VoidCallback? onOpenLibrary;
+
+  const AdminDashboardScreen({
+    super.key,
+    this.onOpenUsers,
+    this.onOpenContent,
+    this.onOpenActivity,
+    this.onOpenLibrary,
+  });
 
   @override
   State<AdminDashboardScreen> createState() => _AdminDashboardScreenState();
@@ -301,6 +312,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             const SizedBox(height: 12),
             _QuickAccessGrid(
               unreadCount: unreadCount,
+              onOpenContent: _openContent,
               onOpenActivity: _openActivityCenter,
               onOpenLibrary: _openLibrary,
             ),
@@ -329,6 +341,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   }
 
   void _openContent(int tab, {String targetId = ''}) {
+    if (widget.onOpenContent != null) {
+      widget.onOpenContent!(tab, targetId: targetId);
+      return;
+    }
+
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -341,6 +358,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   }
 
   void _openActivityCenter() {
+    if (widget.onOpenActivity != null) {
+      widget.onOpenActivity!();
+      return;
+    }
+
     Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => const AdminActivityCenterScreen()),
@@ -348,6 +370,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   }
 
   void _openLibrary() {
+    if (widget.onOpenLibrary != null) {
+      widget.onOpenLibrary!();
+      return;
+    }
+
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -365,6 +392,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   }
 
   void _openUsers() {
+    if (widget.onOpenUsers != null) {
+      widget.onOpenUsers!();
+      return;
+    }
+
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -670,11 +702,13 @@ class _RankedListCard extends StatelessWidget {
 
 class _QuickAccessGrid extends StatelessWidget {
   final int unreadCount;
+  final void Function(int tab, {String targetId}) onOpenContent;
   final VoidCallback onOpenActivity;
   final VoidCallback onOpenLibrary;
 
   const _QuickAccessGrid({
     required this.unreadCount,
+    required this.onOpenContent,
     required this.onOpenActivity,
     required this.onOpenLibrary,
   });
@@ -687,70 +721,35 @@ class _QuickAccessGrid extends StatelessWidget {
         subtitle: 'Review offer submissions',
         icon: Icons.assignment_outlined,
         color: AdminPalette.activity,
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => const AdminContentCenterScreen(
-              initialTab: AdminContentCenterScreen.opportunitiesTab,
-            ),
-          ),
-        ),
+        onTap: () => onOpenContent(AdminContentCenterScreen.opportunitiesTab),
       ),
       _QuickAccessItem(
         title: 'Opportunities',
         subtitle: 'Manage live offers',
         icon: Icons.work_outline_rounded,
         color: AdminPalette.accent,
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => const AdminContentCenterScreen(
-              initialTab: AdminContentCenterScreen.opportunitiesTab,
-            ),
-          ),
-        ),
+        onTap: () => onOpenContent(AdminContentCenterScreen.opportunitiesTab),
       ),
       _QuickAccessItem(
         title: 'Scholarships',
         subtitle: 'Review funding queue',
         icon: Icons.card_giftcard_outlined,
         color: Colors.pink,
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => const AdminContentCenterScreen(
-              initialTab: AdminContentCenterScreen.scholarshipsTab,
-            ),
-          ),
-        ),
+        onTap: () => onOpenContent(AdminContentCenterScreen.scholarshipsTab),
       ),
       _QuickAccessItem(
         title: 'Trainings',
         subtitle: 'Browse learning hub',
         icon: Icons.cast_for_education_outlined,
         color: AdminPalette.secondary,
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => const AdminContentCenterScreen(
-              initialTab: AdminContentCenterScreen.trainingsTab,
-            ),
-          ),
-        ),
+        onTap: () => onOpenContent(AdminContentCenterScreen.trainingsTab),
       ),
       _QuickAccessItem(
         title: 'Project Ideas',
         subtitle: 'Moderate idea queue',
         icon: Icons.lightbulb_outline_rounded,
         color: Colors.amber.shade700,
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => const AdminContentCenterScreen(
-              initialTab: AdminContentCenterScreen.projectIdeasTab,
-            ),
-          ),
-        ),
+        onTap: () => onOpenContent(AdminContentCenterScreen.projectIdeasTab),
       ),
       _QuickAccessItem(
         title: 'Activity',

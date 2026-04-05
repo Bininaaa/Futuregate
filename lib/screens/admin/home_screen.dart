@@ -23,6 +23,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
   int _contentSessionId = 0;
+  int _contentInitialTab = AdminContentCenterScreen.projectIdeasTab;
+  String _contentInitialTargetId = '';
   final Set<int> _visitedIndexes = <int>{0};
 
   late final List<_AdminDestination> _destinations = [
@@ -241,17 +243,27 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _screenForIndex(int index) {
     switch (index) {
       case 0:
-        return const AdminDashboardScreen();
+        return AdminDashboardScreen(
+          onOpenUsers: _openUsersTab,
+          onOpenContent: _openContentTab,
+          onOpenActivity: _openActivityTab,
+          onOpenLibrary: _openLibraryTab,
+        );
       case 1:
         return const UsersScreen();
       case 2:
         return AdminContentCenterScreen(
           key: ValueKey('embedded-content-$_contentSessionId'),
           embedded: true,
+          initialTab: _contentInitialTab,
+          initialTargetId: _contentInitialTargetId,
           resetToken: _contentSessionId,
         );
       case 3:
-        return const AdminActivityCenterScreen(embedded: true);
+        return AdminActivityCenterScreen(
+          embedded: true,
+          onOpenContent: _openContentTab,
+        );
       default:
         return const AdminLibraryScreen();
     }
@@ -261,10 +273,32 @@ class _HomeScreenState extends State<HomeScreen> {
     FocusManager.instance.primaryFocus?.unfocus();
     setState(() {
       if (index == 2 && _currentIndex != 2) {
+        _contentInitialTab = AdminContentCenterScreen.projectIdeasTab;
+        _contentInitialTargetId = '';
         _contentSessionId++;
       }
       _currentIndex = index;
       _visitedIndexes.add(index);
+    });
+  }
+
+  void _openUsersTab() => _selectIndex(1);
+
+  void _openActivityTab() => _selectIndex(3);
+
+  void _openLibraryTab() => _selectIndex(4);
+
+  void _openContentTab(int tab, {String targetId = ''}) {
+    FocusManager.instance.primaryFocus?.unfocus();
+    setState(() {
+      _contentInitialTab = tab.clamp(
+        AdminContentCenterScreen.projectIdeasTab,
+        AdminContentCenterScreen.trainingsTab,
+      );
+      _contentInitialTargetId = targetId;
+      _contentSessionId++;
+      _currentIndex = 2;
+      _visitedIndexes.add(2);
     });
   }
 

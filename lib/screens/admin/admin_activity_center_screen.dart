@@ -12,8 +12,13 @@ import 'admin_content_center_screen.dart';
 
 class AdminActivityCenterScreen extends StatefulWidget {
   final bool embedded;
+  final void Function(int tab, {String targetId})? onOpenContent;
 
-  const AdminActivityCenterScreen({super.key, this.embedded = false});
+  const AdminActivityCenterScreen({
+    super.key,
+    this.embedded = false,
+    this.onOpenContent,
+  });
 
   @override
   State<AdminActivityCenterScreen> createState() =>
@@ -220,6 +225,11 @@ class _AdminActivityCenterScreenState extends State<AdminActivityCenterScreen> {
       'training' => AdminContentCenterScreen.trainingsTab,
       _ => AdminContentCenterScreen.projectIdeasTab,
     };
+
+    if (widget.onOpenContent != null) {
+      widget.onOpenContent!(target, targetId: activity.relatedId);
+      return Future<void>.value();
+    }
 
     return Navigator.push(
       context,
