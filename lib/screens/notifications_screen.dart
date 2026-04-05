@@ -354,12 +354,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           }
           data['id'] = doc.id;
           final opportunity = OpportunityModel.fromMap(data);
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => OpportunityDetailScreen(opportunity: opportunity),
-            ),
-          );
+          OpportunityDetailScreen.show(context, opportunity);
           return;
 
         case 'scholarship':
@@ -475,13 +470,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             return;
           }
           oppData['id'] = oppDoc.id;
-          Navigator.push(
+          OpportunityDetailScreen.show(
             context,
-            MaterialPageRoute(
-              builder: (_) => OpportunityDetailScreen(
-                opportunity: OpportunityModel.fromMap(oppData),
-              ),
-            ),
+            OpportunityModel.fromMap(oppData),
           );
           return;
 

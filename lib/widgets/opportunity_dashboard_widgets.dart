@@ -3,8 +3,35 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../models/opportunity_model.dart';
+import '../utils/application_status.dart';
 import '../utils/opportunity_dashboard_palette.dart';
 import '../utils/opportunity_type.dart';
+
+IconData _applicationStatusIcon(String status) {
+  switch (ApplicationStatus.parse(status)) {
+    case ApplicationStatus.accepted:
+      return Icons.check_circle_rounded;
+    case ApplicationStatus.rejected:
+      return Icons.cancel_rounded;
+    case ApplicationStatus.pending:
+    default:
+      return Icons.hourglass_top_rounded;
+  }
+}
+
+String _opportunityDisplayTitle(OpportunityModel opportunity) {
+  final title = opportunity.title.trim();
+  if (title.isNotEmpty) {
+    return title;
+  }
+
+  return switch (OpportunityType.parse(opportunity.type)) {
+    OpportunityType.internship => 'Student Internship Opportunity',
+    OpportunityType.sponsoring => 'Sponsored Opportunity',
+    OpportunityType.job => 'Open Job Opportunity',
+    _ => 'Open Opportunity',
+  };
+}
 
 class OpportunitySectionHeader extends StatelessWidget {
   final String title;
@@ -653,6 +680,7 @@ class TrendingOpportunityCard extends StatelessWidget {
   final String? locationText;
   final List<String> detailChips;
   final String? compensationText;
+  final String? applicationStatus;
   final bool isSaved;
   final bool isBusy;
   final VoidCallback onTap;
@@ -672,6 +700,7 @@ class TrendingOpportunityCard extends StatelessWidget {
     required this.isBusy,
     required this.onTap,
     this.onToggleSaved,
+    this.applicationStatus,
   });
 
   List<String> _metaItems() {
@@ -759,7 +788,7 @@ class TrendingOpportunityCard extends StatelessWidget {
                     child: _OpportunityAccentChip(
                       label: typeLabel,
                       foreground: tone.strongAccent,
-                      background: tone.accent.withValues(alpha: 0.12),
+                      background: tone.accent.withValues(alpha: 0.16),
                       icon: OpportunityType.icon(opportunity.type),
                     ),
                   ),
@@ -770,6 +799,9 @@ class TrendingOpportunityCard extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: tone.softBackground,
                       borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: tone.accent.withValues(alpha: 0.12),
+                      ),
                     ),
                     child: _OpportunitySaveButton(
                       isBusy: isBusy,
@@ -828,7 +860,7 @@ class TrendingOpportunityCard extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               Text(
-                opportunity.title,
+                _opportunityDisplayTitle(opportunity),
                 style: GoogleFonts.poppins(
                   fontSize: 14.3,
                   fontWeight: FontWeight.w700,
@@ -872,6 +904,18 @@ class TrendingOpportunityCard extends StatelessWidget {
                   ],
                 ),
               ],
+              if (applicationStatus != null) ...[
+                const SizedBox(height: 8),
+                _OpportunityAccentChip(
+                  label: ApplicationStatus.label(applicationStatus),
+                  foreground:
+                      ApplicationStatus.color(applicationStatus),
+                  background: ApplicationStatus.color(
+                    applicationStatus,
+                  ).withValues(alpha: 0.14),
+                  icon: _applicationStatusIcon(applicationStatus!),
+                ),
+              ],
             ],
           ),
         ),
@@ -889,6 +933,7 @@ class OpportunityListTile extends StatelessWidget {
   final String? badgeText;
   final Color? badgeColor;
   final Color? statusColor;
+  final String? applicationStatus;
   final bool isSaved;
   final bool isBusy;
   final VoidCallback onTap;
@@ -908,6 +953,7 @@ class OpportunityListTile extends StatelessWidget {
     this.badgeText,
     this.badgeColor,
     this.statusColor,
+    this.applicationStatus,
   });
 
   @override
@@ -915,133 +961,206 @@ class OpportunityListTile extends StatelessWidget {
     final tone = _toneForOpportunityType(opportunity.type);
     final effectiveBadgeColor =
         badgeColor ?? OpportunityDashboardPalette.primary;
-    final effectiveEdgeColor = statusColor ?? tone.strongAccent;
 
     return Material(
       color: Colors.transparent,
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(18),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(20),
-        child: Ink(
-          padding: const EdgeInsets.fromLTRB(12, 12, 12, 11),
+        borderRadius: BorderRadius.circular(18),
+        child: Container(
           decoration: BoxDecoration(
             color: OpportunityDashboardPalette.surface,
-            borderRadius: BorderRadius.circular(20),
-            border: Border(
-              left: BorderSide(color: effectiveEdgeColor, width: 3),
-              top: BorderSide(color: tone.borderColor),
-              right: BorderSide(color: tone.borderColor),
-              bottom: BorderSide(color: tone.borderColor),
-            ),
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: tone.borderColor),
             boxShadow: [
               BoxShadow(
-                color: tone.glowColor.withValues(alpha: 0.42),
-                blurRadius: 14,
-                offset: const Offset(0, 5),
+                color: tone.glowColor.withValues(alpha: 0.30),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
               ),
             ],
           ),
-          child: Row(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _OpportunityCompanyAvatar(
-                companyName: opportunity.companyName,
-                logoUrl: opportunity.companyLogo,
-                size: 40,
-                accentColor: tone.strongAccent,
-                backgroundColor: tone.accent.withValues(alpha: 0.10),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
+              // -- Colored header strip --
+              Container(
+                padding: const EdgeInsets.fromLTRB(12, 9, 8, 9),
+                decoration: BoxDecoration(
+                  color: tone.softBackground,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(17),
+                    topRight: Radius.circular(17),
+                  ),
+                ),
+                child: Row(
                   children: [
-                    Wrap(
-                      spacing: 6,
-                      runSpacing: 6,
-                      children: [
-                        _OpportunityAccentChip(
-                          label: typeLabel,
-                          foreground: tone.strongAccent,
-                          background: tone.accent.withValues(alpha: 0.12),
-                          icon: OpportunityType.icon(opportunity.type),
-                        ),
-                        if (badgeText != null && badgeText!.isNotEmpty)
-                          _OpportunityAccentChip(
-                            label: badgeText!,
-                            foreground: effectiveBadgeColor,
-                            background: effectiveBadgeColor.withValues(
-                              alpha: 0.12,
-                            ),
-                          ),
-                      ],
+                    _OpportunityAccentChip(
+                      label: typeLabel,
+                      foreground: tone.strongAccent,
+                      background: tone.accent.withValues(alpha: 0.16),
+                      icon: OpportunityType.icon(opportunity.type),
                     ),
-                    const SizedBox(height: 7),
-                    Text(
-                      opportunity.title,
-                      style: GoogleFonts.poppins(
-                        fontSize: 14.2,
-                        fontWeight: FontWeight.w700,
-                        color: OpportunityDashboardPalette.textPrimary,
-                        height: 1.22,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      companyLocationText,
-                      style: GoogleFonts.poppins(
-                        fontSize: 11,
-                        color: OpportunityDashboardPalette.textSecondary,
-                        height: 1.3,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    if (compensationText != null &&
-                        compensationText!.trim().isNotEmpty) ...[
-                      const SizedBox(height: 5),
-                      Text(
-                        compensationText!,
-                        style: GoogleFonts.poppins(
-                          fontSize: 12.4,
-                          fontWeight: FontWeight.w700,
-                          color: tone.strongAccent,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                    if (badgeText != null && badgeText!.isNotEmpty) ...[
+                      const SizedBox(width: 6),
+                      _OpportunityAccentChip(
+                        label: badgeText!,
+                        foreground: effectiveBadgeColor,
+                        background:
+                            effectiveBadgeColor.withValues(alpha: 0.16),
                       ),
                     ],
-                    if (detailChips.isNotEmpty) ...[
-                      const SizedBox(height: 5),
-                      _OpportunityMetadataText(
-                        items: detailChips,
-                        color: OpportunityDashboardPalette.textSecondary,
-                        fontSize: 10.4,
+                    if (applicationStatus != null) ...[
+                      const SizedBox(width: 6),
+                      _OpportunityAccentChip(
+                        label: ApplicationStatus.label(applicationStatus),
+                        foreground:
+                            ApplicationStatus.color(applicationStatus),
+                        background: ApplicationStatus.color(
+                          applicationStatus,
+                        ).withValues(alpha: 0.14),
+                        icon: _applicationStatusIcon(applicationStatus!),
                       ),
                     ],
+                    const Spacer(),
+                    Container(
+                      width: 32,
+                      height: 32,
+                      decoration: BoxDecoration(
+                        color: OpportunityDashboardPalette.surface,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: tone.accent.withValues(alpha: 0.14),
+                        ),
+                      ),
+                      child: _OpportunitySaveButton(
+                        isBusy: isBusy,
+                        isSaved: isSaved,
+                        onPressed: onToggleSaved,
+                        boxSize: 32,
+                        iconSize: 16,
+                        activeColor: tone.strongAccent,
+                      ),
+                    ),
                   ],
                 ),
               ),
-              const SizedBox(width: 8),
-              Container(
-                width: 30,
-                height: 30,
-                decoration: BoxDecoration(
-                  color: tone.softBackground,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: _OpportunitySaveButton(
-                  isBusy: isBusy,
-                  isSaved: isSaved,
-                  onPressed: onToggleSaved,
-                  boxSize: 30,
-                  iconSize: 16,
-                  activeColor: tone.strongAccent,
+              // -- Main content --
+              Padding(
+                padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _OpportunityCompanyAvatar(
+                      companyName: opportunity.companyName,
+                      logoUrl: opportunity.companyLogo,
+                      size: 42,
+                      accentColor: tone.strongAccent,
+                      backgroundColor: tone.accent.withValues(alpha: 0.10),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            _opportunityDisplayTitle(opportunity),
+                            style: GoogleFonts.poppins(
+                              fontSize: 14.2,
+                              fontWeight: FontWeight.w700,
+                              color: OpportunityDashboardPalette.textPrimary,
+                              height: 1.22,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 4),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.business_rounded,
+                                size: 13,
+                                color:
+                                    OpportunityDashboardPalette.textSecondary,
+                              ),
+                              const SizedBox(width: 4),
+                              Expanded(
+                                child: Text(
+                                  companyLocationText,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 11,
+                                    color: OpportunityDashboardPalette
+                                        .textSecondary,
+                                    height: 1.3,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                          if (compensationText != null &&
+                              compensationText!.trim().isNotEmpty) ...[
+                            const SizedBox(height: 6),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: tone.accent.withValues(alpha: 0.08),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.payments_outlined,
+                                    size: 13,
+                                    color: tone.strongAccent,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Flexible(
+                                    child: Text(
+                                      compensationText!,
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w700,
+                                        color: tone.strongAccent,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                          if (detailChips.isNotEmpty) ...[
+                            const SizedBox(height: 6),
+                            _OpportunityMetadataText(
+                              items: detailChips,
+                              color:
+                                  OpportunityDashboardPalette.textSecondary,
+                              fontSize: 10.4,
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: Icon(
+                        Icons.chevron_right_rounded,
+                        size: 20,
+                        color: tone.accent.withValues(alpha: 0.6),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -1354,6 +1473,7 @@ class _OpportunityAccentChip extends StatelessWidget {
       decoration: BoxDecoration(
         color: background,
         borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: foreground.withValues(alpha: 0.10)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

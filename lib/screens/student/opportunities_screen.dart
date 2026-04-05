@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/opportunity_model.dart';
+import '../../providers/application_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/opportunity_provider.dart';
 import '../../providers/saved_opportunity_provider.dart';
@@ -86,6 +87,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
     final opportunityProvider = context.read<OpportunityProvider>();
     final trainingProvider = context.read<TrainingProvider>();
     final savedProvider = context.read<SavedOpportunityProvider>();
+    final applicationProvider = context.read<ApplicationProvider>();
     final userId = context.read<AuthProvider>().userModel?.uid;
 
     final futures = <Future<void>>[opportunityProvider.fetchOpportunities()];
@@ -96,6 +98,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
 
     if (userId != null && userId.isNotEmpty) {
       futures.add(savedProvider.fetchSavedOpportunities(userId));
+      futures.add(applicationProvider.fetchSubmittedApplications(userId));
     }
 
     await Future.wait(futures);
@@ -220,12 +223,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
   }
 
   void _openOpportunity(OpportunityModel opportunity) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => OpportunityDetailScreen(opportunity: opportunity),
-      ),
-    );
+    OpportunityDetailScreen.show(context, opportunity);
   }
 
   void _openTrainings() {
@@ -869,6 +867,56 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
     return opportunity.updatedAt?.toDate() ?? _postedAt(opportunity);
   }
 
+  int _compareLatestFirst(OpportunityModel left, OpportunityModel right) {
+    final rightPosted = _postedAt(right);
+    final leftPosted = _postedAt(left);
+    if (leftPosted != null || rightPosted != null) {
+      if (leftPosted == null) {
+        return 1;
+      }
+      if (rightPosted == null) {
+        return -1;
+      }
+
+      final postedDiff = rightPosted.compareTo(leftPosted);
+      if (postedDiff != 0) {
+        return postedDiff;
+      }
+    }
+
+    final rightUpdated = right.updatedAt?.toDate();
+    final leftUpdated = left.updatedAt?.toDate();
+    if (leftUpdated != null || rightUpdated != null) {
+      if (leftUpdated == null) {
+        return 1;
+      }
+      if (rightUpdated == null) {
+        return -1;
+      }
+
+      final updatedDiff = rightUpdated.compareTo(leftUpdated);
+      if (updatedDiff != 0) {
+        return updatedDiff;
+      }
+    }
+
+    final companyDiff = left.companyName.trim().toLowerCase().compareTo(
+      right.companyName.trim().toLowerCase(),
+    );
+    if (companyDiff != 0) {
+      return companyDiff;
+    }
+
+    final titleDiff = left.title.trim().toLowerCase().compareTo(
+      right.title.trim().toLowerCase(),
+    );
+    if (titleDiff != 0) {
+      return titleDiff;
+    }
+
+    return left.id.compareTo(right.id);
+  }
+
   int _trendingScore(OpportunityModel opportunity) {
     var score = 0;
 
@@ -1025,23 +1073,23 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
 
   List<OpportunityModel> _buildLatestItems(List<OpportunityModel> visible) {
     final items = <OpportunityModel>[...visible];
-    items.sort((left, right) {
-      final rightTime = _recencyFor(right);
-      final leftTime = _recencyFor(left);
-      if (leftTime == null && rightTime == null) {
-        return 0;
-      }
-      if (leftTime == null) {
-        return 1;
-      }
-      if (rightTime == null) {
-        return -1;
-      }
-
-      return rightTime.compareTo(leftTime);
-    });
+    items.sort(_compareLatestFirst);
 
     return items.take(_latestItemsLimit).toList(growable: false);
+  }
+
+  bool _isShowcaseReadyOpportunity(OpportunityModel opportunity) {
+    final title = opportunity.title.trim();
+    final company = opportunity.companyName.trim();
+    final description = opportunity.description.trim();
+    final location = _locationLabel(opportunity)?.trim() ?? '';
+    final compensation = _compensationText(opportunity)?.trim() ?? '';
+
+    return title.isNotEmpty ||
+        company.isNotEmpty ||
+        description.isNotEmpty ||
+        location.isNotEmpty ||
+        compensation.isNotEmpty;
   }
 
   List<OpportunityModel> _buildClosingSoonItems(
@@ -1493,6 +1541,8 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
     final opportunityProvider = context.watch<OpportunityProvider>();
     final trainingProvider = context.watch<TrainingProvider>();
     final savedProvider = context.watch<SavedOpportunityProvider>();
+    final applicationProvider = context.watch<ApplicationProvider>();
+    final appliedStatuses = applicationProvider.appliedStatusMap;
     final textScale = MediaQuery.textScalerOf(context).scale(1);
     final trendingCardHeight = textScale > 1.08 ? 210.0 : 194.0;
 
@@ -1521,9 +1571,12 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
     final trainingItems = trainingProvider.trainings
         .where((training) => training.isApproved)
         .toList();
-    final trendingItems = _buildTrendingItems(visibleOpportunities);
-    final latestItems = _buildLatestItems(visibleOpportunities);
-    final closingSoonItems = _buildClosingSoonItems(visibleOpportunities);
+    final showcaseOpportunities = visibleOpportunities
+        .where(_isShowcaseReadyOpportunity)
+        .toList(growable: false);
+    final trendingItems = _buildTrendingItems(showcaseOpportunities);
+    final latestItems = _buildLatestItems(showcaseOpportunities);
+    final closingSoonItems = _buildClosingSoonItems(showcaseOpportunities);
     final savedIds = savedProvider.savedOpportunities
         .map((item) => item.opportunityId)
         .toSet();
@@ -1752,6 +1805,8 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                                       compensationText: _compensationText(
                                         opportunity,
                                       ),
+                                      applicationStatus:
+                                          appliedStatuses[opportunity.id],
                                       isSaved: savedIds.contains(
                                         opportunity.id,
                                       ),
@@ -1814,6 +1869,8 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                                   ? 'NEW'
                                   : null,
                               badgeColor: OpportunityDashboardPalette.success,
+                              applicationStatus:
+                                  appliedStatuses[opportunity.id],
                               isSaved: savedIds.contains(opportunity.id),
                               isBusy: savedProvider.isLoading,
                               onTap: () => _openOpportunity(opportunity),
@@ -1881,6 +1938,8 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                                   badgeText: 'URGENT',
                                   badgeColor: urgencyColor,
                                   statusColor: urgencyColor,
+                                  applicationStatus:
+                                      appliedStatuses[opportunity.id],
                                   isSaved: savedIds.contains(opportunity.id),
                                   isBusy: savedProvider.isLoading,
                                   onTap: () => _openOpportunity(opportunity),

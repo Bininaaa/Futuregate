@@ -207,12 +207,7 @@ class _JobsScreenState extends State<JobsScreen> {
   }
 
   void _openOpportunity(OpportunityModel opportunity) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => OpportunityDetailScreen(opportunity: opportunity),
-      ),
-    );
+    OpportunityDetailScreen.show(context, opportunity);
   }
 
   List<_JobCardData> _buildJobCards(OpportunityProvider provider) {

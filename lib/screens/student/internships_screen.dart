@@ -126,12 +126,7 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
   }
 
   void _openOpportunity(OpportunityModel opportunity) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => OpportunityDetailScreen(opportunity: opportunity),
-      ),
-    );
+    OpportunityDetailScreen.show(context, opportunity);
   }
 
   Future<void> _toggleSavedOpportunity(OpportunityModel opportunity) async {

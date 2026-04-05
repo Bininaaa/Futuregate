@@ -155,12 +155,7 @@ class _AppliedOpportunitiesScreenState
       return;
     }
 
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => OpportunityDetailScreen(opportunity: opportunity),
-      ),
-    );
+    await OpportunityDetailScreen.show(context, opportunity);
   }
 
   @override

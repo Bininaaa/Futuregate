@@ -556,6 +556,7 @@ class ApplyBar extends StatelessWidget {
   final VoidCallback? onApply;
   final String applyLabel;
   final bool isBusy;
+  final Color? statusColor;
 
   const ApplyBar({
     super.key,
@@ -564,11 +565,28 @@ class ApplyBar extends StatelessWidget {
     required this.onApply,
     required this.applyLabel,
     required this.isBusy,
+    this.statusColor,
   });
 
   @override
   Widget build(BuildContext context) {
     final isDisabled = onApply == null || isBusy;
+    final hasStatus = statusColor != null;
+
+    List<Color> buttonGradient;
+    if (hasStatus) {
+      buttonGradient = [
+        statusColor!,
+        statusColor!.withValues(alpha: 0.82),
+      ];
+    } else if (isDisabled) {
+      buttonGradient = [
+        theme.secondaryTextColor.withValues(alpha: 0.45),
+        theme.secondaryTextColor.withValues(alpha: 0.32),
+      ];
+    } else {
+      buttonGradient = theme.heroGradient;
+    }
 
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
@@ -616,12 +634,7 @@ class ApplyBar extends StatelessWidget {
                   height: 50,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: isDisabled
-                          ? [
-                              theme.secondaryTextColor.withValues(alpha: 0.45),
-                              theme.secondaryTextColor.withValues(alpha: 0.32),
-                            ]
-                          : theme.heroGradient,
+                      colors: buttonGradient,
                       begin: Alignment.centerLeft,
                       end: Alignment.centerRight,
                     ),

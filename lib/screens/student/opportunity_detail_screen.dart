@@ -10,6 +10,7 @@ import '../../providers/auth_provider.dart';
 import '../../providers/cv_provider.dart';
 import '../../providers/saved_opportunity_provider.dart';
 import '../../services/application_service.dart';
+import '../../utils/application_status.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/app_shell_background.dart';
@@ -20,6 +21,23 @@ class OpportunityDetailScreen extends StatelessWidget {
 
   const OpportunityDetailScreen({super.key, required this.opportunity});
 
+  /// Opens the opportunity detail as a floating modal bottom sheet.
+  static Future<void> show(
+    BuildContext context,
+    OpportunityModel opportunity,
+  ) {
+    return showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => OpportunityDetailsScreen(
+        opportunity: opportunity,
+        isSheet: true,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return OpportunityDetailsScreen(opportunity: opportunity);
@@ -29,11 +47,13 @@ class OpportunityDetailScreen extends StatelessWidget {
 class OpportunityDetailsScreen extends StatefulWidget {
   final OpportunityModel opportunity;
   final String? type;
+  final bool isSheet;
 
   const OpportunityDetailsScreen({
     super.key,
     required this.opportunity,
     this.type,
+    this.isSheet = false,
   });
 
   @override
@@ -61,6 +81,7 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
         return;
       }
       _ensureSavedStateLoaded();
+      _ensureApplicationsLoaded();
     });
   }
 
@@ -84,6 +105,20 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
     }
 
     await savedProvider.fetchSavedOpportunities(currentUser.uid);
+  }
+
+  Future<void> _ensureApplicationsLoaded() async {
+    final currentUser = context.read<AuthProvider>().userModel;
+    final applicationProvider = context.read<ApplicationProvider>();
+
+    if (currentUser == null ||
+        currentUser.uid.isEmpty ||
+        applicationProvider.submittedApplicationsLoading ||
+        applicationProvider.submittedApplications.isNotEmpty) {
+      return;
+    }
+
+    await applicationProvider.fetchSubmittedApplications(currentUser.uid);
   }
 
   void _refreshEligibility() {
@@ -241,6 +276,14 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
     );
   }
 
+  String? get _appliedStatus {
+    final userId = context.read<AuthProvider>().userModel?.uid;
+    if (userId == null || userId.isEmpty) return null;
+    return context.read<ApplicationProvider>().applicationStatusFor(
+      widget.opportunity.id,
+    );
+  }
+
   String _buttonLabelForStatus(ApplicationEligibilityStatus status) {
     switch (status) {
       case ApplicationEligibilityStatus.requiresLogin:
@@ -250,6 +293,10 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
             ? 'Apply for Funding'
             : 'Apply Now';
       case ApplicationEligibilityStatus.alreadyApplied:
+        final appStatus = _appliedStatus;
+        if (appStatus != null) {
+          return 'Status: ${ApplicationStatus.label(appStatus)}';
+        }
         return 'Already Applied';
       case ApplicationEligibilityStatus.closed:
         return 'Opportunity Closed';
@@ -594,76 +641,103 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
     final canShowBookmark = authProvider.userModel != null;
     final infoCards = _buildInfoCards();
 
-    return AppShellBackground(
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        bottomNavigationBar: SafeArea(
-          top: false,
-          child: FutureBuilder<ApplicationEligibilityStatus>(
-            future: _eligibilityFuture,
-            builder: (context, snapshot) {
-              final eligibility =
-                  snapshot.data ?? ApplicationEligibilityStatus.available;
-              final isCheckingEligibility =
-                  snapshot.connectionState == ConnectionState.waiting;
-              final canApply =
-                  eligibility == ApplicationEligibilityStatus.available &&
-                  !applicationProvider.isLoading &&
-                  !isCheckingEligibility;
+    final applyBar = SafeArea(
+      top: false,
+      child: FutureBuilder<ApplicationEligibilityStatus>(
+        future: _eligibilityFuture,
+        builder: (context, snapshot) {
+          final eligibility =
+              snapshot.data ?? ApplicationEligibilityStatus.available;
+          final isCheckingEligibility =
+              snapshot.connectionState == ConnectionState.waiting;
+          final canApply =
+              eligibility == ApplicationEligibilityStatus.available &&
+              !applicationProvider.isLoading &&
+              !isCheckingEligibility;
 
-              return ApplyBar(
-                theme: theme,
-                onShare: _shareOpportunity,
-                onApply: canApply ? _apply : null,
-                applyLabel: isCheckingEligibility
-                    ? 'Checking...'
-                    : _buttonLabelForStatus(eligibility),
-                isBusy: applicationProvider.isLoading || isCheckingEligibility,
-              );
-            },
+          final appStatus = eligibility ==
+                  ApplicationEligibilityStatus.alreadyApplied
+              ? _appliedStatus
+              : null;
+
+          return ApplyBar(
+            theme: theme,
+            onShare: _shareOpportunity,
+            onApply: canApply ? _apply : null,
+            applyLabel: isCheckingEligibility
+                ? 'Checking...'
+                : _buttonLabelForStatus(eligibility),
+            isBusy: applicationProvider.isLoading || isCheckingEligibility,
+            statusColor: appStatus != null
+                ? ApplicationStatus.color(appStatus)
+                : null,
+          );
+        },
+      ),
+    );
+
+    final topBar = Padding(
+      padding: const EdgeInsets.fromLTRB(12, 10, 12, 6),
+      child: Row(
+        children: [
+          _TopBarIconButton(
+            icon: widget.isSheet
+                ? Icons.close_rounded
+                : Icons.arrow_back_ios_new_rounded,
+            onTap: () => Navigator.of(context).maybePop(),
           ),
-        ),
-        body: Column(
-          children: [
-            SafeArea(
-              bottom: false,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(12, 10, 12, 6),
-                child: Row(
-                  children: [
-                    _TopBarIconButton(
-                      icon: Icons.arrow_back_ios_new_rounded,
-                      onTap: () => Navigator.of(context).maybePop(),
-                    ),
-                    Expanded(
-                      child: Text(
-                        'AvenirDZ',
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.poppins(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: theme.primaryTextColor,
-                        ),
-                      ),
-                    ),
-                    _TopBarIconButton(
-                      icon: isSaved
-                          ? Icons.bookmark_rounded
-                          : Icons.bookmark_border_rounded,
-                      onTap: canShowBookmark ? _toggleSavedOpportunity : null,
-                      isBusy: _isBookmarkBusy,
-                      iconColor: isSaved
-                          ? theme.accentDeepColor
-                          : theme.primaryTextColor,
-                      fillColor: isSaved
-                          ? theme.accentSoftColor
-                          : theme.surfaceColor,
-                    ),
-                  ],
+          Expanded(
+            child: Text(
+              'AvenirDZ',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.poppins(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: theme.primaryTextColor,
+              ),
+            ),
+          ),
+          _TopBarIconButton(
+            icon: isSaved
+                ? Icons.bookmark_rounded
+                : Icons.bookmark_border_rounded,
+            onTap: canShowBookmark ? _toggleSavedOpportunity : null,
+            isBusy: _isBookmarkBusy,
+            iconColor: isSaved
+                ? theme.accentDeepColor
+                : theme.primaryTextColor,
+            fillColor: isSaved
+                ? theme.accentSoftColor
+                : theme.surfaceColor,
+          ),
+        ],
+      ),
+    );
+
+    final scaffold = Scaffold(
+      backgroundColor: widget.isSheet
+          ? const Color(0xFFF6F9FF)
+          : Colors.transparent,
+      bottomNavigationBar: applyBar,
+      body: Column(
+        children: [
+          if (widget.isSheet) ...[
+            const SizedBox(height: 10),
+            Center(
+              child: Container(
+                width: 36,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFD1D5DB),
+                  borderRadius: BorderRadius.circular(2),
                 ),
               ),
             ),
-            Expanded(
+            const SizedBox(height: 4),
+            topBar,
+          ] else
+            SafeArea(bottom: false, child: topBar),
+          Expanded(
               child: CustomScrollView(
                 physics: const BouncingScrollPhysics(
                   parent: AlwaysScrollableScrollPhysics(),
@@ -796,8 +870,21 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
             ),
           ],
         ),
-      ),
-    );
+      );
+
+    if (widget.isSheet) {
+      return Container(
+        height: MediaQuery.sizeOf(context).height * 0.93,
+        decoration: const BoxDecoration(
+          color: Color(0xFFF6F9FF),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: scaffold,
+      );
+    }
+
+    return AppShellBackground(child: scaffold);
   }
 }
 

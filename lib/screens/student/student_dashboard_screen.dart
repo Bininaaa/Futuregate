@@ -1069,12 +1069,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
       color: Colors.transparent,
       child: InkWell(
         onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => OpportunityDetailScreen(opportunity: item),
-            ),
-          );
+          OpportunityDetailScreen.show(context, item);
         },
         borderRadius: BorderRadius.circular(24),
         child: Ink(
@@ -1671,12 +1666,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
       color: Colors.transparent,
       child: InkWell(
         onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => OpportunityDetailScreen(opportunity: item),
-            ),
-          );
+          OpportunityDetailScreen.show(context, item);
         },
         borderRadius: BorderRadius.circular(24),
         child: Ink(

@@ -229,12 +229,7 @@ class _SavedScreenState extends State<SavedScreen> {
       return;
     }
 
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => OpportunityDetailScreen(opportunity: opportunity!),
-      ),
-    );
+    await OpportunityDetailScreen.show(context, opportunity);
   }
 
   Future<void> _openScholarship(SavedScholarshipModel saved) async {

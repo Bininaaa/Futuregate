@@ -60,6 +60,26 @@ class ApplicationProvider extends ChangeNotifier {
     }
   }
 
+  /// Returns the application status for a specific opportunity, or null if
+  /// the student hasn't applied.  Uses the already-loaded submitted list.
+  String? applicationStatusFor(String opportunityId) {
+    for (final item in _submittedApplications) {
+      if (item.opportunityId == opportunityId) {
+        return item.status;
+      }
+    }
+    return null;
+  }
+
+  /// Returns a set of opportunity IDs the student has applied to.
+  Map<String, String> get appliedStatusMap {
+    final map = <String, String>{};
+    for (final item in _submittedApplications) {
+      map[item.opportunityId] = item.status;
+    }
+    return map;
+  }
+
   Future<ApplicationEligibilityStatus> getEligibility({
     required String studentId,
     required String opportunityId,
