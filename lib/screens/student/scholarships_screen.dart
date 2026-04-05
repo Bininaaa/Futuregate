@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
+import '../../models/saved_scholarship_model.dart';
 import '../../models/scholarship_model.dart';
+import '../../providers/auth_provider.dart';
+import '../../providers/saved_scholarship_provider.dart';
 import '../../providers/scholarship_provider.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
+import '../../widgets/app_shell_background.dart';
 import 'scholarship_detail_screen.dart';
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -41,6 +45,10 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
       final provider = context.read<ScholarshipProvider>();
       if (provider.scholarships.isEmpty) {
         provider.fetchScholarships();
+      }
+      final userId = context.read<AuthProvider>().userModel?.uid.trim();
+      if (userId != null && userId.isNotEmpty) {
+        context.read<SavedScholarshipProvider>().fetchSavedScholarships(userId);
       }
     });
   }
@@ -184,48 +192,124 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
     return searchableText.contains('oxford');
   }
 
+  Future<void> _toggleSavedScholarship(ScholarshipModel scholarship) async {
+    final userId = context.read<AuthProvider>().userModel?.uid.trim() ?? '';
+    if (userId.isEmpty) {
+      return;
+    }
+
+    final provider = context.read<SavedScholarshipProvider>();
+    SavedScholarshipModel? existing;
+    for (final item in provider.savedScholarships) {
+      if (item.scholarshipId == scholarship.id) {
+        existing = item;
+        break;
+      }
+    }
+
+    final locationParts = <String>[
+      scholarship.city?.trim() ?? '',
+      scholarship.country?.trim() ?? '',
+      scholarship.location?.trim() ?? '',
+    ].where((value) => value.isNotEmpty).toList(growable: false);
+
+    final error = existing != null
+        ? await provider.unsaveScholarship(existing.id, userId)
+        : await provider.saveScholarship(
+            studentId: userId,
+            scholarshipId: scholarship.id,
+            title: scholarship.title,
+            provider: scholarship.provider,
+            deadline: scholarship.deadline,
+            location: locationParts.isEmpty
+                ? 'Location not specified'
+                : locationParts.join(', '),
+            fundingType: scholarship.fundingType?.trim() ?? '',
+            level: scholarship.level?.trim() ?? '',
+          );
+
+    if (!mounted) {
+      return;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          error == null
+              ? existing != null
+                    ? 'Removed from saved scholarships'
+                    : 'Scholarship saved'
+              : 'Could not update saved scholarship',
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<ScholarshipProvider>();
+    final savedProvider = context.watch<SavedScholarshipProvider>();
+    final savedIds = savedProvider.savedScholarships
+        .map((item) => item.scholarshipId)
+        .toSet();
     final filtered = _applyFilters(provider.scholarships);
     final featured = _pickFeatured(filtered);
 
-    return Scaffold(
-      backgroundColor: _P.background,
-      body: SafeArea(
-        bottom: false,
-        child: provider.isLoading
-            ? const Center(child: CircularProgressIndicator(color: _P.primary))
-            : CustomScrollView(
-                physics: const BouncingScrollPhysics(),
-                slivers: [
-                  SliverToBoxAdapter(child: _buildHeaderBar(context)),
-                  SliverToBoxAdapter(child: _buildHeroSection()),
-                  if (featured != null)
-                    SliverToBoxAdapter(child: _buildHeroVisualCard(featured)),
-                  SliverToBoxAdapter(child: _buildSearchBar()),
-                  SliverToBoxAdapter(child: _buildFilterChips()),
-                  SliverToBoxAdapter(child: _buildCurationHeader()),
-                  if (filtered.isEmpty)
-                    SliverToBoxAdapter(child: _buildEmptyState())
-                  else
-                    SliverPadding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      sliver: SliverList(
-                        delegate: SliverChildBuilderDelegate((context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 14),
-                            child: _ScholarshipCard(
-                              scholarship: filtered[index],
-                              cardIndex: index,
-                            ),
-                          );
-                        }, childCount: filtered.length),
+    return AppShellBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SafeArea(
+          bottom: false,
+          child: provider.isLoading
+              ? const Center(
+                  child: CircularProgressIndicator(color: _P.primary),
+                )
+              : CustomScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  slivers: [
+                    SliverToBoxAdapter(child: _buildHeaderBar(context)),
+                    SliverToBoxAdapter(child: _buildHeroSection()),
+                    if (featured != null)
+                      SliverToBoxAdapter(
+                        child: _buildHeroVisualCard(
+                          featured,
+                          isSaved: savedIds.contains(featured.id),
+                          isSaving: savedProvider.isLoading,
+                          onToggleSaved: () =>
+                              _toggleSavedScholarship(featured),
+                        ),
                       ),
-                    ),
-                  const SliverToBoxAdapter(child: SizedBox(height: 18)),
-                ],
-              ),
+                    SliverToBoxAdapter(child: _buildSearchBar()),
+                    SliverToBoxAdapter(child: _buildFilterChips()),
+                    SliverToBoxAdapter(child: _buildCurationHeader()),
+                    if (filtered.isEmpty)
+                      SliverToBoxAdapter(child: _buildEmptyState())
+                    else
+                      SliverPadding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        sliver: SliverList(
+                          delegate: SliverChildBuilderDelegate((
+                            context,
+                            index,
+                          ) {
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 14),
+                              child: _ScholarshipCard(
+                                scholarship: filtered[index],
+                                cardIndex: index,
+                                isSaved: savedIds.contains(filtered[index].id),
+                                isBusy: savedProvider.isLoading,
+                                onToggleSaved: () =>
+                                    _toggleSavedScholarship(filtered[index]),
+                              ),
+                            );
+                          }, childCount: filtered.length),
+                        ),
+                      ),
+                    const SliverToBoxAdapter(child: SizedBox(height: 18)),
+                  ],
+                ),
+        ),
       ),
     );
   }
@@ -349,7 +433,12 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
   // ═══════════════════════════════════════════════════════════════════════════
   // 3. HERO VISUAL CARD — uses real data only
   // ═══════════════════════════════════════════════════════════════════════════
-  Widget _buildHeroVisualCard(ScholarshipModel featured) {
+  Widget _buildHeroVisualCard(
+    ScholarshipModel featured, {
+    required bool isSaved,
+    required bool isSaving,
+    required VoidCallback onToggleSaved,
+  }) {
     final heroTitle = featured.title.isNotEmpty
         ? featured.title
         : featured.provider;
@@ -405,24 +494,62 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
                 Positioned(
                   top: 10,
                   right: 10,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 9,
-                      vertical: 3,
-                    ),
-                    decoration: BoxDecoration(
-                      color: _P.secondary.withValues(alpha: 0.9),
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    child: Text(
-                      'FEATURED',
-                      style: GoogleFonts.poppins(
-                        fontSize: 8.5,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 0.8,
-                        color: Colors.white,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      GestureDetector(
+                        onTap: isSaving ? null : onToggleSaved,
+                        child: Container(
+                          width: 34,
+                          height: 34,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.18),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.14),
+                            ),
+                          ),
+                          child: Center(
+                            child: isSaving
+                                ? const SizedBox(
+                                    width: 16,
+                                    height: 16,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : Icon(
+                                    isSaved
+                                        ? Icons.bookmark_rounded
+                                        : Icons.bookmark_outline_rounded,
+                                    size: 18,
+                                    color: Colors.white,
+                                  ),
+                          ),
+                        ),
                       ),
-                    ),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 9,
+                          vertical: 3,
+                        ),
+                        decoration: BoxDecoration(
+                          color: _P.secondary.withValues(alpha: 0.9),
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: Text(
+                          'FEATURED',
+                          style: GoogleFonts.poppins(
+                            fontSize: 8.5,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.8,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
 
@@ -778,8 +905,17 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
 class _ScholarshipCard extends StatelessWidget {
   final ScholarshipModel scholarship;
   final int cardIndex;
+  final bool isSaved;
+  final bool isBusy;
+  final VoidCallback onToggleSaved;
 
-  const _ScholarshipCard({required this.scholarship, required this.cardIndex});
+  const _ScholarshipCard({
+    required this.scholarship,
+    required this.cardIndex,
+    required this.isSaved,
+    required this.isBusy,
+    required this.onToggleSaved,
+  });
 
   static const _gradients = [
     [Color(0xFF3B22F6), Color(0xFF1E40AF)],
@@ -886,6 +1022,41 @@ class _ScholarshipCard extends StatelessWidget {
                           ),
                         ),
                       ),
+                    Positioned(
+                      top: 9,
+                      right: 9,
+                      child: GestureDetector(
+                        onTap: isBusy ? null : onToggleSaved,
+                        child: Container(
+                          width: 32,
+                          height: 32,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.90),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Center(
+                            child: isBusy
+                                ? SizedBox(
+                                    width: 14,
+                                    height: 14,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: _P.primary.withValues(alpha: 0.9),
+                                    ),
+                                  )
+                                : Icon(
+                                    isSaved
+                                        ? Icons.bookmark_rounded
+                                        : Icons.bookmark_outline_rounded,
+                                    size: 18,
+                                    color: isSaved
+                                        ? _P.primary
+                                        : _P.textPrimary,
+                                  ),
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),

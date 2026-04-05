@@ -1,7 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../models/project_idea_model.dart';
+import '../models/saved_idea_model.dart';
 import '../services/project_idea_service.dart';
 
 class ProjectIdeaProvider extends ChangeNotifier {
@@ -12,7 +14,10 @@ class ProjectIdeaProvider extends ChangeNotifier {
 
   List<ProjectIdeaModel> _approvedIdeas = <ProjectIdeaModel>[];
   List<ProjectIdeaModel> _myIdeas = <ProjectIdeaModel>[];
+  List<SavedIdeaModel> _savedIdeas = <SavedIdeaModel>[];
   bool _isLoading = false;
+  bool _savedIdeasLoading = false;
+  String? _savedIdeasError;
   String _currentUserId = '';
   String? _filterDomain;
   String? _filterStatus;
@@ -55,11 +60,14 @@ class ProjectIdeaProvider extends ChangeNotifier {
   String? get filterDomain => _filterDomain;
   String? get filterStatus => _filterStatus;
   bool get isLoading => _isLoading;
+  bool get savedIdeasLoading => _savedIdeasLoading;
+  String? get savedIdeasError => _savedIdeasError;
   String get currentUserId => _currentUserId;
+  List<SavedIdeaModel> get savedIdeas => _savedIdeas;
   int get totalMyIdeaSparks =>
-      _myIdeas.fold<int>(0, (sum, idea) => sum + idea.sparksCount);
+      _myIdeas.fold<int>(0, (total, idea) => total + idea.sparksCount);
   int get totalMyIdeaInterested =>
-      _myIdeas.fold<int>(0, (sum, idea) => sum + idea.interestedCount);
+      _myIdeas.fold<int>(0, (total, idea) => total + idea.interestedCount);
 
   bool isInteractionBusy(String ideaId, ProjectIdeaInteractionType type) {
     return _busyInteractionKeys.contains('${type.name}:$ideaId');
@@ -158,6 +166,38 @@ class ProjectIdeaProvider extends ChangeNotifier {
   Future<void> refreshIdeaEngagement() async {
     await _hydrateEngagement();
     notifyListeners();
+  }
+
+  Future<void> fetchSavedIdeas(String studentId, {bool silent = false}) async {
+    final normalizedStudentId = studentId.trim();
+    if (normalizedStudentId.isEmpty) {
+      _savedIdeas = <SavedIdeaModel>[];
+      _savedIdeasError = null;
+      if (!silent) {
+        notifyListeners();
+      }
+      return;
+    }
+
+    _currentUserId = normalizedStudentId;
+
+    try {
+      if (!silent) {
+        _savedIdeasLoading = true;
+        _savedIdeasError = null;
+        notifyListeners();
+      } else {
+        _savedIdeasError = null;
+      }
+
+      _savedIdeas = await _service.getSavedIdeas(normalizedStudentId);
+    } catch (e) {
+      _savedIdeasError = e.toString();
+      debugPrint('fetchSavedIdeas error: $e');
+    } finally {
+      _savedIdeasLoading = false;
+      notifyListeners();
+    }
   }
 
   Future<String?> submitProjectIdea({
@@ -339,6 +379,13 @@ class ProjectIdeaProvider extends ChangeNotifier {
 
     _busyInteractionKeys.add(busyKey);
     _applyInteractionLocally(ideaId: idea.id, type: type, enabled: !isEnabled);
+    if (type == ProjectIdeaInteractionType.save) {
+      _applySavedIdeaLocally(
+        idea: idea,
+        userId: normalizedUserId,
+        enabled: !isEnabled,
+      );
+    }
     notifyListeners();
 
     try {
@@ -348,9 +395,20 @@ class ProjectIdeaProvider extends ChangeNotifier {
         type: type,
         enabled: !isEnabled,
       );
+      if (type == ProjectIdeaInteractionType.save) {
+        _currentUserId = normalizedUserId;
+        await fetchSavedIdeas(normalizedUserId, silent: true);
+      }
       return null;
     } catch (e) {
       _applyInteractionLocally(ideaId: idea.id, type: type, enabled: isEnabled);
+      if (type == ProjectIdeaInteractionType.save) {
+        _applySavedIdeaLocally(
+          idea: idea,
+          userId: normalizedUserId,
+          enabled: isEnabled,
+        );
+      }
       notifyListeners();
       return e.toString();
     } finally {
@@ -409,6 +467,39 @@ class ProjectIdeaProvider extends ChangeNotifier {
           (idea) =>
               idea.id == ideaId ? _withInteraction(idea, type, enabled) : idea,
         )
+        .toList(growable: false);
+  }
+
+  void _applySavedIdeaLocally({
+    required ProjectIdeaModel idea,
+    required String userId,
+    required bool enabled,
+  }) {
+    if (enabled) {
+      final updatedIdea = idea.copyWith(isSavedByCurrentUser: true);
+      final existingIndex = _savedIdeas.indexWhere(
+        (item) => item.ideaId == idea.id,
+      );
+      final nextItem = SavedIdeaModel(
+        id: existingIndex >= 0
+            ? _savedIdeas[existingIndex].id
+            : 'local_save_${userId}_${idea.id}',
+        ideaId: idea.id,
+        userId: userId,
+        idea: updatedIdea,
+        savedAt: Timestamp.now(),
+      );
+
+      if (existingIndex >= 0) {
+        _savedIdeas[existingIndex] = nextItem;
+      } else {
+        _savedIdeas = <SavedIdeaModel>[nextItem, ..._savedIdeas];
+      }
+      return;
+    }
+
+    _savedIdeas = _savedIdeas
+        .where((item) => item.ideaId != idea.id)
         .toList(growable: false);
   }
 

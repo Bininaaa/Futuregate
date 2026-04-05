@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/auth_provider.dart';
+import '../../widgets/app_shell_background.dart';
 import '../../widgets/profile_avatar.dart';
 import 'profile_screen.dart';
 
@@ -11,7 +12,6 @@ class CompanyApprovalStatusScreen extends StatelessWidget {
 
   static const Color _ink = Color(0xFF112243);
   static const Color _muted = Color(0xFF5F6F89);
-  static const Color _surface = Color(0xFFF5F8FC);
   static const Color _primary = Color(0xFF1D4ED8);
   static const Color _pending = Color(0xFFF59E0B);
   static const Color _danger = Color(0xFFDC2626);
@@ -23,7 +23,12 @@ class CompanyApprovalStatusScreen extends StatelessWidget {
     final user = auth.userModel;
 
     if (user == null) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return const AppShellBackground(
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          body: Center(child: CircularProgressIndicator()),
+        ),
+      );
     }
 
     final isRejected = user.isCompanyRejected;
@@ -50,246 +55,248 @@ class CompanyApprovalStatusScreen extends StatelessWidget {
             'You can still open your profile now and improve the information before approval.',
           ];
 
-    return Scaffold(
-      backgroundColor: _surface,
-      body: Stack(
-        children: [
-          Positioned(
-            top: -110,
-            right: -80,
-            child: _BackdropOrb(
-              size: 240,
-              color: accent.withValues(alpha: 0.14),
+    return AppShellBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Stack(
+          children: [
+            Positioned(
+              top: -110,
+              right: -80,
+              child: _BackdropOrb(
+                size: 240,
+                color: accent.withValues(alpha: 0.14),
+              ),
             ),
-          ),
-          const Positioned(
-            bottom: -90,
-            left: -60,
-            child: _BackdropOrb(size: 220, color: Color(0x121D4ED8)),
-          ),
-          SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Container(
-                      width: 96,
-                      height: 96,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [accent, accent.withValues(alpha: 0.72)],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(30),
-                        boxShadow: [
-                          BoxShadow(
-                            color: accent.withValues(alpha: 0.22),
-                            blurRadius: 32,
-                            offset: const Offset(0, 18),
+            const Positioned(
+              bottom: -90,
+              left: -60,
+              child: _BackdropOrb(size: 220, color: Color(0x121D4ED8)),
+            ),
+            SafeArea(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 96,
+                        height: 96,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [accent, accent.withValues(alpha: 0.72)],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
                           ),
-                        ],
-                      ),
-                      child: Icon(
-                        isRejected
-                            ? Icons.rule_folder_outlined
-                            : Icons.pending_actions_rounded,
-                        size: 42,
-                        color: Colors.white,
+                          borderRadius: BorderRadius.circular(30),
+                          boxShadow: [
+                            BoxShadow(
+                              color: accent.withValues(alpha: 0.22),
+                              blurRadius: 32,
+                              offset: const Offset(0, 18),
+                            ),
+                          ],
+                        ),
+                        child: Icon(
+                          isRejected
+                              ? Icons.rule_folder_outlined
+                              : Icons.pending_actions_rounded,
+                          size: 42,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 22),
-                  _Panel(
-                    padding: const EdgeInsets.fromLTRB(22, 22, 22, 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 8,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: accent.withValues(alpha: 0.10),
-                                  borderRadius: BorderRadius.circular(999),
-                                ),
-                                child: Text(
-                                  badgeLabel,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w700,
-                                    letterSpacing: 0.5,
-                                    color: accent,
+                    const SizedBox(height: 22),
+                    _Panel(
+                      padding: const EdgeInsets.fromLTRB(22, 22, 22, 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 8,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: accent.withValues(alpha: 0.10),
+                                    borderRadius: BorderRadius.circular(999),
+                                  ),
+                                  child: Text(
+                                    badgeLabel,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w700,
+                                      letterSpacing: 0.5,
+                                      color: accent,
+                                    ),
                                   ),
                                 ),
                               ),
+                              const SizedBox(width: 12),
+                              Container(
+                                padding: const EdgeInsets.all(3),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(18),
+                                  border: Border.all(
+                                    color: accent.withValues(alpha: 0.10),
+                                  ),
+                                ),
+                                child: ProfileAvatar(user: user, radius: 21),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 18),
+                          Text(
+                            title,
+                            style: GoogleFonts.poppins(
+                              fontSize: 24,
+                              fontWeight: FontWeight.w700,
+                              color: _ink,
+                              height: 1.15,
                             ),
-                            const SizedBox(width: 12),
-                            Container(
-                              padding: const EdgeInsets.all(3),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(18),
-                                border: Border.all(
-                                  color: accent.withValues(alpha: 0.10),
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            subtitle,
+                            style: GoogleFonts.poppins(
+                              fontSize: 13.5,
+                              height: 1.7,
+                              color: _muted,
+                            ),
+                          ),
+                          const SizedBox(height: 18),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: _InfoStat(
+                                  label: 'Company',
+                                  value:
+                                      (user.companyName ?? user.fullName)
+                                          .trim()
+                                          .isEmpty
+                                      ? 'Not set'
+                                      : (user.companyName ?? user.fullName)
+                                            .trim(),
+                                  color: _primary,
                                 ),
                               ),
-                              child: ProfileAvatar(user: user, radius: 21),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 18),
-                        Text(
-                          title,
-                          style: GoogleFonts.poppins(
-                            fontSize: 24,
-                            fontWeight: FontWeight.w700,
-                            color: _ink,
-                            height: 1.15,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          subtitle,
-                          style: GoogleFonts.poppins(
-                            fontSize: 13.5,
-                            height: 1.7,
-                            color: _muted,
-                          ),
-                        ),
-                        const SizedBox(height: 18),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _InfoStat(
-                                label: 'Company',
-                                value:
-                                    (user.companyName ?? user.fullName)
-                                        .trim()
-                                        .isEmpty
-                                    ? 'Not set'
-                                    : (user.companyName ?? user.fullName)
-                                          .trim(),
-                                color: _primary,
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: _InfoStat(
+                                  label: 'Register',
+                                  value: user.hasCommercialRegister
+                                      ? 'Uploaded'
+                                      : 'Missing',
+                                  color: user.hasCommercialRegister
+                                      ? _success
+                                      : _danger,
+                                ),
                               ),
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: _InfoStat(
-                                label: 'Register',
-                                value: user.hasCommercialRegister
-                                    ? 'Uploaded'
-                                    : 'Missing',
-                                color: user.hasCommercialRegister
-                                    ? _success
-                                    : _danger,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  _Panel(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          helperTitle,
-                          style: GoogleFonts.poppins(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: _ink,
+                            ],
                           ),
-                        ),
-                        const SizedBox(height: 14),
-                        for (final item in helperItems) ...[
-                          _HelperRow(text: item, color: accent),
-                          if (item != helperItems.last)
-                            const SizedBox(height: 12),
                         ],
-                      ],
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                  _Panel(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Need to review your profile?',
-                          style: GoogleFonts.poppins(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: _ink,
+                    const SizedBox(height: 16),
+                    _Panel(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            helperTitle,
+                            style: GoogleFonts.poppins(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: _ink,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'You can open the company profile right now to improve the company story, website, phone number, logo, or commercial register while the account is waiting for review.',
-                          style: GoogleFonts.poppins(
-                            fontSize: 13,
-                            height: 1.65,
-                            color: _muted,
+                          const SizedBox(height: 14),
+                          for (final item in helperItems) ...[
+                            _HelperRow(text: item, color: accent),
+                            if (item != helperItems.last)
+                              const SizedBox(height: 12),
+                          ],
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    _Panel(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Need to review your profile?',
+                            style: GoogleFonts.poppins(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: _ink,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 18),
-                        FilledButton.icon(
-                          onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => const CompanyProfileScreen(),
+                          const SizedBox(height: 8),
+                          Text(
+                            'You can open the company profile right now to improve the company story, website, phone number, logo, or commercial register while the account is waiting for review.',
+                            style: GoogleFonts.poppins(
+                              fontSize: 13,
+                              height: 1.65,
+                              color: _muted,
+                            ),
+                          ),
+                          const SizedBox(height: 18),
+                          FilledButton.icon(
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => const CompanyProfileScreen(),
+                                ),
+                              );
+                            },
+                            icon: const Icon(Icons.open_in_new_rounded),
+                            label: Text(
+                              isRejected
+                                  ? 'Update Company Profile'
+                                  : 'Open Company Profile',
+                            ),
+                            style: FilledButton.styleFrom(
+                              minimumSize: const Size(double.infinity, 52),
+                              backgroundColor: _primary,
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(18),
                               ),
-                            );
-                          },
-                          icon: const Icon(Icons.open_in_new_rounded),
-                          label: Text(
-                            isRejected
-                                ? 'Update Company Profile'
-                                : 'Open Company Profile',
-                          ),
-                          style: FilledButton.styleFrom(
-                            minimumSize: const Size(double.infinity, 52),
-                            backgroundColor: _primary,
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(18),
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 10),
-                        OutlinedButton.icon(
-                          onPressed: auth.logout,
-                          icon: const Icon(Icons.logout_rounded),
-                          label: const Text('Log Out'),
-                          style: OutlinedButton.styleFrom(
-                            minimumSize: const Size(double.infinity, 52),
-                            foregroundColor: _ink,
-                            side: BorderSide(
-                              color: _ink.withValues(alpha: 0.12),
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(18),
+                          const SizedBox(height: 10),
+                          OutlinedButton.icon(
+                            onPressed: auth.logout,
+                            icon: const Icon(Icons.logout_rounded),
+                            label: const Text('Log Out'),
+                            style: OutlinedButton.styleFrom(
+                              minimumSize: const Size(double.infinity, 52),
+                              foregroundColor: _ink,
+                              side: BorderSide(
+                                color: _ink.withValues(alpha: 0.12),
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(18),
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

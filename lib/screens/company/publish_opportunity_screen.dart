@@ -7,6 +7,7 @@ import '../../providers/company_provider.dart';
 import '../../utils/company_dashboard_palette.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
+import '../../widgets/app_shell_background.dart';
 import '../../widgets/opportunity_type_selector.dart';
 
 class PublishOpportunityScreen extends StatefulWidget {
@@ -22,7 +23,6 @@ class PublishOpportunityScreen extends StatefulWidget {
 class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
   static const Color primary = CompanyDashboardPalette.primary;
   static const Color primaryDark = CompanyDashboardPalette.primaryDark;
-  static const Color background = Color(0xFFF8FAFC);
   static const Color surfaceAlt = Color(0xFFF8FAFC);
 
   final _formKey = GlobalKey<FormState>();
@@ -135,235 +135,239 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: background,
-      appBar: AppBar(
-        title: Text(
-          _isEditMode ? 'Edit Opportunity' : 'Create Opportunity',
-          style: GoogleFonts.poppins(
-            fontWeight: FontWeight.w700,
-            color: primaryDark,
-          ),
-        ),
+    return AppShellBackground(
+      child: Scaffold(
         backgroundColor: Colors.transparent,
-        surfaceTintColor: Colors.transparent,
-        scrolledUnderElevation: 0,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: primaryDark),
-      ),
-      bottomNavigationBar: _isLoading
-          ? null
-          : SafeArea(
-              top: false,
-              child: Container(
-                padding: const EdgeInsets.fromLTRB(20, 14, 20, 18),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.05),
-                      blurRadius: 20,
-                      offset: const Offset(0, -6),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      _isEditMode
-                          ? 'Keep this opportunity polished before saving your changes.'
-                          : 'Review the role details and publish when everything is ready.',
-                      style: GoogleFonts.poppins(
-                        fontSize: 12,
-                        color: CompanyDashboardPalette.textSecondary,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 54,
-                      child: ElevatedButton(
-                        onPressed: _isSubmitting ? null : _submit,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: primary,
-                          foregroundColor: Colors.white,
-                          disabledBackgroundColor: primary.withValues(
-                            alpha: 0.55,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(18),
-                          ),
-                          elevation: 0,
-                        ),
-                        child: _isSubmitting
-                            ? const SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2.4,
-                                  color: Colors.white,
-                                ),
-                              )
-                            : Text(
-                                _isEditMode
-                                    ? 'Save Changes'
-                                    : 'Publish ${OpportunityType.label(_selectedType)}',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+        appBar: AppBar(
+          title: Text(
+            _isEditMode ? 'Edit Opportunity' : 'Create Opportunity',
+            style: GoogleFonts.poppins(
+              fontWeight: FontWeight.w700,
+              color: primaryDark,
             ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: primary))
-          : SafeArea(
-              child: Form(
-                key: _formKey,
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(20, 10, 20, 30),
+          ),
+          backgroundColor: Colors.transparent,
+          surfaceTintColor: Colors.transparent,
+          scrolledUnderElevation: 0,
+          elevation: 0,
+          iconTheme: const IconThemeData(color: primaryDark),
+        ),
+        bottomNavigationBar: _isLoading
+            ? null
+            : SafeArea(
+                top: false,
+                child: Container(
+                  padding: const EdgeInsets.fromLTRB(20, 14, 20, 18),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.05),
+                        blurRadius: 20,
+                        offset: const Offset(0, -6),
+                      ),
+                    ],
+                  ),
                   child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildHeroCard(),
-                      const SizedBox(height: 16),
-                      _buildSectionCard(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _buildSectionLabel('Opportunity title'),
-                            const SizedBox(height: 8),
-                            _buildField(
-                              controller: _titleController,
-                              hint: _titleHintForType(),
-                              validator: _validateTitle,
-                            ),
-                            const SizedBox(height: 18),
-                            _buildSectionLabel('Opportunity type'),
-                            const SizedBox(height: 6),
-                            Text(
-                              'Choose the listing category that best matches this role.',
-                              style: GoogleFonts.poppins(
-                                fontSize: 12,
-                                color: CompanyDashboardPalette.textSecondary,
-                                height: 1.45,
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            OpportunityTypeSelector(
-                              selected: _selectedType,
-                              onChanged: (value) {
-                                if (_selectedType == value) {
-                                  return;
-                                }
-                                setState(() {
-                                  _selectedType = value;
-                                  _applyTypeDefaults(value);
-                                });
-                              },
-                            ),
-                            const SizedBox(height: 18),
-                            _buildSectionLabel('Publishing status'),
-                            const SizedBox(height: 6),
-                            Text(
-                              'Open listings are visible to students. Closed listings stay saved privately.',
-                              style: GoogleFonts.poppins(
-                                fontSize: 12,
-                                color: CompanyDashboardPalette.textSecondary,
-                                height: 1.45,
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: _buildStatusChip(
-                                    label: 'Open',
-                                    value: 'open',
-                                    subtitle: 'Visible to students',
-                                  ),
-                                ),
-                                const SizedBox(width: 10),
-                                Expanded(
-                                  child: _buildStatusChip(
-                                    label: 'Closed',
-                                    value: 'closed',
-                                    subtitle: 'Saved privately',
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
+                      Text(
+                        _isEditMode
+                            ? 'Keep this opportunity polished before saving your changes.'
+                            : 'Review the role details and publish when everything is ready.',
+                        style: GoogleFonts.poppins(
+                          fontSize: 12,
+                          color: CompanyDashboardPalette.textSecondary,
                         ),
                       ),
-                      const SizedBox(height: 16),
-                      _buildSectionCard(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _buildSectionLabel(
-                              OpportunityType.descriptionLabel(_selectedType),
+                      const SizedBox(height: 12),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 54,
+                        child: ElevatedButton(
+                          onPressed: _isSubmitting ? null : _submit,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: primary,
+                            foregroundColor: Colors.white,
+                            disabledBackgroundColor: primary.withValues(
+                              alpha: 0.55,
                             ),
-                            const SizedBox(height: 8),
-                            _buildField(
-                              controller: _descriptionController,
-                              hint: OpportunityType.descriptionHint(
-                                _selectedType,
-                              ),
-                              maxLines: 6,
-                              validator: _validateDescription,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(18),
                             ),
-                            const SizedBox(height: 18),
-                            _buildSectionLabel('Location'),
-                            const SizedBox(height: 8),
-                            _buildField(
-                              controller: _locationController,
-                              hint: _locationHintForType(),
-                              validator: _validateLocation,
-                            ),
-                            const SizedBox(height: 18),
-                            _buildSectionLabel(
-                              OpportunityType.requirementsLabel(_selectedType),
-                            ),
-                            const SizedBox(height: 8),
-                            _buildField(
-                              controller: _requirementsController,
-                              hint: OpportunityType.requirementsHint(
-                                _selectedType,
-                              ),
-                              maxLines: 4,
-                              validator: _validateRequirements,
-                            ),
-                            const SizedBox(height: 18),
-                            _buildSectionLabel('Application deadline'),
-                            const SizedBox(height: 8),
-                            _buildField(
-                              controller: _deadlineController,
-                              hint: 'Select a closing date',
-                              validator: _validateDeadline,
-                              onTap: _pickDate,
-                              readOnly: true,
-                              suffixIcon: const Icon(Icons.calendar_today),
-                            ),
-                          ],
+                            elevation: 0,
+                          ),
+                          child: _isSubmitting
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2.4,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : Text(
+                                  _isEditMode
+                                      ? 'Save Changes'
+                                      : 'Publish ${OpportunityType.label(_selectedType)}',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
                         ),
                       ),
-                      if (_usesStructuredFields) ...[
-                        const SizedBox(height: 16),
-                        _buildStructuredOpportunityCard(),
-                      ],
                     ],
                   ),
                 ),
               ),
-            ),
+        body: _isLoading
+            ? const Center(child: CircularProgressIndicator(color: primary))
+            : SafeArea(
+                child: Form(
+                  key: _formKey,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.fromLTRB(20, 10, 20, 30),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildHeroCard(),
+                        const SizedBox(height: 16),
+                        _buildSectionCard(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildSectionLabel('Opportunity title'),
+                              const SizedBox(height: 8),
+                              _buildField(
+                                controller: _titleController,
+                                hint: _titleHintForType(),
+                                validator: _validateTitle,
+                              ),
+                              const SizedBox(height: 18),
+                              _buildSectionLabel('Opportunity type'),
+                              const SizedBox(height: 6),
+                              Text(
+                                'Choose the listing category that best matches this role.',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 12,
+                                  color: CompanyDashboardPalette.textSecondary,
+                                  height: 1.45,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              OpportunityTypeSelector(
+                                selected: _selectedType,
+                                onChanged: (value) {
+                                  if (_selectedType == value) {
+                                    return;
+                                  }
+                                  setState(() {
+                                    _selectedType = value;
+                                    _applyTypeDefaults(value);
+                                  });
+                                },
+                              ),
+                              const SizedBox(height: 18),
+                              _buildSectionLabel('Publishing status'),
+                              const SizedBox(height: 6),
+                              Text(
+                                'Open listings are visible to students. Closed listings stay saved privately.',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 12,
+                                  color: CompanyDashboardPalette.textSecondary,
+                                  height: 1.45,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: _buildStatusChip(
+                                      label: 'Open',
+                                      value: 'open',
+                                      subtitle: 'Visible to students',
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: _buildStatusChip(
+                                      label: 'Closed',
+                                      value: 'closed',
+                                      subtitle: 'Saved privately',
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        _buildSectionCard(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildSectionLabel(
+                                OpportunityType.descriptionLabel(_selectedType),
+                              ),
+                              const SizedBox(height: 8),
+                              _buildField(
+                                controller: _descriptionController,
+                                hint: OpportunityType.descriptionHint(
+                                  _selectedType,
+                                ),
+                                maxLines: 6,
+                                validator: _validateDescription,
+                              ),
+                              const SizedBox(height: 18),
+                              _buildSectionLabel('Location'),
+                              const SizedBox(height: 8),
+                              _buildField(
+                                controller: _locationController,
+                                hint: _locationHintForType(),
+                                validator: _validateLocation,
+                              ),
+                              const SizedBox(height: 18),
+                              _buildSectionLabel(
+                                OpportunityType.requirementsLabel(
+                                  _selectedType,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              _buildField(
+                                controller: _requirementsController,
+                                hint: OpportunityType.requirementsHint(
+                                  _selectedType,
+                                ),
+                                maxLines: 4,
+                                validator: _validateRequirements,
+                              ),
+                              const SizedBox(height: 18),
+                              _buildSectionLabel('Application deadline'),
+                              const SizedBox(height: 8),
+                              _buildField(
+                                controller: _deadlineController,
+                                hint: 'Select a closing date',
+                                validator: _validateDeadline,
+                                onTap: _pickDate,
+                                readOnly: true,
+                                suffixIcon: const Icon(Icons.calendar_today),
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (_usesStructuredFields) ...[
+                          const SizedBox(height: 16),
+                          _buildStructuredOpportunityCard(),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+      ),
     );
   }
 

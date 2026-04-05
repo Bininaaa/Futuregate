@@ -328,7 +328,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
         backgroundColor: Colors.white,
         foregroundColor: _primaryColor,
       ),
-      body: SafeArea(child: content),
+      body: AdminShellBackground(child: SafeArea(top: false, child: content)),
     );
   }
 

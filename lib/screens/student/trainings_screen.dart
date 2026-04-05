@@ -6,6 +6,7 @@ import '../../models/training_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/training_provider.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
+import '../../widgets/app_shell_background.dart';
 import '../../widgets/training_programs_widgets.dart';
 import 'saved_trainings_screen.dart';
 
@@ -714,103 +715,107 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
     }
 
     if (provider.isLoading && provider.trainings.isEmpty) {
-      return const Scaffold(
-        backgroundColor: OpportunityDashboardPalette.background,
-        body: SafeArea(child: TrainingProgramsLoadingView()),
+      return const AppShellBackground(
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          body: SafeArea(child: TrainingProgramsLoadingView()),
+        ),
       );
     }
 
-    return Scaffold(
-      backgroundColor: OpportunityDashboardPalette.background,
-      body: SafeArea(
-        child: RefreshIndicator(
-          onRefresh: _refreshData,
-          color: OpportunityDashboardPalette.primary,
-          child: CustomScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            slivers: [
-              SliverPadding(
-                padding: const EdgeInsets.fromLTRB(18, 10, 18, 24),
-                sliver: SliverList(
-                  delegate: SliverChildListDelegate([
-                    TrainingHeaderBar(
-                      onMenuTap: _showMenuSheet,
-                      onSearchTap: _focusSearchField,
-                    ),
-                    const SizedBox(height: 22),
-                    const TrainingHeroIntro(),
-                    const SizedBox(height: 18),
-                    Container(
-                      key: _searchSectionKey,
-                      child: TrainingSearchBar(
-                        controller: _searchController,
-                        focusNode: _searchFocusNode,
-                        onClear: _searchController.clear,
+    return AppShellBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SafeArea(
+          child: RefreshIndicator(
+            onRefresh: _refreshData,
+            color: OpportunityDashboardPalette.primary,
+            child: CustomScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              slivers: [
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(18, 10, 18, 24),
+                  sliver: SliverList(
+                    delegate: SliverChildListDelegate([
+                      TrainingHeaderBar(
+                        onMenuTap: _showMenuSheet,
+                        onSearchTap: _focusSearchField,
                       ),
-                    ),
-                    if (provider.isSavedLoading) ...[
-                      const SizedBox(height: 12),
-                      const LinearProgressIndicator(minHeight: 2),
-                    ],
-                    if (provider.errorMessage != null) ...[
-                      const SizedBox(height: 16),
-                      TrainingInfoBanner(
-                        message:
-                            '${provider.errorMessage!} Showing the best training content currently available.',
-                      ),
-                    ],
-                    const SizedBox(height: 18),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TrainingSectionTitle(title: sectionTitle),
+                      const SizedBox(height: 22),
+                      const TrainingHeroIntro(),
+                      const SizedBox(height: 18),
+                      Container(
+                        key: _searchSectionKey,
+                        child: TrainingSearchBar(
+                          controller: _searchController,
+                          focusNode: _searchFocusNode,
+                          onClear: _searchController.clear,
                         ),
-                        TrainingLayoutToggle(
-                          view: _trainingLayoutView,
-                          onChanged: (view) {
+                      ),
+                      if (provider.isSavedLoading) ...[
+                        const SizedBox(height: 12),
+                        const LinearProgressIndicator(minHeight: 2),
+                      ],
+                      if (provider.errorMessage != null) ...[
+                        const SizedBox(height: 16),
+                        TrainingInfoBanner(
+                          message:
+                              '${provider.errorMessage!} Showing the best training content currently available.',
+                        ),
+                      ],
+                      const SizedBox(height: 18),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TrainingSectionTitle(title: sectionTitle),
+                          ),
+                          TrainingLayoutToggle(
+                            view: _trainingLayoutView,
+                            onChanged: (view) {
+                              setState(() {
+                                _trainingLayoutView = view;
+                              });
+                            },
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      if (showTopEmptyState)
+                        TrainingProgramsEmptyState(
+                          title: 'No trainings match your search',
+                          subtitle: emptySubtitle,
+                        )
+                      else
+                        ...topCards.map(buildTrainingCard),
+                      if (!isSearching) ...[
+                        const SizedBox(height: 6),
+                        const BrowseMoreTopicsCard(),
+                        const SizedBox(height: 10),
+                        TrainingCatalogueSelector(
+                          domains: availableDomains,
+                          selectedDomain: activeDomain,
+                          onSelected: (domain) {
                             setState(() {
-                              _trainingLayoutView = view;
+                              _selectedDomain = domain;
                             });
                           },
                         ),
+                        if (showDomainEmptyState) ...[
+                          const SizedBox(height: 16),
+                          TrainingProgramsEmptyState(
+                            title: 'No trainings found',
+                            subtitle: emptySubtitle,
+                          ),
+                        ] else if (additionalCards.isNotEmpty) ...[
+                          const SizedBox(height: 16),
+                          ...additionalCards.map(buildTrainingCard),
+                        ],
                       ],
-                    ),
-                    const SizedBox(height: 12),
-                    if (showTopEmptyState)
-                      TrainingProgramsEmptyState(
-                        title: 'No trainings match your search',
-                        subtitle: emptySubtitle,
-                      )
-                    else
-                      ...topCards.map(buildTrainingCard),
-                    if (!isSearching) ...[
-                      const SizedBox(height: 6),
-                      const BrowseMoreTopicsCard(),
-                      const SizedBox(height: 10),
-                      TrainingCatalogueSelector(
-                        domains: availableDomains,
-                        selectedDomain: activeDomain,
-                        onSelected: (domain) {
-                          setState(() {
-                            _selectedDomain = domain;
-                          });
-                        },
-                      ),
-                      if (showDomainEmptyState) ...[
-                        const SizedBox(height: 16),
-                        TrainingProgramsEmptyState(
-                          title: 'No trainings found',
-                          subtitle: emptySubtitle,
-                        ),
-                      ] else if (additionalCards.isNotEmpty) ...[
-                        const SizedBox(height: 16),
-                        ...additionalCards.map(buildTrainingCard),
-                      ],
-                    ],
-                  ]),
+                    ]),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

@@ -15,6 +15,7 @@ import 'providers/admin_provider.dart';
 import 'providers/scholarship_provider.dart';
 import 'providers/project_idea_provider.dart';
 import 'providers/saved_opportunity_provider.dart';
+import 'providers/saved_scholarship_provider.dart';
 import 'providers/cv_provider.dart';
 import 'providers/company_provider.dart';
 import 'providers/chat_provider.dart';
@@ -75,6 +76,7 @@ class AvenirDZApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ScholarshipProvider()),
         ChangeNotifierProvider(create: (_) => ProjectIdeaProvider()),
         ChangeNotifierProvider(create: (_) => SavedOpportunityProvider()),
+        ChangeNotifierProvider(create: (_) => SavedScholarshipProvider()),
         ChangeNotifierProvider(create: (_) => CvProvider()),
         ChangeNotifierProvider(create: (_) => CompanyProvider()),
         ChangeNotifierProvider(create: (_) => ChatProvider()),

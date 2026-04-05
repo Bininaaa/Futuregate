@@ -15,6 +15,7 @@ import '../../services/document_access_service.dart';
 import '../../utils/application_status.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
+import '../../widgets/app_shell_background.dart';
 import '../../widgets/application_status_badge.dart';
 import '../../widgets/profile_avatar.dart';
 import 'chat_screen.dart';
@@ -260,144 +261,148 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
 
     _maybeOpenFocusedDetails(items, provider);
 
-    return Scaffold(
-      backgroundColor: _ApplicationsPalette.background,
-      appBar: widget.showBackButton
-          ? AppBar(
-              title: Text(
-                'Applications',
-                style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.w700,
+    return AppShellBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: widget.showBackButton
+            ? AppBar(
+                title: Text(
+                  'Applications',
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.w700,
+                    color: _ApplicationsPalette.textPrimary,
+                  ),
+                ),
+                backgroundColor: Colors.transparent,
+                surfaceTintColor: Colors.transparent,
+                scrolledUnderElevation: 0,
+                elevation: 0,
+                automaticallyImplyLeading: true,
+                iconTheme: const IconThemeData(
                   color: _ApplicationsPalette.textPrimary,
                 ),
-              ),
-              backgroundColor: Colors.transparent,
-              surfaceTintColor: Colors.transparent,
-              scrolledUnderElevation: 0,
-              elevation: 0,
-              automaticallyImplyLeading: true,
-              iconTheme: const IconThemeData(
-                color: _ApplicationsPalette.textPrimary,
-              ),
-            )
-          : null,
-      body: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        child: SafeArea(
-          top: !widget.showBackButton,
-          bottom: false,
-          child: RefreshIndicator(
-            color: _ApplicationsPalette.primary,
-            onRefresh: _loadApplicationsData,
-            child: CustomScrollView(
-              controller: _scrollController,
-              physics: const BouncingScrollPhysics(
-                parent: AlwaysScrollableScrollPhysics(),
-              ),
-              slivers: [
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: EdgeInsets.fromLTRB(
-                      20,
-                      widget.showBackButton ? 8 : 14,
-                      20,
-                      20,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildApplicationsHero(
-                          companyName: companyName,
-                          isFocusedView: isFocusedView,
-                          totalApplications: totalApplications,
-                          pendingCount: pendingCount,
-                        ),
-                        if (pendingOpportunityCount > 0) ...[
-                          const SizedBox(height: 12),
-                          _InlineBanner(
-                            icon: Icons.warning_amber_rounded,
-                            title: 'Pending opportunities need attention',
-                            message: pendingCount == 1
-                                ? '1 application is still waiting for review.'
-                                : '$pendingCount applications across $pendingOpportunityCount ${pendingOpportunityCount == 1 ? 'opportunity' : 'opportunities'} are still waiting for a decision.',
-                            tone: _ApplicationsPalette.accent,
-                            background: _ApplicationsPalette.accentSoft,
-                            actionLabel: isFocusedView ? null : 'Show pending',
-                            onAction: isFocusedView
-                                ? null
-                                : _showPendingApplications,
-                          ),
-                        ],
-                        if ((provider.applicationsError ?? '')
-                            .trim()
-                            .isNotEmpty) ...[
-                          const SizedBox(height: 16),
-                          _InlineBanner(
-                            icon: Icons.info_outline_rounded,
-                            title: 'Application data is unavailable.',
-                            message: provider.applicationsError!,
-                            tone: _ApplicationsPalette.error,
-                            background: const Color(0xFFFFF1F2),
-                          ),
-                        ],
-                        if (isFocusedView) ...[
-                          const SizedBox(height: 16),
-                          _FocusedApplicationBanner(count: resultsCount),
-                        ] else ...[
-                          const SizedBox(height: 18),
-                          _buildFiltersPanel(
-                            provider,
-                            resultsCount: resultsCount,
-                            totalApplications: totalApplications,
-                            opportunityCounts: opportunityCounts,
-                          ),
-                        ],
-                        const SizedBox(height: 18),
-                        Container(
-                          key: _candidateQueueKey,
-                          child: _buildQueueHeader(
-                            resultsCount: resultsCount,
-                            totalApplications: totalApplications,
-                            isFocusedView: isFocusedView,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+              )
+            : null,
+        body: GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: SafeArea(
+            top: !widget.showBackButton,
+            bottom: false,
+            child: RefreshIndicator(
+              color: _ApplicationsPalette.primary,
+              onRefresh: _loadApplicationsData,
+              child: CustomScrollView(
+                controller: _scrollController,
+                physics: const BouncingScrollPhysics(
+                  parent: AlwaysScrollableScrollPhysics(),
                 ),
-                if (provider.applicationsLoading &&
-                    provider.applications.isEmpty)
-                  const SliverFillRemaining(
-                    hasScrollBody: false,
-                    child: _LoadingState(),
-                  )
-                else if (items.isEmpty)
-                  SliverFillRemaining(
-                    hasScrollBody: false,
-                    child: _EmptyApplicationsState(
-                      hasFilters: _hasActiveFilters,
-                      isFocusedView: isFocusedView,
-                    ),
-                  )
-                else
-                  SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 120),
-                    sliver: SliverList(
-                      delegate: SliverChildBuilderDelegate((context, index) {
-                        final item = items[index];
-                        return _buildApplicationCard(
-                          item,
-                          provider,
-                          opportunityApplicantCount:
-                              opportunityCounts[item
-                                  .application
-                                  .opportunityId] ??
-                              0,
-                        );
-                      }, childCount: items.length),
+                slivers: [
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(
+                        20,
+                        widget.showBackButton ? 8 : 14,
+                        20,
+                        20,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildApplicationsHero(
+                            companyName: companyName,
+                            isFocusedView: isFocusedView,
+                            totalApplications: totalApplications,
+                            pendingCount: pendingCount,
+                          ),
+                          if (pendingOpportunityCount > 0) ...[
+                            const SizedBox(height: 12),
+                            _InlineBanner(
+                              icon: Icons.warning_amber_rounded,
+                              title: 'Pending opportunities need attention',
+                              message: pendingCount == 1
+                                  ? '1 application is still waiting for review.'
+                                  : '$pendingCount applications across $pendingOpportunityCount ${pendingOpportunityCount == 1 ? 'opportunity' : 'opportunities'} are still waiting for a decision.',
+                              tone: _ApplicationsPalette.accent,
+                              background: _ApplicationsPalette.accentSoft,
+                              actionLabel: isFocusedView
+                                  ? null
+                                  : 'Show pending',
+                              onAction: isFocusedView
+                                  ? null
+                                  : _showPendingApplications,
+                            ),
+                          ],
+                          if ((provider.applicationsError ?? '')
+                              .trim()
+                              .isNotEmpty) ...[
+                            const SizedBox(height: 16),
+                            _InlineBanner(
+                              icon: Icons.info_outline_rounded,
+                              title: 'Application data is unavailable.',
+                              message: provider.applicationsError!,
+                              tone: _ApplicationsPalette.error,
+                              background: const Color(0xFFFFF1F2),
+                            ),
+                          ],
+                          if (isFocusedView) ...[
+                            const SizedBox(height: 16),
+                            _FocusedApplicationBanner(count: resultsCount),
+                          ] else ...[
+                            const SizedBox(height: 18),
+                            _buildFiltersPanel(
+                              provider,
+                              resultsCount: resultsCount,
+                              totalApplications: totalApplications,
+                              opportunityCounts: opportunityCounts,
+                            ),
+                          ],
+                          const SizedBox(height: 18),
+                          Container(
+                            key: _candidateQueueKey,
+                            child: _buildQueueHeader(
+                              resultsCount: resultsCount,
+                              totalApplications: totalApplications,
+                              isFocusedView: isFocusedView,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-              ],
+                  if (provider.applicationsLoading &&
+                      provider.applications.isEmpty)
+                    const SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: _LoadingState(),
+                    )
+                  else if (items.isEmpty)
+                    SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: _EmptyApplicationsState(
+                        hasFilters: _hasActiveFilters,
+                        isFocusedView: isFocusedView,
+                      ),
+                    )
+                  else
+                    SliverPadding(
+                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 120),
+                      sliver: SliverList(
+                        delegate: SliverChildBuilderDelegate((context, index) {
+                          final item = items[index];
+                          return _buildApplicationCard(
+                            item,
+                            provider,
+                            opportunityApplicantCount:
+                                opportunityCounts[item
+                                    .application
+                                    .opportunityId] ??
+                                0,
+                          );
+                        }, childCount: items.length),
+                      ),
+                    ),
+                ],
+              ),
             ),
           ),
         ),
@@ -2056,7 +2061,6 @@ class _ApplicationsPalette {
   static const Color secondaryDark = Color(0xFF0F9E90);
   static const Color accent = Color(0xFFF59E0B);
   static const Color accentSoft = Color(0xFFFFF7E6);
-  static const Color background = Color(0xFFF8FAFC);
   static const Color surface = Color(0xFFFFFFFF);
   static const Color surfaceAlt = Color(0xFFF1F5F9);
   static const Color border = Color(0xFFE2E8F0);

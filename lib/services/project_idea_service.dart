@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 
 import '../models/project_idea_model.dart';
+import '../models/saved_idea_model.dart';
 import 'worker_api_service.dart';
 
 enum ProjectIdeaInteractionType { spark, interest, save }
@@ -208,6 +209,87 @@ class ProjectIdeaService {
 
   Future<void> deleteProjectIdea(String id) async {
     await _ideasCollection.doc(id).delete();
+  }
+
+  Future<List<SavedIdeaModel>> getSavedIdeas(String userId) async {
+    final normalizedUserId = userId.trim();
+    if (normalizedUserId.isEmpty) {
+      return const <SavedIdeaModel>[];
+    }
+
+    final ideasById = <String, ProjectIdeaModel>{};
+    final readableIdeas = <ProjectIdeaModel>[
+      ...await getApprovedProjectIdeas(),
+      ...await getProjectIdeasByStudent(normalizedUserId),
+    ];
+    for (final idea in readableIdeas) {
+      ideasById[idea.id] = idea;
+    }
+
+    final readableIdeaIds = ideasById.keys.toList(growable: false);
+    if (readableIdeaIds.isEmpty) {
+      return const <SavedIdeaModel>[];
+    }
+
+    final interactionDocs = <QueryDocumentSnapshot<Map<String, dynamic>>>[];
+
+    for (final chunk in _chunkIds(readableIdeaIds)) {
+      QuerySnapshot<Map<String, dynamic>> snapshot;
+      try {
+        snapshot = await _interactionCollection
+            .where('ideaId', whereIn: chunk)
+            .get();
+      } on FirebaseException catch (error) {
+        if (_isPermissionDeniedError(error)) {
+          debugPrint(
+            'Saved project ideas read skipped because Firestore permissions are not live yet: $error',
+          );
+          return const <SavedIdeaModel>[];
+        }
+        rethrow;
+      }
+
+      interactionDocs.addAll(
+        snapshot.docs.where((doc) {
+          final data = doc.data();
+          return (data['userId'] ?? '').toString().trim() == normalizedUserId &&
+              (data['type'] ?? '').toString().trim().toLowerCase() ==
+                  ProjectIdeaInteractionType.save.storageKey;
+        }),
+      );
+    }
+
+    interactionDocs.sort((first, second) {
+      final firstTime =
+          (first.data()['createdAt'] as Timestamp?)?.millisecondsSinceEpoch ??
+          0;
+      final secondTime =
+          (second.data()['createdAt'] as Timestamp?)?.millisecondsSinceEpoch ??
+          0;
+      return secondTime.compareTo(firstTime);
+    });
+
+    final results = <SavedIdeaModel>[];
+    for (final interaction in interactionDocs) {
+      final data = interaction.data();
+      final ideaId = (data['ideaId'] ?? '').toString().trim();
+      final idea = ideasById[ideaId];
+      if (idea == null) {
+        continue;
+      }
+
+      results.add(
+        SavedIdeaModel(
+          id: interaction.id,
+          ideaId: ideaId,
+          userId: normalizedUserId,
+          idea: idea.copyWith(isSavedByCurrentUser: true),
+          savedAt: data['createdAt'] as Timestamp?,
+        ),
+      );
+    }
+
+    return results;
   }
 
   Future<ProjectIdeaEngagementSnapshot> getEngagementForIdeas({

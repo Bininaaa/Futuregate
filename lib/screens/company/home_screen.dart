@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../settings/settings_screen.dart';
+import '../../widgets/app_shell_background.dart';
 import 'applications_screen.dart';
 import 'chat_list_screen.dart';
 import 'company_dashboard_screen.dart';
@@ -27,70 +28,72 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: _CompanyShellPalette.background,
-      body: IndexedStack(index: _currentIndex, children: _screens),
-      bottomNavigationBar: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(30),
-              border: Border.all(color: _CompanyShellPalette.border),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.08),
-                  blurRadius: 26,
-                  offset: const Offset(0, 14),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: _CompanyBottomNavItem(
-                    label: 'DASHBOARD',
-                    icon: Icons.dashboard_outlined,
-                    selected: _currentIndex == 0,
-                    onTap: () => setState(() => _currentIndex = 0),
+    return AppShellBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: IndexedStack(index: _currentIndex, children: _screens),
+        bottomNavigationBar: SafeArea(
+          top: false,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(30),
+                border: Border.all(color: _CompanyShellPalette.border),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.08),
+                    blurRadius: 26,
+                    offset: const Offset(0, 14),
                   ),
-                ),
-                Expanded(
-                  child: _CompanyBottomNavItem(
-                    label: 'OPPS',
-                    icon: Icons.work_outline_rounded,
-                    selected: _currentIndex == 1,
-                    onTap: () => setState(() => _currentIndex = 1),
+                ],
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: _CompanyBottomNavItem(
+                      label: 'DASHBOARD',
+                      icon: Icons.dashboard_outlined,
+                      selected: _currentIndex == 0,
+                      onTap: () => setState(() => _currentIndex = 0),
+                    ),
                   ),
-                ),
-                Expanded(
-                  child: _CompanyBottomNavItem(
-                    label: 'APPS',
-                    icon: Icons.groups_outlined,
-                    selected: _currentIndex == 2,
-                    onTap: () => setState(() => _currentIndex = 2),
+                  Expanded(
+                    child: _CompanyBottomNavItem(
+                      label: 'OPPS',
+                      icon: Icons.work_outline_rounded,
+                      selected: _currentIndex == 1,
+                      onTap: () => setState(() => _currentIndex = 1),
+                    ),
                   ),
-                ),
-                Expanded(
-                  child: _CompanyBottomNavItem(
-                    label: 'CHAT',
-                    icon: Icons.chat_bubble_outline_rounded,
-                    selected: _currentIndex == 3,
-                    onTap: () => setState(() => _currentIndex = 3),
+                  Expanded(
+                    child: _CompanyBottomNavItem(
+                      label: 'APPS',
+                      icon: Icons.groups_outlined,
+                      selected: _currentIndex == 2,
+                      onTap: () => setState(() => _currentIndex = 2),
+                    ),
                   ),
-                ),
-                Expanded(
-                  child: _CompanyBottomNavItem(
-                    label: 'MORE',
-                    icon: Icons.widgets_outlined,
-                    selected: _currentIndex == 4,
-                    onTap: () => setState(() => _currentIndex = 4),
+                  Expanded(
+                    child: _CompanyBottomNavItem(
+                      label: 'CHAT',
+                      icon: Icons.chat_bubble_outline_rounded,
+                      selected: _currentIndex == 3,
+                      onTap: () => setState(() => _currentIndex = 3),
+                    ),
                   ),
-                ),
-              ],
+                  Expanded(
+                    child: _CompanyBottomNavItem(
+                      label: 'MORE',
+                      icon: Icons.widgets_outlined,
+                      selected: _currentIndex == 4,
+                      onTap: () => setState(() => _currentIndex = 4),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -162,7 +165,6 @@ class _CompanyBottomNavItem extends StatelessWidget {
 class _CompanyShellPalette {
   static const Color primary = Color(0xFF4328D8);
   static const Color primarySoft = Color(0xFFEEF2FF);
-  static const Color background = Color(0xFFF8FAFC);
   static const Color border = Color(0xFFE2E8F0);
   static const Color textMuted = Color(0xFF94A3B8);
 }

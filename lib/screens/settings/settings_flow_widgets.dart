@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../widgets/app_shell_background.dart';
 import 'settings_flow_theme.dart';
 
 class SettingsPageScaffold extends StatelessWidget {
@@ -26,32 +27,34 @@ class SettingsPageScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     final canPop = Navigator.of(context).canPop();
 
-    return Scaffold(
-      backgroundColor: backgroundColor ?? SettingsFlowPalette.background,
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        centerTitle: centerTitle,
+    return AppShellBackground(
+      child: Scaffold(
         backgroundColor: Colors.transparent,
-        surfaceTintColor: Colors.transparent,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        leading:
-            leading ??
-            (canPop
-                ? IconButton(
-                    onPressed: () => Navigator.maybePop(context),
-                    icon: const Icon(
-                      Icons.arrow_back_ios_new_rounded,
-                      color: SettingsFlowPalette.textPrimary,
-                    ),
-                  )
-                : null),
-        title: Text(title, style: SettingsFlowTheme.appBarTitle()),
-        actions: actions,
-      ),
-      body: SafeArea(
-        top: false,
-        child: SingleChildScrollView(padding: bodyPadding, child: child),
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          centerTitle: centerTitle,
+          backgroundColor: Colors.transparent,
+          surfaceTintColor: Colors.transparent,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          leading:
+              leading ??
+              (canPop
+                  ? IconButton(
+                      onPressed: () => Navigator.maybePop(context),
+                      icon: const Icon(
+                        Icons.arrow_back_ios_new_rounded,
+                        color: SettingsFlowPalette.textPrimary,
+                      ),
+                    )
+                  : null),
+          title: Text(title, style: SettingsFlowTheme.appBarTitle()),
+          actions: actions,
+        ),
+        body: SafeArea(
+          top: false,
+          child: SingleChildScrollView(padding: bodyPadding, child: child),
+        ),
       ),
     );
   }

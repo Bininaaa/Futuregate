@@ -12,6 +12,7 @@ import '../../services/application_service.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
+import '../../widgets/app_shell_background.dart';
 import 'opportunity_detail_screen.dart';
 
 class SponsoredOpportunitiesScreen extends StatefulWidget {
@@ -763,134 +764,137 @@ class _SponsoredOpportunitiesScreenState
     final allCards = _buildCardModels(allOpportunities);
     final visibleCards = _applyFilters(allCards);
 
-    return Scaffold(
-      backgroundColor: OpportunityDashboardPalette.background,
-      body: SafeArea(
-        child: RefreshIndicator(
-          color: OpportunityDashboardPalette.primary,
-          backgroundColor: OpportunityDashboardPalette.surface,
-          onRefresh: () => _loadData(force: true),
-          child: CustomScrollView(
-            physics: const BouncingScrollPhysics(
-              parent: AlwaysScrollableScrollPhysics(),
-            ),
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            slivers: [
-              if (opportunityProvider.isLoading && allOpportunities.isNotEmpty)
-                const SliverToBoxAdapter(
-                  child: LinearProgressIndicator(minHeight: 2),
-                ),
-              SliverPadding(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                sliver: SliverToBoxAdapter(
-                  child: _SponsoredHeaderBar(
-                    onSearchTap: () => _searchFocusNode.requestFocus(),
-                  ),
-                ),
+    return AppShellBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SafeArea(
+          child: RefreshIndicator(
+            color: OpportunityDashboardPalette.primary,
+            backgroundColor: OpportunityDashboardPalette.surface,
+            onRefresh: () => _loadData(force: true),
+            child: CustomScrollView(
+              physics: const BouncingScrollPhysics(
+                parent: AlwaysScrollableScrollPhysics(),
               ),
-              SliverPadding(
-                padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
-                sliver: SliverToBoxAdapter(
-                  child: Text(
-                    'Sponsored\nOpportunities',
-                    style: GoogleFonts.poppins(
-                      fontSize: 29,
-                      fontWeight: FontWeight.w700,
-                      height: 1.04,
-                      color: OpportunityDashboardPalette.textPrimary,
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              slivers: [
+                if (opportunityProvider.isLoading &&
+                    allOpportunities.isNotEmpty)
+                  const SliverToBoxAdapter(
+                    child: LinearProgressIndicator(minHeight: 2),
+                  ),
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                  sliver: SliverToBoxAdapter(
+                    child: _SponsoredHeaderBar(
+                      onSearchTap: () => _searchFocusNode.requestFocus(),
                     ),
                   ),
                 ),
-              ),
-              SliverPadding(
-                padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
-                sliver: SliverToBoxAdapter(
-                  child: _SponsoredSearchBar(
-                    controller: _searchController,
-                    focusNode: _searchFocusNode,
-                    onClear: _searchQuery.isEmpty
-                        ? null
-                        : () => _searchController.clear(),
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
+                  sliver: SliverToBoxAdapter(
+                    child: Text(
+                      'Sponsored\nOpportunities',
+                      style: GoogleFonts.poppins(
+                        fontSize: 29,
+                        fontWeight: FontWeight.w700,
+                        height: 1.04,
+                        color: OpportunityDashboardPalette.textPrimary,
+                      ),
+                    ),
                   ),
                 ),
-              ),
-              SliverPadding(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                sliver: SliverToBoxAdapter(
-                  child: SizedBox(
-                    height: 36,
-                    child: ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: _filters.length,
-                      separatorBuilder: (context, index) =>
-                          const SizedBox(width: 8),
-                      itemBuilder: (context, index) {
-                        final filter = _filters[index];
-                        final isActive = filter.value == _activeFilter;
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
+                  sliver: SliverToBoxAdapter(
+                    child: _SponsoredSearchBar(
+                      controller: _searchController,
+                      focusNode: _searchFocusNode,
+                      onClear: _searchQuery.isEmpty
+                          ? null
+                          : () => _searchController.clear(),
+                    ),
+                  ),
+                ),
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                  sliver: SliverToBoxAdapter(
+                    child: SizedBox(
+                      height: 36,
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: _filters.length,
+                        separatorBuilder: (context, index) =>
+                            const SizedBox(width: 8),
+                        itemBuilder: (context, index) {
+                          final filter = _filters[index];
+                          final isActive = filter.value == _activeFilter;
 
-                        return _SponsoredFilterChip(
-                          label: filter.label,
-                          isActive: isActive,
-                          onTap: () {
-                            if (_activeFilter == filter.value) {
-                              return;
-                            }
-                            setState(() {
-                              _activeFilter = filter.value;
-                            });
-                          },
+                          return _SponsoredFilterChip(
+                            label: filter.label,
+                            isActive: isActive,
+                            onTap: () {
+                              if (_activeFilter == filter.value) {
+                                return;
+                              }
+                              setState(() {
+                                _activeFilter = filter.value;
+                              });
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+                if (opportunityProvider.isLoading && allOpportunities.isEmpty)
+                  const SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: Center(child: CircularProgressIndicator()),
+                  )
+                else if (visibleCards.isEmpty)
+                  SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
+                      child: _SponsoredEmptyState(
+                        title: 'No sponsored opportunities found',
+                        subtitle:
+                            'Try adjusting your search or filters to uncover more partner-backed programs.',
+                      ),
+                    ),
+                  )
+                else
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 18),
+                    sliver: SliverList.separated(
+                      itemCount: visibleCards.length,
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(height: 10),
+                      itemBuilder: (context, index) {
+                        final item = visibleCards[index];
+                        final opportunity = item.opportunity;
+                        final isBusy =
+                            opportunity != null &&
+                            _busyApplyIds.contains(opportunity.id);
+
+                        return _SponsoredOpportunityCard(
+                          item: item,
+                          isApplying: isBusy,
+                          onTap: opportunity == null
+                              ? null
+                              : () => _openOpportunity(opportunity),
+                          onApply: () => _applyNow(item),
+                          onViewDetails: opportunity == null
+                              ? null
+                              : () => _openOpportunity(opportunity),
                         );
                       },
                     ),
                   ),
-                ),
-              ),
-              if (opportunityProvider.isLoading && allOpportunities.isEmpty)
-                const SliverFillRemaining(
-                  hasScrollBody: false,
-                  child: Center(child: CircularProgressIndicator()),
-                )
-              else if (visibleCards.isEmpty)
-                SliverFillRemaining(
-                  hasScrollBody: false,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
-                    child: _SponsoredEmptyState(
-                      title: 'No sponsored opportunities found',
-                      subtitle:
-                          'Try adjusting your search or filters to uncover more partner-backed programs.',
-                    ),
-                  ),
-                )
-              else
-                SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 18),
-                  sliver: SliverList.separated(
-                    itemCount: visibleCards.length,
-                    separatorBuilder: (context, index) =>
-                        const SizedBox(height: 10),
-                    itemBuilder: (context, index) {
-                      final item = visibleCards[index];
-                      final opportunity = item.opportunity;
-                      final isBusy =
-                          opportunity != null &&
-                          _busyApplyIds.contains(opportunity.id);
-
-                      return _SponsoredOpportunityCard(
-                        item: item,
-                        isApplying: isBusy,
-                        onTap: opportunity == null
-                            ? null
-                            : () => _openOpportunity(opportunity),
-                        onApply: () => _applyNow(item),
-                        onViewDetails: opportunity == null
-                            ? null
-                            : () => _openOpportunity(opportunity),
-                      );
-                    },
-                  ),
-                ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

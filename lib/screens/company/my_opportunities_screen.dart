@@ -10,6 +10,7 @@ import '../../providers/notification_provider.dart';
 import '../../utils/company_dashboard_palette.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
+import '../../widgets/app_shell_background.dart';
 import '../../widgets/profile_avatar.dart';
 import '../notifications_screen.dart';
 import '../settings/settings_screen.dart';
@@ -710,429 +711,454 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
         .where((item) => item.status == 'open')
         .length;
 
-    return Scaffold(
-      backgroundColor: _OpportunityPalette.background,
-      floatingActionButton: FloatingActionButton(
-        heroTag: 'company-opportunity-fab',
-        backgroundColor: _OpportunityPalette.primary,
-        foregroundColor: Colors.white,
-        elevation: 8,
-        onPressed: _openPublish,
-        child: const Icon(Icons.add_rounded, size: 30),
-      ),
-      body: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        child: SafeArea(
-          bottom: false,
-          child: RefreshIndicator(
-            color: _OpportunityPalette.primary,
-            onRefresh: _loadCompanyData,
-            child: CustomScrollView(
-              physics: const BouncingScrollPhysics(
-                parent: AlwaysScrollableScrollPhysics(),
-              ),
-              slivers: [
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 14, 20, 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            _HeaderIconButton(
-                              icon: Icons.menu_rounded,
-                              onTap: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) => const SettingsScreen(),
-                                  ),
-                                );
-                              },
-                            ),
-                            const SizedBox(width: 14),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Opportunities',
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 25,
-                                      fontWeight: FontWeight.w700,
-                                      color: _OpportunityPalette.textPrimary,
-                                      height: 1.05,
+    return AppShellBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        floatingActionButton: FloatingActionButton(
+          heroTag: 'company-opportunity-fab',
+          backgroundColor: _OpportunityPalette.primary,
+          foregroundColor: Colors.white,
+          elevation: 8,
+          onPressed: _openPublish,
+          child: const Icon(Icons.add_rounded, size: 30),
+        ),
+        body: GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: SafeArea(
+            bottom: false,
+            child: RefreshIndicator(
+              color: _OpportunityPalette.primary,
+              onRefresh: _loadCompanyData,
+              child: CustomScrollView(
+                physics: const BouncingScrollPhysics(
+                  parent: AlwaysScrollableScrollPhysics(),
+                ),
+                slivers: [
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 14, 20, 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              _HeaderIconButton(
+                                icon: Icons.menu_rounded,
+                                onTap: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) => const SettingsScreen(),
                                     ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  const SizedBox(height: 3),
-                                  Text(
-                                    'Manage roles and keep listings polished.',
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 11.5,
-                                      height: 1.35,
-                                      color: _OpportunityPalette.textSecondary,
+                                  );
+                                },
+                              ),
+                              const SizedBox(width: 14),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Opportunities',
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 25,
+                                        fontWeight: FontWeight.w700,
+                                        color: _OpportunityPalette.textPrimary,
+                                        height: 1.05,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
                                     ),
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            _NotificationIconButton(
-                              unreadCount: unreadCount,
-                              onTap: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) => const NotificationsScreen(),
-                                  ),
-                                );
-                              },
-                            ),
-                            const SizedBox(width: 12),
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) =>
-                                        const CompanyProfileScreen(),
-                                  ),
-                                );
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.all(3),
-                                decoration: BoxDecoration(
-                                  color: _OpportunityPalette.surface,
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: _OpportunityPalette.border,
-                                  ),
+                                    const SizedBox(height: 3),
+                                    Text(
+                                      'Manage roles and keep listings polished.',
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 11.5,
+                                        height: 1.35,
+                                        color:
+                                            _OpportunityPalette.textSecondary,
+                                      ),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
                                 ),
-                                child: ProfileAvatar(user: user, radius: 17),
                               ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 18),
-                        Container(
-                          padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [
-                                _OpportunityPalette.primary,
-                                CompanyDashboardPalette.primaryDark,
-                              ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                            borderRadius: BorderRadius.circular(30),
-                            border: Border.all(
-                              color: Colors.white.withValues(alpha: 0.10),
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: _OpportunityPalette.primary.withValues(
-                                  alpha: 0.20,
+                              _NotificationIconButton(
+                                unreadCount: unreadCount,
+                                onTap: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                          const NotificationsScreen(),
+                                    ),
+                                  );
+                                },
+                              ),
+                              const SizedBox(width: 12),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                          const CompanyProfileScreen(),
+                                    ),
+                                  );
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(3),
+                                  decoration: BoxDecoration(
+                                    color: _OpportunityPalette.surface,
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: _OpportunityPalette.border,
+                                    ),
+                                  ),
+                                  child: ProfileAvatar(user: user, radius: 17),
                                 ),
-                                blurRadius: 24,
-                                offset: const Offset(0, 16),
                               ),
                             ],
                           ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Text(
-                                    'Company pipeline',
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 13,
-                                      color: Colors.white.withValues(
-                                        alpha: 0.88,
-                                      ),
-                                      fontWeight: FontWeight.w600,
-                                    ),
+                          const SizedBox(height: 18),
+                          Container(
+                            padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                colors: [
+                                  _OpportunityPalette.primary,
+                                  CompanyDashboardPalette.primaryDark,
+                                ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              borderRadius: BorderRadius.circular(30),
+                              border: Border.all(
+                                color: Colors.white.withValues(alpha: 0.10),
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: _OpportunityPalette.primary.withValues(
+                                    alpha: 0.20,
                                   ),
-                                  const Spacer(),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 10,
-                                      vertical: 6,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white.withValues(
-                                        alpha: 0.14,
-                                      ),
-                                      borderRadius: BorderRadius.circular(999),
-                                      border: Border.all(
+                                  blurRadius: 24,
+                                  offset: const Offset(0, 16),
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                      'Company pipeline',
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 13,
                                         color: Colors.white.withValues(
-                                          alpha: 0.16,
+                                          alpha: 0.88,
+                                        ),
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    const Spacer(),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                        vertical: 6,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withValues(
+                                          alpha: 0.14,
+                                        ),
+                                        borderRadius: BorderRadius.circular(
+                                          999,
+                                        ),
+                                        border: Border.all(
+                                          color: Colors.white.withValues(
+                                            alpha: 0.16,
+                                          ),
+                                        ),
+                                      ),
+                                      child: Text(
+                                        '$openCount live',
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w700,
+                                          color: Colors.white,
                                         ),
                                       ),
                                     ),
-                                    child: Text(
-                                      '$openCount live',
-                                      style: GoogleFonts.poppins(
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w700,
-                                        color: Colors.white,
+                                  ],
+                                ),
+                                const SizedBox(height: 14),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: _HeroMetric(
+                                        label: 'Total',
+                                        value:
+                                            '${provider.opportunities.length}',
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 14),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: _HeroMetric(
-                                      label: 'Total',
-                                      value: '${provider.opportunities.length}',
-                                    ),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Expanded(
-                                    child: _HeroMetric(
-                                      label: 'Live',
-                                      value: '$openCount',
-                                    ),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Expanded(
-                                    child: _HeroMetric(
-                                      label: 'Applicants',
-                                      value: '$totalApplicants',
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 12),
-                              Text(
-                                totalApplicants == 0
-                                    ? 'Your opportunities are ready for new applicants.'
-                                    : 'Track openings and applicant flow in one place.',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 11.5,
-                                  height: 1.4,
-                                  color: Colors.white.withValues(alpha: 0.88),
-                                ),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        Container(
-                          decoration: BoxDecoration(
-                            color: _OpportunityPalette.surface,
-                            borderRadius: BorderRadius.circular(26),
-                            border: Border.all(
-                              color: _OpportunityPalette.border,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.04),
-                                blurRadius: 20,
-                                offset: const Offset(0, 12),
-                              ),
-                            ],
-                          ),
-                          child: TextField(
-                            controller: _searchController,
-                            textInputAction: TextInputAction.search,
-                            style: GoogleFonts.poppins(
-                              fontSize: 14,
-                              color: _OpportunityPalette.textPrimary,
-                            ),
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 20,
-                                vertical: 16,
-                              ),
-                              prefixIcon: const Padding(
-                                padding: EdgeInsets.only(left: 12, right: 8),
-                                child: Icon(
-                                  Icons.search_rounded,
-                                  color: _OpportunityPalette.textMuted,
-                                ),
-                              ),
-                              prefixIconConstraints: const BoxConstraints(
-                                minWidth: 58,
-                                minHeight: 22,
-                              ),
-                              suffixIcon: _searchQuery.isEmpty
-                                  ? null
-                                  : IconButton(
-                                      onPressed: _searchController.clear,
-                                      icon: const Icon(
-                                        Icons.close_rounded,
-                                        color: _OpportunityPalette.textMuted,
+                                    const SizedBox(width: 10),
+                                    Expanded(
+                                      child: _HeroMetric(
+                                        label: 'Live',
+                                        value: '$openCount',
                                       ),
                                     ),
-                              hintText: 'Search by title, location, or keyword',
-                              hintStyle: GoogleFonts.poppins(
-                                fontSize: 12.5,
-                                color: _OpportunityPalette.textMuted,
-                              ),
+                                    const SizedBox(width: 10),
+                                    Expanded(
+                                      child: _HeroMetric(
+                                        label: 'Applicants',
+                                        value: '$totalApplicants',
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 12),
+                                Text(
+                                  totalApplicants == 0
+                                      ? 'Your opportunities are ready for new applicants.'
+                                      : 'Track openings and applicant flow in one place.',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 11.5,
+                                    height: 1.4,
+                                    color: Colors.white.withValues(alpha: 0.88),
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 18),
-                        Row(
-                          children: [
-                            Text(
-                              'ACTIVE FILTERS',
+                          const SizedBox(height: 16),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: _OpportunityPalette.surface,
+                              borderRadius: BorderRadius.circular(26),
+                              border: Border.all(
+                                color: _OpportunityPalette.border,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.04),
+                                  blurRadius: 20,
+                                  offset: const Offset(0, 12),
+                                ),
+                              ],
+                            ),
+                            child: TextField(
+                              controller: _searchController,
+                              textInputAction: TextInputAction.search,
                               style: GoogleFonts.poppins(
-                                fontSize: 12,
-                                letterSpacing: 0.9,
-                                fontWeight: FontWeight.w700,
-                                color: _OpportunityPalette.textSecondary,
+                                fontSize: 14,
+                                color: _OpportunityPalette.textPrimary,
                               ),
-                            ),
-                            const SizedBox(width: 8),
-                            _CounterBadge(count: _activeFilterCount),
-                            const Spacer(),
-                            TextButton(
-                              onPressed: _hasActiveFilters
-                                  ? _clearFilters
-                                  : null,
-                              style: TextButton.styleFrom(
-                                padding: EdgeInsets.zero,
-                                minimumSize: Size.zero,
-                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                              ),
-                              child: Text(
-                                'Clear all',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                  color: _hasActiveFilters
-                                      ? _OpportunityPalette.textSecondary
-                                      : _OpportunityPalette.textMuted,
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                  vertical: 16,
                                 ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          physics: const BouncingScrollPhysics(),
-                          child: Row(
-                            children: [
-                              _SegmentGroup(
-                                selectedFilter: _selectedFilter,
-                                onSelected: (filter) {
-                                  setState(() => _selectedFilter = filter);
-                                },
-                              ),
-                              const SizedBox(width: 10),
-                              _SortButton(
-                                selected: _sortByApplicants,
-                                onTap: () {
-                                  setState(() {
-                                    _sortByApplicants = !_sortByApplicants;
-                                  });
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          physics: const BouncingScrollPhysics(),
-                          child: _TypeFilterGroup(
-                            selectedFilter: _selectedTypeFilter,
-                            onSelected: (filter) {
-                              setState(() => _selectedTypeFilter = filter);
-                            },
-                          ),
-                        ),
-                        if ((provider.opportunitiesError ?? '')
-                            .trim()
-                            .isNotEmpty)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 16),
-                            child: _InlineBanner(
-                              icon: Icons.info_outline_rounded,
-                              title: 'Could not refresh opportunities',
-                              message: provider.opportunitiesError!,
-                              tone: _OpportunityPalette.error,
-                              background: const Color(0xFFFFF1F2),
-                            ),
-                          ),
-                        const SizedBox(height: 12),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                'Showing ${opportunities.length} / ${provider.opportunities.length} opportunities',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 11.5,
+                                prefixIcon: const Padding(
+                                  padding: EdgeInsets.only(left: 12, right: 8),
+                                  child: Icon(
+                                    Icons.search_rounded,
+                                    color: _OpportunityPalette.textMuted,
+                                  ),
+                                ),
+                                prefixIconConstraints: const BoxConstraints(
+                                  minWidth: 58,
+                                  minHeight: 22,
+                                ),
+                                suffixIcon: _searchQuery.isEmpty
+                                    ? null
+                                    : IconButton(
+                                        onPressed: _searchController.clear,
+                                        icon: const Icon(
+                                          Icons.close_rounded,
+                                          color: _OpportunityPalette.textMuted,
+                                        ),
+                                      ),
+                                hintText:
+                                    'Search by title, location, or keyword',
+                                hintStyle: GoogleFonts.poppins(
+                                  fontSize: 12.5,
                                   color: _OpportunityPalette.textMuted,
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 12),
-                            _ViewToggle(
-                              isCompact: _isCompactListView,
-                              onChanged: (compact) {
-                                setState(() => _isCompactListView = compact);
+                          ),
+                          const SizedBox(height: 18),
+                          Row(
+                            children: [
+                              Text(
+                                'ACTIVE FILTERS',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 12,
+                                  letterSpacing: 0.9,
+                                  fontWeight: FontWeight.w700,
+                                  color: _OpportunityPalette.textSecondary,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              _CounterBadge(count: _activeFilterCount),
+                              const Spacer(),
+                              TextButton(
+                                onPressed: _hasActiveFilters
+                                    ? _clearFilters
+                                    : null,
+                                style: TextButton.styleFrom(
+                                  padding: EdgeInsets.zero,
+                                  minimumSize: Size.zero,
+                                  tapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
+                                ),
+                                child: Text(
+                                  'Clear all',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                    color: _hasActiveFilters
+                                        ? _OpportunityPalette.textSecondary
+                                        : _OpportunityPalette.textMuted,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            physics: const BouncingScrollPhysics(),
+                            child: Row(
+                              children: [
+                                _SegmentGroup(
+                                  selectedFilter: _selectedFilter,
+                                  onSelected: (filter) {
+                                    setState(() => _selectedFilter = filter);
+                                  },
+                                ),
+                                const SizedBox(width: 10),
+                                _SortButton(
+                                  selected: _sortByApplicants,
+                                  onTap: () {
+                                    setState(() {
+                                      _sortByApplicants = !_sortByApplicants;
+                                    });
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            physics: const BouncingScrollPhysics(),
+                            child: _TypeFilterGroup(
+                              selectedFilter: _selectedTypeFilter,
+                              onSelected: (filter) {
+                                setState(() => _selectedTypeFilter = filter);
                               },
                             ),
-                          ],
-                        ),
-                      ],
+                          ),
+                          if ((provider.opportunitiesError ?? '')
+                              .trim()
+                              .isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 16),
+                              child: _InlineBanner(
+                                icon: Icons.info_outline_rounded,
+                                title: 'Could not refresh opportunities',
+                                message: provider.opportunitiesError!,
+                                tone: _OpportunityPalette.error,
+                                background: const Color(0xFFFFF1F2),
+                              ),
+                            ),
+                          const SizedBox(height: 12),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  'Showing ${opportunities.length} / ${provider.opportunities.length} opportunities',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 11.5,
+                                    color: _OpportunityPalette.textMuted,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              _ViewToggle(
+                                isCompact: _isCompactListView,
+                                onChanged: (compact) {
+                                  setState(() => _isCompactListView = compact);
+                                },
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                if (provider.opportunitiesLoading &&
-                    provider.opportunities.isEmpty)
-                  const SliverFillRemaining(
-                    hasScrollBody: false,
-                    child: _LoadingState(),
-                  )
-                else if (opportunities.isEmpty)
-                  SliverFillRemaining(
-                    hasScrollBody: false,
-                    child: _EmptyState(
-                      hasExistingOpportunities:
-                          provider.opportunities.isNotEmpty,
-                      onCreate: _openPublish,
-                    ),
-                  )
-                else
-                  SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 120),
-                    sliver: SliverList(
-                      delegate: SliverChildBuilderDelegate((context, index) {
-                        final opportunity = opportunities[index];
-                        final applicantCount =
-                            applicationCounts[opportunity.id] ?? 0;
-                        final metadata = OpportunityMetadata.buildMetadataItems(
-                          type: opportunity.type,
-                          salaryMin: opportunity.salaryMin,
-                          salaryMax: opportunity.salaryMax,
-                          salaryCurrency: opportunity.salaryCurrency,
-                          salaryPeriod: opportunity.salaryPeriod,
-                          compensationText: opportunity.compensationText,
-                          isPaid: opportunity.isPaid,
-                          employmentType: opportunity.employmentType,
-                          workMode: opportunity.workMode,
-                          duration: opportunity.duration,
-                          maxItems: 2,
-                        );
-                        void handleTap() {
-                          _showOpportunityDetails(opportunity, applicantCount);
-                        }
+                  if (provider.opportunitiesLoading &&
+                      provider.opportunities.isEmpty)
+                    const SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: _LoadingState(),
+                    )
+                  else if (opportunities.isEmpty)
+                    SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: _EmptyState(
+                        hasExistingOpportunities:
+                            provider.opportunities.isNotEmpty,
+                        onCreate: _openPublish,
+                      ),
+                    )
+                  else
+                    SliverPadding(
+                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 120),
+                      sliver: SliverList(
+                        delegate: SliverChildBuilderDelegate((context, index) {
+                          final opportunity = opportunities[index];
+                          final applicantCount =
+                              applicationCounts[opportunity.id] ?? 0;
+                          final metadata =
+                              OpportunityMetadata.buildMetadataItems(
+                                type: opportunity.type,
+                                salaryMin: opportunity.salaryMin,
+                                salaryMax: opportunity.salaryMax,
+                                salaryCurrency: opportunity.salaryCurrency,
+                                salaryPeriod: opportunity.salaryPeriod,
+                                compensationText: opportunity.compensationText,
+                                isPaid: opportunity.isPaid,
+                                employmentType: opportunity.employmentType,
+                                workMode: opportunity.workMode,
+                                duration: opportunity.duration,
+                                maxItems: 2,
+                              );
+                          void handleTap() {
+                            _showOpportunityDetails(
+                              opportunity,
+                              applicantCount,
+                            );
+                          }
 
-                        if (_isCompactListView) {
-                          return _OpportunityListTile(
+                          if (_isCompactListView) {
+                            return _OpportunityListTile(
+                              opportunity: opportunity,
+                              applicantCount: applicantCount,
+                              tone: _toneForType(opportunity.type),
+                              statusTone: _toneForStatus(opportunity.status),
+                              timeLeftLabel: _timeLeftLabel(opportunity),
+                              postedLabel: _postedLabel(opportunity),
+                              metadata: metadata,
+                              statusLabel: _statusLabel(opportunity.status),
+                              onTap: handleTap,
+                            );
+                          }
+
+                          return _OpportunityCard(
                             opportunity: opportunity,
                             applicantCount: applicantCount,
                             tone: _toneForType(opportunity.type),
@@ -1143,23 +1169,11 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
                             statusLabel: _statusLabel(opportunity.status),
                             onTap: handleTap,
                           );
-                        }
-
-                        return _OpportunityCard(
-                          opportunity: opportunity,
-                          applicantCount: applicantCount,
-                          tone: _toneForType(opportunity.type),
-                          statusTone: _toneForStatus(opportunity.status),
-                          timeLeftLabel: _timeLeftLabel(opportunity),
-                          postedLabel: _postedLabel(opportunity),
-                          metadata: metadata,
-                          statusLabel: _statusLabel(opportunity.status),
-                          onTap: handleTap,
-                        );
-                      }, childCount: opportunities.length),
+                        }, childCount: opportunities.length),
+                      ),
                     ),
-                  ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -1173,7 +1187,6 @@ class _OpportunityPalette {
   static const Color primarySoft = CompanyDashboardPalette.primarySoft;
   static const Color accent = Color(0xFFE9B05A);
   static const Color accentSoft = Color(0xFFFFF8EE);
-  static const Color background = Color(0xFFF8FAFC);
   static const Color surface = CompanyDashboardPalette.surface;
   static const Color border = CompanyDashboardPalette.border;
   static const Color textPrimary = CompanyDashboardPalette.textPrimary;

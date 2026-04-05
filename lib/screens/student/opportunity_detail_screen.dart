@@ -12,6 +12,7 @@ import '../../providers/saved_opportunity_provider.dart';
 import '../../services/application_service.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
+import '../../widgets/app_shell_background.dart';
 import '../../widgets/opportunity_details/opportunity_details_widgets.dart';
 
 class OpportunityDetailScreen extends StatelessWidget {
@@ -593,137 +594,116 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
     final canShowBookmark = authProvider.userModel != null;
     final infoCards = _buildInfoCards();
 
-    return Scaffold(
-      backgroundColor: theme.pageBackground,
-      bottomNavigationBar: SafeArea(
-        top: false,
-        child: FutureBuilder<ApplicationEligibilityStatus>(
-          future: _eligibilityFuture,
-          builder: (context, snapshot) {
-            final eligibility =
-                snapshot.data ?? ApplicationEligibilityStatus.available;
-            final isCheckingEligibility =
-                snapshot.connectionState == ConnectionState.waiting;
-            final canApply =
-                eligibility == ApplicationEligibilityStatus.available &&
-                !applicationProvider.isLoading &&
-                !isCheckingEligibility;
+    return AppShellBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        bottomNavigationBar: SafeArea(
+          top: false,
+          child: FutureBuilder<ApplicationEligibilityStatus>(
+            future: _eligibilityFuture,
+            builder: (context, snapshot) {
+              final eligibility =
+                  snapshot.data ?? ApplicationEligibilityStatus.available;
+              final isCheckingEligibility =
+                  snapshot.connectionState == ConnectionState.waiting;
+              final canApply =
+                  eligibility == ApplicationEligibilityStatus.available &&
+                  !applicationProvider.isLoading &&
+                  !isCheckingEligibility;
 
-            return ApplyBar(
-              theme: theme,
-              onShare: _shareOpportunity,
-              onApply: canApply ? _apply : null,
-              applyLabel: isCheckingEligibility
-                  ? 'Checking...'
-                  : _buttonLabelForStatus(eligibility),
-              isBusy: applicationProvider.isLoading || isCheckingEligibility,
-            );
-          },
+              return ApplyBar(
+                theme: theme,
+                onShare: _shareOpportunity,
+                onApply: canApply ? _apply : null,
+                applyLabel: isCheckingEligibility
+                    ? 'Checking...'
+                    : _buttonLabelForStatus(eligibility),
+                isBusy: applicationProvider.isLoading || isCheckingEligibility,
+              );
+            },
+          ),
         ),
-      ),
-      body: Column(
-        children: [
-          SafeArea(
-            bottom: false,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(12, 10, 12, 6),
-              child: Row(
-                children: [
-                  _TopBarIconButton(
-                    icon: Icons.arrow_back_ios_new_rounded,
-                    onTap: () => Navigator.of(context).maybePop(),
-                  ),
-                  Expanded(
-                    child: Text(
-                      'AvenirDZ',
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        color: theme.primaryTextColor,
+        body: Column(
+          children: [
+            SafeArea(
+              bottom: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(12, 10, 12, 6),
+                child: Row(
+                  children: [
+                    _TopBarIconButton(
+                      icon: Icons.arrow_back_ios_new_rounded,
+                      onTap: () => Navigator.of(context).maybePop(),
+                    ),
+                    Expanded(
+                      child: Text(
+                        'AvenirDZ',
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: theme.primaryTextColor,
+                        ),
                       ),
                     ),
-                  ),
-                  _TopBarIconButton(
-                    icon: isSaved
-                        ? Icons.bookmark_rounded
-                        : Icons.bookmark_border_rounded,
-                    onTap: canShowBookmark ? _toggleSavedOpportunity : null,
-                    isBusy: _isBookmarkBusy,
-                    iconColor: isSaved
-                        ? theme.accentDeepColor
-                        : theme.primaryTextColor,
-                    fillColor: isSaved
-                        ? theme.accentSoftColor
-                        : theme.surfaceColor,
-                  ),
-                ],
+                    _TopBarIconButton(
+                      icon: isSaved
+                          ? Icons.bookmark_rounded
+                          : Icons.bookmark_border_rounded,
+                      onTap: canShowBookmark ? _toggleSavedOpportunity : null,
+                      isBusy: _isBookmarkBusy,
+                      iconColor: isSaved
+                          ? theme.accentDeepColor
+                          : theme.primaryTextColor,
+                      fillColor: isSaved
+                          ? theme.accentSoftColor
+                          : theme.surfaceColor,
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          Expanded(
-            child: CustomScrollView(
-              physics: const BouncingScrollPhysics(
-                parent: AlwaysScrollableScrollPhysics(),
-              ),
-              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-              slivers: [
-                SliverToBoxAdapter(
-                  child: OpportunityHeader(
-                    theme: theme,
-                    tags: _heroTags,
-                    title: widget.opportunity.title.trim().isEmpty
-                        ? 'Opportunity'
-                        : widget.opportunity.title.trim(),
-                    company: _companyName,
-                    highlightBadge: _heroBadgeLabel,
-                    companyInitial: _companyInitial,
-                  ),
+            Expanded(
+              child: CustomScrollView(
+                physics: const BouncingScrollPhysics(
+                  parent: AlwaysScrollableScrollPhysics(),
                 ),
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 14, 16, 92),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (infoCards.isNotEmpty) ...[
-                          ...infoCards.map(
-                            (card) => Padding(
-                              padding: const EdgeInsets.only(bottom: 10),
-                              child: InfoCard(
-                                theme: theme,
-                                icon: card.icon,
-                                label: card.label,
-                                value: card.value,
-                                isHighlighted: card.highlighted,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                        ],
-                        _SectionCard(
-                          theme: theme,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SectionTitle(
-                                theme: theme,
-                                title: _descriptionTitle,
-                              ),
-                              const SizedBox(height: 12),
-                              Text(
-                                _descriptionText,
-                                style: GoogleFonts.poppins(
-                                  fontSize: 12.75,
-                                  height: 1.62,
-                                  color: theme.secondaryTextColor,
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
+                slivers: [
+                  SliverToBoxAdapter(
+                    child: OpportunityHeader(
+                      theme: theme,
+                      tags: _heroTags,
+                      title: widget.opportunity.title.trim().isEmpty
+                          ? 'Opportunity'
+                          : widget.opportunity.title.trim(),
+                      company: _companyName,
+                      highlightBadge: _heroBadgeLabel,
+                      companyInitial: _companyInitial,
+                    ),
+                  ),
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 14, 16, 92),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (infoCards.isNotEmpty) ...[
+                            ...infoCards.map(
+                              (card) => Padding(
+                                padding: const EdgeInsets.only(bottom: 10),
+                                child: InfoCard(
+                                  theme: theme,
+                                  icon: card.icon,
+                                  label: card.label,
+                                  value: card.value,
+                                  isHighlighted: card.highlighted,
                                 ),
                               ),
-                            ],
-                          ),
-                        ),
-                        if (_requirementItems.isNotEmpty) ...[
-                          const SizedBox(height: 16),
+                            ),
+                            const SizedBox(height: 10),
+                          ],
                           _SectionCard(
                             theme: theme,
                             child: Column(
@@ -731,64 +711,91 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
                               children: [
                                 SectionTitle(
                                   theme: theme,
-                                  title: _requirementsTitle,
+                                  title: _descriptionTitle,
                                 ),
                                 const SizedBox(height: 12),
-                                ..._requirementItems.asMap().entries.map(
-                                  (entry) => Padding(
-                                    padding: EdgeInsets.only(
-                                      bottom:
-                                          entry.key ==
-                                              _requirementItems.length - 1
-                                          ? 0
-                                          : 8,
-                                    ),
-                                    child: RequirementItem(
-                                      theme: theme,
-                                      text: entry.value,
-                                      icon: _requirementIconForIndex(entry.key),
-                                    ),
+                                Text(
+                                  _descriptionText,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 12.75,
+                                    height: 1.62,
+                                    color: theme.secondaryTextColor,
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                        ],
-                        if (_benefitItems.isNotEmpty) ...[
-                          const SizedBox(height: 16),
-                          _SectionCard(
-                            theme: theme,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                SectionTitle(theme: theme, title: 'Benefits'),
-                                const SizedBox(height: 12),
-                                ..._benefitItems.asMap().entries.map(
-                                  (entry) => Padding(
-                                    padding: EdgeInsets.only(
-                                      bottom:
-                                          entry.key == _benefitItems.length - 1
-                                          ? 0
-                                          : 10,
-                                    ),
-                                    child: BenefitItem(
-                                      theme: theme,
-                                      text: entry.value,
+                          if (_requirementItems.isNotEmpty) ...[
+                            const SizedBox(height: 16),
+                            _SectionCard(
+                              theme: theme,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SectionTitle(
+                                    theme: theme,
+                                    title: _requirementsTitle,
+                                  ),
+                                  const SizedBox(height: 12),
+                                  ..._requirementItems.asMap().entries.map(
+                                    (entry) => Padding(
+                                      padding: EdgeInsets.only(
+                                        bottom:
+                                            entry.key ==
+                                                _requirementItems.length - 1
+                                            ? 0
+                                            : 8,
+                                      ),
+                                      child: RequirementItem(
+                                        theme: theme,
+                                        text: entry.value,
+                                        icon: _requirementIconForIndex(
+                                          entry.key,
+                                        ),
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
+                          ],
+                          if (_benefitItems.isNotEmpty) ...[
+                            const SizedBox(height: 16),
+                            _SectionCard(
+                              theme: theme,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SectionTitle(theme: theme, title: 'Benefits'),
+                                  const SizedBox(height: 12),
+                                  ..._benefitItems.asMap().entries.map(
+                                    (entry) => Padding(
+                                      padding: EdgeInsets.only(
+                                        bottom:
+                                            entry.key ==
+                                                _benefitItems.length - 1
+                                            ? 0
+                                            : 10,
+                                      ),
+                                      child: BenefitItem(
+                                        theme: theme,
+                                        text: entry.value,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ],
-                      ],
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

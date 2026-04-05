@@ -7,6 +7,7 @@ import '../../models/project_idea_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/project_idea_provider.dart';
 import '../../services/project_idea_service.dart';
+import '../../widgets/app_shell_background.dart';
 import '../../widgets/ideas/idea_metrics_row.dart';
 import '../../widgets/ideas/innovation_hub_theme.dart';
 import '../../widgets/profile_avatar.dart';
@@ -27,262 +28,267 @@ class IdeaDetailsScreen extends StatelessWidget {
     final isOwner = auth?.uid == idea?.submittedBy;
 
     if (idea == null) {
-      return Scaffold(
-        backgroundColor: InnovationHubPalette.background,
-        appBar: AppBar(
-          backgroundColor: InnovationHubPalette.background,
-          elevation: 0,
-        ),
-        body: Center(
-          child: Text(
-            'This idea is no longer available.',
-            style: InnovationHubTypography.body(
-              color: InnovationHubPalette.textPrimary,
+      return AppShellBackground(
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0),
+          body: Center(
+            child: Text(
+              'This idea is no longer available.',
+              style: InnovationHubTypography.body(
+                color: InnovationHubPalette.textPrimary,
+              ),
             ),
           ),
         ),
       );
     }
 
-    return Scaffold(
-      backgroundColor: InnovationHubPalette.background,
-      appBar: AppBar(
-        backgroundColor: InnovationHubPalette.background,
-        foregroundColor: InnovationHubPalette.textPrimary,
-        elevation: 0,
-        centerTitle: false,
-        title: Text(
-          'Innovation Hub',
-          style: InnovationHubTypography.section(size: 18),
-        ),
-        actions: [
-          IconButton(
-            tooltip: idea.isSavedByCurrentUser ? 'Unsave idea' : 'Save idea',
-            onPressed: auth == null
-                ? null
-                : () => _toggleInteraction(
-                    context,
-                    idea,
-                    ProjectIdeaInteractionType.save,
-                  ),
-            icon: Icon(
-              idea.isSavedByCurrentUser
-                  ? Icons.bookmark_rounded
-                  : Icons.bookmark_outline_rounded,
-            ),
+    return AppShellBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          foregroundColor: InnovationHubPalette.textPrimary,
+          elevation: 0,
+          centerTitle: false,
+          title: Text(
+            'Innovation Hub',
+            style: InnovationHubTypography.section(size: 18),
           ),
-          IconButton(
-            tooltip: 'Share idea',
-            onPressed: () => SharePlus.instance.share(
-              ShareParams(
-                text:
-                    '${idea.title}\n\n${idea.overviewText}\n\nShared from Innovation Hub',
+          actions: [
+            IconButton(
+              tooltip: idea.isSavedByCurrentUser ? 'Unsave idea' : 'Save idea',
+              onPressed: auth == null
+                  ? null
+                  : () => _toggleInteraction(
+                      context,
+                      idea,
+                      ProjectIdeaInteractionType.save,
+                    ),
+              icon: Icon(
+                idea.isSavedByCurrentUser
+                    ? Icons.bookmark_rounded
+                    : Icons.bookmark_outline_rounded,
               ),
             ),
-            icon: const Icon(Icons.ios_share_rounded),
-          ),
-          const SizedBox(width: 6),
-        ],
-      ),
-      bottomNavigationBar: SafeArea(
-        minimum: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-        child: _DetailsBottomActions(
-          idea: idea,
-          isOwner: isOwner,
-          onPrimaryTap: () {
-            if (isOwner) {
-              _openEdit(context, idea);
-              return;
-            }
-            _toggleInteraction(
-              context,
-              idea,
-              ProjectIdeaInteractionType.interest,
-            );
-          },
-          onSecondaryTap: () {
-            if (isOwner) {
-              _showManageTeamSheet(context, idea);
-              return;
-            }
-            _openCreatorProfile(context, idea);
-          },
-          onTertiaryTap: () {
-            if (isOwner) {
-              SharePlus.instance.share(
+            IconButton(
+              tooltip: 'Share idea',
+              onPressed: () => SharePlus.instance.share(
                 ShareParams(
                   text:
                       '${idea.title}\n\n${idea.overviewText}\n\nShared from Innovation Hub',
                 ),
-              );
-              return;
-            }
-            _toggleInteraction(context, idea, ProjectIdeaInteractionType.save);
-          },
+              ),
+              icon: const Icon(Icons.ios_share_rounded),
+            ),
+            const SizedBox(width: 6),
+          ],
         ),
-      ),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
-        children: [
-          _buildHeroCard(context, idea),
-          const SizedBox(height: 18),
-          if (idea.overviewText.trim().isNotEmpty)
-            _IdeaSectionCard(
-              title: 'Idea Overview',
-              icon: Icons.auto_awesome_rounded,
-              child: Text(
-                idea.overviewText,
-                style: InnovationHubTypography.body(
-                  color: InnovationHubPalette.textPrimary,
-                ),
-              ),
-            ),
-          if (idea.problemText.trim().isNotEmpty) ...[
-            const SizedBox(height: 14),
-            _IdeaSectionCard(
-              title: 'What problem it solves',
-              icon: Icons.help_outline_rounded,
-              child: Text(
-                idea.problemText,
-                style: InnovationHubTypography.body(
-                  color: InnovationHubPalette.textPrimary,
-                ),
-              ),
-            ),
-          ],
-          if (idea.solutionText.trim().isNotEmpty) ...[
-            const SizedBox(height: 14),
-            _IdeaSectionCard(
-              title: 'Proposed solution',
-              icon: Icons.rocket_launch_outlined,
-              child: Text(
-                idea.solutionText,
-                style: InnovationHubTypography.body(
-                  color: InnovationHubPalette.textPrimary,
-                ),
-              ),
-            ),
-          ],
-          if (idea.targetAudience.trim().isNotEmpty) ...[
-            const SizedBox(height: 14),
-            _IdeaSectionCard(
-              title: 'Target Users',
-              icon: Icons.groups_2_outlined,
-              child: Text(
-                idea.targetAudience,
-                style: InnovationHubTypography.body(
-                  color: InnovationHubPalette.textPrimary,
-                ),
-              ),
-            ),
-          ],
-          if (idea.displayTeamNeeded.isNotEmpty ||
-              idea.displaySkills.isNotEmpty) ...[
-            const SizedBox(height: 14),
-            _IdeaSectionCard(
-              title: 'Team / Roles Needed',
-              icon: Icons.diversity_3_outlined,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (idea.displayTeamNeeded.isNotEmpty)
-                    _TagWrap(label: 'Roles', values: idea.displayTeamNeeded),
-                  if (idea.displayTeamNeeded.isNotEmpty &&
-                      idea.displaySkills.isNotEmpty)
-                    const SizedBox(height: 14),
-                  if (idea.displaySkills.isNotEmpty)
-                    _TagWrap(label: 'Skills', values: idea.displaySkills),
-                ],
-              ),
-            ),
-          ],
-          const SizedBox(height: 14),
-          _IdeaSectionCard(
-            title: 'Progress / Stage',
-            icon: Icons.timeline_outlined,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Wrap(
-                  spacing: 10,
-                  runSpacing: 10,
-                  children: [
-                    _MiniInfoBadge(
-                      label: idea.displayStage,
-                      color: innovationStageColor(idea.displayStage),
-                    ),
-                    _MiniInfoBadge(
-                      label: idea.statusLabel,
-                      color: innovationStatusColor(idea.status),
-                    ),
-                    if (idea.level.trim().isNotEmpty)
-                      _MiniInfoBadge(
-                        label: academicLevelLabel(idea.level),
-                        color: InnovationHubPalette.secondary,
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  idea.lastUpdatedLabel,
-                  style: InnovationHubTypography.body(size: 13),
-                ),
-              ],
-            ),
+        bottomNavigationBar: SafeArea(
+          minimum: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+          child: _DetailsBottomActions(
+            idea: idea,
+            isOwner: isOwner,
+            onPrimaryTap: () {
+              if (isOwner) {
+                _openEdit(context, idea);
+                return;
+              }
+              _toggleInteraction(
+                context,
+                idea,
+                ProjectIdeaInteractionType.interest,
+              );
+            },
+            onSecondaryTap: () {
+              if (isOwner) {
+                _showManageTeamSheet(context, idea);
+                return;
+              }
+              _openCreatorProfile(context, idea);
+            },
+            onTertiaryTap: () {
+              if (isOwner) {
+                SharePlus.instance.share(
+                  ShareParams(
+                    text:
+                        '${idea.title}\n\n${idea.overviewText}\n\nShared from Innovation Hub',
+                  ),
+                );
+                return;
+              }
+              _toggleInteraction(
+                context,
+                idea,
+                ProjectIdeaInteractionType.save,
+              );
+            },
           ),
-          if (idea.resourcesNeeded.trim().isNotEmpty ||
-              idea.attachmentUrl.trim().isNotEmpty) ...[
+        ),
+        body: ListView(
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
+          children: [
+            _buildHeroCard(context, idea),
+            const SizedBox(height: 18),
+            if (idea.overviewText.trim().isNotEmpty)
+              _IdeaSectionCard(
+                title: 'Idea Overview',
+                icon: Icons.auto_awesome_rounded,
+                child: Text(
+                  idea.overviewText,
+                  style: InnovationHubTypography.body(
+                    color: InnovationHubPalette.textPrimary,
+                  ),
+                ),
+              ),
+            if (idea.problemText.trim().isNotEmpty) ...[
+              const SizedBox(height: 14),
+              _IdeaSectionCard(
+                title: 'What problem it solves',
+                icon: Icons.help_outline_rounded,
+                child: Text(
+                  idea.problemText,
+                  style: InnovationHubTypography.body(
+                    color: InnovationHubPalette.textPrimary,
+                  ),
+                ),
+              ),
+            ],
+            if (idea.solutionText.trim().isNotEmpty) ...[
+              const SizedBox(height: 14),
+              _IdeaSectionCard(
+                title: 'Proposed solution',
+                icon: Icons.rocket_launch_outlined,
+                child: Text(
+                  idea.solutionText,
+                  style: InnovationHubTypography.body(
+                    color: InnovationHubPalette.textPrimary,
+                  ),
+                ),
+              ),
+            ],
+            if (idea.targetAudience.trim().isNotEmpty) ...[
+              const SizedBox(height: 14),
+              _IdeaSectionCard(
+                title: 'Target Users',
+                icon: Icons.groups_2_outlined,
+                child: Text(
+                  idea.targetAudience,
+                  style: InnovationHubTypography.body(
+                    color: InnovationHubPalette.textPrimary,
+                  ),
+                ),
+              ),
+            ],
+            if (idea.displayTeamNeeded.isNotEmpty ||
+                idea.displaySkills.isNotEmpty) ...[
+              const SizedBox(height: 14),
+              _IdeaSectionCard(
+                title: 'Team / Roles Needed',
+                icon: Icons.diversity_3_outlined,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (idea.displayTeamNeeded.isNotEmpty)
+                      _TagWrap(label: 'Roles', values: idea.displayTeamNeeded),
+                    if (idea.displayTeamNeeded.isNotEmpty &&
+                        idea.displaySkills.isNotEmpty)
+                      const SizedBox(height: 14),
+                    if (idea.displaySkills.isNotEmpty)
+                      _TagWrap(label: 'Skills', values: idea.displaySkills),
+                  ],
+                ),
+              ),
+            ],
             const SizedBox(height: 14),
             _IdeaSectionCard(
-              title: 'Resources / Needs',
-              icon: Icons.inventory_2_outlined,
+              title: 'Progress / Stage',
+              icon: Icons.timeline_outlined,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (idea.resourcesNeeded.trim().isNotEmpty)
-                    Text(
-                      idea.resourcesNeeded,
-                      style: InnovationHubTypography.body(
-                        color: InnovationHubPalette.textPrimary,
+                  Wrap(
+                    spacing: 10,
+                    runSpacing: 10,
+                    children: [
+                      _MiniInfoBadge(
+                        label: idea.displayStage,
+                        color: innovationStageColor(idea.displayStage),
                       ),
-                    ),
-                  if (idea.attachmentUrl.trim().isNotEmpty) ...[
-                    if (idea.resourcesNeeded.trim().isNotEmpty)
-                      const SizedBox(height: 14),
-                    OutlinedButton.icon(
-                      onPressed: () =>
-                          _openExternalLink(context, idea.attachmentUrl),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: InnovationHubPalette.primary,
-                        side: const BorderSide(
-                          color: InnovationHubPalette.border,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
+                      _MiniInfoBadge(
+                        label: idea.statusLabel,
+                        color: innovationStatusColor(idea.status),
                       ),
-                      icon: const Icon(Icons.open_in_new_rounded),
-                      label: const Text('Open Attachment'),
-                    ),
-                  ],
+                      if (idea.level.trim().isNotEmpty)
+                        _MiniInfoBadge(
+                          label: academicLevelLabel(idea.level),
+                          color: InnovationHubPalette.secondary,
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    idea.lastUpdatedLabel,
+                    style: InnovationHubTypography.body(size: 13),
+                  ),
                 ],
               ),
             ),
-          ],
-          if (idea.impactText.trim().isNotEmpty) ...[
-            const SizedBox(height: 14),
-            _IdeaSectionCard(
-              title: 'Benefits / Impact',
-              icon: Icons.volunteer_activism_outlined,
-              child: Text(
-                idea.impactText,
-                style: InnovationHubTypography.body(
-                  color: InnovationHubPalette.textPrimary,
+            if (idea.resourcesNeeded.trim().isNotEmpty ||
+                idea.attachmentUrl.trim().isNotEmpty) ...[
+              const SizedBox(height: 14),
+              _IdeaSectionCard(
+                title: 'Resources / Needs',
+                icon: Icons.inventory_2_outlined,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (idea.resourcesNeeded.trim().isNotEmpty)
+                      Text(
+                        idea.resourcesNeeded,
+                        style: InnovationHubTypography.body(
+                          color: InnovationHubPalette.textPrimary,
+                        ),
+                      ),
+                    if (idea.attachmentUrl.trim().isNotEmpty) ...[
+                      if (idea.resourcesNeeded.trim().isNotEmpty)
+                        const SizedBox(height: 14),
+                      OutlinedButton.icon(
+                        onPressed: () =>
+                            _openExternalLink(context, idea.attachmentUrl),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: InnovationHubPalette.primary,
+                          side: const BorderSide(
+                            color: InnovationHubPalette.border,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                        icon: const Icon(Icons.open_in_new_rounded),
+                        label: const Text('Open Attachment'),
+                      ),
+                    ],
+                  ],
                 ),
               ),
-            ),
+            ],
+            if (idea.impactText.trim().isNotEmpty) ...[
+              const SizedBox(height: 14),
+              _IdeaSectionCard(
+                title: 'Benefits / Impact',
+                icon: Icons.volunteer_activism_outlined,
+                child: Text(
+                  idea.impactText,
+                  style: InnovationHubTypography.body(
+                    color: InnovationHubPalette.textPrimary,
+                  ),
+                ),
+              ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }

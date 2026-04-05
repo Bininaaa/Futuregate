@@ -11,6 +11,7 @@ import '../../providers/company_provider.dart';
 import '../../services/document_access_service.dart';
 import '../../utils/company_dashboard_palette.dart';
 import '../../utils/document_upload_validator.dart';
+import '../../widgets/app_shell_background.dart';
 import '../../widgets/profile_avatar.dart';
 import '../settings/about_avenirdz_screen.dart';
 import '../settings/help_center_screen.dart';
@@ -26,138 +27,145 @@ class CompanyProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final user = context.watch<AuthProvider>().userModel;
     if (user == null) {
-      return const Scaffold(body: Center(child: Text('Not logged in')));
+      return const AppShellBackground(
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          body: Center(child: Text('Not logged in')),
+        ),
+      );
     }
 
     final companyName = _companyName(user);
     final description = _companyDescription(user);
     final websiteUri = _websiteUri(user.website ?? '');
 
-    return Scaffold(
-      backgroundColor: const Color(0xFFF4F7FB),
-      appBar: AppBar(
+    return AppShellBackground(
+      child: Scaffold(
         backgroundColor: Colors.transparent,
-        surfaceTintColor: Colors.transparent,
-        scrolledUnderElevation: 0,
-        elevation: 0,
-        iconTheme: const IconThemeData(
-          color: CompanyDashboardPalette.textPrimary,
-        ),
-        title: Text(
-          'Company Profile',
-          style: SettingsFlowTheme.appBarTitle(
-            CompanyDashboardPalette.textPrimary,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          surfaceTintColor: Colors.transparent,
+          scrolledUnderElevation: 0,
+          elevation: 0,
+          iconTheme: const IconThemeData(
+            color: CompanyDashboardPalette.textPrimary,
           ),
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: _HeaderIconButton(
-              icon: Icons.widgets_outlined,
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const SettingsScreen()),
-              ),
+          title: Text(
+            'Company Profile',
+            style: SettingsFlowTheme.appBarTitle(
+              CompanyDashboardPalette.textPrimary,
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: _HeaderIconButton(
-              icon: Icons.edit_outlined,
-              filled: true,
-              color: CompanyDashboardPalette.accent,
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const EditCompanyProfileScreen(),
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: _HeaderIconButton(
+                icon: Icons.widgets_outlined,
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const SettingsScreen()),
                 ),
               ),
             ),
-          ),
-        ],
-      ),
-      body: Stack(
-        children: [
-          const Positioned(
-            top: -120,
-            right: -80,
-            child: _BackdropOrb(220, Color(0x1414B8A6)),
-          ),
-          const Positioned(
-            top: 190,
-            left: -70,
-            child: _BackdropOrb(160, Color(0x124328D8)),
-          ),
-          SafeArea(
-            top: false,
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 28),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildHeroCard(
-                    context,
-                    user: user,
-                    companyName: companyName,
-                    description: description,
-                    websiteUri: websiteUri,
+            Padding(
+              padding: const EdgeInsets.only(right: 16),
+              child: _HeaderIconButton(
+                icon: Icons.edit_outlined,
+                filled: true,
+                color: CompanyDashboardPalette.accent,
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const EditCompanyProfileScreen(),
                   ),
-                  const SizedBox(height: 18),
-                  const SettingsSectionHeading(
-                    title: 'Brand Story',
-                    subtitle:
-                        'A sharper company story makes the profile feel more confident and trustworthy.',
-                  ),
-                  const SizedBox(height: 10),
-                  SettingsPanel(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          description,
-                          style: GoogleFonts.poppins(
-                            fontSize: 14,
-                            height: 1.7,
-                            fontWeight: FontWeight.w500,
-                            color: CompanyDashboardPalette.textPrimary,
-                          ),
-                        ),
-                        if ((user.description ?? '').trim().isEmpty) ...[
-                          const SizedBox(height: 14),
-                          const SettingsInfoBanner(
-                            icon: Icons.edit_note_rounded,
-                            title: 'Story still missing',
-                            message:
-                                'Add a few lines about what your company builds and what students can expect from your team.',
-                            color: CompanyDashboardPalette.accent,
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 18),
-                  const SettingsSectionHeading(
-                    title: 'Details',
-                    subtitle:
-                        'The essentials students and applicants usually look for first.',
-                  ),
-                  const SizedBox(height: 10),
-                  _buildDetailsGrid(context, user, websiteUri),
-                  const SizedBox(height: 18),
-                  const SettingsSectionHeading(
-                    title: 'Verification',
-                    subtitle:
-                        'Keep your company presence trusted with an up-to-date commercial register.',
-                  ),
-                  const SizedBox(height: 10),
-                  _buildCommercialRegisterCard(context, user),
-                  const SizedBox(height: 18),
-                  _buildQuickLinks(context),
-                ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
+        body: Stack(
+          children: [
+            const Positioned(
+              top: -120,
+              right: -80,
+              child: _BackdropOrb(220, Color(0x1414B8A6)),
+            ),
+            const Positioned(
+              top: 190,
+              left: -70,
+              child: _BackdropOrb(160, Color(0x124328D8)),
+            ),
+            SafeArea(
+              top: false,
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 28),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildHeroCard(
+                      context,
+                      user: user,
+                      companyName: companyName,
+                      description: description,
+                      websiteUri: websiteUri,
+                    ),
+                    const SizedBox(height: 18),
+                    const SettingsSectionHeading(
+                      title: 'Brand Story',
+                      subtitle:
+                          'A sharper company story makes the profile feel more confident and trustworthy.',
+                    ),
+                    const SizedBox(height: 10),
+                    SettingsPanel(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            description,
+                            style: GoogleFonts.poppins(
+                              fontSize: 14,
+                              height: 1.7,
+                              fontWeight: FontWeight.w500,
+                              color: CompanyDashboardPalette.textPrimary,
+                            ),
+                          ),
+                          if ((user.description ?? '').trim().isEmpty) ...[
+                            const SizedBox(height: 14),
+                            const SettingsInfoBanner(
+                              icon: Icons.edit_note_rounded,
+                              title: 'Story still missing',
+                              message:
+                                  'Add a few lines about what your company builds and what students can expect from your team.',
+                              color: CompanyDashboardPalette.accent,
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 18),
+                    const SettingsSectionHeading(
+                      title: 'Details',
+                      subtitle:
+                          'The essentials students and applicants usually look for first.',
+                    ),
+                    const SizedBox(height: 10),
+                    _buildDetailsGrid(context, user, websiteUri),
+                    const SizedBox(height: 18),
+                    const SettingsSectionHeading(
+                      title: 'Verification',
+                      subtitle:
+                          'Keep your company presence trusted with an up-to-date commercial register.',
+                    ),
+                    const SizedBox(height: 10),
+                    _buildCommercialRegisterCard(context, user),
+                    const SizedBox(height: 18),
+                    _buildQuickLinks(context),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -845,98 +853,107 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
   Widget build(BuildContext context) {
     final user = context.watch<AuthProvider>().userModel;
     if (user == null) {
-      return const Scaffold(body: Center(child: Text('Not logged in')));
+      return const AppShellBackground(
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          body: Center(child: Text('Not logged in')),
+        ),
+      );
     }
 
-    return Scaffold(
-      backgroundColor: const Color(0xFFF4F7FB),
-      appBar: AppBar(
+    return AppShellBackground(
+      child: Scaffold(
         backgroundColor: Colors.transparent,
-        surfaceTintColor: Colors.transparent,
-        scrolledUnderElevation: 0,
-        elevation: 0,
-        iconTheme: const IconThemeData(
-          color: CompanyDashboardPalette.textPrimary,
-        ),
-        title: Text(
-          'Edit Company Profile',
-          style: SettingsFlowTheme.appBarTitle(
-            CompanyDashboardPalette.textPrimary,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          surfaceTintColor: Colors.transparent,
+          scrolledUnderElevation: 0,
+          elevation: 0,
+          iconTheme: const IconThemeData(
+            color: CompanyDashboardPalette.textPrimary,
           ),
-        ),
-      ),
-      bottomNavigationBar: SafeArea(
-        top: false,
-        child: Container(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            border: Border(top: BorderSide(color: SettingsFlowPalette.border)),
-          ),
-          child: ElevatedButton.icon(
-            onPressed: _saving ? null : _save,
-            icon: _saving
-                ? const SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: Colors.white,
-                    ),
-                  )
-                : const Icon(Icons.check_rounded),
-            label: Text(
-              _saving ? 'Saving changes...' : 'Save Changes',
-              style: GoogleFonts.poppins(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            style: ElevatedButton.styleFrom(
-              minimumSize: const Size.fromHeight(54),
-              elevation: 0,
-              backgroundColor: CompanyDashboardPalette.primary,
-              foregroundColor: Colors.white,
-              disabledBackgroundColor: CompanyDashboardPalette.primary
-                  .withValues(alpha: 0.45),
-              shape: RoundedRectangleBorder(
-                borderRadius: SettingsFlowTheme.radius(20),
-              ),
+          title: Text(
+            'Edit Company Profile',
+            style: SettingsFlowTheme.appBarTitle(
+              CompanyDashboardPalette.textPrimary,
             ),
           ),
         ),
-      ),
-      body: Stack(
-        children: [
-          const Positioned(
-            top: -110,
-            right: -72,
-            child: _BackdropOrb(210, Color(0x1214B8A6)),
-          ),
-          SafeArea(
-            top: false,
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 110),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildEditorIntro(user),
-                    const SizedBox(height: 18),
-                    _buildIdentitySection(),
-                    const SizedBox(height: 18),
-                    _buildContactSection(),
-                    const SizedBox(height: 18),
-                    _buildLogoSection(user),
-                    const SizedBox(height: 18),
-                    _buildRegisterSection(user),
-                  ],
+        bottomNavigationBar: SafeArea(
+          top: false,
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border(
+                top: BorderSide(color: SettingsFlowPalette.border),
+              ),
+            ),
+            child: ElevatedButton.icon(
+              onPressed: _saving ? null : _save,
+              icon: _saving
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                  : const Icon(Icons.check_rounded),
+              label: Text(
+                _saving ? 'Saving changes...' : 'Save Changes',
+                style: GoogleFonts.poppins(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                minimumSize: const Size.fromHeight(54),
+                elevation: 0,
+                backgroundColor: CompanyDashboardPalette.primary,
+                foregroundColor: Colors.white,
+                disabledBackgroundColor: CompanyDashboardPalette.primary
+                    .withValues(alpha: 0.45),
+                shape: RoundedRectangleBorder(
+                  borderRadius: SettingsFlowTheme.radius(20),
                 ),
               ),
             ),
           ),
-        ],
+        ),
+        body: Stack(
+          children: [
+            const Positioned(
+              top: -110,
+              right: -72,
+              child: _BackdropOrb(210, Color(0x1214B8A6)),
+            ),
+            SafeArea(
+              top: false,
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 110),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildEditorIntro(user),
+                      const SizedBox(height: 18),
+                      _buildIdentitySection(),
+                      const SizedBox(height: 18),
+                      _buildContactSection(),
+                      const SizedBox(height: 18),
+                      _buildLogoSection(user),
+                      const SizedBox(height: 18),
+                      _buildRegisterSection(user),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

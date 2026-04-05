@@ -836,55 +836,57 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
             ],
           ),
         ),
-        body: TabBarView(
-          children: [
-            CustomScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              slivers: [
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                    child: AdminSurface(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const AdminSectionHeader(
-                            eyebrow: 'Studio',
-                            title: 'Video Import Workspace',
-                            subtitle:
-                                'Search and curate YouTube lessons in one continuous flow instead of working inside separate fixed windows.',
-                          ),
-                          const SizedBox(height: 14),
-                          Wrap(
-                            spacing: 10,
-                            runSpacing: 10,
-                            children: [
-                              AdminPill(
-                                label: '${_results.length} results',
-                                color: AdminPalette.danger,
-                                icon: Icons.ondemand_video_rounded,
-                              ),
-                              AdminPill(
-                                label: _selectedDomain,
-                                color: AdminPalette.activity,
-                              ),
-                              AdminPill(
-                                label: _selectedLevel,
-                                color: AdminPalette.warning,
-                              ),
-                            ],
-                          ),
-                        ],
+        body: AdminShellBackground(
+          child: TabBarView(
+            children: [
+              CustomScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                slivers: [
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                      child: AdminSurface(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const AdminSectionHeader(
+                              eyebrow: 'Studio',
+                              title: 'Video Import Workspace',
+                              subtitle:
+                                  'Search and curate YouTube lessons in one continuous flow instead of working inside separate fixed windows.',
+                            ),
+                            const SizedBox(height: 14),
+                            Wrap(
+                              spacing: 10,
+                              runSpacing: 10,
+                              children: [
+                                AdminPill(
+                                  label: '${_results.length} results',
+                                  color: AdminPalette.danger,
+                                  icon: Icons.ondemand_video_rounded,
+                                ),
+                                AdminPill(
+                                  label: _selectedDomain,
+                                  color: AdminPalette.activity,
+                                ),
+                                AdminPill(
+                                  label: _selectedLevel,
+                                  color: AdminPalette.warning,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-                SliverToBoxAdapter(child: _buildSearchForm()),
-                _buildSearchResults(),
-              ],
-            ),
-            _buildManageTab(provider),
-          ],
+                  SliverToBoxAdapter(child: _buildSearchForm()),
+                  _buildSearchResults(),
+                ],
+              ),
+              _buildManageTab(provider),
+            ],
+          ),
         ),
       ),
     );

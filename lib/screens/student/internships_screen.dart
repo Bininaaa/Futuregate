@@ -12,6 +12,7 @@ import '../../providers/saved_opportunity_provider.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
+import '../../widgets/app_shell_background.dart';
 import '../../widgets/profile_avatar.dart';
 import '../notifications_screen.dart';
 import 'opportunity_detail_screen.dart';
@@ -30,7 +31,6 @@ enum _InternshipsViewMode { grid, list }
 class _InternshipVisualPalette {
   const _InternshipVisualPalette._();
 
-  static const Color canvas = OpportunityDashboardPalette.background;
   static const Color surface = OpportunityDashboardPalette.surface;
   static const Color mint = OpportunityDashboardPalette.secondary;
   static const Color deepTeal = Color(0xFF0F766E);
@@ -677,210 +677,218 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
         : 182.0;
     final contentBottomPadding = 20 + MediaQuery.paddingOf(context).bottom;
 
-    return Scaffold(
-      backgroundColor: _InternshipVisualPalette.canvas,
-      body: Column(
-        children: [
-          _InternshipsHeaderBar(
-            user: authProvider.userModel,
-            unreadCount: notificationProvider.unreadCount,
-            onNotificationsPressed: _openNotifications,
-          ),
-          if (opportunityProvider.isLoading && hasLiveData)
-            const LinearProgressIndicator(
-              minHeight: 2,
-              color: _InternshipVisualPalette.mint,
+    return AppShellBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Column(
+          children: [
+            _InternshipsHeaderBar(
+              user: authProvider.userModel,
+              unreadCount: notificationProvider.unreadCount,
+              onNotificationsPressed: _openNotifications,
             ),
-          Expanded(
-            child: RefreshIndicator(
-              color: _InternshipVisualPalette.mint,
-              backgroundColor: _InternshipVisualPalette.surface,
-              onRefresh: () => _loadData(force: true),
-              child: ListView(
-                controller: _scrollController,
-                physics: const BouncingScrollPhysics(
-                  parent: AlwaysScrollableScrollPhysics(),
-                ),
-                keyboardDismissBehavior:
-                    ScrollViewKeyboardDismissBehavior.onDrag,
-                padding: EdgeInsets.fromLTRB(16, 18, 16, contentBottomPadding),
-                children: [
-                  const _InternshipsIntro(),
-                  const SizedBox(height: 16),
-                  _InternshipSearchBar(
-                    controller: _searchController,
-                    focusNode: _searchFocusNode,
-                    onClear: _searchQuery.isEmpty
-                        ? null
-                        : _searchController.clear,
+            if (opportunityProvider.isLoading && hasLiveData)
+              const LinearProgressIndicator(
+                minHeight: 2,
+                color: _InternshipVisualPalette.mint,
+              ),
+            Expanded(
+              child: RefreshIndicator(
+                color: _InternshipVisualPalette.mint,
+                backgroundColor: _InternshipVisualPalette.surface,
+                onRefresh: () => _loadData(force: true),
+                child: ListView(
+                  controller: _scrollController,
+                  physics: const BouncingScrollPhysics(
+                    parent: AlwaysScrollableScrollPhysics(),
                   ),
-                  const SizedBox(height: 10),
-                  _InternshipFilterChipRow(
-                    activeFilter: _selectedQuickFilter,
-                    filters: _quickFilters,
-                    onSelected: (filter) {
-                      setState(() {
-                        _selectedQuickFilter = _selectedQuickFilter == filter
-                            ? null
-                            : filter;
-                      });
-                    },
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
+                  padding: EdgeInsets.fromLTRB(
+                    16,
+                    18,
+                    16,
+                    contentBottomPadding,
                   ),
-                  const SizedBox(height: 18),
-                  _InternshipSectionHeader(
-                    title: 'Apply This Week',
-                    actionLabel: 'Browse all',
-                    onAction: _scrollToAvailableSection,
-                  ),
-                  const SizedBox(height: 10),
-                  if (hasLiveData && filteredInternships.isEmpty)
-                    const _InternshipsEmptyState(
-                      title: 'No internships match these filters',
-                      subtitle:
-                          'Try another search or remove a chip to reveal more opportunities.',
-                    )
-                  else
-                    _ApplyThisWeekSection(
-                      items: applyThisWeek,
-                      onOpenOpportunity: (item) {
-                        if (item.opportunity != null) {
-                          _openOpportunity(item.opportunity!);
-                        }
-                      },
-                      onToggleSaved: (item) {
-                        if (item.opportunity != null) {
-                          _toggleSavedOpportunity(item.opportunity!);
-                        }
-                      },
-                      isSaving: savedProvider.isLoading,
+                  children: [
+                    const _InternshipsIntro(),
+                    const SizedBox(height: 16),
+                    _InternshipSearchBar(
+                      controller: _searchController,
+                      focusNode: _searchFocusNode,
+                      onClear: _searchQuery.isEmpty
+                          ? null
+                          : _searchController.clear,
                     ),
-                  const SizedBox(height: 20),
-                  Container(
-                    key: _availableSectionKey,
-                    child: _InternshipSectionHeader(
-                      title: 'Available Internships',
-                      countLabel: availableCountLabel,
-                      trailing: _InternshipViewToggle(
-                        viewMode: _viewMode,
-                        onChanged: (nextViewMode) {
-                          setState(() {
-                            _viewMode = nextViewMode;
-                          });
+                    const SizedBox(height: 10),
+                    _InternshipFilterChipRow(
+                      activeFilter: _selectedQuickFilter,
+                      filters: _quickFilters,
+                      onSelected: (filter) {
+                        setState(() {
+                          _selectedQuickFilter = _selectedQuickFilter == filter
+                              ? null
+                              : filter;
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 18),
+                    _InternshipSectionHeader(
+                      title: 'Apply This Week',
+                      actionLabel: 'Browse all',
+                      onAction: _scrollToAvailableSection,
+                    ),
+                    const SizedBox(height: 10),
+                    if (hasLiveData && filteredInternships.isEmpty)
+                      const _InternshipsEmptyState(
+                        title: 'No internships match these filters',
+                        subtitle:
+                            'Try another search or remove a chip to reveal more opportunities.',
+                      )
+                    else
+                      _ApplyThisWeekSection(
+                        items: applyThisWeek,
+                        onOpenOpportunity: (item) {
+                          if (item.opportunity != null) {
+                            _openOpportunity(item.opportunity!);
+                          }
                         },
+                        onToggleSaved: (item) {
+                          if (item.opportunity != null) {
+                            _toggleSavedOpportunity(item.opportunity!);
+                          }
+                        },
+                        isSaving: savedProvider.isLoading,
+                      ),
+                    const SizedBox(height: 20),
+                    Container(
+                      key: _availableSectionKey,
+                      child: _InternshipSectionHeader(
+                        title: 'Available Internships',
+                        countLabel: availableCountLabel,
+                        trailing: _InternshipViewToggle(
+                          viewMode: _viewMode,
+                          onChanged: (nextViewMode) {
+                            setState(() {
+                              _viewMode = nextViewMode;
+                            });
+                          },
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  if (hasLiveData && filteredInternships.isEmpty)
-                    const _InternshipsEmptyState(
-                      title: 'Nothing to show right now',
-                      subtitle:
-                          'Live internships will appear here as soon as they match your search.',
-                    )
-                  else
-                    AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 240),
-                      switchInCurve: Curves.easeOutCubic,
-                      switchOutCurve: Curves.easeInCubic,
-                      transitionBuilder: (child, animation) {
-                        return FadeTransition(
-                          opacity: animation,
-                          child: SizeTransition(
-                            sizeFactor: animation,
-                            axisAlignment: -1,
-                            child: child,
-                          ),
-                        );
-                      },
-                      child: _viewMode == _InternshipsViewMode.grid
-                          ? GridView.builder(
-                              key: const ValueKey('internships-grid'),
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: availableInternships.length,
-                              gridDelegate:
-                                  SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: gridCrossAxisCount,
-                                    crossAxisSpacing: gridSpacing,
-                                    mainAxisSpacing: gridSpacing,
-                                    mainAxisExtent: gridMainExtent,
-                                  ),
-                              itemBuilder: (context, index) {
-                                final item = availableInternships[index];
-                                return _AvailableInternshipCard(
-                                  item: item,
-                                  onTap: item.opportunity == null
-                                      ? null
-                                      : () =>
-                                            _openOpportunity(item.opportunity!),
-                                  onToggleSaved: item.opportunity == null
-                                      ? null
-                                      : () => _toggleSavedOpportunity(
-                                          item.opportunity!,
-                                        ),
-                                  isSaving: savedProvider.isLoading,
-                                );
-                              },
-                            )
-                          : Column(
-                              key: const ValueKey('internships-list'),
-                              children: [
-                                for (
-                                  var index = 0;
-                                  index < availableInternships.length;
-                                  index++
-                                )
-                                  Padding(
-                                    padding: EdgeInsets.only(
-                                      bottom:
-                                          index ==
-                                              availableInternships.length - 1
-                                          ? 0
-                                          : 12,
-                                    ),
-                                    child: _AvailableInternshipListTile(
-                                      item: availableInternships[index],
-                                      onTap:
-                                          availableInternships[index]
-                                                  .opportunity ==
-                                              null
-                                          ? null
-                                          : () => _openOpportunity(
-                                              availableInternships[index]
-                                                  .opportunity!,
-                                            ),
-                                      onToggleSaved:
-                                          availableInternships[index]
-                                                  .opportunity ==
-                                              null
-                                          ? null
-                                          : () => _toggleSavedOpportunity(
-                                              availableInternships[index]
-                                                  .opportunity!,
-                                            ),
-                                      isSaving: savedProvider.isLoading,
-                                    ),
-                                  ),
-                              ],
+                    const SizedBox(height: 10),
+                    if (hasLiveData && filteredInternships.isEmpty)
+                      const _InternshipsEmptyState(
+                        title: 'Nothing to show right now',
+                        subtitle:
+                            'Live internships will appear here as soon as they match your search.',
+                      )
+                    else
+                      AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 240),
+                        switchInCurve: Curves.easeOutCubic,
+                        switchOutCurve: Curves.easeInCubic,
+                        transitionBuilder: (child, animation) {
+                          return FadeTransition(
+                            opacity: animation,
+                            child: SizeTransition(
+                              sizeFactor: animation,
+                              axisAlignment: -1,
+                              child: child,
                             ),
-                    ),
-                  if (!hasLiveData && opportunityProvider.isLoading) ...[
-                    const SizedBox(height: 8),
-                    Text(
-                      'Loading live internships...',
-                      style: GoogleFonts.poppins(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: _InternshipVisualPalette.textSecondary,
+                          );
+                        },
+                        child: _viewMode == _InternshipsViewMode.grid
+                            ? GridView.builder(
+                                key: const ValueKey('internships-grid'),
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemCount: availableInternships.length,
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: gridCrossAxisCount,
+                                      crossAxisSpacing: gridSpacing,
+                                      mainAxisSpacing: gridSpacing,
+                                      mainAxisExtent: gridMainExtent,
+                                    ),
+                                itemBuilder: (context, index) {
+                                  final item = availableInternships[index];
+                                  return _AvailableInternshipCard(
+                                    item: item,
+                                    onTap: item.opportunity == null
+                                        ? null
+                                        : () => _openOpportunity(
+                                            item.opportunity!,
+                                          ),
+                                    onToggleSaved: item.opportunity == null
+                                        ? null
+                                        : () => _toggleSavedOpportunity(
+                                            item.opportunity!,
+                                          ),
+                                    isSaving: savedProvider.isLoading,
+                                  );
+                                },
+                              )
+                            : Column(
+                                key: const ValueKey('internships-list'),
+                                children: [
+                                  for (
+                                    var index = 0;
+                                    index < availableInternships.length;
+                                    index++
+                                  )
+                                    Padding(
+                                      padding: EdgeInsets.only(
+                                        bottom:
+                                            index ==
+                                                availableInternships.length - 1
+                                            ? 0
+                                            : 12,
+                                      ),
+                                      child: _AvailableInternshipListTile(
+                                        item: availableInternships[index],
+                                        onTap:
+                                            availableInternships[index]
+                                                    .opportunity ==
+                                                null
+                                            ? null
+                                            : () => _openOpportunity(
+                                                availableInternships[index]
+                                                    .opportunity!,
+                                              ),
+                                        onToggleSaved:
+                                            availableInternships[index]
+                                                    .opportunity ==
+                                                null
+                                            ? null
+                                            : () => _toggleSavedOpportunity(
+                                                availableInternships[index]
+                                                    .opportunity!,
+                                              ),
+                                        isSaving: savedProvider.isLoading,
+                                      ),
+                                    ),
+                                ],
+                              ),
                       ),
-                      textAlign: TextAlign.center,
-                    ),
+                    if (!hasLiveData && opportunityProvider.isLoading) ...[
+                      const SizedBox(height: 8),
+                      Text(
+                        'Loading live internships...',
+                        style: GoogleFonts.poppins(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: _InternshipVisualPalette.textSecondary,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

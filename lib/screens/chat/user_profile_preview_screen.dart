@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../models/user_model.dart';
 import '../../services/public_profile_service.dart';
+import '../../widgets/app_shell_background.dart';
 import '../../widgets/chat/chat_formatters.dart';
 import '../../widgets/chat/chat_theme.dart';
 import '../../widgets/profile_avatar.dart';
@@ -46,142 +47,144 @@ class _UserProfilePreviewScreenState extends State<UserProfilePreviewScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: ChatThemePalette.background,
-      body: SafeArea(
-        child: FutureBuilder<UserModel?>(
-          future: _profileFuture,
-          builder: (context, snapshot) {
-            final user = snapshot.data;
-            final about = _about(user);
-            final headline = _headline(user);
-            final title = _profileTitle(user);
+    return AppShellBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SafeArea(
+          child: FutureBuilder<UserModel?>(
+            future: _profileFuture,
+            builder: (context, snapshot) {
+              final user = snapshot.data;
+              final about = _about(user);
+              final headline = _headline(user);
+              final title = _profileTitle(user);
 
-            return ListView(
-              padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
-              children: [
-                Row(
-                  children: [
-                    _ToolbarButton(
-                      icon: Icons.arrow_back_ios_new_rounded,
-                      onTap: () => Navigator.pop(context),
+              return ListView(
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
+                children: [
+                  Row(
+                    children: [
+                      _ToolbarButton(
+                        icon: Icons.arrow_back_ios_new_rounded,
+                        onTap: () => Navigator.pop(context),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Text(
+                          title,
+                          style: ChatThemeStyles.cardTitle().copyWith(
+                            fontSize: 18,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 14),
+                  Container(
+                    padding: const EdgeInsets.all(22),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          ChatThemePalette.primary.withValues(alpha: 0.12),
+                          ChatThemePalette.surface,
+                          ChatThemePalette.surface,
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(30),
+                      border: Border.all(color: ChatThemePalette.border),
+                      boxShadow: ChatThemeStyles.softShadow(0.05),
                     ),
-                    const SizedBox(width: 14),
-                    Expanded(
+                    child: Column(
+                      children: [
+                        ProfileAvatar(
+                          user: user,
+                          userId: widget.userId,
+                          radius: 42,
+                          fallbackName: widget.fallbackName,
+                          role: widget.fallbackRole,
+                        ),
+                        const SizedBox(height: 14),
+                        Text(
+                          _displayName(user),
+                          textAlign: TextAlign.center,
+                          style: ChatThemeStyles.title().copyWith(fontSize: 25),
+                        ),
+                        const SizedBox(height: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 7,
+                          ),
+                          decoration: BoxDecoration(
+                            color: _roleColor(user).withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(999),
+                          ),
+                          child: Text(
+                            _roleLabel(user),
+                            style: ChatThemeStyles.meta(
+                              _roleColor(user),
+                            ).copyWith(fontWeight: FontWeight.w700),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          ChatFormatters.presenceLabel(
+                            user?.lastSeenAt,
+                            isOnline: user?.isOnline ?? false,
+                          ),
+                          style: ChatThemeStyles.meta(
+                            (user?.isOnline ?? false)
+                                ? ChatThemePalette.success
+                                : ChatThemePalette.textSecondary,
+                          ).copyWith(fontWeight: FontWeight.w700),
+                        ),
+                        if (headline.isNotEmpty) ...[
+                          const SizedBox(height: 14),
+                          Text(
+                            headline,
+                            textAlign: TextAlign.center,
+                            style: ChatThemeStyles.body(
+                              ChatThemePalette.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  if (snapshot.hasError) ...[
+                    const SizedBox(height: 12),
+                    _InfoCard(
+                      title: 'Profile Sync',
+                      icon: Icons.sync_problem_outlined,
                       child: Text(
-                        title,
-                        style: ChatThemeStyles.cardTitle().copyWith(
-                          fontSize: 18,
+                        'Live profile details could not be refreshed, so you are seeing safe fallback information.',
+                        style: ChatThemeStyles.body(
+                          ChatThemePalette.textSecondary,
                         ),
                       ),
                     ),
                   ],
-                ),
-                const SizedBox(height: 14),
-                Container(
-                  padding: const EdgeInsets.all(22),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        ChatThemePalette.primary.withValues(alpha: 0.12),
-                        ChatThemePalette.surface,
-                        ChatThemePalette.surface,
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
+                  if (about.isNotEmpty) ...[
+                    const SizedBox(height: 12),
+                    _InfoCard(
+                      title: 'About',
+                      icon: Icons.notes_rounded,
+                      child: Text(
+                        about,
+                        style: ChatThemeStyles.body(
+                          ChatThemePalette.textSecondary,
+                        ),
+                      ),
                     ),
-                    borderRadius: BorderRadius.circular(30),
-                    border: Border.all(color: ChatThemePalette.border),
-                    boxShadow: ChatThemeStyles.softShadow(0.05),
-                  ),
-                  child: Column(
-                    children: [
-                      ProfileAvatar(
-                        user: user,
-                        userId: widget.userId,
-                        radius: 42,
-                        fallbackName: widget.fallbackName,
-                        role: widget.fallbackRole,
-                      ),
-                      const SizedBox(height: 14),
-                      Text(
-                        _displayName(user),
-                        textAlign: TextAlign.center,
-                        style: ChatThemeStyles.title().copyWith(fontSize: 25),
-                      ),
-                      const SizedBox(height: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 7,
-                        ),
-                        decoration: BoxDecoration(
-                          color: _roleColor(user).withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(999),
-                        ),
-                        child: Text(
-                          _roleLabel(user),
-                          style: ChatThemeStyles.meta(
-                            _roleColor(user),
-                          ).copyWith(fontWeight: FontWeight.w700),
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        ChatFormatters.presenceLabel(
-                          user?.lastSeenAt,
-                          isOnline: user?.isOnline ?? false,
-                        ),
-                        style: ChatThemeStyles.meta(
-                          (user?.isOnline ?? false)
-                              ? ChatThemePalette.success
-                              : ChatThemePalette.textSecondary,
-                        ).copyWith(fontWeight: FontWeight.w700),
-                      ),
-                      if (headline.isNotEmpty) ...[
-                        const SizedBox(height: 14),
-                        Text(
-                          headline,
-                          textAlign: TextAlign.center,
-                          style: ChatThemeStyles.body(
-                            ChatThemePalette.textSecondary,
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-                if (snapshot.hasError) ...[
+                  ],
                   const SizedBox(height: 12),
-                  _InfoCard(
-                    title: 'Profile Sync',
-                    icon: Icons.sync_problem_outlined,
-                    child: Text(
-                      'Live profile details could not be refreshed, so you are seeing safe fallback information.',
-                      style: ChatThemeStyles.body(
-                        ChatThemePalette.textSecondary,
-                      ),
-                    ),
-                  ),
+                  ..._buildDetails(user),
                 ],
-                if (about.isNotEmpty) ...[
-                  const SizedBox(height: 12),
-                  _InfoCard(
-                    title: 'About',
-                    icon: Icons.notes_rounded,
-                    child: Text(
-                      about,
-                      style: ChatThemeStyles.body(
-                        ChatThemePalette.textSecondary,
-                      ),
-                    ),
-                  ),
-                ],
-                const SizedBox(height: 12),
-                ..._buildDetails(user),
-              ],
-            );
-          },
+              );
+            },
+          ),
         ),
       ),
     );

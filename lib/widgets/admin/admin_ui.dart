@@ -519,6 +519,24 @@ class AdminPill extends StatelessWidget {
   }
 }
 
+class _GlowOrb extends StatelessWidget {
+  final double size;
+  final Color color;
+
+  const _GlowOrb({required this.size, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+      ),
+    );
+  }
+}
+
 class AdminIconActionButton extends StatelessWidget {
   final IconData icon;
   final String tooltip;
@@ -639,24 +657,6 @@ class AdminEmptyState extends StatelessWidget {
             if (action != null) ...[const SizedBox(height: 16), action!],
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _GlowOrb extends StatelessWidget {
-  final double size;
-  final Color color;
-
-  const _GlowOrb({required this.size, required this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    return IgnorePointer(
-      child: Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(color: color, shape: BoxShape.circle),
       ),
     );
   }

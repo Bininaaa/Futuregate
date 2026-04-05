@@ -1,10 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../../models/opportunity_model.dart';
+import '../../models/saved_idea_model.dart';
+import '../../models/saved_opportunity_model.dart';
+import '../../models/saved_scholarship_model.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/opportunity_provider.dart';
+import '../../providers/project_idea_provider.dart';
 import '../../providers/saved_opportunity_provider.dart';
+import '../../providers/saved_scholarship_provider.dart';
+import '../../services/opportunity_service.dart';
+import '../../services/scholarship_service.dart';
+import '../../utils/opportunity_metadata.dart';
+import '../../utils/opportunity_type.dart';
+import '../../widgets/app_shell_background.dart';
+import '../../widgets/ideas/innovation_hub_theme.dart';
 import '../../widgets/opportunity_type_badge.dart';
+import '../../widgets/student_opportunity_hub_widgets.dart';
+import 'idea_details_screen.dart';
+import 'opportunities_screen.dart';
+import 'opportunity_detail_screen.dart';
+import 'scholarship_detail_screen.dart';
 
 class SavedScreen extends StatefulWidget {
   const SavedScreen({super.key});
@@ -13,120 +32,1472 @@ class SavedScreen extends StatefulWidget {
   State<SavedScreen> createState() => _SavedScreenState();
 }
 
+enum _SavedHubFilter { all, opportunities, scholarships, ideas }
+
 class _SavedScreenState extends State<SavedScreen> {
+  final OpportunityService _opportunityService = OpportunityService();
+  final ScholarshipService _scholarshipService = ScholarshipService();
+  final TextEditingController _searchController = TextEditingController();
+
+  String _searchQuery = '';
+  _SavedHubFilter _selectedFilter = _SavedHubFilter.all;
+  String? _openingItemKey;
+  String? _removingItemKey;
+
   @override
   void initState() {
     super.initState();
-    Future.microtask(() {
-      if (!mounted) {
-        return;
+    _searchController.addListener(_handleSearchChanged);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadSavedContent());
+  }
+
+  @override
+  void dispose() {
+    _searchController
+      ..removeListener(_handleSearchChanged)
+      ..dispose();
+    super.dispose();
+  }
+
+  void _handleSearchChanged() {
+    final nextQuery = _searchController.text.trim();
+    if (nextQuery == _searchQuery) {
+      return;
+    }
+
+    setState(() => _searchQuery = nextQuery);
+  }
+
+  Future<void> _loadSavedContent() async {
+    if (!mounted) {
+      return;
+    }
+
+    final studentId = context.read<AuthProvider>().userModel?.uid.trim();
+    if (studentId == null || studentId.isEmpty) {
+      return;
+    }
+
+    await Future.wait([
+      context.read<SavedOpportunityProvider>().fetchSavedOpportunities(
+        studentId,
+      ),
+      context.read<SavedScholarshipProvider>().fetchSavedScholarships(
+        studentId,
+      ),
+      context.read<ProjectIdeaProvider>().fetchSavedIdeas(studentId),
+      context.read<OpportunityProvider>().fetchOpportunities(),
+    ]);
+  }
+
+  List<_SavedHubItem> _buildItems({
+    required List<SavedOpportunityModel> opportunities,
+    required List<SavedScholarshipModel> scholarships,
+    required List<SavedIdeaModel> ideas,
+  }) {
+    final items = <_SavedHubItem>[
+      ...opportunities.map(_SavedHubItem.opportunity),
+      ...scholarships.map(_SavedHubItem.scholarship),
+      ...ideas.map(_SavedHubItem.idea),
+    ];
+
+    final query = _searchQuery.trim().toLowerCase();
+
+    final filtered =
+        items.where((item) {
+          if (!_matchesFilter(item)) {
+            return false;
+          }
+
+          if (query.isEmpty) {
+            return true;
+          }
+
+          final searchText = <String>[
+            item.title,
+            item.subtitle,
+            item.supporting,
+            item.categoryLabel,
+          ].join(' ').toLowerCase();
+
+          return searchText.contains(query);
+        }).toList()..sort((first, second) {
+          final firstTime = first.savedAt?.millisecondsSinceEpoch ?? 0;
+          final secondTime = second.savedAt?.millisecondsSinceEpoch ?? 0;
+          return secondTime.compareTo(firstTime);
+        });
+
+    return filtered;
+  }
+
+  bool _matchesFilter(_SavedHubItem item) {
+    return switch (_selectedFilter) {
+      _SavedHubFilter.all => true,
+      _SavedHubFilter.opportunities =>
+        item.kind == _SavedHubItemKind.opportunity,
+      _SavedHubFilter.scholarships =>
+        item.kind == _SavedHubItemKind.scholarship,
+      _SavedHubFilter.ideas => item.kind == _SavedHubItemKind.idea,
+    };
+  }
+
+  int _countForFilter({
+    required List<SavedOpportunityModel> opportunities,
+    required List<SavedScholarshipModel> scholarships,
+    required List<SavedIdeaModel> ideas,
+    required _SavedHubFilter filter,
+  }) {
+    return switch (filter) {
+      _SavedHubFilter.all =>
+        opportunities.length + scholarships.length + ideas.length,
+      _SavedHubFilter.opportunities => opportunities.length,
+      _SavedHubFilter.scholarships => scholarships.length,
+      _SavedHubFilter.ideas => ideas.length,
+    };
+  }
+
+  String _filterLabel(_SavedHubFilter filter) {
+    return switch (filter) {
+      _SavedHubFilter.all => 'All',
+      _SavedHubFilter.opportunities => 'Opportunities',
+      _SavedHubFilter.scholarships => 'Scholarships',
+      _SavedHubFilter.ideas => 'Ideas',
+    };
+  }
+
+  Color _filterColor(_SavedHubFilter filter) {
+    return switch (filter) {
+      _SavedHubFilter.all => StudentOpportunityHubPalette.primary,
+      _SavedHubFilter.opportunities => StudentOpportunityHubPalette.accent,
+      _SavedHubFilter.scholarships => StudentOpportunityHubPalette.secondary,
+      _SavedHubFilter.ideas => InnovationHubPalette.primary,
+    };
+  }
+
+  String _itemKey(_SavedHubItem item) => '${item.kind.name}:${item.id}';
+
+  Future<void> _openItem(_SavedHubItem item) async {
+    final key = _itemKey(item);
+    if (_openingItemKey != null) {
+      return;
+    }
+
+    setState(() => _openingItemKey = key);
+
+    try {
+      switch (item.kind) {
+        case _SavedHubItemKind.opportunity:
+          await _openOpportunity(item.opportunity!);
+          break;
+        case _SavedHubItemKind.scholarship:
+          await _openScholarship(item.scholarship!);
+          break;
+        case _SavedHubItemKind.idea:
+          await _openIdea(item.idea!);
+          break;
       }
-      final uid = context.read<AuthProvider>().userModel?.uid;
-      if (uid != null) {
-        context.read<SavedOpportunityProvider>().fetchSavedOpportunities(uid);
+    } finally {
+      if (mounted) {
+        setState(() => _openingItemKey = null);
       }
-    });
+    }
+  }
+
+  Future<void> _openOpportunity(SavedOpportunityModel saved) async {
+    OpportunityModel? opportunity;
+    for (final item in context.read<OpportunityProvider>().opportunities) {
+      if (item.id == saved.opportunityId) {
+        opportunity = item;
+        break;
+      }
+    }
+
+    opportunity ??= await _opportunityService.getOpportunityById(
+      saved.opportunityId,
+    );
+
+    if (!mounted) {
+      return;
+    }
+
+    if (opportunity == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('This opportunity is no longer available.'),
+        ),
+      );
+      return;
+    }
+
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => OpportunityDetailScreen(opportunity: opportunity!),
+      ),
+    );
+  }
+
+  Future<void> _openScholarship(SavedScholarshipModel saved) async {
+    final scholarship = await _scholarshipService.getScholarshipById(
+      saved.scholarshipId,
+    );
+
+    if (!mounted) {
+      return;
+    }
+
+    if (scholarship == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('This scholarship is no longer available.'),
+        ),
+      );
+      return;
+    }
+
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ScholarshipDetailScreen(scholarship: scholarship),
+      ),
+    );
+  }
+
+  Future<void> _openIdea(SavedIdeaModel saved) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) =>
+            IdeaDetailsScreen(ideaId: saved.ideaId, initialIdea: saved.idea),
+      ),
+    );
+  }
+
+  Future<void> _removeItem(_SavedHubItem item) async {
+    final studentId = context.read<AuthProvider>().userModel?.uid.trim() ?? '';
+    if (studentId.isEmpty || _removingItemKey != null) {
+      return;
+    }
+
+    final key = _itemKey(item);
+    setState(() => _removingItemKey = key);
+
+    String? error;
+    String successMessage;
+
+    switch (item.kind) {
+      case _SavedHubItemKind.opportunity:
+        error = await context
+            .read<SavedOpportunityProvider>()
+            .unsaveOpportunity(item.opportunity!.id, studentId);
+        successMessage = 'Removed from saved opportunities';
+        break;
+      case _SavedHubItemKind.scholarship:
+        error = await context
+            .read<SavedScholarshipProvider>()
+            .unsaveScholarship(item.scholarship!.id, studentId);
+        successMessage = 'Removed from saved scholarships';
+        break;
+      case _SavedHubItemKind.idea:
+        error = await context.read<ProjectIdeaProvider>().toggleSave(
+          item.idea!.idea,
+          studentId,
+        );
+        successMessage = 'Removed from saved ideas';
+        break;
+    }
+
+    if (!mounted) {
+      return;
+    }
+
+    setState(() => _removingItemKey = null);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          error == null ? successMessage : 'Could not remove this saved item',
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<SavedOpportunityProvider>();
+    final savedOpportunityProvider = context.watch<SavedOpportunityProvider>();
+    final savedScholarshipProvider = context.watch<SavedScholarshipProvider>();
+    final savedIdeasProvider = context.watch<ProjectIdeaProvider>();
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Saved Opportunities')),
-      body: provider.isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : provider.savedOpportunities.isEmpty
-              ? const Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.bookmark_border, size: 64, color: Colors.grey),
-                      SizedBox(height: 12),
-                      Text('No saved opportunities yet',
-                          style: TextStyle(color: Colors.grey)),
-                    ],
-                  ),
-                )
-              : ListView.builder(
-                  padding: const EdgeInsets.all(12),
-                  itemCount: provider.savedOpportunities.length,
-                  itemBuilder: (context, index) {
-                    final saved = provider.savedOpportunities[index];
+    final items = _buildItems(
+      opportunities: savedOpportunityProvider.savedOpportunities,
+      scholarships: savedScholarshipProvider.savedScholarships,
+      ideas: savedIdeasProvider.savedIdeas,
+    );
+    final totalSaved = _countForFilter(
+      opportunities: savedOpportunityProvider.savedOpportunities,
+      scholarships: savedScholarshipProvider.savedScholarships,
+      ideas: savedIdeasProvider.savedIdeas,
+      filter: _SavedHubFilter.all,
+    );
+    final hasAnyItems = totalSaved > 0;
+    final hasFilters =
+        _selectedFilter != _SavedHubFilter.all || _searchQuery.isNotEmpty;
+    final isInitialLoading =
+        !hasAnyItems &&
+        (savedOpportunityProvider.isLoading ||
+            savedScholarshipProvider.isLoading ||
+            savedIdeasProvider.savedIdeasLoading);
 
-                    return Card(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    saved.title,
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w600,
+    return AppShellBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: Text(
+            'Saved Items',
+            style: GoogleFonts.poppins(
+              fontWeight: FontWeight.w700,
+              color: StudentOpportunityHubPalette.textPrimary,
+            ),
+          ),
+          backgroundColor: Colors.transparent,
+          surfaceTintColor: Colors.transparent,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          iconTheme: const IconThemeData(
+            color: StudentOpportunityHubPalette.textPrimary,
+          ),
+          actions: [
+            IconButton(
+              tooltip: 'Refresh',
+              onPressed: _loadSavedContent,
+              icon: const Icon(Icons.refresh_rounded),
+            ),
+          ],
+        ),
+        body: SafeArea(
+          top: false,
+          child: RefreshIndicator(
+            color: StudentOpportunityHubPalette.primary,
+            onRefresh: _loadSavedContent,
+            child: CustomScrollView(
+              physics: const BouncingScrollPhysics(
+                parent: AlwaysScrollableScrollPhysics(),
+              ),
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _SavedCompactSummary(
+                          total: totalSaved,
+                          opportunities: savedOpportunityProvider
+                              .savedOpportunities
+                              .length,
+                          scholarships:
+                              savedScholarshipProvider.savedScholarships.length,
+                          ideas: savedIdeasProvider.savedIdeas.length,
+                        ),
+                        const SizedBox(height: 14),
+                        if ((savedIdeasProvider.savedIdeasError ?? '')
+                            .trim()
+                            .isNotEmpty)
+                          _InlineBanner(
+                            icon: Icons.info_outline_rounded,
+                            title: 'Some saved ideas could not load right now.',
+                            message: savedIdeasProvider.savedIdeasError!,
+                            tone: StudentOpportunityHubPalette.error,
+                            background: const Color(0xFFFFF1F2),
+                          ),
+                        if ((savedIdeasProvider.savedIdeasError ?? '')
+                            .trim()
+                            .isNotEmpty)
+                          const SizedBox(height: 14),
+                        StudentOpportunitySearchField(
+                          controller: _searchController,
+                          hintText:
+                              'Search by title, company, provider, creator, or type',
+                          onChanged: (_) => setState(() {}),
+                        ),
+                        const SizedBox(height: 12),
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: _SavedHubFilter.values
+                                .map(
+                                  (filter) => Padding(
+                                    padding: EdgeInsets.only(
+                                      right:
+                                          filter == _SavedHubFilter.values.last
+                                          ? 0
+                                          : 8,
+                                    ),
+                                    child: StudentOpportunityFilterChip(
+                                      label:
+                                          '${_filterLabel(filter)} ${_countForFilter(opportunities: savedOpportunityProvider.savedOpportunities, scholarships: savedScholarshipProvider.savedScholarships, ideas: savedIdeasProvider.savedIdeas, filter: filter)}',
+                                      selected: filter == _selectedFilter,
+                                      color: _filterColor(filter),
+                                      onTap: () {
+                                        if (_selectedFilter == filter) {
+                                          return;
+                                        }
+                                        setState(
+                                          () => _selectedFilter = filter,
+                                        );
+                                      },
                                     ),
                                   ),
-                                ),
-                                OpportunityTypeBadge(type: saved.type),
-                              ],
-                            ),
-                            const SizedBox(height: 6),
-                            Text(
-                              '${saved.companyName} \u2022 ${saved.location}',
-                              style: GoogleFonts.poppins(
-                                fontSize: 13,
-                                color: Colors.grey.shade600,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Row(
-                              children: [
-                                Icon(Icons.schedule,
-                                    size: 14, color: Colors.grey.shade400),
-                                const SizedBox(width: 4),
-                                Text(
-                                  'Deadline: ${saved.deadline}',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 12,
-                                    color: Colors.grey.shade500,
-                                  ),
-                                ),
-                                const Spacer(),
-                                GestureDetector(
-                                  onTap: () async {
-                                    final authProvider =
-                                        context.read<AuthProvider>();
-                                    final scaffoldMessenger =
-                                        ScaffoldMessenger.of(context);
-                                    final uid =
-                                        authProvider.userModel?.uid ?? '';
-                                    await provider.unsaveOpportunity(
-                                        saved.id, uid);
-                                    if (!mounted) return;
-                                    scaffoldMessenger.showSnackBar(
-                                      const SnackBar(
-                                          content: Text('Removed from saved')),
-                                    );
-                                  },
-                                  child: const Icon(Icons.bookmark_remove,
-                                      color: Colors.red, size: 22),
-                                ),
-                              ],
-                            ),
-                          ],
+                                )
+                                .toList(growable: false),
+                          ),
+                        ),
+                        const SizedBox(height: 18),
+                        Text(
+                          hasFilters
+                              ? '${items.length} saved items in this view'
+                              : totalSaved == 1
+                              ? '1 saved item ready when you need it'
+                              : '$totalSaved saved items ready when you need them',
+                          style: GoogleFonts.poppins(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: StudentOpportunityHubPalette.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                if (isInitialLoading)
+                  const SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: StudentOpportunityLoadingState(
+                      title: 'Loading your saved shelf...',
+                      message:
+                          'Gathering your saved opportunities, scholarships, and ideas into one place.',
+                    ),
+                  )
+                else if (items.isEmpty)
+                  SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: StudentOpportunityEmptyState(
+                      icon: hasFilters
+                          ? Icons.filter_alt_off_rounded
+                          : Icons.bookmark_border_rounded,
+                      title: hasFilters
+                          ? 'No saved items match this view'
+                          : 'Nothing saved yet',
+                      message: hasFilters
+                          ? 'Try clearing the search or switching the content filter to bring more saved items back into view.'
+                          : 'Save opportunities, scholarships, or ideas you like, then come back here to compare them calmly.',
+                      actionLabel: 'Explore opportunities',
+                      onAction: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const OpportunitiesScreen(),
                         ),
                       ),
-                    );
-                  },
-                ),
+                    ),
+                  )
+                else
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
+                    sliver: SliverList(
+                      delegate: SliverChildBuilderDelegate((context, index) {
+                        final item = items[index];
+                        final itemKey = _itemKey(item);
+
+                        return Padding(
+                          padding: EdgeInsets.only(
+                            bottom: index == items.length - 1 ? 0 : 14,
+                          ),
+                          child: _SavedHubCard(
+                            item: item,
+                            isOpening: _openingItemKey == itemKey,
+                            isRemoving: _removingItemKey == itemKey,
+                            onOpen: () => _openItem(item),
+                            onRemove: () => _removeItem(item),
+                          ),
+                        );
+                      }, childCount: items.length),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
+}
+
+class _SavedHubCard extends StatelessWidget {
+  final _SavedHubItem item;
+  final bool isOpening;
+  final bool isRemoving;
+  final VoidCallback onOpen;
+  final VoidCallback onRemove;
+
+  const _SavedHubCard({
+    required this.item,
+    required this.isOpening,
+    required this.isRemoving,
+    required this.onOpen,
+    required this.onRemove,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    switch (item.kind) {
+      case _SavedHubItemKind.opportunity:
+        return _SavedOpportunityCard(
+          item: item.opportunity!,
+          isOpening: isOpening,
+          isRemoving: isRemoving,
+          onOpen: onOpen,
+          onRemove: onRemove,
+        );
+      case _SavedHubItemKind.scholarship:
+        return _SavedScholarshipCard(
+          item: item.scholarship!,
+          isOpening: isOpening,
+          isRemoving: isRemoving,
+          onOpen: onOpen,
+          onRemove: onRemove,
+        );
+      case _SavedHubItemKind.idea:
+        return _SavedIdeaCard(
+          item: item.idea!,
+          isOpening: isOpening,
+          isRemoving: isRemoving,
+          onOpen: onOpen,
+          onRemove: onRemove,
+        );
+    }
+  }
+}
+
+class _SavedCompactSummary extends StatelessWidget {
+  final int total;
+  final int opportunities;
+  final int scholarships;
+  final int ideas;
+
+  const _SavedCompactSummary({
+    required this.total,
+    required this.opportunities,
+    required this.scholarships,
+    required this.ideas,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.92),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: StudentOpportunityHubPalette.border.withValues(alpha: 0.95),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                  color: StudentOpportunityHubPalette.primary.withValues(
+                    alpha: 0.10,
+                  ),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: const Icon(
+                  Icons.bookmarks_outlined,
+                  color: StudentOpportunityHubPalette.primary,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Saved shelf',
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: StudentOpportunityHubPalette.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'All your saved things in one place.',
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        color: StudentOpportunityHubPalette.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          Row(
+            children: [
+              Expanded(
+                child: _SavedMiniStat(
+                  label: 'Total',
+                  value: '$total',
+                  color: StudentOpportunityHubPalette.primary,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _SavedMiniStat(
+                  label: 'Opps',
+                  value: '$opportunities',
+                  color: StudentOpportunityHubPalette.accent,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _SavedMiniStat(
+                  label: 'Scholarships',
+                  value: '$scholarships',
+                  color: StudentOpportunityHubPalette.secondary,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _SavedMiniStat(
+                  label: 'Ideas',
+                  value: '$ideas',
+                  color: InnovationHubPalette.primary,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SavedMiniStat extends StatelessWidget {
+  final String label;
+  final String value;
+  final Color color;
+
+  const _SavedMiniStat({
+    required this.label,
+    required this.value,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Column(
+        children: [
+          Text(
+            value,
+            style: GoogleFonts.poppins(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: StudentOpportunityHubPalette.textPrimary,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            style: GoogleFonts.poppins(
+              fontSize: 9.6,
+              fontWeight: FontWeight.w600,
+              color: color,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SavedOpportunityCard extends StatelessWidget {
+  final SavedOpportunityModel item;
+  final bool isOpening;
+  final bool isRemoving;
+  final VoidCallback onOpen;
+  final VoidCallback onRemove;
+
+  const _SavedOpportunityCard({
+    required this.item,
+    required this.isOpening,
+    required this.isRemoving,
+    required this.onOpen,
+    required this.onRemove,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = OpportunityType.color(item.type);
+    final deadline = OpportunityMetadata.parseDateTimeLike(item.deadline);
+    final isExpired = _isExpired(deadline);
+    final isClosingSoon = _isClosingSoon(deadline);
+
+    return _SavedCardFrame(
+      accent: accent,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(child: OpportunityTypeBadge(type: item.type)),
+              const SizedBox(width: 10),
+              StudentOpportunityMetaPill(
+                icon: Icons.bookmark_added_outlined,
+                label: _relativeSavedLabel(item.savedAt?.toDate()),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          Text(item.title, style: _SavedCardText.title),
+          const SizedBox(height: 6),
+          Text(item.companyName, style: _SavedCardText.subtitle),
+          const SizedBox(height: 14),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              StudentOpportunityMetaPill(
+                icon: Icons.location_on_outlined,
+                label: item.location.trim().isEmpty
+                    ? 'Location not specified'
+                    : item.location.trim(),
+              ),
+              StudentOpportunityMetaPill(
+                icon: isExpired
+                    ? Icons.event_busy_outlined
+                    : Icons.flag_outlined,
+                label: _deadlineLabel(deadline, item.deadline),
+                tone: _deadlineTone(deadline),
+              ),
+              if (isClosingSoon && !isExpired)
+                const StudentOpportunityMetaPill(
+                  icon: Icons.local_fire_department_outlined,
+                  label: 'Closing soon',
+                  tone: StudentOpportunityHubPalette.accent,
+                ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          _InsightBanner(
+            icon: isExpired
+                ? Icons.history_toggle_off_rounded
+                : isClosingSoon
+                ? Icons.alarm_rounded
+                : Icons.bookmark_outline_rounded,
+            tone: isExpired
+                ? StudentOpportunityHubPalette.error
+                : isClosingSoon
+                ? StudentOpportunityHubPalette.accent
+                : StudentOpportunityHubPalette.primary,
+            message: isExpired
+                ? 'The deadline may have passed, but you kept this saved for reference.'
+                : isClosingSoon
+                ? 'This saved opportunity needs attention soon if you still want to apply.'
+                : 'A clean shortlist entry you can revisit anytime before you decide to apply.',
+          ),
+          const SizedBox(height: 14),
+          _SavedActionRow(
+            isOpening: isOpening,
+            isRemoving: isRemoving,
+            onOpen: onOpen,
+            onRemove: onRemove,
+            primaryLabel: 'View details',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SavedScholarshipCard extends StatelessWidget {
+  final SavedScholarshipModel item;
+  final bool isOpening;
+  final bool isRemoving;
+  final VoidCallback onOpen;
+  final VoidCallback onRemove;
+
+  const _SavedScholarshipCard({
+    required this.item,
+    required this.isOpening,
+    required this.isRemoving,
+    required this.onOpen,
+    required this.onRemove,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = StudentOpportunityHubPalette.secondary;
+    final deadline = OpportunityMetadata.parseDateTimeLike(item.deadline);
+    final fundingLabel = item.fundingType.trim().isEmpty
+        ? 'Scholarship'
+        : item.fundingType.trim();
+
+    return _SavedCardFrame(
+      accent: accent,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: accent.withValues(alpha: 0.10),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  fundingLabel.toUpperCase(),
+                  style: GoogleFonts.poppins(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: accent,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              StudentOpportunityMetaPill(
+                icon: Icons.bookmark_added_outlined,
+                label: _relativeSavedLabel(item.savedAt?.toDate()),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          Text(item.title, style: _SavedCardText.title),
+          const SizedBox(height: 6),
+          Text(item.provider, style: _SavedCardText.subtitle),
+          const SizedBox(height: 14),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              StudentOpportunityMetaPill(
+                icon: Icons.public_rounded,
+                label: item.location.trim().isEmpty
+                    ? 'Destination not specified'
+                    : item.location.trim(),
+              ),
+              StudentOpportunityMetaPill(
+                icon: Icons.event_available_outlined,
+                label: _deadlineLabel(deadline, item.deadline),
+                tone: _deadlineTone(deadline),
+              ),
+              if (item.level.trim().isNotEmpty)
+                StudentOpportunityMetaPill(
+                  icon: Icons.school_outlined,
+                  label: item.level.trim(),
+                  tone: StudentOpportunityHubPalette.secondary,
+                ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          _InsightBanner(
+            icon: Icons.workspace_premium_outlined,
+            tone: StudentOpportunityHubPalette.secondary,
+            message:
+                'This scholarship stayed on your shelf so you can compare funding, destination, and deadline without rushing.',
+          ),
+          const SizedBox(height: 14),
+          _SavedActionRow(
+            isOpening: isOpening,
+            isRemoving: isRemoving,
+            onOpen: onOpen,
+            onRemove: onRemove,
+            primaryLabel: 'View scholarship',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SavedIdeaCard extends StatelessWidget {
+  final SavedIdeaModel item;
+  final bool isOpening;
+  final bool isRemoving;
+  final VoidCallback onOpen;
+  final VoidCallback onRemove;
+
+  const _SavedIdeaCard({
+    required this.item,
+    required this.isOpening,
+    required this.isRemoving,
+    required this.onOpen,
+    required this.onRemove,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = innovationCategoryColor(item.idea.displayCategory);
+
+    return _SavedCardFrame(
+      accent: accent,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: accent.withValues(alpha: 0.10),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  item.idea.displayCategory,
+                  style: GoogleFonts.poppins(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: accent,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              StudentOpportunityMetaPill(
+                icon: Icons.bookmark_added_outlined,
+                label: _relativeSavedLabel(item.savedAt?.toDate()),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 46,
+                height: 46,
+                decoration: BoxDecoration(
+                  color: accent.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Icon(
+                  innovationCategoryIcon(item.idea.displayCategory),
+                  color: accent,
+                  size: 22,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(item.idea.title, style: _SavedCardText.title),
+                    const SizedBox(height: 6),
+                    Text(item.idea.creatorName, style: _SavedCardText.subtitle),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            item.idea.cardSummary,
+            style: GoogleFonts.poppins(
+              fontSize: 12.5,
+              height: 1.55,
+              color: StudentOpportunityHubPalette.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 14),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              StudentOpportunityMetaPill(
+                icon: Icons.timeline_outlined,
+                label: item.idea.displayStage,
+                tone: innovationStageColor(item.idea.displayStage),
+              ),
+              StudentOpportunityMetaPill(
+                icon: Icons.flash_on_outlined,
+                label: '${item.idea.sparksCount} sparks',
+                tone: StudentOpportunityHubPalette.accent,
+              ),
+              StudentOpportunityMetaPill(
+                icon: Icons.groups_rounded,
+                label: '${item.idea.interestedCount} interested',
+                tone: StudentOpportunityHubPalette.secondary,
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          _InsightBanner(
+            icon: Icons.lightbulb_outline_rounded,
+            tone: accent,
+            message:
+                'This idea is still on your radar, ready for a deeper look when you want inspiration or collaboration.',
+          ),
+          const SizedBox(height: 14),
+          _SavedActionRow(
+            isOpening: isOpening,
+            isRemoving: isRemoving,
+            onOpen: onOpen,
+            onRemove: onRemove,
+            primaryLabel: 'View idea',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SavedCardFrame extends StatelessWidget {
+  final Color accent;
+  final Widget child;
+
+  const _SavedCardFrame({required this.accent, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.94),
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(color: accent.withValues(alpha: 0.12)),
+      ),
+      child: child,
+    );
+  }
+}
+
+class _SavedActionRow extends StatelessWidget {
+  final bool isOpening;
+  final bool isRemoving;
+  final VoidCallback onOpen;
+  final VoidCallback onRemove;
+  final String primaryLabel;
+
+  const _SavedActionRow({
+    required this.isOpening,
+    required this.isRemoving,
+    required this.onOpen,
+    required this.onRemove,
+    required this.primaryLabel,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: _SavedActionButton(
+            label: isOpening ? 'Opening...' : primaryLabel,
+            icon: isOpening
+                ? Icons.hourglass_top_rounded
+                : Icons.north_east_rounded,
+            background: StudentOpportunityHubPalette.primary,
+            foreground: Colors.white,
+            onTap: isOpening || isRemoving ? null : onOpen,
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: _SavedActionButton(
+            label: isRemoving ? 'Removing...' : 'Remove',
+            icon: isRemoving
+                ? Icons.hourglass_top_rounded
+                : Icons.bookmark_remove_outlined,
+            background: StudentOpportunityHubPalette.surfaceAlt,
+            foreground: StudentOpportunityHubPalette.error,
+            onTap: isOpening || isRemoving ? null : onRemove,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _SavedActionButton extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final Color background;
+  final Color foreground;
+  final VoidCallback? onTap;
+
+  const _SavedActionButton({
+    required this.label,
+    required this.icon,
+    required this.background,
+    required this.foreground,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: background,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: foreground.withValues(alpha: 0.10)),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 18, color: foreground),
+            const SizedBox(width: 8),
+            Flexible(
+              child: Text(
+                label,
+                overflow: TextOverflow.ellipsis,
+                style: GoogleFonts.poppins(
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w700,
+                  color: foreground,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _InsightBanner extends StatelessWidget {
+  final IconData icon;
+  final Color tone;
+  final String message;
+
+  const _InsightBanner({
+    required this.icon,
+    required this.tone,
+    required this.message,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: tone.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: tone.withValues(alpha: 0.10)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 34,
+            height: 34,
+            decoration: BoxDecoration(
+              color: tone.withValues(alpha: 0.10),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: tone, size: 18),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              message,
+              style: GoogleFonts.poppins(
+                fontSize: 12,
+                height: 1.5,
+                color: StudentOpportunityHubPalette.textSecondary,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _InlineBanner extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String message;
+  final Color tone;
+  final Color background;
+
+  const _InlineBanner({
+    required this.icon,
+    required this.title,
+    required this.message,
+    required this.tone,
+    required this.background,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: tone.withValues(alpha: 0.10)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 34,
+            height: 34,
+            decoration: BoxDecoration(
+              color: tone.withValues(alpha: 0.10),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: tone, size: 18),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: GoogleFonts.poppins(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: StudentOpportunityHubPalette.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  message,
+                  style: GoogleFonts.poppins(
+                    fontSize: 12,
+                    height: 1.5,
+                    color: StudentOpportunityHubPalette.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+abstract final class _SavedCardText {
+  static final TextStyle title = GoogleFonts.poppins(
+    fontSize: 18,
+    height: 1.2,
+    fontWeight: FontWeight.w700,
+    color: StudentOpportunityHubPalette.textPrimary,
+  );
+
+  static final TextStyle subtitle = GoogleFonts.poppins(
+    fontSize: 13,
+    fontWeight: FontWeight.w600,
+    color: StudentOpportunityHubPalette.textSecondary,
+  );
+}
+
+enum _SavedHubItemKind { opportunity, scholarship, idea }
+
+class _SavedHubItem {
+  final _SavedHubItemKind kind;
+  final SavedOpportunityModel? opportunity;
+  final SavedScholarshipModel? scholarship;
+  final SavedIdeaModel? idea;
+
+  const _SavedHubItem._({
+    required this.kind,
+    this.opportunity,
+    this.scholarship,
+    this.idea,
+  });
+
+  factory _SavedHubItem.opportunity(SavedOpportunityModel value) {
+    return _SavedHubItem._(
+      kind: _SavedHubItemKind.opportunity,
+      opportunity: value,
+    );
+  }
+
+  factory _SavedHubItem.scholarship(SavedScholarshipModel value) {
+    return _SavedHubItem._(
+      kind: _SavedHubItemKind.scholarship,
+      scholarship: value,
+    );
+  }
+
+  factory _SavedHubItem.idea(SavedIdeaModel value) {
+    return _SavedHubItem._(kind: _SavedHubItemKind.idea, idea: value);
+  }
+
+  String get id {
+    switch (kind) {
+      case _SavedHubItemKind.opportunity:
+        return opportunity!.id;
+      case _SavedHubItemKind.scholarship:
+        return scholarship!.id;
+      case _SavedHubItemKind.idea:
+        return idea!.id;
+    }
+  }
+
+  DateTime? get savedAt {
+    switch (kind) {
+      case _SavedHubItemKind.opportunity:
+        return opportunity!.savedAt?.toDate();
+      case _SavedHubItemKind.scholarship:
+        return scholarship!.savedAt?.toDate();
+      case _SavedHubItemKind.idea:
+        return idea!.savedAt?.toDate();
+    }
+  }
+
+  String get title {
+    switch (kind) {
+      case _SavedHubItemKind.opportunity:
+        return opportunity!.title;
+      case _SavedHubItemKind.scholarship:
+        return scholarship!.title;
+      case _SavedHubItemKind.idea:
+        return idea!.idea.title;
+    }
+  }
+
+  String get subtitle {
+    switch (kind) {
+      case _SavedHubItemKind.opportunity:
+        return opportunity!.companyName;
+      case _SavedHubItemKind.scholarship:
+        return scholarship!.provider;
+      case _SavedHubItemKind.idea:
+        return idea!.idea.creatorName;
+    }
+  }
+
+  String get supporting {
+    switch (kind) {
+      case _SavedHubItemKind.opportunity:
+        return opportunity!.location;
+      case _SavedHubItemKind.scholarship:
+        return scholarship!.location;
+      case _SavedHubItemKind.idea:
+        return idea!.idea.cardSummary;
+    }
+  }
+
+  String get categoryLabel {
+    switch (kind) {
+      case _SavedHubItemKind.opportunity:
+        return OpportunityType.label(opportunity!.type);
+      case _SavedHubItemKind.scholarship:
+        return 'Scholarship';
+      case _SavedHubItemKind.idea:
+        return idea!.idea.displayCategory;
+    }
+  }
+}
+
+String _relativeSavedLabel(DateTime? value) {
+  if (value == null) {
+    return 'Saved';
+  }
+
+  final now = DateTime.now();
+  final today = DateTime(now.year, now.month, now.day);
+  final target = DateTime(value.year, value.month, value.day);
+  final difference = today.difference(target).inDays;
+
+  if (difference <= 0) {
+    return 'Saved today';
+  }
+  if (difference == 1) {
+    return 'Saved yesterday';
+  }
+  if (difference < 7) {
+    return 'Saved $difference days ago';
+  }
+  if (difference < 30) {
+    final weeks = (difference / 7).ceil();
+    return 'Saved $weeks ${weeks == 1 ? 'week' : 'weeks'} ago';
+  }
+
+  return 'Saved ${DateFormat('MMM d').format(value)}';
+}
+
+bool _isClosingSoon(DateTime? deadline) {
+  if (deadline == null) {
+    return false;
+  }
+
+  final now = DateTime.now();
+  final today = DateTime(now.year, now.month, now.day);
+  final target = DateTime(deadline.year, deadline.month, deadline.day);
+  final difference = target.difference(today).inDays;
+  return difference >= 0 && difference <= 7;
+}
+
+bool _isExpired(DateTime? deadline) {
+  if (deadline == null) {
+    return false;
+  }
+
+  final now = DateTime.now();
+  final today = DateTime(now.year, now.month, now.day);
+  final target = DateTime(deadline.year, deadline.month, deadline.day);
+  return target.isBefore(today);
+}
+
+String _deadlineLabel(DateTime? deadline, String fallback) {
+  if (deadline == null) {
+    final normalizedFallback = fallback.trim();
+    if (normalizedFallback.isEmpty) {
+      return 'No deadline shared';
+    }
+    return normalizedFallback;
+  }
+
+  final prefix = _isExpired(deadline) ? 'Closed' : 'Closes';
+  return '$prefix ${DateFormat('MMM d').format(deadline)}';
+}
+
+Color? _deadlineTone(DateTime? deadline) {
+  if (deadline == null) {
+    return null;
+  }
+
+  if (_isExpired(deadline)) {
+    return StudentOpportunityHubPalette.error;
+  }
+  if (_isClosingSoon(deadline)) {
+    return StudentOpportunityHubPalette.accent;
+  }
+  return StudentOpportunityHubPalette.secondary;
 }

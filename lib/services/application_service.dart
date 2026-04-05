@@ -1,5 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../models/application_model.dart';
+import '../models/opportunity_model.dart';
+import '../models/student_application_item_model.dart';
 import 'notification_worker_service.dart';
 import 'cv_service.dart';
 import '../utils/application_status.dart';
@@ -30,6 +33,63 @@ class ApplicationService {
         .get();
 
     return snapshot.docs.length;
+  }
+
+  Future<List<StudentApplicationItemModel>> getSubmittedApplications(
+    String studentId,
+  ) async {
+    final normalizedStudentId = studentId.trim();
+    if (normalizedStudentId.isEmpty) {
+      return const [];
+    }
+
+    final snapshot = await _firestore
+        .collection('applications')
+        .where('studentId', isEqualTo: normalizedStudentId)
+        .get();
+
+    final applications =
+        snapshot.docs.map((doc) {
+          final data = doc.data();
+          data['id'] = data['id'] ?? doc.id;
+          return ApplicationModel.fromMap(data);
+        }).toList()..sort((first, second) {
+          final firstTime = first.appliedAt?.millisecondsSinceEpoch ?? 0;
+          final secondTime = second.appliedAt?.millisecondsSinceEpoch ?? 0;
+          return secondTime.compareTo(firstTime);
+        });
+
+    final opportunityIds = applications
+        .map((application) => application.opportunityId.trim())
+        .where((opportunityId) => opportunityId.isNotEmpty)
+        .toSet();
+
+    final opportunityDocs = await Future.wait(
+      opportunityIds.map(
+        (opportunityId) =>
+            _firestore.collection('opportunities').doc(opportunityId).get(),
+      ),
+    );
+
+    final opportunitiesById = <String, OpportunityModel>{};
+    for (final doc in opportunityDocs) {
+      final data = doc.data();
+      if (!doc.exists || data == null) {
+        continue;
+      }
+
+      data['id'] = doc.id;
+      opportunitiesById[doc.id] = OpportunityModel.fromMap(data);
+    }
+
+    return applications
+        .map(
+          (application) => StudentApplicationItemModel(
+            application: application,
+            opportunity: opportunitiesById[application.opportunityId.trim()],
+          ),
+        )
+        .toList(growable: false);
   }
 
   Future<ApplicationEligibilityStatus> getEligibility({

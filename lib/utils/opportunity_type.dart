@@ -17,7 +17,7 @@ class OpportunityType {
 
   // Colors
   static const Color jobColor = Color(0xFF6C63FF);
-  static const Color internshipColor = Color(0xFF4DA0FF);
+  static const Color internshipColor = Color(0xFF10B981);
   static const Color sponsoringColor = Color(0xFFFF9F43);
 
   static Color color(String type) {

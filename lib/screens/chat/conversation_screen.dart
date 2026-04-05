@@ -10,6 +10,7 @@ import '../../providers/auth_provider.dart';
 import '../../providers/chat_provider.dart';
 import '../../services/ai_message_service.dart';
 import '../../services/public_profile_service.dart';
+import '../../widgets/app_shell_background.dart';
 import '../../widgets/chat/chat_formatters.dart';
 import '../../widgets/chat/chat_confirmation_dialog.dart';
 import '../../widgets/chat/chat_input_bar.dart';
@@ -171,7 +172,8 @@ class _ConversationScreenState extends State<ConversationScreen> {
       senderId: auth.uid,
       senderRole: auth.role,
       text: text,
-      recipientId: conversation?.otherParticipantId(auth.uid) ?? widget.recipientId,
+      recipientId:
+          conversation?.otherParticipantId(auth.uid) ?? widget.recipientId,
       messageType: attachment?.messageType ?? 'text',
       attachmentFileName: attachment?.fileName ?? '',
       attachmentFilePath: attachment?.filePath ?? '',
@@ -192,9 +194,9 @@ class _ConversationScreenState extends State<ConversationScreen> {
   Future<void> _handleAiTask(String task, {String? targetLanguage}) async {
     final text = _messageController.text.trim();
     if (text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Type a message first')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Type a message first')));
       return;
     }
 
@@ -212,9 +214,9 @@ class _ConversationScreenState extends State<ConversationScreen> {
       );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(_readableError(e.toString()))),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(_readableError(e.toString()))));
     } finally {
       if (mounted) setState(() => _isAiProcessing = false);
     }
@@ -223,9 +225,9 @@ class _ConversationScreenState extends State<ConversationScreen> {
   void _showTranslateSheet() {
     final text = _messageController.text.trim();
     if (text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Type a message first')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Type a message first')));
       return;
     }
 
@@ -323,9 +325,9 @@ class _ConversationScreenState extends State<ConversationScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(_readableError(error))),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(_readableError(error))));
       context.read<ChatProvider>().clearError();
     });
   }
@@ -369,7 +371,10 @@ class _ConversationScreenState extends State<ConversationScreen> {
     final provider = context.read<ChatProvider>();
     if (auth == null) return;
 
-    final archived = !provider.isConversationArchivedFor(conversation, auth.uid);
+    final archived = !provider.isConversationArchivedFor(
+      conversation,
+      auth.uid,
+    );
     if (archived) {
       final confirmed = await showChatConfirmationDialog(
         context,
@@ -393,7 +398,9 @@ class _ConversationScreenState extends State<ConversationScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          archived ? 'Conversation moved to Archived' : 'Conversation restored to Inbox',
+          archived
+              ? 'Conversation moved to Archived'
+              : 'Conversation restored to Inbox',
         ),
       ),
     );
@@ -428,7 +435,8 @@ class _ConversationScreenState extends State<ConversationScreen> {
     final confirmed = await showChatConfirmationDialog(
       context,
       title: 'Delete conversation?',
-      message: 'Are you sure you want to delete this conversation? This action cannot be undone.',
+      message:
+          'Are you sure you want to delete this conversation? This action cannot be undone.',
       confirmLabel: 'Delete',
       destructive: true,
       icon: Icons.delete_outline_rounded,
@@ -441,9 +449,9 @@ class _ConversationScreenState extends State<ConversationScreen> {
     );
     if (!mounted || provider.error != null) return;
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Conversation deleted')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Conversation deleted')));
     Navigator.pop(context);
   }
 
@@ -475,189 +483,219 @@ class _ConversationScreenState extends State<ConversationScreen> {
       _scrollToBottom();
     }
 
-    return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
-      body: StreamBuilder<ConversationModel?>(
-        stream: _conversationStream,
-        builder: (context, snapshot) {
-          final conversation = snapshot.data;
-          final currentUserId = auth?.uid ?? '';
-          final otherUserId =
-              conversation?.otherParticipantId(currentUserId) ?? widget.recipientId;
-          final otherRole = _resolveOtherRole(conversation, auth);
-          final otherName =
-              conversation?.displayNameFor(currentUserId) ?? widget.otherName;
-          final contextLabel = _resolveContextLabel(conversation);
-          final normalizedOtherUserId = otherUserId.trim();
+    return AppShellBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: StreamBuilder<ConversationModel?>(
+          stream: _conversationStream,
+          builder: (context, snapshot) {
+            final conversation = snapshot.data;
+            final currentUserId = auth?.uid ?? '';
+            final otherUserId =
+                conversation?.otherParticipantId(currentUserId) ??
+                widget.recipientId;
+            final otherRole = _resolveOtherRole(conversation, auth);
+            final otherName =
+                conversation?.displayNameFor(currentUserId) ?? widget.otherName;
+            final contextLabel = _resolveContextLabel(conversation);
+            final normalizedOtherUserId = otherUserId.trim();
 
-          if (_profileUserId != normalizedOtherUserId || _profileFuture == null) {
-            _profileUserId = normalizedOtherUserId;
-            _profileFuture = normalizedOtherUserId.isEmpty
-                ? Future<UserModel?>.value(null)
-                : PublicProfileService.instance.fetchPublicProfile(normalizedOtherUserId);
-          }
+            if (_profileUserId != normalizedOtherUserId ||
+                _profileFuture == null) {
+              _profileUserId = normalizedOtherUserId;
+              _profileFuture = normalizedOtherUserId.isEmpty
+                  ? Future<UserModel?>.value(null)
+                  : PublicProfileService.instance.fetchPublicProfile(
+                      normalizedOtherUserId,
+                    );
+            }
 
-          return FutureBuilder<UserModel?>(
-            future: _profileFuture,
-            builder: (context, profileSnapshot) {
-              final otherUser = profileSnapshot.data;
-              final fallbackHeadline =
-                  widget.fallbackProfileHeadline.trim().isNotEmpty
-                      ? widget.fallbackProfileHeadline.trim()
-                      : otherRole == 'company'
-                          ? (otherUser?.sector ?? '').trim()
-                          : [
-                              (otherUser?.fieldOfStudy ?? '').trim(),
-                              (otherUser?.university ?? '').trim(),
-                            ].where((value) => value.isNotEmpty).join(' - ');
-              final fallbackAbout =
-                  widget.fallbackProfileAbout.trim().isNotEmpty
-                      ? widget.fallbackProfileAbout.trim()
-                      : otherRole == 'company'
-                          ? (otherUser?.description ?? '').trim()
-                          : (otherUser?.bio ?? '').trim();
-              final fallbackLocation =
-                  widget.fallbackProfileLocation.trim().isNotEmpty
-                      ? widget.fallbackProfileLocation.trim()
-                      : (otherUser?.location ?? '').trim();
-              final fallbackWebsite =
-                  widget.fallbackProfileWebsite.trim().isNotEmpty
-                      ? widget.fallbackProfileWebsite.trim()
-                      : (otherUser?.website ?? '').trim();
+            return FutureBuilder<UserModel?>(
+              future: _profileFuture,
+              builder: (context, profileSnapshot) {
+                final otherUser = profileSnapshot.data;
+                final fallbackHeadline =
+                    widget.fallbackProfileHeadline.trim().isNotEmpty
+                    ? widget.fallbackProfileHeadline.trim()
+                    : otherRole == 'company'
+                    ? (otherUser?.sector ?? '').trim()
+                    : [
+                        (otherUser?.fieldOfStudy ?? '').trim(),
+                        (otherUser?.university ?? '').trim(),
+                      ].where((value) => value.isNotEmpty).join(' - ');
+                final fallbackAbout =
+                    widget.fallbackProfileAbout.trim().isNotEmpty
+                    ? widget.fallbackProfileAbout.trim()
+                    : otherRole == 'company'
+                    ? (otherUser?.description ?? '').trim()
+                    : (otherUser?.bio ?? '').trim();
+                final fallbackLocation =
+                    widget.fallbackProfileLocation.trim().isNotEmpty
+                    ? widget.fallbackProfileLocation.trim()
+                    : (otherUser?.location ?? '').trim();
+                final fallbackWebsite =
+                    widget.fallbackProfileWebsite.trim().isNotEmpty
+                    ? widget.fallbackProfileWebsite.trim()
+                    : (otherUser?.website ?? '').trim();
 
-              final isOnline = otherUser?.isOnline ?? false;
+                final isOnline = otherUser?.isOnline ?? false;
 
-              return SafeArea(
-                child: Column(
-                  children: [
-                    _ConversationHeader(
-                      title: otherName,
-                      otherUser: otherUser,
-                      otherUserId: otherUserId,
-                      otherRole: otherRole,
-                      fallbackName: otherName,
-                      isOnline: isOnline,
-                      contextLabel: contextLabel,
-                      onBack: () => Navigator.pop(context),
-                      onOpenProfile: () => _openProfile(
-                        userId: otherUserId,
+                return SafeArea(
+                  child: Column(
+                    children: [
+                      _ConversationHeader(
+                        title: otherName,
+                        otherUser: otherUser,
+                        otherUserId: otherUserId,
+                        otherRole: otherRole,
                         fallbackName: otherName,
-                        fallbackRole: otherRole,
-                        fallbackHeadline: fallbackHeadline,
-                        fallbackAbout: fallbackAbout,
-                        fallbackLocation: fallbackLocation,
-                        fallbackWebsite: fallbackWebsite,
+                        isOnline: isOnline,
                         contextLabel: contextLabel,
-                      ),
-                      onMenuSelected: (value) {
-                        if (value == 'profile') {
-                          _openProfile(
-                            userId: otherUserId,
-                            fallbackName: otherName,
-                            fallbackRole: otherRole,
-                            fallbackHeadline: fallbackHeadline,
-                            fallbackAbout: fallbackAbout,
-                            fallbackLocation: fallbackLocation,
-                            fallbackWebsite: fallbackWebsite,
-                            contextLabel: contextLabel,
-                          );
-                          return;
-                        }
-                        if (value == 'mute' && conversation != null) {
-                          _toggleMute(conversation);
-                          return;
-                        }
-                        if (value == 'archive' && conversation != null) {
-                          _toggleArchive(conversation);
-                          return;
-                        }
-                        if (value == 'delete' && conversation != null) {
-                          _deleteConversation(conversation);
-                        }
-                      },
-                      muted: auth == null || conversation == null
-                          ? false
-                          : chatProvider.isConversationMutedFor(conversation, auth.uid),
-                      archived: auth == null || conversation == null
-                          ? false
-                          : chatProvider.isConversationArchivedFor(conversation, auth.uid),
-                    ),
-                    Expanded(
-                      child: Container(
-                        color: const Color(0xFFF8FAFC),
-                        child: messages.isEmpty
-                            ? _EmptyConversationState(
-                                contextLabel: contextLabel,
-                                otherName: otherName,
-                              )
-                            : ListView.builder(
-                                controller: _scrollController,
-                                physics: const BouncingScrollPhysics(),
-                                padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
-                                itemCount: messages.length + _dateDividerCount(messages),
-                                itemBuilder: (context, index) {
-                                  final mapped = _mapIndexToMessage(messages, index);
-                                  if (mapped.isDivider) {
-                                    return _DateDivider(label: mapped.dividerLabel!);
-                                  }
-
-                                  final message = mapped.message!;
-                                  final messageIndex = mapped.messageIndex!;
-                                  final isMe = message.senderId == currentUserId;
-                                  final isFirstInGroup = messageIndex == 0 ||
-                                      messages[messageIndex - 1].senderId != message.senderId;
-                                  final isLastInGroup = messageIndex == messages.length - 1 ||
-                                      messages[messageIndex + 1].senderId != message.senderId;
-                                  final showAvatar = isLastInGroup;
-
-                                  return ChatMessageBubble(
-                                    conversationId: widget.conversationId,
-                                    message: message,
-                                    isMe: isMe,
-                                    isFirstInGroup: isFirstInGroup,
-                                    isLastInGroup: isLastInGroup,
-                                    showAvatar: showAvatar,
-                                    otherUser: otherUser,
-                                    otherUserId: otherUserId,
-                                    otherRole: otherRole,
-                                    fallbackName: otherName,
-                                    onEdit: () => _startEdit(message),
-                                    onDelete: () => _deleteMessage(message.id),
-                                  );
-                                },
+                        onBack: () => Navigator.pop(context),
+                        onOpenProfile: () => _openProfile(
+                          userId: otherUserId,
+                          fallbackName: otherName,
+                          fallbackRole: otherRole,
+                          fallbackHeadline: fallbackHeadline,
+                          fallbackAbout: fallbackAbout,
+                          fallbackLocation: fallbackLocation,
+                          fallbackWebsite: fallbackWebsite,
+                          contextLabel: contextLabel,
+                        ),
+                        onMenuSelected: (value) {
+                          if (value == 'profile') {
+                            _openProfile(
+                              userId: otherUserId,
+                              fallbackName: otherName,
+                              fallbackRole: otherRole,
+                              fallbackHeadline: fallbackHeadline,
+                              fallbackAbout: fallbackAbout,
+                              fallbackLocation: fallbackLocation,
+                              fallbackWebsite: fallbackWebsite,
+                              contextLabel: contextLabel,
+                            );
+                            return;
+                          }
+                          if (value == 'mute' && conversation != null) {
+                            _toggleMute(conversation);
+                            return;
+                          }
+                          if (value == 'archive' && conversation != null) {
+                            _toggleArchive(conversation);
+                            return;
+                          }
+                          if (value == 'delete' && conversation != null) {
+                            _deleteConversation(conversation);
+                          }
+                        },
+                        muted: auth == null || conversation == null
+                            ? false
+                            : chatProvider.isConversationMutedFor(
+                                conversation,
+                                auth.uid,
+                              ),
+                        archived: auth == null || conversation == null
+                            ? false
+                            : chatProvider.isConversationArchivedFor(
+                                conversation,
+                                auth.uid,
                               ),
                       ),
-                    ),
-                    ChatInputBar(
-                      controller: _messageController,
-                      isSending: chatProvider.isSending,
-                      isEditing: _editingMessageId != null,
-                      isAiProcessing: _isAiProcessing,
-                      showAiTools: auth?.role == 'student',
-                      pendingAttachment: _pendingAttachment,
-                      onSend: () => _sendMessage(conversation),
-                      onPickImage: _pickImage,
-                      onPickFile: _pickFile,
-                      onCancelEdit: () {
-                        setState(() {
-                          _editingMessageId = null;
-                          _messageController.clear();
-                        });
-                      },
-                      onRemoveAttachment: () {
-                        setState(() => _pendingAttachment = null);
-                      },
-                      onEmojiTap: () {},
-                      onAiFormalize: () => _handleAiTask('formal'),
-                      onAiCorrect: () => _handleAiTask('correct'),
-                      onAiTranslate: _showTranslateSheet,
-                    ),
-                  ],
-                ),
-              );
-            },
-          );
-        },
+                      Expanded(
+                        child: Container(
+                          color: const Color(0xFFF8FAFC),
+                          child: messages.isEmpty
+                              ? _EmptyConversationState(
+                                  contextLabel: contextLabel,
+                                  otherName: otherName,
+                                )
+                              : ListView.builder(
+                                  controller: _scrollController,
+                                  physics: const BouncingScrollPhysics(),
+                                  padding: const EdgeInsets.fromLTRB(
+                                    0,
+                                    8,
+                                    0,
+                                    8,
+                                  ),
+                                  itemCount:
+                                      messages.length +
+                                      _dateDividerCount(messages),
+                                  itemBuilder: (context, index) {
+                                    final mapped = _mapIndexToMessage(
+                                      messages,
+                                      index,
+                                    );
+                                    if (mapped.isDivider) {
+                                      return _DateDivider(
+                                        label: mapped.dividerLabel!,
+                                      );
+                                    }
+
+                                    final message = mapped.message!;
+                                    final messageIndex = mapped.messageIndex!;
+                                    final isMe =
+                                        message.senderId == currentUserId;
+                                    final isFirstInGroup =
+                                        messageIndex == 0 ||
+                                        messages[messageIndex - 1].senderId !=
+                                            message.senderId;
+                                    final isLastInGroup =
+                                        messageIndex == messages.length - 1 ||
+                                        messages[messageIndex + 1].senderId !=
+                                            message.senderId;
+                                    final showAvatar = isLastInGroup;
+
+                                    return ChatMessageBubble(
+                                      conversationId: widget.conversationId,
+                                      message: message,
+                                      isMe: isMe,
+                                      isFirstInGroup: isFirstInGroup,
+                                      isLastInGroup: isLastInGroup,
+                                      showAvatar: showAvatar,
+                                      otherUser: otherUser,
+                                      otherUserId: otherUserId,
+                                      otherRole: otherRole,
+                                      fallbackName: otherName,
+                                      onEdit: () => _startEdit(message),
+                                      onDelete: () =>
+                                          _deleteMessage(message.id),
+                                    );
+                                  },
+                                ),
+                        ),
+                      ),
+                      ChatInputBar(
+                        controller: _messageController,
+                        isSending: chatProvider.isSending,
+                        isEditing: _editingMessageId != null,
+                        isAiProcessing: _isAiProcessing,
+                        showAiTools: auth?.role == 'student',
+                        pendingAttachment: _pendingAttachment,
+                        onSend: () => _sendMessage(conversation),
+                        onPickImage: _pickImage,
+                        onPickFile: _pickFile,
+                        onCancelEdit: () {
+                          setState(() {
+                            _editingMessageId = null;
+                            _messageController.clear();
+                          });
+                        },
+                        onRemoveAttachment: () {
+                          setState(() => _pendingAttachment = null);
+                        },
+                        onEmojiTap: () {},
+                        onAiFormalize: () => _handleAiTask('formal'),
+                        onAiCorrect: () => _handleAiTask('correct'),
+                        onAiTranslate: _showTranslateSheet,
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
+          },
+        ),
       ),
     );
   }
@@ -666,7 +704,10 @@ class _ConversationScreenState extends State<ConversationScreen> {
     if (messages.isEmpty) return 0;
     int count = 1;
     for (int i = 1; i < messages.length; i++) {
-      if (!ChatFormatters.isSameMessageDay(messages[i - 1].sentAt, messages[i].sentAt)) {
+      if (!ChatFormatters.isSameMessageDay(
+        messages[i - 1].sentAt,
+        messages[i].sentAt,
+      )) {
         count++;
       }
     }
@@ -697,7 +738,6 @@ class _ConversationScreenState extends State<ConversationScreen> {
 
     return _MappedItem.divider('');
   }
-
 
   String _inferMimeType(String fileName, {String fallback = ''}) {
     final lower = fileName.toLowerCase();
@@ -730,13 +770,13 @@ class _MappedItem {
   final int? messageIndex;
 
   _MappedItem.divider(this.dividerLabel)
-      : isDivider = true,
-        message = null,
-        messageIndex = null;
+    : isDivider = true,
+      message = null,
+      messageIndex = null;
 
   _MappedItem.message(this.message, this.messageIndex)
-      : isDivider = false,
-        dividerLabel = null;
+    : isDivider = false,
+      dividerLabel = null;
 }
 
 class _ConversationHeader extends StatelessWidget {
@@ -770,13 +810,17 @@ class _ConversationHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final presenceColor = isOnline ? ChatThemePalette.success : ChatThemePalette.textSecondary;
+    final presenceColor = isOnline
+        ? ChatThemePalette.success
+        : ChatThemePalette.textSecondary;
 
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border(
-          bottom: BorderSide(color: ChatThemePalette.border.withValues(alpha: 0.5)),
+          bottom: BorderSide(
+            color: ChatThemePalette.border.withValues(alpha: 0.5),
+          ),
         ),
       ),
       child: Padding(
@@ -869,7 +913,9 @@ class _ConversationHeader extends StatelessWidget {
                             child: Icon(
                               Icons.notifications_off_outlined,
                               size: 13,
-                              color: ChatThemePalette.textSecondary.withValues(alpha: 0.6),
+                              color: ChatThemePalette.textSecondary.withValues(
+                                alpha: 0.6,
+                              ),
                             ),
                           ),
                       ],
@@ -881,7 +927,9 @@ class _ConversationHeader extends StatelessWidget {
             const SizedBox(width: 8),
             PopupMenuButton<String>(
               color: ChatThemePalette.surface,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
               onSelected: onMenuSelected,
               itemBuilder: (context) => [
                 PopupMenuItem<String>(
@@ -917,7 +965,11 @@ class _ConversationHeader extends StatelessWidget {
                   color: const Color(0xFFF1F5F9),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(Icons.more_vert_rounded, size: 18, color: ChatThemePalette.textSecondary),
+                child: const Icon(
+                  Icons.more_vert_rounded,
+                  size: 18,
+                  color: ChatThemePalette.textSecondary,
+                ),
               ),
             ),
           ],
@@ -945,10 +997,9 @@ class _DateDivider extends StatelessWidget {
           ),
           child: Text(
             label,
-            style: ChatThemeStyles.meta(ChatThemePalette.textSecondary).copyWith(
-              fontSize: 10.5,
-              fontWeight: FontWeight.w600,
-            ),
+            style: ChatThemeStyles.meta(
+              ChatThemePalette.textSecondary,
+            ).copyWith(fontSize: 10.5, fontWeight: FontWeight.w600),
           ),
         ),
       ),
@@ -990,21 +1041,26 @@ class _EmptyConversationState extends StatelessWidget {
             Text(
               'Say hello to $otherName',
               textAlign: TextAlign.center,
-              style: ChatThemeStyles.cardTitle().copyWith(fontSize: 16, fontWeight: FontWeight.w700),
+              style: ChatThemeStyles.cardTitle().copyWith(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+              ),
             ),
             const SizedBox(height: 8),
             Text(
               'Send your first message to start the conversation.',
               textAlign: TextAlign.center,
-              style: ChatThemeStyles.body(ChatThemePalette.textSecondary).copyWith(
-                fontSize: 13,
-                height: 1.5,
-              ),
+              style: ChatThemeStyles.body(
+                ChatThemePalette.textSecondary,
+              ).copyWith(fontSize: 13, height: 1.5),
             ),
             if (contextLabel.trim().isNotEmpty) ...[
               const SizedBox(height: 12),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 5,
+                ),
                 decoration: BoxDecoration(
                   color: ChatThemePalette.primary.withValues(alpha: 0.07),
                   borderRadius: BorderRadius.circular(999),
@@ -1012,10 +1068,9 @@ class _EmptyConversationState extends StatelessWidget {
                 child: Text(
                   contextLabel.trim(),
                   textAlign: TextAlign.center,
-                  style: ChatThemeStyles.meta(ChatThemePalette.primary).copyWith(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 11,
-                  ),
+                  style: ChatThemeStyles.meta(
+                    ChatThemePalette.primary,
+                  ).copyWith(fontWeight: FontWeight.w600, fontSize: 11),
                 ),
               ),
             ],

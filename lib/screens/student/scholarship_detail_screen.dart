@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../models/saved_scholarship_model.dart';
 import '../../models/scholarship_model.dart';
+import '../../providers/auth_provider.dart';
+import '../../providers/saved_scholarship_provider.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
+import '../../widgets/app_shell_background.dart';
 
 typedef _P = OpportunityDashboardPalette;
 
@@ -331,223 +336,317 @@ class ScholarshipDetailScreen extends StatelessWidget {
     }
   }
 
+  Future<void> _toggleSavedScholarship(BuildContext context) async {
+    final userId = context.read<AuthProvider>().userModel?.uid.trim() ?? '';
+    if (userId.isEmpty) {
+      return;
+    }
+
+    final provider = context.read<SavedScholarshipProvider>();
+    SavedScholarshipModel? existing;
+    for (final item in provider.savedScholarships) {
+      if (item.scholarshipId == scholarship.id) {
+        existing = item;
+        break;
+      }
+    }
+
+    final location = _locationText ?? 'Location not specified';
+
+    final error = existing != null
+        ? await provider.unsaveScholarship(existing.id, userId)
+        : await provider.saveScholarship(
+            studentId: userId,
+            scholarshipId: scholarship.id,
+            title: _title,
+            provider: _provider,
+            deadline: _deadlineText,
+            location: location,
+            fundingType: _fundingType ?? '',
+            level: _level ?? '',
+          );
+
+    if (!context.mounted) {
+      return;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          error == null
+              ? existing != null
+                    ? 'Removed from saved scholarships'
+                    : 'Scholarship saved'
+              : 'Could not update saved scholarship',
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final auth = context.watch<AuthProvider>().userModel;
+    final savedProvider = context.watch<SavedScholarshipProvider>();
+    final currentUserId = auth?.uid.trim() ?? '';
+    if (currentUserId.isNotEmpty &&
+        !savedProvider.hasLoaded &&
+        !savedProvider.isLoading) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!context.mounted) {
+          return;
+        }
+        context.read<SavedScholarshipProvider>().fetchSavedScholarships(
+          currentUserId,
+        );
+      });
+    }
+    SavedScholarshipModel? existingSaved;
+    for (final item in savedProvider.savedScholarships) {
+      if (item.scholarshipId == scholarship.id) {
+        existingSaved = item;
+        break;
+      }
+    }
+    final isSaved = existingSaved != null;
     final hasLink = _linkUri != null;
     final location = _locationText;
     final chips = _heroChips;
     final eligibilityItems = _eligibilityItems;
     final profileRows = _profileRows;
 
-    return Scaffold(
-      backgroundColor: _P.background,
-      bottomNavigationBar: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-          child: _ScholarshipActionBar(
-            hostLabel: _linkHost,
-            enabled: hasLink,
-            onTap: hasLink ? () => _openLink(context) : null,
+    return AppShellBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        bottomNavigationBar: SafeArea(
+          top: false,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+            child: _ScholarshipActionBar(
+              hostLabel: _linkHost,
+              enabled: hasLink,
+              onTap: hasLink ? () => _openLink(context) : null,
+            ),
           ),
         ),
-      ),
-      body: Stack(
-        children: [
-          Positioned(
-            top: -72,
-            right: -36,
-            child: _SoftOrb(
-              size: 184,
-              color: _P.primary.withValues(alpha: 0.12),
+        body: Stack(
+          children: [
+            Positioned(
+              top: -72,
+              right: -36,
+              child: _SoftOrb(
+                size: 184,
+                color: _P.primary.withValues(alpha: 0.12),
+              ),
             ),
-          ),
-          Positioned(
-            top: 240,
-            left: -58,
-            child: _SoftOrb(
-              size: 144,
-              color: _P.secondary.withValues(alpha: 0.10),
+            Positioned(
+              top: 240,
+              left: -58,
+              child: _SoftOrb(
+                size: 144,
+                color: _P.secondary.withValues(alpha: 0.10),
+              ),
             ),
-          ),
-          Column(
-            children: [
-              SafeArea(
-                bottom: false,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 10, 16, 6),
-                  child: Row(
+            Column(
+              children: [
+                SafeArea(
+                  bottom: false,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 10, 16, 6),
+                    child: Row(
+                      children: [
+                        _TopBarIconButton(
+                          icon: Icons.arrow_back_ios_new_rounded,
+                          onTap: () => Navigator.of(context).maybePop(),
+                        ),
+                        Expanded(
+                          child: Text(
+                            'Scholarship',
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.poppins(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: _P.textPrimary,
+                            ),
+                          ),
+                        ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            _TopBarIconButton(
+                              icon: isSaved
+                                  ? Icons.bookmark_rounded
+                                  : Icons.bookmark_outline_rounded,
+                              onTap:
+                                  currentUserId.isEmpty ||
+                                      savedProvider.isLoading
+                                  ? null
+                                  : () => _toggleSavedScholarship(context),
+                              iconColor: isSaved ? _P.primary : _P.textPrimary,
+                              fillColor: isSaved
+                                  ? _P.primary.withValues(alpha: 0.08)
+                                  : _P.surface,
+                            ),
+                            const SizedBox(width: 8),
+                            _TopBarIconButton(
+                              icon: hasLink
+                                  ? Icons.open_in_new_rounded
+                                  : Icons.link_off_rounded,
+                              onTap: hasLink ? () => _openLink(context) : null,
+                              iconColor: hasLink
+                                  ? _P.primary
+                                  : _P.textSecondary,
+                              fillColor: hasLink
+                                  ? _P.primary.withValues(alpha: 0.08)
+                                  : _P.surface,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: ListView(
+                    physics: const BouncingScrollPhysics(),
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 132),
                     children: [
-                      _TopBarIconButton(
-                        icon: Icons.arrow_back_ios_new_rounded,
-                        onTap: () => Navigator.of(context).maybePop(),
+                      _ScholarshipHeroCard(
+                        scholarship: scholarship,
+                        badgeLabel: _primaryBadgeLabel,
+                        secondaryBadgeLabel: _secondaryBadgeLabel,
+                        provider: _provider,
+                        title: _title,
+                        location: location,
+                        deadline: scholarship.deadline.trim().isEmpty
+                            ? null
+                            : _deadlineText,
+                        chips: chips,
                       ),
-                      Expanded(
+                      const SizedBox(height: 22),
+                      _PageSectionHeading(
+                        eyebrow: 'AT A GLANCE',
+                        title: 'Quick Snapshot',
+                        subtitle:
+                            'Everything important is surfaced here before you open the full application call.',
+                      ),
+                      const SizedBox(height: 14),
+                      _ScholarshipStatsWrap(stats: _stats),
+                      const SizedBox(height: 22),
+                      _ScholarshipSectionCard(
+                        icon: Icons.auto_awesome_rounded,
+                        iconColor: _P.primary,
+                        title: 'About This Scholarship',
+                        subtitle:
+                            'A focused overview so the opportunity feels easy to scan.',
                         child: Text(
-                          'Scholarship',
-                          textAlign: TextAlign.center,
+                          _description,
                           style: GoogleFonts.poppins(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: _P.textPrimary,
+                            fontSize: 13,
+                            height: 1.7,
+                            color: _P.textSecondary,
                           ),
                         ),
                       ),
-                      _TopBarIconButton(
-                        icon: hasLink
-                            ? Icons.open_in_new_rounded
-                            : Icons.link_off_rounded,
-                        onTap: hasLink ? () => _openLink(context) : null,
-                        iconColor: hasLink ? _P.primary : _P.textSecondary,
-                        fillColor: hasLink
-                            ? _P.primary.withValues(alpha: 0.08)
-                            : _P.surface,
+                      const SizedBox(height: 16),
+                      _ScholarshipSectionCard(
+                        icon: Icons.verified_user_rounded,
+                        iconColor: _P.secondary,
+                        title: 'Who Can Apply',
+                        subtitle:
+                            'Check the core eligibility signals before moving forward.',
+                        child: eligibilityItems.isEmpty
+                            ? Text(
+                                _eligibility,
+                                style: GoogleFonts.poppins(
+                                  fontSize: 13,
+                                  height: 1.7,
+                                  color: _P.textSecondary,
+                                ),
+                              )
+                            : Column(
+                                children: eligibilityItems
+                                    .asMap()
+                                    .entries
+                                    .map(
+                                      (entry) => Padding(
+                                        padding: EdgeInsets.only(
+                                          bottom:
+                                              entry.key ==
+                                                  eligibilityItems.length - 1
+                                              ? 0
+                                              : 10,
+                                        ),
+                                        child: _EligibilityItem(
+                                          text: entry.value,
+                                        ),
+                                      ),
+                                    )
+                                    .toList(growable: false),
+                              ),
+                      ),
+                      const SizedBox(height: 16),
+                      _ScholarshipSectionCard(
+                        icon: Icons.fact_check_outlined,
+                        iconColor: _P.accent,
+                        title: 'Scholarship Profile',
+                        subtitle:
+                            'A cleaner breakdown of the provider, destination, and track.',
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ...profileRows.asMap().entries.map(
+                              (entry) => Padding(
+                                padding: EdgeInsets.only(
+                                  bottom: entry.key == profileRows.length - 1
+                                      ? 0
+                                      : 8,
+                                ),
+                                child: _ProfileRow(data: entry.value),
+                              ),
+                            ),
+                            if (scholarship.tags.isNotEmpty) ...[
+                              const SizedBox(height: 16),
+                              Text(
+                                'Highlights',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  color: _P.textPrimary,
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: scholarship.tags
+                                    .take(6)
+                                    .map((tag) => _TagChip(label: tag))
+                                    .toList(growable: false),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      _ScholarshipSectionCard(
+                        icon: Icons.launch_rounded,
+                        iconColor: _P.primaryDark,
+                        title: 'Application Link',
+                        subtitle:
+                            'Continue with confidence on the official destination.',
+                        child: _ApplicationPreviewCard(
+                          link: scholarship.link,
+                          hostLabel: _linkHost,
+                          enabled: hasLink,
+                        ),
                       ),
                     ],
                   ),
                 ),
-              ),
-              Expanded(
-                child: ListView(
-                  physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 132),
-                  children: [
-                    _ScholarshipHeroCard(
-                      scholarship: scholarship,
-                      badgeLabel: _primaryBadgeLabel,
-                      secondaryBadgeLabel: _secondaryBadgeLabel,
-                      provider: _provider,
-                      title: _title,
-                      location: location,
-                      deadline: scholarship.deadline.trim().isEmpty
-                          ? null
-                          : _deadlineText,
-                      chips: chips,
-                    ),
-                    const SizedBox(height: 22),
-                    _PageSectionHeading(
-                      eyebrow: 'AT A GLANCE',
-                      title: 'Quick Snapshot',
-                      subtitle:
-                          'Everything important is surfaced here before you open the full application call.',
-                    ),
-                    const SizedBox(height: 14),
-                    _ScholarshipStatsWrap(stats: _stats),
-                    const SizedBox(height: 22),
-                    _ScholarshipSectionCard(
-                      icon: Icons.auto_awesome_rounded,
-                      iconColor: _P.primary,
-                      title: 'About This Scholarship',
-                      subtitle:
-                          'A focused overview so the opportunity feels easy to scan.',
-                      child: Text(
-                        _description,
-                        style: GoogleFonts.poppins(
-                          fontSize: 13,
-                          height: 1.7,
-                          color: _P.textSecondary,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    _ScholarshipSectionCard(
-                      icon: Icons.verified_user_rounded,
-                      iconColor: _P.secondary,
-                      title: 'Who Can Apply',
-                      subtitle:
-                          'Check the core eligibility signals before moving forward.',
-                      child: eligibilityItems.isEmpty
-                          ? Text(
-                              _eligibility,
-                              style: GoogleFonts.poppins(
-                                fontSize: 13,
-                                height: 1.7,
-                                color: _P.textSecondary,
-                              ),
-                            )
-                          : Column(
-                              children: eligibilityItems
-                                  .asMap()
-                                  .entries
-                                  .map(
-                                    (entry) => Padding(
-                                      padding: EdgeInsets.only(
-                                        bottom:
-                                            entry.key ==
-                                                eligibilityItems.length - 1
-                                            ? 0
-                                            : 10,
-                                      ),
-                                      child: _EligibilityItem(
-                                        text: entry.value,
-                                      ),
-                                    ),
-                                  )
-                                  .toList(growable: false),
-                            ),
-                    ),
-                    const SizedBox(height: 16),
-                    _ScholarshipSectionCard(
-                      icon: Icons.fact_check_outlined,
-                      iconColor: _P.accent,
-                      title: 'Scholarship Profile',
-                      subtitle:
-                          'A cleaner breakdown of the provider, destination, and track.',
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          ...profileRows.asMap().entries.map(
-                            (entry) => Padding(
-                              padding: EdgeInsets.only(
-                                bottom: entry.key == profileRows.length - 1
-                                    ? 0
-                                    : 8,
-                              ),
-                              child: _ProfileRow(data: entry.value),
-                            ),
-                          ),
-                          if (scholarship.tags.isNotEmpty) ...[
-                            const SizedBox(height: 16),
-                            Text(
-                              'Highlights',
-                              style: GoogleFonts.poppins(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w700,
-                                color: _P.textPrimary,
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                            Wrap(
-                              spacing: 8,
-                              runSpacing: 8,
-                              children: scholarship.tags
-                                  .take(6)
-                                  .map((tag) => _TagChip(label: tag))
-                                  .toList(growable: false),
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    _ScholarshipSectionCard(
-                      icon: Icons.launch_rounded,
-                      iconColor: _P.primaryDark,
-                      title: 'Application Link',
-                      subtitle:
-                          'Continue with confidence on the official destination.',
-                      child: _ApplicationPreviewCard(
-                        link: scholarship.link,
-                        hostLabel: _linkHost,
-                        enabled: hasLink,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

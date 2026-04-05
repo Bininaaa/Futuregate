@@ -869,57 +869,59 @@ class _AdminGoogleBooksImportScreenState
             ],
           ),
         ),
-        body: TabBarView(
-          children: [
-            CustomScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              slivers: [
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                    child: AdminSurface(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const AdminSectionHeader(
-                            eyebrow: 'Studio',
-                            title: 'Book Import Workspace',
-                            subtitle:
-                                'Search and import books in one continuous flow instead of working inside separate fixed windows.',
-                          ),
-                          const SizedBox(height: 14),
-                          Wrap(
-                            spacing: 10,
-                            runSpacing: 10,
-                            children: [
-                              AdminPill(
-                                label: '${_results.length} results',
-                                color: AdminPalette.info,
-                                icon: Icons.manage_search_rounded,
-                              ),
-                              AdminPill(
-                                label: _selectedDomain,
-                                color: AdminPalette.activity,
-                              ),
-                              AdminPill(
-                                label: _selectedLanguage.isEmpty
-                                    ? 'Any language'
-                                    : _selectedLanguage.toUpperCase(),
-                                color: AdminPalette.success,
-                              ),
-                            ],
-                          ),
-                        ],
+        body: AdminShellBackground(
+          child: TabBarView(
+            children: [
+              CustomScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                slivers: [
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                      child: AdminSurface(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const AdminSectionHeader(
+                              eyebrow: 'Studio',
+                              title: 'Book Import Workspace',
+                              subtitle:
+                                  'Search and import books in one continuous flow instead of working inside separate fixed windows.',
+                            ),
+                            const SizedBox(height: 14),
+                            Wrap(
+                              spacing: 10,
+                              runSpacing: 10,
+                              children: [
+                                AdminPill(
+                                  label: '${_results.length} results',
+                                  color: AdminPalette.info,
+                                  icon: Icons.manage_search_rounded,
+                                ),
+                                AdminPill(
+                                  label: _selectedDomain,
+                                  color: AdminPalette.activity,
+                                ),
+                                AdminPill(
+                                  label: _selectedLanguage.isEmpty
+                                      ? 'Any language'
+                                      : _selectedLanguage.toUpperCase(),
+                                  color: AdminPalette.success,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-                SliverToBoxAdapter(child: _buildSearchForm()),
-                _buildSearchResults(),
-              ],
-            ),
-            _buildManageTab(provider),
-          ],
+                  SliverToBoxAdapter(child: _buildSearchForm()),
+                  _buildSearchResults(),
+                ],
+              ),
+              _buildManageTab(provider),
+            ],
+          ),
         ),
       ),
     );

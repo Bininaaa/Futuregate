@@ -7,7 +7,9 @@ import '../../providers/application_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/cv_provider.dart';
 import '../../providers/notification_provider.dart';
+import '../../providers/project_idea_provider.dart';
 import '../../providers/saved_opportunity_provider.dart';
+import '../../providers/saved_scholarship_provider.dart';
 import '../../providers/student_provider.dart';
 import '../../screens/notifications_screen.dart';
 import '../../screens/settings/about_avenirdz_screen.dart';
@@ -16,10 +18,13 @@ import '../../screens/settings/logout_confirmation_sheet.dart';
 import '../../screens/settings/security_privacy_screen.dart';
 import '../../screens/settings/settings_flow_theme.dart';
 import '../../screens/settings/settings_flow_widgets.dart';
+import '../../widgets/app_shell_background.dart';
 import '../../screens/settings/settings_screen.dart';
 import '../../widgets/profile_avatar.dart';
+import 'applied_opportunities_screen.dart';
 import 'cv_screen.dart';
 import 'edit_profile_screen.dart';
+import 'saved_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -53,6 +58,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       context.read<SavedOpportunityProvider>().fetchSavedOpportunities(
         currentUser.uid,
       ),
+      context.read<SavedScholarshipProvider>().fetchSavedScholarships(
+        currentUser.uid,
+      ),
+      context.read<ProjectIdeaProvider>().fetchSavedIdeas(currentUser.uid),
       context.read<CvProvider>().loadCv(currentUser.uid),
     ]);
   }
@@ -63,6 +72,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final studentProvider = context.watch<StudentProvider>();
     final applicationsProvider = context.watch<ApplicationProvider>();
     final savedProvider = context.watch<SavedOpportunityProvider>();
+    final savedScholarshipProvider = context.watch<SavedScholarshipProvider>();
+    final savedIdeasProvider = context.watch<ProjectIdeaProvider>();
     final notificationProvider = context.watch<NotificationProvider>();
     final cvProvider = context.watch<CvProvider>();
 
@@ -74,189 +85,208 @@ class _ProfileScreenState extends State<ProfileScreen> {
         : 'Hi, $firstName \u{1F44B}';
     final subtitle = _resolveSubtitle(cvProvider.cv);
 
-    return Scaffold(
-      backgroundColor: SettingsFlowPalette.background,
-      body: SafeArea(
-        child: RefreshIndicator(
-          color: SettingsFlowPalette.primary,
-          onRefresh: _loadDashboardData,
-          child: ListView(
-            physics: const BouncingScrollPhysics(
-              parent: AlwaysScrollableScrollPhysics(),
-            ),
-            padding: const EdgeInsets.fromLTRB(16, 6, 16, 24),
-            children: [
-              _DashboardTopBar(
-                onBack: () => Navigator.maybePop(context),
-                onMenuSelected: (value) async {
-                  switch (value) {
-                    case _DashboardMenuAction.refresh:
-                      await _loadDashboardData();
-                      return;
-                    case _DashboardMenuAction.notifications:
-                      if (!mounted) {
+    return AppShellBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SafeArea(
+          child: RefreshIndicator(
+            color: SettingsFlowPalette.primary,
+            onRefresh: _loadDashboardData,
+            child: ListView(
+              physics: const BouncingScrollPhysics(
+                parent: AlwaysScrollableScrollPhysics(),
+              ),
+              padding: const EdgeInsets.fromLTRB(16, 6, 16, 24),
+              children: [
+                _DashboardTopBar(
+                  onBack: () => Navigator.maybePop(context),
+                  onMenuSelected: (value) async {
+                    switch (value) {
+                      case _DashboardMenuAction.refresh:
+                        await _loadDashboardData();
                         return;
-                      }
-                      Navigator.push(
+                      case _DashboardMenuAction.notifications:
+                        if (!mounted) {
+                          return;
+                        }
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const NotificationsScreen(),
+                          ),
+                        );
+                        return;
+                      case _DashboardMenuAction.logout:
+                        if (!mounted) {
+                          return;
+                        }
+                        await showLogoutConfirmationSheet(context);
+                        return;
+                    }
+                  },
+                ),
+                const SizedBox(height: 14),
+                _DashboardHeader(
+                  greeting: greeting,
+                  subtitle: subtitle,
+                  user: student,
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _DashboardStatCard(
+                        title: 'Applications',
+                        value:
+                            '${applicationsProvider.submittedApplicationsCount}',
+                        icon: Icons.assignment_turned_in_outlined,
+                        gradient: SettingsFlowPalette.primaryGradient,
+                        accentColor: Colors.white,
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const AppliedOpportunitiesScreen(),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: _DashboardStatCard(
+                        title: 'Saved',
+                        value:
+                            '${savedProvider.savedOpportunities.length + savedScholarshipProvider.savedScholarships.length + savedIdeasProvider.savedIdeas.length}',
+                        icon: Icons.bookmark_outline_rounded,
+                        gradient: SettingsFlowPalette.secondaryGradient,
+                        accentColor: Colors.white,
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const SavedScreen(),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                const SettingsSectionHeading(title: 'Quick Actions'),
+                const SizedBox(height: 10),
+                GridView.count(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                  childAspectRatio: 1.22,
+                  children: [
+                    _QuickActionCard(
+                      icon: Icons.edit_outlined,
+                      iconColor: SettingsFlowPalette.primary,
+                      title: 'Edit Profile',
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const EditProfileScreen(),
+                        ),
+                      ),
+                    ),
+                    _QuickActionCard(
+                      icon: Icons.description_outlined,
+                      iconColor: SettingsFlowPalette.secondary,
+                      title: 'Cv builder',
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const CvScreen()),
+                      ),
+                    ),
+                    _QuickActionCard(
+                      icon: Icons.notifications_none_rounded,
+                      iconColor: SettingsFlowPalette.accent,
+                      title: 'Notifications',
+                      showAlertDot: notificationProvider.unreadCount > 0,
+                      onTap: () => Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (_) => const NotificationsScreen(),
                         ),
-                      );
-                      return;
-                    case _DashboardMenuAction.logout:
-                      if (!mounted) {
-                        return;
-                      }
-                      await showLogoutConfirmationSheet(context);
-                      return;
-                  }
-                },
-              ),
-              const SizedBox(height: 14),
-              _DashboardHeader(
-                greeting: greeting,
-                subtitle: subtitle,
-                user: student,
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: _DashboardStatCard(
-                      title: 'Applications',
-                      value:
-                          '${applicationsProvider.submittedApplicationsCount}',
-                      icon: Icons.assignment_turned_in_outlined,
-                      gradient: SettingsFlowPalette.primaryGradient,
-                      accentColor: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: _DashboardStatCard(
-                      title: 'Saved',
-                      value: '${savedProvider.savedOpportunities.length}',
-                      icon: Icons.bookmark_outline_rounded,
-                      gradient: SettingsFlowPalette.secondaryGradient,
-                      accentColor: Colors.white,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              const SettingsSectionHeading(title: 'Quick Actions'),
-              const SizedBox(height: 10),
-              GridView.count(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                crossAxisCount: 2,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
-                childAspectRatio: 1.22,
-                children: [
-                  _QuickActionCard(
-                    icon: Icons.edit_outlined,
-                    iconColor: SettingsFlowPalette.primary,
-                    title: 'Edit Profile',
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const EditProfileScreen(),
                       ),
                     ),
-                  ),
-                  _QuickActionCard(
-                    icon: Icons.description_outlined,
-                    iconColor: SettingsFlowPalette.secondary,
-                    title: 'Cv builder',
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const CvScreen()),
-                    ),
-                  ),
-                  _QuickActionCard(
-                    icon: Icons.notifications_none_rounded,
-                    iconColor: SettingsFlowPalette.accent,
-                    title: 'Notifications',
-                    showAlertDot: notificationProvider.unreadCount > 0,
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const NotificationsScreen(),
-                      ),
-                    ),
-                  ),
-                  _QuickActionCard(
-                    icon: Icons.tune_rounded,
-                    iconColor: SettingsFlowPalette.primaryDark,
-                    title: 'Settings',
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const SettingsScreen()),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: SettingsFlowPalette.surfaceTint,
-                  borderRadius: SettingsFlowTheme.radius(26),
-                  border: Border.all(
-                    color: SettingsFlowPalette.primary.withValues(alpha: 0.08),
-                  ),
-                ),
-                child: Column(
-                  children: [
-                    SettingsListRow(
-                      icon: Icons.lock_outline_rounded,
-                      iconColor: SettingsFlowPalette.primary,
-                      title: 'Security & Privacy',
+                    _QuickActionCard(
+                      icon: Icons.tune_rounded,
+                      iconColor: SettingsFlowPalette.primaryDark,
+                      title: 'Settings',
                       onTap: () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => const SecurityPrivacyScreen(),
+                          builder: (_) => const SettingsScreen(),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 10),
-                    SettingsListRow(
-                      icon: Icons.help_outline_rounded,
-                      iconColor: SettingsFlowPalette.secondary,
-                      title: 'Help Center',
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const HelpCenterScreen(),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    SettingsListRow(
-                      icon: Icons.info_outline_rounded,
-                      iconColor: SettingsFlowPalette.accent,
-                      title: 'About AvenirDZ',
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const AboutAvenirDzScreen(),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    SettingsListRow(
-                      icon: Icons.logout_rounded,
-                      iconColor: SettingsFlowPalette.error,
-                      title: 'Logout',
-                      destructive: true,
-                      onTap: () => showLogoutConfirmationSheet(context),
                     ),
                   ],
                 ),
-              ),
-            ],
+                const SizedBox(height: 20),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: SettingsFlowPalette.surfaceTint,
+                    borderRadius: SettingsFlowTheme.radius(26),
+                    border: Border.all(
+                      color: SettingsFlowPalette.primary.withValues(
+                        alpha: 0.08,
+                      ),
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      SettingsListRow(
+                        icon: Icons.lock_outline_rounded,
+                        iconColor: SettingsFlowPalette.primary,
+                        title: 'Security & Privacy',
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const SecurityPrivacyScreen(),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      SettingsListRow(
+                        icon: Icons.help_outline_rounded,
+                        iconColor: SettingsFlowPalette.secondary,
+                        title: 'Help Center',
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const HelpCenterScreen(),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      SettingsListRow(
+                        icon: Icons.info_outline_rounded,
+                        iconColor: SettingsFlowPalette.accent,
+                        title: 'About AvenirDZ',
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const AboutAvenirDzScreen(),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      SettingsListRow(
+                        icon: Icons.logout_rounded,
+                        iconColor: SettingsFlowPalette.error,
+                        title: 'Logout',
+                        destructive: true,
+                        onTap: () => showLogoutConfirmationSheet(context),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -500,6 +530,7 @@ class _DashboardStatCard extends StatelessWidget {
   final IconData icon;
   final Gradient gradient;
   final Color accentColor;
+  final VoidCallback? onTap;
 
   const _DashboardStatCard({
     required this.title,
@@ -507,76 +538,80 @@ class _DashboardStatCard extends StatelessWidget {
     required this.icon,
     required this.gradient,
     required this.accentColor,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: 138,
-      child: Stack(
-        children: [
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: Container(
-              height: 22,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(24),
-                boxShadow: SettingsFlowTheme.softShadow(0.05),
+      child: GestureDetector(
+        onTap: onTap,
+        child: Stack(
+          children: [
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: Container(
+                height: 22,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: SettingsFlowTheme.softShadow(0.05),
+                ),
               ),
             ),
-          ),
-          Positioned.fill(
-            bottom: 8,
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                gradient: gradient,
-                borderRadius: BorderRadius.circular(24),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        width: 38,
-                        height: 38,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.18),
-                          borderRadius: SettingsFlowTheme.radius(14),
+            Positioned.fill(
+              bottom: 8,
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  gradient: gradient,
+                  borderRadius: BorderRadius.circular(24),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          width: 38,
+                          height: 38,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.18),
+                            borderRadius: SettingsFlowTheme.radius(14),
+                          ),
+                          child: Icon(icon, color: accentColor),
                         ),
-                        child: Icon(icon, color: accentColor),
-                      ),
-                      const Spacer(),
-                      Icon(
-                        Icons.north_east_rounded,
-                        color: accentColor.withValues(alpha: 0.88),
-                        size: 18,
-                      ),
-                    ],
-                  ),
-                  const Spacer(),
-                  Text(
-                    value,
-                    style: SettingsFlowTheme.heroTitle(
-                      Colors.white,
-                    ).copyWith(fontSize: 28),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    title,
-                    style: SettingsFlowTheme.body(
-                      Colors.white.withValues(alpha: 0.92),
+                        const Spacer(),
+                        Icon(
+                          Icons.north_east_rounded,
+                          color: accentColor.withValues(alpha: 0.88),
+                          size: 18,
+                        ),
+                      ],
                     ),
-                  ),
-                ],
+                    const Spacer(),
+                    Text(
+                      value,
+                      style: SettingsFlowTheme.heroTitle(
+                        Colors.white,
+                      ).copyWith(fontSize: 28),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      title,
+                      style: SettingsFlowTheme.body(
+                        Colors.white.withValues(alpha: 0.92),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

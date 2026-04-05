@@ -6,6 +6,7 @@ import '../../models/project_idea_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/project_idea_provider.dart';
 import '../../services/file_storage_service.dart';
+import '../../widgets/app_shell_background.dart';
 import '../../widgets/ideas/innovation_hub_theme.dart';
 
 class CreateIdeaScreen extends StatefulWidget {
@@ -326,303 +327,311 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
   Widget build(BuildContext context) {
     final provider = context.watch<ProjectIdeaProvider>();
 
-    return Scaffold(
-      backgroundColor: InnovationHubPalette.background,
-      appBar: AppBar(
-        backgroundColor: InnovationHubPalette.background,
-        foregroundColor: InnovationHubPalette.textPrimary,
-        elevation: 0,
-        centerTitle: false,
-        title: Text(
-          widget.isEditMode ? 'Edit Idea' : 'Create Idea',
-          style: InnovationHubTypography.section(size: 20),
-        ),
-      ),
-      bottomNavigationBar: SafeArea(
-        minimum: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-        child: Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: InnovationHubPalette.surface,
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: InnovationHubPalette.border),
-            boxShadow: InnovationHubPalette.softShadow(0.06),
+    return AppShellBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          foregroundColor: InnovationHubPalette.textPrimary,
+          elevation: 0,
+          centerTitle: false,
+          title: Text(
+            widget.isEditMode ? 'Edit Idea' : 'Create Idea',
+            style: InnovationHubTypography.section(size: 20),
           ),
-          child: provider.isLoading
-              ? const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 14),
-                  child: Center(child: CircularProgressIndicator()),
-                )
-              : ElevatedButton(
-                  onPressed: _isUploadingImage ? null : _submit,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: InnovationHubPalette.primary,
-                    foregroundColor: Colors.white,
-                    disabledBackgroundColor: InnovationHubPalette.primary
-                        .withValues(alpha: 0.4),
-                    disabledForegroundColor: Colors.white,
-                    elevation: 0,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(18),
-                    ),
-                  ),
-                  child: Text(
-                    _isUploadingImage
-                        ? 'Uploading cover image...'
-                        : _isLocked
-                        ? 'Editing locked after review'
-                        : widget.isEditMode
-                        ? 'Save Changes'
-                        : 'Publish Idea',
-                    style: InnovationHubTypography.label(
-                      color: Colors.white,
-                      size: 14,
-                    ),
-                  ),
-                ),
         ),
-      ),
-      body: AbsorbPointer(
-        absorbing: _isLocked,
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
-            children: [
-              _buildHeroCard(),
-              if (_isLocked) ...[
-                const SizedBox(height: 16),
-                _buildLockNotice(),
-              ],
-              const SizedBox(height: 18),
-              _SectionCard(
-                title: 'Core Idea',
-                subtitle:
-                    'Shape the concept and make the first impression feel sharp.',
-                child: Column(
-                  children: [
-                    _StyledField(
-                      controller: _titleController,
-                      label: 'Idea Title',
-                      hint: 'AI-powered campus wellbeing assistant',
-                      validator: _requiredValidator,
-                    ),
-                    const SizedBox(height: 14),
-                    _StyledField(
-                      controller: _taglineController,
-                      label: 'Short Tagline',
-                      hint: 'A smarter way for students to find support fast.',
-                    ),
-                    const SizedBox(height: 18),
-                    _buildChoiceGroup(
-                      title: 'Category',
-                      values: innovationHubDefaultCategories,
-                      selected: _selectedCategory,
-                      onSelected: (value) {
-                        setState(() => _selectedCategory = value);
-                      },
-                    ),
-                    const SizedBox(height: 18),
-                    _buildChoiceGroup(
-                      title: 'Stage',
-                      values: innovationHubStageOptions,
-                      selected: _selectedStage,
-                      onSelected: (value) {
-                        setState(() => _selectedStage = value);
-                      },
-                    ),
-                    const SizedBox(height: 18),
-                    DropdownButtonFormField<String>(
-                      initialValue: _selectedLevel,
-                      dropdownColor: InnovationHubPalette.surface,
-                      decoration: _inputDecoration(
-                        label: 'Best suited for',
-                        hint: 'Select student level',
-                      ),
-                      items: const [
-                        DropdownMenuItem(value: 'bac', child: Text('Bachelor')),
-                        DropdownMenuItem(
-                          value: 'licence',
-                          child: Text('Licence'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'master',
-                          child: Text('Master'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'doctorat',
-                          child: Text('Doctorate'),
-                        ),
-                      ],
-                      onChanged: (value) {
-                        if (value != null) {
-                          setState(() => _selectedLevel = value);
-                        }
-                      },
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 18),
-              _SectionCard(
-                title: 'Idea Story',
-                subtitle:
-                    'Give students and future collaborators a clear reason to care.',
-                child: Column(
-                  children: [
-                    _StyledField(
-                      controller: _overviewController,
-                      label: 'Idea Overview',
-                      hint:
-                          'Describe the concept, what it does, and how it comes to life.',
-                      validator: _requiredValidator,
-                      minLines: 4,
-                      maxLines: 6,
-                    ),
-                    const SizedBox(height: 14),
-                    _StyledField(
-                      controller: _problemController,
-                      label: 'Problem Statement',
-                      hint: 'What student challenge does this idea solve?',
-                      minLines: 3,
-                      maxLines: 5,
-                    ),
-                    const SizedBox(height: 14),
-                    _StyledField(
-                      controller: _solutionController,
-                      label: 'Solution',
-                      hint:
-                          'Explain the proposed solution and why it stands out.',
-                      minLines: 3,
-                      maxLines: 5,
-                    ),
-                    const SizedBox(height: 14),
-                    _StyledField(
-                      controller: _audienceController,
-                      label: 'Target Audience',
-                      hint: 'Students, clubs, mentors, campuses...',
-                    ),
-                    const SizedBox(height: 14),
-                    _StyledField(
-                      controller: _benefitsController,
-                      label: 'Benefits / Impact',
-                      hint: 'Why does this idea matter right now?',
-                      minLines: 3,
-                      maxLines: 5,
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 18),
-              _SectionCard(
-                title: 'Team Setup',
-                subtitle:
-                    'Show who you need to turn the concept into something real.',
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _SelectionWrap(
-                      title: 'Team Needed',
-                      suggestions: innovationHubRoleOptions,
-                      selectedValues: _selectedRoles,
-                      onToggle: (value) {
-                        setState(() {
-                          if (_selectedRoles.contains(value)) {
-                            _selectedRoles.remove(value);
-                          } else {
-                            _selectedRoles.add(value);
-                          }
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 12),
-                    _StyledField(
-                      controller: _customRolesController,
-                      label: 'Add custom roles',
-                      hint: 'Mentor, Community Lead, Data Analyst',
-                      onChanged: (_) => setState(() {}),
-                    ),
-                    const SizedBox(height: 18),
-                    _SelectionWrap(
-                      title: 'Skills Needed',
-                      suggestions: innovationHubSkillSuggestions,
-                      selectedValues: _selectedSkills,
-                      onToggle: (value) {
-                        setState(() {
-                          if (_selectedSkills.contains(value)) {
-                            _selectedSkills.remove(value);
-                          } else {
-                            _selectedSkills.add(value);
-                          }
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 12),
-                    _StyledField(
-                      controller: _customSkillsController,
-                      label: 'Add custom skills',
-                      hint: 'Firebase, UX Research, Fundraising',
-                      onChanged: (_) => setState(() {}),
-                    ),
-                    const SizedBox(height: 14),
-                    _StyledField(
-                      controller: _resourcesController,
-                      label: 'Resources / Needs',
-                      hint:
-                          'Prototype support, mentor feedback, pilot testers...',
-                      minLines: 3,
-                      maxLines: 4,
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 18),
-              _SectionCard(
-                title: 'Cover & Links',
-                subtitle:
-                    'Give the idea a strong first frame with a direct image upload and an optional deck link.',
-                child: Column(
-                  children: [
-                    _buildImageUploadCard(),
-                    const SizedBox(height: 14),
-                    _StyledField(
-                      controller: _attachmentUrlController,
-                      label: 'Deck / Demo Link',
-                      hint: 'Figma, Notion, pitch deck, landing page...',
-                    ),
-                    const SizedBox(height: 14),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: InnovationHubPalette.cardTint,
+        bottomNavigationBar: SafeArea(
+          minimum: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+          child: Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: InnovationHubPalette.surface,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: InnovationHubPalette.border),
+              boxShadow: InnovationHubPalette.softShadow(0.06),
+            ),
+            child: provider.isLoading
+                ? const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 14),
+                    child: Center(child: CircularProgressIndicator()),
+                  )
+                : ElevatedButton(
+                    onPressed: _isUploadingImage ? null : _submit,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: InnovationHubPalette.primary,
+                      foregroundColor: Colors.white,
+                      disabledBackgroundColor: InnovationHubPalette.primary
+                          .withValues(alpha: 0.4),
+                      disabledForegroundColor: Colors.white,
+                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(18),
-                        border: Border.all(color: InnovationHubPalette.border),
                       ),
-                      child: SwitchListTile.adaptive(
-                        value: _isPublic,
-                        onChanged: (value) {
-                          setState(() => _isPublic = value);
+                    ),
+                    child: Text(
+                      _isUploadingImage
+                          ? 'Uploading cover image...'
+                          : _isLocked
+                          ? 'Editing locked after review'
+                          : widget.isEditMode
+                          ? 'Save Changes'
+                          : 'Publish Idea',
+                      style: InnovationHubTypography.label(
+                        color: Colors.white,
+                        size: 14,
+                      ),
+                    ),
+                  ),
+          ),
+        ),
+        body: AbsorbPointer(
+          absorbing: _isLocked,
+          child: Form(
+            key: _formKey,
+            child: ListView(
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
+              children: [
+                _buildHeroCard(),
+                if (_isLocked) ...[
+                  const SizedBox(height: 16),
+                  _buildLockNotice(),
+                ],
+                const SizedBox(height: 18),
+                _SectionCard(
+                  title: 'Core Idea',
+                  subtitle:
+                      'Shape the concept and make the first impression feel sharp.',
+                  child: Column(
+                    children: [
+                      _StyledField(
+                        controller: _titleController,
+                        label: 'Idea Title',
+                        hint: 'AI-powered campus wellbeing assistant',
+                        validator: _requiredValidator,
+                      ),
+                      const SizedBox(height: 14),
+                      _StyledField(
+                        controller: _taglineController,
+                        label: 'Short Tagline',
+                        hint:
+                            'A smarter way for students to find support fast.',
+                      ),
+                      const SizedBox(height: 18),
+                      _buildChoiceGroup(
+                        title: 'Category',
+                        values: innovationHubDefaultCategories,
+                        selected: _selectedCategory,
+                        onSelected: (value) {
+                          setState(() => _selectedCategory = value);
                         },
-                        activeThumbColor: InnovationHubPalette.primary,
-                        activeTrackColor: InnovationHubPalette.primary
-                            .withValues(alpha: 0.3),
-                        title: Text(
-                          'Ready for public discovery',
-                          style: InnovationHubTypography.label(
-                            color: InnovationHubPalette.textPrimary,
-                            size: 13,
+                      ),
+                      const SizedBox(height: 18),
+                      _buildChoiceGroup(
+                        title: 'Stage',
+                        values: innovationHubStageOptions,
+                        selected: _selectedStage,
+                        onSelected: (value) {
+                          setState(() => _selectedStage = value);
+                        },
+                      ),
+                      const SizedBox(height: 18),
+                      DropdownButtonFormField<String>(
+                        initialValue: _selectedLevel,
+                        dropdownColor: InnovationHubPalette.surface,
+                        decoration: _inputDecoration(
+                          label: 'Best suited for',
+                          hint: 'Select student level',
+                        ),
+                        items: const [
+                          DropdownMenuItem(
+                            value: 'bac',
+                            child: Text('Bachelor'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'licence',
+                            child: Text('Licence'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'master',
+                            child: Text('Master'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'doctorat',
+                            child: Text('Doctorate'),
+                          ),
+                        ],
+                        onChanged: (value) {
+                          if (value != null) {
+                            setState(() => _selectedLevel = value);
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 18),
+                _SectionCard(
+                  title: 'Idea Story',
+                  subtitle:
+                      'Give students and future collaborators a clear reason to care.',
+                  child: Column(
+                    children: [
+                      _StyledField(
+                        controller: _overviewController,
+                        label: 'Idea Overview',
+                        hint:
+                            'Describe the concept, what it does, and how it comes to life.',
+                        validator: _requiredValidator,
+                        minLines: 4,
+                        maxLines: 6,
+                      ),
+                      const SizedBox(height: 14),
+                      _StyledField(
+                        controller: _problemController,
+                        label: 'Problem Statement',
+                        hint: 'What student challenge does this idea solve?',
+                        minLines: 3,
+                        maxLines: 5,
+                      ),
+                      const SizedBox(height: 14),
+                      _StyledField(
+                        controller: _solutionController,
+                        label: 'Solution',
+                        hint:
+                            'Explain the proposed solution and why it stands out.',
+                        minLines: 3,
+                        maxLines: 5,
+                      ),
+                      const SizedBox(height: 14),
+                      _StyledField(
+                        controller: _audienceController,
+                        label: 'Target Audience',
+                        hint: 'Students, clubs, mentors, campuses...',
+                      ),
+                      const SizedBox(height: 14),
+                      _StyledField(
+                        controller: _benefitsController,
+                        label: 'Benefits / Impact',
+                        hint: 'Why does this idea matter right now?',
+                        minLines: 3,
+                        maxLines: 5,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 18),
+                _SectionCard(
+                  title: 'Team Setup',
+                  subtitle:
+                      'Show who you need to turn the concept into something real.',
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _SelectionWrap(
+                        title: 'Team Needed',
+                        suggestions: innovationHubRoleOptions,
+                        selectedValues: _selectedRoles,
+                        onToggle: (value) {
+                          setState(() {
+                            if (_selectedRoles.contains(value)) {
+                              _selectedRoles.remove(value);
+                            } else {
+                              _selectedRoles.add(value);
+                            }
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                      _StyledField(
+                        controller: _customRolesController,
+                        label: 'Add custom roles',
+                        hint: 'Mentor, Community Lead, Data Analyst',
+                        onChanged: (_) => setState(() {}),
+                      ),
+                      const SizedBox(height: 18),
+                      _SelectionWrap(
+                        title: 'Skills Needed',
+                        suggestions: innovationHubSkillSuggestions,
+                        selectedValues: _selectedSkills,
+                        onToggle: (value) {
+                          setState(() {
+                            if (_selectedSkills.contains(value)) {
+                              _selectedSkills.remove(value);
+                            } else {
+                              _selectedSkills.add(value);
+                            }
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                      _StyledField(
+                        controller: _customSkillsController,
+                        label: 'Add custom skills',
+                        hint: 'Firebase, UX Research, Fundraising',
+                        onChanged: (_) => setState(() {}),
+                      ),
+                      const SizedBox(height: 14),
+                      _StyledField(
+                        controller: _resourcesController,
+                        label: 'Resources / Needs',
+                        hint:
+                            'Prototype support, mentor feedback, pilot testers...',
+                        minLines: 3,
+                        maxLines: 4,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 18),
+                _SectionCard(
+                  title: 'Cover & Links',
+                  subtitle:
+                      'Give the idea a strong first frame with a direct image upload and an optional deck link.',
+                  child: Column(
+                    children: [
+                      _buildImageUploadCard(),
+                      const SizedBox(height: 14),
+                      _StyledField(
+                        controller: _attachmentUrlController,
+                        label: 'Deck / Demo Link',
+                        hint: 'Figma, Notion, pitch deck, landing page...',
+                      ),
+                      const SizedBox(height: 14),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: InnovationHubPalette.cardTint,
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(
+                            color: InnovationHubPalette.border,
                           ),
                         ),
-                        subtitle: Text(
-                          'Approved ideas appear in Discover. Pending ideas still stay visible in My Ideas.',
-                          style: InnovationHubTypography.body(size: 12.5),
+                        child: SwitchListTile.adaptive(
+                          value: _isPublic,
+                          onChanged: (value) {
+                            setState(() => _isPublic = value);
+                          },
+                          activeThumbColor: InnovationHubPalette.primary,
+                          activeTrackColor: InnovationHubPalette.primary
+                              .withValues(alpha: 0.3),
+                          title: Text(
+                            'Ready for public discovery',
+                            style: InnovationHubTypography.label(
+                              color: InnovationHubPalette.textPrimary,
+                              size: 13,
+                            ),
+                          ),
+                          subtitle: Text(
+                            'Approved ideas appear in Discover. Pending ideas still stay visible in My Ideas.',
+                            style: InnovationHubTypography.body(size: 12.5),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

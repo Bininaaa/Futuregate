@@ -7,6 +7,7 @@ import '../../models/conversation_model.dart';
 import '../../models/user_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/chat_provider.dart';
+import '../../widgets/app_shell_background.dart';
 import '../../widgets/chat/chat_theme.dart';
 import '../../widgets/profile_avatar.dart';
 import 'user_profile_preview_screen.dart';
@@ -128,110 +129,114 @@ class _NewChatScreenState extends State<NewChatScreen> {
         .where((contact) => !recentIds.contains(contact.uid))
         .toList();
 
-    return Scaffold(
-      backgroundColor: ChatThemePalette.background,
-      body: SafeArea(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 12, 20, 18),
-              child: Row(
-                children: [
-                  _ToolbarButton(
-                    icon: Icons.arrow_back_ios_new_rounded,
-                    onTap: () => Navigator.pop(context),
-                  ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Text(
-                      'New Chat',
-                      style: ChatThemeStyles.title().copyWith(fontSize: 22),
+    return AppShellBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SafeArea(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 18),
+                child: Row(
+                  children: [
+                    _ToolbarButton(
+                      icon: Icons.arrow_back_ios_new_rounded,
+                      onTap: () => Navigator.pop(context),
                     ),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 4,
-                ),
-                decoration: BoxDecoration(
-                  color: ChatThemePalette.surface,
-                  borderRadius: BorderRadius.circular(22),
-                  border: Border.all(color: ChatThemePalette.border),
-                  boxShadow: ChatThemeStyles.softShadow(0.04),
-                ),
-                child: TextField(
-                  controller: _searchController,
-                  onChanged: _onSearchChanged,
-                  style: ChatThemeStyles.body(),
-                  decoration: InputDecoration(
-                    icon: const Icon(
-                      Icons.search_rounded,
-                      color: ChatThemePalette.textSecondary,
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Text(
+                        'New Chat',
+                        style: ChatThemeStyles.title().copyWith(fontSize: 22),
+                      ),
                     ),
-                    hintText: currentUser?.role == 'company'
-                        ? 'Search students'
-                        : 'Search companies',
-                    hintStyle: ChatThemeStyles.body(
-                      ChatThemePalette.textSecondary,
-                    ),
-                    border: InputBorder.none,
-                  ),
+                  ],
                 ),
               ),
-            ),
-            const SizedBox(height: 18),
-            Expanded(
-              child: _isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : ListView(
-                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 28),
-                      children: [
-                        if (recentContacts.isNotEmpty) ...[
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: ChatThemePalette.surface,
+                    borderRadius: BorderRadius.circular(22),
+                    border: Border.all(color: ChatThemePalette.border),
+                    boxShadow: ChatThemeStyles.softShadow(0.04),
+                  ),
+                  child: TextField(
+                    controller: _searchController,
+                    onChanged: _onSearchChanged,
+                    style: ChatThemeStyles.body(),
+                    decoration: InputDecoration(
+                      icon: const Icon(
+                        Icons.search_rounded,
+                        color: ChatThemePalette.textSecondary,
+                      ),
+                      hintText: currentUser?.role == 'company'
+                          ? 'Search students'
+                          : 'Search companies',
+                      hintStyle: ChatThemeStyles.body(
+                        ChatThemePalette.textSecondary,
+                      ),
+                      border: InputBorder.none,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 18),
+              Expanded(
+                child: _isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : ListView(
+                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 28),
+                        children: [
+                          if (recentContacts.isNotEmpty) ...[
+                            Text(
+                              'Recent contacts',
+                              style: ChatThemeStyles.meta().copyWith(
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            ...recentContacts.map(_buildContactTile),
+                            const SizedBox(height: 20),
+                          ],
                           Text(
-                            'Recent contacts',
+                            recentContacts.isNotEmpty
+                                ? 'Suggested'
+                                : 'Contacts',
                             style: ChatThemeStyles.meta().copyWith(
                               fontWeight: FontWeight.w700,
                             ),
                           ),
                           const SizedBox(height: 12),
-                          ...recentContacts.map(_buildContactTile),
-                          const SizedBox(height: 20),
+                          if (suggestions.isEmpty && recentContacts.isEmpty)
+                            Container(
+                              padding: const EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                color: ChatThemePalette.surface,
+                                borderRadius: BorderRadius.circular(24),
+                                border: Border.all(
+                                  color: ChatThemePalette.border,
+                                ),
+                              ),
+                              child: Text(
+                                'No matching contacts found yet.',
+                                style: ChatThemeStyles.body(
+                                  ChatThemePalette.textSecondary,
+                                ),
+                              ),
+                            )
+                          else
+                            ...suggestions.map(_buildContactTile),
                         ],
-                        Text(
-                          recentContacts.isNotEmpty ? 'Suggested' : 'Contacts',
-                          style: ChatThemeStyles.meta().copyWith(
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        if (suggestions.isEmpty && recentContacts.isEmpty)
-                          Container(
-                            padding: const EdgeInsets.all(20),
-                            decoration: BoxDecoration(
-                              color: ChatThemePalette.surface,
-                              borderRadius: BorderRadius.circular(24),
-                              border: Border.all(
-                                color: ChatThemePalette.border,
-                              ),
-                            ),
-                            child: Text(
-                              'No matching contacts found yet.',
-                              style: ChatThemeStyles.body(
-                                ChatThemePalette.textSecondary,
-                              ),
-                            ),
-                          )
-                        else
-                          ...suggestions.map(_buildContactTile),
-                      ],
-                    ),
-            ),
-          ],
+                      ),
+              ),
+            ],
+          ),
         ),
       ),
     );

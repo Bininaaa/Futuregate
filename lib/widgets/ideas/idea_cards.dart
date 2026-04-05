@@ -8,12 +8,14 @@ class IdeaCard extends StatelessWidget {
   final ProjectIdeaModel idea;
   final VoidCallback onTap;
   final bool showStatus;
+  final Widget? trailingAction;
 
   const IdeaCard({
     super.key,
     required this.idea,
     required this.onTap,
     this.showStatus = false,
+    this.trailingAction,
   });
 
   @override
@@ -53,6 +55,10 @@ class IdeaCard extends StatelessWidget {
                     ),
                   ),
                   const Spacer(),
+                  if (trailingAction != null) ...[
+                    trailingAction!,
+                    const SizedBox(width: 8),
+                  ],
                   _MiniBadge(
                     label: idea.displayStage,
                     color: innovationStageColor(idea.displayStage),
@@ -112,8 +118,14 @@ class IdeaCard extends StatelessWidget {
 class FeaturedIdeaCard extends StatelessWidget {
   final ProjectIdeaModel idea;
   final VoidCallback onTap;
+  final Widget? trailingAction;
 
-  const FeaturedIdeaCard({super.key, required this.idea, required this.onTap});
+  const FeaturedIdeaCard({
+    super.key,
+    required this.idea,
+    required this.onTap,
+    this.trailingAction,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -154,6 +166,10 @@ class FeaturedIdeaCard extends StatelessWidget {
                     ),
                   ),
                   const Spacer(),
+                  if (trailingAction != null) ...[
+                    trailingAction!,
+                    const SizedBox(width: 8),
+                  ],
                   _GlassBadge(label: 'Featured'),
                 ],
               ),

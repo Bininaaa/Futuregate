@@ -214,7 +214,7 @@ class _AdminActivityCenterScreenState extends State<AdminActivityCenterScreen> {
         backgroundColor: Colors.white,
         foregroundColor: AdminPalette.textPrimary,
       ),
-      body: SafeArea(child: content),
+      body: AdminShellBackground(child: SafeArea(top: false, child: content)),
     );
   }
 

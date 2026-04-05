@@ -11,6 +11,7 @@ import '../../providers/cv_provider.dart';
 import '../../screens/settings/settings_flow_theme.dart';
 import '../../screens/settings/settings_flow_widgets.dart';
 import '../../services/cv_pdf_service.dart';
+import '../../widgets/app_shell_background.dart';
 
 class CvPreviewScreen extends StatefulWidget {
   final CvModel cv;
@@ -34,8 +35,9 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
     final uid = context.read<AuthProvider>().userModel?.uid;
     if (uid == null) return;
 
-    final error =
-        await context.read<CvProvider>().exportCvAsPdf(studentId: uid);
+    final error = await context.read<CvProvider>().exportCvAsPdf(
+      studentId: uid,
+    );
 
     if (!mounted) return;
 
@@ -65,145 +67,143 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
   }
 
   Future<void> _share(Uint8List bytes) async {
-    final templateId =
-        CvTemplateConfig.resolveTemplateId(widget.cv.templateId);
-    await Printing.sharePdf(
-      bytes: bytes,
-      filename: 'cv_$templateId.pdf',
-    );
+    final templateId = CvTemplateConfig.resolveTemplateId(widget.cv.templateId);
+    await Printing.sharePdf(bytes: bytes, filename: 'cv_$templateId.pdf');
   }
 
   @override
   Widget build(BuildContext context) {
     final cvProvider = context.watch<CvProvider>();
 
-    return Scaffold(
-      backgroundColor: SettingsFlowPalette.background,
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
+    return AppShellBackground(
+      child: Scaffold(
         backgroundColor: Colors.transparent,
-        surfaceTintColor: Colors.transparent,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        leading: IconButton(
-          onPressed: () => Navigator.maybePop(context),
-          icon: const Icon(
-            Icons.arrow_back_ios_new_rounded,
-            color: SettingsFlowPalette.textPrimary,
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          backgroundColor: Colors.transparent,
+          surfaceTintColor: Colors.transparent,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          leading: IconButton(
+            onPressed: () => Navigator.maybePop(context),
+            icon: const Icon(
+              Icons.arrow_back_ios_new_rounded,
+              color: SettingsFlowPalette.textPrimary,
+            ),
           ),
-        ),
-        title: Text('Preview', style: SettingsFlowTheme.appBarTitle()),
-        actions: [
-          FutureBuilder<Uint8List>(
-            future: _pdfFuture,
-            builder: (context, snapshot) {
-              if (!snapshot.hasData) return const SizedBox.shrink();
-              return IconButton(
-                icon: const Icon(
-                  Icons.share_outlined,
-                  color: SettingsFlowPalette.textPrimary,
-                ),
-                tooltip: 'Share PDF',
-                onPressed: () => _share(snapshot.data!),
-              );
-            },
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: FutureBuilder<Uint8List>(
+          title: Text('Preview', style: SettingsFlowTheme.appBarTitle()),
+          actions: [
+            FutureBuilder<Uint8List>(
               future: _pdfFuture,
               builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const CircularProgressIndicator(
-                          color: SettingsFlowPalette.primary,
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          'Generating PDF...',
-                          style: SettingsFlowTheme.caption(),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-
-                if (snapshot.hasError) {
-                  return Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(32),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            Icons.error_outline_rounded,
-                            size: 48,
-                            color: SettingsFlowPalette.error,
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            'Failed to generate PDF',
-                            style: SettingsFlowTheme.sectionTitle(),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            snapshot.error.toString(),
-                            style: SettingsFlowTheme.caption(),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                }
-
-                return PdfPreview(
-                  build: (_) => snapshot.data!,
-                  canChangeOrientation: false,
-                  canChangePageFormat: false,
-                  canDebug: false,
-                  allowPrinting: false,
-                  allowSharing: false,
-                  pdfFileName: 'cv_preview.pdf',
+                if (!snapshot.hasData) return const SizedBox.shrink();
+                return IconButton(
+                  icon: const Icon(
+                    Icons.share_outlined,
+                    color: SettingsFlowPalette.textPrimary,
+                  ),
+                  tooltip: 'Share PDF',
+                  onPressed: () => _share(snapshot.data!),
                 );
               },
             ),
-          ),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: SettingsFlowPalette.surface,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.06),
-                  blurRadius: 10,
-                  offset: const Offset(0, -2),
-                ),
-              ],
-            ),
-            child: cvProvider.isExporting
-                ? const Center(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(vertical: 8),
-                      child: CircularProgressIndicator(
-                        color: SettingsFlowPalette.primary,
+          ],
+        ),
+        body: Column(
+          children: [
+            Expanded(
+              child: FutureBuilder<Uint8List>(
+                future: _pdfFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const CircularProgressIndicator(
+                            color: SettingsFlowPalette.primary,
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            'Generating PDF...',
+                            style: SettingsFlowTheme.caption(),
+                          ),
+                        ],
                       ),
-                    ),
-                  )
-                : SettingsPrimaryButton(
-                    label: 'Export & Save CV',
-                    icon: Icons.cloud_upload_outlined,
-                    onPressed: _exportAndUpload,
+                    );
+                  }
+
+                  if (snapshot.hasError) {
+                    return Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(32),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.error_outline_rounded,
+                              size: 48,
+                              color: SettingsFlowPalette.error,
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              'Failed to generate PDF',
+                              style: SettingsFlowTheme.sectionTitle(),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              snapshot.error.toString(),
+                              style: SettingsFlowTheme.caption(),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }
+
+                  return PdfPreview(
+                    build: (_) => snapshot.data!,
+                    canChangeOrientation: false,
+                    canChangePageFormat: false,
+                    canDebug: false,
+                    allowPrinting: false,
+                    allowSharing: false,
+                    pdfFileName: 'cv_preview.pdf',
+                  );
+                },
+              ),
+            ),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: SettingsFlowPalette.surface,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.06),
+                    blurRadius: 10,
+                    offset: const Offset(0, -2),
                   ),
-          ),
-        ],
+                ],
+              ),
+              child: cvProvider.isExporting
+                  ? const Center(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(vertical: 8),
+                        child: CircularProgressIndicator(
+                          color: SettingsFlowPalette.primary,
+                        ),
+                      ),
+                    )
+                  : SettingsPrimaryButton(
+                      label: 'Export & Save CV',
+                      icon: Icons.cloud_upload_outlined,
+                      onPressed: _exportAndUpload,
+                    ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -12,6 +12,7 @@ import '../../providers/saved_opportunity_provider.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
+import '../../widgets/app_shell_background.dart';
 import '../../widgets/profile_avatar.dart';
 import '../notifications_screen.dart';
 import 'opportunity_detail_screen.dart';
@@ -985,321 +986,323 @@ class _JobsScreenState extends State<JobsScreen> {
         opportunityProvider.isLoading &&
         opportunityProvider.opportunities.isNotEmpty;
 
-    return Scaffold(
-      backgroundColor: OpportunityDashboardPalette.background,
-      body: RefreshIndicator(
-        color: OpportunityDashboardPalette.primary,
-        backgroundColor: OpportunityDashboardPalette.surface,
-        onRefresh: () => _loadData(force: true),
-        child: CustomScrollView(
-          physics: const BouncingScrollPhysics(
-            parent: AlwaysScrollableScrollPhysics(),
-          ),
-          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-          slivers: [
-            SliverToBoxAdapter(
-              child: _JobsHeaderBar(
-                user: authProvider.userModel,
-                unreadCount: notificationProvider.unreadCount,
-                onNotificationsPressed: _openNotifications,
-                compact: isCompact,
-              ),
+    return AppShellBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: RefreshIndicator(
+          color: OpportunityDashboardPalette.primary,
+          backgroundColor: OpportunityDashboardPalette.surface,
+          onRefresh: () => _loadData(force: true),
+          child: CustomScrollView(
+            physics: const BouncingScrollPhysics(
+              parent: AlwaysScrollableScrollPhysics(),
             ),
-            if (showLoadingBar)
-              const SliverToBoxAdapter(
-                child: LinearProgressIndicator(minHeight: 2),
-              ),
-            SliverPadding(
-              padding: EdgeInsets.fromLTRB(
-                horizontalPadding,
-                headlineTopPadding,
-                horizontalPadding,
-                0,
-              ),
-              sliver: SliverToBoxAdapter(
-                child: Text.rich(
-                  TextSpan(
-                    children: [
-                      TextSpan(
-                        text: 'Find your next\n',
-                        style: GoogleFonts.poppins(
-                          fontSize: headlineFontSize,
-                          fontWeight: FontWeight.w700,
-                          height: 1.08,
-                          color: OpportunityDashboardPalette.textPrimary,
-                        ),
-                      ),
-                      TextSpan(
-                        text: 'breakthrough',
-                        style: GoogleFonts.poppins(
-                          fontSize: headlineFontSize,
-                          fontWeight: FontWeight.w700,
-                          height: 1.08,
-                          color: OpportunityDashboardPalette.primary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            SliverPadding(
-              padding: EdgeInsets.fromLTRB(
-                horizontalPadding,
-                searchTopPadding,
-                horizontalPadding,
-                0,
-              ),
-              sliver: SliverToBoxAdapter(
-                child: _JobsSearchBar(
-                  controller: _searchController,
-                  focusNode: _searchFocusNode,
-                  onClear: _searchQuery.isEmpty
-                      ? null
-                      : _searchController.clear,
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            slivers: [
+              SliverToBoxAdapter(
+                child: _JobsHeaderBar(
+                  user: authProvider.userModel,
+                  unreadCount: notificationProvider.unreadCount,
+                  onNotificationsPressed: _openNotifications,
                   compact: isCompact,
                 ),
               ),
-            ),
-            SliverPadding(
-              padding: EdgeInsets.fromLTRB(
-                horizontalPadding,
-                categoriesTopPadding,
-                horizontalPadding,
-                0,
-              ),
-              sliver: SliverToBoxAdapter(
-                child: _SectionHeader(
-                  title: 'Categories',
-                  actionLabel: 'See All',
-                  compact: isCompact,
-                  onAction: () {
-                    if (_selectedCategoryKey == null) {
-                      return;
-                    }
-
-                    setState(() {
-                      _selectedCategoryKey = null;
-                    });
-                  },
+              if (showLoadingBar)
+                const SliverToBoxAdapter(
+                  child: LinearProgressIndicator(minHeight: 2),
                 ),
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: SizedBox(
-                height: categoriesHeight,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  padding: EdgeInsets.fromLTRB(
-                    horizontalPadding,
-                    isExtraCompact
-                        ? 4
-                        : isCompact
-                        ? 6
-                        : 14,
-                    horizontalPadding,
-                    0,
-                  ),
-                  physics: const BouncingScrollPhysics(),
-                  itemCount: _categories.length,
-                  separatorBuilder: (context, index) =>
-                      SizedBox(width: categorySpacing),
-                  itemBuilder: (context, index) {
-                    final category = _categories[index];
-                    return _JobCategoryChip(
-                      category: category,
-                      isSelected: category.key == _selectedCategoryKey,
-                      compact: isCompact,
-                      onTap: () {
-                        setState(() {
-                          _selectedCategoryKey =
-                              _selectedCategoryKey == category.key
-                              ? null
-                              : category.key;
-                        });
-                      },
-                    );
-                  },
-                ),
-              ),
-            ),
-            SliverPadding(
-              padding: EdgeInsets.fromLTRB(
-                horizontalPadding,
-                sectionTopPadding,
-                horizontalPadding,
-                0,
-              ),
-              sliver: SliverToBoxAdapter(
-                child: Text(
-                  'Featured Jobs',
-                  style: GoogleFonts.poppins(
-                    fontSize: isCompact ? 16 : 19,
-                    fontWeight: FontWeight.w700,
-                    color: OpportunityDashboardPalette.textPrimary,
-                  ),
-                ),
-              ),
-            ),
-            if (filteredJobs.isEmpty)
               SliverPadding(
                 padding: EdgeInsets.fromLTRB(
                   horizontalPadding,
-                  isExtraCompact
-                      ? 8
-                      : isCompact
-                      ? 10
-                      : 14,
+                  headlineTopPadding,
                   horizontalPadding,
                   0,
                 ),
                 sliver: SliverToBoxAdapter(
-                  child: _JobsEmptyStateCard(
-                    title: 'No featured jobs found',
-                    message:
-                        'Try another keyword or clear your category filter to see more roles.',
-                    compact: isCompact,
-                  ),
-                ),
-              )
-            else
-              SliverToBoxAdapter(
-                child: SizedBox(
-                  height: featuredHeight,
-                  child: ListView.separated(
-                    scrollDirection: Axis.horizontal,
-                    padding: EdgeInsets.fromLTRB(
-                      horizontalPadding,
-                      isExtraCompact
-                          ? 8
-                          : isCompact
-                          ? 10
-                          : 14,
-                      horizontalPadding,
-                      0,
-                    ),
-                    physics: const BouncingScrollPhysics(),
-                    itemCount: featuredJobs.length,
-                    separatorBuilder: (context, index) =>
-                        SizedBox(width: featuredSpacing),
-                    itemBuilder: (context, index) {
-                      final job = featuredJobs[index];
-                      return SizedBox(
-                        width: screenSize.width * featuredCardWidthFactor,
-                        child: _FeaturedJobCard(
-                          job: job,
-                          style: _featuredStyleFor(index),
-                          compact: isCompact,
-                          onTap: job.opportunity == null
-                              ? null
-                              : () => _openOpportunity(job.opportunity!),
-                          onApply: job.opportunity == null
-                              ? null
-                              : () => _openOpportunity(job.opportunity!),
+                  child: Text.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(
+                          text: 'Find your next\n',
+                          style: GoogleFonts.poppins(
+                            fontSize: headlineFontSize,
+                            fontWeight: FontWeight.w700,
+                            height: 1.08,
+                            color: OpportunityDashboardPalette.textPrimary,
+                          ),
                         ),
-                      );
-                    },
+                        TextSpan(
+                          text: 'breakthrough',
+                          style: GoogleFonts.poppins(
+                            fontSize: headlineFontSize,
+                            fontWeight: FontWeight.w700,
+                            height: 1.08,
+                            color: OpportunityDashboardPalette.primary,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            SliverPadding(
-              padding: EdgeInsets.fromLTRB(
-                horizontalPadding,
-                sectionTopPadding,
-                horizontalPadding,
-                0,
-              ),
-              sliver: SliverToBoxAdapter(
-                child: _SectionHeader(
-                  title: 'Available Roles',
-                  countLabel: availableRoles.length == 1
-                      ? '1 job'
-                      : '${availableRoles.length} jobs',
-                  compact: isCompact,
-                  trailing: _RolesViewToggle(
-                    viewMode: _viewMode,
+              SliverPadding(
+                padding: EdgeInsets.fromLTRB(
+                  horizontalPadding,
+                  searchTopPadding,
+                  horizontalPadding,
+                  0,
+                ),
+                sliver: SliverToBoxAdapter(
+                  child: _JobsSearchBar(
+                    controller: _searchController,
+                    focusNode: _searchFocusNode,
+                    onClear: _searchQuery.isEmpty
+                        ? null
+                        : _searchController.clear,
                     compact: isCompact,
-                    onChanged: (viewMode) {
+                  ),
+                ),
+              ),
+              SliverPadding(
+                padding: EdgeInsets.fromLTRB(
+                  horizontalPadding,
+                  categoriesTopPadding,
+                  horizontalPadding,
+                  0,
+                ),
+                sliver: SliverToBoxAdapter(
+                  child: _SectionHeader(
+                    title: 'Categories',
+                    actionLabel: 'See All',
+                    compact: isCompact,
+                    onAction: () {
+                      if (_selectedCategoryKey == null) {
+                        return;
+                      }
+
                       setState(() {
-                        _viewMode = viewMode;
+                        _selectedCategoryKey = null;
                       });
                     },
                   ),
                 ),
               ),
-            ),
-            if (filteredJobs.isEmpty)
+              SliverToBoxAdapter(
+                child: SizedBox(
+                  height: categoriesHeight,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    padding: EdgeInsets.fromLTRB(
+                      horizontalPadding,
+                      isExtraCompact
+                          ? 4
+                          : isCompact
+                          ? 6
+                          : 14,
+                      horizontalPadding,
+                      0,
+                    ),
+                    physics: const BouncingScrollPhysics(),
+                    itemCount: _categories.length,
+                    separatorBuilder: (context, index) =>
+                        SizedBox(width: categorySpacing),
+                    itemBuilder: (context, index) {
+                      final category = _categories[index];
+                      return _JobCategoryChip(
+                        category: category,
+                        isSelected: category.key == _selectedCategoryKey,
+                        compact: isCompact,
+                        onTap: () {
+                          setState(() {
+                            _selectedCategoryKey =
+                                _selectedCategoryKey == category.key
+                                ? null
+                                : category.key;
+                          });
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ),
               SliverPadding(
                 padding: EdgeInsets.fromLTRB(
                   horizontalPadding,
-                  isExtraCompact ? 12 : 14,
+                  sectionTopPadding,
                   horizontalPadding,
                   0,
                 ),
                 sliver: SliverToBoxAdapter(
-                  child: _JobsEmptyStateCard(
-                    title: 'No roles match your search',
-                    message:
-                        'Search by title or company, or tap See All to reset categories.',
-                    compact: isCompact,
+                  child: Text(
+                    'Featured Jobs',
+                    style: GoogleFonts.poppins(
+                      fontSize: isCompact ? 16 : 19,
+                      fontWeight: FontWeight.w700,
+                      color: OpportunityDashboardPalette.textPrimary,
+                    ),
                   ),
                 ),
-              )
-            else if (_viewMode == _JobsViewMode.grid)
-              SliverPadding(
-                padding: EdgeInsets.fromLTRB(
-                  horizontalPadding,
-                  isExtraCompact ? 12 : 14,
-                  horizontalPadding,
-                  0,
-                ),
-                sliver: SliverGrid(
-                  delegate: SliverChildBuilderDelegate((context, index) {
-                    final job = availableRoles[index];
-                    return _AvailableRoleCard(
-                      job: job,
+              ),
+              if (filteredJobs.isEmpty)
+                SliverPadding(
+                  padding: EdgeInsets.fromLTRB(
+                    horizontalPadding,
+                    isExtraCompact
+                        ? 8
+                        : isCompact
+                        ? 10
+                        : 14,
+                    horizontalPadding,
+                    0,
+                  ),
+                  sliver: SliverToBoxAdapter(
+                    child: _JobsEmptyStateCard(
+                      title: 'No featured jobs found',
+                      message:
+                          'Try another keyword or clear your category filter to see more roles.',
                       compact: isCompact,
-                      onTap: job.opportunity == null
-                          ? null
-                          : () => _openOpportunity(job.opportunity!),
-                    );
-                  }, childCount: availableRoles.length),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: gridSpacing,
-                    mainAxisSpacing: gridSpacing,
-                    mainAxisExtent: gridMainExtent,
+                    ),
+                  ),
+                )
+              else
+                SliverToBoxAdapter(
+                  child: SizedBox(
+                    height: featuredHeight,
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      padding: EdgeInsets.fromLTRB(
+                        horizontalPadding,
+                        isExtraCompact
+                            ? 8
+                            : isCompact
+                            ? 10
+                            : 14,
+                        horizontalPadding,
+                        0,
+                      ),
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: featuredJobs.length,
+                      separatorBuilder: (context, index) =>
+                          SizedBox(width: featuredSpacing),
+                      itemBuilder: (context, index) {
+                        final job = featuredJobs[index];
+                        return SizedBox(
+                          width: screenSize.width * featuredCardWidthFactor,
+                          child: _FeaturedJobCard(
+                            job: job,
+                            style: _featuredStyleFor(index),
+                            compact: isCompact,
+                            onTap: job.opportunity == null
+                                ? null
+                                : () => _openOpportunity(job.opportunity!),
+                            onApply: job.opportunity == null
+                                ? null
+                                : () => _openOpportunity(job.opportunity!),
+                          ),
+                        );
+                      },
+                    ),
                   ),
                 ),
-              )
-            else
               SliverPadding(
                 padding: EdgeInsets.fromLTRB(
                   horizontalPadding,
-                  isExtraCompact ? 12 : 14,
+                  sectionTopPadding,
                   horizontalPadding,
                   0,
                 ),
-                sliver: SliverList(
-                  delegate: SliverChildBuilderDelegate((context, index) {
-                    final job = availableRoles[index];
-                    return Padding(
-                      padding: EdgeInsets.only(
-                        bottom: index == availableRoles.length - 1 ? 0 : 12,
-                      ),
-                      child: _PurpleAvailableRoleListCard(
+                sliver: SliverToBoxAdapter(
+                  child: _SectionHeader(
+                    title: 'Available Roles',
+                    countLabel: availableRoles.length == 1
+                        ? '1 job'
+                        : '${availableRoles.length} jobs',
+                    compact: isCompact,
+                    trailing: _RolesViewToggle(
+                      viewMode: _viewMode,
+                      compact: isCompact,
+                      onChanged: (viewMode) {
+                        setState(() {
+                          _viewMode = viewMode;
+                        });
+                      },
+                    ),
+                  ),
+                ),
+              ),
+              if (filteredJobs.isEmpty)
+                SliverPadding(
+                  padding: EdgeInsets.fromLTRB(
+                    horizontalPadding,
+                    isExtraCompact ? 12 : 14,
+                    horizontalPadding,
+                    0,
+                  ),
+                  sliver: SliverToBoxAdapter(
+                    child: _JobsEmptyStateCard(
+                      title: 'No roles match your search',
+                      message:
+                          'Search by title or company, or tap See All to reset categories.',
+                      compact: isCompact,
+                    ),
+                  ),
+                )
+              else if (_viewMode == _JobsViewMode.grid)
+                SliverPadding(
+                  padding: EdgeInsets.fromLTRB(
+                    horizontalPadding,
+                    isExtraCompact ? 12 : 14,
+                    horizontalPadding,
+                    0,
+                  ),
+                  sliver: SliverGrid(
+                    delegate: SliverChildBuilderDelegate((context, index) {
+                      final job = availableRoles[index];
+                      return _AvailableRoleCard(
                         job: job,
                         compact: isCompact,
                         onTap: job.opportunity == null
                             ? null
                             : () => _openOpportunity(job.opportunity!),
-                      ),
-                    );
-                  }, childCount: availableRoles.length),
+                      );
+                    }, childCount: availableRoles.length),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: gridSpacing,
+                      mainAxisSpacing: gridSpacing,
+                      mainAxisExtent: gridMainExtent,
+                    ),
+                  ),
+                )
+              else
+                SliverPadding(
+                  padding: EdgeInsets.fromLTRB(
+                    horizontalPadding,
+                    isExtraCompact ? 12 : 14,
+                    horizontalPadding,
+                    0,
+                  ),
+                  sliver: SliverList(
+                    delegate: SliverChildBuilderDelegate((context, index) {
+                      final job = availableRoles[index];
+                      return Padding(
+                        padding: EdgeInsets.only(
+                          bottom: index == availableRoles.length - 1 ? 0 : 12,
+                        ),
+                        child: _PurpleAvailableRoleListCard(
+                          job: job,
+                          compact: isCompact,
+                          onTap: job.opportunity == null
+                              ? null
+                              : () => _openOpportunity(job.opportunity!),
+                        ),
+                      );
+                    }, childCount: availableRoles.length),
+                  ),
                 ),
-              ),
-            SliverToBoxAdapter(child: SizedBox(height: bottomSpacing)),
-          ],
+              SliverToBoxAdapter(child: SizedBox(height: bottomSpacing)),
+            ],
+          ),
         ),
       ),
     );
