@@ -19,7 +19,9 @@ import 'profile_screen.dart';
 enum _IdeaFilter { all, approved, pending, rejected, interested }
 
 class ProjectIdeasScreen extends StatefulWidget {
-  const ProjectIdeasScreen({super.key});
+  final bool embedded;
+
+  const ProjectIdeasScreen({super.key, this.embedded = false});
 
   @override
   State<ProjectIdeasScreen> createState() => _ProjectIdeasScreenState();
@@ -75,104 +77,115 @@ class _ProjectIdeasScreenState extends State<ProjectIdeasScreen> {
     );
     final categories = _buildCategoryList(provider);
 
-    return AppShellBackground(
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        floatingActionButton: _buildFab(),
-        body: SafeArea(
-          child: provider.isLoading && discoverIdeas.isEmpty && myIdeas.isEmpty
-              ? const Center(child: CircularProgressIndicator())
-              : RefreshIndicator(
-                  color: InnovationHubPalette.primary,
-                  onRefresh: () => context
-                      .read<ProjectIdeaProvider>()
-                      .fetchIdeas(auth?.uid ?? _loadedUserId),
-                  child: CustomScrollView(
-                    physics: const AlwaysScrollableScrollPhysics(
-                      parent: BouncingScrollPhysics(),
-                    ),
-                    slivers: [
+    final scaffold = Scaffold(
+      backgroundColor: Colors.transparent,
+      floatingActionButton: _buildFab(),
+      body: SafeArea(
+        top: !widget.embedded,
+        child: provider.isLoading && discoverIdeas.isEmpty && myIdeas.isEmpty
+            ? const Center(child: CircularProgressIndicator())
+            : RefreshIndicator(
+                color: InnovationHubPalette.primary,
+                onRefresh: () => context.read<ProjectIdeaProvider>().fetchIdeas(
+                  auth?.uid ?? _loadedUserId,
+                ),
+                child: CustomScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(
+                    parent: BouncingScrollPhysics(),
+                  ),
+                  slivers: [
+                    if (!widget.embedded)
                       SliverToBoxAdapter(
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
                           child: _buildHeader(auth),
                         ),
                       ),
-                      SliverToBoxAdapter(
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
-                          child: MyIdeasToggle(
-                            selected: _segment,
-                            onChanged: (value) {
-                              setState(() {
-                                _segment = value;
-                                _filter = _IdeaFilter.all;
-                              });
-                            },
-                          ),
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: EdgeInsets.fromLTRB(
+                          20,
+                          widget.embedded ? 18 : 14,
+                          20,
+                          0,
+                        ),
+                        child: MyIdeasToggle(
+                          selected: _segment,
+                          onChanged: (value) {
+                            setState(() {
+                              _segment = value;
+                              _filter = _IdeaFilter.all;
+                            });
+                          },
                         ),
                       ),
-                      SliverToBoxAdapter(
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
-                          child: _buildSearchBar(),
-                        ),
+                    ),
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+                        child: _buildSearchBar(),
                       ),
-                      SliverToBoxAdapter(
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
-                          child: _buildCategoryChips(provider, categories),
-                        ),
+                    ),
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
+                        child: _buildCategoryChips(provider, categories),
                       ),
-                      SliverToBoxAdapter(
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
-                          child: _buildFilterChips(),
-                        ),
+                    ),
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+                        child: _buildFilterChips(),
                       ),
-                      SliverToBoxAdapter(
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
-                          child: AnimatedSwitcher(
-                            duration: const Duration(milliseconds: 240),
-                            switchInCurve: Curves.easeOutCubic,
-                            switchOutCurve: Curves.easeOutCubic,
-                            child: _segment == IdeasHubSegment.discover
-                                ? _DiscoverIdeasSection(
-                                    key: const ValueKey<String>('discover'),
-                                    ideas: discoverIdeas,
-                                    onIdeaTap: _openIdeaDetails,
-                                    onCreateTap: _openCreateIdea,
-                                    trailingActionBuilder: auth == null
-                                        ? null
-                                        : (idea) => _IdeaSaveButton(
-                                            isSaved: idea.isSavedByCurrentUser,
-                                            isBusy: provider.isInteractionBusy(
-                                              idea.id,
-                                              ProjectIdeaInteractionType.save,
-                                            ),
-                                            onTap: () => _toggleSaveIdea(idea),
+                    ),
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
+                        child: AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 240),
+                          switchInCurve: Curves.easeOutCubic,
+                          switchOutCurve: Curves.easeOutCubic,
+                          child: _segment == IdeasHubSegment.discover
+                              ? _DiscoverIdeasSection(
+                                  key: const ValueKey<String>('discover'),
+                                  ideas: discoverIdeas,
+                                  onIdeaTap: _openIdeaDetails,
+                                  onCreateTap: _openCreateIdea,
+                                  trailingActionBuilder: auth == null
+                                      ? null
+                                      : (idea) => _IdeaSaveButton(
+                                          isSaved: idea.isSavedByCurrentUser,
+                                          isBusy: provider.isInteractionBusy(
+                                            idea.id,
+                                            ProjectIdeaInteractionType.save,
                                           ),
-                                  )
-                                : _MyIdeasSection(
-                                    key: const ValueKey<String>('mine'),
-                                    ideas: myIdeas,
-                                    totalInterested:
-                                        provider.totalMyIdeaInterested,
-                                    onCreateTap: _openCreateIdea,
-                                    onIdeaTap: _openIdeaDetails,
-                                    onEditTap: _openEditIdea,
-                                    onManageTeamTap: _showManageTeamSheet,
-                                  ),
-                          ),
+                                          onTap: () => _toggleSaveIdea(idea),
+                                        ),
+                                )
+                              : _MyIdeasSection(
+                                  key: const ValueKey<String>('mine'),
+                                  ideas: myIdeas,
+                                  totalInterested:
+                                      provider.totalMyIdeaInterested,
+                                  onCreateTap: _openCreateIdea,
+                                  onIdeaTap: _openIdeaDetails,
+                                  onEditTap: _openEditIdea,
+                                  onManageTeamTap: _showManageTeamSheet,
+                                ),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-        ),
+              ),
       ),
     );
+
+    if (widget.embedded) {
+      return scaffold;
+    }
+
+    return AppShellBackground(child: scaffold);
   }
 
   Widget _buildHeader(UserModel? auth) {
@@ -268,8 +281,9 @@ class _ProjectIdeasScreenState extends State<ProjectIdeasScreen> {
             selectedColor: InnovationHubPalette.primary,
             backgroundColor: InnovationHubPalette.chipTint,
             side: BorderSide(
-              color:
-                  selected ? Colors.transparent : InnovationHubPalette.border,
+              color: selected
+                  ? Colors.transparent
+                  : InnovationHubPalette.border,
             ),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(999),
@@ -468,9 +482,9 @@ class _ProjectIdeasScreenState extends State<ProjectIdeasScreen> {
     );
 
     if (error != null && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(error)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(error)));
     }
   }
 
@@ -668,10 +682,7 @@ class _MyIdeasSection extends StatelessWidget {
             ),
             const SizedBox(width: 10),
             Expanded(
-              child: _StatCard(
-                label: 'Interested',
-                value: '$totalInterested',
-              ),
+              child: _StatCard(label: 'Interested', value: '$totalInterested'),
             ),
           ],
         ),

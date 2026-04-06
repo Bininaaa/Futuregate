@@ -4,6 +4,7 @@ import '../../config/cv_template_config.dart';
 import '../../models/cv_model.dart';
 import '../../screens/settings/settings_flow_theme.dart';
 import '../../widgets/app_shell_background.dart';
+import '../../widgets/student/student_workspace_shell.dart';
 import '../../widgets/cv_templates/cv_template_preview.dart';
 
 class CvTemplateSelectorScreen extends StatefulWidget {
@@ -35,30 +36,17 @@ class _CvTemplateSelectorScreenState extends State<CvTemplateSelectorScreen> {
     return AppShellBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          backgroundColor: Colors.transparent,
-          surfaceTintColor: Colors.transparent,
-          elevation: 0,
-          scrolledUnderElevation: 0,
-          leading: IconButton(
-            onPressed: () => Navigator.maybePop(context),
-            icon: const Icon(
-              Icons.arrow_back_ios_new_rounded,
-              color: SettingsFlowPalette.textPrimary,
-            ),
-          ),
-          title: Text(
-            'Choose Template',
-            style: SettingsFlowTheme.appBarTitle(),
-          ),
+        appBar: StudentWorkspaceAppBar(
+          title: 'Choose Template',
+          subtitle: 'Pick the resume style that best fits the role you want.',
+          icon: Icons.style_rounded,
+          showBackButton: true,
+          onBack: () => Navigator.maybePop(context),
           actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context, _selectedId),
-              child: Text(
-                'Apply',
-                style: SettingsFlowTheme.body(SettingsFlowPalette.primary),
-              ),
+            StudentWorkspaceActionButton(
+              icon: Icons.check_rounded,
+              tooltip: 'Apply template',
+              onTap: () => Navigator.pop(context, _selectedId),
             ),
           ],
         ),

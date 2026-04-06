@@ -22,6 +22,7 @@ import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/ideas/innovation_hub_theme.dart';
+import '../../widgets/student/student_workspace_shell.dart';
 import '../../widgets/student_opportunity_hub_widgets.dart';
 import 'idea_details_screen.dart';
 import 'opportunities_screen.dart';
@@ -44,6 +45,7 @@ class _SavedScreenState extends State<SavedScreen> {
 
   String _searchQuery = '';
   _SavedHubFilter _selectedFilter = _SavedHubFilter.all;
+  String? _selectedOpportunityType;
   String? _openingItemKey;
   String? _removingItemKey;
 
@@ -137,7 +139,7 @@ class _SavedScreenState extends State<SavedScreen> {
   }
 
   bool _matchesFilter(_SavedHubItem item) {
-    return switch (_selectedFilter) {
+    final matchesMainFilter = switch (_selectedFilter) {
       _SavedHubFilter.all => true,
       _SavedHubFilter.opportunities =>
         item.kind == _SavedHubItemKind.opportunity,
@@ -146,6 +148,19 @@ class _SavedScreenState extends State<SavedScreen> {
       _SavedHubFilter.trainings => item.kind == _SavedHubItemKind.training,
       _SavedHubFilter.ideas => item.kind == _SavedHubItemKind.idea,
     };
+
+    if (!matchesMainFilter) {
+      return false;
+    }
+
+    if (_selectedFilter != _SavedHubFilter.opportunities ||
+        _selectedOpportunityType == null) {
+      return true;
+    }
+
+    return item.kind == _SavedHubItemKind.opportunity &&
+        OpportunityType.parse(item.opportunity!.type) ==
+            _selectedOpportunityType;
   }
 
   int _countForFilter({
@@ -186,6 +201,41 @@ class _SavedScreenState extends State<SavedScreen> {
       _SavedHubFilter.trainings => const Color(0xFF6366F1),
       _SavedHubFilter.ideas => InnovationHubPalette.primary,
     };
+  }
+
+  String _opportunityTypeFilterLabel(String? type) {
+    final normalized = OpportunityType.parse(type);
+    switch (normalized) {
+      case OpportunityType.internship:
+        return 'Internships';
+      case OpportunityType.sponsoring:
+        return 'Sponsored';
+      case OpportunityType.job:
+      default:
+        return 'Jobs';
+    }
+  }
+
+  Color _opportunityTypeFilterColor(String? type) {
+    if (type == null) {
+      return StudentOpportunityHubPalette.primary;
+    }
+
+    return OpportunityType.color(type);
+  }
+
+  int _countForOpportunityTypeFilter(
+    List<SavedOpportunityModel> opportunities,
+    String? type,
+  ) {
+    if (type == null) {
+      return opportunities.length;
+    }
+
+    final normalized = OpportunityType.parse(type);
+    return opportunities
+        .where((item) => OpportunityType.parse(item.type) == normalized)
+        .length;
   }
 
   String _itemKey(_SavedHubItem item) => '${item.kind.name}:${item.id}';
@@ -390,26 +440,18 @@ class _SavedScreenState extends State<SavedScreen> {
     return AppShellBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          title: Text(
-            'Saved Items',
-            style: GoogleFonts.poppins(
-              fontWeight: FontWeight.w700,
-              color: StudentOpportunityHubPalette.textPrimary,
-            ),
-          ),
-          backgroundColor: Colors.transparent,
-          surfaceTintColor: Colors.transparent,
-          elevation: 0,
-          scrolledUnderElevation: 0,
-          iconTheme: const IconThemeData(
-            color: StudentOpportunityHubPalette.textPrimary,
-          ),
+        appBar: StudentWorkspaceAppBar(
+          title: 'Saved Items',
+          subtitle:
+              'Your saved opportunities, scholarships, trainings, and ideas.',
+          icon: Icons.bookmark_rounded,
+          showBackButton: true,
+          onBack: () => Navigator.maybePop(context),
           actions: [
-            IconButton(
+            StudentWorkspaceActionButton(
+              icon: Icons.refresh_rounded,
               tooltip: 'Refresh',
-              onPressed: _loadSavedContent,
-              icon: const Icon(Icons.refresh_rounded),
+              onTap: () => _loadSavedContent(),
             ),
           ],
         ),
@@ -482,15 +524,117 @@ class _SavedScreenState extends State<SavedScreen> {
                                         if (_selectedFilter == filter) {
                                           return;
                                         }
-                                        setState(
-                                          () => _selectedFilter = filter,
-                                        );
+                                        setState(() {
+                                          _selectedFilter = filter;
+                                          if (filter !=
+                                              _SavedHubFilter.opportunities) {
+                                            _selectedOpportunityType = null;
+                                          }
+                                        });
                                       },
                                     ),
                                   ),
                                 )
                                 .toList(growable: false),
                           ),
+                        ),
+                        AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 220),
+                          switchInCurve: Curves.easeOut,
+                          switchOutCurve: Curves.easeIn,
+                          child:
+                              _selectedFilter == _SavedHubFilter.opportunities
+                              ? Padding(
+                                  key: const ValueKey(
+                                    'saved-opportunity-type-filters',
+                                  ),
+                                  padding: const EdgeInsets.only(top: 10),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Opportunity type',
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 11.2,
+                                          fontWeight: FontWeight.w600,
+                                          color: StudentOpportunityHubPalette
+                                              .textSecondary,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      SingleChildScrollView(
+                                        scrollDirection: Axis.horizontal,
+                                        child: Row(
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                right: 8,
+                                              ),
+                                              child: StudentOpportunityFilterChip(
+                                                label:
+                                                    'All opps (${_countForOpportunityTypeFilter(savedOpportunityProvider.savedOpportunities, null)})',
+                                                selected:
+                                                    _selectedOpportunityType ==
+                                                    null,
+                                                color:
+                                                    StudentOpportunityHubPalette
+                                                        .primary,
+                                                onTap: () {
+                                                  if (_selectedOpportunityType ==
+                                                      null) {
+                                                    return;
+                                                  }
+                                                  setState(
+                                                    () =>
+                                                        _selectedOpportunityType =
+                                                            null,
+                                                  );
+                                                },
+                                              ),
+                                            ),
+                                            ...OpportunityType.values.map(
+                                              (type) => Padding(
+                                                padding: EdgeInsets.only(
+                                                  right:
+                                                      type ==
+                                                          OpportunityType
+                                                              .values
+                                                              .last
+                                                      ? 0
+                                                      : 8,
+                                                ),
+                                                child: StudentOpportunityFilterChip(
+                                                  label:
+                                                      '${_opportunityTypeFilterLabel(type)} (${_countForOpportunityTypeFilter(savedOpportunityProvider.savedOpportunities, type)})',
+                                                  selected:
+                                                      _selectedOpportunityType ==
+                                                      type,
+                                                  color:
+                                                      _opportunityTypeFilterColor(
+                                                        type,
+                                                      ),
+                                                  onTap: () {
+                                                    if (_selectedOpportunityType ==
+                                                        type) {
+                                                      return;
+                                                    }
+                                                    setState(
+                                                      () =>
+                                                          _selectedOpportunityType =
+                                                              type,
+                                                    );
+                                                  },
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              : const SizedBox.shrink(),
                         ),
                         const SizedBox(height: 14),
                         Text(

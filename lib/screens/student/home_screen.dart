@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
-import 'student_dashboard_screen.dart';
-import 'opportunities_screen.dart';
-import 'scholarships_screen.dart';
-import 'applied_opportunities_screen.dart';
-import 'project_ideas_screen.dart';
-import 'chat_list_screen.dart';
-import 'saved_screen.dart';
-import 'cv_screen.dart';
-import 'profile_screen.dart';
-import '../settings/settings_screen.dart';
-import '../settings/logout_confirmation_sheet.dart';
+import '../../providers/notification_provider.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
 import '../../widgets/app_shell_background.dart';
+import '../../widgets/student/student_workspace_shell.dart';
+import '../notifications_screen.dart';
+import '../settings/logout_confirmation_sheet.dart';
+import 'chat_list_screen.dart';
+import 'opportunities_screen.dart';
+import 'profile_screen.dart';
+import 'project_ideas_screen.dart';
+import 'scholarships_screen.dart';
+import 'student_dashboard_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final int initialIndex;
@@ -35,20 +34,79 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late int _currentIndex;
+  final Set<int> _visitedIndexes = <int>{};
+
+  late final List<_StudentDestination> _destinations = [
+    const _StudentDestination(
+      title: 'Home',
+      subtitle: 'Your daily student pulse, shortcuts, and fresh momentum.',
+      icon: Icons.home_rounded,
+      navLabel: 'Home',
+      compactNavLabel: 'Home',
+      navIcon: Icons.home_outlined,
+      activeNavIcon: Icons.home_rounded,
+    ),
+    const _StudentDestination(
+      title: 'Explore',
+      subtitle: 'Jobs, internships, sponsored tracks, and training in one hub.',
+      icon: Icons.explore_rounded,
+      navLabel: 'Explore',
+      compactNavLabel: 'Explore',
+      navIcon: Icons.explore_outlined,
+      activeNavIcon: Icons.explore_rounded,
+    ),
+    const _StudentDestination(
+      title: 'Scholarships',
+      subtitle: 'Funding opportunities, deadlines, and global study paths.',
+      icon: Icons.school_rounded,
+      navLabel: 'Scholarships',
+      compactNavLabel: 'Funds',
+      navIcon: Icons.school_outlined,
+      activeNavIcon: Icons.school_rounded,
+    ),
+    const _StudentDestination(
+      title: 'Ideas',
+      subtitle: 'Build, save, and grow your next project idea with confidence.',
+      icon: Icons.lightbulb_rounded,
+      navLabel: 'Ideas',
+      compactNavLabel: 'Ideas',
+      navIcon: Icons.lightbulb_outline,
+      activeNavIcon: Icons.lightbulb_rounded,
+    ),
+    const _StudentDestination(
+      title: 'Messages',
+      subtitle: 'Stay close to conversations, follow-ups, and collaboration.',
+      icon: Icons.chat_rounded,
+      navLabel: 'Messages',
+      compactNavLabel: 'Chat',
+      navIcon: Icons.chat_bubble_outline_rounded,
+      activeNavIcon: Icons.chat_bubble_rounded,
+    ),
+    const _StudentDestination(
+      title: 'Profile',
+      subtitle: 'Your profile strength, saved activity, and account controls.',
+      icon: Icons.person_rounded,
+      navLabel: 'Profile',
+      compactNavLabel: 'Me',
+      navIcon: Icons.person_outline_rounded,
+      activeNavIcon: Icons.person_rounded,
+    ),
+  ];
 
   final List<Widget> _screens = const [
-    StudentDashboardScreen(),
-    OpportunitiesScreen(),
-    ScholarshipsScreen(),
-    ProjectIdeasScreen(),
-    ChatListScreen(),
-    _MoreScreen(),
+    StudentDashboardScreen(embedded: true),
+    OpportunitiesScreen(embedded: true),
+    ScholarshipsScreen(embedded: true),
+    ProjectIdeasScreen(embedded: true),
+    ChatListScreen(embedded: true),
+    ProfileScreen(embedded: true),
   ];
 
   @override
   void initState() {
     super.initState();
     _currentIndex = _normalizeIndex(widget.initialIndex);
+    _visitedIndexes.add(_currentIndex);
     HomeScreen._requestedTabIndex.addListener(_handleRequestedTab);
     _handleRequestedTab();
   }
@@ -57,7 +115,9 @@ class _HomeScreenState extends State<HomeScreen> {
   void didUpdateWidget(covariant HomeScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.initialIndex != oldWidget.initialIndex) {
-      _currentIndex = _normalizeIndex(widget.initialIndex);
+      final nextIndex = _normalizeIndex(widget.initialIndex);
+      _visitedIndexes.add(nextIndex);
+      _currentIndex = nextIndex;
     }
   }
 
@@ -82,6 +142,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     setState(() {
       _currentIndex = normalizedIndex;
+      _visitedIndexes.add(normalizedIndex);
     });
   }
 
@@ -95,234 +156,113 @@ class _HomeScreenState extends State<HomeScreen> {
     return index;
   }
 
+  void _selectIndex(int index) {
+    FocusManager.instance.primaryFocus?.unfocus();
+    if (index == _currentIndex) {
+      return;
+    }
+
+    setState(() {
+      _currentIndex = index;
+      _visitedIndexes.add(index);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    final unreadCount = context.watch<NotificationProvider>().unreadCount;
+    final keyboardVisible = MediaQuery.viewInsetsOf(context).bottom > 0;
+    final destination = _destinations[_currentIndex];
+
     return AppShellBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        body: _screens[_currentIndex],
-        bottomNavigationBar: Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.06),
-                blurRadius: 16,
-                offset: const Offset(0, -4),
+        body: SafeArea(
+          child: Column(
+            children: [
+              StudentWorkspaceTopBar(
+                title: destination.title,
+                subtitle: destination.subtitle,
+                icon: destination.icon,
+                actions: [
+                  StudentWorkspaceActionButton(
+                    icon: Icons.notifications_outlined,
+                    tooltip: 'Notifications',
+                    badgeCount: unreadCount,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const NotificationsScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                  StudentWorkspaceActionButton(
+                    icon: Icons.logout_rounded,
+                    tooltip: 'Logout',
+                    color: OpportunityDashboardPalette.error,
+                    onTap: () => showLogoutConfirmationSheet(context),
+                  ),
+                ],
               ),
-            ],
-          ),
-          child: BottomNavigationBar(
-            currentIndex: _currentIndex,
-            onTap: (index) => setState(() => _currentIndex = index),
-            type: BottomNavigationBarType.fixed,
-            backgroundColor: Colors.white,
-            selectedItemColor: OpportunityDashboardPalette.primary,
-            unselectedItemColor: OpportunityDashboardPalette.textSecondary,
-            selectedLabelStyle: GoogleFonts.poppins(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-            ),
-            unselectedLabelStyle: GoogleFonts.poppins(fontSize: 11),
-            elevation: 0,
-            items: const [
-              BottomNavigationBarItem(
-                icon: Icon(Icons.dashboard_outlined),
-                activeIcon: Icon(Icons.dashboard),
-                label: 'Dashboard',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.work_outline),
-                activeIcon: Icon(Icons.work),
-                label: 'Opportunities',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.school_outlined),
-                activeIcon: Icon(Icons.school),
-                label: 'Scholarships',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.lightbulb_outline),
-                activeIcon: Icon(Icons.lightbulb),
-                label: 'Ideas',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.chat_bubble_outline),
-                activeIcon: Icon(Icons.chat_bubble),
-                label: 'Chat',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.menu),
-                activeIcon: Icon(Icons.menu),
-                label: 'More',
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: IndexedStack(
+                    index: _currentIndex,
+                    children: List<Widget>.generate(
+                      _screens.length,
+                      (index) => _visitedIndexes.contains(index)
+                          ? _screens[index]
+                          : const SizedBox.shrink(),
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
         ),
+        bottomNavigationBar: keyboardVisible
+            ? null
+            : SafeArea(
+                top: false,
+                child: StudentPillNavigationBar(
+                  destinations: _destinations
+                      .map(
+                        (destination) => StudentWorkspaceNavDestination(
+                          label: destination.navLabel,
+                          compactLabel: destination.compactNavLabel,
+                          icon: destination.navIcon,
+                          activeIcon: destination.activeNavIcon,
+                        ),
+                      )
+                      .toList(growable: false),
+                  currentIndex: _currentIndex,
+                  onTap: _selectIndex,
+                ),
+              ),
       ),
     );
   }
 }
 
-class _MoreScreen extends StatelessWidget {
-  const _MoreScreen();
+class _StudentDestination {
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final String navLabel;
+  final String compactNavLabel;
+  final IconData navIcon;
+  final IconData activeNavIcon;
 
-  @override
-  Widget build(BuildContext context) {
-    return AppShellBackground(
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          title: Text(
-            'More',
-            style: GoogleFonts.poppins(
-              fontWeight: FontWeight.w600,
-              color: OpportunityDashboardPalette.textPrimary,
-            ),
-          ),
-          backgroundColor: Colors.transparent,
-          surfaceTintColor: Colors.transparent,
-          elevation: 0,
-          iconTheme: const IconThemeData(
-            color: OpportunityDashboardPalette.textPrimary,
-          ),
-        ),
-        body: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            _buildMenuItem(
-              context,
-              icon: Icons.person_outline,
-              title: 'My Profile',
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const ProfileScreen()),
-              ),
-            ),
-            const SizedBox(height: 10),
-            _buildMenuItem(
-              context,
-              icon: Icons.description_outlined,
-              title: 'My CV',
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const CvScreen()),
-              ),
-            ),
-            const SizedBox(height: 10),
-            _buildMenuItem(
-              context,
-              icon: Icons.assignment_turned_in_outlined,
-              title: 'Applied Opportunities',
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const AppliedOpportunitiesScreen(),
-                ),
-              ),
-            ),
-            const SizedBox(height: 10),
-            _buildMenuItem(
-              context,
-              icon: Icons.bookmark_outline,
-              title: 'Saved Items',
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const SavedScreen()),
-              ),
-            ),
-            const SizedBox(height: 10),
-            _buildMenuItem(
-              context,
-              icon: Icons.settings_outlined,
-              title: 'Settings',
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const SettingsScreen()),
-              ),
-            ),
-            const SizedBox(height: 20),
-            _buildMenuItem(
-              context,
-              icon: Icons.logout,
-              title: 'Logout',
-              isDestructive: true,
-              onTap: () => showLogoutConfirmationSheet(context),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMenuItem(
-    BuildContext context, {
-    required IconData icon,
-    required String title,
-    required VoidCallback onTap,
-    bool isDestructive = false,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(18),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 10,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: isDestructive
-                    ? Colors.red.withValues(alpha: 0.08)
-                    : OpportunityDashboardPalette.primary.withValues(
-                        alpha: 0.08,
-                      ),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(
-                icon,
-                color: isDestructive
-                    ? Colors.red
-                    : OpportunityDashboardPalette.primary,
-                size: 22,
-              ),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Text(
-                title,
-                style: GoogleFonts.poppins(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w500,
-                  color: isDestructive
-                      ? Colors.red
-                      : OpportunityDashboardPalette.textPrimary,
-                ),
-              ),
-            ),
-            Icon(
-              Icons.chevron_right,
-              color: isDestructive
-                  ? Colors.red.withValues(alpha: 0.4)
-                  : OpportunityDashboardPalette.textSecondary.withValues(
-                      alpha: 0.5,
-                    ),
-              size: 20,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  const _StudentDestination({
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.navLabel,
+    required this.compactNavLabel,
+    required this.navIcon,
+    required this.activeNavIcon,
+  });
 }

@@ -11,6 +11,7 @@ import '../../utils/opportunity_type.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/application_status_badge.dart';
 import '../../widgets/opportunity_type_badge.dart';
+import '../../widgets/student/student_workspace_shell.dart';
 import '../../widgets/student_opportunity_hub_widgets.dart';
 import 'opportunities_screen.dart';
 import 'opportunity_detail_screen.dart';
@@ -169,26 +170,18 @@ class _AppliedOpportunitiesScreenState
     return AppShellBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          title: Text(
-            'Applied Opportunities',
-            style: GoogleFonts.poppins(
-              fontWeight: FontWeight.w700,
-              color: StudentOpportunityHubPalette.textPrimary,
-            ),
-          ),
-          backgroundColor: Colors.transparent,
-          surfaceTintColor: Colors.transparent,
-          elevation: 0,
-          scrolledUnderElevation: 0,
-          iconTheme: const IconThemeData(
-            color: StudentOpportunityHubPalette.textPrimary,
-          ),
+        appBar: StudentWorkspaceAppBar(
+          title: 'Applied Opportunities',
+          subtitle:
+              'Track every role you submitted and see what needs attention next.',
+          icon: Icons.assignment_turned_in_rounded,
+          showBackButton: true,
+          onBack: () => Navigator.maybePop(context),
           actions: [
-            IconButton(
+            StudentWorkspaceActionButton(
+              icon: Icons.refresh_rounded,
               tooltip: 'Refresh',
-              onPressed: _loadApplications,
-              icon: const Icon(Icons.refresh_rounded),
+              onTap: () => _loadApplications(),
             ),
           ],
         ),

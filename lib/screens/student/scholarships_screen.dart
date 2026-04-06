@@ -9,6 +9,7 @@ import '../../providers/saved_scholarship_provider.dart';
 import '../../providers/scholarship_provider.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
 import '../../widgets/app_shell_background.dart';
+import '../../widgets/student/student_workspace_shell.dart';
 import 'scholarship_detail_screen.dart';
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -17,7 +18,9 @@ import 'scholarship_detail_screen.dart';
 typedef _P = OpportunityDashboardPalette;
 
 class ScholarshipsScreen extends StatefulWidget {
-  const ScholarshipsScreen({super.key});
+  final bool embedded;
+
+  const ScholarshipsScreen({super.key, this.embedded = false});
 
   @override
   State<ScholarshipsScreen> createState() => _ScholarshipsScreenState();
@@ -254,137 +257,76 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
     final filtered = _applyFilters(provider.scholarships);
     final featured = _pickFeatured(filtered);
 
-    return AppShellBackground(
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: SafeArea(
-          bottom: false,
-          child: provider.isLoading
-              ? const Center(
-                  child: CircularProgressIndicator(color: _P.primary),
-                )
-              : CustomScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  slivers: [
-                    SliverToBoxAdapter(child: _buildHeaderBar(context)),
-                    SliverToBoxAdapter(child: _buildHeroSection()),
-                    if (featured != null)
-                      SliverToBoxAdapter(
-                        child: _buildHeroVisualCard(
-                          featured,
-                          isSaved: savedIds.contains(featured.id),
-                          isSaving: savedProvider.isLoading,
-                          onToggleSaved: () =>
-                              _toggleSavedScholarship(featured),
-                        ),
+    final scaffold = Scaffold(
+      backgroundColor: Colors.transparent,
+      appBar: widget.embedded
+          ? null
+          : StudentWorkspaceAppBar(
+              title: 'Scholarships',
+              subtitle:
+                  'Curated funding paths, deadlines, and global study options.',
+              icon: Icons.school_rounded,
+              showBackButton: true,
+              onBack: () => Navigator.maybePop(context),
+            ),
+      body: SafeArea(
+        top: false,
+        bottom: false,
+        child: provider.isLoading
+            ? const Center(child: CircularProgressIndicator(color: _P.primary))
+            : CustomScrollView(
+                physics: const BouncingScrollPhysics(),
+                slivers: [
+                  SliverToBoxAdapter(child: _buildHeroSection()),
+                  if (featured != null)
+                    SliverToBoxAdapter(
+                      child: _buildHeroVisualCard(
+                        featured,
+                        isSaved: savedIds.contains(featured.id),
+                        isSaving: savedProvider.isLoading,
+                        onToggleSaved: () => _toggleSavedScholarship(featured),
                       ),
-                    SliverToBoxAdapter(child: _buildSearchBar()),
-                    SliverToBoxAdapter(child: _buildFilterChips()),
-                    SliverToBoxAdapter(child: _buildCurationHeader()),
-                    if (filtered.isEmpty)
-                      SliverToBoxAdapter(child: _buildEmptyState())
-                    else
-                      SliverPadding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        sliver: SliverList(
-                          delegate: SliverChildBuilderDelegate((
-                            context,
-                            index,
-                          ) {
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 14),
-                              child: _ScholarshipCard(
-                                scholarship: filtered[index],
-                                cardIndex: index,
-                                isSaved: savedIds.contains(filtered[index].id),
-                                isBusy: savedProvider.isLoading,
-                                onToggleSaved: () =>
-                                    _toggleSavedScholarship(filtered[index]),
-                              ),
-                            );
-                          }, childCount: filtered.length),
-                        ),
+                    ),
+                  SliverToBoxAdapter(child: _buildSearchBar()),
+                  SliverToBoxAdapter(child: _buildFilterChips()),
+                  SliverToBoxAdapter(child: _buildCurationHeader()),
+                  if (filtered.isEmpty)
+                    SliverToBoxAdapter(child: _buildEmptyState())
+                  else
+                    SliverPadding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      sliver: SliverList(
+                        delegate: SliverChildBuilderDelegate((context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 14),
+                            child: _ScholarshipCard(
+                              scholarship: filtered[index],
+                              cardIndex: index,
+                              isSaved: savedIds.contains(filtered[index].id),
+                              isBusy: savedProvider.isLoading,
+                              onToggleSaved: () =>
+                                  _toggleSavedScholarship(filtered[index]),
+                            ),
+                          );
+                        }, childCount: filtered.length),
                       ),
-                    const SliverToBoxAdapter(child: SizedBox(height: 18)),
-                  ],
-                ),
-        ),
+                    ),
+                  const SliverToBoxAdapter(child: SizedBox(height: 18)),
+                ],
+              ),
       ),
     );
+
+    if (widget.embedded) {
+      return scaffold;
+    }
+
+    return AppShellBackground(child: scaffold);
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
   // 1. TOP HEADER BAR
   // ═══════════════════════════════════════════════════════════════════════════
-  Widget _buildHeaderBar(BuildContext context) {
-    final canPop = Navigator.of(context).canPop();
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(12, 4, 14, 0),
-      child: Row(
-        children: [
-          if (canPop)
-            GestureDetector(
-              onTap: () => Navigator.of(context).pop(),
-              child: Container(
-                width: 34,
-                height: 34,
-                decoration: BoxDecoration(
-                  color: _P.surface,
-                  borderRadius: BorderRadius.circular(10),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.05),
-                      blurRadius: 6,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: const Icon(
-                  Icons.arrow_back_ios_new_rounded,
-                  size: 15,
-                  color: _P.textPrimary,
-                ),
-              ),
-            ),
-          if (canPop) const SizedBox(width: 10),
-          Text(
-            'Scholarships',
-            style: GoogleFonts.poppins(
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-              color: _P.primary,
-            ),
-          ),
-          const Spacer(),
-          Container(
-            width: 32,
-            height: 32,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: const LinearGradient(
-                colors: [_P.primary, _P.primaryDark],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: _P.primary.withValues(alpha: 0.25),
-                  blurRadius: 6,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: const Icon(
-              Icons.person_rounded,
-              color: Colors.white,
-              size: 16,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   // ═══════════════════════════════════════════════════════════════════════════
   // 2. HERO SECTION (label + title + subtitle)
   // ═══════════════════════════════════════════════════════════════════════════

@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/training_provider.dart';
 import '../../widgets/app_shell_background.dart';
+import '../../widgets/student/student_workspace_shell.dart';
 import '../../widgets/training_resource_card.dart';
 
 class SavedTrainingsScreen extends StatefulWidget {
@@ -100,12 +101,19 @@ class _SavedTrainingsScreenState extends State<SavedTrainingsScreen> {
     return AppShellBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          title: const Text('Saved Resources'),
-          backgroundColor: Colors.transparent,
-          surfaceTintColor: Colors.transparent,
-          elevation: 0,
-          scrolledUnderElevation: 0,
+        appBar: StudentWorkspaceAppBar(
+          title: 'Saved Resources',
+          subtitle: 'Training content you bookmarked for later.',
+          icon: Icons.bookmark_rounded,
+          showBackButton: true,
+          onBack: () => Navigator.maybePop(context),
+          actions: [
+            StudentWorkspaceActionButton(
+              icon: Icons.refresh_rounded,
+              tooltip: 'Refresh saved resources',
+              onTap: () => _refreshSaved(),
+            ),
+          ],
         ),
         body: uid.isEmpty
             ? const Center(

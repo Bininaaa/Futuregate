@@ -41,7 +41,9 @@ import 'trainings_screen.dart';
 import 'scholarships_screen.dart';
 
 class StudentDashboardScreen extends StatefulWidget {
-  const StudentDashboardScreen({super.key});
+  final bool embedded;
+
+  const StudentDashboardScreen({super.key, this.embedded = false});
 
   @override
   State<StudentDashboardScreen> createState() => _StudentDashboardScreenState();
@@ -157,104 +159,107 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     final showProfilePrompt = profileCompletion < 100;
     _ensureDashboardData(user);
 
-    return AppShellBackground(
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: SafeArea(
-          child: CustomScrollView(
-            physics: const BouncingScrollPhysics(),
-            slivers: [
-              SliverToBoxAdapter(
-                child: _buildProfileHeader(
-                  context,
-                  firstName,
-                  user,
-                  profileCompletion,
-                ),
+    final scaffold = Scaffold(
+      backgroundColor: Colors.transparent,
+      body: SafeArea(
+        top: !widget.embedded,
+        child: CustomScrollView(
+          physics: const BouncingScrollPhysics(),
+          slivers: [
+            SliverToBoxAdapter(
+              child: _buildProfileHeader(
+                context,
+                firstName,
+                user,
+                profileCompletion,
               ),
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
+              sliver: SliverToBoxAdapter(
+                child: _buildSectionTitle('Categories'),
+              ),
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
+              sliver: SliverToBoxAdapter(child: _buildCategoriesGrid(context)),
+            ),
+            if (showProfilePrompt)
               SliverPadding(
-                padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
                 sliver: SliverToBoxAdapter(
-                  child: _buildSectionTitle('Categories'),
+                  child: _buildProfileCompletionPrompt(
+                    context,
+                    user,
+                    cv,
+                    profileCompletion,
+                  ),
                 ),
               ),
-              SliverPadding(
-                padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
-                sliver: SliverToBoxAdapter(
-                  child: _buildCategoriesGrid(context),
-                ),
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(20, 22, 20, 0),
+              sliver: SliverToBoxAdapter(
+                child: _buildSectionHeader('Closing Soon'),
               ),
-              if (showProfilePrompt)
-                SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-                  sliver: SliverToBoxAdapter(
-                    child: _buildProfileCompletionPrompt(
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(20, 10, 0, 0),
+              sliver: SliverToBoxAdapter(
+                child: _buildClosingSoonSection(context),
+              ),
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
+              sliver: SliverToBoxAdapter(
+                child: _buildSectionHeader(
+                  'Recommended',
+                  onSeeAll: () {
+                    Navigator.push(
                       context,
-                      user,
-                      cv,
-                      profileCompletion,
-                    ),
-                  ),
-                ),
-              SliverPadding(
-                padding: const EdgeInsets.fromLTRB(20, 22, 20, 0),
-                sliver: SliverToBoxAdapter(
-                  child: _buildSectionHeader('Closing Soon'),
+                      MaterialPageRoute(
+                        builder: (_) => const OpportunitiesScreen(),
+                      ),
+                    );
+                  },
                 ),
               ),
-              SliverPadding(
-                padding: const EdgeInsets.fromLTRB(20, 10, 0, 0),
-                sliver: SliverToBoxAdapter(
-                  child: _buildClosingSoonSection(context),
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(0, 12, 0, 0),
+              sliver: SliverToBoxAdapter(
+                child: _buildRecommendedSection(context),
+              ),
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
+              sliver: SliverToBoxAdapter(
+                child: _buildSectionHeader(
+                  'Recent',
+                  onSeeAll: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const OpportunitiesScreen(),
+                      ),
+                    );
+                  },
                 ),
               ),
-              SliverPadding(
-                padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
-                sliver: SliverToBoxAdapter(
-                  child: _buildSectionHeader(
-                    'Recommended',
-                    onSeeAll: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const OpportunitiesScreen(),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ),
-              SliverPadding(
-                padding: const EdgeInsets.fromLTRB(0, 12, 0, 0),
-                sliver: SliverToBoxAdapter(
-                  child: _buildRecommendedSection(context),
-                ),
-              ),
-              SliverPadding(
-                padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
-                sliver: SliverToBoxAdapter(
-                  child: _buildSectionHeader(
-                    'Recent',
-                    onSeeAll: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const OpportunitiesScreen(),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ),
-              SliverPadding(
-                padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
-                sliver: _buildRecentSection(context),
-              ),
-            ],
-          ),
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
+              sliver: _buildRecentSection(context),
+            ),
+          ],
         ),
       ),
     );
+
+    if (widget.embedded) {
+      return scaffold;
+    }
+
+    return AppShellBackground(child: scaffold);
   }
 
   // ═══════════════════════════════════════════════════════════════════════════

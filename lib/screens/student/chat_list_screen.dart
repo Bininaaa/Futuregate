@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import '../chat/messages_inbox_screen.dart';
 
 class ChatListScreen extends StatelessWidget {
-  const ChatListScreen({super.key});
+  final bool embedded;
+
+  const ChatListScreen({super.key, this.embedded = false});
 
   @override
   Widget build(BuildContext context) {
-    return const MessagesInboxScreen();
+    return MessagesInboxScreen(embedded: embedded);
   }
 }

@@ -12,6 +12,7 @@ import '../../screens/settings/settings_flow_theme.dart';
 import '../../screens/settings/settings_flow_widgets.dart';
 import '../../services/cv_pdf_service.dart';
 import '../../widgets/app_shell_background.dart';
+import '../../widgets/student/student_workspace_shell.dart';
 
 class CvPreviewScreen extends StatefulWidget {
   final CvModel cv;
@@ -78,32 +79,23 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
     return AppShellBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          backgroundColor: Colors.transparent,
-          surfaceTintColor: Colors.transparent,
-          elevation: 0,
-          scrolledUnderElevation: 0,
-          leading: IconButton(
-            onPressed: () => Navigator.maybePop(context),
-            icon: const Icon(
-              Icons.arrow_back_ios_new_rounded,
-              color: SettingsFlowPalette.textPrimary,
-            ),
-          ),
-          title: Text('Preview', style: SettingsFlowTheme.appBarTitle()),
+        appBar: StudentWorkspaceAppBar(
+          title: 'CV Preview',
+          subtitle: 'Review the final layout before you export or share it.',
+          icon: Icons.picture_as_pdf_rounded,
+          showBackButton: true,
+          onBack: () => Navigator.maybePop(context),
           actions: [
             FutureBuilder<Uint8List>(
               future: _pdfFuture,
               builder: (context, snapshot) {
-                if (!snapshot.hasData) return const SizedBox.shrink();
-                return IconButton(
-                  icon: const Icon(
-                    Icons.share_outlined,
-                    color: SettingsFlowPalette.textPrimary,
-                  ),
+                if (!snapshot.hasData) {
+                  return const SizedBox.shrink();
+                }
+                return StudentWorkspaceActionButton(
+                  icon: Icons.share_outlined,
                   tooltip: 'Share PDF',
-                  onPressed: () => _share(snapshot.data!),
+                  onTap: () => _share(snapshot.data!),
                 );
               },
             ),

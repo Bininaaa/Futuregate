@@ -16,6 +16,7 @@ import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/opportunity_dashboard_widgets.dart';
+import '../../widgets/student/student_workspace_shell.dart';
 import 'internships_screen.dart';
 import 'jobs_screen.dart';
 import 'opportunity_detail_screen.dart';
@@ -24,8 +25,13 @@ import 'trainings_screen.dart';
 
 class OpportunitiesScreen extends StatefulWidget {
   final String? initialFilter;
+  final bool embedded;
 
-  const OpportunitiesScreen({super.key, this.initialFilter});
+  const OpportunitiesScreen({
+    super.key,
+    this.initialFilter,
+    this.embedded = false,
+  });
 
   @override
   State<OpportunitiesScreen> createState() => _OpportunitiesScreenState();
@@ -1583,379 +1589,364 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
         .map((item) => item.opportunityId)
         .toSet();
 
-    return AppShellBackground(
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          backgroundColor: Colors.transparent,
-          surfaceTintColor: Colors.transparent,
-          elevation: 0,
-          titleSpacing: 20,
-          title: Text(
-            'AvenirDZ',
-            style: GoogleFonts.poppins(
-              fontSize: 22,
-              fontWeight: FontWeight.w700,
-              color: OpportunityDashboardPalette.textPrimary,
+    final scaffold = Scaffold(
+      backgroundColor: Colors.transparent,
+      appBar: widget.embedded
+          ? null
+          : StudentWorkspaceAppBar(
+              title: 'Explore',
+              subtitle:
+                  'Jobs, internships, sponsored tracks, and training in one stream.',
+              icon: Icons.explore_rounded,
+              showBackButton: true,
+              onBack: () => Navigator.maybePop(context),
+              actions: [
+                StudentWorkspaceActionButton(
+                  icon: Icons.search_rounded,
+                  tooltip: 'Focus search',
+                  onTap: () => _focusSearchField(),
+                ),
+                StudentWorkspaceActionButton(
+                  icon: Icons.tune_rounded,
+                  tooltip: 'Filter opportunities',
+                  onTap: () => _showFilterSheet(),
+                ),
+              ],
             ),
-          ),
-          actions: [
-            IconButton(
-              tooltip: 'Focus search',
-              onPressed: _focusSearchField,
-              icon: const Icon(
-                Icons.search_rounded,
-                color: OpportunityDashboardPalette.textPrimary,
-              ),
-            ),
-            IconButton(
-              tooltip: 'Filter opportunities',
-              onPressed: _showFilterSheet,
-              icon: const Icon(
-                Icons.tune_rounded,
-                color: OpportunityDashboardPalette.textPrimary,
-              ),
-            ),
-            const SizedBox(width: 8),
-          ],
-        ),
-        body: opportunityProvider.isLoading && allOpportunities.isEmpty
-            ? const OpportunityDashboardLoadingSkeleton()
-            : RefreshIndicator(
-                color: OpportunityDashboardPalette.primary,
-                backgroundColor: OpportunityDashboardPalette.surface,
-                onRefresh: () => _loadData(force: true),
-                child: CustomScrollView(
-                  controller: _scrollController,
-                  physics: const BouncingScrollPhysics(
-                    parent: AlwaysScrollableScrollPhysics(),
+      body: opportunityProvider.isLoading && allOpportunities.isEmpty
+          ? const OpportunityDashboardLoadingSkeleton()
+          : RefreshIndicator(
+              color: OpportunityDashboardPalette.primary,
+              backgroundColor: OpportunityDashboardPalette.surface,
+              onRefresh: () => _loadData(force: true),
+              child: CustomScrollView(
+                controller: _scrollController,
+                physics: const BouncingScrollPhysics(
+                  parent: AlwaysScrollableScrollPhysics(),
+                ),
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
+                slivers: [
+                  if (opportunityProvider.isLoading &&
+                      allOpportunities.isNotEmpty)
+                    const SliverToBoxAdapter(
+                      child: LinearProgressIndicator(minHeight: 2),
+                    ),
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+                    sliver: SliverToBoxAdapter(
+                      child: _buildHeaderSection(
+                        visibleOpportunities.length,
+                        allOpportunities.length,
+                      ),
+                    ),
                   ),
-                  keyboardDismissBehavior:
-                      ScrollViewKeyboardDismissBehavior.onDrag,
-                  slivers: [
-                    if (opportunityProvider.isLoading &&
-                        allOpportunities.isNotEmpty)
-                      const SliverToBoxAdapter(
-                        child: LinearProgressIndicator(minHeight: 2),
-                      ),
-                    SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
-                      sliver: SliverToBoxAdapter(
-                        child: _buildHeaderSection(
-                          visibleOpportunities.length,
-                          allOpportunities.length,
-                        ),
-                      ),
-                    ),
-                    SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
-                      sliver: SliverToBoxAdapter(
-                        child: Column(
-                          children: [
-                            OpportunityHeroCard(
-                              title: 'Jobs',
-                              subtitle:
-                                  'Discover premium open roles from trusted employers and remote-ready teams.',
-                              supportingLabel: _supportingCountText(
-                                count: jobItems.length,
-                                singular: 'open position',
-                                plural: 'open positions',
-                                fallback: 'Explore verified openings',
-                              ),
-                              icon: Icons.work_outline_rounded,
-                              onTap: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const JobsScreen(),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                            SizedBox(
-                              height: 140,
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: OpportunityCategoryCard(
-                                      title: 'Internships',
-                                      subtitle: 'Hands-on student placements',
-                                      caption: _supportingCountText(
-                                        count: internshipItems.length,
-                                        singular: 'open internship',
-                                        plural: 'open internships',
-                                        fallback: 'Build experience faster',
-                                      ),
-                                      icon: Icons.school_outlined,
-                                      color:
-                                          OpportunityDashboardPalette.secondary,
-                                      backgroundColor:
-                                          OpportunityDashboardPalette.secondary
-                                              .withValues(alpha: 0.10),
-                                      onTap: () => Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (_) =>
-                                              const InternshipsScreen(),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Expanded(
-                                    child: OpportunityCategoryCard(
-                                      title: 'Sponsored',
-                                      subtitle: 'Partner-backed support',
-                                      caption: _supportingCountText(
-                                        count: sponsoredItems.length,
-                                        singular: 'active track',
-                                        plural: 'active tracks',
-                                        fallback: 'Partner-backed tracks',
-                                      ),
-                                      icon: Icons.campaign_outlined,
-                                      color: OpportunityDashboardPalette.accent,
-                                      backgroundColor:
-                                          OpportunityDashboardPalette.accent
-                                              .withValues(alpha: 0.10),
-                                      onTap: () => Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (_) =>
-                                              const SponsoredOpportunitiesScreen(),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                            TrainingProgramsCard(
-                              title: 'Training Programs',
-                              subtitle: '',
-                              badgeLabel: trainingProvider.isLoading
-                                  ? 'Loading...'
-                                  : _supportingCountText(
-                                      count: trainingItems.length,
-                                      singular: 'resource',
-                                      plural: 'resources',
-                                      fallback: 'Updated weekly',
-                                    ),
-                              onTap: _openTrainings,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
-                      sliver: SliverToBoxAdapter(
-                        key: _trendingSectionKey,
-                        child: TrendingOpportunitySectionHeader(
-                          title: 'Trending Opportunities',
-                          subtitle:
-                              'Featured, fresh, and high-signal picks from live data',
-                          actionLabel: 'View All',
-                          onAction: () async {
-                            _setFilter(_OpportunityDashboardFilter.all);
-                            await _scrollToKey(_latestSectionKey);
-                          },
-                        ),
-                      ),
-                    ),
-                    SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(20, 10, 0, 0),
-                      sliver: SliverToBoxAdapter(
-                        child: trendingItems.isEmpty
-                            ? Padding(
-                                padding: const EdgeInsets.only(right: 20),
-                                child: OpportunityDashboardEmptyState(
-                                  icon: Icons.trending_up_rounded,
-                                  title: 'No trending items right now',
-                                  subtitle:
-                                      'Fresh recommendations will appear here as new listings arrive.',
-                                  color: OpportunityDashboardPalette.primary,
-                                ),
-                              )
-                            : SizedBox(
-                                height: trendingCardHeight,
-                                child: ListView.separated(
-                                  scrollDirection: Axis.horizontal,
-                                  padding: const EdgeInsets.only(right: 20),
-                                  itemCount: trendingItems.length,
-                                  separatorBuilder: (context, index) =>
-                                      const SizedBox(width: 12),
-                                  itemBuilder: (context, index) {
-                                    final opportunity = trendingItems[index];
-
-                                    return TrendingOpportunityCard(
-                                      opportunity: opportunity,
-                                      rank: index + 1,
-                                      typeLabel: OpportunityType.label(
-                                        opportunity.type,
-                                      ),
-                                      trendLabel: _trendingSignalLabel(
-                                        opportunity,
-                                      ),
-                                      companyName: _companyNameOrNull(
-                                        opportunity,
-                                      ),
-                                      locationText: _locationLabel(opportunity),
-                                      detailChips: _trendingDetailChips(
-                                        opportunity,
-                                      ),
-                                      compensationText: _compensationText(
-                                        opportunity,
-                                      ),
-                                      applicationStatus:
-                                          appliedStatuses[opportunity.id],
-                                      isSaved: savedIds.contains(
-                                        opportunity.id,
-                                      ),
-                                      isBusy: savedProvider.isLoading,
-                                      onTap: () =>
-                                          _openOpportunity(opportunity),
-                                      onToggleSaved: () =>
-                                          _toggleSavedOpportunity(opportunity),
-                                    );
-                                  },
-                                ),
-                              ),
-                      ),
-                    ),
-                    SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
-                      sliver: SliverToBoxAdapter(
-                        key: _latestSectionKey,
-                        child: OpportunitySectionHeader(
-                          title: 'Latest Opportunities',
-                          subtitle:
-                              'The $_latestItemsLimit newest roles, internships, and sponsored tracks',
-                          accentColor: OpportunityDashboardPalette.success,
-                        ),
-                      ),
-                    ),
-                    if (latestItems.isEmpty)
-                      SliverPadding(
-                        padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
-                        sliver: SliverToBoxAdapter(
-                          child: OpportunityDashboardEmptyState(
-                            icon: Icons.search_off_rounded,
-                            title: 'No opportunities found',
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
+                    sliver: SliverToBoxAdapter(
+                      child: Column(
+                        children: [
+                          OpportunityHeroCard(
+                            title: 'Jobs',
                             subtitle:
-                                'Try adjusting your search or filters to uncover more matches.',
-                            color: OpportunityDashboardPalette.success,
+                                'Discover premium open roles from trusted employers and remote-ready teams.',
+                            supportingLabel: _supportingCountText(
+                              count: jobItems.length,
+                              singular: 'open position',
+                              plural: 'open positions',
+                              fallback: 'Explore verified openings',
+                            ),
+                            icon: Icons.work_outline_rounded,
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const JobsScreen(),
+                              ),
+                            ),
                           ),
-                        ),
-                      )
-                    else
-                      SliverPadding(
-                        padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
-                        sliver: SliverList.separated(
-                          itemCount: latestItems.length,
-                          separatorBuilder: (context, index) =>
-                              const SizedBox(height: 8),
-                          itemBuilder: (context, index) {
-                            final opportunity = latestItems[index];
-                            return OpportunityListTile(
-                              opportunity: opportunity,
-                              typeLabel: OpportunityType.label(
-                                opportunity.type,
-                              ),
-                              companyLocationText: _companyLocationText(
-                                opportunity,
-                              ),
-                              compensationText: _compensationText(opportunity),
-                              detailChips: _latestStatusItems(opportunity),
-                              badgeText: _isNewOpportunity(opportunity)
-                                  ? 'NEW'
-                                  : null,
-                              badgeColor: OpportunityDashboardPalette.success,
-                              applicationStatus:
-                                  appliedStatuses[opportunity.id],
-                              isSaved: savedIds.contains(opportunity.id),
-                              isBusy: savedProvider.isLoading,
-                              onTap: () => _openOpportunity(opportunity),
-                              onToggleSaved: () =>
-                                  _toggleSavedOpportunity(opportunity),
-                            );
-                          },
-                        ),
-                      ),
-                    SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
-                      sliver: SliverToBoxAdapter(
-                        child: const OpportunitySectionHeader(
-                          title: 'Closing Soon',
-                          subtitle:
-                              'Urgent applications that need attention before they expire',
-                          accentColor: OpportunityDashboardPalette.error,
-                        ),
+                          const SizedBox(height: 10),
+                          SizedBox(
+                            height: 140,
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: OpportunityCategoryCard(
+                                    title: 'Internships',
+                                    subtitle: 'Hands-on student placements',
+                                    caption: _supportingCountText(
+                                      count: internshipItems.length,
+                                      singular: 'open internship',
+                                      plural: 'open internships',
+                                      fallback: 'Build experience faster',
+                                    ),
+                                    icon: Icons.school_outlined,
+                                    color:
+                                        OpportunityDashboardPalette.secondary,
+                                    backgroundColor: OpportunityDashboardPalette
+                                        .secondary
+                                        .withValues(alpha: 0.10),
+                                    onTap: () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) =>
+                                            const InternshipsScreen(),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: OpportunityCategoryCard(
+                                    title: 'Sponsored',
+                                    subtitle: 'Partner-backed support',
+                                    caption: _supportingCountText(
+                                      count: sponsoredItems.length,
+                                      singular: 'active track',
+                                      plural: 'active tracks',
+                                      fallback: 'Partner-backed tracks',
+                                    ),
+                                    icon: Icons.campaign_outlined,
+                                    color: OpportunityDashboardPalette.accent,
+                                    backgroundColor: OpportunityDashboardPalette
+                                        .accent
+                                        .withValues(alpha: 0.10),
+                                    onTap: () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) =>
+                                            const SponsoredOpportunitiesScreen(),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          TrainingProgramsCard(
+                            title: 'Training Programs',
+                            subtitle: '',
+                            badgeLabel: trainingProvider.isLoading
+                                ? 'Loading...'
+                                : _supportingCountText(
+                                    count: trainingItems.length,
+                                    singular: 'resource',
+                                    plural: 'resources',
+                                    fallback: 'Updated weekly',
+                                  ),
+                            onTap: _openTrainings,
+                          ),
+                        ],
                       ),
                     ),
-                    SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
-                      sliver: closingSoonItems.isEmpty
-                          ? SliverToBoxAdapter(
+                  ),
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
+                    sliver: SliverToBoxAdapter(
+                      key: _trendingSectionKey,
+                      child: TrendingOpportunitySectionHeader(
+                        title: 'Trending Opportunities',
+                        subtitle:
+                            'Featured, fresh, and high-signal picks from live data',
+                        actionLabel: 'View All',
+                        onAction: () async {
+                          _setFilter(_OpportunityDashboardFilter.all);
+                          await _scrollToKey(_latestSectionKey);
+                        },
+                      ),
+                    ),
+                  ),
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(20, 10, 0, 0),
+                    sliver: SliverToBoxAdapter(
+                      child: trendingItems.isEmpty
+                          ? Padding(
+                              padding: const EdgeInsets.only(right: 20),
                               child: OpportunityDashboardEmptyState(
-                                icon: Icons.hourglass_bottom_rounded,
-                                title: 'No urgent deadlines yet',
+                                icon: Icons.trending_up_rounded,
+                                title: 'No trending items right now',
                                 subtitle:
-                                    'Once a listing is nearing its deadline, it will show up here.',
-                                color: OpportunityDashboardPalette.error,
+                                    'Fresh recommendations will appear here as new listings arrive.',
+                                color: OpportunityDashboardPalette.primary,
                               ),
                             )
-                          : SliverList.separated(
-                              itemCount: closingSoonItems.length,
-                              separatorBuilder: (context, index) =>
-                                  const SizedBox(height: 10),
-                              itemBuilder: (context, index) {
-                                final opportunity = closingSoonItems[index];
-                                final urgencyColor = _closingSoonColor(
-                                  opportunity,
-                                );
+                          : SizedBox(
+                              height: trendingCardHeight,
+                              child: ListView.separated(
+                                scrollDirection: Axis.horizontal,
+                                padding: const EdgeInsets.only(right: 20),
+                                itemCount: trendingItems.length,
+                                separatorBuilder: (context, index) =>
+                                    const SizedBox(width: 12),
+                                itemBuilder: (context, index) {
+                                  final opportunity = trendingItems[index];
 
-                                return OpportunityListTile(
-                                  opportunity: opportunity,
-                                  typeLabel: OpportunityType.label(
-                                    opportunity.type,
-                                  ),
-                                  companyLocationText: _companyLocationText(
-                                    opportunity,
-                                  ),
-                                  compensationText: _compensationText(
-                                    opportunity,
-                                  ),
-                                  detailChips: [
-                                    _closingSoonText(opportunity),
-                                    ..._metadataItems(
-                                      opportunity,
-                                      maxItems: 3,
-                                    ).where(
-                                      (item) =>
-                                          item !=
-                                          _compensationText(opportunity),
+                                  return TrendingOpportunityCard(
+                                    opportunity: opportunity,
+                                    rank: index + 1,
+                                    typeLabel: OpportunityType.label(
+                                      opportunity.type,
                                     ),
-                                  ],
-                                  badgeText: 'URGENT',
-                                  badgeColor: urgencyColor,
-                                  statusColor: urgencyColor,
-                                  applicationStatus:
-                                      appliedStatuses[opportunity.id],
-                                  isSaved: savedIds.contains(opportunity.id),
-                                  isBusy: savedProvider.isLoading,
-                                  onTap: () => _openOpportunity(opportunity),
-                                  onToggleSaved: () =>
-                                      _toggleSavedOpportunity(opportunity),
-                                );
-                              },
+                                    trendLabel: _trendingSignalLabel(
+                                      opportunity,
+                                    ),
+                                    companyName: _companyNameOrNull(
+                                      opportunity,
+                                    ),
+                                    locationText: _locationLabel(opportunity),
+                                    detailChips: _trendingDetailChips(
+                                      opportunity,
+                                    ),
+                                    compensationText: _compensationText(
+                                      opportunity,
+                                    ),
+                                    applicationStatus:
+                                        appliedStatuses[opportunity.id],
+                                    isSaved: savedIds.contains(opportunity.id),
+                                    isBusy: savedProvider.isLoading,
+                                    onTap: () => _openOpportunity(opportunity),
+                                    onToggleSaved: () =>
+                                        _toggleSavedOpportunity(opportunity),
+                                  );
+                                },
+                              ),
                             ),
                     ),
-                  ],
-                ),
+                  ),
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
+                    sliver: SliverToBoxAdapter(
+                      key: _latestSectionKey,
+                      child: OpportunitySectionHeader(
+                        title: 'Latest Opportunities',
+                        subtitle:
+                            'The $_latestItemsLimit newest roles, internships, and sponsored tracks',
+                        accentColor: OpportunityDashboardPalette.success,
+                      ),
+                    ),
+                  ),
+                  if (latestItems.isEmpty)
+                    SliverPadding(
+                      padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+                      sliver: SliverToBoxAdapter(
+                        child: OpportunityDashboardEmptyState(
+                          icon: Icons.search_off_rounded,
+                          title: 'No opportunities found',
+                          subtitle:
+                              'Try adjusting your search or filters to uncover more matches.',
+                          color: OpportunityDashboardPalette.success,
+                        ),
+                      ),
+                    )
+                  else
+                    SliverPadding(
+                      padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+                      sliver: SliverList.separated(
+                        itemCount: latestItems.length,
+                        separatorBuilder: (context, index) =>
+                            const SizedBox(height: 8),
+                        itemBuilder: (context, index) {
+                          final opportunity = latestItems[index];
+                          return OpportunityListTile(
+                            opportunity: opportunity,
+                            typeLabel: OpportunityType.label(opportunity.type),
+                            companyLocationText: _companyLocationText(
+                              opportunity,
+                            ),
+                            compensationText: _compensationText(opportunity),
+                            detailChips: _latestStatusItems(opportunity),
+                            badgeText: _isNewOpportunity(opportunity)
+                                ? 'NEW'
+                                : null,
+                            badgeColor: OpportunityDashboardPalette.success,
+                            applicationStatus: appliedStatuses[opportunity.id],
+                            isSaved: savedIds.contains(opportunity.id),
+                            isBusy: savedProvider.isLoading,
+                            onTap: () => _openOpportunity(opportunity),
+                            onToggleSaved: () =>
+                                _toggleSavedOpportunity(opportunity),
+                          );
+                        },
+                      ),
+                    ),
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
+                    sliver: SliverToBoxAdapter(
+                      child: const OpportunitySectionHeader(
+                        title: 'Closing Soon',
+                        subtitle:
+                            'Urgent applications that need attention before they expire',
+                        accentColor: OpportunityDashboardPalette.error,
+                      ),
+                    ),
+                  ),
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+                    sliver: closingSoonItems.isEmpty
+                        ? SliverToBoxAdapter(
+                            child: OpportunityDashboardEmptyState(
+                              icon: Icons.hourglass_bottom_rounded,
+                              title: 'No urgent deadlines yet',
+                              subtitle:
+                                  'Once a listing is nearing its deadline, it will show up here.',
+                              color: OpportunityDashboardPalette.error,
+                            ),
+                          )
+                        : SliverList.separated(
+                            itemCount: closingSoonItems.length,
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(height: 10),
+                            itemBuilder: (context, index) {
+                              final opportunity = closingSoonItems[index];
+                              final urgencyColor = _closingSoonColor(
+                                opportunity,
+                              );
+
+                              return OpportunityListTile(
+                                opportunity: opportunity,
+                                typeLabel: OpportunityType.label(
+                                  opportunity.type,
+                                ),
+                                companyLocationText: _companyLocationText(
+                                  opportunity,
+                                ),
+                                compensationText: _compensationText(
+                                  opportunity,
+                                ),
+                                detailChips: [
+                                  _closingSoonText(opportunity),
+                                  ..._metadataItems(
+                                    opportunity,
+                                    maxItems: 3,
+                                  ).where(
+                                    (item) =>
+                                        item != _compensationText(opportunity),
+                                  ),
+                                ],
+                                badgeText: 'URGENT',
+                                badgeColor: urgencyColor,
+                                statusColor: urgencyColor,
+                                applicationStatus:
+                                    appliedStatuses[opportunity.id],
+                                isSaved: savedIds.contains(opportunity.id),
+                                isBusy: savedProvider.isLoading,
+                                onTap: () => _openOpportunity(opportunity),
+                                onToggleSaved: () =>
+                                    _toggleSavedOpportunity(opportunity),
+                              );
+                            },
+                          ),
+                  ),
+                ],
               ),
-      ),
+            ),
     );
+
+    if (widget.embedded) {
+      return scaffold;
+    }
+
+    return AppShellBackground(child: scaffold);
   }
 }
 

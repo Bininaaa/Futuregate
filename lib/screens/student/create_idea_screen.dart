@@ -9,6 +9,7 @@ import '../../providers/project_idea_provider.dart';
 import '../../services/file_storage_service.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/ideas/innovation_hub_theme.dart';
+import '../../widgets/student/student_workspace_shell.dart';
 
 class CreateIdeaScreen extends StatefulWidget {
   final ProjectIdeaModel? idea;
@@ -183,10 +184,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
 
       final adminProvider = context.read<AdminProvider>();
       error = widget.isEditMode && widget.idea != null
-          ? await adminProvider.updateAdminProjectIdea(
-              widget.idea!.id,
-              payload,
-            )
+          ? await adminProvider.updateAdminProjectIdea(widget.idea!.id, payload)
           : await adminProvider.createAdminProjectIdea(payload);
     } else if (widget.isEditMode && widget.idea != null) {
       error = await provider.updateProjectIdea(
@@ -250,8 +248,8 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
             widget.isEditMode
                 ? 'Idea updated successfully.'
                 : widget.isAdmin
-                    ? 'Idea published successfully.'
-                    : 'Idea submitted successfully.',
+                ? 'Idea published successfully.'
+                : 'Idea submitted successfully.',
           ),
         ),
       );
@@ -385,19 +383,20 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
     return AppShellBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          foregroundColor: InnovationHubPalette.textPrimary,
-          elevation: 0,
-          centerTitle: false,
-          title: Text(
-            widget.isEditMode
-                ? 'Edit Idea'
-                : widget.isAdmin
-                    ? 'Publish Idea'
-                    : 'Create Idea',
-            style: InnovationHubTypography.section(size: 20),
-          ),
+        appBar: StudentWorkspaceAppBar(
+          title: widget.isEditMode
+              ? 'Edit Idea'
+              : widget.isAdmin
+              ? 'Publish Idea'
+              : 'Create Idea',
+          subtitle: widget.isEditMode
+              ? 'Refine the concept, details, and team signals before updating.'
+              : 'Shape your idea clearly so it feels strong the moment it is submitted.',
+          icon: widget.isEditMode
+              ? Icons.edit_rounded
+              : Icons.lightbulb_rounded,
+          showBackButton: true,
+          onBack: () => Navigator.maybePop(context),
         ),
         bottomNavigationBar: SafeArea(
           minimum: const EdgeInsets.fromLTRB(20, 0, 20, 20),
@@ -996,8 +995,8 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
             widget.isEditMode
                 ? 'Refine your idea'
                 : widget.isAdmin
-                    ? 'Publish an idea'
-                    : 'Launch your next breakthrough',
+                ? 'Publish an idea'
+                : 'Launch your next breakthrough',
             style: InnovationHubTypography.title(color: Colors.white, size: 26),
           ),
           const SizedBox(height: 10),
