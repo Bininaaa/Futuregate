@@ -1176,9 +1176,21 @@ class _SponsoredOpportunityCard extends StatelessWidget {
     final innerRadius = BorderRadius.circular(20);
     final accentSurface = item.iconBackgroundColor;
     final accentColor = item.iconForegroundColor;
-    final warmTint = const Color(0xFFFFF2E2);
-    final warmGlow = const Color(0xFFF8C98B);
-    final warmStroke = const Color(0xFFE8B16A);
+    final warmTint = Color.lerp(
+      accentSurface,
+      const Color(0xFFFFF6EA),
+      0.72,
+    )!;
+    final warmGlow = Color.lerp(
+      accentColor,
+      const Color(0xFFF4C890),
+      0.48,
+    )!;
+    final warmStroke = Color.lerp(
+      accentColor,
+      const Color(0xFFE7BD8C),
+      0.68,
+    )!;
     final stats = <_SponsoredStatData>[
       if (item.primaryStat != null) item.primaryStat!,
       if (item.secondaryStat != null) item.secondaryStat!,
@@ -1195,9 +1207,9 @@ class _SponsoredOpportunityCard extends StatelessWidget {
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                Color.lerp(accentSurface, warmTint, 0.48)!,
+                const Color(0xFFFFFEFB),
                 warmTint,
-                Colors.white,
+                Color.lerp(accentSurface, Colors.white, 0.84)!,
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -1208,42 +1220,42 @@ class _SponsoredOpportunityCard extends StatelessWidget {
                 accentColor,
                 warmStroke,
                 0.55,
-              )!.withValues(alpha: 0.16),
+              )!.withValues(alpha: 0.20),
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
-                blurRadius: 16,
-                offset: const Offset(0, 8),
+                color: Colors.black.withValues(alpha: 0.04),
+                blurRadius: 18,
+                offset: const Offset(0, 9),
               ),
               BoxShadow(
-                color: accentColor.withValues(alpha: 0.08),
-                blurRadius: 8,
-                offset: const Offset(0, 4),
-              ),
-              BoxShadow(
-                color: warmStroke.withValues(alpha: 0.10),
+                color: accentColor.withValues(alpha: 0.06),
                 blurRadius: 14,
-                offset: const Offset(0, 7),
+                offset: const Offset(0, 5),
+              ),
+              BoxShadow(
+                color: warmGlow.withValues(alpha: 0.10),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
               ),
             ],
           ),
           child: Stack(
             children: [
               Positioned(
-                top: -36,
+                top: -30,
                 right: -16,
                 child: _SponsoredCardGlow(
-                  size: 104,
-                  color: warmGlow.withValues(alpha: 0.28),
+                  size: 96,
+                  color: warmGlow.withValues(alpha: 0.20),
                 ),
               ),
               Positioned(
-                bottom: -42,
-                left: -20,
+                bottom: -36,
+                left: -16,
                 child: _SponsoredCardGlow(
-                  size: 110,
-                  color: warmGlow.withValues(alpha: 0.18),
+                  size: 98,
+                  color: accentSurface.withValues(alpha: 0.18),
                 ),
               ),
               Padding(
@@ -1251,7 +1263,10 @@ class _SponsoredOpportunityCard extends StatelessWidget {
                 child: Container(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [Colors.white, warmTint.withValues(alpha: 0.56)],
+                      colors: [
+                        Colors.white,
+                        Color.lerp(warmTint, Colors.white, 0.38)!,
+                      ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
@@ -1276,9 +1291,9 @@ class _SponsoredOpportunityCard extends StatelessWidget {
                             ),
                             gradient: LinearGradient(
                               colors: [
-                                warmGlow.withValues(alpha: 0.24),
-                                accentSurface.withValues(alpha: 0.42),
-                                accentSurface.withValues(alpha: 0.10),
+                                warmGlow.withValues(alpha: 0.18),
+                                accentSurface.withValues(alpha: 0.26),
+                                Colors.white.withValues(alpha: 0.16),
                                 Colors.transparent,
                               ],
                               begin: Alignment.topLeft,
@@ -1292,7 +1307,7 @@ class _SponsoredOpportunityCard extends StatelessWidget {
                         right: -14,
                         child: _SponsoredCardGlow(
                           size: 84,
-                          color: Colors.white.withValues(alpha: 0.76),
+                          color: warmTint.withValues(alpha: 0.34),
                         ),
                       ),
                       Positioned(
@@ -1305,7 +1320,7 @@ class _SponsoredOpportunityCard extends StatelessWidget {
                             accentColor,
                             warmStroke,
                             0.65,
-                          )!.withValues(alpha: 0.08),
+                          )!.withValues(alpha: 0.06),
                         ),
                       ),
                       Padding(

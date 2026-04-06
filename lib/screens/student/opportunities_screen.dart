@@ -1544,7 +1544,9 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
     final applicationProvider = context.watch<ApplicationProvider>();
     final appliedStatuses = applicationProvider.appliedStatusMap;
     final textScale = MediaQuery.textScalerOf(context).scale(1);
-    final trendingCardHeight = textScale > 1.08 ? 210.0 : 194.0;
+    final isCompactTrendingLayout =
+        MediaQuery.sizeOf(context).width < 380 || textScale > 1.08;
+    final trendingCardHeight = isCompactTrendingLayout ? 226.0 : 208.0;
 
     final allOpportunities = opportunityProvider.opportunities;
     final visibleOpportunities = _applyFilters(allOpportunities);
