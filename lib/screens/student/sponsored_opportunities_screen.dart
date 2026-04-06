@@ -9,6 +9,7 @@ import '../../providers/auth_provider.dart';
 import '../../providers/cv_provider.dart';
 import '../../providers/opportunity_provider.dart';
 import '../../services/application_service.dart';
+import '../../utils/application_status.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
@@ -97,8 +98,20 @@ class _SponsoredOpportunitiesScreenState
 
   Future<void> _loadData({bool force = false}) async {
     final provider = context.read<OpportunityProvider>();
+    final applicationProvider = context.read<ApplicationProvider>();
+    final userId = context.read<AuthProvider>().userModel?.uid;
+
+    final futures = <Future<void>>[];
     if (force || provider.opportunities.isEmpty) {
-      await provider.fetchOpportunities();
+      futures.add(provider.fetchOpportunities());
+    }
+
+    if (userId != null && userId.isNotEmpty) {
+      futures.add(applicationProvider.fetchSubmittedApplications(userId));
+    }
+
+    if (futures.isNotEmpty) {
+      await Future.wait(futures);
     }
   }
 
@@ -210,6 +223,47 @@ class _SponsoredOpportunitiesScreenState
       case ApplicationEligibilityStatus.unavailable:
         return 'This opportunity is no longer available';
     }
+  }
+
+  _SponsoredActionState _actionStateForOpportunity(
+    OpportunityModel? opportunity,
+    Map<String, String> appliedStatuses,
+  ) {
+    if (opportunity == null) {
+      return const _SponsoredActionState(
+        label: 'Preview',
+        color: Color(0xFF94A3B8),
+        icon: Icons.remove_red_eye_outlined,
+      );
+    }
+
+    final applicationStatus = appliedStatuses[opportunity.id];
+    if (applicationStatus != null) {
+      return _SponsoredActionState(
+        label: ApplicationStatus.label(applicationStatus),
+        color: ApplicationStatus.color(applicationStatus),
+        icon: _sponsoredApplicationStatusIcon(applicationStatus),
+      );
+    }
+
+    if (opportunity.isHidden) {
+      return const _SponsoredActionState(
+        label: 'Unavailable',
+        color: Color(0xFF94A3B8),
+        icon: Icons.visibility_off_rounded,
+      );
+    }
+
+    final normalizedStatus = opportunity.status.trim().toLowerCase();
+    if (normalizedStatus.isNotEmpty && normalizedStatus != 'open') {
+      return const _SponsoredActionState(
+        label: 'Closed',
+        color: Color(0xFF94A3B8),
+        icon: Icons.lock_outline_rounded,
+      );
+    }
+
+    return const _SponsoredActionState(label: 'Apply Now');
   }
 
   List<_SponsoredOpportunityCardModel> _buildCardModels(
@@ -663,14 +717,8 @@ class _SponsoredOpportunitiesScreenState
     if (filters.contains(_SponsoredFilter.startup)) {
       return const _SponsoredStatData(label: 'TRACK', value: 'Startup');
     }
-    if (filters.contains(_SponsoredFilter.competition)) {
-      return const _SponsoredStatData(label: 'FORMAT', value: 'Competition');
-    }
-    if (filters.contains(_SponsoredFilter.internships)) {
-      return const _SponsoredStatData(label: 'FORMAT', value: 'Internship');
-    }
 
-    return const _SponsoredStatData(label: 'FORMAT', value: 'Sponsored');
+    return null;
   }
 
   _SponsoredStatData? _secondaryStatFor(OpportunityModel opportunity) {
@@ -754,10 +802,12 @@ class _SponsoredOpportunitiesScreenState
 
   @override
   Widget build(BuildContext context) {
+    final applicationProvider = context.watch<ApplicationProvider>();
     final opportunityProvider = context.watch<OpportunityProvider>();
     final allOpportunities = opportunityProvider.opportunities;
     final allCards = _buildCardModels(allOpportunities);
     final visibleCards = _applyFilters(allCards);
+    final appliedStatuses = applicationProvider.appliedStatusMap;
 
     return AppShellBackground(
       child: Scaffold(
@@ -866,21 +916,28 @@ class _SponsoredOpportunitiesScreenState
                     sliver: SliverList.separated(
                       itemCount: visibleCards.length,
                       separatorBuilder: (context, index) =>
-                          const SizedBox(height: 10),
+                          const SizedBox(height: 8),
                       itemBuilder: (context, index) {
                         final item = visibleCards[index];
                         final opportunity = item.opportunity;
                         final isBusy =
                             opportunity != null &&
                             _busyApplyIds.contains(opportunity.id);
+                        final actionState = _actionStateForOpportunity(
+                          opportunity,
+                          appliedStatuses,
+                        );
 
                         return _SponsoredOpportunityCard(
                           item: item,
                           isApplying: isBusy,
+                          actionState: actionState,
                           onTap: opportunity == null
                               ? null
                               : () => _openOpportunity(opportunity),
-                          onApply: () => _applyNow(item),
+                          onApply: actionState.isEnabled
+                              ? () => _applyNow(item)
+                              : null,
                           onViewDetails: opportunity == null
                               ? null
                               : () => _openOpportunity(opportunity),
@@ -1099,13 +1156,15 @@ class _SponsoredFilterChip extends StatelessWidget {
 class _SponsoredOpportunityCard extends StatelessWidget {
   final _SponsoredOpportunityCardModel item;
   final bool isApplying;
+  final _SponsoredActionState actionState;
   final VoidCallback? onTap;
-  final VoidCallback onApply;
+  final VoidCallback? onApply;
   final VoidCallback? onViewDetails;
 
   const _SponsoredOpportunityCard({
     required this.item,
     required this.isApplying,
+    required this.actionState,
     required this.onTap,
     required this.onApply,
     required this.onViewDetails,
@@ -1113,13 +1172,17 @@ class _SponsoredOpportunityCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final outerRadius = BorderRadius.circular(26);
-    final innerRadius = BorderRadius.circular(24);
+    final outerRadius = BorderRadius.circular(22);
+    final innerRadius = BorderRadius.circular(20);
     final accentSurface = item.iconBackgroundColor;
     final accentColor = item.iconForegroundColor;
     final warmTint = const Color(0xFFFFF2E2);
     final warmGlow = const Color(0xFFF8C98B);
     final warmStroke = const Color(0xFFE8B16A);
+    final stats = <_SponsoredStatData>[
+      if (item.primaryStat != null) item.primaryStat!,
+      if (item.secondaryStat != null) item.secondaryStat!,
+    ];
 
     return Material(
       color: Colors.transparent,
@@ -1150,36 +1213,36 @@ class _SponsoredOpportunityCard extends StatelessWidget {
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.05),
-                blurRadius: 18,
-                offset: const Offset(0, 10),
+                blurRadius: 16,
+                offset: const Offset(0, 8),
               ),
               BoxShadow(
                 color: accentColor.withValues(alpha: 0.08),
-                blurRadius: 10,
+                blurRadius: 8,
                 offset: const Offset(0, 4),
               ),
               BoxShadow(
                 color: warmStroke.withValues(alpha: 0.10),
-                blurRadius: 16,
-                offset: const Offset(0, 8),
+                blurRadius: 14,
+                offset: const Offset(0, 7),
               ),
             ],
           ),
           child: Stack(
             children: [
               Positioned(
-                top: -42,
+                top: -36,
                 right: -16,
                 child: _SponsoredCardGlow(
-                  size: 120,
+                  size: 104,
                   color: warmGlow.withValues(alpha: 0.28),
                 ),
               ),
               Positioned(
-                bottom: -52,
+                bottom: -42,
                 left: -20,
                 child: _SponsoredCardGlow(
-                  size: 128,
+                  size: 110,
                   color: warmGlow.withValues(alpha: 0.18),
                 ),
               ),
@@ -1206,7 +1269,7 @@ class _SponsoredOpportunityCard extends StatelessWidget {
                         top: 0,
                         right: 0,
                         child: Container(
-                          height: 92,
+                          height: 74,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.vertical(
                               top: Radius.circular(innerRadius.topLeft.x),
@@ -1225,10 +1288,10 @@ class _SponsoredOpportunityCard extends StatelessWidget {
                         ),
                       ),
                       Positioned(
-                        top: -20,
+                        top: -16,
                         right: -14,
                         child: _SponsoredCardGlow(
-                          size: 96,
+                          size: 84,
                           color: Colors.white.withValues(alpha: 0.76),
                         ),
                       ),
@@ -1237,7 +1300,7 @@ class _SponsoredOpportunityCard extends StatelessWidget {
                         bottom: -10,
                         child: Icon(
                           item.iconData,
-                          size: 84,
+                          size: 72,
                           color: Color.lerp(
                             accentColor,
                             warmStroke,
@@ -1246,7 +1309,7 @@ class _SponsoredOpportunityCard extends StatelessWidget {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+                        padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -1258,37 +1321,37 @@ class _SponsoredOpportunityCard extends StatelessWidget {
                                 _SponsoredStatusBadge(badge: item.badge),
                               ],
                             ),
-                            const SizedBox(height: 14),
+                            const SizedBox(height: 10),
                             Text(
                               item.title,
-                              maxLines: 3,
+                              maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: GoogleFonts.poppins(
-                                fontSize: 16.8,
+                                fontSize: 15.6,
                                 fontWeight: FontWeight.w700,
-                                height: 1.18,
+                                height: 1.15,
                                 color: OpportunityDashboardPalette.textPrimary,
                               ),
                             ),
-                            const SizedBox(height: 8),
+                            const SizedBox(height: 4),
                             Text(
-                              item.description,
-                              maxLines: 4,
+                              item.companyName,
+                              maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: GoogleFonts.poppins(
-                                fontSize: 12,
+                                fontSize: 11.4,
                                 fontWeight: FontWeight.w500,
-                                height: 1.45,
+                                height: 1.25,
                                 color:
                                     OpportunityDashboardPalette.textSecondary,
                               ),
                             ),
                             if (item.urgency != null) ...[
-                              const SizedBox(height: 12),
+                              const SizedBox(height: 10),
                               Container(
                                 padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 8,
+                                  horizontal: 9,
+                                  vertical: 6,
                                 ),
                                 decoration: BoxDecoration(
                                   color: item.urgency!.color.withValues(
@@ -1306,15 +1369,15 @@ class _SponsoredOpportunityCard extends StatelessWidget {
                                   children: [
                                     Icon(
                                       item.urgency!.icon,
-                                      size: 14,
+                                      size: 13,
                                       color: item.urgency!.color,
                                     ),
-                                    const SizedBox(width: 6),
+                                    const SizedBox(width: 5),
                                     Flexible(
                                       child: Text(
                                         item.urgency!.text,
                                         style: GoogleFonts.poppins(
-                                          fontSize: 11.3,
+                                          fontSize: 10.6,
                                           fontWeight: FontWeight.w600,
                                           color: item.urgency!.color,
                                         ),
@@ -1324,35 +1387,32 @@ class _SponsoredOpportunityCard extends StatelessWidget {
                                 ),
                               ),
                             ],
-                            if (item.primaryStat != null) ...[
-                              const SizedBox(height: 14),
+                            if (stats.isNotEmpty) ...[
+                              const SizedBox(height: 10),
                               Row(
                                 children: [
-                                  Expanded(
-                                    child: _SponsoredStatBox(
-                                      stat: item.primaryStat!,
-                                      accentColor: accentSurface,
-                                    ),
-                                  ),
-                                  if (item.secondaryStat != null) ...[
-                                    const SizedBox(width: 12),
+                                  for (var index = 0; index < stats.length; index++) ...[
                                     Expanded(
                                       child: _SponsoredStatBox(
-                                        stat: item.secondaryStat!,
+                                        stat: stats[index],
                                         accentColor: accentSurface,
                                       ),
                                     ),
+                                    if (index != stats.length - 1)
+                                      const SizedBox(width: 10),
                                   ],
                                 ],
                               ),
                             ],
-                            const SizedBox(height: 16),
+                            const SizedBox(height: 12),
                             _SponsoredPrimaryActionButton(
-                              label: 'Apply Now',
+                              label: actionState.label,
+                              icon: actionState.icon,
+                              accentColor: actionState.color,
                               isLoading: isApplying,
                               onTap: onApply,
                             ),
-                            const SizedBox(height: 8),
+                            const SizedBox(height: 6),
                             _SponsoredSecondaryActionButton(
                               label: 'View Details',
                               onTap: onViewDetails,
@@ -1380,36 +1440,36 @@ class _SponsoredIconTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 50,
-      height: 50,
+      width: 44,
+      height: 44,
       padding: const EdgeInsets.all(2),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: item.iconBackgroundColor),
         boxShadow: [
           BoxShadow(
             color: item.iconForegroundColor.withValues(alpha: 0.08),
-            blurRadius: 14,
-            offset: const Offset(0, 8),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
       child: Container(
         decoration: BoxDecoration(
           color: item.iconBackgroundColor,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(14),
         ),
         clipBehavior: Clip.antiAlias,
         child: item.logoUrl.isEmpty
-            ? Icon(item.iconData, color: item.iconForegroundColor, size: 26)
+            ? Icon(item.iconData, color: item.iconForegroundColor, size: 22)
             : CachedNetworkImage(
                 imageUrl: item.logoUrl,
                 fit: BoxFit.cover,
                 errorWidget: (context, url, error) => Icon(
                   item.iconData,
                   color: item.iconForegroundColor,
-                  size: 26,
+                  size: 22,
                 ),
               ),
       ),
@@ -1425,7 +1485,7 @@ class _SponsoredStatusBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
         color: badge.backgroundColor,
         borderRadius: BorderRadius.circular(999),
@@ -1436,9 +1496,9 @@ class _SponsoredStatusBadge extends StatelessWidget {
       child: Text(
         badge.label,
         style: GoogleFonts.poppins(
-          fontSize: 9.5,
+          fontSize: 8.8,
           fontWeight: FontWeight.w700,
-          letterSpacing: 0.35,
+          letterSpacing: 0.3,
           color: badge.foregroundColor,
         ),
       ),
@@ -1458,7 +1518,7 @@ class _SponsoredStatBox extends StatelessWidget {
     final warmStroke = const Color(0xFFE9B87A);
 
     return Container(
-      padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
+      padding: const EdgeInsets.fromLTRB(11, 9, 11, 9),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -1485,19 +1545,19 @@ class _SponsoredStatBox extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: GoogleFonts.poppins(
-              fontSize: 9.5,
+              fontSize: 8.8,
               fontWeight: FontWeight.w700,
-              letterSpacing: 0.45,
+              letterSpacing: 0.35,
               color: OpportunityDashboardPalette.textSecondary,
             ),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 4),
           Text(
             stat.value,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: GoogleFonts.poppins(
-              fontSize: 13.5,
+              fontSize: 12.6,
               fontWeight: FontWeight.w700,
               height: 1.2,
               color: OpportunityDashboardPalette.textPrimary,
@@ -1511,43 +1571,59 @@ class _SponsoredStatBox extends StatelessWidget {
 
 class _SponsoredPrimaryActionButton extends StatelessWidget {
   final String label;
+  final IconData? icon;
+  final Color? accentColor;
   final bool isLoading;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   const _SponsoredPrimaryActionButton({
     required this.label,
+    this.icon,
+    this.accentColor,
     required this.isLoading,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    final resolvedGradient = accentColor == null
+        ? (isLoading
+              ? [
+                  OpportunityDashboardPalette.primary.withValues(alpha: 0.55),
+                  OpportunityDashboardPalette.primaryDark.withValues(
+                    alpha: 0.55,
+                  ),
+                ]
+              : const [
+                  OpportunityDashboardPalette.primary,
+                  OpportunityDashboardPalette.primaryDark,
+                ])
+        : [
+            Color.alphaBlend(
+              accentColor!.withValues(alpha: 0.18),
+              Colors.white,
+            ),
+            accentColor!.withValues(alpha: 0.32),
+          ];
+    final resolvedTextColor = accentColor == null ? Colors.white : accentColor!;
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: isLoading ? null : onTap,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(16),
         child: Ink(
-          height: 46,
+          height: 40,
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: isLoading
-                  ? [
-                      OpportunityDashboardPalette.primary.withValues(
-                        alpha: 0.55,
-                      ),
-                      OpportunityDashboardPalette.primaryDark.withValues(
-                        alpha: 0.55,
-                      ),
-                    ]
-                  : const [
-                      OpportunityDashboardPalette.primary,
-                      OpportunityDashboardPalette.primaryDark,
-                    ],
+              colors: resolvedGradient,
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
             ),
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(16),
+            border: accentColor == null
+                ? null
+                : Border.all(color: accentColor!.withValues(alpha: 0.18)),
           ),
           child: Center(
             child: isLoading
@@ -1559,19 +1635,51 @@ class _SponsoredPrimaryActionButton extends StatelessWidget {
                       valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                     ),
                   )
-                : Text(
-                    label,
-                    style: GoogleFonts.poppins(
-                      fontSize: 13.5,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                    ),
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (icon != null) ...[
+                        Icon(icon, size: 15, color: resolvedTextColor),
+                        const SizedBox(width: 6),
+                      ],
+                      Text(
+                        label,
+                        style: GoogleFonts.poppins(
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.w700,
+                          color: resolvedTextColor,
+                        ),
+                      ),
+                    ],
                   ),
           ),
         ),
       ),
     );
   }
+}
+
+IconData _sponsoredApplicationStatusIcon(String status) {
+  switch (ApplicationStatus.parse(status)) {
+    case ApplicationStatus.accepted:
+      return Icons.check_circle_rounded;
+    case ApplicationStatus.rejected:
+      return Icons.cancel_rounded;
+    case ApplicationStatus.pending:
+    default:
+      return Icons.hourglass_top_rounded;
+  }
+}
+
+class _SponsoredActionState {
+  final String label;
+  final Color? color;
+  final IconData? icon;
+
+  const _SponsoredActionState({required this.label, this.color, this.icon});
+
+  bool get isEnabled => color == null;
 }
 
 class _SponsoredSecondaryActionButton extends StatelessWidget {
@@ -1589,19 +1697,19 @@ class _SponsoredSecondaryActionButton extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(16),
         child: Ink(
-          height: 44,
+          height: 38,
           decoration: BoxDecoration(
             color: const Color(0xFFFFF7ED),
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(14),
             border: Border.all(color: const Color(0xFFF3D2A6)),
           ),
           child: Center(
             child: Text(
               label,
               style: GoogleFonts.poppins(
-                fontSize: 13,
+                fontSize: 12,
                 fontWeight: FontWeight.w700,
                 color: const Color(0xFFD48827),
               ),

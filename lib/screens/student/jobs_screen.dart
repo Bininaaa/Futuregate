@@ -5,10 +5,12 @@ import 'package:provider/provider.dart';
 
 import '../../models/opportunity_model.dart';
 import '../../models/user_model.dart';
+import '../../providers/application_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/notification_provider.dart';
 import '../../providers/opportunity_provider.dart';
 import '../../providers/saved_opportunity_provider.dart';
+import '../../utils/application_status.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
@@ -186,14 +188,14 @@ class _JobsScreenState extends State<JobsScreen> {
   Future<void> _loadData({bool force = false}) async {
     final opportunityProvider = context.read<OpportunityProvider>();
     final savedProvider = context.read<SavedOpportunityProvider>();
+    final applicationProvider = context.read<ApplicationProvider>();
     final userId = context.read<AuthProvider>().userModel?.uid;
 
     final futures = <Future<void>>[opportunityProvider.fetchOpportunities()];
 
-    if (userId != null &&
-        userId.isNotEmpty &&
-        (force || savedProvider.savedOpportunities.isEmpty)) {
+    if (userId != null && userId.isNotEmpty) {
       futures.add(savedProvider.fetchSavedOpportunities(userId));
+      futures.add(applicationProvider.fetchSubmittedApplications(userId));
     }
 
     await Future.wait(futures);
@@ -208,6 +210,88 @@ class _JobsScreenState extends State<JobsScreen> {
 
   void _openOpportunity(OpportunityModel opportunity) {
     OpportunityDetailScreen.show(context, opportunity);
+  }
+
+  Future<void> _toggleSavedOpportunity(OpportunityModel opportunity) async {
+    final authProvider = context.read<AuthProvider>();
+    final savedProvider = context.read<SavedOpportunityProvider>();
+    final messenger = ScaffoldMessenger.of(context);
+    final userId = authProvider.userModel?.uid;
+
+    if (userId == null || userId.isEmpty) {
+      messenger.showSnackBar(
+        const SnackBar(
+          content: Text('You must be logged in to save opportunities'),
+        ),
+      );
+      return;
+    }
+
+    final matchingSaved = savedProvider.savedOpportunities
+        .where((item) => item.opportunityId == opportunity.id)
+        .toList();
+    final existingSaved = matchingSaved.isNotEmpty ? matchingSaved.first : null;
+
+    String? error;
+    var message = 'Opportunity saved';
+
+    if (existingSaved != null) {
+      error = await savedProvider.unsaveOpportunity(existingSaved.id, userId);
+      message = 'Removed from saved opportunities';
+    } else {
+      error = await savedProvider.saveOpportunity(
+        studentId: userId,
+        opportunityId: opportunity.id,
+        title: opportunity.title,
+        companyName: opportunity.companyName,
+        type: opportunity.type,
+        location: opportunity.location,
+        deadline: opportunity.deadlineLabel,
+      );
+    }
+
+    if (!mounted) {
+      return;
+    }
+
+    messenger.showSnackBar(SnackBar(content: Text(error ?? message)));
+  }
+
+  _JobStatusData? _statusDataForOpportunity(
+    OpportunityModel? opportunity,
+    Map<String, String> appliedStatuses,
+  ) {
+    if (opportunity == null) {
+      return null;
+    }
+
+    final applicationStatus = appliedStatuses[opportunity.id];
+    if (applicationStatus != null) {
+      return _JobStatusData(
+        label: ApplicationStatus.label(applicationStatus),
+        color: ApplicationStatus.color(applicationStatus),
+        icon: _jobApplicationStatusIcon(applicationStatus),
+      );
+    }
+
+    if (opportunity.isHidden) {
+      return const _JobStatusData(
+        label: 'Unavailable',
+        color: Color(0xFF64748B),
+        icon: Icons.visibility_off_rounded,
+      );
+    }
+
+    final normalizedStatus = opportunity.status.trim().toLowerCase();
+    if (normalizedStatus.isNotEmpty && normalizedStatus != 'open') {
+      return const _JobStatusData(
+        label: 'Closed',
+        color: Color(0xFF64748B),
+        icon: Icons.lock_outline_rounded,
+      );
+    }
+
+    return null;
   }
 
   List<_JobCardData> _buildJobCards(OpportunityProvider provider) {
@@ -909,8 +993,10 @@ class _JobsScreenState extends State<JobsScreen> {
   @override
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
+    final applicationProvider = context.watch<ApplicationProvider>();
     final notificationProvider = context.watch<NotificationProvider>();
     final opportunityProvider = context.watch<OpportunityProvider>();
+    final savedProvider = context.watch<SavedOpportunityProvider>();
     final mediaQuery = MediaQuery.of(context);
     final screenSize = mediaQuery.size;
     final viewPadding = mediaQuery.viewPadding;
@@ -977,6 +1063,10 @@ class _JobsScreenState extends State<JobsScreen> {
     final filteredJobs = _applyFilters(allJobs);
     final featuredJobs = _selectFeaturedJobs(filteredJobs);
     final availableRoles = _selectAvailableRoles(filteredJobs);
+    final appliedStatuses = applicationProvider.appliedStatusMap;
+    final savedIds = savedProvider.savedOpportunities
+        .map((item) => item.opportunityId)
+        .toSet();
     final showLoadingBar =
         opportunityProvider.isLoading &&
         opportunityProvider.opportunities.isNotEmpty;
@@ -1181,16 +1271,30 @@ class _JobsScreenState extends State<JobsScreen> {
                           SizedBox(width: featuredSpacing),
                       itemBuilder: (context, index) {
                         final job = featuredJobs[index];
+                        final statusData = _statusDataForOpportunity(
+                          job.opportunity,
+                          appliedStatuses,
+                        );
                         return SizedBox(
                           width: screenSize.width * featuredCardWidthFactor,
                           child: _FeaturedJobCard(
                             job: job,
                             style: _featuredStyleFor(index),
                             compact: isCompact,
+                            statusData: statusData,
+                            isSaved:
+                                job.opportunity != null &&
+                                savedIds.contains(job.opportunity!.id),
+                            isSaveBusy: savedProvider.isLoading,
+                            onToggleSaved: job.opportunity == null
+                                ? null
+                                : () =>
+                                      _toggleSavedOpportunity(job.opportunity!),
                             onTap: job.opportunity == null
                                 ? null
                                 : () => _openOpportunity(job.opportunity!),
-                            onApply: job.opportunity == null
+                            onApply:
+                                job.opportunity == null || statusData != null
                                 ? null
                                 : () => _openOpportunity(job.opportunity!),
                           ),
@@ -1253,9 +1357,21 @@ class _JobsScreenState extends State<JobsScreen> {
                   sliver: SliverGrid(
                     delegate: SliverChildBuilderDelegate((context, index) {
                       final job = availableRoles[index];
+                      final statusData = _statusDataForOpportunity(
+                        job.opportunity,
+                        appliedStatuses,
+                      );
                       return _AvailableRoleCard(
                         job: job,
                         compact: isCompact,
+                        statusData: statusData,
+                        isSaved:
+                            job.opportunity != null &&
+                            savedIds.contains(job.opportunity!.id),
+                        isSaveBusy: savedProvider.isLoading,
+                        onToggleSaved: job.opportunity == null
+                            ? null
+                            : () => _toggleSavedOpportunity(job.opportunity!),
                         onTap: job.opportunity == null
                             ? null
                             : () => _openOpportunity(job.opportunity!),
@@ -1280,6 +1396,10 @@ class _JobsScreenState extends State<JobsScreen> {
                   sliver: SliverList(
                     delegate: SliverChildBuilderDelegate((context, index) {
                       final job = availableRoles[index];
+                      final statusData = _statusDataForOpportunity(
+                        job.opportunity,
+                        appliedStatuses,
+                      );
                       return Padding(
                         padding: EdgeInsets.only(
                           bottom: index == availableRoles.length - 1 ? 0 : 12,
@@ -1287,6 +1407,14 @@ class _JobsScreenState extends State<JobsScreen> {
                         child: _PurpleAvailableRoleListCard(
                           job: job,
                           compact: isCompact,
+                          statusData: statusData,
+                          isSaved:
+                              job.opportunity != null &&
+                              savedIds.contains(job.opportunity!.id),
+                          isSaveBusy: savedProvider.isLoading,
+                          onToggleSaved: job.opportunity == null
+                              ? null
+                              : () => _toggleSavedOpportunity(job.opportunity!),
                           onTap: job.opportunity == null
                               ? null
                               : () => _openOpportunity(job.opportunity!),
@@ -1308,11 +1436,19 @@ class _PurpleAvailableRoleListCard extends StatelessWidget {
   final _JobCardData job;
   final VoidCallback? onTap;
   final bool compact;
+  final _JobStatusData? statusData;
+  final bool isSaved;
+  final bool isSaveBusy;
+  final VoidCallback? onToggleSaved;
 
   const _PurpleAvailableRoleListCard({
     required this.job,
     this.onTap,
     required this.compact,
+    this.statusData,
+    required this.isSaved,
+    required this.isSaveBusy,
+    this.onToggleSaved,
   });
 
   String _supportingLine() {
@@ -1517,29 +1653,62 @@ class _PurpleAvailableRoleListCard extends StatelessWidget {
                               runSpacing: compact ? 3 : 4,
                               children: metadataItems,
                             ),
+                            if (statusData != null) ...[
+                              SizedBox(height: compact ? 6 : 7),
+                              _JobStatusChip(
+                                label: statusData!.label,
+                                color: statusData!.color,
+                                icon: statusData!.icon,
+                                compact: compact,
+                              ),
+                            ],
                           ],
                         ),
                       ),
                       SizedBox(width: compact ? 8 : 10),
-                      Align(
-                        alignment: Alignment.center,
-                        child: Container(
-                          width: compact ? 28 : 30,
-                          height: compact ? 28 : 30,
-                          decoration: BoxDecoration(
-                            color: palette.chipTextColor.withValues(
-                              alpha: 0.10,
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _JobSaveButton(
+                            isBusy: isSaveBusy,
+                            isSaved: isSaved,
+                            onPressed: onToggleSaved,
+                            size: compact ? 28 : 30,
+                            iconSize: compact ? 15 : 16,
+                            activeColor: palette.chipTextColor,
+                            inactiveColor: palette.chipTextColor.withValues(
+                              alpha: 0.78,
                             ),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            Icons.arrow_forward_rounded,
-                            color: palette.chipTextColor.withValues(
-                              alpha: 0.82,
+                            backgroundColor: Colors.white.withValues(
+                              alpha: 0.70,
                             ),
-                            size: compact ? 15 : 16,
+                            borderColor: palette.chipTextColor.withValues(
+                              alpha: 0.12,
+                            ),
+                            spinnerColor: palette.chipTextColor,
                           ),
-                        ),
+                          SizedBox(height: compact ? 7 : 8),
+                          Align(
+                            alignment: Alignment.center,
+                            child: Container(
+                              width: compact ? 28 : 30,
+                              height: compact ? 28 : 30,
+                              decoration: BoxDecoration(
+                                color: palette.chipTextColor.withValues(
+                                  alpha: 0.10,
+                                ),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                Icons.arrow_forward_rounded,
+                                color: palette.chipTextColor.withValues(
+                                  alpha: 0.82,
+                                ),
+                                size: compact ? 15 : 16,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -2097,6 +2266,10 @@ class _FeaturedJobCard extends StatelessWidget {
   final VoidCallback? onTap;
   final VoidCallback? onApply;
   final bool compact;
+  final _JobStatusData? statusData;
+  final bool isSaved;
+  final bool isSaveBusy;
+  final VoidCallback? onToggleSaved;
 
   const _FeaturedJobCard({
     required this.job,
@@ -2104,6 +2277,10 @@ class _FeaturedJobCard extends StatelessWidget {
     this.onTap,
     this.onApply,
     required this.compact,
+    this.statusData,
+    required this.isSaved,
+    required this.isSaveBusy,
+    this.onToggleSaved,
   });
 
   String? _displayMetadataLine() {
@@ -2392,6 +2569,9 @@ class _FeaturedJobCard extends StatelessWidget {
         final borderRadiusValue = isTight ? 24.0 : 30.0;
         final cardRadius = BorderRadius.circular(borderRadiusValue);
         final footerButtonCompact = compact || denseLayout;
+        final actionLabel =
+            statusData?.label ??
+            (job.opportunity == null ? 'Preview' : 'Apply Now');
         final salaryLabel = !hasFooterSalary
             ? null
             : Row(
@@ -2430,6 +2610,9 @@ class _FeaturedJobCard extends StatelessWidget {
                     alignment: Alignment.centerRight,
                     child: _ApplyNowButton(
                       onTap: onApply,
+                      label: actionLabel,
+                      icon: statusData?.icon,
+                      accentColor: statusData?.color,
                       backgroundColors: style.buttonGradientColors,
                       textColor: style.buttonTextColor,
                       compact: footerButtonCompact,
@@ -2450,6 +2633,9 @@ class _FeaturedJobCard extends StatelessWidget {
                   SizedBox(width: isTight ? 10 : 12),
                   _ApplyNowButton(
                     onTap: onApply,
+                    label: actionLabel,
+                    icon: statusData?.icon,
+                    accentColor: statusData?.color,
                     backgroundColors: style.buttonGradientColors,
                     textColor: style.buttonTextColor,
                     compact: footerButtonCompact,
@@ -2543,6 +2729,29 @@ class _FeaturedJobCard extends StatelessWidget {
                                 ),
                               ),
                               const Spacer(),
+                              _JobSaveButton(
+                                isBusy: isSaveBusy,
+                                isSaved: isSaved,
+                                onPressed: onToggleSaved,
+                                size: denseLayout
+                                    ? (isTight ? 30 : 32)
+                                    : (isTight ? 32 : 34),
+                                iconSize: denseLayout
+                                    ? (isTight ? 15 : 16)
+                                    : (isTight ? 16 : 18),
+                                activeColor: Colors.white,
+                                inactiveColor: Colors.white.withValues(
+                                  alpha: 0.90,
+                                ),
+                                backgroundColor: Colors.white.withValues(
+                                  alpha: 0.14,
+                                ),
+                                borderColor: Colors.white.withValues(
+                                  alpha: 0.18,
+                                ),
+                                spinnerColor: Colors.white,
+                              ),
+                              SizedBox(width: isTight ? 8 : 10),
                               Container(
                                 padding: EdgeInsets.symmetric(
                                   horizontal: denseLayout
@@ -2644,12 +2853,18 @@ class _FeaturedJobCard extends StatelessWidget {
 
 class _ApplyNowButton extends StatelessWidget {
   final VoidCallback? onTap;
+  final String label;
+  final IconData? icon;
+  final Color? accentColor;
   final List<Color> backgroundColors;
   final Color textColor;
   final bool compact;
 
   const _ApplyNowButton({
     required this.onTap,
+    required this.label,
+    this.icon,
+    this.accentColor,
     required this.backgroundColors,
     required this.textColor,
     required this.compact,
@@ -2657,10 +2872,27 @@ class _ApplyNowButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final resolvedTextColor = accentColor ?? textColor;
+    final resolvedBackgroundColors = accentColor == null
+        ? backgroundColors
+        : [Colors.white, Colors.white];
+    final resolvedBorderColor =
+        accentColor?.withValues(alpha: 0.52) ??
+        Colors.white.withValues(alpha: 0.60);
+    final resolvedShadows = accentColor == null
+        ? <BoxShadow>[]
+        : [
+            BoxShadow(
+              color: accentColor!.withValues(alpha: 0.24),
+              blurRadius: 16,
+              offset: const Offset(0, 8),
+            ),
+          ];
+
     return IgnorePointer(
       ignoring: onTap == null,
       child: Opacity(
-        opacity: onTap == null ? 0.82 : 1,
+        opacity: onTap == null && accentColor == null ? 0.82 : 1,
         child: Material(
           color: Colors.transparent,
           child: InkWell(
@@ -2673,22 +2905,31 @@ class _ApplyNowButton extends StatelessWidget {
               ),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: backgroundColors,
+                  colors: resolvedBackgroundColors,
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
                 borderRadius: BorderRadius.circular(compact ? 16 : 18),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.60)),
+                border: Border.all(color: resolvedBorderColor),
+                boxShadow: resolvedShadows,
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  if (icon != null) ...[
+                    Icon(
+                      icon,
+                      size: compact ? 11.5 : 12.5,
+                      color: resolvedTextColor,
+                    ),
+                    SizedBox(width: compact ? 5 : 6),
+                  ],
                   Text(
-                    'Apply Now',
+                    label,
                     style: GoogleFonts.poppins(
-                      fontSize: compact ? 10.0 : 11.0,
-                      fontWeight: FontWeight.w700,
-                      color: textColor,
+                      fontSize: compact ? 10.2 : 11.2,
+                      fontWeight: FontWeight.w800,
+                      color: resolvedTextColor,
                     ),
                   ),
                 ],
@@ -2699,6 +2940,155 @@ class _ApplyNowButton extends StatelessWidget {
       ),
     );
   }
+}
+
+IconData _jobApplicationStatusIcon(String status) {
+  switch (ApplicationStatus.parse(status)) {
+    case ApplicationStatus.accepted:
+      return Icons.check_circle_rounded;
+    case ApplicationStatus.rejected:
+      return Icons.cancel_rounded;
+    case ApplicationStatus.pending:
+    default:
+      return Icons.hourglass_top_rounded;
+  }
+}
+
+class _JobSaveButton extends StatelessWidget {
+  final bool isBusy;
+  final bool isSaved;
+  final VoidCallback? onPressed;
+  final double size;
+  final double iconSize;
+  final Color activeColor;
+  final Color inactiveColor;
+  final Color backgroundColor;
+  final Color borderColor;
+  final Color spinnerColor;
+
+  const _JobSaveButton({
+    required this.isBusy,
+    required this.isSaved,
+    required this.onPressed,
+    required this.size,
+    required this.iconSize,
+    required this.activeColor,
+    required this.inactiveColor,
+    required this.backgroundColor,
+    required this.borderColor,
+    required this.spinnerColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (isBusy) {
+      return Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          shape: BoxShape.circle,
+          border: Border.all(color: borderColor),
+        ),
+        child: Center(
+          child: SizedBox(
+            width: iconSize - 2,
+            height: iconSize - 2,
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              valueColor: AlwaysStoppedAnimation<Color>(spinnerColor),
+            ),
+          ),
+        ),
+      );
+    }
+
+    if (onPressed == null) {
+      return SizedBox(width: size, height: size);
+    }
+
+    return Material(
+      color: Colors.transparent,
+      shape: const CircleBorder(),
+      child: InkWell(
+        onTap: onPressed,
+        customBorder: const CircleBorder(),
+        child: Ink(
+          width: size,
+          height: size,
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            shape: BoxShape.circle,
+            border: Border.all(color: borderColor),
+          ),
+          child: Icon(
+            isSaved ? Icons.bookmark_rounded : Icons.bookmark_outline_rounded,
+            size: iconSize,
+            color: isSaved ? activeColor : inactiveColor,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _JobStatusChip extends StatelessWidget {
+  final String label;
+  final Color color;
+  final IconData icon;
+  final bool compact;
+
+  const _JobStatusChip({
+    required this.label,
+    required this.color,
+    required this.icon,
+    required this.compact,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: compact ? 8 : 9,
+        vertical: compact ? 4 : 5,
+      ),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(compact ? 11 : 12),
+        border: Border.all(color: color.withValues(alpha: 0.18)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: compact ? 12 : 13, color: color),
+          SizedBox(width: compact ? 4 : 5),
+          Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: GoogleFonts.poppins(
+              fontSize: compact ? 8.8 : 9.4,
+              fontWeight: FontWeight.w700,
+              color: color,
+              letterSpacing: 0.1,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _JobStatusData {
+  final String label;
+  final Color color;
+  final IconData icon;
+
+  const _JobStatusData({
+    required this.label,
+    required this.color,
+    required this.icon,
+  });
 }
 
 class _GlowOrb extends StatelessWidget {
@@ -2971,11 +3361,19 @@ class _AvailableRoleCard extends StatelessWidget {
   final _JobCardData job;
   final VoidCallback? onTap;
   final bool compact;
+  final _JobStatusData? statusData;
+  final bool isSaved;
+  final bool isSaveBusy;
+  final VoidCallback? onToggleSaved;
 
   const _AvailableRoleCard({
     required this.job,
     this.onTap,
     required this.compact,
+    this.statusData,
+    required this.isSaved,
+    required this.isSaveBusy,
+    this.onToggleSaved,
   });
 
   @override
@@ -3069,7 +3467,7 @@ class _AvailableRoleCard extends StatelessWidget {
                               if (job.typeBadge != null)
                                 ConstrainedBox(
                                   constraints: BoxConstraints(
-                                    maxWidth: constraints.maxWidth * 0.44,
+                                    maxWidth: constraints.maxWidth * 0.34,
                                   ),
                                   child: Container(
                                     padding: EdgeInsets.symmetric(
@@ -3102,6 +3500,25 @@ class _AvailableRoleCard extends StatelessWidget {
                                     ),
                                   ),
                                 ),
+                              SizedBox(width: isTight ? 6 : 7),
+                              _JobSaveButton(
+                                isBusy: isSaveBusy,
+                                isSaved: isSaved,
+                                onPressed: onToggleSaved,
+                                size: isTight ? 26 : 28,
+                                iconSize: isTight ? 14 : 15,
+                                activeColor: palette.chipTextColor,
+                                inactiveColor: palette.chipTextColor.withValues(
+                                  alpha: 0.78,
+                                ),
+                                backgroundColor: Colors.white.withValues(
+                                  alpha: 0.74,
+                                ),
+                                borderColor: palette.chipTextColor.withValues(
+                                  alpha: 0.12,
+                                ),
+                                spinnerColor: palette.chipTextColor,
+                              ),
                             ],
                           ),
                           SizedBox(height: isTight ? 6 : 8),
@@ -3156,7 +3573,17 @@ class _AvailableRoleCard extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               Expanded(
-                                child: job.levelTag == null
+                                child: statusData != null
+                                    ? Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: _JobStatusChip(
+                                          label: statusData!.label,
+                                          color: statusData!.color,
+                                          icon: statusData!.icon,
+                                          compact: isTight,
+                                        ),
+                                      )
+                                    : job.levelTag == null
                                     ? const SizedBox.shrink()
                                     : Align(
                                         alignment: Alignment.centerLeft,

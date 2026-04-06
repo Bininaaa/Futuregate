@@ -5,10 +5,12 @@ import 'package:provider/provider.dart';
 
 import '../../models/opportunity_model.dart';
 import '../../models/user_model.dart';
+import '../../providers/application_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/notification_provider.dart';
 import '../../providers/opportunity_provider.dart';
 import '../../providers/saved_opportunity_provider.dart';
+import '../../utils/application_status.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
@@ -105,14 +107,14 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
   Future<void> _loadData({bool force = false}) async {
     final opportunityProvider = context.read<OpportunityProvider>();
     final savedProvider = context.read<SavedOpportunityProvider>();
+    final applicationProvider = context.read<ApplicationProvider>();
     final userId = context.read<AuthProvider>().userModel?.uid;
 
     final futures = <Future<void>>[opportunityProvider.fetchOpportunities()];
 
-    if (userId != null &&
-        userId.isNotEmpty &&
-        (force || savedProvider.savedOpportunities.isEmpty)) {
+    if (userId != null && userId.isNotEmpty) {
       futures.add(savedProvider.fetchSavedOpportunities(userId));
+      futures.add(applicationProvider.fetchSubmittedApplications(userId));
     }
 
     await Future.wait(futures);
@@ -369,7 +371,6 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
       searchText: searchText,
       opportunity: opportunity,
       isSaved: savedIds.contains(opportunity.id),
-      isPlaceholder: false,
     );
   }
 
@@ -636,6 +637,7 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
   @override
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
+    final applicationProvider = context.watch<ApplicationProvider>();
     final notificationProvider = context.watch<NotificationProvider>();
     final opportunityProvider = context.watch<OpportunityProvider>();
     final savedProvider = context.watch<SavedOpportunityProvider>();
@@ -646,20 +648,16 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
     final savedIds = savedProvider.savedOpportunities
         .map((item) => item.opportunityId)
         .toSet();
+    final appliedStatuses = applicationProvider.appliedStatusMap;
     final liveInternships = _buildLiveInternships(
       opportunityProvider.opportunities,
       savedIds,
     );
-    final hasLiveData = liveInternships.isNotEmpty;
-    final filteredInternships = hasLiveData
-        ? _applyFilters(liveInternships)
-        : const <_InternshipCardModel>[];
-    final applyThisWeek = hasLiveData
-        ? _selectApplyThisWeek(filteredInternships)
-        : _placeholderWeeklyInternships;
-    final availableInternships = hasLiveData
-        ? _selectAvailableInternships(filteredInternships)
-        : _placeholderAvailableInternships;
+    final filteredInternships = _applyFilters(liveInternships);
+    final featuredInternships = _selectApplyThisWeek(filteredInternships);
+    final availableInternships = _selectAvailableInternships(
+      filteredInternships,
+    );
     final availableCountLabel = availableInternships.length == 1
         ? '1 internship'
         : '${availableInternships.length} internships';
@@ -682,7 +680,7 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
               unreadCount: notificationProvider.unreadCount,
               onNotificationsPressed: _openNotifications,
             ),
-            if (opportunityProvider.isLoading && hasLiveData)
+            if (opportunityProvider.isLoading && liveInternships.isNotEmpty)
               const LinearProgressIndicator(
                 minHeight: 2,
                 color: _InternshipVisualPalette.mint,
@@ -729,20 +727,24 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
                     ),
                     const SizedBox(height: 18),
                     _InternshipSectionHeader(
-                      title: 'Apply This Week',
+                      title: 'Featured Internships',
                       actionLabel: 'Browse all',
                       onAction: _scrollToAvailableSection,
                     ),
                     const SizedBox(height: 10),
-                    if (hasLiveData && filteredInternships.isEmpty)
-                      const _InternshipsEmptyState(
-                        title: 'No internships match these filters',
-                        subtitle:
-                            'Try another search or remove a chip to reveal more opportunities.',
+                    if (filteredInternships.isEmpty)
+                      _InternshipsEmptyState(
+                        title: liveInternships.isEmpty
+                            ? 'No live internships yet'
+                            : 'No internships match these filters',
+                        subtitle: liveInternships.isEmpty
+                            ? 'Internships published in the database will appear here.'
+                            : 'Try another search or remove a chip to reveal more opportunities.',
                       )
                     else
                       _ApplyThisWeekSection(
-                        items: applyThisWeek,
+                        items: featuredInternships,
+                        appliedStatuses: appliedStatuses,
                         onOpenOpportunity: (item) {
                           if (item.opportunity != null) {
                             _openOpportunity(item.opportunity!);
@@ -772,11 +774,14 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    if (hasLiveData && filteredInternships.isEmpty)
-                      const _InternshipsEmptyState(
-                        title: 'Nothing to show right now',
-                        subtitle:
-                            'Live internships will appear here as soon as they match your search.',
+                    if (filteredInternships.isEmpty)
+                      _InternshipsEmptyState(
+                        title: liveInternships.isEmpty
+                            ? 'No internships available'
+                            : 'Nothing to show right now',
+                        subtitle: liveInternships.isEmpty
+                            ? 'Publish internship opportunities in the database to populate this section.'
+                            : 'Live internships will appear here as soon as they match your search.',
                       )
                     else
                       AnimatedSwitcher(
@@ -808,8 +813,14 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
                                     ),
                                 itemBuilder: (context, index) {
                                   final item = availableInternships[index];
+                                  final statusData =
+                                      _internshipStatusDataForOpportunity(
+                                        item.opportunity,
+                                        appliedStatuses,
+                                      );
                                   return _AvailableInternshipCard(
                                     item: item,
+                                    statusData: statusData,
                                     onTap: item.opportunity == null
                                         ? null
                                         : () => _openOpportunity(
@@ -842,6 +853,12 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
                                       ),
                                       child: _AvailableInternshipListTile(
                                         item: availableInternships[index],
+                                        statusData:
+                                            _internshipStatusDataForOpportunity(
+                                              availableInternships[index]
+                                                  .opportunity,
+                                              appliedStatuses,
+                                            ),
                                         onTap:
                                             availableInternships[index]
                                                     .opportunity ==
@@ -866,7 +883,8 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
                                 ],
                               ),
                       ),
-                    if (!hasLiveData && opportunityProvider.isLoading) ...[
+                    if (liveInternships.isEmpty &&
+                        opportunityProvider.isLoading) ...[
                       const SizedBox(height: 8),
                       Text(
                         'Loading live internships...',
@@ -934,7 +952,7 @@ class _InternshipsHeaderBar extends StatelessWidget {
                   style: GoogleFonts.poppins(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
-                    color: OpportunityDashboardPalette.primary,
+                    color: _InternshipVisualPalette.deepTeal,
                   ),
                 ),
               ),
@@ -1020,29 +1038,29 @@ class _InternshipsIntro extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Internships',
-          style: GoogleFonts.poppins(
-            fontSize: 26,
-            fontWeight: FontWeight.w700,
-            height: 1.05,
-            color: OpportunityDashboardPalette.textPrimary,
+    return Text.rich(
+      TextSpan(
+        children: [
+          TextSpan(
+            text: 'Find your next\n',
+            style: GoogleFonts.poppins(
+              fontSize: 30,
+              fontWeight: FontWeight.w700,
+              height: 1.08,
+              color: OpportunityDashboardPalette.textPrimary,
+            ),
           ),
-        ),
-        const SizedBox(height: 6),
-        Text(
-          'Explore learning opportunities designed for your growth.',
-          style: GoogleFonts.poppins(
-            fontSize: 13,
-            fontWeight: FontWeight.w500,
-            height: 1.35,
-            color: OpportunityDashboardPalette.textSecondary,
+          TextSpan(
+            text: 'internship',
+            style: GoogleFonts.poppins(
+              fontSize: 30,
+              fontWeight: FontWeight.w700,
+              height: 1.08,
+              color: _InternshipVisualPalette.deepTeal,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -1077,7 +1095,7 @@ class _InternshipSearchBar extends StatelessWidget {
         ),
         prefixIcon: const Icon(
           Icons.search_rounded,
-          color: OpportunityDashboardPalette.textSecondary,
+          color: _InternshipVisualPalette.deepTeal,
         ),
         suffixIcon: onClear == null
             ? null
@@ -1085,11 +1103,11 @@ class _InternshipSearchBar extends StatelessWidget {
                 onPressed: onClear,
                 icon: const Icon(
                   Icons.close_rounded,
-                  color: OpportunityDashboardPalette.textSecondary,
+                  color: _InternshipVisualPalette.deepTeal,
                 ),
               ),
         filled: true,
-        fillColor: const Color(0xFFEEF2FF),
+        fillColor: const Color(0xFFEAF8F4),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
           vertical: 14,
@@ -1105,7 +1123,7 @@ class _InternshipSearchBar extends StatelessWidget {
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(22),
           borderSide: const BorderSide(
-            color: OpportunityDashboardPalette.primary,
+            color: _InternshipVisualPalette.deepTeal,
           ),
         ),
       ),
@@ -1401,12 +1419,14 @@ _InternshipFeaturedVariantStyle _featuredInternshipStyleFor(int index) {
 
 class _ApplyThisWeekSection extends StatelessWidget {
   final List<_InternshipCardModel> items;
+  final Map<String, String> appliedStatuses;
   final ValueChanged<_InternshipCardModel> onOpenOpportunity;
   final ValueChanged<_InternshipCardModel> onToggleSaved;
   final bool isSaving;
 
   const _ApplyThisWeekSection({
     required this.items,
+    required this.appliedStatuses,
     required this.onOpenOpportunity,
     required this.onToggleSaved,
     required this.isSaving,
@@ -1435,13 +1455,21 @@ class _ApplyThisWeekSection extends StatelessWidget {
         separatorBuilder: (context, index) => SizedBox(width: cardSpacing),
         itemBuilder: (context, index) {
           final item = items[index];
+          final statusData = _internshipStatusDataForOpportunity(
+            item.opportunity,
+            appliedStatuses,
+          );
 
           return SizedBox(
             width: cardWidth,
             child: _InternshipFeaturedCard(
               item: item,
               style: _featuredInternshipStyleFor(index),
+              statusData: statusData,
               onTap: item.opportunity == null
+                  ? null
+                  : () => onOpenOpportunity(item),
+              onAction: item.opportunity == null || statusData != null
                   ? null
                   : () => onOpenOpportunity(item),
               onToggleSaved: item.opportunity == null
@@ -1460,15 +1488,19 @@ class _InternshipFeaturedCard extends StatelessWidget {
   final _InternshipCardModel item;
   final _InternshipFeaturedVariantStyle style;
   final VoidCallback? onTap;
+  final VoidCallback? onAction;
   final VoidCallback? onToggleSaved;
   final bool isSaving;
+  final _InternshipStatusData? statusData;
 
   const _InternshipFeaturedCard({
     required this.item,
     required this.style,
     this.onTap,
+    this.onAction,
     this.onToggleSaved,
     required this.isSaving,
+    this.statusData,
   });
 
   String _supportingLine() {
@@ -1487,10 +1519,9 @@ class _InternshipFeaturedCard extends StatelessWidget {
 
   String? _metadataLine() {
     final parts = <String>[
-      if (item.categoryLabel?.trim().isNotEmpty ?? false)
-        item.categoryLabel!.trim(),
-      if (item.applyByText.trim().isNotEmpty) item.applyByText.trim(),
       if (item.duration?.trim().isNotEmpty ?? false) item.duration!.trim(),
+      if (item.deadlinePill?.trim().isNotEmpty ?? false)
+        item.deadlinePill!.trim(),
     ];
 
     if (parts.isEmpty) {
@@ -1499,21 +1530,6 @@ class _InternshipFeaturedCard extends StatelessWidget {
 
     return parts.take(2).join(' • ');
   }
-
-  List<String> _tagLabels() {
-    final tags = <String>[
-      if (item.deadlinePill?.trim().isNotEmpty ?? false)
-        item.deadlinePill!.trim(),
-      if (item.isPaid) 'Paid',
-      if (item.duration?.trim().isNotEmpty ?? false) item.duration!.trim(),
-      if (item.categoryLabel?.trim().isNotEmpty ?? false)
-        item.categoryLabel!.trim(),
-    ];
-
-    return tags.take(2).toList();
-  }
-
-  String _ctaLabel() => _featuredHeroTag(item) == null ? 'Apply' : 'Open';
 
   List<Widget> _buildDecorations() {
     switch (style.decorationVariant) {
@@ -1660,7 +1676,6 @@ class _InternshipFeaturedCard extends StatelessWidget {
     final topTag = _featuredHeroTag(item);
     final supportingLine = _supportingLine();
     final metadataLine = _metadataLine();
-    final tagLabels = _tagLabels();
     final compensationLabel = _compensationLineFor(item)?.trim();
 
     return LayoutBuilder(
@@ -1692,9 +1707,6 @@ class _InternshipFeaturedCard extends StatelessWidget {
         final metadataFontSize = denseLayout
             ? (isTight ? 10.0 : 10.8)
             : (isTight ? 10.4 : 11.2);
-        final tagFontSize = denseLayout
-            ? (isTight ? 8.6 : 9.0)
-            : (isTight ? 8.9 : 9.4);
         final compensationFontSize = denseLayout
             ? (isTight ? 12.0 : 13.4)
             : (isTight ? 12.6 : 14.6);
@@ -1702,6 +1714,7 @@ class _InternshipFeaturedCard extends StatelessWidget {
         final cardRadius = BorderRadius.circular(cardRadiusValue);
         final hasCompensation =
             compensationLabel != null && compensationLabel.isNotEmpty;
+        final actionLabel = statusData?.label ?? 'Apply Now';
         final useStackedFooter =
             constraints.maxWidth < 286 ||
             ((compensationLabel?.length ?? 0) > (isTight ? 18 : 20) &&
@@ -1745,8 +1758,10 @@ class _InternshipFeaturedCard extends StatelessWidget {
                   Align(
                     alignment: Alignment.centerRight,
                     child: _InternshipFeaturedCtaButton(
-                      label: _ctaLabel(),
-                      onTap: onTap,
+                      label: actionLabel,
+                      icon: statusData?.icon,
+                      accentColor: statusData?.color,
+                      onTap: onAction,
                       backgroundColors: style.buttonGradientColors,
                       textColor: style.buttonTextColor,
                       compact: denseLayout,
@@ -1766,8 +1781,10 @@ class _InternshipFeaturedCard extends StatelessWidget {
                   ),
                   SizedBox(width: isTight ? 10 : 12),
                   _InternshipFeaturedCtaButton(
-                    label: _ctaLabel(),
-                    onTap: onTap,
+                    label: actionLabel,
+                    icon: statusData?.icon,
+                    accentColor: statusData?.color,
+                    onTap: onAction,
                     backgroundColors: style.buttonGradientColors,
                     textColor: style.buttonTextColor,
                     compact: denseLayout,
@@ -1975,46 +1992,6 @@ class _InternshipFeaturedCard extends StatelessWidget {
                               ),
                             ),
                           ],
-                          if (tagLabels.isNotEmpty) ...[
-                            SizedBox(
-                              height: denseLayout
-                                  ? (isTight ? 8 : 10)
-                                  : (isTight ? 10 : 12),
-                            ),
-                            Wrap(
-                              spacing: isTight ? 6 : 7,
-                              runSpacing: isTight ? 6 : 7,
-                              children: tagLabels
-                                  .map(
-                                    (tag) => Container(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: isTight ? 8 : 9,
-                                        vertical: isTight ? 5 : 6,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: style.badgeBackground,
-                                        borderRadius: BorderRadius.circular(
-                                          999,
-                                        ),
-                                        border: Border.all(
-                                          color: style.badgeBorderColor,
-                                        ),
-                                      ),
-                                      child: Text(
-                                        tag,
-                                        style: GoogleFonts.poppins(
-                                          fontSize: tagFontSize,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.white.withValues(
-                                            alpha: 0.96,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  )
-                                  .toList(),
-                            ),
-                          ],
                           SizedBox(
                             height: denseLayout
                                 ? (isTight ? 10 : 14)
@@ -2038,6 +2015,8 @@ class _InternshipFeaturedCard extends StatelessWidget {
 class _InternshipFeaturedCtaButton extends StatelessWidget {
   final String label;
   final VoidCallback? onTap;
+  final IconData? icon;
+  final Color? accentColor;
   final List<Color> backgroundColors;
   final Color textColor;
   final bool compact;
@@ -2045,6 +2024,8 @@ class _InternshipFeaturedCtaButton extends StatelessWidget {
   const _InternshipFeaturedCtaButton({
     required this.label,
     required this.onTap,
+    this.icon,
+    this.accentColor,
     required this.backgroundColors,
     required this.textColor,
     required this.compact,
@@ -2052,10 +2033,27 @@ class _InternshipFeaturedCtaButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final resolvedTextColor = accentColor ?? textColor;
+    final resolvedBackgroundColors = accentColor == null
+        ? backgroundColors
+        : [Colors.white, Colors.white];
+    final resolvedBorderColor =
+        accentColor?.withValues(alpha: 0.52) ??
+        Colors.white.withValues(alpha: 0.58);
+    final resolvedShadows = accentColor == null
+        ? <BoxShadow>[]
+        : [
+            BoxShadow(
+              color: accentColor!.withValues(alpha: 0.24),
+              blurRadius: 16,
+              offset: const Offset(0, 8),
+            ),
+          ];
+
     return IgnorePointer(
       ignoring: onTap == null,
       child: Opacity(
-        opacity: onTap == null ? 0.82 : 1,
+        opacity: onTap == null && accentColor == null ? 0.82 : 1,
         child: Material(
           color: Colors.transparent,
           child: InkWell(
@@ -2068,29 +2066,32 @@ class _InternshipFeaturedCtaButton extends StatelessWidget {
               ),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: backgroundColors,
+                  colors: resolvedBackgroundColors,
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
                 borderRadius: BorderRadius.circular(compact ? 16 : 18),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.58)),
+                border: Border.all(color: resolvedBorderColor),
+                boxShadow: resolvedShadows,
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  if (icon != null) ...[
+                    Icon(
+                      icon,
+                      size: compact ? 11.5 : 12.5,
+                      color: resolvedTextColor,
+                    ),
+                    SizedBox(width: compact ? 5 : 6),
+                  ],
                   Text(
                     label,
                     style: GoogleFonts.poppins(
-                      fontSize: compact ? 10.0 : 11.0,
-                      fontWeight: FontWeight.w700,
-                      color: textColor,
+                      fontSize: compact ? 10.2 : 11.2,
+                      fontWeight: FontWeight.w800,
+                      color: resolvedTextColor,
                     ),
-                  ),
-                  SizedBox(width: compact ? 5 : 6),
-                  Icon(
-                    Icons.arrow_outward_rounded,
-                    size: compact ? 13 : 14,
-                    color: textColor,
                   ),
                 ],
               ),
@@ -2297,12 +2298,14 @@ List<Widget> _buildAvailableInternshipDecorations({
 
 class _AvailableInternshipCard extends StatelessWidget {
   final _InternshipCardModel item;
+  final _InternshipStatusData? statusData;
   final VoidCallback? onTap;
   final VoidCallback? onToggleSaved;
   final bool isSaving;
 
   const _AvailableInternshipCard({
     required this.item,
+    this.statusData,
     this.onTap,
     this.onToggleSaved,
     required this.isSaving,
@@ -2315,7 +2318,6 @@ class _AvailableInternshipCard extends StatelessWidget {
     final palette = _availableInternshipPaletteFor(item.uniqueKey);
     final compensationLabel = _compensationLineFor(item);
     final topBadge = _availableTopBadge(item);
-    final footerBadge = _availableFooterBadge(item);
     final cardRadius = BorderRadius.circular(compact ? 20 : 24);
 
     return Material(
@@ -2410,7 +2412,7 @@ class _AvailableInternshipCard extends StatelessWidget {
                               if (topBadge != null)
                                 ConstrainedBox(
                                   constraints: BoxConstraints(
-                                    maxWidth: constraints.maxWidth * 0.44,
+                                    maxWidth: constraints.maxWidth * 0.34,
                                   ),
                                   child: Container(
                                     padding: EdgeInsets.symmetric(
@@ -2443,6 +2445,23 @@ class _AvailableInternshipCard extends StatelessWidget {
                                     ),
                                   ),
                                 ),
+                              SizedBox(width: isTight ? 6 : 7),
+                              _BookmarkIconButton(
+                                isSaved: item.isSaved,
+                                isSaving: isSaving,
+                                onTap: onToggleSaved,
+                                size: isTight ? 26 : 28,
+                                iconSize: isTight ? 14 : 15,
+                                borderRadius: isTight ? 10 : 11,
+                                activeColor: Colors.white,
+                                activeBackgroundColor: palette.accentColor,
+                                activeBorderColor: palette.accentColor,
+                                inactiveColor: palette.accentColor,
+                                inactiveBackgroundColor: Colors.white
+                                    .withValues(alpha: 0.82),
+                                inactiveBorderColor: palette.accentColor
+                                    .withValues(alpha: 0.10),
+                              ),
                             ],
                           ),
                           SizedBox(height: isTight ? 6 : 8),
@@ -2508,39 +2527,49 @@ class _AvailableInternshipCard extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               Expanded(
-                                child: Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: isTight ? 7 : 8,
-                                      vertical: isTight ? 4 : 5,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: palette.accentColor.withValues(
-                                        alpha: 0.10,
-                                      ),
-                                      borderRadius: BorderRadius.circular(
-                                        isTight ? 11 : 12,
-                                      ),
-                                      border: Border.all(
-                                        color: palette.accentColor.withValues(
-                                          alpha: 0.10,
+                                child: statusData != null
+                                    ? Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: _InternshipStatusChip(
+                                          label: statusData!.label,
+                                          color: statusData!.color,
+                                          icon: statusData!.icon,
+                                          compact: isTight,
                                         ),
-                                      ),
-                                    ),
-                                    child: Text(
-                                      footerBadge,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: GoogleFonts.poppins(
-                                        fontSize: chipSize,
-                                        fontWeight: FontWeight.w700,
-                                        color: palette.accentColor,
-                                        letterSpacing: 0.3,
-                                      ),
-                                    ),
-                                  ),
-                                ),
+                                      )
+                                    : item.duration?.trim().isNotEmpty ?? false
+                                    ? Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: isTight ? 7 : 8,
+                                            vertical: isTight ? 4 : 5,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: palette.accentColor
+                                                .withValues(alpha: 0.10),
+                                            borderRadius: BorderRadius.circular(
+                                              isTight ? 11 : 12,
+                                            ),
+                                            border: Border.all(
+                                              color: palette.accentColor
+                                                  .withValues(alpha: 0.10),
+                                            ),
+                                          ),
+                                          child: Text(
+                                            item.duration!.trim(),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: GoogleFonts.poppins(
+                                              fontSize: chipSize,
+                                              fontWeight: FontWeight.w700,
+                                              color: palette.accentColor,
+                                              letterSpacing: 0.3,
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                    : const SizedBox.shrink(),
                               ),
                               Container(
                                 width: isTight ? 28 : 30,
@@ -2582,12 +2611,14 @@ class _AvailableInternshipCard extends StatelessWidget {
 
 class _AvailableInternshipListTile extends StatelessWidget {
   final _InternshipCardModel item;
+  final _InternshipStatusData? statusData;
   final VoidCallback? onTap;
   final VoidCallback? onToggleSaved;
   final bool isSaving;
 
   const _AvailableInternshipListTile({
     required this.item,
+    this.statusData,
     this.onTap,
     this.onToggleSaved,
     required this.isSaving,
@@ -2610,7 +2641,6 @@ class _AvailableInternshipListTile extends StatelessWidget {
     final palette = _availableInternshipPaletteFor(item.uniqueKey);
     final compensationLabel = _compensationLineFor(item);
     final topBadge = _availableTopBadge(item);
-    final footerBadge = _availableFooterBadge(item);
     final cardRadius = BorderRadius.circular(compact ? 17 : 19);
     final supportingLine = _supportingLine();
     final detailText = item.location?.trim().isNotEmpty ?? false
@@ -2619,7 +2649,8 @@ class _AvailableInternshipListTile extends StatelessWidget {
     final showInlineBadge =
         topBadge != null &&
         topBadge.trim().isNotEmpty &&
-        topBadge.trim().toUpperCase() != footerBadge.trim().toUpperCase();
+        topBadge.trim().toUpperCase() !=
+            (item.duration?.trim().toUpperCase() ?? '');
     final topSurface = Color.alphaBlend(
       palette.surfaceTint.withValues(alpha: 0.24),
       const Color(0xFFFCFFFE),
@@ -2650,16 +2681,10 @@ class _AvailableInternshipListTile extends StatelessWidget {
           color: _InternshipVisualPalette.textSecondary,
           compact: compact,
         ),
-      if (footerBadge.trim().isNotEmpty)
+      if (item.duration?.trim().isNotEmpty ?? false)
         _AvailableInternshipListMetaItem(
-          text: footerBadge.trim(),
+          text: item.duration!.trim(),
           color: palette.accentColor.withValues(alpha: 0.82),
-          compact: compact,
-        ),
-      if (item.applyByText.trim().isNotEmpty)
-        _AvailableInternshipListMetaItem(
-          text: item.applyByText.trim(),
-          color: palette.accentColor.withValues(alpha: 0.72),
           compact: compact,
         ),
     ];
@@ -2811,6 +2836,15 @@ class _AvailableInternshipListTile extends StatelessWidget {
                               runSpacing: compact ? 3 : 4,
                               children: metadataItems,
                             ),
+                            if (statusData != null) ...[
+                              SizedBox(height: compact ? 6 : 7),
+                              _InternshipStatusChip(
+                                label: statusData!.label,
+                                color: statusData!.color,
+                                icon: statusData!.icon,
+                                compact: compact,
+                              ),
+                            ],
                           ],
                         ),
                       ),
@@ -3302,7 +3336,6 @@ class _InternshipCardModel {
   final String searchText;
   final OpportunityModel? opportunity;
   final bool isSaved;
-  final bool isPlaceholder;
 
   const _InternshipCardModel({
     required this.id,
@@ -3330,65 +3363,7 @@ class _InternshipCardModel {
     required this.searchText,
     required this.opportunity,
     required this.isSaved,
-    required this.isPlaceholder,
   });
-
-  factory _InternshipCardModel.placeholder({
-    required String id,
-    required String title,
-    required String companyName,
-    required String companyLabel,
-    required String secondaryText,
-    required String fallbackLabel,
-    required String? deadlinePill,
-    required String applyByText,
-    required bool isPaid,
-    String? compensation,
-    required String? workMode,
-    required String? duration,
-    required String? categoryLabel,
-    required bool matchesSummer,
-    required bool matchesTech,
-    required bool matchesMarketing,
-    bool isFeaturedPreferred = false,
-  }) {
-    return _InternshipCardModel(
-      id: id,
-      title: title,
-      companyName: companyName,
-      companyLabel: companyLabel,
-      secondaryText: secondaryText,
-      logoUrl: '',
-      fallbackLabel: fallbackLabel,
-      workMode: workMode,
-      location: null,
-      deadline: null,
-      daysUntilDeadline: null,
-      deadlinePill: deadlinePill,
-      applyByText: applyByText,
-      isPaid: isPaid,
-      compensation: compensation,
-      duration: duration,
-      categoryLabel: categoryLabel,
-      isFeaturedPreferred: isFeaturedPreferred,
-      matchesSummer: matchesSummer,
-      matchesTech: matchesTech,
-      matchesMarketing: matchesMarketing,
-      createdAt: null,
-      searchText: [
-        title,
-        companyName,
-        secondaryText,
-        workMode ?? '',
-        compensation ?? '',
-        duration ?? '',
-        categoryLabel ?? '',
-      ].join(' ').toLowerCase(),
-      opportunity: null,
-      isSaved: false,
-      isPlaceholder: true,
-    );
-  }
 
   String get uniqueKey => id.isEmpty ? '$title|$companyName' : id;
 }
@@ -3397,16 +3372,13 @@ String? _featuredHeroTag(_InternshipCardModel item) {
   if (item.workMode != null && item.workMode!.trim().isNotEmpty) {
     return item.workMode!.toUpperCase();
   }
-  if (item.categoryLabel != null && item.categoryLabel!.trim().isNotEmpty) {
-    return switch (item.categoryLabel!.toLowerCase()) {
-      'engineering' => 'TECH',
-      'marketing' => 'GROWTH',
-      'strategy' => 'STRATEGY',
-      'design' => 'DESIGN',
-      _ => item.categoryLabel!.toUpperCase(),
-    };
+  if (item.duration != null && item.duration!.trim().isNotEmpty) {
+    return item.duration!.trim().toUpperCase();
   }
-  return item.isFeaturedPreferred ? 'CURATED' : null;
+  if (item.isPaid) {
+    return 'PAID';
+  }
+  return null;
 }
 
 String? _compensationLineFor(_InternshipCardModel item) {
@@ -3421,137 +3393,119 @@ String? _availableTopBadge(_InternshipCardModel item) {
   if (item.workMode != null && item.workMode!.trim().isNotEmpty) {
     return item.workMode!.toUpperCase();
   }
+  if (item.duration != null && item.duration!.trim().isNotEmpty) {
+    return item.duration!.trim().toUpperCase();
+  }
   if (item.isPaid) {
     return 'PAID';
   }
-  if (item.categoryLabel != null && item.categoryLabel!.trim().isNotEmpty) {
-    return item.categoryLabel!.toUpperCase();
-  }
-  return 'INTERNSHIP';
+  return null;
 }
 
-String _availableFooterBadge(_InternshipCardModel item) {
-  if (item.duration != null && item.duration!.trim().isNotEmpty) {
-    return item.duration!;
+_InternshipStatusData? _internshipStatusDataForOpportunity(
+  OpportunityModel? opportunity,
+  Map<String, String> appliedStatuses,
+) {
+  if (opportunity == null) {
+    return null;
   }
-  if (item.categoryLabel != null && item.categoryLabel!.trim().isNotEmpty) {
-    return item.categoryLabel!;
+
+  final applicationStatus = appliedStatuses[opportunity.id];
+  if (applicationStatus != null) {
+    return _InternshipStatusData(
+      label: ApplicationStatus.label(applicationStatus),
+      color: ApplicationStatus.color(applicationStatus),
+      icon: _internshipApplicationStatusIcon(applicationStatus),
+    );
   }
-  return 'Internship';
+
+  if (opportunity.isHidden) {
+    return const _InternshipStatusData(
+      label: 'Unavailable',
+      color: Color(0xFF64748B),
+      icon: Icons.visibility_off_rounded,
+    );
+  }
+
+  final normalizedStatus = opportunity.status.trim().toLowerCase();
+  if (normalizedStatus.isNotEmpty && normalizedStatus != 'open') {
+    return const _InternshipStatusData(
+      label: 'Closed',
+      color: Color(0xFF64748B),
+      icon: Icons.lock_outline_rounded,
+    );
+  }
+
+  return null;
 }
 
-final List<_InternshipCardModel> _placeholderWeeklyInternships = [
-  _InternshipCardModel.placeholder(
-    id: 'spotify-uiux',
-    title: 'UI/UX Designer',
-    companyName: 'Spotify',
-    companyLabel: 'SPOTIFY',
-    secondaryText: 'Spotify | Remote',
-    fallbackLabel: 'S',
-    deadlinePill: '3 days left',
-    applyByText: 'Applying by Oct 12',
-    isPaid: true,
-    compensation: 'Paid stipend',
-    workMode: 'Remote',
-    duration: '3 months',
-    categoryLabel: 'Design',
-    matchesSummer: false,
-    matchesTech: false,
-    matchesMarketing: false,
-    isFeaturedPreferred: true,
-  ),
-  _InternshipCardModel.placeholder(
-    id: 'notion-product',
-    title: 'Product Design Intern',
-    companyName: 'Notion',
-    companyLabel: 'NOTION',
-    secondaryText: 'Notion | Hybrid',
-    fallbackLabel: 'N',
-    deadlinePill: '5 days left',
-    applyByText: 'Applying by Oct 16',
-    isPaid: true,
-    compensation: 'Monthly stipend',
-    workMode: 'Hybrid',
-    duration: '4 months',
-    categoryLabel: 'Design',
-    matchesSummer: false,
-    matchesTech: true,
-    matchesMarketing: false,
-    isFeaturedPreferred: true,
-  ),
-  _InternshipCardModel.placeholder(
-    id: 'agency-growth',
-    title: 'Growth Marketing Intern',
-    companyName: 'Agency X',
-    companyLabel: 'AGENCY X',
-    secondaryText: 'Agency X | Paris, FR',
-    fallbackLabel: 'A',
-    deadlinePill: '1 week left',
-    applyByText: 'Applying by Oct 21',
-    isPaid: true,
-    compensation: 'Project stipend',
-    workMode: null,
-    duration: '10 weeks',
-    categoryLabel: 'Marketing',
-    matchesSummer: true,
-    matchesTech: false,
-    matchesMarketing: true,
-  ),
-];
+IconData _internshipApplicationStatusIcon(String status) {
+  switch (ApplicationStatus.parse(status)) {
+    case ApplicationStatus.accepted:
+      return Icons.check_circle_rounded;
+    case ApplicationStatus.rejected:
+      return Icons.cancel_rounded;
+    case ApplicationStatus.pending:
+    default:
+      return Icons.hourglass_top_rounded;
+  }
+}
 
-final List<_InternshipCardModel> _placeholderAvailableInternships = [
-  _InternshipCardModel.placeholder(
-    id: 'google-ux',
-    title: 'UX Design Intern',
-    companyName: 'Google',
-    companyLabel: 'GOOGLE',
-    secondaryText: 'Google | Hybrid',
-    fallbackLabel: 'G',
-    deadlinePill: '3 days left',
-    applyByText: 'Applying by Oct 12',
-    isPaid: true,
-    compensation: 'Paid stipend',
-    workMode: 'Hybrid',
-    duration: '3 months',
-    categoryLabel: 'Design',
-    matchesSummer: false,
-    matchesTech: true,
-    matchesMarketing: false,
-    isFeaturedPreferred: true,
-  ),
-  _InternshipCardModel.placeholder(
-    id: 'vercel-frontend',
-    title: 'Frontend Engineer Intern',
-    companyName: 'Vercel',
-    companyLabel: 'VERCEL',
-    secondaryText: 'Vercel | Remote',
-    fallbackLabel: 'V',
-    deadlinePill: '6 days left',
-    applyByText: 'Applying by Oct 18',
-    isPaid: true,
-    compensation: 'Monthly stipend',
-    workMode: 'Remote',
-    duration: '3 months',
-    categoryLabel: 'Engineering',
-    matchesSummer: false,
-    matchesTech: true,
-    matchesMarketing: false,
-  ),
-  _InternshipCardModel.placeholder(
-    id: 'agency-strategy',
-    title: 'Marketing Strategy Intern',
-    companyName: 'Agency X',
-    companyLabel: 'AGENCY X',
-    secondaryText: 'Agency X | Paris, FR',
-    fallbackLabel: 'A',
-    deadlinePill: '10 days left',
-    applyByText: 'Applying by Oct 24',
-    isPaid: false,
-    workMode: null,
-    duration: 'Credit only',
-    categoryLabel: 'Strategy',
-    matchesSummer: true,
-    matchesTech: false,
-    matchesMarketing: true,
-  ),
-];
+class _InternshipStatusChip extends StatelessWidget {
+  final String label;
+  final Color color;
+  final IconData icon;
+  final bool compact;
+
+  const _InternshipStatusChip({
+    required this.label,
+    required this.color,
+    required this.icon,
+    required this.compact,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: compact ? 8 : 9,
+        vertical: compact ? 4 : 5,
+      ),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(compact ? 11 : 12),
+        border: Border.all(color: color.withValues(alpha: 0.18)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: compact ? 12 : 13, color: color),
+          SizedBox(width: compact ? 4 : 5),
+          Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: GoogleFonts.poppins(
+              fontSize: compact ? 8.8 : 9.4,
+              fontWeight: FontWeight.w700,
+              color: color,
+              letterSpacing: 0.1,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _InternshipStatusData {
+  final String label;
+  final Color color;
+  final IconData icon;
+
+  const _InternshipStatusData({
+    required this.label,
+    required this.color,
+    required this.icon,
+  });
+}
