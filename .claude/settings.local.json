@@ -3,7 +3,12 @@
     "allow": [
       "Bash(xargs ls:*)",
       "Bash(grep -E \"\\\\.dart$\")",
-      "Bash(flutter analyze:*)"
+      "Bash(flutter analyze:*)",
+      "Bash(find /c/AV4 -name \"*.dart\" -exec grep -l \"saved_screen\\\\|SavedScreen\" {} \\\\;)",
+      "Bash(dart analyze:*)",
+      "Bash(firebase --version)",
+      "Bash(firebase projects:list)",
+      "Bash(firebase deploy:*)"
     ]
   }
 }

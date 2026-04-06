@@ -14,6 +14,22 @@ class SavedScholarshipProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   bool get hasLoaded => _hasLoaded;
 
+  String _formatError(Object error) {
+    final raw = error.toString().replaceFirst('Exception: ', '').trim();
+    final normalized = raw.toLowerCase();
+
+    if (normalized.contains('permission-denied') ||
+        normalized.contains('missing or insufficient permissions')) {
+      return 'Firebase rejected scholarship saves. Check Firestore rules and confirm this account is an active student.';
+    }
+
+    if (raw.isEmpty) {
+      return 'Unexpected scholarship save error.';
+    }
+
+    return raw;
+  }
+
   Future<void> fetchSavedScholarships(String studentId) async {
     try {
       _isLoading = true;
@@ -53,7 +69,7 @@ class SavedScholarshipProvider extends ChangeNotifier {
       await fetchSavedScholarships(studentId);
       return null;
     } catch (e) {
-      return e.toString();
+      return _formatError(e);
     }
   }
 
@@ -65,7 +81,7 @@ class SavedScholarshipProvider extends ChangeNotifier {
       notifyListeners();
       return null;
     } catch (e) {
-      return e.toString();
+      return _formatError(e);
     }
   }
 }

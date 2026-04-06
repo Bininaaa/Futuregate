@@ -102,6 +102,43 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
     }
   }
 
+  Future<void> _toggleSavedTraining(TrainingModel training) async {
+    final auth = context.read<AuthProvider>().userModel;
+    final userId = auth?.uid.trim() ?? '';
+    if (userId.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('You must be logged in to save resources'),
+        ),
+      );
+      return;
+    }
+
+    final provider = context.read<TrainingProvider>();
+    final wasSaved = provider.isTrainingSaved(training.id);
+    final error = await provider.toggleSavedTraining(
+      userId: userId,
+      training: training,
+    );
+
+    if (!mounted) {
+      return;
+    }
+
+    final normalizedError = error?.replaceFirst('Exception: ', '').trim();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          normalizedError == null || normalizedError.isEmpty
+              ? wasSaved
+                    ? 'Removed from saved resources'
+                    : 'Resource saved'
+              : normalizedError,
+        ),
+      ),
+    );
+  }
+
   void _showPlaceholderMessage() {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
@@ -692,21 +729,43 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
         : 'No training programs are available yet for $activeDomain.';
 
     Widget buildTrainingCard(TrainingCourseCardData card) {
+      final training = card.isPlaceholder
+          ? null
+          : approvedTrainings.firstWhere((item) => item.id == card.id);
+
       void onTap() {
         if (card.isPlaceholder) {
           _showPlaceholderMessage();
           return;
         }
 
-        final training = approvedTrainings.firstWhere(
-          (item) => item.id == card.id,
-        );
-        _openLink(training.displayLink);
+        _openLink(training!.displayLink);
       }
 
+      final isSaved = training != null && provider.isTrainingSaved(training.id);
+      final isSaveBusy =
+          training != null && provider.isTrainingBusy(training.id);
+      final onToggleSaved = training == null
+          ? null
+          : () => _toggleSavedTraining(training);
+
       final cardWidget = _trainingLayoutView == TrainingLayoutView.grid
-          ? TrainingCourseCard(data: card, onTap: onTap, onStart: onTap)
-          : TrainingCourseListCard(data: card, onTap: onTap, onStart: onTap);
+          ? TrainingCourseCard(
+              data: card,
+              onTap: onTap,
+              onStart: onTap,
+              isSaved: isSaved,
+              isSaveBusy: isSaveBusy,
+              onToggleSaved: onToggleSaved,
+            )
+          : TrainingCourseListCard(
+              data: card,
+              onTap: onTap,
+              onStart: onTap,
+              isSaved: isSaved,
+              isSaveBusy: isSaveBusy,
+              onToggleSaved: onToggleSaved,
+            );
 
       return Padding(
         padding: const EdgeInsets.only(bottom: 12),
@@ -755,6 +814,12 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
                       if (provider.isSavedLoading) ...[
                         const SizedBox(height: 12),
                         const LinearProgressIndicator(minHeight: 2),
+                      ],
+                      if (provider.savedErrorMessage != null) ...[
+                        const SizedBox(height: 16),
+                        TrainingInfoBanner(
+                          message: provider.savedErrorMessage!,
+                        ),
                       ],
                       if (provider.errorMessage != null) ...[
                         const SizedBox(height: 16),

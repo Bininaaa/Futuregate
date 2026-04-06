@@ -11,6 +11,7 @@ import '../../providers/project_idea_provider.dart';
 import '../../providers/saved_opportunity_provider.dart';
 import '../../providers/saved_scholarship_provider.dart';
 import '../../providers/student_provider.dart';
+import '../../providers/training_provider.dart';
 import '../../screens/notifications_screen.dart';
 import '../../screens/settings/about_avenirdz_screen.dart';
 import '../../screens/settings/help_center_screen.dart';
@@ -61,6 +62,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       context.read<SavedScholarshipProvider>().fetchSavedScholarships(
         currentUser.uid,
       ),
+      context.read<TrainingProvider>().fetchSavedTrainings(currentUser.uid),
       context.read<ProjectIdeaProvider>().fetchSavedIdeas(currentUser.uid),
       context.read<CvProvider>().loadCv(currentUser.uid),
     ]);
@@ -155,7 +157,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       child: _DashboardStatCard(
                         title: 'Saved',
                         value:
-                            '${savedProvider.savedOpportunities.length + savedScholarshipProvider.savedScholarships.length + savedIdeasProvider.savedIdeas.length}',
+                            '${savedProvider.savedOpportunities.length + savedScholarshipProvider.savedScholarships.length + context.watch<TrainingProvider>().savedTrainings.length + savedIdeasProvider.savedIdeas.length}',
                         icon: Icons.bookmark_outline_rounded,
                         gradient: SettingsFlowPalette.secondaryGradient,
                         accentColor: Colors.white,

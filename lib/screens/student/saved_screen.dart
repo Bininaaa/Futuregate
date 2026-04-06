@@ -3,22 +3,25 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import 'package:url_launcher/url_launcher.dart';
+
 import '../../models/opportunity_model.dart';
 import '../../models/saved_idea_model.dart';
 import '../../models/saved_opportunity_model.dart';
 import '../../models/saved_scholarship_model.dart';
+import '../../models/training_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/opportunity_provider.dart';
 import '../../providers/project_idea_provider.dart';
 import '../../providers/saved_opportunity_provider.dart';
 import '../../providers/saved_scholarship_provider.dart';
+import '../../providers/training_provider.dart';
 import '../../services/opportunity_service.dart';
 import '../../services/scholarship_service.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/ideas/innovation_hub_theme.dart';
-import '../../widgets/opportunity_type_badge.dart';
 import '../../widgets/student_opportunity_hub_widgets.dart';
 import 'idea_details_screen.dart';
 import 'opportunities_screen.dart';
@@ -32,7 +35,7 @@ class SavedScreen extends StatefulWidget {
   State<SavedScreen> createState() => _SavedScreenState();
 }
 
-enum _SavedHubFilter { all, opportunities, scholarships, ideas }
+enum _SavedHubFilter { all, opportunities, scholarships, trainings, ideas }
 
 class _SavedScreenState extends State<SavedScreen> {
   final OpportunityService _opportunityService = OpportunityService();
@@ -85,6 +88,7 @@ class _SavedScreenState extends State<SavedScreen> {
       context.read<SavedScholarshipProvider>().fetchSavedScholarships(
         studentId,
       ),
+      context.read<TrainingProvider>().fetchSavedTrainings(studentId),
       context.read<ProjectIdeaProvider>().fetchSavedIdeas(studentId),
       context.read<OpportunityProvider>().fetchOpportunities(),
     ]);
@@ -93,11 +97,13 @@ class _SavedScreenState extends State<SavedScreen> {
   List<_SavedHubItem> _buildItems({
     required List<SavedOpportunityModel> opportunities,
     required List<SavedScholarshipModel> scholarships,
+    required List<TrainingModel> trainings,
     required List<SavedIdeaModel> ideas,
   }) {
     final items = <_SavedHubItem>[
       ...opportunities.map(_SavedHubItem.opportunity),
       ...scholarships.map(_SavedHubItem.scholarship),
+      ...trainings.map(_SavedHubItem.training),
       ...ideas.map(_SavedHubItem.idea),
     ];
 
@@ -137,6 +143,7 @@ class _SavedScreenState extends State<SavedScreen> {
         item.kind == _SavedHubItemKind.opportunity,
       _SavedHubFilter.scholarships =>
         item.kind == _SavedHubItemKind.scholarship,
+      _SavedHubFilter.trainings => item.kind == _SavedHubItemKind.training,
       _SavedHubFilter.ideas => item.kind == _SavedHubItemKind.idea,
     };
   }
@@ -144,14 +151,19 @@ class _SavedScreenState extends State<SavedScreen> {
   int _countForFilter({
     required List<SavedOpportunityModel> opportunities,
     required List<SavedScholarshipModel> scholarships,
+    required List<TrainingModel> trainings,
     required List<SavedIdeaModel> ideas,
     required _SavedHubFilter filter,
   }) {
     return switch (filter) {
       _SavedHubFilter.all =>
-        opportunities.length + scholarships.length + ideas.length,
+        opportunities.length +
+            scholarships.length +
+            trainings.length +
+            ideas.length,
       _SavedHubFilter.opportunities => opportunities.length,
       _SavedHubFilter.scholarships => scholarships.length,
+      _SavedHubFilter.trainings => trainings.length,
       _SavedHubFilter.ideas => ideas.length,
     };
   }
@@ -161,6 +173,7 @@ class _SavedScreenState extends State<SavedScreen> {
       _SavedHubFilter.all => 'All',
       _SavedHubFilter.opportunities => 'Opportunities',
       _SavedHubFilter.scholarships => 'Scholarships',
+      _SavedHubFilter.trainings => 'Trainings',
       _SavedHubFilter.ideas => 'Ideas',
     };
   }
@@ -170,6 +183,7 @@ class _SavedScreenState extends State<SavedScreen> {
       _SavedHubFilter.all => StudentOpportunityHubPalette.primary,
       _SavedHubFilter.opportunities => StudentOpportunityHubPalette.accent,
       _SavedHubFilter.scholarships => StudentOpportunityHubPalette.secondary,
+      _SavedHubFilter.trainings => const Color(0xFF6366F1),
       _SavedHubFilter.ideas => InnovationHubPalette.primary,
     };
   }
@@ -191,6 +205,9 @@ class _SavedScreenState extends State<SavedScreen> {
           break;
         case _SavedHubItemKind.scholarship:
           await _openScholarship(item.scholarship!);
+          break;
+        case _SavedHubItemKind.training:
+          await _openTraining(item.training!);
           break;
         case _SavedHubItemKind.idea:
           await _openIdea(item.idea!);
@@ -258,6 +275,22 @@ class _SavedScreenState extends State<SavedScreen> {
     );
   }
 
+  Future<void> _openTraining(TrainingModel training) async {
+    final link = training.displayLink;
+    if (link.isEmpty) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No link available for this training.')),
+      );
+      return;
+    }
+
+    final uri = Uri.tryParse(link);
+    if (uri != null && await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
+
   Future<void> _openIdea(SavedIdeaModel saved) async {
     await Navigator.push(
       context,
@@ -293,6 +326,13 @@ class _SavedScreenState extends State<SavedScreen> {
             .unsaveScholarship(item.scholarship!.id, studentId);
         successMessage = 'Removed from saved scholarships';
         break;
+      case _SavedHubItemKind.training:
+        error = await context.read<TrainingProvider>().unsaveTraining(
+          userId: studentId,
+          trainingId: item.training!.id,
+        );
+        successMessage = 'Removed from saved trainings';
+        break;
       case _SavedHubItemKind.idea:
         error = await context.read<ProjectIdeaProvider>().toggleSave(
           item.idea!.idea,
@@ -321,16 +361,19 @@ class _SavedScreenState extends State<SavedScreen> {
   Widget build(BuildContext context) {
     final savedOpportunityProvider = context.watch<SavedOpportunityProvider>();
     final savedScholarshipProvider = context.watch<SavedScholarshipProvider>();
+    final trainingProvider = context.watch<TrainingProvider>();
     final savedIdeasProvider = context.watch<ProjectIdeaProvider>();
 
     final items = _buildItems(
       opportunities: savedOpportunityProvider.savedOpportunities,
       scholarships: savedScholarshipProvider.savedScholarships,
+      trainings: trainingProvider.savedTrainings,
       ideas: savedIdeasProvider.savedIdeas,
     );
     final totalSaved = _countForFilter(
       opportunities: savedOpportunityProvider.savedOpportunities,
       scholarships: savedScholarshipProvider.savedScholarships,
+      trainings: trainingProvider.savedTrainings,
       ideas: savedIdeasProvider.savedIdeas,
       filter: _SavedHubFilter.all,
     );
@@ -341,6 +384,7 @@ class _SavedScreenState extends State<SavedScreen> {
         !hasAnyItems &&
         (savedOpportunityProvider.isLoading ||
             savedScholarshipProvider.isLoading ||
+            trainingProvider.isSavedLoading ||
             savedIdeasProvider.savedIdeasLoading);
 
     return AppShellBackground(
@@ -392,9 +436,10 @@ class _SavedScreenState extends State<SavedScreen> {
                               .length,
                           scholarships:
                               savedScholarshipProvider.savedScholarships.length,
+                          trainings: trainingProvider.savedTrainings.length,
                           ideas: savedIdeasProvider.savedIdeas.length,
                         ),
-                        const SizedBox(height: 14),
+                        const SizedBox(height: 12),
                         if ((savedIdeasProvider.savedIdeasError ?? '')
                             .trim()
                             .isNotEmpty)
@@ -408,14 +453,14 @@ class _SavedScreenState extends State<SavedScreen> {
                         if ((savedIdeasProvider.savedIdeasError ?? '')
                             .trim()
                             .isNotEmpty)
-                          const SizedBox(height: 14),
+                          const SizedBox(height: 12),
                         StudentOpportunitySearchField(
                           controller: _searchController,
                           hintText:
-                              'Search by title, company, provider, creator, or type',
+                              'Search by title, company, provider, or category',
                           onChanged: (_) => setState(() {}),
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 10),
                         SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
                           child: Row(
@@ -430,7 +475,7 @@ class _SavedScreenState extends State<SavedScreen> {
                                     ),
                                     child: StudentOpportunityFilterChip(
                                       label:
-                                          '${_filterLabel(filter)} ${_countForFilter(opportunities: savedOpportunityProvider.savedOpportunities, scholarships: savedScholarshipProvider.savedScholarships, ideas: savedIdeasProvider.savedIdeas, filter: filter)}',
+                                          '${_filterLabel(filter)} (${_countForFilter(opportunities: savedOpportunityProvider.savedOpportunities, scholarships: savedScholarshipProvider.savedScholarships, trainings: trainingProvider.savedTrainings, ideas: savedIdeasProvider.savedIdeas, filter: filter)})',
                                       selected: filter == _selectedFilter,
                                       color: _filterColor(filter),
                                       onTap: () {
@@ -447,15 +492,15 @@ class _SavedScreenState extends State<SavedScreen> {
                                 .toList(growable: false),
                           ),
                         ),
-                        const SizedBox(height: 18),
+                        const SizedBox(height: 14),
                         Text(
                           hasFilters
-                              ? '${items.length} saved items in this view'
+                              ? '${items.length} items shown'
                               : totalSaved == 1
-                              ? '1 saved item ready when you need it'
-                              : '$totalSaved saved items ready when you need them',
+                              ? '1 saved item'
+                              : '$totalSaved saved items',
                           style: GoogleFonts.poppins(
-                            fontSize: 13,
+                            fontSize: 12.5,
                             fontWeight: FontWeight.w600,
                             color: StudentOpportunityHubPalette.textSecondary,
                           ),
@@ -468,9 +513,9 @@ class _SavedScreenState extends State<SavedScreen> {
                   const SliverFillRemaining(
                     hasScrollBody: false,
                     child: StudentOpportunityLoadingState(
-                      title: 'Loading your saved shelf...',
+                      title: 'Loading saved items...',
                       message:
-                          'Gathering your saved opportunities, scholarships, and ideas into one place.',
+                          'Pulling together your saved opportunities, scholarships, trainings, and ideas.',
                     ),
                   )
                 else if (items.isEmpty)
@@ -484,8 +529,8 @@ class _SavedScreenState extends State<SavedScreen> {
                           ? 'No saved items match this view'
                           : 'Nothing saved yet',
                       message: hasFilters
-                          ? 'Try clearing the search or switching the content filter to bring more saved items back into view.'
-                          : 'Save opportunities, scholarships, or ideas you like, then come back here to compare them calmly.',
+                          ? 'Try a different search or filter to see more saved items.'
+                          : 'Save opportunities, scholarships, trainings, or ideas, and they will appear here.',
                       actionLabel: 'Explore opportunities',
                       onAction: () => Navigator.push(
                         context,
@@ -497,7 +542,7 @@ class _SavedScreenState extends State<SavedScreen> {
                   )
                 else
                   SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
+                    padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
                     sliver: SliverList(
                       delegate: SliverChildBuilderDelegate((context, index) {
                         final item = items[index];
@@ -505,7 +550,7 @@ class _SavedScreenState extends State<SavedScreen> {
 
                         return Padding(
                           padding: EdgeInsets.only(
-                            bottom: index == items.length - 1 ? 0 : 14,
+                            bottom: index == items.length - 1 ? 0 : 10,
                           ),
                           child: _SavedHubCard(
                             item: item,
@@ -561,6 +606,14 @@ class _SavedHubCard extends StatelessWidget {
           onOpen: onOpen,
           onRemove: onRemove,
         );
+      case _SavedHubItemKind.training:
+        return _SavedTrainingCard(
+          item: item.training!,
+          isOpening: isOpening,
+          isRemoving: isRemoving,
+          onOpen: onOpen,
+          onRemove: onRemove,
+        );
       case _SavedHubItemKind.idea:
         return _SavedIdeaCard(
           item: item.idea!,
@@ -577,12 +630,14 @@ class _SavedCompactSummary extends StatelessWidget {
   final int total;
   final int opportunities;
   final int scholarships;
+  final int trainings;
   final int ideas;
 
   const _SavedCompactSummary({
     required this.total,
     required this.opportunities,
     required this.scholarships,
+    required this.trainings,
     required this.ideas,
   });
 
@@ -590,10 +645,10 @@ class _SavedCompactSummary extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.92),
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(22),
         border: Border.all(
           color: StudentOpportunityHubPalette.border.withValues(alpha: 0.95),
         ),
@@ -624,16 +679,16 @@ class _SavedCompactSummary extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Saved shelf',
+                      'Saved items',
                       style: GoogleFonts.poppins(
-                        fontSize: 16,
+                        fontSize: 15,
                         fontWeight: FontWeight.w700,
                         color: StudentOpportunityHubPalette.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      'All your saved things in one place.',
+                      'Everything you saved, in one simple list.',
                       style: GoogleFonts.poppins(
                         fontSize: 12,
                         color: StudentOpportunityHubPalette.textSecondary,
@@ -644,39 +699,35 @@ class _SavedCompactSummary extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 14),
-          Row(
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
             children: [
-              Expanded(
-                child: _SavedMiniStat(
-                  label: 'Total',
-                  value: '$total',
-                  color: StudentOpportunityHubPalette.primary,
-                ),
+              _SavedMiniStat(
+                label: 'Total',
+                value: '$total',
+                color: StudentOpportunityHubPalette.primary,
               ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _SavedMiniStat(
-                  label: 'Opps',
-                  value: '$opportunities',
-                  color: StudentOpportunityHubPalette.accent,
-                ),
+              _SavedMiniStat(
+                label: 'Opportunities',
+                value: '$opportunities',
+                color: StudentOpportunityHubPalette.accent,
               ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _SavedMiniStat(
-                  label: 'Scholarships',
-                  value: '$scholarships',
-                  color: StudentOpportunityHubPalette.secondary,
-                ),
+              _SavedMiniStat(
+                label: 'Scholarships',
+                value: '$scholarships',
+                color: StudentOpportunityHubPalette.secondary,
               ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _SavedMiniStat(
-                  label: 'Ideas',
-                  value: '$ideas',
-                  color: InnovationHubPalette.primary,
-                ),
+              _SavedMiniStat(
+                label: 'Trainings',
+                value: '$trainings',
+                color: const Color(0xFF6366F1),
+              ),
+              _SavedMiniStat(
+                label: 'Ideas',
+                value: '$ideas',
+                color: InnovationHubPalette.primary,
               ),
             ],
           ),
@@ -700,17 +751,20 @@ class _SavedMiniStat extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: color.withValues(alpha: 0.12)),
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             value,
             style: GoogleFonts.poppins(
-              fontSize: 16,
+              fontSize: 15,
               fontWeight: FontWeight.w700,
               color: StudentOpportunityHubPalette.textPrimary,
             ),
@@ -718,9 +772,8 @@ class _SavedMiniStat extends StatelessWidget {
           const SizedBox(height: 2),
           Text(
             label,
-            textAlign: TextAlign.center,
             style: GoogleFonts.poppins(
-              fontSize: 9.6,
+              fontSize: 10.5,
               fontWeight: FontWeight.w600,
               color: color,
             ),
@@ -753,80 +806,36 @@ class _SavedOpportunityCard extends StatelessWidget {
     final isExpired = _isExpired(deadline);
     final isClosingSoon = _isClosingSoon(deadline);
 
-    return _SavedCardFrame(
+    return _SavedListCard(
       accent: accent,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(child: OpportunityTypeBadge(type: item.type)),
-              const SizedBox(width: 10),
-              StudentOpportunityMetaPill(
-                icon: Icons.bookmark_added_outlined,
-                label: _relativeSavedLabel(item.savedAt?.toDate()),
-              ),
-            ],
+      leadingIcon: OpportunityType.icon(item.type),
+      typeLabel: OpportunityType.label(item.type),
+      savedLabel: _relativeSavedLabel(item.savedAt?.toDate()),
+      title: item.title,
+      subtitle: item.companyName,
+      meta: [
+        _SavedMetaChip(
+          icon: Icons.location_on_outlined,
+          label: item.location.trim().isEmpty
+              ? 'Location not specified'
+              : item.location.trim(),
+        ),
+        _SavedMetaChip(
+          icon: isExpired ? Icons.event_busy_outlined : Icons.flag_outlined,
+          label: _deadlineLabel(deadline, item.deadline),
+          tone: _deadlineTone(deadline),
+        ),
+        if (isClosingSoon && !isExpired)
+          const _SavedMetaChip(
+            icon: Icons.local_fire_department_outlined,
+            label: 'Closing soon',
+            tone: StudentOpportunityHubPalette.accent,
           ),
-          const SizedBox(height: 14),
-          Text(item.title, style: _SavedCardText.title),
-          const SizedBox(height: 6),
-          Text(item.companyName, style: _SavedCardText.subtitle),
-          const SizedBox(height: 14),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              StudentOpportunityMetaPill(
-                icon: Icons.location_on_outlined,
-                label: item.location.trim().isEmpty
-                    ? 'Location not specified'
-                    : item.location.trim(),
-              ),
-              StudentOpportunityMetaPill(
-                icon: isExpired
-                    ? Icons.event_busy_outlined
-                    : Icons.flag_outlined,
-                label: _deadlineLabel(deadline, item.deadline),
-                tone: _deadlineTone(deadline),
-              ),
-              if (isClosingSoon && !isExpired)
-                const StudentOpportunityMetaPill(
-                  icon: Icons.local_fire_department_outlined,
-                  label: 'Closing soon',
-                  tone: StudentOpportunityHubPalette.accent,
-                ),
-            ],
-          ),
-          const SizedBox(height: 14),
-          _InsightBanner(
-            icon: isExpired
-                ? Icons.history_toggle_off_rounded
-                : isClosingSoon
-                ? Icons.alarm_rounded
-                : Icons.bookmark_outline_rounded,
-            tone: isExpired
-                ? StudentOpportunityHubPalette.error
-                : isClosingSoon
-                ? StudentOpportunityHubPalette.accent
-                : StudentOpportunityHubPalette.primary,
-            message: isExpired
-                ? 'The deadline may have passed, but you kept this saved for reference.'
-                : isClosingSoon
-                ? 'This saved opportunity needs attention soon if you still want to apply.'
-                : 'A clean shortlist entry you can revisit anytime before you decide to apply.',
-          ),
-          const SizedBox(height: 14),
-          _SavedActionRow(
-            isOpening: isOpening,
-            isRemoving: isRemoving,
-            onOpen: onOpen,
-            onRemove: onRemove,
-            primaryLabel: 'View details',
-          ),
-        ],
-      ),
+      ],
+      isOpening: isOpening,
+      isRemoving: isRemoving,
+      onOpen: onOpen,
+      onRemove: onRemove,
     );
   }
 }
@@ -854,84 +863,111 @@ class _SavedScholarshipCard extends StatelessWidget {
         ? 'Scholarship'
         : item.fundingType.trim();
 
-    return _SavedCardFrame(
+    return _SavedListCard(
       accent: accent,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: accent.withValues(alpha: 0.10),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Text(
-                  fundingLabel.toUpperCase(),
-                  style: GoogleFonts.poppins(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: accent,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 10),
-              StudentOpportunityMetaPill(
-                icon: Icons.bookmark_added_outlined,
-                label: _relativeSavedLabel(item.savedAt?.toDate()),
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
-          Text(item.title, style: _SavedCardText.title),
-          const SizedBox(height: 6),
-          Text(item.provider, style: _SavedCardText.subtitle),
-          const SizedBox(height: 14),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              StudentOpportunityMetaPill(
-                icon: Icons.public_rounded,
-                label: item.location.trim().isEmpty
-                    ? 'Destination not specified'
-                    : item.location.trim(),
-              ),
-              StudentOpportunityMetaPill(
-                icon: Icons.event_available_outlined,
-                label: _deadlineLabel(deadline, item.deadline),
-                tone: _deadlineTone(deadline),
-              ),
-              if (item.level.trim().isNotEmpty)
-                StudentOpportunityMetaPill(
-                  icon: Icons.school_outlined,
-                  label: item.level.trim(),
-                  tone: StudentOpportunityHubPalette.secondary,
-                ),
-            ],
-          ),
-          const SizedBox(height: 14),
-          _InsightBanner(
-            icon: Icons.workspace_premium_outlined,
+      leadingIcon: Icons.school_outlined,
+      typeLabel: fundingLabel,
+      savedLabel: _relativeSavedLabel(item.savedAt?.toDate()),
+      title: item.title,
+      subtitle: item.provider,
+      meta: [
+        _SavedMetaChip(
+          icon: Icons.public_rounded,
+          label: item.location.trim().isEmpty
+              ? 'Destination not specified'
+              : item.location.trim(),
+        ),
+        _SavedMetaChip(
+          icon: Icons.event_available_outlined,
+          label: _deadlineLabel(deadline, item.deadline),
+          tone: _deadlineTone(deadline),
+        ),
+        if (item.level.trim().isNotEmpty)
+          _SavedMetaChip(
+            icon: Icons.school_outlined,
+            label: item.level.trim(),
             tone: StudentOpportunityHubPalette.secondary,
-            message:
-                'This scholarship stayed on your shelf so you can compare funding, destination, and deadline without rushing.',
           ),
-          const SizedBox(height: 14),
-          _SavedActionRow(
-            isOpening: isOpening,
-            isRemoving: isRemoving,
-            onOpen: onOpen,
-            onRemove: onRemove,
-            primaryLabel: 'View scholarship',
+      ],
+      isOpening: isOpening,
+      isRemoving: isRemoving,
+      onOpen: onOpen,
+      onRemove: onRemove,
+    );
+  }
+}
+
+class _SavedTrainingCard extends StatelessWidget {
+  final TrainingModel item;
+  final bool isOpening;
+  final bool isRemoving;
+  final VoidCallback onOpen;
+  final VoidCallback onRemove;
+
+  const _SavedTrainingCard({
+    required this.item,
+    required this.isOpening,
+    required this.isRemoving,
+    required this.onOpen,
+    required this.onRemove,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    const accent = Color(0xFF6366F1);
+    final typeLabel = item.type.trim().isEmpty
+        ? 'Training'
+        : item.type[0].toUpperCase() + item.type.substring(1);
+    final summary = item.description.trim();
+
+    return _SavedListCard(
+      accent: accent,
+      leadingIcon: Icons.menu_book_rounded,
+      typeLabel: typeLabel,
+      savedLabel: _relativeSavedLabel(null),
+      title: item.title,
+      subtitle: item.provider,
+      summary: summary.isEmpty ? null : summary,
+      meta: [
+        if (item.level.trim().isNotEmpty)
+          _SavedMetaChip(
+            icon: Icons.signal_cellular_alt_rounded,
+            label: item.level.trim(),
+            tone: accent,
           ),
-        ],
-      ),
+        if (item.duration.trim().isNotEmpty)
+          _SavedMetaChip(
+            icon: Icons.schedule_rounded,
+            label: item.duration.trim(),
+          ),
+        if (item.domain.trim().isNotEmpty)
+          _SavedMetaChip(
+            icon: Icons.category_outlined,
+            label: item.domain.trim(),
+            tone: accent,
+          ),
+        if (item.language.trim().isNotEmpty)
+          _SavedMetaChip(
+            icon: Icons.language_rounded,
+            label: item.language.trim(),
+          ),
+        if (item.isFree == true)
+          const _SavedMetaChip(
+            icon: Icons.money_off_rounded,
+            label: 'Free',
+            tone: Color(0xFF10B981),
+          ),
+        if (item.hasCertificate == true)
+          const _SavedMetaChip(
+            icon: Icons.verified_outlined,
+            label: 'Certificate',
+            tone: Color(0xFF6366F1),
+          ),
+      ],
+      isOpening: isOpening,
+      isRemoving: isRemoving,
+      onOpen: onOpen,
+      onRemove: onRemove,
     );
   }
 }
@@ -954,110 +990,179 @@ class _SavedIdeaCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final accent = innovationCategoryColor(item.idea.displayCategory);
+    final summary = item.idea.cardSummary.trim();
+
+    return _SavedListCard(
+      accent: accent,
+      leadingIcon: innovationCategoryIcon(item.idea.displayCategory),
+      typeLabel: item.idea.displayCategory,
+      savedLabel: _relativeSavedLabel(item.savedAt?.toDate()),
+      title: item.idea.title,
+      subtitle: item.idea.creatorName,
+      summary: summary.isEmpty ? null : summary,
+      meta: [
+        _SavedMetaChip(
+          icon: Icons.timeline_outlined,
+          label: item.idea.displayStage,
+          tone: innovationStageColor(item.idea.displayStage),
+        ),
+        _SavedMetaChip(
+          icon: Icons.people_outline_rounded,
+          label: '${item.idea.interestedCount} interested',
+          tone: StudentOpportunityHubPalette.secondary,
+        ),
+      ],
+      isOpening: isOpening,
+      isRemoving: isRemoving,
+      onOpen: onOpen,
+      onRemove: onRemove,
+    );
+  }
+}
+
+class _SavedListCard extends StatelessWidget {
+  final Color accent;
+  final IconData leadingIcon;
+  final String typeLabel;
+  final String savedLabel;
+  final String title;
+  final String subtitle;
+  final String? summary;
+  final List<Widget> meta;
+  final bool isOpening;
+  final bool isRemoving;
+  final VoidCallback onOpen;
+  final VoidCallback onRemove;
+
+  const _SavedListCard({
+    required this.accent,
+    required this.leadingIcon,
+    required this.typeLabel,
+    required this.savedLabel,
+    required this.title,
+    required this.subtitle,
+    this.summary,
+    required this.meta,
+    required this.isOpening,
+    required this.isRemoving,
+    required this.onOpen,
+    required this.onRemove,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final normalizedSummary = summary?.trim() ?? '';
+    final isBusy = isOpening || isRemoving;
 
     return _SavedCardFrame(
       accent: accent,
-      child: Column(
+      onTap: isBusy ? null : onOpen,
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: accent.withValues(alpha: 0.10),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Text(
-                  item.idea.displayCategory,
-                  style: GoogleFonts.poppins(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: accent,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 10),
-              StudentOpportunityMetaPill(
-                icon: Icons.bookmark_added_outlined,
-                label: _relativeSavedLabel(item.savedAt?.toDate()),
-              ),
-            ],
+          Container(
+            width: 42,
+            height: 42,
+            decoration: BoxDecoration(
+              color: accent.withValues(alpha: 0.10),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Icon(leadingIcon, color: accent, size: 20),
           ),
-          const SizedBox(height: 14),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: 46,
-                height: 46,
-                decoration: BoxDecoration(
-                  color: accent.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Icon(
-                  innovationCategoryIcon(item.idea.displayCategory),
-                  color: accent,
-                  size: 22,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 6,
                   children: [
-                    Text(item.idea.title, style: _SavedCardText.title),
-                    const SizedBox(height: 6),
-                    Text(item.idea.creatorName, style: _SavedCardText.subtitle),
+                    _SavedLabelChip(
+                      label: typeLabel,
+                      tone: accent,
+                      filled: true,
+                    ),
+                    _SavedLabelChip(
+                      label: savedLabel,
+                      icon: Icons.bookmark_added_outlined,
+                    ),
                   ],
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Text(
-            item.idea.cardSummary,
-            style: GoogleFonts.poppins(
-              fontSize: 12.5,
-              height: 1.55,
-              color: StudentOpportunityHubPalette.textSecondary,
+                const SizedBox(height: 8),
+                Text(
+                  title,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: _SavedCardText.title,
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  subtitle,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: _SavedCardText.subtitle,
+                ),
+                if (normalizedSummary.isNotEmpty) ...[
+                  const SizedBox(height: 6),
+                  Text(
+                    normalizedSummary,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.poppins(
+                      fontSize: 11.6,
+                      height: 1.45,
+                      color: StudentOpportunityHubPalette.textSecondary,
+                    ),
+                  ),
+                ],
+                if (meta.isNotEmpty) ...[
+                  const SizedBox(height: 10),
+                  Wrap(spacing: 6, runSpacing: 6, children: meta),
+                ],
+              ],
             ),
           ),
-          const SizedBox(height: 14),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
+          const SizedBox(width: 10),
+          Column(
             children: [
-              StudentOpportunityMetaPill(
-                icon: Icons.timeline_outlined,
-                label: item.idea.displayStage,
-                tone: innovationStageColor(item.idea.displayStage),
+              Container(
+                width: 34,
+                height: 34,
+                decoration: BoxDecoration(
+                  color: accent.withValues(alpha: 0.10),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Center(
+                  child: isOpening
+                      ? SizedBox(
+                          width: 15,
+                          height: 15,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: accent,
+                          ),
+                        )
+                      : Icon(
+                          Icons.chevron_right_rounded,
+                          color: accent,
+                          size: 20,
+                        ),
+                ),
               ),
-              StudentOpportunityMetaPill(
-                icon: Icons.people_outline_rounded,
-                label: '${item.idea.interestedCount} interested',
-                tone: StudentOpportunityHubPalette.secondary,
+              const SizedBox(height: 8),
+              _SavedTrailingButton(
+                icon: isRemoving
+                    ? Icons.hourglass_top_rounded
+                    : Icons.bookmark_remove_outlined,
+                tooltip: 'Remove',
+                background: StudentOpportunityHubPalette.error.withValues(
+                  alpha: 0.08,
+                ),
+                foreground: StudentOpportunityHubPalette.error,
+                onTap: isBusy ? null : onRemove,
               ),
             ],
-          ),
-          const SizedBox(height: 14),
-          _InsightBanner(
-            icon: Icons.lightbulb_outline_rounded,
-            tone: accent,
-            message:
-                'This idea is still on your radar, ready for a deeper look when you want inspiration or collaboration.',
-          ),
-          const SizedBox(height: 14),
-          _SavedActionRow(
-            isOpening: isOpening,
-            isRemoving: isRemoving,
-            onOpen: onOpen,
-            onRemove: onRemove,
-            primaryLabel: 'View idea',
           ),
         ],
       ),
@@ -1068,80 +1173,138 @@ class _SavedIdeaCard extends StatelessWidget {
 class _SavedCardFrame extends StatelessWidget {
   final Color accent;
   final Widget child;
+  final VoidCallback? onTap;
 
-  const _SavedCardFrame({required this.accent, required this.child});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.94),
-        borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: accent.withValues(alpha: 0.12)),
-      ),
-      child: child,
-    );
-  }
-}
-
-class _SavedActionRow extends StatelessWidget {
-  final bool isOpening;
-  final bool isRemoving;
-  final VoidCallback onOpen;
-  final VoidCallback onRemove;
-  final String primaryLabel;
-
-  const _SavedActionRow({
-    required this.isOpening,
-    required this.isRemoving,
-    required this.onOpen,
-    required this.onRemove,
-    required this.primaryLabel,
+  const _SavedCardFrame({
+    required this.accent,
+    required this.child,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: _SavedActionButton(
-            label: isOpening ? 'Opening...' : primaryLabel,
-            icon: isOpening
-                ? Icons.hourglass_top_rounded
-                : Icons.north_east_rounded,
-            background: StudentOpportunityHubPalette.primary,
-            foreground: Colors.white,
-            onTap: isOpening || isRemoving ? null : onOpen,
-          ),
+    return Material(
+      color: Colors.transparent,
+      child: Ink(
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.95),
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(color: accent.withValues(alpha: 0.12)),
         ),
-        const SizedBox(width: 10),
-        Expanded(
-          child: _SavedActionButton(
-            label: isRemoving ? 'Removing...' : 'Remove',
-            icon: isRemoving
-                ? Icons.hourglass_top_rounded
-                : Icons.bookmark_remove_outlined,
-            background: StudentOpportunityHubPalette.surfaceAlt,
-            foreground: StudentOpportunityHubPalette.error,
-            onTap: isOpening || isRemoving ? null : onRemove,
-          ),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(22),
+          child: Padding(padding: const EdgeInsets.all(14), child: child),
         ),
-      ],
+      ),
     );
   }
 }
 
-class _SavedActionButton extends StatelessWidget {
+class _SavedLabelChip extends StatelessWidget {
   final String label;
+  final IconData? icon;
+  final Color tone;
+  final bool filled;
+
+  const _SavedLabelChip({
+    required this.label,
+    this.icon,
+    this.tone = StudentOpportunityHubPalette.textMuted,
+    this.filled = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+      decoration: BoxDecoration(
+        color: filled
+            ? tone.withValues(alpha: 0.10)
+            : Colors.white.withValues(alpha: 0.82),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(
+          color: filled
+              ? tone.withValues(alpha: 0.18)
+              : StudentOpportunityHubPalette.border.withValues(alpha: 0.92),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icon != null) ...[
+            Icon(icon, size: 12, color: tone),
+            const SizedBox(width: 5),
+          ],
+          Text(
+            label,
+            style: GoogleFonts.poppins(
+              fontSize: 10.4,
+              fontWeight: FontWeight.w600,
+              color: filled ? tone : StudentOpportunityHubPalette.textSecondary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SavedMetaChip extends StatelessWidget {
   final IconData icon;
+  final String label;
+  final Color? tone;
+
+  const _SavedMetaChip({required this.icon, required this.label, this.tone});
+
+  @override
+  Widget build(BuildContext context) {
+    final resolvedTone = tone ?? StudentOpportunityHubPalette.textMuted;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
+      decoration: BoxDecoration(
+        color: tone == null
+            ? Colors.white.withValues(alpha: 0.86)
+            : resolvedTone.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(
+          color: tone == null
+              ? StudentOpportunityHubPalette.border.withValues(alpha: 0.90)
+              : resolvedTone.withValues(alpha: 0.14),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 13, color: resolvedTone),
+          const SizedBox(width: 5),
+          Text(
+            label,
+            style: GoogleFonts.poppins(
+              fontSize: 10.6,
+              fontWeight: FontWeight.w600,
+              color: tone == null
+                  ? StudentOpportunityHubPalette.textSecondary
+                  : resolvedTone,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SavedTrailingButton extends StatelessWidget {
+  final IconData icon;
+  final String tooltip;
   final Color background;
   final Color foreground;
   final VoidCallback? onTap;
 
-  const _SavedActionButton({
-    required this.label,
+  const _SavedTrailingButton({
     required this.icon,
+    required this.tooltip,
     required this.background,
     required this.foreground,
     required this.onTap,
@@ -1149,84 +1312,21 @@ class _SavedActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        decoration: BoxDecoration(
-          color: background,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: foreground.withValues(alpha: 0.10)),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 18, color: foreground),
-            const SizedBox(width: 8),
-            Flexible(
-              child: Text(
-                label,
-                overflow: TextOverflow.ellipsis,
-                style: GoogleFonts.poppins(
-                  fontSize: 12.5,
-                  fontWeight: FontWeight.w700,
-                  color: foreground,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _InsightBanner extends StatelessWidget {
-  final IconData icon;
-  final Color tone;
-  final String message;
-
-  const _InsightBanner({
-    required this.icon,
-    required this.tone,
-    required this.message,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: tone.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: tone.withValues(alpha: 0.10)),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 34,
-            height: 34,
-            decoration: BoxDecoration(
-              color: tone.withValues(alpha: 0.10),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(icon, color: tone, size: 18),
+    return SizedBox(
+      width: 34,
+      height: 34,
+      child: IconButton(
+        tooltip: tooltip,
+        onPressed: onTap,
+        padding: EdgeInsets.zero,
+        style: IconButton.styleFrom(
+          backgroundColor: background,
+          foregroundColor: foreground,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              message,
-              style: GoogleFonts.poppins(
-                fontSize: 12,
-                height: 1.5,
-                color: StudentOpportunityHubPalette.textSecondary,
-              ),
-            ),
-          ),
-        ],
+        ),
+        icon: Icon(icon, size: 17),
       ),
     );
   }
@@ -1302,31 +1402,33 @@ class _InlineBanner extends StatelessWidget {
 
 abstract final class _SavedCardText {
   static final TextStyle title = GoogleFonts.poppins(
-    fontSize: 18,
-    height: 1.2,
+    fontSize: 16,
+    height: 1.18,
     fontWeight: FontWeight.w700,
     color: StudentOpportunityHubPalette.textPrimary,
   );
 
   static final TextStyle subtitle = GoogleFonts.poppins(
-    fontSize: 13,
+    fontSize: 12.4,
     fontWeight: FontWeight.w600,
     color: StudentOpportunityHubPalette.textSecondary,
   );
 }
 
-enum _SavedHubItemKind { opportunity, scholarship, idea }
+enum _SavedHubItemKind { opportunity, scholarship, training, idea }
 
 class _SavedHubItem {
   final _SavedHubItemKind kind;
   final SavedOpportunityModel? opportunity;
   final SavedScholarshipModel? scholarship;
+  final TrainingModel? training;
   final SavedIdeaModel? idea;
 
   const _SavedHubItem._({
     required this.kind,
     this.opportunity,
     this.scholarship,
+    this.training,
     this.idea,
   });
 
@@ -1344,6 +1446,10 @@ class _SavedHubItem {
     );
   }
 
+  factory _SavedHubItem.training(TrainingModel value) {
+    return _SavedHubItem._(kind: _SavedHubItemKind.training, training: value);
+  }
+
   factory _SavedHubItem.idea(SavedIdeaModel value) {
     return _SavedHubItem._(kind: _SavedHubItemKind.idea, idea: value);
   }
@@ -1354,6 +1460,8 @@ class _SavedHubItem {
         return opportunity!.id;
       case _SavedHubItemKind.scholarship:
         return scholarship!.id;
+      case _SavedHubItemKind.training:
+        return training!.id;
       case _SavedHubItemKind.idea:
         return idea!.id;
     }
@@ -1365,6 +1473,8 @@ class _SavedHubItem {
         return opportunity!.savedAt?.toDate();
       case _SavedHubItemKind.scholarship:
         return scholarship!.savedAt?.toDate();
+      case _SavedHubItemKind.training:
+        return null;
       case _SavedHubItemKind.idea:
         return idea!.savedAt?.toDate();
     }
@@ -1376,6 +1486,8 @@ class _SavedHubItem {
         return opportunity!.title;
       case _SavedHubItemKind.scholarship:
         return scholarship!.title;
+      case _SavedHubItemKind.training:
+        return training!.title;
       case _SavedHubItemKind.idea:
         return idea!.idea.title;
     }
@@ -1387,6 +1499,8 @@ class _SavedHubItem {
         return opportunity!.companyName;
       case _SavedHubItemKind.scholarship:
         return scholarship!.provider;
+      case _SavedHubItemKind.training:
+        return training!.provider;
       case _SavedHubItemKind.idea:
         return idea!.idea.creatorName;
     }
@@ -1398,6 +1512,8 @@ class _SavedHubItem {
         return opportunity!.location;
       case _SavedHubItemKind.scholarship:
         return scholarship!.location;
+      case _SavedHubItemKind.training:
+        return training!.description;
       case _SavedHubItemKind.idea:
         return idea!.idea.cardSummary;
     }
@@ -1409,6 +1525,10 @@ class _SavedHubItem {
         return OpportunityType.label(opportunity!.type);
       case _SavedHubItemKind.scholarship:
         return 'Scholarship';
+      case _SavedHubItemKind.training:
+        return training!.type.isNotEmpty
+            ? training!.type[0].toUpperCase() + training!.type.substring(1)
+            : 'Training';
       case _SavedHubItemKind.idea:
         return idea!.idea.displayCategory;
     }

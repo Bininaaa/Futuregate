@@ -373,11 +373,10 @@ class ScholarshipDetailScreen extends StatelessWidget {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          error == null
-              ? existing != null
-                    ? 'Removed from saved scholarships'
-                    : 'Scholarship saved'
-              : 'Could not update saved scholarship',
+          error ??
+              (existing != null
+                  ? 'Removed from saved scholarships'
+                  : 'Scholarship saved'),
         ),
       ),
     );

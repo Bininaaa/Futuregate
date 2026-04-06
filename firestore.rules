@@ -58,6 +58,10 @@ service cloud.firestore {
       return /databases/$(database)/documents/trainings/$(trainingId);
     }
 
+    function scholarshipPath(scholarshipId) {
+      return /databases/$(database)/documents/scholarships/$(scholarshipId);
+    }
+
     function conversationPath(conversationId) {
       return /databases/$(database)/documents/conversations/$(conversationId);
     }
@@ -714,6 +718,7 @@ service cloud.firestore {
               'title',
               'description',
               'provider',
+              'providerLogo',
               'duration',
               'level',
               'link',
@@ -726,6 +731,11 @@ service cloud.firestore {
               'previewLink',
               'isApproved',
               'isFeatured',
+              'rating',
+              'learnerCount',
+              'learnerCountLabel',
+              'isFree',
+              'hasCertificate',
               'savedAt'
             ]) &&
             request.resource.data.id == trainingId &&
@@ -1014,6 +1024,33 @@ service cloud.firestore {
           request.resource.data.id == savedId &&
           request.resource.data.studentId == request.auth.uid &&
           exists(opportunityPath(request.resource.data.opportunityId));
+
+      allow update: if false;
+
+      allow delete: if isAdmin() ||
+          (isStudent() && resource.data.studentId == request.auth.uid);
+    }
+
+    match /savedScholarships/{savedId} {
+      allow read: if signedIn() &&
+          (isAdmin() || resource.data.studentId == request.auth.uid);
+
+      allow create: if isStudent() &&
+          request.resource.data.keys().hasOnly([
+            'id',
+            'scholarshipId',
+            'studentId',
+            'title',
+            'provider',
+            'deadline',
+            'location',
+            'fundingType',
+            'level',
+            'savedAt'
+          ]) &&
+          request.resource.data.id == savedId &&
+          request.resource.data.studentId == request.auth.uid &&
+          exists(scholarshipPath(request.resource.data.scholarshipId));
 
       allow update: if false;
 

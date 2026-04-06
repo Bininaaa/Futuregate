@@ -8,6 +8,7 @@ import '../../providers/application_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/cv_provider.dart';
 import '../../providers/opportunity_provider.dart';
+import '../../providers/saved_opportunity_provider.dart';
 import '../../services/application_service.dart';
 import '../../utils/application_status.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
@@ -59,6 +60,7 @@ class _SponsoredOpportunitiesScreenState
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
   final Set<String> _busyApplyIds = <String>{};
+  final Set<String> _busySaveIds = <String>{};
 
   String _searchQuery = '';
   _SponsoredFilter _activeFilter = _SponsoredFilter.all;
@@ -99,6 +101,7 @@ class _SponsoredOpportunitiesScreenState
   Future<void> _loadData({bool force = false}) async {
     final provider = context.read<OpportunityProvider>();
     final applicationProvider = context.read<ApplicationProvider>();
+    final savedProvider = context.read<SavedOpportunityProvider>();
     final userId = context.read<AuthProvider>().userModel?.uid;
 
     final futures = <Future<void>>[];
@@ -108,6 +111,9 @@ class _SponsoredOpportunitiesScreenState
 
     if (userId != null && userId.isNotEmpty) {
       futures.add(applicationProvider.fetchSubmittedApplications(userId));
+      if (force || savedProvider.savedOpportunities.isEmpty) {
+        futures.add(savedProvider.fetchSavedOpportunities(userId));
+      }
     }
 
     if (futures.isNotEmpty) {
@@ -117,6 +123,67 @@ class _SponsoredOpportunitiesScreenState
 
   void _openOpportunity(OpportunityModel opportunity) {
     OpportunityDetailScreen.show(context, opportunity);
+  }
+
+  Future<void> _toggleSavedOpportunity(OpportunityModel opportunity) async {
+    final authProvider = context.read<AuthProvider>();
+    final savedProvider = context.read<SavedOpportunityProvider>();
+    final messenger = ScaffoldMessenger.of(context);
+    final userId = authProvider.userModel?.uid;
+
+    if (_busySaveIds.contains(opportunity.id)) {
+      return;
+    }
+
+    if (userId == null || userId.isEmpty) {
+      messenger.showSnackBar(
+        const SnackBar(
+          content: Text('You must be logged in to save opportunities'),
+        ),
+      );
+      return;
+    }
+
+    final matchingSaved = savedProvider.savedOpportunities
+        .where((item) => item.opportunityId == opportunity.id)
+        .toList();
+    final existingSaved = matchingSaved.isNotEmpty ? matchingSaved.first : null;
+
+    setState(() {
+      _busySaveIds.add(opportunity.id);
+    });
+
+    try {
+      String? error;
+      var message = 'Opportunity saved';
+
+      if (existingSaved != null) {
+        error = await savedProvider.unsaveOpportunity(existingSaved.id, userId);
+        message = 'Removed from saved opportunities';
+      } else {
+        error = await savedProvider.saveOpportunity(
+          studentId: userId,
+          opportunityId: opportunity.id,
+          title: opportunity.title,
+          companyName: _companyName(opportunity),
+          type: opportunity.type,
+          location: opportunity.location,
+          deadline: opportunity.deadlineLabel,
+        );
+      }
+
+      if (!mounted) {
+        return;
+      }
+
+      messenger.showSnackBar(SnackBar(content: Text(error ?? message)));
+    } finally {
+      if (mounted) {
+        setState(() {
+          _busySaveIds.remove(opportunity.id);
+        });
+      }
+    }
   }
 
   Future<void> _applyNow(_SponsoredOpportunityCardModel item) async {
@@ -804,10 +871,14 @@ class _SponsoredOpportunitiesScreenState
   Widget build(BuildContext context) {
     final applicationProvider = context.watch<ApplicationProvider>();
     final opportunityProvider = context.watch<OpportunityProvider>();
+    final savedProvider = context.watch<SavedOpportunityProvider>();
     final allOpportunities = opportunityProvider.opportunities;
     final allCards = _buildCardModels(allOpportunities);
     final visibleCards = _applyFilters(allCards);
     final appliedStatuses = applicationProvider.appliedStatusMap;
+    final savedIds = savedProvider.savedOpportunities
+        .map((item) => item.opportunityId)
+        .toSet();
 
     return AppShellBackground(
       child: Scaffold(
@@ -920,9 +991,12 @@ class _SponsoredOpportunitiesScreenState
                       itemBuilder: (context, index) {
                         final item = visibleCards[index];
                         final opportunity = item.opportunity;
-                        final isBusy =
+                        final isApplying =
                             opportunity != null &&
                             _busyApplyIds.contains(opportunity.id);
+                        final isSaveBusy =
+                            opportunity != null &&
+                            _busySaveIds.contains(opportunity.id);
                         final actionState = _actionStateForOpportunity(
                           opportunity,
                           appliedStatuses,
@@ -930,7 +1004,11 @@ class _SponsoredOpportunitiesScreenState
 
                         return _SponsoredOpportunityCard(
                           item: item,
-                          isApplying: isBusy,
+                          isApplying: isApplying,
+                          isSaved:
+                              opportunity != null &&
+                              savedIds.contains(opportunity.id),
+                          isSaveBusy: isSaveBusy,
                           actionState: actionState,
                           onTap: opportunity == null
                               ? null
@@ -938,6 +1016,9 @@ class _SponsoredOpportunitiesScreenState
                           onApply: actionState.isEnabled
                               ? () => _applyNow(item)
                               : null,
+                          onToggleSaved: opportunity == null
+                              ? null
+                              : () => _toggleSavedOpportunity(opportunity),
                           onViewDetails: opportunity == null
                               ? null
                               : () => _openOpportunity(opportunity),
@@ -1156,17 +1237,23 @@ class _SponsoredFilterChip extends StatelessWidget {
 class _SponsoredOpportunityCard extends StatelessWidget {
   final _SponsoredOpportunityCardModel item;
   final bool isApplying;
+  final bool isSaved;
+  final bool isSaveBusy;
   final _SponsoredActionState actionState;
   final VoidCallback? onTap;
   final VoidCallback? onApply;
+  final VoidCallback? onToggleSaved;
   final VoidCallback? onViewDetails;
 
   const _SponsoredOpportunityCard({
     required this.item,
     required this.isApplying,
+    required this.isSaved,
+    required this.isSaveBusy,
     required this.actionState,
     required this.onTap,
     required this.onApply,
+    required this.onToggleSaved,
     required this.onViewDetails,
   });
 
@@ -1176,21 +1263,9 @@ class _SponsoredOpportunityCard extends StatelessWidget {
     final innerRadius = BorderRadius.circular(20);
     final accentSurface = item.iconBackgroundColor;
     final accentColor = item.iconForegroundColor;
-    final warmTint = Color.lerp(
-      accentSurface,
-      const Color(0xFFFFF6EA),
-      0.72,
-    )!;
-    final warmGlow = Color.lerp(
-      accentColor,
-      const Color(0xFFF4C890),
-      0.48,
-    )!;
-    final warmStroke = Color.lerp(
-      accentColor,
-      const Color(0xFFE7BD8C),
-      0.68,
-    )!;
+    final warmTint = Color.lerp(accentSurface, const Color(0xFFFFF6EA), 0.72)!;
+    final warmGlow = Color.lerp(accentColor, const Color(0xFFF4C890), 0.48)!;
+    final warmStroke = Color.lerp(accentColor, const Color(0xFFE7BD8C), 0.68)!;
     final stats = <_SponsoredStatData>[
       if (item.primaryStat != null) item.primaryStat!,
       if (item.secondaryStat != null) item.secondaryStat!,
@@ -1334,6 +1409,15 @@ class _SponsoredOpportunityCard extends StatelessWidget {
                                 _SponsoredIconTile(item: item),
                                 const Spacer(),
                                 _SponsoredStatusBadge(badge: item.badge),
+                                if (onToggleSaved != null) ...[
+                                  const SizedBox(width: 8),
+                                  _SponsoredBookmarkButton(
+                                    isSaved: isSaved,
+                                    isLoading: isSaveBusy,
+                                    onTap: onToggleSaved,
+                                    activeColor: accentColor,
+                                  ),
+                                ],
                               ],
                             ),
                             const SizedBox(height: 10),
@@ -1406,7 +1490,11 @@ class _SponsoredOpportunityCard extends StatelessWidget {
                               const SizedBox(height: 10),
                               Row(
                                 children: [
-                                  for (var index = 0; index < stats.length; index++) ...[
+                                  for (
+                                    var index = 0;
+                                    index < stats.length;
+                                    index++
+                                  ) ...[
                                     Expanded(
                                       child: _SponsoredStatBox(
                                         stat: stats[index],
@@ -1515,6 +1603,73 @@ class _SponsoredStatusBadge extends StatelessWidget {
           fontWeight: FontWeight.w700,
           letterSpacing: 0.3,
           color: badge.foregroundColor,
+        ),
+      ),
+    );
+  }
+}
+
+class _SponsoredBookmarkButton extends StatelessWidget {
+  final bool isSaved;
+  final bool isLoading;
+  final VoidCallback? onTap;
+  final Color activeColor;
+
+  const _SponsoredBookmarkButton({
+    required this.isSaved,
+    required this.isLoading,
+    required this.onTap,
+    required this.activeColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: isLoading ? null : onTap,
+        borderRadius: BorderRadius.circular(14),
+        child: Ink(
+          width: 38,
+          height: 38,
+          decoration: BoxDecoration(
+            color: isSaved
+                ? activeColor.withValues(alpha: 0.12)
+                : Colors.white.withValues(alpha: 0.92),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: isSaved
+                  ? activeColor.withValues(alpha: 0.22)
+                  : OpportunityDashboardPalette.border,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.03),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Center(
+            child: isLoading
+                ? SizedBox(
+                    width: 17,
+                    height: 17,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(activeColor),
+                    ),
+                  )
+                : Icon(
+                    isSaved
+                        ? Icons.bookmark_rounded
+                        : Icons.bookmark_outline_rounded,
+                    size: 18,
+                    color: isSaved
+                        ? activeColor
+                        : OpportunityDashboardPalette.textSecondary,
+                  ),
+          ),
         ),
       ),
     );

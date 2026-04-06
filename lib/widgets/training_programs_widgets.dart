@@ -269,12 +269,18 @@ class TrainingCourseCard extends StatelessWidget {
   final TrainingCourseCardData data;
   final VoidCallback onTap;
   final VoidCallback onStart;
+  final bool isSaved;
+  final bool isSaveBusy;
+  final VoidCallback? onToggleSaved;
 
   const TrainingCourseCard({
     super.key,
     required this.data,
     required this.onTap,
     required this.onStart,
+    this.isSaved = false,
+    this.isSaveBusy = false,
+    this.onToggleSaved,
   });
 
   @override
@@ -461,6 +467,14 @@ class TrainingCourseCard extends StatelessWidget {
                                 else
                                   const Spacer(),
                                 const SizedBox(width: 8),
+                                if (onToggleSaved != null) ...[
+                                  _SaveTrainingButton(
+                                    isSaved: isSaved,
+                                    isBusy: isSaveBusy,
+                                    onTap: onToggleSaved,
+                                  ),
+                                  const SizedBox(width: 8),
+                                ],
                                 _StartTrainingButton(onTap: onStart),
                               ],
                             ),
@@ -483,12 +497,18 @@ class TrainingCourseListCard extends StatelessWidget {
   final TrainingCourseCardData data;
   final VoidCallback onTap;
   final VoidCallback onStart;
+  final bool isSaved;
+  final bool isSaveBusy;
+  final VoidCallback? onToggleSaved;
 
   const TrainingCourseListCard({
     super.key,
     required this.data,
     required this.onTap,
     required this.onStart,
+    this.isSaved = false,
+    this.isSaveBusy = false,
+    this.onToggleSaved,
   });
 
   @override
@@ -619,6 +639,14 @@ class TrainingCourseListCard extends StatelessWidget {
                         else
                           const Spacer(),
                         const SizedBox(width: 8),
+                        if (onToggleSaved != null) ...[
+                          _SaveTrainingButton(
+                            isSaved: isSaved,
+                            isBusy: isSaveBusy,
+                            onTap: onToggleSaved,
+                          ),
+                          const SizedBox(width: 8),
+                        ],
                         _StartTrainingButton(onTap: onStart),
                       ],
                     ),
@@ -1755,6 +1783,67 @@ class _StartTrainingButton extends StatelessWidget {
               fontWeight: FontWeight.w700,
               color: OpportunityDashboardPalette.primary,
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SaveTrainingButton extends StatelessWidget {
+  final bool isSaved;
+  final bool isBusy;
+  final VoidCallback? onTap;
+
+  const _SaveTrainingButton({
+    required this.isSaved,
+    required this.isBusy,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(13),
+      child: InkWell(
+        onTap: isBusy ? null : onTap,
+        borderRadius: BorderRadius.circular(13),
+        child: Ink(
+          width: 38,
+          height: 34,
+          decoration: BoxDecoration(
+            color: isSaved
+                ? OpportunityDashboardPalette.accent.withValues(alpha: 0.14)
+                : OpportunityDashboardPalette.background,
+            borderRadius: BorderRadius.circular(13),
+            border: Border.all(
+              color:
+                  (isSaved
+                          ? OpportunityDashboardPalette.accent
+                          : OpportunityDashboardPalette.border)
+                      .withValues(alpha: 0.9),
+            ),
+          ),
+          child: Center(
+            child: isBusy
+                ? SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: OpportunityDashboardPalette.primary,
+                    ),
+                  )
+                : Icon(
+                    isSaved
+                        ? Icons.bookmark_rounded
+                        : Icons.bookmark_outline_rounded,
+                    size: 18,
+                    color: isSaved
+                        ? OpportunityDashboardPalette.accent
+                        : OpportunityDashboardPalette.textSecondary,
+                  ),
           ),
         ),
       ),
