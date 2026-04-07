@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(wc -l /c/AV4/lib/config/*.dart)",
+      "Bash(wc -l /c/AV4/lib/providers/*.dart)",
+      "Bash(wc -l /c/AV4/lib/services/*.dart)",
+      "Bash(wc -l /c/AV4/lib/routes/*.dart)",
+      "Bash(wc -l /c/AV4/lib/utils/*.dart)",
+      "Bash(ls -lh /c/AV4/lib/screens/settings/settings_flow_theme.dart /c/AV4/lib/config/*.dart)"
+    ]
+  }
+}

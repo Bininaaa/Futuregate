@@ -255,27 +255,47 @@ class StudentPillNavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final compact = MediaQuery.sizeOf(context).width < 430;
+    final width = MediaQuery.sizeOf(context).width;
+    final compact = width < 400;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
         decoration: BoxDecoration(
-          color: const Color(0xFF090C14),
+          gradient: LinearGradient(
+            colors: [
+              Color.alphaBlend(
+                OpportunityDashboardPalette.primaryDark.withValues(alpha: 0.34),
+                const Color(0xFF090C14),
+              ),
+              const Color(0xFF090C14),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
           borderRadius: BorderRadius.circular(34),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.16),
-              blurRadius: 32,
-              offset: const Offset(0, 18),
+              color: OpportunityDashboardPalette.primary.withValues(
+                alpha: 0.14,
+              ),
+              blurRadius: 26,
+              offset: const Offset(0, 14),
+            ),
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.18),
+              blurRadius: 18,
+              offset: const Offset(0, 8),
             ),
           ],
         ),
         child: Row(
           children: List<Widget>.generate(
             destinations.length,
-            (index) => Expanded(
+            (index) => Flexible(
+              flex: currentIndex == index ? (compact ? 14 : 15) : 6,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 3),
                 child: _StudentPillNavItem(
@@ -347,6 +367,10 @@ class _StudentPillNavItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final label = compact ? destination.compactLabel : destination.label;
+    final selectedBackground = Color.alphaBlend(
+      OpportunityDashboardPalette.primary.withValues(alpha: 0.12),
+      const Color(0xFF2B2B2E),
+    );
 
     return InkWell(
       onTap: onTap,
@@ -355,13 +379,17 @@ class _StudentPillNavItem extends StatelessWidget {
         duration: const Duration(milliseconds: 220),
         curve: Curves.easeOutCubic,
         height: 48,
-        padding: EdgeInsets.symmetric(horizontal: selected ? 10 : 0),
+        padding: EdgeInsets.symmetric(
+          horizontal: selected ? (compact ? 8 : 10) : 0,
+        ),
         decoration: BoxDecoration(
-          color: selected ? const Color(0xFF252934) : Colors.transparent,
+          color: selected ? selectedBackground : Colors.transparent,
           borderRadius: BorderRadius.circular(999),
-          border: selected
-              ? Border.all(color: Colors.white.withValues(alpha: 0.08))
-              : null,
+          border: Border.all(
+            color: selected
+                ? Colors.white.withValues(alpha: 0.06)
+                : Colors.transparent,
+          ),
         ),
         child: AnimatedSwitcher(
           duration: const Duration(milliseconds: 200),
@@ -373,15 +401,15 @@ class _StudentPillNavItem extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
-                      width: 24,
-                      height: 24,
+                      width: compact ? 20 : 24,
+                      height: compact ? 20 : 24,
                       decoration: const BoxDecoration(
                         color: Colors.white,
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
                         destination.activeIcon,
-                        size: 14,
+                        size: compact ? 11 : 14,
                         color: const Color(0xFF090C14),
                       ),
                     ),
@@ -392,7 +420,7 @@ class _StudentPillNavItem extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: GoogleFonts.poppins(
-                          fontSize: compact ? 10.4 : 11.2,
+                          fontSize: compact ? 9.4 : 11.2,
                           fontWeight: FontWeight.w600,
                           color: Colors.white,
                         ),
@@ -404,8 +432,8 @@ class _StudentPillNavItem extends StatelessWidget {
                   key: ValueKey<String>('idle-${destination.label}'),
                   child: Icon(
                     destination.icon,
-                    size: 21,
-                    color: Colors.white.withValues(alpha: 0.82),
+                    size: compact ? 18 : 21,
+                    color: Colors.white.withValues(alpha: 0.88),
                   ),
                 ),
         ),
