@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -36,6 +37,7 @@ import '../../widgets/opportunity_dashboard_widgets.dart';
 import '../../widgets/opportunity_type_badge.dart';
 import '../../widgets/profile_avatar.dart';
 import '../notifications_screen.dart';
+import '../settings/settings_screen.dart';
 import 'applied_opportunities_screen.dart';
 import 'cv_screen.dart';
 import 'saved_screen.dart';
@@ -366,16 +368,52 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                       context,
                       MaterialPageRoute(builder: (_) => const ProfileScreen()),
                     ),
-                    child: Container(
-                      padding: const EdgeInsets.all(3),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.42),
-                          width: 2,
-                        ),
+                    child: SizedBox(
+                      width: 62,
+                      height: 62,
+                      child: Stack(
+                        children: [
+                          Positioned.fill(
+                            child: CustomPaint(
+                              painter: _ProfileCompletionRingPainter(
+                                progress: profileCompletion / 100,
+                                trackColor: Colors.white.withValues(alpha: 0.18),
+                                progressColor: profileCompletion >= 100
+                                    ? const Color(0xFF47D16C)
+                                    : const Color(0xFFFFC857),
+                                strokeWidth: 2.6,
+                              ),
+                            ),
+                          ),
+                          Center(
+                            child: ProfileAvatar(user: user, radius: 25),
+                          ),
+                          Positioned(
+                            bottom: 0,
+                            right: 0,
+                            child: Container(
+                              width: 22,
+                              height: 22,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.18),
+                                    blurRadius: 4,
+                                    offset: const Offset(0, 1),
+                                  ),
+                                ],
+                              ),
+                              child: const Icon(
+                                Icons.edit_rounded,
+                                size: 12,
+                                color: Color(0xFF4F46E5),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                      child: ProfileAvatar(user: user, radius: 25),
                     ),
                   ),
                   const SizedBox(width: 14),
@@ -421,28 +459,50 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
+                        builder: (_) => const SettingsScreen(),
+                      ),
+                    ),
+                    child: Container(
+                      width: 42,
+                      height: 42,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.11),
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: const Icon(
+                        Icons.settings_outlined,
+                        color: Colors.white,
+                        size: 21,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  GestureDetector(
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
                         builder: (_) => const NotificationsScreen(),
                       ),
                     ),
                     child: Container(
-                      width: 46,
-                      height: 46,
+                      width: 42,
+                      height: 42,
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.11),
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(14),
                       ),
                       child: Stack(
                         alignment: Alignment.center,
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.notifications_outlined,
                             color: Colors.white,
-                            size: 22,
+                            size: 21,
                           ),
                           if (unreadCount > 0)
                             Positioned(
-                              top: 8,
-                              right: 8,
+                              top: 6,
+                              right: 6,
                               child: Container(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 5,
@@ -2134,7 +2194,8 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
       ),
     ]..sort((a, b) => a.sortDate.compareTo(b.sortDate));
 
-    final urgentKeys = urgentActivities.map((item) => item.dedupeKey).toSet();
+    final urgentKeys =
+        urgentActivities.take(2).map((item) => item.dedupeKey).toSet();
 
     final applicationActivities = _applicationActivityEntries(
       context,
@@ -2391,7 +2452,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
           _daysUntil(deadline) <= 7;
       final key = 'saved_opp:${item.opportunityId}';
 
-      if (isUrgent != urgentOnly || excludedKeys.contains(key)) {
+      if (urgentOnly ? !isUrgent : excludedKeys.contains(key)) {
         continue;
       }
 
@@ -2470,7 +2531,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
           _daysUntil(deadline) <= 7;
       final key = 'saved_scholarship:${item.scholarshipId}';
 
-      if (isUrgent != urgentOnly || excludedKeys.contains(key)) {
+      if (urgentOnly ? !isUrgent : excludedKeys.contains(key)) {
         continue;
       }
 
@@ -3677,4 +3738,56 @@ class _DashboardActivityEntry {
     this.trailingColor,
     required this.onTap,
   });
+}
+
+class _ProfileCompletionRingPainter extends CustomPainter {
+  final double progress;
+  final Color trackColor;
+  final Color progressColor;
+  final double strokeWidth;
+
+  _ProfileCompletionRingPainter({
+    required this.progress,
+    required this.trackColor,
+    required this.progressColor,
+    required this.strokeWidth,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = (size.shortestSide - strokeWidth) / 2;
+    final rect = Rect.fromCircle(center: center, radius: radius);
+
+    final trackPaint = Paint()
+      ..color = trackColor
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = strokeWidth
+      ..strokeCap = StrokeCap.round;
+
+    canvas.drawCircle(center, radius, trackPaint);
+
+    if (progress > 0) {
+      final progressPaint = Paint()
+        ..color = progressColor
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = strokeWidth
+        ..strokeCap = StrokeCap.round;
+
+      canvas.drawArc(
+        rect,
+        -math.pi / 2,
+        2 * math.pi * progress.clamp(0.0, 1.0),
+        false,
+        progressPaint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _ProfileCompletionRingPainter oldDelegate) =>
+      oldDelegate.progress != progress ||
+      oldDelegate.trackColor != trackColor ||
+      oldDelegate.progressColor != progressColor ||
+      oldDelegate.strokeWidth != strokeWidth;
 }

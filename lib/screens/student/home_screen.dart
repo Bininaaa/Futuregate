@@ -177,32 +177,33 @@ class _HomeScreenState extends State<HomeScreen> {
         body: SafeArea(
           child: Column(
             children: [
-              StudentWorkspaceTopBar(
-                title: destination.title,
-                subtitle: destination.subtitle,
-                icon: destination.icon,
-                actions: [
-                  StudentWorkspaceActionButton(
-                    icon: Icons.notifications_outlined,
-                    tooltip: 'Notifications',
-                    badgeCount: unreadCount,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const NotificationsScreen(),
-                        ),
-                      );
-                    },
-                  ),
-                  StudentWorkspaceActionButton(
-                    icon: Icons.logout_rounded,
-                    tooltip: 'Logout',
-                    color: OpportunityDashboardPalette.error,
-                    onTap: () => showLogoutConfirmationSheet(context),
-                  ),
-                ],
-              ),
+              if (_currentIndex != 0)
+                StudentWorkspaceTopBar(
+                  title: destination.title,
+                  subtitle: destination.subtitle,
+                  icon: destination.icon,
+                  actions: [
+                    StudentWorkspaceActionButton(
+                      icon: Icons.notifications_outlined,
+                      tooltip: 'Notifications',
+                      badgeCount: unreadCount,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const NotificationsScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                    StudentWorkspaceActionButton(
+                      icon: Icons.logout_rounded,
+                      tooltip: 'Logout',
+                      color: OpportunityDashboardPalette.error,
+                      onTap: () => showLogoutConfirmationSheet(context),
+                    ),
+                  ],
+                ),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
