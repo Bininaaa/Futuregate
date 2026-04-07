@@ -111,6 +111,10 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
   }
 
   _OpportunityDashboardFilter _filterFromInitialValue(String? value) {
+    if (value == null || value.isEmpty) {
+      return _OpportunityDashboardFilter.all;
+    }
+
     switch (OpportunityType.parse(value)) {
       case OpportunityType.job:
         return _OpportunityDashboardFilter.job;
@@ -873,36 +877,24 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
     return opportunity.updatedAt?.toDate() ?? _postedAt(opportunity);
   }
 
+  DateTime? _latestDate(OpportunityModel opportunity) {
+    return _postedAt(opportunity) ?? opportunity.updatedAt?.toDate();
+  }
+
   int _compareLatestFirst(OpportunityModel left, OpportunityModel right) {
-    final rightPosted = _postedAt(right);
-    final leftPosted = _postedAt(left);
-    if (leftPosted != null || rightPosted != null) {
-      if (leftPosted == null) {
+    final leftDate = _latestDate(left);
+    final rightDate = _latestDate(right);
+    if (leftDate != null || rightDate != null) {
+      if (leftDate == null) {
         return 1;
       }
-      if (rightPosted == null) {
+      if (rightDate == null) {
         return -1;
       }
 
-      final postedDiff = rightPosted.compareTo(leftPosted);
-      if (postedDiff != 0) {
-        return postedDiff;
-      }
-    }
-
-    final rightUpdated = right.updatedAt?.toDate();
-    final leftUpdated = left.updatedAt?.toDate();
-    if (leftUpdated != null || rightUpdated != null) {
-      if (leftUpdated == null) {
-        return 1;
-      }
-      if (rightUpdated == null) {
-        return -1;
-      }
-
-      final updatedDiff = rightUpdated.compareTo(leftUpdated);
-      if (updatedDiff != 0) {
-        return updatedDiff;
+      final dateDiff = rightDate.compareTo(leftDate);
+      if (dateDiff != 0) {
+        return dateDiff;
       }
     }
 
