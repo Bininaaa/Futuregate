@@ -175,18 +175,18 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
               ),
             ),
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
+              padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
               sliver: SliverToBoxAdapter(
                 child: _buildSectionTitle('Categories'),
               ),
             ),
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
               sliver: SliverToBoxAdapter(child: _buildCategoriesGrid(context)),
             ),
             if (showProfilePrompt)
               SliverPadding(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
                 sliver: SliverToBoxAdapter(
                   child: _buildProfileCompletionPrompt(
                     context,
@@ -197,19 +197,19 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                 ),
               ),
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 22, 20, 0),
+              padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
               sliver: SliverToBoxAdapter(
                 child: _buildSectionHeader('Closing Soon'),
               ),
             ),
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 10, 0, 0),
+              padding: const EdgeInsets.fromLTRB(20, 8, 0, 0),
               sliver: SliverToBoxAdapter(
                 child: _buildClosingSoonSection(context),
               ),
             ),
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
+              padding: const EdgeInsets.fromLTRB(20, 22, 20, 0),
               sliver: SliverToBoxAdapter(
                 child: _buildSectionHeader(
                   'Recommended',
@@ -225,13 +225,13 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
               ),
             ),
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(0, 12, 0, 0),
+              padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
               sliver: SliverToBoxAdapter(
                 child: _buildRecommendedSection(context),
               ),
             ),
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
+              padding: const EdgeInsets.fromLTRB(20, 22, 20, 0),
               sliver: SliverToBoxAdapter(
                 child: _buildSectionHeader(
                   'Recent',
@@ -718,7 +718,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
   // ═══════════════════════════════════════════════════════════════════════════
 
   Widget _buildCategoriesGrid(BuildContext context) {
-    final categories = [
+    final categories = <_CategoryItem>[
       _CategoryItem(
         title: 'Jobs',
         icon: Icons.work_outline,
@@ -749,7 +749,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
         ),
       ),
       _CategoryItem(
-        title: 'Scholarships',
+        title: 'Scolarships',
         icon: Icons.emoji_events_outlined,
         gradient: [const Color(0xFF2ED573), const Color(0xFF7BED9F)],
         onTap: () => Navigator.push(
@@ -795,19 +795,26 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
       ),
     ];
 
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 4,
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
-        childAspectRatio: 0.84,
-      ),
-      itemCount: categories.length,
-      itemBuilder: (context, index) {
-        final cat = categories[index];
-        return _buildCategoryCard(cat);
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final crossAxisCount = constraints.maxWidth < 300 ? 3 : 4;
+        const spacing = 8.0;
+        final itemWidth =
+            (constraints.maxWidth - ((crossAxisCount - 1) * spacing)) /
+            crossAxisCount;
+
+        return Wrap(
+          spacing: spacing,
+          runSpacing: spacing,
+          children: categories
+              .map(
+                (category) => SizedBox(
+                  width: itemWidth,
+                  child: _buildCategoryCard(category),
+                ),
+              )
+              .toList(growable: false),
+        );
       },
     );
   }
@@ -816,6 +823,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     return GestureDetector(
       onTap: item.onTap,
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Container(
             width: 54,
@@ -839,19 +847,22 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
           ),
           const SizedBox(height: 7),
           SizedBox(
-            height: 24,
+            height: 18,
             child: Center(
-              child: Text(
-                item.title,
-                style: GoogleFonts.poppins(
-                  fontSize: 10.2,
-                  fontWeight: FontWeight.w500,
-                  color: textDark,
-                  height: 1.1,
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  item.title,
+                  style: GoogleFonts.poppins(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w500,
+                    color: textDark,
+                    height: 1.0,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  softWrap: false,
                 ),
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
               ),
             ),
           ),

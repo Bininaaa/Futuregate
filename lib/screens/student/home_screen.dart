@@ -9,10 +9,10 @@ import '../notifications_screen.dart';
 import '../settings/logout_confirmation_sheet.dart';
 import 'chat_list_screen.dart';
 import 'opportunities_screen.dart';
-import 'profile_screen.dart';
 import 'project_ideas_screen.dart';
 import 'scholarships_screen.dart';
 import 'student_dashboard_screen.dart';
+import 'trainings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final int initialIndex;
@@ -47,11 +47,12 @@ class _HomeScreenState extends State<HomeScreen> {
       activeNavIcon: Icons.home_rounded,
     ),
     const _StudentDestination(
-      title: 'Explore',
-      subtitle: 'Jobs, internships, sponsored tracks, and training in one hub.',
+      title: 'Discover',
+      subtitle:
+          'Jobs, internships, and sponsored tracks matched to your next move.',
       icon: Icons.explore_rounded,
-      navLabel: 'Explore',
-      compactNavLabel: 'Explore',
+      navLabel: 'Discover',
+      compactNavLabel: 'Discover',
       navIcon: Icons.explore_outlined,
       activeNavIcon: Icons.explore_rounded,
     ),
@@ -60,9 +61,18 @@ class _HomeScreenState extends State<HomeScreen> {
       subtitle: 'Funding opportunities, deadlines, and global study paths.',
       icon: Icons.school_rounded,
       navLabel: 'Scholarships',
-      compactNavLabel: 'Funds',
+      compactNavLabel: 'Scholarships',
       navIcon: Icons.school_outlined,
       activeNavIcon: Icons.school_rounded,
+    ),
+    const _StudentDestination(
+      title: 'Training',
+      subtitle: 'Courses, books, and certifications that sharpen your journey.',
+      icon: Icons.cast_for_education_rounded,
+      navLabel: 'Training',
+      compactNavLabel: 'Training',
+      navIcon: Icons.cast_for_education_outlined,
+      activeNavIcon: Icons.cast_for_education_rounded,
     ),
     const _StudentDestination(
       title: 'Ideas',
@@ -74,22 +84,13 @@ class _HomeScreenState extends State<HomeScreen> {
       activeNavIcon: Icons.lightbulb_rounded,
     ),
     const _StudentDestination(
-      title: 'Messages',
+      title: 'Chat',
       subtitle: 'Stay close to conversations, follow-ups, and collaboration.',
-      icon: Icons.chat_rounded,
-      navLabel: 'Messages',
+      icon: Icons.chat_bubble_rounded,
+      navLabel: 'Chat',
       compactNavLabel: 'Chat',
       navIcon: Icons.chat_bubble_outline_rounded,
       activeNavIcon: Icons.chat_bubble_rounded,
-    ),
-    const _StudentDestination(
-      title: 'Profile',
-      subtitle: 'Your profile strength, saved activity, and account controls.',
-      icon: Icons.person_rounded,
-      navLabel: 'Profile',
-      compactNavLabel: 'Me',
-      navIcon: Icons.person_outline_rounded,
-      activeNavIcon: Icons.person_rounded,
     ),
   ];
 
@@ -97,9 +98,9 @@ class _HomeScreenState extends State<HomeScreen> {
     StudentDashboardScreen(embedded: true),
     OpportunitiesScreen(embedded: true),
     ScholarshipsScreen(embedded: true),
+    TrainingsScreen(embedded: true),
     ProjectIdeasScreen(embedded: true),
     ChatListScreen(embedded: true),
-    ProfileScreen(embedded: true),
   ];
 
   @override

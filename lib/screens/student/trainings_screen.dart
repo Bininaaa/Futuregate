@@ -11,7 +11,9 @@ import '../../widgets/training_programs_widgets.dart';
 import 'saved_trainings_screen.dart';
 
 class TrainingsScreen extends StatefulWidget {
-  const TrainingsScreen({super.key});
+  final bool embedded;
+
+  const TrainingsScreen({super.key, this.embedded = false});
 
   @override
   State<TrainingsScreen> createState() => _TrainingsScreenState();
@@ -774,117 +776,135 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
     }
 
     if (provider.isLoading && provider.trainings.isEmpty) {
-      return const AppShellBackground(
+      final loadingScaffold = Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SafeArea(
+          top: !widget.embedded,
+          child: const TrainingProgramsLoadingView(),
+        ),
+      );
+
+      if (widget.embedded) {
+        return loadingScaffold;
+      }
+
+      return AppShellBackground(
         child: Scaffold(
           backgroundColor: Colors.transparent,
-          body: SafeArea(child: TrainingProgramsLoadingView()),
+          body: SafeArea(
+            top: !widget.embedded,
+            child: const TrainingProgramsLoadingView(),
+          ),
         ),
       );
     }
 
-    return AppShellBackground(
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: SafeArea(
-          child: RefreshIndicator(
-            onRefresh: _refreshData,
-            color: OpportunityDashboardPalette.primary,
-            child: CustomScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              slivers: [
-                SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(18, 10, 18, 24),
-                  sliver: SliverList(
-                    delegate: SliverChildListDelegate([
-                      TrainingHeaderBar(
-                        onMenuTap: _showMenuSheet,
-                        onSearchTap: _focusSearchField,
+    final scaffold = Scaffold(
+      backgroundColor: Colors.transparent,
+      body: SafeArea(
+        top: !widget.embedded,
+        child: RefreshIndicator(
+          onRefresh: _refreshData,
+          color: OpportunityDashboardPalette.primary,
+          child: CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            slivers: [
+              SliverPadding(
+                padding: const EdgeInsets.fromLTRB(18, 10, 18, 24),
+                sliver: SliverList(
+                  delegate: SliverChildListDelegate([
+                    TrainingHeaderBar(
+                      onMenuTap: _showMenuSheet,
+                      onSearchTap: _focusSearchField,
+                    ),
+                    const SizedBox(height: 22),
+                    const TrainingHeroIntro(),
+                    const SizedBox(height: 18),
+                    Container(
+                      key: _searchSectionKey,
+                      child: TrainingSearchBar(
+                        controller: _searchController,
+                        focusNode: _searchFocusNode,
+                        onClear: _searchController.clear,
                       ),
-                      const SizedBox(height: 22),
-                      const TrainingHeroIntro(),
-                      const SizedBox(height: 18),
-                      Container(
-                        key: _searchSectionKey,
-                        child: TrainingSearchBar(
-                          controller: _searchController,
-                          focusNode: _searchFocusNode,
-                          onClear: _searchController.clear,
-                        ),
-                      ),
-                      if (provider.isSavedLoading) ...[
-                        const SizedBox(height: 12),
-                        const LinearProgressIndicator(minHeight: 2),
-                      ],
-                      if (provider.savedErrorMessage != null) ...[
-                        const SizedBox(height: 16),
-                        TrainingInfoBanner(
-                          message: provider.savedErrorMessage!,
-                        ),
-                      ],
-                      if (provider.errorMessage != null) ...[
-                        const SizedBox(height: 16),
-                        TrainingInfoBanner(
-                          message:
-                              '${provider.errorMessage!} Showing the best training content currently available.',
-                        ),
-                      ],
-                      const SizedBox(height: 18),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TrainingSectionTitle(title: sectionTitle),
-                          ),
-                          TrainingLayoutToggle(
-                            view: _trainingLayoutView,
-                            onChanged: (view) {
-                              setState(() {
-                                _trainingLayoutView = view;
-                              });
-                            },
-                          ),
-                        ],
-                      ),
+                    ),
+                    if (provider.isSavedLoading) ...[
                       const SizedBox(height: 12),
-                      if (showTopEmptyState)
-                        TrainingProgramsEmptyState(
-                          title: 'No trainings match your search',
-                          subtitle: emptySubtitle,
-                        )
-                      else
-                        ...topCards.map(buildTrainingCard),
-                      if (!isSearching) ...[
-                        const SizedBox(height: 6),
-                        const BrowseMoreTopicsCard(),
-                        const SizedBox(height: 10),
-                        TrainingCatalogueSelector(
-                          domains: availableDomains,
-                          selectedDomain: activeDomain,
-                          onSelected: (domain) {
+                      const LinearProgressIndicator(minHeight: 2),
+                    ],
+                    if (provider.savedErrorMessage != null) ...[
+                      const SizedBox(height: 16),
+                      TrainingInfoBanner(message: provider.savedErrorMessage!),
+                    ],
+                    if (provider.errorMessage != null) ...[
+                      const SizedBox(height: 16),
+                      TrainingInfoBanner(
+                        message:
+                            '${provider.errorMessage!} Showing the best training content currently available.',
+                      ),
+                    ],
+                    const SizedBox(height: 18),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TrainingSectionTitle(title: sectionTitle),
+                        ),
+                        TrainingLayoutToggle(
+                          view: _trainingLayoutView,
+                          onChanged: (view) {
                             setState(() {
-                              _selectedDomain = domain;
+                              _trainingLayoutView = view;
                             });
                           },
                         ),
-                        if (showDomainEmptyState) ...[
-                          const SizedBox(height: 16),
-                          TrainingProgramsEmptyState(
-                            title: 'No trainings found',
-                            subtitle: emptySubtitle,
-                          ),
-                        ] else if (additionalCards.isNotEmpty) ...[
-                          const SizedBox(height: 16),
-                          ...additionalCards.map(buildTrainingCard),
-                        ],
                       ],
-                    ]),
-                  ),
+                    ),
+                    const SizedBox(height: 12),
+                    if (showTopEmptyState)
+                      TrainingProgramsEmptyState(
+                        title: 'No trainings match your search',
+                        subtitle: emptySubtitle,
+                      )
+                    else
+                      ...topCards.map(buildTrainingCard),
+                    if (!isSearching) ...[
+                      const SizedBox(height: 6),
+                      const BrowseMoreTopicsCard(),
+                      const SizedBox(height: 10),
+                      TrainingCatalogueSelector(
+                        domains: availableDomains,
+                        selectedDomain: activeDomain,
+                        onSelected: (domain) {
+                          setState(() {
+                            _selectedDomain = domain;
+                          });
+                        },
+                      ),
+                      if (showDomainEmptyState) ...[
+                        const SizedBox(height: 16),
+                        TrainingProgramsEmptyState(
+                          title: 'No trainings found',
+                          subtitle: emptySubtitle,
+                        ),
+                      ] else if (additionalCards.isNotEmpty) ...[
+                        const SizedBox(height: 16),
+                        ...additionalCards.map(buildTrainingCard),
+                      ],
+                    ],
+                  ]),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
     );
+
+    if (widget.embedded) {
+      return scaffold;
+    }
+
+    return AppShellBackground(child: scaffold);
   }
 }
 
