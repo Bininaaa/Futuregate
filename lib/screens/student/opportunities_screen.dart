@@ -1594,7 +1594,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
       appBar: widget.embedded
           ? null
           : StudentWorkspaceAppBar(
-              title: 'Explore',
+              title: 'Discover',
               subtitle:
                   'Jobs, internships, sponsored tracks, and training in one stream.',
               icon: Icons.explore_rounded,

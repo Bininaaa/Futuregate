@@ -5,10 +5,15 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../models/cv_model.dart';
 import '../../models/user_model.dart';
 import '../../models/opportunity_model.dart';
+import '../../models/saved_idea_model.dart';
+import '../../models/saved_opportunity_model.dart';
+import '../../models/saved_scholarship_model.dart';
+import '../../models/scholarship_model.dart';
 import '../../models/student_application_item_model.dart';
 import '../../models/training_model.dart';
 import '../../providers/application_provider.dart';
@@ -19,9 +24,11 @@ import '../../providers/opportunity_provider.dart';
 import '../../providers/project_idea_provider.dart';
 import '../../providers/saved_opportunity_provider.dart';
 import '../../providers/saved_scholarship_provider.dart';
+import '../../providers/scholarship_provider.dart';
 import '../../providers/training_provider.dart';
 import '../../utils/application_status.dart';
 import '../../widgets/app_shell_background.dart';
+import '../../widgets/application_status_badge.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
 import '../../utils/opportunity_type.dart';
@@ -33,12 +40,15 @@ import 'applied_opportunities_screen.dart';
 import 'cv_screen.dart';
 import 'saved_screen.dart';
 import 'profile_screen.dart';
+import 'idea_details_screen.dart';
 import 'opportunities_screen.dart';
 import 'jobs_screen.dart';
 import 'internships_screen.dart';
 import 'opportunity_detail_screen.dart';
 import 'project_ideas_screen.dart';
+import 'scholarship_detail_screen.dart';
 import 'sponsored_opportunities_screen.dart';
+import 'student_home_navigation.dart';
 import 'trainings_screen.dart';
 import 'scholarships_screen.dart';
 
@@ -113,6 +123,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     context.read<OpportunityProvider>().fetchFeaturedOpportunities();
     context.read<OpportunityProvider>().fetchOpportunities();
     context.read<TrainingProvider>().fetchTrainings();
+    context.read<ScholarshipProvider>().fetchScholarships();
   }
 
   void _loadStudentData(String studentId) {
@@ -222,14 +233,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
               sliver: SliverToBoxAdapter(
                 child: _buildSectionHeader(
                   'Recommended',
-                  onSeeAll: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const OpportunitiesScreen(),
-                      ),
-                    );
-                  },
+                  onSeeAll: () => _openDiscover(context),
                 ),
               ),
             ),
@@ -252,32 +256,18 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
             SliverPadding(
               padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
               sliver: SliverToBoxAdapter(
-                child: _buildQuickAccessSection(
-                  context,
-                  dashboardSnapshot,
-                  profileCompletion: profileCompletion,
-                ),
+                child: _buildQuickAccessSection(context),
               ),
             ),
             SliverPadding(
               padding: const EdgeInsets.fromLTRB(20, 22, 20, 0),
               sliver: SliverToBoxAdapter(
-                child: _buildSectionHeader(
-                  'Recent',
-                  onSeeAll: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const OpportunitiesScreen(),
-                      ),
-                    );
-                  },
-                ),
+                child: _buildSectionHeader('Latest Activities'),
               ),
             ),
             SliverPadding(
               padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
-              sliver: _buildRecentSection(context),
+              sliver: _buildLatestActivitiesSection(context, cv),
             ),
           ],
         ),
@@ -588,6 +578,8 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                   ),
                 ],
               ),
+              const SizedBox(height: 10),
+              _buildSavedShortcutBanner(context, snapshot),
             ],
           ),
         ],
@@ -706,10 +698,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     }
 
     void openDiscover() {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => const OpportunitiesScreen()),
-      );
+      _openDiscover(context);
     }
 
     void openProfile() {
@@ -951,82 +940,193 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     );
   }
 
+  Widget _buildSavedShortcutBanner(
+    BuildContext context,
+    _DashboardSnapshot snapshot,
+  ) {
+    final totalSaved = snapshot.savedCount;
+    final summary = totalSaved == 0
+        ? 'Keep your strongest roles, funding, and learning picks one tap away.'
+        : '$totalSaved ${_pluralizedWord(totalSaved, "saved item", "saved items")} ready for a second look.';
+    final chips = <Widget>[
+      if (snapshot.savedOpportunityCount > 0)
+        _buildSavedShortcutChip(
+          '${snapshot.savedOpportunityCount} ${_pluralizedWord(snapshot.savedOpportunityCount, "role", "roles")}',
+        ),
+      if (snapshot.savedScholarshipCount > 0)
+        _buildSavedShortcutChip(
+          '${snapshot.savedScholarshipCount} ${_pluralizedWord(snapshot.savedScholarshipCount, "scholarship", "scholarships")}',
+        ),
+      if (snapshot.savedTrainingCount > 0)
+        _buildSavedShortcutChip('${snapshot.savedTrainingCount} learning'),
+      if (snapshot.savedIdeaCount > 0)
+        _buildSavedShortcutChip(
+          '${snapshot.savedIdeaCount} ${_pluralizedWord(snapshot.savedIdeaCount, "idea", "ideas")}',
+        ),
+    ];
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const SavedScreen()),
+          );
+        },
+        borderRadius: BorderRadius.circular(22),
+        child: Ink(
+          padding: const EdgeInsets.all(13),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.10),
+            borderRadius: BorderRadius.circular(22),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.14)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.08),
+                blurRadius: 18,
+                offset: const Offset(0, 10),
+              ),
+            ],
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.14),
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: const Icon(
+                  Icons.bookmark_rounded,
+                  color: Colors.white,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            'Saved shortlist',
+                            style: GoogleFonts.poppins(
+                              fontSize: 12.6,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 5,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.14),
+                            borderRadius: BorderRadius.circular(999),
+                          ),
+                          child: Text(
+                            totalSaved == 0 ? 'Empty' : '$totalSaved saved',
+                            style: GoogleFonts.poppins(
+                              fontSize: 9.8,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      summary,
+                      style: GoogleFonts.poppins(
+                        fontSize: 10.8,
+                        height: 1.35,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white.withValues(alpha: 0.80),
+                      ),
+                    ),
+                    if (chips.isNotEmpty) ...[
+                      const SizedBox(height: 10),
+                      Wrap(spacing: 8, runSpacing: 8, children: chips),
+                    ],
+                  ],
+                ),
+              ),
+              const SizedBox(width: 10),
+              Container(
+                width: 34,
+                height: 34,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.14),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.arrow_forward_rounded,
+                  color: Colors.white,
+                  size: 18,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSavedShortcutChip(String label) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
+      ),
+      child: Text(
+        label,
+        style: GoogleFonts.poppins(
+          fontSize: 9.6,
+          fontWeight: FontWeight.w700,
+          color: Colors.white.withValues(alpha: 0.92),
+        ),
+      ),
+    );
+  }
+
   // ═══════════════════════════════════════════════════════════════════════════
   // 2. QUICK ACCESS
   // ═══════════════════════════════════════════════════════════════════════════
 
-  Widget _buildQuickAccessSection(
-    BuildContext context,
-    _DashboardSnapshot snapshot, {
-    required int profileCompletion,
-  }) {
-    final cards = <_QuickAccessCardItem>[
-      _QuickAccessCardItem(
+  Widget _buildQuickAccessSection(BuildContext context) {
+    final items = <_QuickAccessTileItem>[
+      _QuickAccessTileItem(
         title: 'Jobs',
-        subtitle: snapshot.jobsCount > 0
-            ? '${snapshot.jobsCount} open ${_pluralizedWord(snapshot.jobsCount, "role", "roles")} ready to explore.'
-            : 'Fresh roles from teams that are hiring.',
-        badge: snapshot.jobsCount > 0 ? '${snapshot.jobsCount} open' : null,
         icon: Icons.work_outline_rounded,
-        accent: const Color(0xFF6C63FF),
+        color: const Color(0xFF6C63FF),
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const JobsScreen()),
         ),
       ),
-      _QuickAccessCardItem(
+      _QuickAccessTileItem(
         title: 'Internships',
-        subtitle: snapshot.internshipsCount > 0
-            ? '${snapshot.internshipsCount} open ${_pluralizedWord(snapshot.internshipsCount, "internship", "internships")} for hands-on growth.'
-            : 'Hands-on experience built for students.',
-        badge: snapshot.internshipsCount > 0
-            ? '${snapshot.internshipsCount} open'
-            : null,
         icon: Icons.school_outlined,
-        accent: const Color(0xFF10B981),
+        color: const Color(0xFF19C37D),
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const InternshipsScreen()),
         ),
       ),
-      _QuickAccessCardItem(
-        title: 'Scholarships',
-        subtitle: snapshot.savedScholarshipCount > 0
-            ? '${snapshot.savedScholarshipCount} saved ${_pluralizedWord(snapshot.savedScholarshipCount, "scholarship", "scholarships")} waiting for a second look.'
-            : 'Funding paths for study, mobility, and research.',
-        badge: snapshot.savedScholarshipCount > 0
-            ? '${snapshot.savedScholarshipCount} saved'
-            : 'Funding',
-        icon: Icons.emoji_events_outlined,
-        accent: const Color(0xFF2ED573),
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const ScholarshipsScreen()),
-        ),
-      ),
-      _QuickAccessCardItem(
-        title: 'Learning',
-        subtitle: snapshot.learningCount > 0
-            ? '${snapshot.learningCount} curated resources to sharpen your skills.'
-            : 'Courses, books, and certificates to grow fast.',
-        badge: snapshot.learningCount > 0 ? '${snapshot.learningCount}' : null,
-        icon: Icons.cast_for_education_outlined,
-        accent: const Color(0xFF00B894),
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const TrainingsScreen()),
-        ),
-      ),
-    ];
-
-    final actions = <_QuickActionItem>[
-      _QuickActionItem(
-        title: 'Sponsorships',
-        icon: Icons.workspace_premium_outlined,
-        color: const Color(0xFFFF9F43),
-        badge: snapshot.sponsoringCount > 0
-            ? '${snapshot.sponsoringCount}'
-            : null,
+      _QuickAccessTileItem(
+        title: 'Sponsoring',
+        icon: Icons.campaign_outlined,
+        color: const Color(0xFFFFB341),
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(
@@ -1034,33 +1134,46 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
           ),
         ),
       ),
-      _QuickActionItem(
+      _QuickAccessTileItem(
+        title: 'Scholarships',
+        icon: Icons.emoji_events_outlined,
+        color: const Color(0xFF47D16C),
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const ScholarshipsScreen()),
+        ),
+      ),
+      _QuickAccessTileItem(
         title: 'Ideas',
         icon: Icons.lightbulb_outline_rounded,
         color: const Color(0xFFFF6B6B),
-        badge: snapshot.savedIdeaCount > 0
-            ? '${snapshot.savedIdeaCount}'
-            : null,
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const ProjectIdeasScreen()),
         ),
       ),
-      _QuickActionItem(
+      _QuickAccessTileItem(
         title: 'CV Builder',
         icon: Icons.description_outlined,
         color: deepPurple,
-        badge: profileCompletion == 100 ? 'Ready' : '$profileCompletion%',
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const CvScreen()),
         ),
       ),
-      _QuickActionItem(
+      _QuickAccessTileItem(
+        title: 'Training',
+        icon: Icons.cast_for_education_outlined,
+        color: const Color(0xFF22CFC3),
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const TrainingsScreen()),
+        ),
+      ),
+      _QuickAccessTileItem(
         title: 'Saved',
-        icon: Icons.bookmark_outline_rounded,
-        color: const Color(0xFFE17055),
-        badge: snapshot.savedCount > 0 ? '${snapshot.savedCount}' : null,
+        icon: Icons.bookmark_border_rounded,
+        color: const Color(0xFFF08E72),
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const SavedScreen()),
@@ -1068,192 +1181,91 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
       ),
     ];
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        LayoutBuilder(
-          builder: (context, constraints) {
-            final crossAxisCount = constraints.maxWidth >= 720 ? 4 : 2;
-            const spacing = 12.0;
-            final itemWidth =
-                (constraints.maxWidth - ((crossAxisCount - 1) * spacing)) /
-                crossAxisCount;
-            final aspectRatio = crossAxisCount >= 4 ? 1.15 : 1.28;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final crossAxisCount = constraints.maxWidth >= 1080
+            ? 6
+            : constraints.maxWidth >= 860
+            ? 5
+            : 4;
+        const spacing = 10.0;
+        final itemWidth =
+            (constraints.maxWidth - ((crossAxisCount - 1) * spacing)) /
+            crossAxisCount;
 
-            return Wrap(
-              spacing: spacing,
-              runSpacing: spacing,
-              children: cards
-                  .map(
-                    (item) => SizedBox(
-                      width: itemWidth,
-                      child: AspectRatio(
-                        aspectRatio: aspectRatio,
-                        child: _buildQuickAccessCard(item),
-                      ),
-                    ),
-                  )
-                  .toList(growable: false),
-            );
-          },
-        ),
-        const SizedBox(height: 12),
-        Wrap(
-          spacing: 10,
-          runSpacing: 10,
-          children: actions
-              .map((item) => _buildQuickActionPill(item))
+        return Wrap(
+          spacing: spacing,
+          runSpacing: 14,
+          children: items
+              .map(
+                (item) => SizedBox(
+                  width: itemWidth,
+                  child: _buildQuickAccessTile(item),
+                ),
+              )
               .toList(growable: false),
-        ),
-      ],
+        );
+      },
     );
   }
 
-  Widget _buildQuickAccessCard(_QuickAccessCardItem item) {
+  Widget _buildQuickAccessTile(_QuickAccessTileItem item) {
+    final iconBackground = Color.lerp(item.color, Colors.white, 0.12)!;
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: item.onTap,
-        borderRadius: BorderRadius.circular(24),
-        child: Ink(
-          padding: const EdgeInsets.all(15),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [item.accent.withValues(alpha: 0.16), Colors.white],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: item.accent.withValues(alpha: 0.16)),
-            boxShadow: [
-              BoxShadow(
-                color: item.accent.withValues(alpha: 0.08),
-                blurRadius: 20,
-                offset: const Offset(0, 10),
-              ),
-            ],
-          ),
-          child: Stack(
-            children: [
-              Positioned(
-                top: -18,
-                right: -12,
-                child: Container(
-                  width: 62,
-                  height: 62,
-                  decoration: BoxDecoration(
-                    color: item.accent.withValues(alpha: 0.10),
-                    shape: BoxShape.circle,
-                  ),
-                ),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+        borderRadius: BorderRadius.circular(20),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 1),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final boxSize = constraints.maxWidth.clamp(54.0, 62.0).toDouble();
+
+              return Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: 42,
-                        height: 42,
-                        decoration: BoxDecoration(
-                          color: item.accent.withValues(alpha: 0.14),
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        child: Icon(item.icon, color: item.accent, size: 20),
+                  Ink(
+                    width: boxSize,
+                    height: boxSize,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [iconBackground, item.color],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
                       ),
-                      const Spacer(),
-                      if (item.badge != null)
-                        _buildQuickAccessBadge(item.badge!, item.accent),
-                    ],
-                  ),
-                  const Spacer(),
-                  Text(
-                    item.title,
-                    style: GoogleFonts.poppins(
-                      fontSize: 14.2,
-                      fontWeight: FontWeight.w700,
-                      color: textDark,
+                      borderRadius: BorderRadius.circular(boxSize * 0.28),
+                    ),
+                    child: Icon(
+                      item.icon,
+                      color: Colors.white,
+                      size: boxSize * 0.38,
                     ),
                   ),
-                  const SizedBox(height: 5),
-                  Text(
-                    item.subtitle,
-                    style: GoogleFonts.poppins(
-                      fontSize: 11.1,
-                      height: 1.4,
-                      fontWeight: FontWeight.w500,
-                      color: textMedium,
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    width: constraints.maxWidth,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        item.title,
+                        textAlign: TextAlign.center,
+                        maxLines: 1,
+                        softWrap: false,
+                        style: GoogleFonts.poppins(
+                          fontSize: 11.2,
+                          height: 1,
+                          fontWeight: FontWeight.w700,
+                          color: textDark,
+                        ),
+                      ),
                     ),
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
-              ),
-            ],
+              );
+            },
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildQuickActionPill(_QuickActionItem item) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: item.onTap,
-        borderRadius: BorderRadius.circular(999),
-        child: Ink(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-          decoration: BoxDecoration(
-            color: item.color.withValues(alpha: 0.08),
-            borderRadius: BorderRadius.circular(999),
-            border: Border.all(color: item.color.withValues(alpha: 0.12)),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(item.icon, color: item.color, size: 16),
-              const SizedBox(width: 8),
-              Text(
-                item.title,
-                style: GoogleFonts.poppins(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
-                  color: textDark,
-                ),
-              ),
-              if (item.badge != null) ...[
-                const SizedBox(width: 8),
-                _buildQuickAccessBadge(item.badge!, item.color, compact: true),
-              ],
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildQuickAccessBadge(
-    String label,
-    Color color, {
-    bool compact = false,
-  }) {
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: compact ? 8 : 9,
-        vertical: compact ? 4 : 5,
-      ),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Text(
-        label,
-        style: GoogleFonts.poppins(
-          fontSize: compact ? 9.2 : 9.4,
-          fontWeight: FontWeight.w700,
-          color: color,
         ),
       ),
     );
@@ -1422,6 +1434,9 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     _DashboardSnapshot snapshot,
   ) {
     final provider = context.watch<OpportunityProvider>();
+    final appliedStatusMap = context
+        .watch<ApplicationProvider>()
+        .appliedStatusMap;
     final items = snapshot.closingSoonItems;
 
     if (provider.isLoading && items.isEmpty) {
@@ -1443,30 +1458,39 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     }
 
     return SizedBox(
-      height: 182,
+      height: 206,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.only(right: 20),
         itemCount: items.length > 4 ? 4 : items.length,
         separatorBuilder: (_, _) => const SizedBox(width: 12),
         itemBuilder: (context, index) {
-          return _buildClosingSoonCard(context, items[index]);
+          final item = items[index];
+          return _buildClosingSoonCard(
+            context,
+            item,
+            applicationStatus: appliedStatusMap[item.id],
+          );
         },
       ),
     );
   }
 
-  Widget _buildClosingSoonCard(BuildContext context, OpportunityModel item) {
+  Widget _buildClosingSoonCard(
+    BuildContext context,
+    OpportunityModel item, {
+    String? applicationStatus,
+  }) {
     final normalizedType = OpportunityType.parse(item.type);
     final accent = OpportunityType.color(normalizedType);
     final deadline = _opportunityDeadline(item);
-    final deadlineLabel = deadline == null
-        ? 'Deadline soon'
-        : _deadlineCountdown(deadline);
     final dateLabel = deadline == null
         ? item.deadlineLabel
         : OpportunityMetadata.formatDateLabel(deadline);
     final urgencyColor = _closingSoonUrgencyColor(deadline);
+    final deadlineLabel = deadline == null
+        ? 'Deadline soon'
+        : _deadlineCountdown(deadline);
     final footerLabel = _closingSoonFooterLabel(normalizedType, dateLabel);
     final locationLabel = item.location.trim().isNotEmpty
         ? item.location.trim()
@@ -1554,6 +1578,13 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
+              if (applicationStatus != null) ...[
+                const SizedBox(height: 8),
+                ApplicationStatusBadge(
+                  status: applicationStatus,
+                  fontSize: 9.2,
+                ),
+              ],
               const SizedBox(height: 10),
               Row(
                 children: [
@@ -1674,9 +1705,9 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
   String _closingSoonFooterLabel(String type, String dateLabel) {
     switch (OpportunityType.parse(type)) {
       case OpportunityType.internship:
-        return 'Internship closes $dateLabel';
+        return 'Closes $dateLabel';
       case OpportunityType.sponsoring:
-        return 'Program closes $dateLabel';
+        return 'Closes $dateLabel';
       case OpportunityType.job:
       default:
         return 'Apply by $dateLabel';
@@ -1719,12 +1750,30 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
   // 4. RECOMMENDED SECTION
   // ═══════════════════════════════════════════════════════════════════════════
 
+  void _openDiscover(BuildContext context) {
+    if (widget.embedded) {
+      StudentHomeNavigation.switchToTab(
+        context,
+        StudentHomeNavigation.discoverTab,
+      );
+      return;
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const OpportunitiesScreen()),
+    );
+  }
+
   Widget _buildRecommendedSection(
     BuildContext context,
     UserModel? user,
     _DashboardSnapshot snapshot,
   ) {
     final provider = context.watch<OpportunityProvider>();
+    final appliedStatusMap = context
+        .watch<ApplicationProvider>()
+        .appliedStatusMap;
     final items = snapshot.recommendedItems;
     final isLoading =
         items.isEmpty && (provider.isFeaturedLoading || provider.isLoading);
@@ -1745,14 +1794,20 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     }
 
     return SizedBox(
-      height: 252,
+      height: 220,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 20),
         itemCount: items.length > 6 ? 6 : items.length,
-        separatorBuilder: (_, _) => const SizedBox(width: 14),
+        separatorBuilder: (_, _) => const SizedBox(width: 12),
         itemBuilder: (context, index) {
-          return _buildRecommendedCard(context, items[index], user);
+          final item = items[index];
+          return _buildRecommendedCard(
+            context,
+            item,
+            user,
+            applicationStatus: appliedStatusMap[item.id],
+          );
         },
       ),
     );
@@ -1761,8 +1816,9 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
   Widget _buildRecommendedCard(
     BuildContext context,
     OpportunityModel item,
-    UserModel? user,
-  ) {
+    UserModel? user, {
+    String? applicationStatus,
+  }) {
     final freshness = _timeAgo(
       item.createdAt?.toDate() ?? item.updatedAt?.toDate(),
     );
@@ -1778,13 +1834,13 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
       color: Colors.transparent,
       child: InkWell(
         onTap: () => OpportunityDetailScreen.show(context, item),
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(22),
         child: Ink(
-          width: 268,
-          padding: const EdgeInsets.all(18),
+          width: 236,
+          padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
             color: cardWhite,
-            borderRadius: BorderRadius.circular(24),
+            borderRadius: BorderRadius.circular(22),
             border: Border.all(color: accent.withValues(alpha: 0.12)),
             boxShadow: [
               BoxShadow(
@@ -1799,41 +1855,47 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
             children: [
               Row(
                 children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: primaryPurple.withValues(alpha: 0.10),
-                      borderRadius: BorderRadius.circular(999),
-                    ),
-                    child: Text(
-                      'Recommended for you',
-                      style: GoogleFonts.poppins(
-                        fontSize: 10.5,
-                        fontWeight: FontWeight.w800,
-                        color: primaryPurple,
-                      ),
+                  Expanded(
+                    child: Wrap(
+                      spacing: 6,
+                      runSpacing: 6,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        OpportunityTypeBadge(
+                          type: item.type,
+                          showIcon: false,
+                          fontSize: 9.2,
+                        ),
+                        if (applicationStatus != null)
+                          ApplicationStatusBadge(
+                            status: applicationStatus,
+                            fontSize: 9.2,
+                          ),
+                      ],
                     ),
                   ),
-                  const Spacer(),
-                  if (freshness != null)
+                  if (freshness != null) ...[
+                    const SizedBox(width: 8),
                     Text(
                       freshness,
                       style: GoogleFonts.poppins(
-                        fontSize: 11,
+                        fontSize: 10.5,
                         fontWeight: FontWeight.w700,
                         color: textLight,
                       ),
                     ),
+                  ],
                 ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 8),
               Row(
                 children: [
-                  _buildCompanyLogo(item.companyLogo, item.companyName),
-                  const SizedBox(width: 12),
+                  _buildCompanyLogo(
+                    item.companyLogo,
+                    item.companyName,
+                    size: 34,
+                  ),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1841,7 +1903,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                         Text(
                           item.companyName,
                           style: GoogleFonts.poppins(
-                            fontSize: 13,
+                            fontSize: 12,
                             fontWeight: FontWeight.w600,
                             color: textDark,
                           ),
@@ -1852,7 +1914,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                           children: [
                             Icon(
                               Icons.location_on_outlined,
-                              size: 12,
+                              size: 10,
                               color: textLight,
                             ),
                             const SizedBox(width: 2),
@@ -1860,7 +1922,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                               child: Text(
                                 locationLabel,
                                 style: GoogleFonts.poppins(
-                                  fontSize: 11,
+                                  fontSize: 10,
                                   color: textLight,
                                 ),
                                 maxLines: 1,
@@ -1874,53 +1936,50 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 14),
+              const SizedBox(height: 10),
               Text(
                 item.title,
                 style: GoogleFonts.poppins(
-                  fontSize: 18,
+                  fontSize: 15.2,
                   fontWeight: FontWeight.w700,
                   color: textDark,
                 ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 4),
               Text(
                 _summarize(
                   item.description,
                   fallback: 'A strong opportunity worth a closer look.',
                 ),
                 style: GoogleFonts.poppins(
-                  fontSize: 12.5,
-                  height: 1.4,
+                  fontSize: 10.8,
+                  height: 1.3,
                   fontWeight: FontWeight.w500,
                   color: textMedium,
                 ),
-                maxLines: 2,
+                maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 11,
-                  vertical: 9,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                 decoration: BoxDecoration(
                   color: accent.withValues(alpha: 0.07),
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(999),
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(Icons.auto_awesome_rounded, size: 14, color: accent),
-                    const SizedBox(width: 7),
+                    Icon(Icons.auto_awesome_rounded, size: 12, color: accent),
+                    const SizedBox(width: 5),
                     Expanded(
                       child: Text(
                         reason,
                         style: GoogleFonts.poppins(
-                          fontSize: 10.7,
-                          height: 1.35,
+                          fontSize: 9.6,
+                          height: 1.2,
                           fontWeight: FontWeight.w600,
                           color: textDark,
                         ),
@@ -1931,32 +1990,57 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                   ],
                 ),
               ),
-              const Spacer(),
+              const SizedBox(height: 10),
               Row(
                 children: [
-                  OpportunityTypeBadge(type: item.type, showIcon: false),
-                  const Spacer(),
                   if (deadlineLabel != null)
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.schedule, size: 13, color: textLight),
-                        const SizedBox(width: 3),
-                        Text(
-                          deadlineLabel,
-                          style: GoogleFonts.poppins(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w700,
-                            color: textMedium,
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 5,
+                      ),
+                      decoration: BoxDecoration(
+                        color: accent.withValues(alpha: 0.10),
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.schedule, size: 11, color: accent),
+                          const SizedBox(width: 3),
+                          Text(
+                            deadlineLabel,
+                            style: GoogleFonts.poppins(
+                              fontSize: 9.2,
+                              fontWeight: FontWeight.w700,
+                              color: accent,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
+                    )
+                  else
+                    Text(
+                      'Open details',
+                      style: GoogleFonts.poppins(
+                        fontSize: 9.6,
+                        fontWeight: FontWeight.w700,
+                        color: textMedium,
+                      ),
                     ),
-                  const SizedBox(width: 8),
-                  const Icon(
-                    Icons.arrow_forward_rounded,
-                    size: 18,
-                    color: primaryPurple,
+                  const Spacer(),
+                  Container(
+                    width: 26,
+                    height: 26,
+                    decoration: BoxDecoration(
+                      color: accent.withValues(alpha: 0.10),
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                    child: Icon(
+                      Icons.arrow_forward_rounded,
+                      size: 15,
+                      color: accent,
+                    ),
                   ),
                 ],
               ),
@@ -2022,49 +2106,87 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // 5. RECENT SECTION
+  // 5. LATEST ACTIVITIES
   // ═══════════════════════════════════════════════════════════════════════════
 
-  SliverList _buildRecentSection(BuildContext context) {
-    final oppProvider = context.watch<OpportunityProvider>();
+  SliverList _buildLatestActivitiesSection(BuildContext context, CvModel? cv) {
+    final applicationProvider = context.watch<ApplicationProvider>();
+    final savedOpportunityProvider = context.watch<SavedOpportunityProvider>();
+    final savedScholarshipProvider = context.watch<SavedScholarshipProvider>();
     final trainingProvider = context.watch<TrainingProvider>();
-    final recentOpps = oppProvider.opportunities
-        .where(_isHomeOpportunity)
-        .toList();
-    if (recentOpps.isEmpty) {
-      recentOpps.addAll(
-        oppProvider.featuredOpportunities.where(_isHomeOpportunity),
-      );
-    }
-    recentOpps.sort(
-      (a, b) => _recentOpportunityTimestamp(
-        b,
-      ).compareTo(_recentOpportunityTimestamp(a)),
-    );
+    final projectIdeaProvider = context.watch<ProjectIdeaProvider>();
+    final cvProvider = context.watch<CvProvider>();
+    final opportunityProvider = context.watch<OpportunityProvider>();
+    final scholarshipProvider = context.watch<ScholarshipProvider>();
 
-    final recentTrainings = trainingProvider.trainings
-        .where((item) => item.isApproved && !item.isHidden)
-        .toList();
-    recentTrainings.sort(
-      (a, b) =>
-          _recentTrainingTimestamp(b).compareTo(_recentTrainingTimestamp(a)),
-    );
+    final urgentActivities = <_DashboardActivityEntry>[
+      ..._savedOpportunityActivityEntries(
+        context,
+        savedOpportunityProvider.savedOpportunities,
+        opportunityProvider,
+        urgentOnly: true,
+      ),
+      ..._savedScholarshipActivityEntries(
+        context,
+        savedScholarshipProvider.savedScholarships,
+        scholarshipProvider,
+        urgentOnly: true,
+      ),
+    ]..sort((a, b) => a.sortDate.compareTo(b.sortDate));
 
-    final recentItems = <_RecentItem>[
-      ...recentOpps.take(6).map((item) => _RecentItem(opportunity: item)),
+    final urgentKeys = urgentActivities.map((item) => item.dedupeKey).toSet();
+
+    final applicationActivities = _applicationActivityEntries(
+      context,
+      applicationProvider.submittedApplications,
+    );
+    final cvActivity = _cvActivityEntry(context, cv ?? cvProvider.cv);
+    final savedActivities = <_DashboardActivityEntry>[
+      ..._savedOpportunityActivityEntries(
+        context,
+        savedOpportunityProvider.savedOpportunities,
+        opportunityProvider,
+        urgentOnly: false,
+        excludedKeys: urgentKeys,
+      ),
+      ..._savedScholarshipActivityEntries(
+        context,
+        savedScholarshipProvider.savedScholarships,
+        scholarshipProvider,
+        urgentOnly: false,
+        excludedKeys: urgentKeys,
+      ),
+      ..._savedTrainingActivityEntries(
+        context,
+        trainingProvider.savedTrainings,
+      ),
+      ..._savedIdeaActivityEntries(context, projectIdeaProvider.savedIdeas),
+    ]..sort((a, b) => b.sortDate.compareTo(a.sortDate));
+
+    final activities = <_DashboardActivityEntry>[
+      ...urgentActivities.take(2),
+      if (applicationActivities.isNotEmpty) applicationActivities.first,
+      ?cvActivity,
+      ...savedActivities.take(2),
     ];
 
-    if (recentItems.length < 4) {
-      recentItems.addAll(
-        recentTrainings
-            .take(6 - recentItems.length)
-            .map((item) => _RecentItem(training: item)),
+    if (applicationActivities.length > 1 && activities.length < 5) {
+      activities.addAll(
+        applicationActivities.skip(1).take(5 - activities.length),
       );
+    }
+    if (savedActivities.length > 2 && activities.length < 5) {
+      activities.addAll(savedActivities.skip(2).take(5 - activities.length));
     }
 
     final isLoading =
-        recentItems.isEmpty &&
-        (oppProvider.isLoading || trainingProvider.isLoading);
+        activities.isEmpty &&
+        (applicationProvider.submittedApplicationsLoading ||
+            savedOpportunityProvider.isLoading ||
+            savedScholarshipProvider.isLoading ||
+            trainingProvider.isSavedLoading ||
+            projectIdeaProvider.savedIdeasLoading ||
+            cvProvider.isLoading);
 
     if (isLoading) {
       return SliverList(
@@ -2079,13 +2201,14 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
       );
     }
 
-    if (recentItems.isEmpty) {
+    if (activities.isEmpty) {
       return SliverList(
         delegate: SliverChildListDelegate([
           _buildEmptyState(
-            icon: Icons.history,
-            message: 'Nothing recent yet',
-            subtitle: 'Latest opportunities will show here first',
+            icon: Icons.bolt_rounded,
+            message: 'No activity yet',
+            subtitle:
+                'Apply, save, or refresh your CV and your latest momentum will show here.',
           ),
         ]),
       );
@@ -2093,265 +2216,610 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
 
     return SliverList(
       delegate: SliverChildBuilderDelegate((context, index) {
-        final item = recentItems[index];
-        if (item.opportunity != null) {
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: _buildRecentOpportunityCard(context, item.opportunity!),
-          );
-        } else {
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: _buildRecentTrainingCard(context, item.training!),
-          );
-        }
-      }, childCount: recentItems.length),
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: _buildLatestActivityCard(activities[index]),
+        );
+      }, childCount: activities.length),
     );
   }
 
-  Widget _buildRecentOpportunityCard(
+  Widget _buildLatestActivityCard(_DashboardActivityEntry item) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: item.onTap,
+        borderRadius: BorderRadius.circular(24),
+        child: Ink(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
+          decoration: _recentCardDecoration(item.accent),
+          child: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: item.accent.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(13),
+                ),
+                child: Icon(item.icon, color: item.accent, size: 19),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Wrap(
+                            spacing: 6,
+                            runSpacing: 4,
+                            children: [
+                              _buildRecentLabelChip(
+                                label: item.badgeLabel,
+                                color: item.accent,
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (item.trailingLabel != null)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8, top: 2),
+                            child: Text(
+                              item.trailingLabel!,
+                              style: GoogleFonts.poppins(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w700,
+                                color: item.trailingColor ?? textLight,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      item.title,
+                      style: GoogleFonts.poppins(
+                        fontSize: 13.6,
+                        fontWeight: FontWeight.w700,
+                        color: textDark,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      item.subtitle,
+                      style: GoogleFonts.poppins(
+                        fontSize: 11.3,
+                        fontWeight: FontWeight.w600,
+                        color: textMedium,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    if (item.metaLabel != null) ...[
+                      const SizedBox(height: 4),
+                      _buildRecentMetaItem(
+                        icon: item.metaIcon ?? Icons.info_outline_rounded,
+                        label: item.metaLabel!,
+                        color: item.metaColor,
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              _buildRecentArrowChip(item.accent),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  List<_DashboardActivityEntry> _applicationActivityEntries(
     BuildContext context,
-    OpportunityModel item,
+    List<StudentApplicationItemModel> items,
   ) {
-    final normalizedType = OpportunityType.parse(item.type);
-    final accent = OpportunityType.color(normalizedType);
-    final freshness = _timeAgo(
-      item.createdAt?.toDate() ?? item.updatedAt?.toDate(),
-    );
-    final deadlineLabel = _recentFriendlyDeadline(item);
+    final applications = [...items];
+    applications.sort((a, b) {
+      final first = a.appliedAt?.millisecondsSinceEpoch ?? 0;
+      final second = b.appliedAt?.millisecondsSinceEpoch ?? 0;
+      return second.compareTo(first);
+    });
 
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: () {
-          OpportunityDetailScreen.show(context, item);
-        },
-        borderRadius: BorderRadius.circular(24),
-        child: Ink(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
-          decoration: _recentCardDecoration(accent),
-          child: Row(
-            children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: accent.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(13),
+    return applications
+        .where((item) => item.appliedAt != null)
+        .map((item) {
+          final accent = _applicationActivityColor(item.status);
+          final deadline = item.deadline;
+          final hasUpcomingDeadline =
+              deadline != null && _daysUntil(deadline) >= 0;
+          final meta = hasUpcomingDeadline
+              ? 'Closes ${DateFormat('MMM d').format(deadline)}'
+              : item.location;
+
+          return _DashboardActivityEntry(
+            dedupeKey: 'application:${item.id}',
+            sortDate: item.appliedAt!,
+            badgeLabel: _applicationActivityBadge(item.status),
+            accent: accent,
+            icon: _applicationActivityIcon(item.status),
+            title: item.title,
+            subtitle: item.companyName,
+            metaLabel: meta.trim().isEmpty ? null : meta,
+            metaIcon: hasUpcomingDeadline
+                ? Icons.schedule_outlined
+                : Icons.location_on_outlined,
+            metaColor: hasUpcomingDeadline ? accentGold : null,
+            trailingLabel: _timeAgo(item.appliedAt),
+            onTap: () {
+              if (item.canOpenDetails && item.opportunity != null) {
+                OpportunityDetailScreen.show(context, item.opportunity!);
+                return;
+              }
+
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const AppliedOpportunitiesScreen(),
                 ),
-                child: Icon(
-                  OpportunityType.icon(normalizedType),
-                  color: accent,
-                  size: 19,
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Wrap(
-                            spacing: 6,
-                            runSpacing: 4,
-                            children: [
-                              _buildRecentLabelChip(
-                                label: OpportunityType.label(normalizedType),
-                                color: accent,
-                              ),
-                              if (item.isFeatured)
-                                _buildRecentLabelChip(
-                                  label: 'Featured',
-                                  color: primaryPurple,
-                                ),
-                            ],
-                          ),
-                        ),
-                        if (freshness != null)
-                          Padding(
-                            padding: const EdgeInsets.only(left: 8, top: 2),
-                            child: Text(
-                              freshness,
-                              style: GoogleFonts.poppins(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w700,
-                                color: textLight,
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      item.title,
-                      style: GoogleFonts.poppins(
-                        fontSize: 13.6,
-                        fontWeight: FontWeight.w700,
-                        color: textDark,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 3),
-                    Text(
-                      item.companyName.isNotEmpty
-                          ? item.companyName
-                          : OpportunityType.label(normalizedType),
-                      style: GoogleFonts.poppins(
-                        fontSize: 11.3,
-                        fontWeight: FontWeight.w600,
-                        color: textMedium,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 4),
-                    Wrap(
-                      spacing: 10,
-                      runSpacing: 4,
-                      children: [
-                        if (item.location.trim().isNotEmpty)
-                          _buildRecentMetaItem(
-                            icon: Icons.location_on_outlined,
-                            label: item.location.trim(),
-                          ),
-                        if (deadlineLabel != null)
-                          _buildRecentMetaItem(
-                            icon: Icons.schedule_outlined,
-                            label: deadlineLabel,
-                            color: accentGold,
-                          ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 8),
-              _buildRecentArrowChip(accent),
-            ],
-          ),
+              );
+            },
+          );
+        })
+        .toList(growable: false);
+  }
+
+  List<_DashboardActivityEntry> _savedOpportunityActivityEntries(
+    BuildContext context,
+    List<SavedOpportunityModel> items,
+    OpportunityProvider provider, {
+    required bool urgentOnly,
+    Set<String> excludedKeys = const <String>{},
+  }) {
+    final activities = <_DashboardActivityEntry>[];
+
+    for (final item in items) {
+      final deadline = OpportunityMetadata.parseDateTimeLike(item.deadline);
+      final isUrgent =
+          deadline != null &&
+          _daysUntil(deadline) >= 0 &&
+          _daysUntil(deadline) <= 7;
+      final key = 'saved_opp:${item.opportunityId}';
+
+      if (isUrgent != urgentOnly || excludedKeys.contains(key)) {
+        continue;
+      }
+
+      final accent = isUrgent
+          ? _closingSoonUrgencyColor(deadline)
+          : OpportunityType.color(item.type);
+      final savedAt = item.savedAt?.toDate();
+      final timestamp = isUrgent
+          ? deadline
+          : (savedAt ?? deadline ?? DateTime.fromMillisecondsSinceEpoch(0));
+      final companyName = item.companyName.trim();
+      final subtitle = isUrgent
+          ? companyName.isNotEmpty
+                ? 'Saved ${OpportunityType.lowercaseLabel(item.type)} from $companyName'
+                : 'Saved ${OpportunityType.lowercaseLabel(item.type)} that needs attention'
+          : (companyName.isNotEmpty
+                ? companyName
+                : OpportunityType.label(item.type));
+      final meta = deadline != null
+          ? 'Closes ${DateFormat('MMM d').format(deadline)}'
+          : item.location.trim();
+
+      activities.add(
+        _DashboardActivityEntry(
+          dedupeKey: key,
+          sortDate: timestamp,
+          badgeLabel: isUrgent
+              ? 'Closing soon'
+              : 'Saved ${OpportunityType.lowercaseLabel(item.type)}',
+          accent: accent,
+          icon: isUrgent
+              ? Icons.schedule_outlined
+              : OpportunityType.icon(item.type),
+          title: item.title.trim().isNotEmpty
+              ? item.title.trim()
+              : 'Saved opportunity',
+          subtitle: subtitle,
+          metaLabel: meta.trim().isEmpty ? null : meta,
+          metaIcon: deadline != null
+              ? Icons.schedule_outlined
+              : Icons.location_on_outlined,
+          metaColor: deadline != null ? accent : null,
+          trailingLabel: isUrgent
+              ? _deadlineCountdown(deadline)
+              : _timeAgo(savedAt),
+          trailingColor: isUrgent ? accent : null,
+          onTap: () => _openSavedOpportunityActivity(context, item, provider),
         ),
-      ),
+      );
+    }
+
+    activities.sort(
+      (a, b) => urgentOnly
+          ? a.sortDate.compareTo(b.sortDate)
+          : b.sortDate.compareTo(a.sortDate),
+    );
+
+    return activities;
+  }
+
+  List<_DashboardActivityEntry> _savedScholarshipActivityEntries(
+    BuildContext context,
+    List<SavedScholarshipModel> items,
+    ScholarshipProvider provider, {
+    required bool urgentOnly,
+    Set<String> excludedKeys = const <String>{},
+  }) {
+    const scholarshipAccent = Color(0xFF47D16C);
+    final activities = <_DashboardActivityEntry>[];
+
+    for (final item in items) {
+      final deadline = OpportunityMetadata.parseDateTimeLike(item.deadline);
+      final isUrgent =
+          deadline != null &&
+          _daysUntil(deadline) >= 0 &&
+          _daysUntil(deadline) <= 7;
+      final key = 'saved_scholarship:${item.scholarshipId}';
+
+      if (isUrgent != urgentOnly || excludedKeys.contains(key)) {
+        continue;
+      }
+
+      final accent = isUrgent
+          ? _closingSoonUrgencyColor(deadline)
+          : scholarshipAccent;
+      final savedAt = item.savedAt?.toDate();
+      final timestamp = isUrgent
+          ? deadline
+          : (savedAt ?? deadline ?? DateTime.fromMillisecondsSinceEpoch(0));
+      final providerName = item.provider.trim();
+      final subtitle = isUrgent
+          ? providerName.isNotEmpty
+                ? 'Saved scholarship from $providerName'
+                : 'Saved scholarship that needs attention'
+          : (providerName.isNotEmpty ? providerName : 'Scholarship');
+      final meta = deadline != null
+          ? 'Closes ${DateFormat('MMM d').format(deadline)}'
+          : _firstNonEmpty([item.level, item.location, item.fundingType]);
+
+      activities.add(
+        _DashboardActivityEntry(
+          dedupeKey: key,
+          sortDate: timestamp,
+          badgeLabel: isUrgent ? 'Closing soon' : 'Saved scholarship',
+          accent: accent,
+          icon: isUrgent
+              ? Icons.schedule_outlined
+              : Icons.emoji_events_outlined,
+          title: item.title.trim().isNotEmpty
+              ? item.title.trim()
+              : 'Saved scholarship',
+          subtitle: subtitle,
+          metaLabel: meta.trim().isEmpty ? null : meta,
+          metaIcon: deadline != null
+              ? Icons.schedule_outlined
+              : Icons.school_outlined,
+          metaColor: deadline != null ? accent : null,
+          trailingLabel: isUrgent
+              ? _deadlineCountdown(deadline)
+              : _timeAgo(savedAt),
+          trailingColor: isUrgent ? accent : null,
+          onTap: () => _openSavedScholarshipActivity(context, item, provider),
+        ),
+      );
+    }
+
+    activities.sort(
+      (a, b) => urgentOnly
+          ? a.sortDate.compareTo(b.sortDate)
+          : b.sortDate.compareTo(a.sortDate),
+    );
+
+    return activities;
+  }
+
+  List<_DashboardActivityEntry> _savedTrainingActivityEntries(
+    BuildContext context,
+    List<TrainingModel> items,
+  ) {
+    final trainings = [...items];
+    trainings.sort((a, b) {
+      final first = a.savedAt?.millisecondsSinceEpoch ?? 0;
+      final second = b.savedAt?.millisecondsSinceEpoch ?? 0;
+      return second.compareTo(first);
+    });
+
+    return trainings
+        .where((item) => item.savedAt != null)
+        .map((item) {
+          final typeLabel = _recentTrainingTypeLabel(item.type);
+          final providerName = item.provider.trim();
+          final subtitle = providerName.isNotEmpty ? providerName : typeLabel;
+          final meta = recentTrainingSupportingLine(item);
+
+          return _DashboardActivityEntry(
+            dedupeKey: 'saved_training:${item.id}',
+            sortDate: item.savedAt!.toDate(),
+            badgeLabel: 'Saved ${typeLabel.toLowerCase()}',
+            accent: accentTeal,
+            icon: _savedTrainingActivityIcon(item.type),
+            title: item.title.trim().isNotEmpty
+                ? item.title.trim()
+                : 'Saved resource',
+            subtitle: subtitle,
+            metaLabel: meta.trim().isEmpty ? null : meta,
+            metaIcon: Icons.auto_stories_outlined,
+            trailingLabel: _timeAgo(item.savedAt?.toDate()),
+            onTap: () {
+              unawaited(_openSavedTrainingActivity(context, item));
+            },
+          );
+        })
+        .toList(growable: false);
+  }
+
+  List<_DashboardActivityEntry> _savedIdeaActivityEntries(
+    BuildContext context,
+    List<SavedIdeaModel> items,
+  ) {
+    final ideas = [...items];
+    ideas.sort((a, b) {
+      final first = a.savedAt?.millisecondsSinceEpoch ?? 0;
+      final second = b.savedAt?.millisecondsSinceEpoch ?? 0;
+      return second.compareTo(first);
+    });
+
+    return ideas
+        .where((item) => item.savedAt != null)
+        .map((item) {
+          return _DashboardActivityEntry(
+            dedupeKey: 'saved_idea:${item.ideaId}',
+            sortDate: item.savedAt!.toDate(),
+            badgeLabel: 'Saved idea',
+            accent: const Color(0xFFFF6B6B),
+            icon: Icons.lightbulb_outline_rounded,
+            title: item.idea.title.trim().isNotEmpty
+                ? item.idea.title.trim()
+                : 'Saved idea',
+            subtitle: item.idea.creatorName,
+            metaLabel: _firstNonEmpty([
+              item.idea.displayCategory,
+              item.idea.displayStage,
+            ]),
+            metaIcon: Icons.auto_awesome_outlined,
+            trailingLabel: _timeAgo(item.savedAt?.toDate()),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => IdeaDetailsScreen(
+                    ideaId: item.ideaId,
+                    initialIdea: item.idea,
+                  ),
+                ),
+              );
+            },
+          );
+        })
+        .toList(growable: false);
+  }
+
+  _DashboardActivityEntry? _cvActivityEntry(BuildContext context, CvModel? cv) {
+    if (cv == null) {
+      return null;
+    }
+
+    final timestamp =
+        cv.updatedAt?.toDate() ??
+        cv.uploadedCvUploadedAt?.toDate() ??
+        cv.createdAt?.toDate();
+    if (timestamp == null || (!cv.hasUploadedCv && !cv.hasBuilderContent)) {
+      return null;
+    }
+
+    final subtitle = switch (cv.sourceType.trim()) {
+      'uploaded' => 'Uploaded CV is ready to send',
+      'hybrid' => 'Uploaded and builder CV assets are ready',
+      _ =>
+        cv.hasBuilderContent
+            ? 'Builder CV refreshed for faster applications'
+            : 'CV is ready for your next application',
+    };
+
+    final cvSignals = <String>[
+      if (cv.skills.isNotEmpty)
+        '${cv.skills.length} ${_pluralizedWord(cv.skills.length, "skill", "skills")}',
+      if (cv.experience.isNotEmpty)
+        '${cv.experience.length} ${_pluralizedWord(cv.experience.length, "experience block", "experience blocks")}',
+      if (cv.languages.isNotEmpty)
+        '${cv.languages.length} ${_pluralizedWord(cv.languages.length, "language", "languages")}',
+    ];
+
+    return _DashboardActivityEntry(
+      dedupeKey: 'cv:${cv.id.isNotEmpty ? cv.id : cv.studentId}',
+      sortDate: timestamp,
+      badgeLabel: 'CV updated',
+      accent: primaryPurple,
+      icon: Icons.description_outlined,
+      title: cv.hasUploadedCv ? 'Your CV is ready' : 'Builder CV updated',
+      subtitle: subtitle,
+      metaLabel: cvSignals.isNotEmpty
+          ? cvSignals.take(2).join(' - ')
+          : (cv.hasUploadedCv
+                ? 'Primary file attached'
+                : 'Profile data synced'),
+      metaIcon: cv.hasUploadedCv
+          ? Icons.file_present_outlined
+          : Icons.auto_awesome_outlined,
+      trailingLabel: _timeAgo(timestamp),
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const CvScreen()),
+        );
+      },
     );
   }
 
-  Widget _buildRecentTrainingCard(BuildContext context, TrainingModel item) {
-    final freshness = _timeAgo(item.createdAt?.toDate());
+  OpportunityModel? _dashboardOpportunityById(
+    OpportunityProvider provider,
+    String opportunityId,
+  ) {
+    final normalizedId = opportunityId.trim();
+    if (normalizedId.isEmpty) {
+      return null;
+    }
 
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const TrainingsScreen()),
-          );
-        },
-        borderRadius: BorderRadius.circular(24),
-        child: Ink(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
-          decoration: _recentCardDecoration(accentTeal),
-          child: Row(
-            children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: accentTeal.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(13),
-                ),
-                child: Icon(
-                  _trainingTypeIcon(item.type),
-                  color: accentTeal,
-                  size: 19,
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Wrap(
-                            spacing: 6,
-                            runSpacing: 4,
-                            children: [
-                              _buildRecentLabelChip(
-                                label: _recentTrainingTypeLabel(item.type),
-                                color: accentTeal,
-                              ),
-                            ],
-                          ),
-                        ),
-                        if (freshness != null)
-                          Padding(
-                            padding: const EdgeInsets.only(left: 8, top: 2),
-                            child: Text(
-                              freshness,
-                              style: GoogleFonts.poppins(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w700,
-                                color: textLight,
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      item.title,
-                      style: GoogleFonts.poppins(
-                        fontSize: 13.6,
-                        fontWeight: FontWeight.w700,
-                        color: textDark,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 3),
-                    Text(
-                      item.provider.isNotEmpty ? item.provider : 'Training',
-                      style: GoogleFonts.poppins(
-                        fontSize: 11.3,
-                        fontWeight: FontWeight.w600,
-                        color: textMedium,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 4),
-                    Wrap(
-                      spacing: 10,
-                      runSpacing: 4,
-                      children: [
-                        if (item.duration.trim().isNotEmpty)
-                          _buildRecentMetaItem(
-                            icon: Icons.schedule_outlined,
-                            label: item.duration.trim(),
-                          ),
-                        if (item.level.trim().isNotEmpty)
-                          _buildRecentMetaItem(
-                            icon: Icons.school_outlined,
-                            label: _recentCompactLabel(item.level),
-                          ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 8),
-              _buildRecentArrowChip(accentTeal),
-            ],
-          ),
-        ),
-      ),
+    for (final item in [
+      ...provider.opportunities,
+      ...provider.featuredOpportunities,
+    ]) {
+      if (item.id == normalizedId && !item.isHidden) {
+        return item;
+      }
+    }
+
+    return null;
+  }
+
+  void _openSavedOpportunityActivity(
+    BuildContext context,
+    SavedOpportunityModel item,
+    OpportunityProvider provider,
+  ) {
+    final opportunity = _dashboardOpportunityById(provider, item.opportunityId);
+    if (opportunity != null) {
+      OpportunityDetailScreen.show(context, opportunity);
+      return;
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const SavedScreen()),
     );
+  }
+
+  void _openSavedScholarshipActivity(
+    BuildContext context,
+    SavedScholarshipModel item,
+    ScholarshipProvider provider,
+  ) {
+    ScholarshipModel? scholarship;
+    for (final candidate in provider.scholarships) {
+      if (candidate.id == item.scholarshipId) {
+        scholarship = candidate;
+        break;
+      }
+    }
+
+    if (scholarship != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ScholarshipDetailScreen(scholarship: scholarship!),
+        ),
+      );
+      return;
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const SavedScreen()),
+    );
+  }
+
+  Future<void> _openSavedTrainingActivity(
+    BuildContext context,
+    TrainingModel item,
+  ) async {
+    final link = item.displayLink.trim();
+    if (link.isEmpty) {
+      if (!mounted) {
+        return;
+      }
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const SavedScreen()),
+      );
+      return;
+    }
+
+    final uri = Uri.tryParse(link);
+    if (uri == null) {
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('This saved resource has an invalid link.'),
+        ),
+      );
+      return;
+    }
+
+    final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+
+    if (!launched && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not open this saved resource.')),
+      );
+    }
+  }
+
+  String _applicationActivityBadge(String status) {
+    switch (ApplicationStatus.parse(status)) {
+      case ApplicationStatus.accepted:
+        return 'Approved';
+      case ApplicationStatus.rejected:
+        return 'Update';
+      case ApplicationStatus.pending:
+      default:
+        return 'Applied';
+    }
+  }
+
+  IconData _applicationActivityIcon(String status) {
+    switch (ApplicationStatus.parse(status)) {
+      case ApplicationStatus.accepted:
+        return Icons.check_circle_rounded;
+      case ApplicationStatus.rejected:
+        return Icons.cancel_rounded;
+      case ApplicationStatus.pending:
+      default:
+        return Icons.hourglass_top_rounded;
+    }
+  }
+
+  Color _applicationActivityColor(String status) {
+    switch (ApplicationStatus.parse(status)) {
+      case ApplicationStatus.accepted:
+        return OpportunityDashboardPalette.success;
+      case ApplicationStatus.rejected:
+        return OpportunityDashboardPalette.error;
+      case ApplicationStatus.pending:
+      default:
+        return accentGold;
+    }
+  }
+
+  String _firstNonEmpty(List<String?> values) {
+    for (final value in values) {
+      final normalized = value?.trim() ?? '';
+      if (normalized.isNotEmpty) {
+        return normalized;
+      }
+    }
+
+    return '';
   }
 
   int _recentOpportunityTimestamp(OpportunityModel item) {
@@ -2362,10 +2830,6 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
           item.deadlineLabel,
         )?.millisecondsSinceEpoch ??
         0;
-  }
-
-  int _recentTrainingTimestamp(TrainingModel item) {
-    return item.createdAt?.millisecondsSinceEpoch ?? 0;
   }
 
   String recentOpportunitySupportingLine(OpportunityModel item) {
@@ -2406,6 +2870,21 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
         return 'File';
       default:
         return 'Learning';
+    }
+  }
+
+  IconData _savedTrainingActivityIcon(String type) {
+    switch (type.trim().toLowerCase()) {
+      case 'book':
+        return Icons.menu_book_rounded;
+      case 'course':
+        return Icons.play_lesson_rounded;
+      case 'video':
+        return Icons.ondemand_video_rounded;
+      case 'file':
+        return Icons.description_outlined;
+      default:
+        return Icons.school_outlined;
     }
   }
 
@@ -2666,39 +3145,68 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     final workMode = (item.workMode ?? '').trim().toLowerCase();
 
     if (_matchesRecommendationSignal(field, haystack)) {
-      return 'Matches your $field background.';
+      final compactField = _compactRecommendationValue(field);
+      if (compactField.isNotEmpty) {
+        return 'Fits your $compactField focus.';
+      }
     }
     if (_matchesRecommendationSignal(level, haystack)) {
-      return 'Feels relevant for $level students.';
+      final compactLevel = _compactRecommendationValue(level);
+      if (compactLevel.isNotEmpty) {
+        return 'Good for $compactLevel students.';
+      }
     }
     if (_matchesRecommendationSignal(location, haystack)) {
-      return 'Close to your current location.';
+      return 'Near your location.';
     }
     if (workMode == 'remote') {
-      return 'Remote-friendly for a flexible student schedule.';
+      return 'Remote-friendly.';
     }
     if (workMode == 'hybrid') {
-      return 'Hybrid setup with flexible on-site time.';
+      return 'Hybrid schedule.';
     }
     if (item.isPaid == true) {
-      return 'Paid opportunity with clearer value upfront.';
+      return 'Paid opportunity.';
     }
     if (daysLeft != null && daysLeft >= 0 && daysLeft <= 7) {
-      return 'Deadline is coming up soon.';
+      return 'Deadline coming up.';
     }
     if (item.isFeatured) {
-      return 'Highlighted by our team for extra visibility.';
+      return 'Team-highlighted.';
     }
 
     switch (OpportunityType.parse(item.type)) {
       case OpportunityType.internship:
-        return 'Strong option for building real experience.';
+        return 'Builds real experience.';
       case OpportunityType.sponsoring:
-        return 'Student support with a clear application path.';
+        return 'Clear support path.';
       case OpportunityType.job:
       default:
-        return 'A solid next-step opportunity to explore.';
+        return 'Strong next step.';
     }
+  }
+
+  String _compactRecommendationValue(String value) {
+    final words = value
+        .trim()
+        .split(RegExp(r'\s+'))
+        .where((part) => part.isNotEmpty)
+        .toList();
+
+    if (words.isEmpty) {
+      return '';
+    }
+
+    if (words.length == 1) {
+      return words.first;
+    }
+
+    final twoWords = words.take(2).join(' ');
+    if (twoWords.length <= 18) {
+      return twoWords;
+    }
+
+    return words.first;
   }
 
   String _opportunitySearchText(OpportunityModel item) {
@@ -2724,21 +3232,6 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     }
 
     return haystack.contains(normalized);
-  }
-
-  IconData _trainingTypeIcon(String type) {
-    switch (type.toLowerCase()) {
-      case 'book':
-        return Icons.menu_book_outlined;
-      case 'course':
-        return Icons.cast_for_education_outlined;
-      case 'video':
-        return Icons.play_circle_outline;
-      case 'file':
-        return Icons.insert_drive_file_outlined;
-      default:
-        return Icons.school_outlined;
-    }
   }
 
   String _greetingForTime(DateTime currentTime) {
@@ -3007,8 +3500,9 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
             'Your fastest path back into jobs, funding, tools, and saves.';
         accentColor = accentTeal;
         break;
-      case 'Recent':
-        subtitle = 'Fresh opportunities and learning picks added lately.';
+      case 'Latest Activities':
+        subtitle =
+            'Your recent applications, saves, CV updates, and urgent deadlines.';
         accentColor = accentTeal;
         break;
       default:
@@ -3139,43 +3633,48 @@ class _DashboardFocus {
   });
 }
 
-class _QuickAccessCardItem {
-  final String title;
-  final String subtitle;
-  final String? badge;
-  final IconData icon;
-  final Color accent;
-  final VoidCallback onTap;
-
-  const _QuickAccessCardItem({
-    required this.title,
-    required this.subtitle,
-    required this.badge,
-    required this.icon,
-    required this.accent,
-    required this.onTap,
-  });
-}
-
-class _QuickActionItem {
+class _QuickAccessTileItem {
   final String title;
   final IconData icon;
   final Color color;
-  final String? badge;
   final VoidCallback onTap;
 
-  const _QuickActionItem({
+  const _QuickAccessTileItem({
     required this.title,
     required this.icon,
     required this.color,
-    required this.badge,
     required this.onTap,
   });
 }
 
-class _RecentItem {
-  final OpportunityModel? opportunity;
-  final TrainingModel? training;
+class _DashboardActivityEntry {
+  final String dedupeKey;
+  final DateTime sortDate;
+  final String badgeLabel;
+  final Color accent;
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final String? metaLabel;
+  final IconData? metaIcon;
+  final Color? metaColor;
+  final String? trailingLabel;
+  final Color? trailingColor;
+  final VoidCallback onTap;
 
-  _RecentItem({this.opportunity, this.training});
+  const _DashboardActivityEntry({
+    required this.dedupeKey,
+    required this.sortDate,
+    required this.badgeLabel,
+    required this.accent,
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    this.metaLabel,
+    this.metaIcon,
+    this.metaColor,
+    this.trailingLabel,
+    this.trailingColor,
+    required this.onTap,
+  });
 }

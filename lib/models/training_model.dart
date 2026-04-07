@@ -12,6 +12,7 @@ class TrainingModel {
   final String createdBy;
   final String createdByRole;
   final Timestamp? createdAt;
+  final Timestamp? savedAt;
 
   final String type; // training, book, course, file, video
   final String source; // internal, google_books, youtube, etc
@@ -41,6 +42,7 @@ class TrainingModel {
     required this.createdBy,
     required this.createdByRole,
     this.createdAt,
+    this.savedAt,
     this.type = 'training',
     this.source = 'internal',
     this.authors = const [],
@@ -76,6 +78,7 @@ class TrainingModel {
       createdBy: (map['createdBy'] ?? '').toString(),
       createdByRole: (map['createdByRole'] ?? '').toString(),
       createdAt: map['createdAt'] as Timestamp?,
+      savedAt: map['savedAt'] as Timestamp?,
       type: (map['type'] ?? 'training').toString(),
       source: (map['source'] ?? 'internal').toString(),
       authors:
@@ -118,6 +121,7 @@ class TrainingModel {
       'createdBy': createdBy,
       'createdByRole': createdByRole,
       'createdAt': createdAt,
+      'savedAt': savedAt,
       'type': type,
       'source': source,
       'authors': authors,
@@ -150,6 +154,7 @@ class TrainingModel {
     String? createdBy,
     String? createdByRole,
     Timestamp? createdAt,
+    Timestamp? savedAt,
     String? type,
     String? source,
     List<String>? authors,
@@ -178,6 +183,7 @@ class TrainingModel {
       createdBy: createdBy ?? this.createdBy,
       createdByRole: createdByRole ?? this.createdByRole,
       createdAt: createdAt ?? this.createdAt,
+      savedAt: savedAt ?? this.savedAt,
       type: type ?? this.type,
       source: source ?? this.source,
       authors: authors ?? this.authors,

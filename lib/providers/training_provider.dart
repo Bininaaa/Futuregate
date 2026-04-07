@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../models/training_model.dart';
 import '../services/training_service.dart';
@@ -78,7 +79,7 @@ class TrainingProvider extends ChangeNotifier {
 
       _savedTrainingIds.add(training.id);
       _savedTrainings.removeWhere((item) => item.id == training.id);
-      _savedTrainings.insert(0, training);
+      _savedTrainings.insert(0, training.copyWith(savedAt: Timestamp.now()));
       notifyListeners();
       return null;
     } catch (e) {

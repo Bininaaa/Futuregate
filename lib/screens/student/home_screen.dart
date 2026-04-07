@@ -12,6 +12,7 @@ import 'opportunities_screen.dart';
 import 'project_ideas_screen.dart';
 import 'scholarships_screen.dart';
 import 'student_dashboard_screen.dart';
+import 'student_home_navigation.dart';
 import 'trainings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -19,13 +20,8 @@ class HomeScreen extends StatefulWidget {
 
   const HomeScreen({super.key, this.initialIndex = 0});
 
-  static final ValueNotifier<int?> _requestedTabIndex = ValueNotifier<int?>(
-    null,
-  );
-
   static void switchToTab(BuildContext context, int index) {
-    _requestedTabIndex.value = index;
-    Navigator.of(context).popUntil((route) => route.isFirst);
+    StudentHomeNavigation.switchToTab(context, index);
   }
 
   @override
@@ -108,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     _currentIndex = _normalizeIndex(widget.initialIndex);
     _visitedIndexes.add(_currentIndex);
-    HomeScreen._requestedTabIndex.addListener(_handleRequestedTab);
+    StudentHomeNavigation.requestedTabIndex.addListener(_handleRequestedTab);
     _handleRequestedTab();
   }
 
@@ -124,18 +120,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
-    HomeScreen._requestedTabIndex.removeListener(_handleRequestedTab);
+    StudentHomeNavigation.requestedTabIndex.removeListener(_handleRequestedTab);
     super.dispose();
   }
 
   void _handleRequestedTab() {
-    final requestedIndex = HomeScreen._requestedTabIndex.value;
+    final requestedIndex = StudentHomeNavigation.requestedTabIndex.value;
     if (requestedIndex == null) {
       return;
     }
 
     final normalizedIndex = _normalizeIndex(requestedIndex);
-    HomeScreen._requestedTabIndex.value = null;
+    StudentHomeNavigation.requestedTabIndex.value = null;
 
     if (!mounted || normalizedIndex == _currentIndex) {
       return;

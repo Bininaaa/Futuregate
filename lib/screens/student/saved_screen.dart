@@ -1618,7 +1618,7 @@ class _SavedHubItem {
       case _SavedHubItemKind.scholarship:
         return scholarship!.savedAt?.toDate();
       case _SavedHubItemKind.training:
-        return null;
+        return training!.savedAt?.toDate();
       case _SavedHubItemKind.idea:
         return idea!.savedAt?.toDate();
     }
