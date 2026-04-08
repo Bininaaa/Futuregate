@@ -9,7 +9,7 @@ import '../../utils/opportunity_dashboard_palette.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/shared/app_feedback.dart';
 import '../../widgets/training_programs_widgets.dart';
-import 'saved_trainings_screen.dart';
+import 'saved_screen.dart';
 
 class TrainingsScreen extends StatefulWidget {
   final bool embedded;
@@ -175,7 +175,12 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
   Future<void> _openSavedTrainings() async {
     await Navigator.of(
       context,
-    ).push(MaterialPageRoute(builder: (_) => const SavedTrainingsScreen()));
+    ).push(
+      MaterialPageRoute(
+        builder: (_) =>
+            const SavedScreen(initialFilter: SavedScreenFilter.trainings),
+      ),
+    );
   }
 
   Future<void> _showMenuSheet() async {

@@ -531,6 +531,25 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
     _experienceLevelLabel,
   ]).take(4).toList();
 
+  String _displayStatusLabel(String rawValue) {
+    final normalized = rawValue
+        .trim()
+        .replaceAll(RegExp(r'[_-]+'), ' ')
+        .replaceAll(RegExp(r'\s+'), ' ');
+    if (normalized.isEmpty) {
+      return '';
+    }
+
+    return normalized
+        .split(' ')
+        .where((part) => part.isNotEmpty)
+        .map(
+          (part) =>
+              '${part[0].toUpperCase()}${part.substring(1).toLowerCase()}',
+        )
+        .join(' ');
+  }
+
   SavedOpportunityModel? _existingSavedOpportunity(
     SavedOpportunityProvider provider,
   ) {
@@ -696,7 +715,9 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
                 icon: OpportunityType.icon(_effectiveType),
               ),
               if (widget.opportunity.status.trim().isNotEmpty)
-                AppBadgeData(label: widget.opportunity.status),
+                AppBadgeData(
+                  label: _displayStatusLabel(widget.opportunity.status),
+                ),
               ..._heroTags.map((tag) => AppBadgeData(label: tag)),
             ],
             footer: Column(

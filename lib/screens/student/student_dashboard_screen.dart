@@ -1185,7 +1185,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
         ),
       ),
       _QuickAccessTileItem(
-        title: 'Sponsoring',
+        title: 'Sponsored',
         icon: Icons.campaign_outlined,
         color: const Color(0xFFFFB341),
         onTap: () => Navigator.push(

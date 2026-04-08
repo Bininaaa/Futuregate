@@ -48,7 +48,10 @@ class _SponsoredPalette {
   static const Color accentDark = Color(0xFFEA580C);
   static const Color accentSurface = Color(0xFFFFF7ED);
   static const Color accentBorder = Color(0xFFFED7AA);
+  static const Color heroMid = Color(0xFFEA580C);
+  static const Color heroEnd = Color(0xFFF59E0B);
   static const Color surface = OpportunityDashboardPalette.surface;
+  static const Color surfaceMuted = Color(0xFFFFFBF7);
   static const Color border = OpportunityDashboardPalette.border;
   static const Color textPrimary = OpportunityDashboardPalette.textPrimary;
   static const Color textSecondary = OpportunityDashboardPalette.textSecondary;
@@ -80,7 +83,6 @@ class _SponsoredOpportunitiesScreenState
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
   final ScrollController _scrollController = ScrollController();
-  final GlobalKey _allProgramsSectionKey = GlobalKey();
   final Set<String> _busyApplyIds = <String>{};
   final Set<String> _busySaveIds = <String>{};
 
@@ -195,7 +197,7 @@ class _SponsoredOpportunitiesScreenState
           studentId: userId,
           opportunityId: opportunity.id,
           title: opportunity.title,
-          companyName: _companyName(opportunity),
+          companyName: opportunity.companyName.trim(),
           type: opportunity.type,
           location: opportunity.location,
           deadline: opportunity.deadlineLabel,
@@ -222,15 +224,6 @@ class _SponsoredOpportunitiesScreenState
 
   Future<void> _applyNow(_SponsoredCardModel item) async {
     final opportunity = item.opportunity;
-
-    if (opportunity == null) {
-      context.showAppSnackBar(
-        'This sponsored preview is not live yet.',
-        title: 'Opportunity unavailable',
-        type: AppFeedbackType.warning,
-      );
-      return;
-    }
 
     if (_busyApplyIds.contains(opportunity.id)) {
       return;
@@ -330,17 +323,9 @@ class _SponsoredOpportunitiesScreenState
   }
 
   _SponsoredActionState _actionStateForOpportunity(
-    OpportunityModel? opportunity,
+    OpportunityModel opportunity,
     Map<String, String> appliedStatuses,
   ) {
-    if (opportunity == null) {
-      return const _SponsoredActionState(
-        label: 'Preview',
-        color: Color(0xFF94A3B8),
-        icon: Icons.remove_red_eye_outlined,
-      );
-    }
-
     final applicationStatus = appliedStatuses[opportunity.id];
     if (applicationStatus != null) {
       return _SponsoredActionState(
@@ -373,23 +358,15 @@ class _SponsoredOpportunitiesScreenState
   List<_SponsoredCardModel> _buildCardModels(
     List<OpportunityModel> opportunities,
   ) {
-    final liveSponsored = opportunities.where(_isLiveSponsored).toList();
-    final inferredSponsored = opportunities.where(_looksSponsored).toList();
+    final cards =
+        opportunities
+            .where(_isLiveSponsored)
+            .where((opportunity) => opportunity.title.trim().isNotEmpty)
+            .map(_mapOpportunityToCardModel)
+            .toList()
+          ..sort(_sortSponsoredCards);
 
-    final source = liveSponsored.isNotEmpty
-        ? liveSponsored
-        : inferredSponsored.isNotEmpty
-        ? inferredSponsored
-        : const <OpportunityModel>[];
-
-    final cards = source.map(_mapOpportunityToCardModel).toList()
-      ..sort(_sortSponsoredCards);
-
-    if (cards.isNotEmpty) {
-      return cards;
-    }
-
-    return _placeholderSponsoredCards;
+    return cards;
   }
 
   bool _isLiveSponsored(OpportunityModel opportunity) {
@@ -399,37 +376,6 @@ class _SponsoredOpportunitiesScreenState
     }
 
     return _isOpenOpportunity(opportunity);
-  }
-
-  bool _looksSponsored(OpportunityModel opportunity) {
-    if (!_isOpenOpportunity(opportunity)) {
-      return false;
-    }
-
-    final normalized = _normalizedSearchText(opportunity);
-    const keywords = [
-      'sponsor',
-      'sponsored',
-      'funding',
-      'funded',
-      'grant',
-      'grants',
-      'stipend',
-      'award',
-      'reward',
-      'accelerator',
-      'incubator',
-      'startup',
-      'fellowship',
-      'ambassador',
-      'competition',
-      'challenge',
-      'hackathon',
-      'summit',
-      'innovation',
-    ];
-
-    return keywords.any(normalized.contains);
   }
 
   bool _isOpenOpportunity(OpportunityModel opportunity) {
@@ -451,13 +397,13 @@ class _SponsoredOpportunitiesScreenState
   int _priorityScore(_SponsoredCardModel item) {
     var score = 0;
 
-    if (item.opportunity?.isFeatured == true) {
+    if (item.opportunity.isFeatured) {
       score += 80;
     }
-    if (item.badgeLabel == 'CLOSING SOON') {
+    if (item.badgeLabel == 'Closing soon') {
       score += 48;
     }
-    if (item.badgeLabel == 'FULLY FUNDED') {
+    if (item.badgeLabel == 'Fully funded') {
       score += 36;
     }
     if (item.filters.contains(_SponsoredFilter.grants)) {
@@ -470,9 +416,7 @@ class _SponsoredOpportunitiesScreenState
         item.urgencyText!.toLowerCase().contains('day')) {
       score += 10;
     }
-    if (!item.isPlaceholder) {
-      score += 12;
-    }
+    score += 12;
 
     return score;
   }
@@ -490,39 +434,18 @@ class _SponsoredOpportunitiesScreenState
     }).toList();
   }
 
-  List<_SponsoredCardModel> _selectFeatured(List<_SponsoredCardModel> items) {
-    final result = <_SponsoredCardModel>[];
-    final seen = <String>{};
-
-    void addCandidates(Iterable<_SponsoredCardModel> candidates) {
-      for (final candidate in candidates) {
-        if (result.length >= 6) {
-          return;
-        }
-        if (seen.add(candidate.id)) {
-          result.add(candidate);
-        }
+  String _labelForFilter(_SponsoredFilter filter) {
+    for (final item in _filters) {
+      if (item.value == filter) {
+        return item.label;
       }
     }
-
-    addCandidates(items.where((item) => item.opportunity?.isFeatured == true));
-    addCandidates(items.where((item) => item.badgeLabel == 'FULLY FUNDED'));
-    addCandidates(
-      items.where(
-        (item) =>
-            item.daysUntilDeadline != null && item.daysUntilDeadline! <= 7,
-      ),
-    );
-    addCandidates(items);
-
-    return result;
+    return 'All';
   }
 
   _SponsoredCardModel _mapOpportunityToCardModel(OpportunityModel opportunity) {
-    final title = opportunity.title.trim().isEmpty
-        ? 'Sponsored Opportunity'
-        : opportunity.title.trim();
-    final description = _descriptionFor(opportunity);
+    final title = opportunity.title.trim();
+    final description = opportunity.description.trim();
     final filters = _filtersForOpportunity(opportunity);
     final theme = _themeFor(filters);
     final badgeLabel = _badgeLabelForOpportunity(opportunity, filters);
@@ -531,15 +454,18 @@ class _SponsoredOpportunitiesScreenState
     final urgencyColor = _urgencyColorFor(opportunity);
     final compensation = _compensationText(opportunity);
     final duration = _durationFor(opportunity);
-    final companyName = _companyName(opportunity);
+    final trackLabel = _trackLabelFor(opportunity);
+    final locationLabel = _locationLabelFor(opportunity);
+    final companyName = opportunity.companyName.trim();
     final deadline = _deadlineFor(opportunity);
     final daysUntilDeadline = _daysUntil(deadline);
     final searchText = [
       title,
       companyName,
       description,
-      opportunity.location,
+      locationLabel ?? opportunity.location,
       opportunity.requirements,
+      trackLabel ?? '',
       badgeLabel,
       urgencyText ?? '',
       compensation ?? '',
@@ -556,6 +482,8 @@ class _SponsoredOpportunitiesScreenState
       iconData: theme.icon,
       iconColor: theme.foregroundColor,
       iconBgColor: theme.backgroundColor,
+      trackLabel: trackLabel,
+      locationLabel: locationLabel,
       badgeLabel: badgeLabel,
       badgeColor: badgeColor,
       urgencyText: urgencyText,
@@ -566,36 +494,47 @@ class _SponsoredOpportunitiesScreenState
       filters: filters,
       opportunity: opportunity,
       searchText: searchText,
-      isPlaceholder: false,
       createdAt: opportunity.createdAt?.toDate(),
     );
   }
 
-  String _companyName(OpportunityModel opportunity) {
-    final companyName = opportunity.companyName.trim();
-    return companyName.isEmpty ? 'AvenirDZ Partner' : companyName;
+  String? _trackLabelFor(OpportunityModel opportunity) {
+    final rawValue = opportunity.readString(const <String>[
+      'track',
+      'program',
+      'programType',
+      'initiative',
+      'category',
+    ]);
+    if (rawValue == null) {
+      return null;
+    }
+
+    final normalized = rawValue
+        .trim()
+        .replaceAll(RegExp(r'[_-]+'), ' ')
+        .replaceAll(RegExp(r'\s+'), ' ');
+    if (normalized.isEmpty) {
+      return null;
+    }
+
+    return normalized
+        .split(' ')
+        .where((part) => part.isNotEmpty)
+        .map(
+          (part) =>
+              '${part[0].toUpperCase()}${part.substring(1).toLowerCase()}',
+        )
+        .join(' ');
   }
 
-  String _descriptionFor(OpportunityModel opportunity) {
-    final description = opportunity.description.trim();
-    if (description.isNotEmpty) {
-      return description;
+  String? _locationLabelFor(OpportunityModel opportunity) {
+    final location = opportunity.location.trim();
+    if (location.isEmpty) {
+      return null;
     }
 
-    final companyName = _companyName(opportunity);
-    final filters = _filtersForOpportunity(opportunity);
-    if (filters.contains(_SponsoredFilter.startup)) {
-      return '$companyName is opening a partner-backed startup track for ambitious students ready to build and learn fast.';
-    }
-    if (filters.contains(_SponsoredFilter.competition)) {
-      return '$companyName is inviting students to a sponsored challenge with mentorship, visibility, and hands-on exposure.';
-    }
-    if (filters.contains(_SponsoredFilter.grants) ||
-        filters.contains(_SponsoredFilter.funding)) {
-      return '$companyName is supporting student ideas through a sponsored program with funding and guided application support.';
-    }
-
-    return '$companyName is offering a sponsored opportunity designed to help students grow through real support and curated access.';
+    return _compactValueText(location);
   }
 
   Set<_SponsoredFilter> _filtersForOpportunity(OpportunityModel opportunity) {
@@ -731,7 +670,7 @@ class _SponsoredOpportunitiesScreenState
     if (daysUntilDeadline != null &&
         daysUntilDeadline >= 0 &&
         daysUntilDeadline <= 4) {
-      return 'CLOSING SOON';
+      return 'Closing soon';
     }
 
     if (_containsAny(normalized, const [
@@ -739,7 +678,7 @@ class _SponsoredOpportunitiesScreenState
       'full funding',
       'all expenses',
     ])) {
-      return 'FULLY FUNDED';
+      return 'Fully funded';
     }
 
     if (_containsAny(normalized, const [
@@ -748,24 +687,24 @@ class _SponsoredOpportunitiesScreenState
       'limited spots',
       'exclusive',
     ])) {
-      return 'LIMITED';
+      return 'Limited';
     }
 
     if (filters.contains(_SponsoredFilter.funding) &&
         filters.contains(_SponsoredFilter.grants)) {
-      return 'FULLY FUNDED';
+      return 'Fully funded';
     }
 
-    return 'OPEN';
+    return 'Open';
   }
 
   Color _badgeColorForLabel(String label) {
     switch (label) {
-      case 'CLOSING SOON':
+      case 'Closing soon':
         return OpportunityDashboardPalette.error;
-      case 'FULLY FUNDED':
+      case 'Fully funded':
         return const Color(0xFFC2410C);
-      case 'LIMITED':
+      case 'Limited':
         return _SponsoredPalette.accent;
       default:
         return const Color(0xFF0F766E);
@@ -890,20 +829,6 @@ class _SponsoredOpportunitiesScreenState
     return needles.any(value.contains);
   }
 
-  Future<void> _scrollToAllPrograms() async {
-    final sectionContext = _allProgramsSectionKey.currentContext;
-    if (sectionContext == null) {
-      return;
-    }
-
-    await Scrollable.ensureVisible(
-      sectionContext,
-      duration: const Duration(milliseconds: 320),
-      curve: Curves.easeOutCubic,
-      alignment: 0.02,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
@@ -918,17 +843,17 @@ class _SponsoredOpportunitiesScreenState
     final allOpportunities = opportunityProvider.opportunities;
     final allCards = _buildCardModels(allOpportunities);
     final visibleCards = _applyFilters(allCards);
-    final featuredCards = _selectFeatured(visibleCards);
     final appliedStatuses = applicationProvider.appliedStatusMap;
     final savedIds = savedProvider.savedOpportunities
         .map((item) => item.opportunityId)
         .toSet();
     final hasActiveFilters =
         _searchQuery.isNotEmpty || _activeFilter != _SponsoredFilter.all;
+    final activeFilterLabel = _labelForFilter(_activeFilter);
     final showCatalogEmptyState = allCards.isEmpty && !hasActiveFilters;
     final countLabel = visibleCards.length == 1
-        ? '1 program'
-        : '${visibleCards.length} programs';
+        ? '1 program live now'
+        : '${visibleCards.length} programs live now';
     final horizontalPadding = isExtraCompact
         ? 16.0
         : isCompact
@@ -939,18 +864,7 @@ class _SponsoredOpportunitiesScreenState
         : isCompact
         ? 26.0
         : 32.0;
-    final featuredHeight = isExtraCompact
-        ? 220.0
-        : isCompact
-        ? 230.0
-        : 260.0;
-    final featuredCardWidth = screenSize.width * (isExtraCompact ? 0.76 : 0.78);
-    final gridSpacing = isExtraCompact ? 12.0 : 14.0;
-    final gridMainExtent = isExtraCompact
-        ? 240.0
-        : isCompact
-        ? 250.0
-        : 262.0;
+    final cardSpacing = isExtraCompact ? 12.0 : 14.0;
     final bottomPadding = 20 + MediaQuery.paddingOf(context).bottom;
 
     return AppShellBackground(
@@ -974,7 +888,21 @@ class _SponsoredOpportunitiesScreenState
                 backgroundColor: _SponsoredPalette.surface,
                 onRefresh: () => _loadData(force: true),
                 child: opportunityProvider.isLoading && allOpportunities.isEmpty
-                    ? const Center(child: CircularProgressIndicator())
+                    ? ListView(
+                        physics: const BouncingScrollPhysics(
+                          parent: AlwaysScrollableScrollPhysics(),
+                        ),
+                        children: const [
+                          SizedBox(
+                            height: 420,
+                            child: Center(
+                              child: CircularProgressIndicator(
+                                color: _SponsoredPalette.accent,
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
                     : ListView(
                         controller: _scrollController,
                         physics: const BouncingScrollPhysics(
@@ -997,7 +925,7 @@ class _SponsoredOpportunitiesScreenState
                               TextSpan(
                                 children: [
                                   TextSpan(
-                                    text: 'Sponsored\n',
+                                    text: 'Find your next\n',
                                     style: GoogleFonts.poppins(
                                       fontSize: headlineFontSize,
                                       fontWeight: FontWeight.w700,
@@ -1006,7 +934,7 @@ class _SponsoredOpportunitiesScreenState
                                     ),
                                   ),
                                   TextSpan(
-                                    text: 'Programs',
+                                    text: 'sponsored path',
                                     style: GoogleFonts.poppins(
                                       fontSize: headlineFontSize,
                                       fontWeight: FontWeight.w700,
@@ -1034,7 +962,7 @@ class _SponsoredOpportunitiesScreenState
                           ),
                           SizedBox(height: isCompact ? 10 : 12),
                           SizedBox(
-                            height: 36,
+                            height: 40,
                             child: ListView.separated(
                               scrollDirection: Axis.horizontal,
                               padding: EdgeInsets.symmetric(
@@ -1062,96 +990,16 @@ class _SponsoredOpportunitiesScreenState
                               },
                             ),
                           ),
-                          SizedBox(height: isCompact ? 16 : 22),
+                          SizedBox(height: isCompact ? 18 : 24),
                           Padding(
                             padding: EdgeInsets.symmetric(
                               horizontal: horizontalPadding,
                             ),
                             child: _SponsoredSectionHeader(
-                              title: 'Featured Programs',
-                              actionLabel: 'Browse all',
-                              onAction: _scrollToAllPrograms,
-                              compact: isCompact,
-                            ),
-                          ),
-                          SizedBox(height: isCompact ? 8 : 12),
-                          if (visibleCards.isEmpty)
-                            Padding(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: horizontalPadding,
-                              ),
-                              child: _SponsoredEmptyState(
-                                title: showCatalogEmptyState
-                                    ? 'No sponsored programs available right now'
-                                    : 'No sponsored programs match this view',
-                                message: showCatalogEmptyState
-                                    ? 'Check back soon for new partner-backed programs.'
-                                    : 'Try adjusting your search or filters to explore more partner-backed programs.',
-                              ),
-                            )
-                          else
-                            SizedBox(
-                              height: featuredHeight,
-                              child: ListView.separated(
-                                scrollDirection: Axis.horizontal,
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: horizontalPadding,
-                                ),
-                                physics: const BouncingScrollPhysics(),
-                                itemCount: featuredCards.length,
-                                separatorBuilder: (context, index) =>
-                                    const SizedBox(width: 14),
-                                itemBuilder: (context, index) {
-                                  final item = featuredCards[index];
-                                  final opportunity = item.opportunity;
-                                  final actionState =
-                                      _actionStateForOpportunity(
-                                        opportunity,
-                                        appliedStatuses,
-                                      );
-
-                                  return SizedBox(
-                                    width: featuredCardWidth,
-                                    child: _FeaturedSponsoredCard(
-                                      item: item,
-                                      actionState: actionState,
-                                      isSaved:
-                                          opportunity != null &&
-                                          savedIds.contains(opportunity.id),
-                                      isSaveBusy:
-                                          opportunity != null &&
-                                          _busySaveIds.contains(opportunity.id),
-                                      isApplying:
-                                          opportunity != null &&
-                                          _busyApplyIds.contains(
-                                            opportunity.id,
-                                          ),
-                                      compact: isCompact,
-                                      onTap: opportunity == null
-                                          ? null
-                                          : () => _openOpportunity(opportunity),
-                                      onApply: actionState.isEnabled
-                                          ? () => _applyNow(item)
-                                          : null,
-                                      onToggleSaved: opportunity == null
-                                          ? null
-                                          : () => _toggleSavedOpportunity(
-                                              opportunity,
-                                            ),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                          SizedBox(height: isCompact ? 18 : 24),
-                          Container(
-                            key: _allProgramsSectionKey,
-                            padding: EdgeInsets.symmetric(
-                              horizontal: horizontalPadding,
-                            ),
-                            child: _SponsoredSectionHeader(
-                              title: 'All Programs',
-                              countLabel: countLabel,
+                              title: 'All Sponsored Programs',
+                              countLabel: hasActiveFilters
+                                  ? '$countLabel matched in ${activeFilterLabel.toLowerCase()}'
+                                  : countLabel,
                               compact: isCompact,
                               trailing: _SponsoredViewToggle(
                                 viewMode: _viewMode,
@@ -1163,7 +1011,7 @@ class _SponsoredOpportunitiesScreenState
                               ),
                             ),
                           ),
-                          SizedBox(height: isCompact ? 8 : 12),
+                          SizedBox(height: isCompact ? 10 : 14),
                           if (visibleCards.isEmpty)
                             Padding(
                               padding: EdgeInsets.symmetric(
@@ -1174,7 +1022,7 @@ class _SponsoredOpportunitiesScreenState
                                     ? 'No sponsored programs available right now'
                                     : 'No sponsored programs match this view',
                                 message: showCatalogEmptyState
-                                    ? 'Check back soon for new partner-backed programs.'
+                                    ? 'Check back soon for new sponsored programs.'
                                     : 'Try adjusting your search or filters to see matching programs.',
                               ),
                             )
@@ -1194,61 +1042,66 @@ class _SponsoredOpportunitiesScreenState
                                   );
                                 },
                                 child: _viewMode == _SponsoredViewMode.grid
-                                    ? GridView.builder(
+                                    ? Column(
                                         key: const ValueKey('sponsored-grid'),
-                                        shrinkWrap: true,
-                                        physics:
-                                            const NeverScrollableScrollPhysics(),
-                                        itemCount: visibleCards.length,
-                                        gridDelegate:
-                                            SliverGridDelegateWithFixedCrossAxisCount(
-                                              crossAxisCount: 2,
-                                              crossAxisSpacing: gridSpacing,
-                                              mainAxisSpacing: gridSpacing,
-                                              mainAxisExtent: gridMainExtent,
-                                            ),
-                                        itemBuilder: (context, index) {
-                                          final item = visibleCards[index];
-                                          final opportunity = item.opportunity;
-                                          final actionState =
-                                              _actionStateForOpportunity(
-                                                opportunity,
-                                                appliedStatuses,
-                                              );
+                                        children: [
+                                          for (
+                                            var index = 0;
+                                            index < visibleCards.length;
+                                            index++
+                                          )
+                                            Padding(
+                                              padding: EdgeInsets.only(
+                                                bottom:
+                                                    index ==
+                                                        visibleCards.length - 1
+                                                    ? 0
+                                                    : cardSpacing,
+                                              ),
+                                              child: Builder(
+                                                builder: (context) {
+                                                  final item =
+                                                      visibleCards[index];
+                                                  final opportunity =
+                                                      item.opportunity;
+                                                  final actionState =
+                                                      _actionStateForOpportunity(
+                                                        opportunity,
+                                                        appliedStatuses,
+                                                      );
 
-                                          return _SponsoredGridCard(
-                                            item: item,
-                                            actionState: actionState,
-                                            isSaved:
-                                                opportunity != null &&
-                                                savedIds.contains(
-                                                  opportunity.id,
-                                                ),
-                                            isSaveBusy:
-                                                opportunity != null &&
-                                                _busySaveIds.contains(
-                                                  opportunity.id,
-                                                ),
-                                            isApplying:
-                                                opportunity != null &&
-                                                _busyApplyIds.contains(
-                                                  opportunity.id,
-                                                ),
-                                            onTap: opportunity == null
-                                                ? null
-                                                : () => _openOpportunity(
-                                                    opportunity,
-                                                  ),
-                                            onApply: actionState.isEnabled
-                                                ? () => _applyNow(item)
-                                                : null,
-                                            onToggleSaved: opportunity == null
-                                                ? null
-                                                : () => _toggleSavedOpportunity(
-                                                    opportunity,
-                                                  ),
-                                          );
-                                        },
+                                                  return _SponsoredGridCard(
+                                                    item: item,
+                                                    actionState: actionState,
+                                                    isSaved: savedIds.contains(
+                                                      opportunity.id,
+                                                    ),
+                                                    isSaveBusy: _busySaveIds
+                                                        .contains(
+                                                          opportunity.id,
+                                                        ),
+                                                    isApplying: _busyApplyIds
+                                                        .contains(
+                                                          opportunity.id,
+                                                        ),
+                                                    compact: isCompact,
+                                                    onTap: () =>
+                                                        _openOpportunity(
+                                                          opportunity,
+                                                        ),
+                                                    onApply:
+                                                        actionState.isEnabled
+                                                        ? () => _applyNow(item)
+                                                        : null,
+                                                    onToggleSaved: () =>
+                                                        _toggleSavedOpportunity(
+                                                          opportunity,
+                                                        ),
+                                                  );
+                                                },
+                                              ),
+                                            ),
+                                        ],
                                       )
                                     : Column(
                                         key: const ValueKey('sponsored-list'),
@@ -1264,7 +1117,7 @@ class _SponsoredOpportunitiesScreenState
                                                     index ==
                                                         visibleCards.length - 1
                                                     ? 0
-                                                    : 10,
+                                                    : cardSpacing,
                                               ),
                                               child: Builder(
                                                 builder: (context) {
@@ -1281,40 +1134,27 @@ class _SponsoredOpportunitiesScreenState
                                                   return _SponsoredListTile(
                                                     item: listItem,
                                                     actionState: listAction,
-                                                    isSaved:
-                                                        listOpp != null &&
-                                                        savedIds.contains(
-                                                          listOpp.id,
+                                                    isSaved: savedIds.contains(
+                                                      listOpp.id,
+                                                    ),
+                                                    isSaveBusy: _busySaveIds
+                                                        .contains(listOpp.id),
+                                                    isApplying: _busyApplyIds
+                                                        .contains(listOpp.id),
+                                                    onTap: () =>
+                                                        _openOpportunity(
+                                                          listOpp,
                                                         ),
-                                                    isSaveBusy:
-                                                        listOpp != null &&
-                                                        _busySaveIds.contains(
-                                                          listOpp.id,
-                                                        ),
-                                                    isApplying:
-                                                        listOpp != null &&
-                                                        _busyApplyIds.contains(
-                                                          listOpp.id,
-                                                        ),
-                                                    onTap: listOpp == null
-                                                        ? null
-                                                        : () =>
-                                                              _openOpportunity(
-                                                                listOpp,
-                                                              ),
                                                     onApply:
                                                         listAction.isEnabled
                                                         ? () => _applyNow(
                                                             listItem,
                                                           )
                                                         : null,
-                                                    onToggleSaved:
-                                                        listOpp == null
-                                                        ? null
-                                                        : () =>
-                                                              _toggleSavedOpportunity(
-                                                                listOpp,
-                                                              ),
+                                                    onToggleSaved: () =>
+                                                        _toggleSavedOpportunity(
+                                                          listOpp,
+                                                        ),
                                                   );
                                                 },
                                               ),
@@ -1426,6 +1266,39 @@ class _SponsoredHeaderBar extends StatelessWidget {
   }
 }
 
+class _BackdropShape extends StatelessWidget {
+  final double width;
+  final double height;
+  final Color color;
+  final double opacity;
+  final double radius;
+  final double rotation;
+
+  const _BackdropShape({
+    required this.width,
+    required this.height,
+    required this.color,
+    required this.opacity,
+    required this.radius,
+    required this.rotation,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Transform.rotate(
+      angle: rotation,
+      child: Container(
+        width: width,
+        height: height,
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: opacity),
+          borderRadius: BorderRadius.circular(radius),
+        ),
+      ),
+    );
+  }
+}
+
 class _SponsoredSearchBar extends StatelessWidget {
   final TextEditingController controller;
   final FocusNode focusNode;
@@ -1441,46 +1314,51 @@ class _SponsoredSearchBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: _SponsoredPalette.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: _SponsoredPalette.border),
+    return TextField(
+      controller: controller,
+      focusNode: focusNode,
+      textInputAction: TextInputAction.search,
+      cursorColor: _SponsoredPalette.accent,
+      style: GoogleFonts.poppins(
+        fontSize: compact ? 12 : 14,
+        fontWeight: FontWeight.w500,
+        color: OpportunityDashboardPalette.textPrimary,
       ),
-      child: TextField(
-        controller: controller,
-        focusNode: focusNode,
-        cursorColor: _SponsoredPalette.accent,
-        style: GoogleFonts.poppins(
-          fontSize: compact ? 12 : 13,
-          fontWeight: FontWeight.w500,
-          color: _SponsoredPalette.textPrimary,
+      decoration: InputDecoration(
+        isDense: compact,
+        hintText: 'Search programs, partners...',
+        hintStyle: GoogleFonts.poppins(
+          fontSize: compact ? 12 : 14,
+          color: OpportunityDashboardPalette.textSecondary,
         ),
-        decoration: InputDecoration(
-          hintText: 'Search grants, startups, competitions...',
-          hintStyle: GoogleFonts.poppins(
-            fontSize: compact ? 11.5 : 12,
-            fontWeight: FontWeight.w500,
-            color: _SponsoredPalette.textSecondary,
-          ),
-          prefixIcon: const Icon(
-            Icons.search_rounded,
-            color: _SponsoredPalette.textSecondary,
-          ),
-          suffixIcon: onClear == null
-              ? null
-              : IconButton(
-                  tooltip: 'Clear search',
-                  onPressed: onClear,
-                  icon: const Icon(
-                    Icons.close_rounded,
-                    color: _SponsoredPalette.textSecondary,
-                  ),
-                ),
-          border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 14,
-            vertical: 13,
+        prefixIcon: Icon(
+          Icons.search_rounded,
+          color: OpportunityDashboardPalette.textSecondary,
+          size: compact ? 18 : 22,
+        ),
+        suffixIcon: onClear == null
+            ? null
+            : IconButton(
+                onPressed: onClear,
+                tooltip: 'Clear search',
+                icon: const Icon(Icons.close_rounded),
+                color: OpportunityDashboardPalette.textSecondary,
+              ),
+        filled: true,
+        fillColor: const Color(0xFFEEF2FF),
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: compact ? 14 : 18,
+          vertical: compact ? 12 : 18,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(compact ? 18 : 24),
+          borderSide: const BorderSide(color: Colors.transparent),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(compact ? 18 : 24),
+          borderSide: BorderSide(
+            color: _SponsoredPalette.accent.withValues(alpha: 0.22),
+            width: 1.5,
           ),
         ),
       ),
@@ -1507,17 +1385,30 @@ class _SponsoredFilterChip extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(999),
         child: Ink(
-          padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 9),
           decoration: BoxDecoration(
-            color: isActive
-                ? _SponsoredPalette.accent
-                : _SponsoredPalette.surface,
+            gradient: isActive
+                ? const LinearGradient(
+                    colors: [
+                      _SponsoredPalette.heroMid,
+                      _SponsoredPalette.heroEnd,
+                    ],
+                  )
+                : null,
+            color: isActive ? null : Colors.white.withValues(alpha: 0.86),
             borderRadius: BorderRadius.circular(999),
             border: Border.all(
-              color: isActive
-                  ? _SponsoredPalette.accent
-                  : _SponsoredPalette.border,
+              color: isActive ? Colors.transparent : _SponsoredPalette.border,
             ),
+            boxShadow: isActive
+                ? [
+                    BoxShadow(
+                      color: _SponsoredPalette.accent.withValues(alpha: 0.18),
+                      blurRadius: 14,
+                      offset: const Offset(0, 6),
+                    ),
+                  ]
+                : null,
           ),
           child: Text(
             label,
@@ -1535,17 +1426,13 @@ class _SponsoredFilterChip extends StatelessWidget {
 
 class _SponsoredSectionHeader extends StatelessWidget {
   final String title;
-  final String? actionLabel;
   final String? countLabel;
-  final VoidCallback? onAction;
   final Widget? trailing;
   final bool compact;
 
   const _SponsoredSectionHeader({
     required this.title,
-    this.actionLabel,
     this.countLabel,
-    this.onAction,
     this.trailing,
     required this.compact,
   });
@@ -1582,18 +1469,6 @@ class _SponsoredSectionHeader extends StatelessWidget {
           ),
         ),
         ?trailing,
-        if (actionLabel != null)
-          GestureDetector(
-            onTap: onAction,
-            child: Text(
-              actionLabel!,
-              style: GoogleFonts.poppins(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: _SponsoredPalette.accent,
-              ),
-            ),
-          ),
       ],
     );
   }
@@ -1609,10 +1484,11 @@ class _SponsoredViewToggle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFFF1F5F9),
-        borderRadius: BorderRadius.circular(10),
+        color: Colors.white.withValues(alpha: 0.88),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: _SponsoredPalette.accentBorder),
       ),
-      padding: const EdgeInsets.all(3),
+      padding: const EdgeInsets.all(4),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -1650,17 +1526,25 @@ class _ToggleIcon extends StatelessWidget {
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 180),
-        width: 30,
-        height: 28,
+        width: 34,
+        height: 30,
         decoration: BoxDecoration(
-          color: isActive ? _SponsoredPalette.surface : Colors.transparent,
-          borderRadius: BorderRadius.circular(8),
+          gradient: isActive
+              ? const LinearGradient(
+                  colors: [
+                    _SponsoredPalette.heroMid,
+                    _SponsoredPalette.heroEnd,
+                  ],
+                )
+              : null,
+          color: isActive ? null : Colors.transparent,
+          borderRadius: BorderRadius.circular(10),
           boxShadow: isActive
               ? [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.06),
-                    blurRadius: 4,
-                    offset: const Offset(0, 1),
+                    color: _SponsoredPalette.accent.withValues(alpha: 0.2),
+                    blurRadius: 12,
+                    offset: const Offset(0, 6),
                   ),
                 ]
               : null,
@@ -1668,15 +1552,14 @@ class _ToggleIcon extends StatelessWidget {
         child: Icon(
           icon,
           size: 16,
-          color: isActive
-              ? _SponsoredPalette.accent
-              : _SponsoredPalette.textSecondary,
+          color: isActive ? Colors.white : _SponsoredPalette.textSecondary,
         ),
       ),
     );
   }
 }
 
+// ignore: unused_element
 class _FeaturedSponsoredCard extends StatelessWidget {
   final _SponsoredCardModel item;
   final _SponsoredActionState actionState;
@@ -1903,6 +1786,7 @@ class _SponsoredGridCard extends StatelessWidget {
   final bool isSaved;
   final bool isSaveBusy;
   final bool isApplying;
+  final bool compact;
   final VoidCallback? onTap;
   final VoidCallback? onApply;
   final VoidCallback? onToggleSaved;
@@ -1913,6 +1797,7 @@ class _SponsoredGridCard extends StatelessWidget {
     required this.isSaved,
     required this.isSaveBusy,
     required this.isApplying,
+    required this.compact,
     required this.onTap,
     required this.onApply,
     required this.onToggleSaved,
@@ -1920,7 +1805,12 @@ class _SponsoredGridCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final radius = BorderRadius.circular(14);
+    final radius = BorderRadius.circular(compact ? 22 : 24);
+    final heroColors = [
+      item.iconColor.withValues(alpha: 0.94),
+      item.badgeColor.withValues(alpha: 0.86),
+      _SponsoredPalette.heroEnd,
+    ];
 
     return Material(
       color: Colors.transparent,
@@ -1931,109 +1821,267 @@ class _SponsoredGridCard extends StatelessWidget {
         borderRadius: radius,
         child: Ink(
           decoration: BoxDecoration(
-            color: _SponsoredPalette.surface,
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Colors.white, _SponsoredPalette.surfaceMuted],
+            ),
             borderRadius: radius,
-            border: Border.all(color: _SponsoredPalette.border),
+            border: Border.all(color: item.badgeColor.withValues(alpha: 0.18)),
+            boxShadow: [
+              BoxShadow(
+                color: item.badgeColor.withValues(alpha: 0.08),
+                blurRadius: 24,
+                offset: const Offset(0, 12),
+              ),
+            ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                height: 4,
+                padding: EdgeInsets.fromLTRB(
+                  compact ? 16 : 18,
+                  compact ? 16 : 18,
+                  compact ? 16 : 18,
+                  compact ? 18 : 20,
+                ),
                 decoration: BoxDecoration(
-                  color: item.iconColor,
-                  borderRadius: BorderRadius.vertical(
-                    top: Radius.circular(radius.topLeft.x),
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: heroColors,
+                  ),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(radius.topLeft.x),
+                    topRight: Radius.circular(radius.topRight.x),
                   ),
                 ),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          _CompanyIcon(
-                            logoUrl: item.logoUrl,
-                            iconData: item.iconData,
-                            iconColor: item.iconColor,
-                            iconBgColor: item.iconBgColor,
-                            size: 34,
-                          ),
-                          const Spacer(),
-                          if (onToggleSaved != null)
-                            GestureDetector(
-                              onTap: isSaveBusy ? null : onToggleSaved,
-                              child: Icon(
-                                isSaved
-                                    ? Icons.bookmark_rounded
-                                    : Icons.bookmark_outline_rounded,
-                                size: 18,
-                                color: isSaved
-                                    ? _SponsoredPalette.accent
-                                    : _SponsoredPalette.textSecondary,
+                child: Stack(
+                  children: [
+                    const Positioned(
+                      top: -8,
+                      right: -2,
+                      child: _BackdropShape(
+                        width: 82,
+                        height: 82,
+                        color: Colors.white,
+                        opacity: 0.09,
+                        radius: 24,
+                        rotation: -0.28,
+                      ),
+                    ),
+                    const Positioned(
+                      bottom: 0,
+                      left: -10,
+                      child: _BackdropShape(
+                        width: 54,
+                        height: 54,
+                        color: Colors.white,
+                        opacity: 0.08,
+                        radius: 18,
+                        rotation: 0.26,
+                      ),
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: [
+                                  _SponsoredMetaChip(
+                                    icon: Icons.workspace_premium_rounded,
+                                    label: 'Sponsored',
+                                    foregroundColor: Colors.white,
+                                    backgroundColor: Colors.white.withValues(
+                                      alpha: 0.14,
+                                    ),
+                                    borderColor: Colors.white.withValues(
+                                      alpha: 0.14,
+                                    ),
+                                  ),
+                                  if (item.trackLabel != null)
+                                    _SponsoredMetaChip(
+                                      icon: Icons.bolt_rounded,
+                                      label: item.trackLabel!,
+                                      foregroundColor: Colors.white,
+                                      backgroundColor: Colors.white.withValues(
+                                        alpha: 0.14,
+                                      ),
+                                      borderColor: Colors.white.withValues(
+                                        alpha: 0.14,
+                                      ),
+                                    ),
+                                ],
                               ),
                             ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        item.title,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.poppins(
-                          fontSize: 12.5,
-                          fontWeight: FontWeight.w700,
-                          height: 1.2,
-                          color: _SponsoredPalette.textPrimary,
+                            if (onToggleSaved != null) ...[
+                              const SizedBox(width: 8),
+                              _BookmarkButton(
+                                isSaved: isSaved,
+                                isLoading: isSaveBusy,
+                                onTap: onToggleSaved,
+                              ),
+                            ],
+                          ],
                         ),
-                      ),
-                      const SizedBox(height: 2),
+                        SizedBox(height: compact ? 16 : 18),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(3),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha: 0.16),
+                                borderRadius: BorderRadius.circular(18),
+                              ),
+                              child: _CompanyIcon(
+                                logoUrl: item.logoUrl,
+                                iconData: item.iconData,
+                                iconColor: item.iconColor,
+                                iconBgColor: item.iconBgColor,
+                                size: compact ? 46 : 50,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    item.title,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: GoogleFonts.poppins(
+                                      fontSize: compact ? 16 : 18,
+                                      fontWeight: FontWeight.w700,
+                                      height: 1.18,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  if (item.companyName.isNotEmpty) ...[
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      item.companyName,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 11.5,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.white.withValues(
+                                          alpha: 0.84,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.fromLTRB(
+                  compact ? 16 : 18,
+                  16,
+                  compact ? 16 : 18,
+                  compact ? 16 : 18,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (item.description.isNotEmpty) ...[
                       Text(
-                        item.companyName,
-                        maxLines: 1,
+                        item.description,
+                        maxLines: compact ? 2 : 3,
                         overflow: TextOverflow.ellipsis,
                         style: GoogleFonts.poppins(
-                          fontSize: 10.5,
-                          fontWeight: FontWeight.w500,
+                          fontSize: compact ? 11.5 : 12.5,
+                          height: 1.55,
                           color: _SponsoredPalette.textSecondary,
                         ),
                       ),
-                      const Spacer(),
-                      if (item.compensation != null)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 4),
-                          child: Text(
-                            item.compensation!,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.poppins(
-                              fontSize: 10.5,
-                              fontWeight: FontWeight.w600,
-                              color: _SponsoredPalette.accentDark,
-                            ),
+                      const SizedBox(height: 14),
+                    ],
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        if (item.compensation != null)
+                          _SponsoredMetaChip(
+                            icon: Icons.payments_outlined,
+                            label: item.compensation!,
+                            foregroundColor: _SponsoredPalette.accentDark,
+                            backgroundColor: _SponsoredPalette.accentSurface,
+                            borderColor: _SponsoredPalette.accentBorder,
+                          ),
+                        if (item.duration != null)
+                          _SponsoredMetaChip(
+                            icon: Icons.timelapse_rounded,
+                            label: item.duration!,
+                            foregroundColor: _SponsoredPalette.textPrimary,
+                            backgroundColor: Colors.white,
+                            borderColor: _SponsoredPalette.border,
+                          ),
+                        if (item.locationLabel != null)
+                          _SponsoredMetaChip(
+                            icon: Icons.place_outlined,
+                            label: item.locationLabel!,
+                            foregroundColor: _SponsoredPalette.textPrimary,
+                            backgroundColor: Colors.white,
+                            borderColor: _SponsoredPalette.border,
+                          ),
+                        if (item.urgencyText != null)
+                          _SponsoredMetaChip(
+                            icon: Icons.schedule_rounded,
+                            label: item.urgencyText!,
+                            foregroundColor:
+                                item.urgencyColor ?? _SponsoredPalette.accent,
+                            backgroundColor:
+                                (item.urgencyColor ?? _SponsoredPalette.accent)
+                                    .withValues(alpha: 0.08),
+                            borderColor:
+                                (item.urgencyColor ?? _SponsoredPalette.accent)
+                                    .withValues(alpha: 0.16),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 14),
+                    Row(
+                      children: [
+                        _BadgePill(
+                          label: item.badgeLabel,
+                          color: item.badgeColor,
+                        ),
+                        const Spacer(),
+                        Text(
+                          'Tap card for details',
+                          style: GoogleFonts.poppins(
+                            fontSize: 10.5,
+                            fontWeight: FontWeight.w500,
+                            color: _SponsoredPalette.textSecondary,
                           ),
                         ),
-                      Row(
-                        children: [
-                          _BadgePill(
-                            label: item.badgeLabel,
-                            color: item.badgeColor,
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 6),
-                      _ApplyButton(
-                        label: actionState.label,
-                        icon: actionState.icon,
-                        accentColor: actionState.color,
-                        isLoading: isApplying,
-                        onTap: onApply,
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
+                    const SizedBox(height: 14),
+                    _ApplyButton(
+                      label: actionState.label,
+                      icon: actionState.icon,
+                      accentColor: actionState.color,
+                      isLoading: isApplying,
+                      onTap: onApply,
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -2067,7 +2115,7 @@ class _SponsoredListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final radius = BorderRadius.circular(14);
+    final radius = BorderRadius.circular(16);
 
     return Material(
       color: Colors.transparent,
@@ -2081,128 +2129,204 @@ class _SponsoredListTile extends StatelessWidget {
             color: _SponsoredPalette.surface,
             borderRadius: radius,
             border: Border.all(color: _SponsoredPalette.border),
-          ),
-          padding: const EdgeInsets.all(12),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _CompanyIcon(
-                logoUrl: item.logoUrl,
-                iconData: item.iconData,
-                iconColor: item.iconColor,
-                iconBgColor: item.iconBgColor,
-                size: 42,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.04),
+                blurRadius: 14,
+                offset: const Offset(0, 6),
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+            ],
+          ),
+          child: Stack(
+            children: [
+              Positioned(
+                top: 0,
+                bottom: 0,
+                left: 0,
+                child: Container(
+                  width: 8,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [item.iconColor, item.badgeColor],
+                    ),
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(radius.topLeft.x),
+                      bottomLeft: Radius.circular(radius.bottomLeft.x),
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 14, 12),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(
-                      item.title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.poppins(
-                        fontSize: 13.5,
-                        fontWeight: FontWeight.w700,
-                        color: _SponsoredPalette.textPrimary,
-                      ),
+                    _CompanyIcon(
+                      logoUrl: item.logoUrl,
+                      iconData: item.iconData,
+                      iconColor: item.iconColor,
+                      iconBgColor: item.iconBgColor,
+                      size: 40,
                     ),
-                    const SizedBox(height: 2),
-                    Text(
-                      item.companyName,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.poppins(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w500,
-                        color: _SponsoredPalette.textSecondary,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Row(
-                      children: [
-                        _BadgePill(
-                          label: item.badgeLabel,
-                          color: item.badgeColor,
-                        ),
-                        if (item.compensation != null) ...[
-                          const SizedBox(width: 8),
-                          Flexible(
-                            child: Text(
-                              item.compensation!,
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  item.title,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w700,
+                                    color: _SponsoredPalette.textPrimary,
+                                  ),
+                                ),
+                              ),
+                              if (onToggleSaved != null) ...[
+                                const SizedBox(width: 8),
+                                GestureDetector(
+                                  onTap: isSaveBusy ? null : onToggleSaved,
+                                  child: Icon(
+                                    isSaved
+                                        ? Icons.bookmark_rounded
+                                        : Icons.bookmark_outline_rounded,
+                                    size: 18,
+                                    color: isSaved
+                                        ? _SponsoredPalette.accent
+                                        : _SponsoredPalette.textSecondary,
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                          if (item.companyName.isNotEmpty) ...[
+                            const SizedBox(height: 2),
+                            Text(
+                              item.companyName,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: GoogleFonts.poppins(
                                 fontSize: 10.5,
-                                fontWeight: FontWeight.w600,
-                                color: _SponsoredPalette.accentDark,
-                              ),
-                            ),
-                          ),
-                        ],
-                        if (item.urgencyText != null) ...[
-                          const SizedBox(width: 8),
-                          Icon(
-                            Icons.schedule_rounded,
-                            size: 11,
-                            color: item.urgencyColor,
-                          ),
-                          const SizedBox(width: 2),
-                          Flexible(
-                            child: Text(
-                              item.urgencyText!,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: GoogleFonts.poppins(
-                                fontSize: 10,
                                 fontWeight: FontWeight.w500,
-                                color: item.urgencyColor,
+                                color: _SponsoredPalette.textSecondary,
                               ),
                             ),
+                          ] else
+                            const SizedBox(height: 1),
+                          const SizedBox(height: 7),
+                          Row(
+                            children: [
+                              _BadgePill(
+                                label: item.badgeLabel,
+                                color: item.badgeColor,
+                              ),
+                              if (item.compensation != null) ...[
+                                const SizedBox(width: 8),
+                                Flexible(
+                                  child: Text(
+                                    item.compensation!,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 10.5,
+                                      fontWeight: FontWeight.w600,
+                                      color: _SponsoredPalette.accentDark,
+                                    ),
+                                  ),
+                                ),
+                              ] else if (item.urgencyText != null) ...[
+                                const SizedBox(width: 8),
+                                Flexible(
+                                  child: Text(
+                                    item.urgencyText!,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 10.2,
+                                      fontWeight: FontWeight.w500,
+                                      color:
+                                          item.urgencyColor ??
+                                          _SponsoredPalette.textSecondary,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ],
                           ),
                         ],
-                      ],
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    SizedBox(
+                      width: 88,
+                      height: 32,
+                      child: _ApplyButton(
+                        label: actionState.label,
+                        icon: null,
+                        accentColor: actionState.color,
+                        isLoading: isApplying,
+                        onTap: onApply,
+                      ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(width: 8),
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (onToggleSaved != null)
-                    GestureDetector(
-                      onTap: isSaveBusy ? null : onToggleSaved,
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 6),
-                        child: Icon(
-                          isSaved
-                              ? Icons.bookmark_rounded
-                              : Icons.bookmark_outline_rounded,
-                          size: 20,
-                          color: isSaved
-                              ? _SponsoredPalette.accent
-                              : _SponsoredPalette.textSecondary,
-                        ),
-                      ),
-                    ),
-                  SizedBox(
-                    width: 72,
-                    height: 30,
-                    child: _ApplyButton(
-                      label: actionState.label,
-                      icon: null,
-                      accentColor: actionState.color,
-                      isLoading: isApplying,
-                      onTap: onApply,
-                    ),
-                  ),
-                ],
-              ),
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _SponsoredMetaChip extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color foregroundColor;
+  final Color backgroundColor;
+  final Color borderColor;
+
+  const _SponsoredMetaChip({
+    required this.icon,
+    required this.label,
+    required this.foregroundColor,
+    required this.backgroundColor,
+    required this.borderColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: borderColor),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 13, color: foregroundColor),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: GoogleFonts.poppins(
+              fontSize: 10.5,
+              fontWeight: FontWeight.w600,
+              color: foregroundColor,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -2317,23 +2441,29 @@ class _ApplyButton extends StatelessWidget {
                       valueColor: AlwaysStoppedAnimation<Color>(textColor),
                     ),
                   )
-                : Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (icon != null) ...[
-                        Icon(icon, size: 14, color: textColor),
-                        const SizedBox(width: 5),
-                      ],
-                      Text(
-                        label,
-                        style: GoogleFonts.poppins(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                          color: textColor,
-                        ),
+                : Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (icon != null) ...[
+                            Icon(icon, size: 14, color: textColor),
+                            const SizedBox(width: 5),
+                          ],
+                          Text(
+                            label,
+                            style: GoogleFonts.poppins(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: textColor,
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
           ),
         ),
@@ -2509,6 +2639,8 @@ class _SponsoredCardModel {
   final IconData iconData;
   final Color iconColor;
   final Color iconBgColor;
+  final String? trackLabel;
+  final String? locationLabel;
   final String badgeLabel;
   final Color badgeColor;
   final String? urgencyText;
@@ -2517,9 +2649,8 @@ class _SponsoredCardModel {
   final String? duration;
   final int? daysUntilDeadline;
   final Set<_SponsoredFilter> filters;
-  final OpportunityModel? opportunity;
+  final OpportunityModel opportunity;
   final String searchText;
-  final bool isPlaceholder;
   final DateTime? createdAt;
 
   const _SponsoredCardModel({
@@ -2531,6 +2662,8 @@ class _SponsoredCardModel {
     required this.iconData,
     required this.iconColor,
     required this.iconBgColor,
+    required this.trackLabel,
+    required this.locationLabel,
     required this.badgeLabel,
     required this.badgeColor,
     required this.urgencyText,
@@ -2541,117 +2674,6 @@ class _SponsoredCardModel {
     required this.filters,
     required this.opportunity,
     required this.searchText,
-    required this.isPlaceholder,
     required this.createdAt,
   });
-
-  /*
-  factory _SponsoredCardModel.placeholder({
-    required String id,
-    required String title,
-    required String description,
-    required String companyName,
-    required IconData iconData,
-    required Color iconColor,
-    required Color iconBgColor,
-    required String badgeLabel,
-    required Color badgeColor,
-    required String? urgencyText,
-    required Color? urgencyColor,
-    required String? compensation,
-    required String? duration,
-    required Set<_SponsoredFilter> filters,
-  }) {
-    return _SponsoredCardModel(
-      id: id,
-      title: title,
-      description: description,
-      companyName: companyName,
-      logoUrl: '',
-      iconData: iconData,
-      iconColor: iconColor,
-      iconBgColor: iconBgColor,
-      badgeLabel: badgeLabel,
-      badgeColor: badgeColor,
-      urgencyText: urgencyText,
-      urgencyColor: urgencyColor,
-      compensation: compensation,
-      duration: duration,
-      daysUntilDeadline: null,
-      filters: filters,
-      opportunity: null,
-      searchText: [
-        title,
-        description,
-        companyName,
-        ...filters.map((filter) => filter.name),
-      ].join(' ').toLowerCase(),
-      isPlaceholder: true,
-      createdAt: null,
-    );
-  }
-  */
 }
-
-final List<_SponsoredCardModel> _placeholderSponsoredCards =
-    const <_SponsoredCardModel>[]; /*
-  _SponsoredCardModel.placeholder(
-    id: 'jp-morgan-fintech',
-    title: 'JP Morgan Fintech Summit',
-    description:
-        'A partner-backed summit for ambitious students exploring finance, technology, and innovation-led product building.',
-    companyName: 'JP Morgan',
-    iconData: Icons.emoji_events_rounded,
-    iconColor: _SponsoredPalette.accent,
-    iconBgColor: const Color(0xFFFFEDD5),
-    badgeLabel: 'FULLY FUNDED',
-    badgeColor: const Color(0xFFC2410C),
-    urgencyText: 'Closing in 5 days',
-    urgencyColor: const Color(0xFFEA580C),
-    compensation: '\$5,000',
-    duration: '3 days',
-    filters: {
-      _SponsoredFilter.funding,
-      _SponsoredFilter.grants,
-      _SponsoredFilter.competition,
-    },
-  ),
-  _SponsoredCardModel.placeholder(
-    id: 'aws-ambassador',
-    title: 'AWS Student Ambassador',
-    description:
-        'A sponsored student ambassador track with mentorship, community leadership, and premium cloud learning access.',
-    companyName: 'AWS',
-    iconData: Icons.school_rounded,
-    iconColor: OpportunityDashboardPalette.primaryDark,
-    iconBgColor: const Color(0xFFDBEAFE),
-    badgeLabel: 'OPEN',
-    badgeColor: const Color(0xFF0F766E),
-    urgencyText: 'Applications open',
-    urgencyColor: OpportunityDashboardPalette.secondary,
-    compensation: '\$1,200 / mo',
-    duration: '6 mo',
-    filters: {_SponsoredFilter.funding, _SponsoredFilter.internships},
-  ),
-  _SponsoredCardModel.placeholder(
-    id: 'innovation-grant',
-    title: 'International Innovation Grant',
-    description:
-        'A premium support program for students building new ideas through mentorship, funding access, and expert review.',
-    companyName: 'AvenirDZ Partner',
-    iconData: Icons.workspace_premium_rounded,
-    iconColor: OpportunityDashboardPalette.warning,
-    iconBgColor: const Color(0xFFFEF3C7),
-    badgeLabel: 'LIMITED',
-    badgeColor: _SponsoredPalette.accent,
-    urgencyText: 'Closing in 8 days',
-    urgencyColor: OpportunityDashboardPalette.warning,
-    compensation: '\$8,000',
-    duration: '12 wk',
-    filters: {
-      _SponsoredFilter.funding,
-      _SponsoredFilter.grants,
-      _SponsoredFilter.startup,
-    },
-  ),
-*/

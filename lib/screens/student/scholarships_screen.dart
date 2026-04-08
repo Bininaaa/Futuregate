@@ -33,7 +33,7 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
   int _activeFilterIndex = 0;
 
   static const List<String> _filters = [
-    'All Opportunities',
+    'All Scholarships',
     'Fully Funded',
     'Europe',
     'Asia',
@@ -745,28 +745,29 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
               ],
             ),
           ),
-          GestureDetector(
-            onTap: () {},
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'View all scholarships',
-                  style: GoogleFonts.poppins(
-                    fontSize: 10.5,
-                    fontWeight: FontWeight.w500,
+          if (widget.embedded)
+            GestureDetector(
+              onTap: _openScholarshipCatalog,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'View all scholarships',
+                    style: GoogleFonts.poppins(
+                      fontSize: 10.5,
+                      fontWeight: FontWeight.w500,
+                      color: _P.primary,
+                    ),
+                  ),
+                  const SizedBox(width: 3),
+                  const Icon(
+                    Icons.arrow_forward_rounded,
+                    size: 13,
                     color: _P.primary,
                   ),
-                ),
-                const SizedBox(width: 3),
-                const Icon(
-                  Icons.arrow_forward_rounded,
-                  size: 13,
-                  color: _P.primary,
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
         ],
       ),
     );
@@ -835,6 +836,13 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
       MaterialPageRoute(
         builder: (_) => ScholarshipDetailScreen(scholarship: scholarship),
       ),
+    );
+  }
+
+  void _openScholarshipCatalog() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const ScholarshipsScreen()),
     );
   }
 }
@@ -1109,7 +1117,7 @@ class _ScholarshipCard extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        'Explore Opportunity',
+                        'Explore Scholarship',
                         style: GoogleFonts.poppins(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,

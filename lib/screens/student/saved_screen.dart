@@ -30,8 +30,15 @@ import 'opportunities_screen.dart';
 import 'opportunity_detail_screen.dart';
 import 'scholarship_detail_screen.dart';
 
+enum SavedScreenFilter { all, opportunities, scholarships, trainings, ideas }
+
 class SavedScreen extends StatefulWidget {
-  const SavedScreen({super.key});
+  final SavedScreenFilter initialFilter;
+
+  const SavedScreen({
+    super.key,
+    this.initialFilter = SavedScreenFilter.all,
+  });
 
   @override
   State<SavedScreen> createState() => _SavedScreenState();
@@ -45,7 +52,7 @@ class _SavedScreenState extends State<SavedScreen> {
   final TextEditingController _searchController = TextEditingController();
 
   String _searchQuery = '';
-  _SavedHubFilter _selectedFilter = _SavedHubFilter.all;
+  late _SavedHubFilter _selectedFilter;
   String? _selectedOpportunityType;
   String? _openingItemKey;
   String? _removingItemKey;
@@ -53,6 +60,7 @@ class _SavedScreenState extends State<SavedScreen> {
   @override
   void initState() {
     super.initState();
+    _selectedFilter = _savedHubFilterFromInitial(widget.initialFilter);
     _searchController.addListener(_handleSearchChanged);
     WidgetsBinding.instance.addPostFrameCallback((_) => _loadSavedContent());
   }
@@ -72,6 +80,16 @@ class _SavedScreenState extends State<SavedScreen> {
     }
 
     setState(() => _searchQuery = nextQuery);
+  }
+
+  _SavedHubFilter _savedHubFilterFromInitial(SavedScreenFilter filter) {
+    return switch (filter) {
+      SavedScreenFilter.all => _SavedHubFilter.all,
+      SavedScreenFilter.opportunities => _SavedHubFilter.opportunities,
+      SavedScreenFilter.scholarships => _SavedHubFilter.scholarships,
+      SavedScreenFilter.trainings => _SavedHubFilter.trainings,
+      SavedScreenFilter.ideas => _SavedHubFilter.ideas,
+    };
   }
 
   Future<void> _loadSavedContent() async {

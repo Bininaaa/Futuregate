@@ -15,7 +15,7 @@ import '../../widgets/profile_avatar.dart';
 import '../../widgets/shared/app_content_system.dart';
 import '../../widgets/shared/app_feedback.dart';
 import '../chat/user_profile_preview_screen.dart';
-import 'edit_project_idea_screen.dart';
+import 'create_idea_screen.dart';
 
 class IdeaDetailsScreen extends StatelessWidget {
   final String ideaId;
@@ -626,7 +626,9 @@ class IdeaDetailsScreen extends StatelessWidget {
 
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => EditProjectIdeaScreen(idea: idea)),
+      MaterialPageRoute(
+        builder: (_) => CreateIdeaScreen(idea: idea, isEditMode: true),
+      ),
     );
   }
 
