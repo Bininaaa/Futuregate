@@ -26,8 +26,10 @@ import '../../providers/project_idea_provider.dart';
 import '../../providers/saved_opportunity_provider.dart';
 import '../../providers/saved_scholarship_provider.dart';
 import '../../providers/scholarship_provider.dart';
+import '../../providers/student_provider.dart';
 import '../../providers/training_provider.dart';
 import '../../utils/application_status.dart';
+import '../../utils/student_profile_completion.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/application_status_badge.dart';
 import '../../utils/opportunity_metadata.dart';
@@ -135,6 +137,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     }
 
     _loadedStudentId = studentId;
+    context.read<StudentProvider>().loadStudentProfile(studentId);
     context.read<SavedOpportunityProvider>().fetchSavedOpportunities(studentId);
     context.read<SavedScholarshipProvider>().fetchSavedScholarships(studentId);
     context.read<TrainingProvider>().fetchSavedTrainings(studentId);
@@ -166,7 +169,8 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final user = context.watch<AuthProvider>().userModel;
+    final authUser = context.watch<AuthProvider>().userModel;
+    final user = context.watch<StudentProvider>().student ?? authUser;
     final cv = context.watch<CvProvider>().cv;
     final opportunityProvider = context.watch<OpportunityProvider>();
     final trainingProvider = context.watch<TrainingProvider>();
@@ -2980,24 +2984,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
   }
 
   int _missingProfileSignals(UserModel? user, CvModel? cv) {
-    final checks = <bool>[
-      (user?.fullName ?? '').trim().isNotEmpty,
-      (user?.email ?? '').trim().isNotEmpty,
-      (user?.phone ?? '').trim().isNotEmpty,
-      (user?.location ?? '').trim().isNotEmpty,
-      (user?.academicLevel ?? '').trim().isNotEmpty,
-      (user?.university ?? '').trim().isNotEmpty,
-      (user?.fieldOfStudy ?? '').trim().isNotEmpty,
-      (user?.bio ?? '').trim().isNotEmpty,
-      _hasReadyCv(cv),
-      cv != null &&
-          (cv.skills.isNotEmpty ||
-              cv.languages.isNotEmpty ||
-              cv.education.isNotEmpty ||
-              cv.experience.isNotEmpty),
-    ];
-
-    return checks.where((value) => !value).length;
+    return buildStudentProfileCompletionSummary(user, cv).missingCount;
   }
 
   String _pluralizedWord(int count, String singular, String plural) {
@@ -3341,37 +3328,16 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
   }
 
   bool _hasReadyCv(CvModel? cv) {
-    if (cv == null) {
-      return false;
-    }
-
-    return cv.hasUploadedCv || cv.hasExportedPdf || cv.hasBuilderContent;
+    return hasReadyStudentCv(cv);
   }
 
   int _profileCompletionPercent(UserModel? user, CvModel? cv) {
-    final checks = <bool>[
-      (user?.fullName ?? '').trim().isNotEmpty,
-      (user?.email ?? '').trim().isNotEmpty,
-      (user?.phone ?? '').trim().isNotEmpty,
-      (user?.location ?? '').trim().isNotEmpty,
-      (user?.academicLevel ?? '').trim().isNotEmpty,
-      (user?.university ?? '').trim().isNotEmpty,
-      (user?.fieldOfStudy ?? '').trim().isNotEmpty,
-      (user?.bio ?? '').trim().isNotEmpty,
-      _hasReadyCv(cv),
-      cv != null &&
-          (cv.skills.isNotEmpty ||
-              cv.languages.isNotEmpty ||
-              cv.education.isNotEmpty ||
-              cv.experience.isNotEmpty),
-    ];
-
-    final completed = checks.where((value) => value).length;
-    return ((completed / checks.length) * 100).round();
+    return buildStudentProfileCompletionSummary(user, cv).completionPercent;
   }
 
   String _profileHint(UserModel? user, CvModel? cv) {
-    if (!_hasReadyCv(cv)) {
+    final profileSummary = buildStudentProfileCompletionSummary(user, cv);
+    if (!profileSummary.hasReadyCv) {
       return 'Add your CV so applications are quicker when the right opportunity appears.';
     }
     if ((user?.academicLevel ?? '').trim().isEmpty ||
@@ -3382,21 +3348,23 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     if ((user?.bio ?? '').trim().isEmpty) {
       return 'A short bio will make your profile look more complete and intentional.';
     }
+    if ((user?.fullName ?? '').trim().isEmpty ||
+        (user?.email ?? '').trim().isEmpty ||
+        (user?.location ?? '').trim().isEmpty ||
+        (user?.phone ?? '').trim().isEmpty) {
+      return 'Tighten your core contact details so your profile feels complete everywhere in the app.';
+    }
 
     return 'Your profile is in good shape for the next opportunity you open.';
   }
 
   String _profilePrimaryActionLabel(UserModel? user, CvModel? cv) {
-    if (!_hasReadyCv(cv)) {
+    final profileSummary = buildStudentProfileCompletionSummary(user, cv);
+    if (!profileSummary.hasReadyCv) {
       return 'Add CV';
     }
 
-    if ((user?.academicLevel ?? '').trim().isEmpty ||
-        (user?.fieldOfStudy ?? '').trim().isEmpty ||
-        (user?.university ?? '').trim().isEmpty ||
-        (user?.bio ?? '').trim().isEmpty ||
-        (user?.location ?? '').trim().isEmpty ||
-        (user?.phone ?? '').trim().isEmpty) {
+    if (!profileSummary.isComplete) {
       return 'Complete profile';
     }
 

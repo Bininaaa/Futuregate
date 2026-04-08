@@ -22,6 +22,7 @@ import '../../screens/settings/logout_confirmation_sheet.dart';
 import '../../screens/settings/security_privacy_screen.dart';
 import '../../screens/settings/settings_flow_theme.dart';
 import '../../screens/settings/settings_screen.dart';
+import '../../utils/student_profile_completion.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/profile_avatar.dart';
 import 'applied_opportunities_screen.dart';
@@ -250,34 +251,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   double _profileCompletion(UserModel? user, CvModel? cv) {
-    final checks = <bool>[
-      (user?.fullName ?? '').trim().isNotEmpty,
-      (user?.email ?? '').trim().isNotEmpty,
-      (user?.phone ?? '').trim().isNotEmpty,
-      (user?.location ?? '').trim().isNotEmpty,
-      (user?.academicLevel ?? '').trim().isNotEmpty,
-      (user?.university ?? '').trim().isNotEmpty,
-      (user?.fieldOfStudy ?? '').trim().isNotEmpty,
-      (user?.bio ?? '').trim().isNotEmpty,
-      cv != null &&
-          (cv.hasBuilderContent || cv.hasUploadedCv || cv.hasExportedPdf),
-    ];
-    return checks.where((c) => c).length / checks.length;
+    return buildStudentProfileCompletionSummary(user, cv).completion;
   }
 
   List<String> _missingItems(UserModel? user, CvModel? cv) {
-    final items = <String>[];
-    if ((user?.phone ?? '').trim().isEmpty) items.add('Phone');
-    if ((user?.location ?? '').trim().isEmpty) items.add('Location');
-    if ((user?.academicLevel ?? '').trim().isEmpty) items.add('Academic level');
-    if ((user?.university ?? '').trim().isEmpty) items.add('University');
-    if ((user?.fieldOfStudy ?? '').trim().isEmpty) items.add('Field of study');
-    if ((user?.bio ?? '').trim().isEmpty) items.add('Bio');
-    if (cv == null ||
-        (!cv.hasBuilderContent && !cv.hasUploadedCv && !cv.hasExportedPdf)) {
-      items.add('CV');
-    }
-    return items;
+    return buildStudentProfileCompletionSummary(user, cv).missingItems;
   }
 
   String _completionTitle(double completion) {
@@ -312,6 +290,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       'Field of study',
       'University',
       'Academic level',
+      'Full name',
+      'Email',
       'Location',
       'Phone',
     ];
@@ -336,6 +316,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         return 'A university name adds context and credibility to your academic profile.';
       case 'Academic level':
         return 'Your academic level helps recruiters and programs understand where you are right now.';
+      case 'Full name':
+        return 'Your name makes the profile feel complete and recognizable right away.';
+      case 'Email':
+        return 'A working email keeps applications, notifications, and follow-up communication on track.';
       case 'Location':
         return 'A location makes remote, local, and hybrid opportunities easier to match.';
       case 'Phone':

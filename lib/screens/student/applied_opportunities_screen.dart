@@ -491,7 +491,7 @@ class _AppliedMiniStat extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 84,
+      constraints: const BoxConstraints(minHeight: 96),
       padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -510,6 +510,7 @@ class _AppliedMiniStat extends StatelessWidget {
         ],
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
@@ -534,7 +535,7 @@ class _AppliedMiniStat extends StatelessWidget {
               ),
             ],
           ),
-          const Spacer(),
+          const SizedBox(height: 18),
           Text(
             value,
             style: GoogleFonts.poppins(
