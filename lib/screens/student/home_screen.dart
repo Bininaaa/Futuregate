@@ -20,8 +20,20 @@ class HomeScreen extends StatefulWidget {
 
   const HomeScreen({super.key, this.initialIndex = 0});
 
-  static void switchToTab(BuildContext context, int index) {
-    StudentHomeNavigation.switchToTab(context, index);
+  static void switchToTab(
+    BuildContext context,
+    int index, {
+    String? discoverFilter,
+  }) {
+    StudentHomeNavigation.switchToTab(
+      context,
+      index,
+      discoverFilter: discoverFilter,
+    );
+  }
+
+  static void switchToDiscover(BuildContext context, {String? filter}) {
+    StudentHomeNavigation.switchToDiscover(context, filter: filter);
   }
 
   @override

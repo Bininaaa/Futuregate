@@ -22,6 +22,7 @@ import 'internships_screen.dart';
 import 'jobs_screen.dart';
 import 'opportunity_detail_screen.dart';
 import 'sponsored_opportunities_screen.dart';
+import 'student_home_navigation.dart';
 import 'trainings_screen.dart';
 
 class OpportunitiesScreen extends StatefulWidget {
@@ -58,8 +59,13 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
   @override
   void initState() {
     super.initState();
-    _activeFilter = _filterFromInitialValue(widget.initialFilter);
+    _activeFilter = _filterFromInitialValue(_resolveInitialFilter());
     _searchController.addListener(_handleSearchChanged);
+    if (widget.embedded) {
+      StudentHomeNavigation.requestedDiscoverFilter.addListener(
+        _handleRequestedDiscoverFilter,
+      );
+    }
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) {
@@ -71,12 +77,26 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
 
   @override
   void dispose() {
+    if (widget.embedded) {
+      StudentHomeNavigation.requestedDiscoverFilter.removeListener(
+        _handleRequestedDiscoverFilter,
+      );
+    }
     _searchController
       ..removeListener(_handleSearchChanged)
       ..dispose();
     _searchFocusNode.dispose();
     _scrollController.dispose();
     super.dispose();
+  }
+
+  String? _resolveInitialFilter() {
+    if (!widget.embedded) {
+      return widget.initialFilter;
+    }
+
+    return StudentHomeNavigation.takeRequestedDiscoverFilter() ??
+        widget.initialFilter;
   }
 
   void _handleSearchChanged() {
@@ -88,6 +108,51 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
     setState(() {
       _searchQuery = nextValue;
     });
+  }
+
+  void _handleRequestedDiscoverFilter() {
+    if (!mounted) {
+      return;
+    }
+
+    _applyNavigationFilter(StudentHomeNavigation.takeRequestedDiscoverFilter());
+  }
+
+  void _applyNavigationFilter(String? value) {
+    final nextFilter = _filterFromInitialValue(value);
+    final shouldClearSearch = _searchController.text.isNotEmpty;
+    final hasStructuredFilters =
+        _selectedEmploymentFilter != null ||
+        _selectedWorkModeFilter != null ||
+        _paidOnly ||
+        _closingSoonOnly;
+
+    if (!shouldClearSearch &&
+        !hasStructuredFilters &&
+        nextFilter == _activeFilter) {
+      return;
+    }
+
+    setState(() {
+      _activeFilter = nextFilter;
+      _searchQuery = '';
+      _selectedEmploymentFilter = null;
+      _selectedWorkModeFilter = null;
+      _paidOnly = false;
+      _closingSoonOnly = false;
+    });
+
+    if (shouldClearSearch) {
+      _searchController.clear();
+    }
+
+    if (_scrollController.hasClients) {
+      _scrollController.animateTo(
+        0,
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOutCubic,
+      );
+    }
   }
 
   Future<void> _loadData({bool force = false}) async {

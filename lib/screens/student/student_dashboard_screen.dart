@@ -47,12 +47,9 @@ import 'saved_screen.dart';
 import 'profile_screen.dart';
 import 'idea_details_screen.dart';
 import 'opportunities_screen.dart';
-import 'jobs_screen.dart';
-import 'internships_screen.dart';
 import 'opportunity_detail_screen.dart';
 import 'project_ideas_screen.dart';
 import 'scholarship_detail_screen.dart';
-import 'sponsored_opportunities_screen.dart';
 import 'student_home_navigation.dart';
 import 'trainings_screen.dart';
 import 'scholarships_screen.dart';
@@ -1174,47 +1171,45 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
         title: 'Jobs',
         icon: Icons.work_outline_rounded,
         color: const Color(0xFF6C63FF),
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const JobsScreen()),
-        ),
+        onTap: () =>
+            _openQuickAccessDiscover(context, filter: OpportunityType.job),
       ),
       _QuickAccessTileItem(
         title: 'Internships',
         icon: Icons.school_outlined,
         color: const Color(0xFF19C37D),
-        onTap: () => Navigator.push(
+        onTap: () => _openQuickAccessDiscover(
           context,
-          MaterialPageRoute(builder: (_) => const InternshipsScreen()),
+          filter: OpportunityType.internship,
         ),
       ),
       _QuickAccessTileItem(
         title: 'Sponsored',
         icon: Icons.campaign_outlined,
         color: const Color(0xFFFFB341),
-        onTap: () => Navigator.push(
+        onTap: () => _openQuickAccessDiscover(
           context,
-          MaterialPageRoute(
-            builder: (_) => const SponsoredOpportunitiesScreen(),
-          ),
+          filter: OpportunityType.sponsoring,
         ),
       ),
       _QuickAccessTileItem(
         title: 'Scholarships',
         icon: Icons.emoji_events_outlined,
         color: const Color(0xFF47D16C),
-        onTap: () => Navigator.push(
+        onTap: () => _openQuickAccessTab(
           context,
-          MaterialPageRoute(builder: (_) => const ScholarshipsScreen()),
+          tabIndex: StudentHomeNavigation.scholarshipsTab,
+          standaloneBuilder: (_) => const ScholarshipsScreen(),
         ),
       ),
       _QuickAccessTileItem(
         title: 'Ideas',
         icon: Icons.lightbulb_outline_rounded,
         color: const Color(0xFFFF6B6B),
-        onTap: () => Navigator.push(
+        onTap: () => _openQuickAccessTab(
           context,
-          MaterialPageRoute(builder: (_) => const ProjectIdeasScreen()),
+          tabIndex: StudentHomeNavigation.ideasTab,
+          standaloneBuilder: (_) => const ProjectIdeasScreen(),
         ),
       ),
       _QuickAccessTileItem(
@@ -1230,9 +1225,10 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
         title: 'Training',
         icon: Icons.cast_for_education_outlined,
         color: const Color(0xFF22CFC3),
-        onTap: () => Navigator.push(
+        onTap: () => _openQuickAccessTab(
           context,
-          MaterialPageRoute(builder: (_) => const TrainingsScreen()),
+          tabIndex: StudentHomeNavigation.trainingTab,
+          standaloneBuilder: (_) => const TrainingsScreen(),
         ),
       ),
       _QuickAccessTileItem(
@@ -1818,10 +1814,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
 
   void _openDiscover(BuildContext context) {
     if (widget.embedded) {
-      StudentHomeNavigation.switchToTab(
-        context,
-        StudentHomeNavigation.discoverTab,
-      );
+      StudentHomeNavigation.switchToDiscover(context);
       return;
     }
 
@@ -1829,6 +1822,33 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
       context,
       MaterialPageRoute(builder: (_) => const OpportunitiesScreen()),
     );
+  }
+
+  void _openQuickAccessDiscover(BuildContext context, {String? filter}) {
+    if (widget.embedded) {
+      StudentHomeNavigation.switchToDiscover(context, filter: filter);
+      return;
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => OpportunitiesScreen(initialFilter: filter),
+      ),
+    );
+  }
+
+  void _openQuickAccessTab(
+    BuildContext context, {
+    required int tabIndex,
+    required WidgetBuilder standaloneBuilder,
+  }) {
+    if (widget.embedded) {
+      StudentHomeNavigation.switchToTab(context, tabIndex);
+      return;
+    }
+
+    Navigator.push(context, MaterialPageRoute(builder: standaloneBuilder));
   }
 
   Widget _buildRecommendedSection(

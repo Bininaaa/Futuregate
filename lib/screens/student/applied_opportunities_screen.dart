@@ -365,10 +365,10 @@ class _AppliedCompactSummary extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.92),
-        borderRadius: BorderRadius.circular(22),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: StudentOpportunityHubPalette.border.withValues(alpha: 0.95),
         ),
@@ -379,21 +379,21 @@ class _AppliedCompactSummary extends StatelessWidget {
           Row(
             children: [
               Container(
-                width: 38,
-                height: 38,
+                width: 34,
+                height: 34,
                 decoration: BoxDecoration(
                   color: StudentOpportunityHubPalette.primary.withValues(
                     alpha: 0.10,
                   ),
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(
                   Icons.assignment_turned_in_outlined,
                   color: StudentOpportunityHubPalette.primary,
-                  size: 20,
+                  size: 18,
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 10),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -401,7 +401,7 @@ class _AppliedCompactSummary extends StatelessWidget {
                     Text(
                       'Applied history',
                       style: GoogleFonts.poppins(
-                        fontSize: 15,
+                        fontSize: 14,
                         fontWeight: FontWeight.w700,
                         color: StudentOpportunityHubPalette.textPrimary,
                       ),
@@ -410,7 +410,7 @@ class _AppliedCompactSummary extends StatelessWidget {
                     Text(
                       'Everything you submitted, in one simple list.',
                       style: GoogleFonts.poppins(
-                        fontSize: 12,
+                        fontSize: 11,
                         color: StudentOpportunityHubPalette.textSecondary,
                       ),
                     ),
@@ -419,10 +419,10 @@ class _AppliedCompactSummary extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 10),
           LayoutBuilder(
             builder: (context, constraints) {
-              const spacing = 10.0;
+              const spacing = 8.0;
               final tileWidth = (constraints.maxWidth - spacing) / 2;
 
               return Wrap(
@@ -491,8 +491,8 @@ class _AppliedMiniStat extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      constraints: const BoxConstraints(minHeight: 96),
-      padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
+      constraints: const BoxConstraints(minHeight: 82),
+      padding: const EdgeInsets.fromLTRB(10, 9, 10, 9),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -516,18 +516,18 @@ class _AppliedMiniStat extends StatelessWidget {
           Row(
             children: [
               Container(
-                width: 28,
-                height: 28,
+                width: 24,
+                height: 24,
                 decoration: BoxDecoration(
                   color: color.withValues(alpha: 0.11),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(icon, size: 16, color: color),
+                child: Icon(icon, size: 14, color: color),
               ),
               const Spacer(),
               Container(
-                width: 8,
-                height: 8,
+                width: 6,
+                height: 6,
                 decoration: BoxDecoration(
                   color: color.withValues(alpha: 0.88),
                   shape: BoxShape.circle,
@@ -535,11 +535,11 @@ class _AppliedMiniStat extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: 12),
           Text(
             value,
             style: GoogleFonts.poppins(
-              fontSize: 20,
+              fontSize: 18,
               fontWeight: FontWeight.w700,
               color: StudentOpportunityHubPalette.textPrimary,
             ),
@@ -550,7 +550,7 @@ class _AppliedMiniStat extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: GoogleFonts.poppins(
-              fontSize: 11,
+              fontSize: 10,
               fontWeight: FontWeight.w600,
               color: StudentOpportunityHubPalette.textSecondary,
             ),

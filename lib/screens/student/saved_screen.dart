@@ -807,10 +807,10 @@ class _SavedCompactSummary extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.92),
-        borderRadius: BorderRadius.circular(22),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: StudentOpportunityHubPalette.border.withValues(alpha: 0.95),
         ),
@@ -821,21 +821,21 @@ class _SavedCompactSummary extends StatelessWidget {
           Row(
             children: [
               Container(
-                width: 38,
-                height: 38,
+                width: 34,
+                height: 34,
                 decoration: BoxDecoration(
                   color: StudentOpportunityHubPalette.primary.withValues(
                     alpha: 0.10,
                   ),
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(
                   Icons.bookmarks_outlined,
                   color: StudentOpportunityHubPalette.primary,
-                  size: 20,
+                  size: 18,
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 10),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -843,7 +843,7 @@ class _SavedCompactSummary extends StatelessWidget {
                     Text(
                       'Saved history',
                       style: GoogleFonts.poppins(
-                        fontSize: 15,
+                        fontSize: 14,
                         fontWeight: FontWeight.w700,
                         color: StudentOpportunityHubPalette.textPrimary,
                       ),
@@ -852,7 +852,7 @@ class _SavedCompactSummary extends StatelessWidget {
                     Text(
                       'Everything you saved, in one simple list.',
                       style: GoogleFonts.poppins(
-                        fontSize: 12,
+                        fontSize: 11,
                         color: StudentOpportunityHubPalette.textSecondary,
                       ),
                     ),
@@ -861,10 +861,10 @@ class _SavedCompactSummary extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 10),
           LayoutBuilder(
             builder: (context, constraints) {
-              const spacing = 10.0;
+              const spacing = 8.0;
               final tileWidth = (constraints.maxWidth - spacing) / 2;
 
               return Wrap(
@@ -878,12 +878,13 @@ class _SavedCompactSummary extends StatelessWidget {
                       value: '$total',
                       color: StudentOpportunityHubPalette.primary,
                       icon: Icons.layers_rounded,
+                      wide: true,
                     ),
                   ),
                   SizedBox(
                     width: tileWidth,
                     child: _SavedMiniStat(
-                      label: 'Opportunities',
+                      label: 'Opps',
                       value: '$opportunities',
                       color: StudentOpportunityHubPalette.accent,
                       icon: Icons.work_outline_rounded,
@@ -931,19 +932,21 @@ class _SavedMiniStat extends StatelessWidget {
   final String value;
   final Color color;
   final IconData icon;
+  final bool wide;
 
   const _SavedMiniStat({
     required this.label,
     required this.value,
     required this.color,
     required this.icon,
+    this.wide = false,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      constraints: const BoxConstraints(minHeight: 96),
-      padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
+      constraints: BoxConstraints(minHeight: wide ? 68 : 82),
+      padding: EdgeInsets.fromLTRB(10, wide ? 8 : 9, 10, wide ? 8 : 9),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -960,54 +963,94 @@ class _SavedMiniStat extends StatelessWidget {
           ),
         ],
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 28,
-                height: 28,
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.11),
-                  borderRadius: BorderRadius.circular(10),
+      child: wide
+          ? Row(
+              children: [
+                _SavedMiniStatIcon(color: color, icon: icon),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.poppins(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                      color: StudentOpportunityHubPalette.textSecondary,
+                    ),
+                  ),
                 ),
-                child: Icon(icon, size: 16, color: color),
-              ),
-              const Spacer(),
-              Container(
-                width: 8,
-                height: 8,
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.88),
-                  shape: BoxShape.circle,
+                const SizedBox(width: 10),
+                Text(
+                  value,
+                  style: GoogleFonts.poppins(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: StudentOpportunityHubPalette.textPrimary,
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 18),
-          Text(
-            value,
-            style: GoogleFonts.poppins(
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-              color: StudentOpportunityHubPalette.textPrimary,
+              ],
+            )
+          : Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    _SavedMiniStatIcon(color: color, icon: icon),
+                    const Spacer(),
+                    Container(
+                      width: 6,
+                      height: 6,
+                      decoration: BoxDecoration(
+                        color: color.withValues(alpha: 0.88),
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  value,
+                  style: GoogleFonts.poppins(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: StudentOpportunityHubPalette.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.poppins(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                    color: StudentOpportunityHubPalette.textSecondary,
+                  ),
+                ),
+              ],
             ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: GoogleFonts.poppins(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: StudentOpportunityHubPalette.textSecondary,
-            ),
-          ),
-        ],
+    );
+  }
+}
+
+class _SavedMiniStatIcon extends StatelessWidget {
+  final Color color;
+  final IconData icon;
+
+  const _SavedMiniStatIcon({required this.color, required this.icon});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 24,
+      height: 24,
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.11),
+        borderRadius: BorderRadius.circular(8),
       ),
+      child: Icon(icon, size: 14, color: color),
     );
   }
 }
