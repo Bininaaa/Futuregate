@@ -163,7 +163,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                           padding: EdgeInsets.symmetric(horizontal: 16),
                           child: SettingsEmptyState(
                             icon: Icons.notifications_none_rounded,
-                            title: 'No notifications here',
+                            title: 'No notifications right now',
                             message:
                                 'Try another filter or check back after your next application or message update.',
                           ),

@@ -624,7 +624,7 @@ class _RankedListCard extends StatelessWidget {
           const SizedBox(height: 12),
           if (items.isEmpty)
             const Text(
-              'No data yet',
+              'No highlights available yet',
               style: TextStyle(color: AdminPalette.textMuted),
             ),
           ...items.asMap().entries.map((entry) {
@@ -958,7 +958,7 @@ class _RecentActivityCard extends StatelessWidget {
       radius: 22,
       child: activities.isEmpty
           ? const Text(
-              'No recent activity',
+              'No recent activity yet',
               style: TextStyle(color: AdminPalette.textMuted),
             )
           : Column(
@@ -1180,7 +1180,7 @@ class _RecentUsersCard extends StatelessWidget {
           const SizedBox(height: 12),
           if (users.isEmpty)
             const Text(
-              'No recent users',
+              'No recent users yet',
               style: TextStyle(color: AdminPalette.textMuted),
             ),
           ...users.asMap().entries.map((entry) {
@@ -1314,7 +1314,7 @@ class _RecentOpportunitiesCard extends StatelessWidget {
           const SizedBox(height: 12),
           if (opportunities.isEmpty)
             const Text(
-              'No opportunities yet',
+              'No opportunities published yet',
               style: TextStyle(color: AdminPalette.textMuted),
             ),
           ...opportunities.asMap().entries.map((entry) {
@@ -1370,7 +1370,9 @@ class _RecentOpportunitiesCard extends StatelessWidget {
                                   child: Padding(
                                     padding: const EdgeInsets.only(top: 2),
                                     child: Text(
-                                      title.isNotEmpty ? title : 'No title',
+                                      title.isNotEmpty
+                                          ? title
+                                          : 'Untitled opportunity',
                                       maxLines: 2,
                                       overflow: TextOverflow.ellipsis,
                                       style: const TextStyle(
@@ -1393,7 +1395,7 @@ class _RecentOpportunitiesCard extends StatelessWidget {
                             Text(
                               companyName.isNotEmpty
                                   ? companyName
-                                  : 'No company name',
+                                  : 'Company name not added',
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: const TextStyle(

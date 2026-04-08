@@ -334,7 +334,7 @@
       const el = document.getElementById(containerId);
       let html = `<div class="top-list"><h3>${title}</h3>`;
       if (items.length === 0) {
-        html += '<p style="color:#999;font-size:14px">No data yet</p>';
+        html += '<p style="color:#999;font-size:14px">No highlights available yet</p>';
       }
       items.forEach((item, index) => {
         html += `<div class="top-item">
@@ -410,7 +410,7 @@
         const activities = result.items.slice(0, 8);
 
         if (activities.length === 0) {
-          el.innerHTML = '<p style="color:#999">No recent activity</p>';
+          el.innerHTML = '<p style="color:#999">No recent activity yet</p>';
           return;
         }
 
@@ -446,7 +446,7 @@
             <div class="user-actions"><span class="status-dot ${user.isActive !== false ? 'active' : 'inactive'}"></span></div>
           </div>`;
         });
-        el.innerHTML = html || '<p style="color:#999">No users yet</p>';
+        el.innerHTML = html || '<p style="color:#999">No users available yet</p>';
       } catch (error) {
         console.error('Failed to load recent users:', error);
         document.getElementById('recent-users').innerHTML = '<p style="color:#c33">Failed to load recent users.</p>';
@@ -472,7 +472,7 @@
           html += `<div class="opp-card">
             <div class="opp-icon" style="background:rgba(255,140,0,0.12);color:#FF8C00">OP</div>
             <div class="opp-info">
-              <div class="opp-title">${esc(opportunity.title || 'No title')}</div>
+              <div class="opp-title">${esc(opportunity.title || 'Untitled opportunity')}</div>
               <div class="opp-company">${esc(opportunity.companyName || 'Unknown')}</div>
               <div class="opp-badges">
                 <span class="badge badge-${normalizedType}">${esc(typeLabel)}</span>
@@ -481,7 +481,7 @@
             </div>
           </div>`;
         });
-        el.innerHTML = html || '<p style="color:#999">No opportunities yet</p>';
+        el.innerHTML = html || '<p style="color:#999">No opportunities published yet</p>';
       } catch (error) {
         console.error('Failed to load recent opportunities:', error);
         document.getElementById('recent-opps').innerHTML = '<p style="color:#c33">Failed to load recent opportunities.</p>';

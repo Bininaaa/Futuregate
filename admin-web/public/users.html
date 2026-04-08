@@ -169,7 +169,7 @@
       const users = filterUsers();
       const el = document.getElementById('users-list');
       if (users.length === 0) {
-        el.innerHTML = '<div class="empty-state"><div class="icon">&#x1F465;</div><p>No users found</p></div>';
+        el.innerHTML = '<div class="empty-state"><div class="icon">&#x1F465;</div><p>No users match the current filters.</p></div>';
         return;
       }
 
@@ -265,7 +265,7 @@
       const hasBuiltInfo = summary?.built?.hasBuilderContent === true;
 
       let primaryBody = `
-        <div class="document-card-meta">No uploaded primary CV file is available for this student.</div>
+        <div class="document-card-meta">Primary CV file is not available for this student.</div>
       `;
       if (primaryAvailable) {
         primaryBody = `
@@ -304,7 +304,7 @@
       }
 
       let builtBody = `
-        <div class="document-card-meta">No built CV information is available for this student.</div>
+        <div class="document-card-meta">Built CV details are not available for this student.</div>
       `;
       if (hasBuiltInfo || builtAvailable) {
         const builtSummary = summary?.built?.summary

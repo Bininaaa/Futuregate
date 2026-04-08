@@ -77,18 +77,18 @@ class _CvScreenState extends State<CvScreen> {
       if (uid == null) return;
 
       final error = await context.read<CvProvider>().saveCv(
-            studentId: uid,
-            fullName: cv.fullName,
-            email: cv.email,
-            phone: cv.phone,
-            address: cv.address,
-            summary: cv.summary,
-            education: cv.education,
-            experience: cv.experience,
-            skills: cv.skills,
-            languages: cv.languages,
-            templateId: selectedId,
-          );
+        studentId: uid,
+        fullName: cv.fullName,
+        email: cv.email,
+        phone: cv.phone,
+        address: cv.address,
+        summary: cv.summary,
+        education: cv.education,
+        experience: cv.experience,
+        skills: cv.skills,
+        languages: cv.languages,
+        templateId: selectedId,
+      );
 
       if (!mounted) return;
 
@@ -133,8 +133,8 @@ class _CvScreenState extends State<CvScreen> {
     if (uid == null) return;
 
     final error = await context.read<CvProvider>().exportCvAsPdf(
-          studentId: uid,
-        );
+      studentId: uid,
+    );
 
     if (!mounted) return;
 
@@ -180,11 +180,11 @@ class _CvScreenState extends State<CvScreen> {
     }
 
     final error = await context.read<CvProvider>().uploadCvFile(
-          studentId: uid,
-          filePath: file.path ?? '',
-          fileName: file.name,
-          fileBytes: file.bytes,
-        );
+      studentId: uid,
+      filePath: file.path ?? '',
+      fileName: file.name,
+      fileBytes: file.bytes,
+    );
 
     if (!mounted) return;
 
@@ -203,13 +203,12 @@ class _CvScreenState extends State<CvScreen> {
     final uid = _uid;
     if (uid == null) return;
 
-    final newMode =
-        cv.primaryCvMode == 'uploaded' ? 'builder_pdf' : 'uploaded';
+    final newMode = cv.primaryCvMode == 'uploaded' ? 'builder_pdf' : 'uploaded';
 
     final error = await context.read<CvProvider>().setPrimaryCvMode(
-          studentId: uid,
-          primaryCvMode: newMode,
-        );
+      studentId: uid,
+      primaryCvMode: newMode,
+    );
 
     if (!mounted) return;
 
@@ -266,7 +265,7 @@ class _CvScreenState extends State<CvScreen> {
 
       if (!launched && mounted) {
         messenger.showSnackBar(
-          const SnackBar(content: Text('Could not open the document.')),
+          const SnackBar(content: Text('We couldn\'t open the document.')),
         );
       }
     } catch (e) {
@@ -393,14 +392,13 @@ class _CvScreenState extends State<CvScreen> {
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
-                                  cv != null &&
-                                          cv.templateId.trim().isNotEmpty
+                                  cv != null && cv.templateId.trim().isNotEmpty
                                       ? CvTemplateConfig.getTemplate(
                                           cv.templateId,
                                         ).name
                                       : cv?.hasBuilderContent == true
-                                          ? 'None selected'
-                                          : 'Add content first',
+                                      ? 'None selected'
+                                      : 'Add content first',
                                   style: SettingsFlowTheme.caption(),
                                 ),
                               ],
@@ -539,8 +537,7 @@ class _CvScreenState extends State<CvScreen> {
                 ),
 
                 // ── Your Files ──
-                if (cv != null &&
-                    (cv.hasUploadedCv || cv.hasExportedPdf)) ...[
+                if (cv != null && (cv.hasUploadedCv || cv.hasExportedPdf)) ...[
                   const SizedBox(height: 20),
                   SettingsPanel(
                     child: Column(
@@ -555,13 +552,14 @@ class _CvScreenState extends State<CvScreen> {
                           _FileRow(
                             icon: Icons.upload_file_rounded,
                             label: 'Uploaded CV',
-                            isActive: cv.primaryCvMode == 'uploaded' ||
+                            isActive:
+                                cv.primaryCvMode == 'uploaded' ||
                                 !cv.hasExportedPdf,
                             onView: cv.isUploadedCvPdf
                                 ? () => _openSecureCv(
-                                      variant: 'primary',
-                                      requirePdf: true,
-                                    )
+                                    variant: 'primary',
+                                    requirePdf: true,
+                                  )
                                 : null,
                             onDownload: () => _openSecureCv(
                               variant: 'primary',
@@ -577,16 +575,15 @@ class _CvScreenState extends State<CvScreen> {
                           _FileRow(
                             icon: Icons.picture_as_pdf_rounded,
                             label: 'Built CV',
-                            isActive: cv.primaryCvMode != 'uploaded' ||
+                            isActive:
+                                cv.primaryCvMode != 'uploaded' ||
                                 !cv.hasUploadedCv,
                             onView: () => _openSecureCv(
                               variant: 'built',
                               requirePdf: true,
                             ),
-                            onDownload: () => _openSecureCv(
-                              variant: 'built',
-                              download: true,
-                            ),
+                            onDownload: () =>
+                                _openSecureCv(variant: 'built', download: true),
                           ),
                         if (cv.hasUploadedCv && cv.hasExportedPdf) ...[
                           const SizedBox(height: 14),
@@ -615,7 +612,7 @@ class _CvScreenState extends State<CvScreen> {
     if (message.contains('404') || message.contains('not found')) {
       return 'The requested document is no longer available.';
     }
-    return 'Could not open the document right now.';
+    return 'We couldn\'t open the document right now.';
   }
 }
 
@@ -640,9 +637,7 @@ class _FileRow extends StatelessWidget {
       children: [
         Icon(icon, size: 18, color: SettingsFlowPalette.textSecondary),
         const SizedBox(width: 10),
-        Expanded(
-          child: Text(label, style: SettingsFlowTheme.body()),
-        ),
+        Expanded(child: Text(label, style: SettingsFlowTheme.body())),
         if (isActive)
           const Padding(
             padding: EdgeInsets.only(right: 8),

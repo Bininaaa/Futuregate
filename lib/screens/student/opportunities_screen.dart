@@ -1646,7 +1646,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                               count: jobItems.length,
                               singular: 'open position',
                               plural: 'open positions',
-                              fallback: 'No live jobs yet',
+                              fallback: 'No jobs available right now',
                             ),
                             icon: Icons.work_outline_rounded,
                             onTap: () => Navigator.push(
@@ -1669,7 +1669,8 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                                       count: internshipItems.length,
                                       singular: 'open internship',
                                       plural: 'open internships',
-                                      fallback: 'No live internships yet',
+                                      fallback:
+                                          'No internships available right now',
                                     ),
                                     icon: Icons.school_outlined,
                                     color:
@@ -1695,7 +1696,8 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                                       count: sponsoredItems.length,
                                       singular: 'active track',
                                       plural: 'active tracks',
-                                      fallback: 'No live sponsored tracks yet',
+                                      fallback:
+                                          'No sponsored programs available right now',
                                     ),
                                     icon: Icons.campaign_outlined,
                                     color: OpportunityDashboardPalette.accent,
@@ -1724,7 +1726,8 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                                     count: trainingItems.length,
                                     singular: 'resource',
                                     plural: 'resources',
-                                    fallback: 'No training resources yet',
+                                    fallback:
+                                        'No training resources available right now',
                                   ),
                             onTap: _openTrainings,
                           ),
@@ -1756,9 +1759,9 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                               padding: const EdgeInsets.only(right: 20),
                               child: OpportunityDashboardEmptyState(
                                 icon: Icons.trending_up_rounded,
-                                title: 'No trending items right now',
+                                title: 'No trending opportunities right now',
                                 subtitle:
-                                    'Fresh recommendations will appear here as new listings arrive.',
+                                    'Fresh recommendations are highlighted as new listings go live.',
                                 color: OpportunityDashboardPalette.primary,
                               ),
                             )
@@ -1823,7 +1826,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                       sliver: SliverToBoxAdapter(
                         child: OpportunityDashboardEmptyState(
                           icon: Icons.search_off_rounded,
-                          title: 'No opportunities found',
+                          title: 'No opportunities match this view',
                           subtitle:
                               'Try adjusting your search or filters to uncover more matches.',
                           color: OpportunityDashboardPalette.success,
@@ -1878,9 +1881,9 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                         ? SliverToBoxAdapter(
                             child: OpportunityDashboardEmptyState(
                               icon: Icons.hourglass_bottom_rounded,
-                              title: 'No urgent deadlines yet',
+                              title: 'No urgent deadlines right now',
                               subtitle:
-                                  'Once a listing is nearing its deadline, it will show up here.',
+                                  'Opportunities nearing their deadlines are highlighted here.',
                               color: OpportunityDashboardPalette.error,
                             ),
                           )

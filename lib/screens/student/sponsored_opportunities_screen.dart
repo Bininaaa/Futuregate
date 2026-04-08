@@ -223,9 +223,7 @@ class _SponsoredOpportunitiesScreenState
     if (opportunity == null) {
       messenger.showSnackBar(
         const SnackBar(
-          content: Text(
-            'This sponsored opportunity preview has no live record yet',
-          ),
+          content: Text('This sponsored preview is not live yet.'),
         ),
       );
       return;
@@ -1075,11 +1073,11 @@ class _SponsoredOpportunitiesScreenState
                               ),
                               child: _SponsoredEmptyState(
                                 title: showCatalogEmptyState
-                                    ? 'No sponsored programs yet'
-                                    : 'No sponsored programs found',
+                                    ? 'No sponsored programs available right now'
+                                    : 'No sponsored programs match this view',
                                 message: showCatalogEmptyState
-                                    ? 'Live sponsored programs will appear here once partners publish them.'
-                                    : 'Try adjusting your search or filters to uncover more partner-backed programs.',
+                                    ? 'Check back soon for new partner-backed programs.'
+                                    : 'Try adjusting your search or filters to explore more partner-backed programs.',
                               ),
                             )
                           else
@@ -1164,11 +1162,11 @@ class _SponsoredOpportunitiesScreenState
                               ),
                               child: _SponsoredEmptyState(
                                 title: showCatalogEmptyState
-                                    ? 'Nothing published yet'
-                                    : 'Nothing to show right now',
+                                    ? 'No sponsored programs available right now'
+                                    : 'No sponsored programs match this view',
                                 message: showCatalogEmptyState
-                                    ? 'Live sponsored programs will appear here once partners publish them.'
-                                    : 'Live sponsored programs will appear here as they match your search.',
+                                    ? 'Check back soon for new partner-backed programs.'
+                                    : 'Try adjusting your search or filters to see matching programs.',
                               ),
                             )
                           else

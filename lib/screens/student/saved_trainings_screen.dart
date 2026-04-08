@@ -43,7 +43,9 @@ class _SavedTrainingsScreenState extends State<SavedTrainingsScreen> {
   Future<void> _openLink(String link) async {
     if (link.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No link available for this item')),
+        const SnackBar(
+          content: Text('This resource does not have a link yet.'),
+        ),
       );
       return;
     }
@@ -59,9 +61,9 @@ class _SavedTrainingsScreenState extends State<SavedTrainingsScreen> {
     final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
 
     if (!launched && mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Could not open the link')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('We couldn\'t open this link.')),
+      );
     }
   }
 
@@ -157,7 +159,7 @@ class _SavedTrainingsScreenState extends State<SavedTrainingsScreen> {
                           SizedBox(height: 12),
                           Center(
                             child: Text(
-                              'No saved resources yet',
+                              'You have no saved resources yet.',
                               style: TextStyle(color: Colors.grey),
                             ),
                           ),

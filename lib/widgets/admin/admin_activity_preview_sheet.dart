@@ -524,7 +524,7 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
         _PreviewHighlightItem(
           icon: link.isNotEmpty ? Icons.link_rounded : Icons.link_off_rounded,
           label: 'Access',
-          value: link.isNotEmpty ? 'Application Link Ready' : 'No Link Yet',
+          value: link.isNotEmpty ? 'Application Link Ready' : 'Link not added',
           color: link.isNotEmpty ? AdminPalette.info : AdminPalette.textMuted,
         ),
       ]),
@@ -593,7 +593,7 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
         ),
         _PreviewDetailItem(
           'Access',
-          link.isNotEmpty ? 'External Link Available' : 'No Link Available',
+          link.isNotEmpty ? 'External Link Available' : 'Link unavailable',
           icon: link.isNotEmpty
               ? Icons.open_in_new_rounded
               : Icons.link_off_rounded,
@@ -633,7 +633,7 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
         ? ''
         : training.hasCertificate!
         ? 'Certificate Available'
-        : 'No Certificate';
+        : 'Certificate not included';
     final learnerLabel = training.learnerCountLabel.trim().isNotEmpty
         ? training.learnerCountLabel.trim()
         : training.learnerCount?.toString() ?? '';
@@ -1717,7 +1717,7 @@ class _UnavailableCard extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'We could not load the linked ${activity.type.replaceAll('_', ' ')} record right now.',
+            'We couldn\'t load the linked ${activity.type.replaceAll('_', ' ')} record right now.',
             textAlign: TextAlign.center,
             style: const TextStyle(
               fontSize: 13,

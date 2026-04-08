@@ -1217,10 +1217,10 @@ class _JobsScreenState extends State<JobsScreen> {
                   sliver: SliverToBoxAdapter(
                     child: _JobsEmptyStateCard(
                       title: showCatalogEmptyState
-                          ? 'No jobs available yet'
-                          : 'No featured jobs found',
+                          ? 'No jobs available right now'
+                          : 'No featured jobs in this view',
                       message: showCatalogEmptyState
-                          ? 'Live job listings will appear here once companies publish them.'
+                          ? 'Check back soon for new job listings.'
                           : 'Try another keyword or clear your category filter to see more roles.',
                       compact: isCompact,
                     ),
@@ -1317,11 +1317,11 @@ class _JobsScreenState extends State<JobsScreen> {
                   sliver: SliverToBoxAdapter(
                     child: _JobsEmptyStateCard(
                       title: showCatalogEmptyState
-                          ? 'No roles available yet'
+                          ? 'No roles available right now'
                           : 'No roles match your search',
                       message: showCatalogEmptyState
-                          ? 'Live job listings will appear here once companies publish them.'
-                          : 'Search by title or company, or tap See All to reset categories.',
+                          ? 'Check back soon for new job listings.'
+                          : 'Try another search or clear your category filters to see more roles.',
                       compact: isCompact,
                     ),
                   ),

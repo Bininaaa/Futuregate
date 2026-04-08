@@ -59,7 +59,7 @@ class _AdminActivityCenterScreenState extends State<AdminActivityCenterScreen> {
         : provider.activityError != null && provider.recentActivity.isEmpty
         ? AdminEmptyState(
             icon: Icons.error_outline_rounded,
-            title: 'Activity could not be loaded',
+            title: 'Activity feed unavailable',
             message: provider.activityError!,
             action: FilledButton(
               onPressed: () => provider.loadActivityFeed(reset: true),
@@ -669,7 +669,7 @@ class _ActivityFeedFooter extends StatelessWidget {
                 ),
           label: Text(
             provider.activityLoadingMore
-                ? 'Loading'
+                ? 'Loading...'
                 : isRetryState
                 ? 'Try Again'
                 : 'Older Activity',
@@ -690,7 +690,7 @@ class _ActivityFeedFooter extends StatelessWidget {
           children: [
             Text(
               isRetryState
-                  ? 'Could not load older activity'
+                  ? 'Older activity could not be loaded'
                   : 'Need more activity?',
               style: const TextStyle(
                 fontSize: 13,

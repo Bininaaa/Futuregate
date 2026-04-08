@@ -276,7 +276,7 @@ class _UsersScreenState extends State<UsersScreen> {
               hasScrollBody: false,
               child: AdminEmptyState(
                 icon: Icons.people_outline_rounded,
-                title: 'No users found',
+                title: 'No users match this search',
                 message:
                     'Try another search or relax the current role and level filters.',
               ),
@@ -1328,32 +1328,32 @@ class _UsersScreenState extends State<UsersScreen> {
                       Icons.phone_outlined,
                       'Phone',
                       user.phone,
-                      'No phone number added',
+                      'Not provided',
                     ),
                     _buildOptionalDetailRow(
                       Icons.location_on_outlined,
                       'Location',
                       user.location,
-                      'No location added',
+                      'Not provided',
                     ),
                     if (user.role == 'student') ...[
                       _buildOptionalDetailRow(
                         Icons.school_outlined,
                         'Academic Level',
                         user.academicLevel,
-                        'No academic level added',
+                        'Not provided',
                       ),
                       _buildOptionalDetailRow(
                         Icons.account_balance_outlined,
                         'University',
                         user.university,
-                        'No university added',
+                        'Not provided',
                       ),
                       _buildOptionalDetailRow(
                         Icons.subject_outlined,
                         'Field of Study',
                         user.fieldOfStudy,
-                        'No field of study added',
+                        'Not provided',
                       ),
                     ],
                     if (user.role == 'student' &&
@@ -1362,25 +1362,25 @@ class _UsersScreenState extends State<UsersScreen> {
                         Icons.science_outlined,
                         'Research Topic',
                         user.researchTopic,
-                        'No research topic added',
+                        'Not provided',
                       ),
                       _buildOptionalDetailRow(
                         Icons.biotech_outlined,
                         'Laboratory',
                         user.laboratory,
-                        'No laboratory added',
+                        'Not provided',
                       ),
                       _buildOptionalDetailRow(
                         Icons.person_outline_rounded,
                         'Supervisor',
                         user.supervisor,
-                        'No supervisor assigned',
+                        'Not provided',
                       ),
                       _buildOptionalDetailRow(
                         Icons.category_outlined,
                         'Research Domain',
                         user.researchDomain,
-                        'No research domain added',
+                        'Not provided',
                       ),
                     ],
                     if (user.role == 'company') ...[
@@ -1388,7 +1388,7 @@ class _UsersScreenState extends State<UsersScreen> {
                         Icons.business_outlined,
                         'Company',
                         user.companyName,
-                        'No company name added',
+                        'Not provided',
                       ),
                       _buildDetailRow(
                         Icons.verified_user_outlined,
@@ -1400,13 +1400,13 @@ class _UsersScreenState extends State<UsersScreen> {
                         Icons.category_outlined,
                         'Sector',
                         user.sector,
-                        'No sector added',
+                        'Not provided',
                       ),
                       _buildOptionalDetailRow(
                         Icons.language_outlined,
                         'Website',
                         user.website,
-                        'No website added',
+                        'Not provided',
                       ),
                     ],
                     if (user.role == 'student') ...[
@@ -1625,10 +1625,10 @@ class _UsersScreenState extends State<UsersScreen> {
           _buildSectionCopy(
             'Primary CV',
             cv == null
-                ? 'No CV has been created for this user yet.'
+                ? 'No CV has been created for this user.'
                 : cv.hasUploadedCv
                 ? 'Primary CV: ${cv.uploadedCvDisplayName}'
-                : 'No primary CV uploaded',
+                : 'Primary CV not uploaded',
           ),
           const SizedBox(height: 6),
           _buildSectionCopy(
@@ -1834,7 +1834,7 @@ class _UsersScreenState extends State<UsersScreen> {
       );
       if (!launched && mounted) {
         messenger.showSnackBar(
-          const SnackBar(content: Text('Could not open the document.')),
+          const SnackBar(content: Text('We couldn\'t open the document.')),
         );
       }
     } catch (e) {
@@ -1866,7 +1866,7 @@ class _UsersScreenState extends State<UsersScreen> {
       );
       if (!launched && mounted) {
         messenger.showSnackBar(
-          const SnackBar(content: Text('Could not open the document.')),
+          const SnackBar(content: Text('We couldn\'t open the document.')),
         );
       }
     } catch (e) {
@@ -1884,7 +1884,7 @@ class _UsersScreenState extends State<UsersScreen> {
       return 'The requested document is no longer available.';
     }
 
-    return 'Could not open the document right now.';
+    return 'We couldn\'t open the document right now.';
   }
 
   Widget _buildOptionalDetailRow(

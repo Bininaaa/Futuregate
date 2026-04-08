@@ -141,7 +141,10 @@ class _ModerateScreenState extends State<ModerateScreen>
         : allIdeas;
 
     if (allIdeas.isEmpty) {
-      return _buildEmptyState(Icons.lightbulb_outline, 'No project ideas yet');
+      return _buildEmptyState(
+        Icons.lightbulb_outline,
+        'No project ideas to review yet',
+      );
     }
 
     return RefreshIndicator(
@@ -194,7 +197,10 @@ class _ModerateScreenState extends State<ModerateScreen>
             );
           }
           if (ideas.isEmpty) {
-            return _buildEmptyState(Icons.check_circle, 'No pending ideas');
+            return _buildEmptyState(
+              Icons.check_circle,
+              'No pending ideas to review',
+            );
           }
           final idea = ideas[index - 1];
           final isIdeaBusy = provider.busyIdeaIds.contains(idea.id);
@@ -375,7 +381,10 @@ class _ModerateScreenState extends State<ModerateScreen>
     final opportunities = provider.allOpportunities;
 
     if (opportunities.isEmpty) {
-      return _buildEmptyState(Icons.work_outline, 'No opportunities yet');
+      return _buildEmptyState(
+        Icons.work_outline,
+        'No opportunities published yet',
+      );
     }
 
     return RefreshIndicator(
@@ -417,7 +426,7 @@ class _ModerateScreenState extends State<ModerateScreen>
                 ),
               ),
               title: Text(
-                opp['title'] ?? 'No title',
+                opp['title'] ?? 'Untitled opportunity',
                 style: const TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 15,
@@ -517,7 +526,10 @@ class _ModerateScreenState extends State<ModerateScreen>
     final scholarships = provider.allScholarships;
 
     if (scholarships.isEmpty) {
-      return _buildEmptyState(Icons.card_giftcard, 'No scholarships yet');
+      return _buildEmptyState(
+        Icons.card_giftcard,
+        'No scholarships published yet',
+      );
     }
 
     return RefreshIndicator(
@@ -559,7 +571,7 @@ class _ModerateScreenState extends State<ModerateScreen>
                 ),
               ),
               title: Text(
-                sch['title'] ?? 'No title',
+                sch['title'] ?? 'Untitled scholarship',
                 style: const TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 15,

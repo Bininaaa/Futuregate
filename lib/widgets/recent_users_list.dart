@@ -1,30 +1,28 @@
 import 'package:flutter/material.dart';
+
 import '../models/user_model.dart';
 import 'profile_avatar.dart';
 
 class RecentUsersList extends StatelessWidget {
   final List<UserModel> users;
 
-  const RecentUsersList({
-    super.key,
-    required this.users,
-  });
+  const RecentUsersList({super.key, required this.users});
 
   String _buildSubtitle(UserModel user) {
     if (user.role == 'student' && user.academicLevel == 'doctorat') {
-      return '${user.email} • Doctorat${user.researchTopic?.isNotEmpty == true ? ' • ${user.researchTopic}' : ''}';
+      return '${user.email} - Doctorat${user.researchTopic?.isNotEmpty == true ? ' - ${user.researchTopic}' : ''}';
     }
 
     if (user.role == 'student') {
-      return '${user.email} • ${user.academicLevel ?? 'No level'}';
+      return '${user.email} - ${user.academicLevel ?? 'Level not added'}';
     }
 
     if (user.role == 'company') {
-      return '${user.email} • ${user.companyName?.isNotEmpty == true ? user.companyName : 'No company name'}';
+      return '${user.email} - ${user.companyName?.isNotEmpty == true ? user.companyName : 'Company name not added'}';
     }
 
     if (user.role == 'admin') {
-      return '${user.email} • ${user.adminLevel?.isNotEmpty == true ? user.adminLevel : 'Admin'}';
+      return '${user.email} - ${user.adminLevel?.isNotEmpty == true ? user.adminLevel : 'Admin'}';
     }
 
     return user.email;
@@ -40,14 +38,10 @@ class RecentUsersList extends StatelessWidget {
           children: [
             const Text(
               'Recent Users',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
-            if (users.isEmpty)
-              const Text('No recent users found'),
+            if (users.isEmpty) const Text('No recent users yet'),
             ...users.map(
               (user) => ListTile(
                 leading: ProfileAvatar(user: user, radius: 20),

@@ -400,9 +400,9 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     if (provider.allProjectIdeas.isEmpty) {
       return AdminEmptyState(
         icon: Icons.lightbulb_outline,
-        title: 'No project ideas yet',
+        title: 'No project ideas to review yet',
         message:
-            'Create the first admin idea to seed the innovation feed and make the space feel alive immediately.',
+            'Create the first project idea to start shaping the innovation feed.',
         action: FilledButton.icon(
           onPressed: () => _openIdeaEditor(),
           icon: const Icon(Icons.add_rounded),
@@ -900,9 +900,9 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             if (applications.isEmpty)
               const AdminEmptyState(
                 icon: Icons.assignment_late_outlined,
-                title: 'No applications yet',
+                title: 'No applications to review yet',
                 message:
-                    'This opportunity does not have any submitted applications right now.',
+                    'There are no submitted applications for this opportunity right now.',
               )
             else
               ...applications.map((item) {
@@ -1011,9 +1011,9 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     if (provider.allOpportunities.isEmpty) {
       return AdminEmptyState(
         icon: Icons.work_outline,
-        title: 'No opportunities yet',
+        title: 'No opportunities published yet',
         message:
-            'Publish the first admin opportunity so students have something to discover right away.',
+            'Publish the first opportunity to start populating the student discovery experience.',
         action: FilledButton.icon(
           onPressed: () => _openOpportunityEditor(),
           icon: const Icon(Icons.add_rounded),
@@ -1209,7 +1209,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             icon: OpportunityType.icon(opportunityType),
             iconColor: opportunityTypeColor,
             title: DisplayText.capitalizeWords(
-              (opportunity['title'] ?? 'No title').toString(),
+              (opportunity['title'] ?? 'Untitled opportunity').toString(),
             ),
             subtitle: subtitle,
             description: _cleanCardDescription(
@@ -1352,9 +1352,9 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     if (provider.allScholarships.isEmpty) {
       return AdminEmptyState(
         icon: Icons.card_giftcard,
-        title: 'No scholarships yet',
+        title: 'No scholarships published yet',
         message:
-            'Publish the first scholarship and start shaping the student discovery catalog from the admin side.',
+            'Publish the first scholarship to start shaping the student discovery catalog.',
         action: FilledButton.icon(
           onPressed: () => _openScholarshipEditor(),
           icon: const Icon(Icons.add_rounded),
@@ -1513,7 +1513,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             title: DisplayText.capitalizeWords(
               scholarshipModel.title.isNotEmpty
                   ? scholarshipModel.title
-                  : 'No title',
+                  : 'Untitled scholarship',
             ),
             subtitle: _joinCardSubtitleParts([
               DisplayText.capitalizeLeadingLabel(
@@ -1653,9 +1653,9 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     if (provider.allTrainings.isEmpty) {
       return AdminEmptyState(
         icon: Icons.cast_for_education_outlined,
-        title: 'No trainings yet',
+        title: 'No learning resources yet',
         message:
-            'Import the first learning resource so the training library starts feeling useful immediately.',
+            'Import the first learning resource to start building the training library.',
         action: FilledButton.icon(
           onPressed: () => _openTrainingLibrary(),
           icon: const Icon(Icons.auto_awesome_mosaic_rounded),
@@ -1854,15 +1854,15 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
   String _ideaEmptyMessage(String filter) {
     switch (filter) {
       case _ideaFilterPending:
-        return 'No pending ideas match your search';
+        return 'No pending ideas match this search';
       case _ideaFilterApproved:
-        return 'No approved ideas match your search';
+        return 'No approved ideas match this search';
       case _ideaFilterRejected:
-        return 'No rejected ideas match your search';
+        return 'No rejected ideas match this search';
       case _ideaFilterHidden:
-        return 'No hidden ideas match your search';
+        return 'No hidden ideas match this search';
       default:
-        return 'No ideas match your search';
+        return 'No ideas match this search';
     }
   }
 
@@ -1996,13 +1996,13 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
   String _opportunityEmptyMessage(String filter) {
     switch (filter) {
       case _opportunityFilterClosed:
-        return 'No closed opportunities match your search';
+        return 'No closed opportunities match this search';
       case _opportunityFilterFeatured:
-        return 'No featured opportunities match your search';
+        return 'No featured opportunities match this search';
       case _opportunityFilterHidden:
-        return 'No hidden opportunities match your search';
+        return 'No hidden opportunities match this search';
       default:
-        return 'No opportunities match your search';
+        return 'No opportunities match this search';
     }
   }
 
@@ -2055,11 +2055,11 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
   String _scholarshipEmptyMessage(String filter) {
     switch (filter) {
       case _scholarshipFilterFeatured:
-        return 'No featured scholarships match your search';
+        return 'No featured scholarships match this search';
       case _scholarshipFilterHidden:
-        return 'No hidden scholarships match your search';
+        return 'No hidden scholarships match this search';
       default:
-        return 'No scholarships match your search';
+        return 'No scholarships match this search';
     }
   }
 
@@ -2110,15 +2110,15 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
   String _trainingEmptyMessage(String filter) {
     switch (filter) {
       case _trainingFilterBooks:
-        return 'No books match your search';
+        return 'No books match this search';
       case _trainingFilterVideos:
-        return 'No videos match your search';
+        return 'No videos match this search';
       case _trainingFilterFeatured:
-        return 'No featured resources match your search';
+        return 'No featured resources match this search';
       case _trainingFilterHidden:
-        return 'No hidden resources match your search';
+        return 'No hidden resources match this search';
       default:
-        return 'No trainings match your search';
+        return 'No training resources match this search';
     }
   }
 
@@ -3588,7 +3588,9 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               return const SizedBox(
                 height: 220,
                 child: Center(
-                  child: Text('No CV available for this application'),
+                  child: Text(
+                    'CV details are not available for this application',
+                  ),
                 ),
               );
             }
@@ -3635,7 +3637,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                       title: 'Primary CV PDF',
                       subtitle: cv.hasUploadedCv
                           ? 'File: ${cv.uploadedCvDisplayName}\nUploaded: ${_formatDocumentDate(cv.uploadedCvUploadedAt)}'
-                          : 'No CV uploaded',
+                          : 'No uploaded CV',
                       accentColor: _accentColor,
                       warningText: cv.hasUploadedCv && !cv.isUploadedCvPdf
                           ? 'This uploaded file is not a valid PDF. Ask the user to replace it with a PDF version.'
@@ -3661,8 +3663,8 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                       subtitle: cv.hasExportedPdf
                           ? 'Built CV PDF is ready for review.'
                           : cv.hasBuilderContent
-                          ? 'Built CV information is available, but no PDF has been exported yet.'
-                          : 'No built CV information available.',
+                          ? 'Built CV details are available, but the PDF has not been exported yet.'
+                          : 'No built CV details available.',
                       accentColor: _primaryColor,
                       onView: cv.hasExportedPdf
                           ? () => _openApplicationDocument(
@@ -3766,7 +3768,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       );
       if (!launched && mounted) {
         messenger.showSnackBar(
-          const SnackBar(content: Text('Could not open the document.')),
+          const SnackBar(content: Text('We couldn\'t open the document.')),
         );
       }
     } catch (e) {
@@ -3876,7 +3878,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       return 'The requested document is no longer available.';
     }
 
-    return 'Could not open the document right now.';
+    return 'We couldn\'t open the document right now.';
   }
 
   void _showOpportunityDetails(Map<String, dynamic> opportunity) {
@@ -4267,7 +4269,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 label: 'Access',
                 value: link.isNotEmpty
                     ? 'Application Link Ready'
-                    : 'No Link Yet',
+                    : 'Link not added',
                 color: link.isNotEmpty
                     ? AdminPalette.info
                     : AdminPalette.textMuted,
@@ -4340,7 +4342,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 'Access',
                 link.isNotEmpty
                     ? 'External Link Available'
-                    : 'No Link Available',
+                    : 'Link unavailable',
                 icon: link.isNotEmpty
                     ? Icons.open_in_new_rounded
                     : Icons.link_off_rounded,
@@ -4396,7 +4398,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
         ? ''
         : training.hasCertificate!
         ? 'Certificate Available'
-        : 'No Certificate';
+        : 'Certificate not included';
     final learnerLabel = training.learnerCountLabel.trim().isNotEmpty
         ? training.learnerCountLabel.trim()
         : training.learnerCount?.toString() ?? '';
@@ -4845,7 +4847,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
   Widget _buildEmptyState(IconData icon, String message) {
     return AdminEmptyState(
       icon: icon,
-      title: 'Nothing to show here',
+      title: 'No results in this view',
       message: message,
     );
   }

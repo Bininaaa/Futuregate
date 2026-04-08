@@ -303,7 +303,7 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
                       icon: Icons.lock_outline_rounded,
                       title: 'Sign in to see your messages',
                       subtitle:
-                          'Your conversations will appear here once you log in.',
+                          'Sign in to view your conversations and recent updates.',
                     );
                   }
 
@@ -326,13 +326,13 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
                             title: _selectedFilter == _InboxFilter.archived
                                 ? 'No archived conversations'
                                 : _searchQuery.isNotEmpty
-                                ? 'No results found'
+                                ? 'No conversations match your search'
                                 : 'No conversations yet',
                             subtitle: _selectedFilter == _InboxFilter.archived
-                                ? 'Archived conversations will appear here.'
+                                ? 'Archived conversations are shown here when you move them out of your inbox.'
                                 : _searchQuery.isNotEmpty
-                                ? 'Try a different search term.'
-                                : 'Tap the compose button to start chatting.',
+                                ? 'Try a different name or keyword.'
+                                : 'Start a conversation to begin chatting.',
                           ),
                         ],
                       ),

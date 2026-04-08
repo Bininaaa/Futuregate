@@ -78,7 +78,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
 
   Future<void> _openLink(
     String link, {
-    String emptyMessage = 'No training link is available for this item yet',
+    String emptyMessage = 'This training does not have a link yet.',
   }) async {
     if (link.trim().isEmpty) {
       ScaffoldMessenger.of(
@@ -89,9 +89,9 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
 
     final uri = Uri.tryParse(link);
     if (uri == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Invalid training link')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('This training link is not valid.')),
+      );
       return;
     }
 
@@ -99,7 +99,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
 
     if (!launched && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not open the training link')),
+        const SnackBar(content: Text('We couldn\'t open this training link.')),
       );
     }
   }
@@ -638,12 +638,12 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
         activeDomain != 'All' &&
         additionalCards.isEmpty;
     final emptySubtitle = !hasApprovedTrainings
-        ? 'No training programs are available yet.'
+        ? 'No training programs are available right now.'
         : isSearching
-        ? 'Try another keyword to find available training programs.'
+        ? 'Try a different search to find more training programs.'
         : activeDomain == 'All'
-        ? 'No training programs are available yet.'
-        : 'No training programs are available yet for $activeDomain.';
+        ? 'No training programs are available right now.'
+        : 'No training programs are available right now for $activeDomain.';
 
     Widget buildTrainingCard(TrainingCourseCardData card) {
       final training = _findTrainingById(approvedTrainings, card.id);
@@ -774,7 +774,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
                     const SizedBox(height: 12),
                     if (showTopEmptyState)
                       TrainingProgramsEmptyState(
-                        title: 'No trainings match your search',
+                        title: 'No training programs match your search',
                         subtitle: emptySubtitle,
                       )
                     else
@@ -795,7 +795,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
                       if (showDomainEmptyState) ...[
                         const SizedBox(height: 16),
                         TrainingProgramsEmptyState(
-                          title: 'No trainings found',
+                          title: 'No training programs available in this topic',
                           subtitle: emptySubtitle,
                         ),
                       ] else if (additionalCards.isNotEmpty) ...[

@@ -796,7 +796,7 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
           ),
           const SizedBox(height: 14),
           Text(
-            'No scholarships found',
+            'No scholarships match your search',
             style: GoogleFonts.poppins(
               fontSize: 14,
               fontWeight: FontWeight.w600,
@@ -805,7 +805,7 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
           ),
           const SizedBox(height: 6),
           Text(
-            'Try adjusting your search or filters\nto discover more opportunities.',
+            'Try adjusting your search or filters\nto explore more scholarships.',
             textAlign: TextAlign.center,
             style: GoogleFonts.poppins(
               fontSize: 11.5,

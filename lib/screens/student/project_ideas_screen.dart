@@ -578,8 +578,8 @@ class _DiscoverIdeasSection extends StatelessWidget {
     if (ideas.isEmpty) {
       return _EmptyState(
         icon: Icons.auto_awesome_outlined,
-        title: 'No ideas found',
-        subtitle: 'Try a different filter or create a new idea.',
+        title: 'No ideas match this view',
+        subtitle: 'Try a different filter or start a new idea.',
         ctaLabel: 'Create an idea',
         onTap: onCreateTap,
       );
@@ -665,7 +665,7 @@ class _MyIdeasSection extends StatelessWidget {
     if (ideas.isEmpty) {
       return _EmptyState(
         icon: Icons.lightbulb_outline_rounded,
-        title: 'No ideas here',
+        title: 'No ideas yet',
         subtitle: 'Create your first idea or adjust the filters.',
         ctaLabel: 'Create your first idea',
         onTap: onCreateTap,

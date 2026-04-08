@@ -224,7 +224,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
                                 ),
                               ),
                               child: Text(
-                                'No matching contacts found yet.',
+                                'No contacts match your search.',
                                 style: ChatThemeStyles.body(
                                   ChatThemePalette.textSecondary,
                                 ),

@@ -120,25 +120,27 @@ class _CvEditScreenState extends State<CvEditScreen> {
     if (uid == null) return;
 
     final error = await context.read<CvProvider>().saveCv(
-          studentId: uid,
-          fullName: _fullNameController.text.trim(),
-          email: _emailController.text.trim(),
-          phone: _phoneController.text.trim(),
-          address: _addressController.text.trim(),
-          summary: _summaryController.text.trim(),
-          education: _education,
-          experience: _experience,
-          skills: _skills,
-          languages: _languages,
-        );
+      studentId: uid,
+      fullName: _fullNameController.text.trim(),
+      email: _emailController.text.trim(),
+      phone: _phoneController.text.trim(),
+      address: _addressController.text.trim(),
+      summary: _summaryController.text.trim(),
+      education: _education,
+      experience: _experience,
+      skills: _skills,
+      languages: _languages,
+    );
 
     if (!mounted) return;
 
     if (error == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content:
-              Text('CV saved', style: SettingsFlowTheme.body(Colors.white)),
+          content: Text(
+            'CV saved',
+            style: SettingsFlowTheme.body(Colors.white),
+          ),
           backgroundColor: SettingsFlowPalette.success,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
@@ -527,7 +529,7 @@ class _CvEditScreenState extends State<CvEditScreen> {
             ),
             const SizedBox(height: 10),
             if (_education.isEmpty)
-              _emptyState('No education added yet', Icons.school_outlined)
+              _emptyState('Add your education', Icons.school_outlined)
             else
               ..._education.asMap().entries.map((entry) {
                 final i = entry.key;
@@ -551,7 +553,7 @@ class _CvEditScreenState extends State<CvEditScreen> {
             ),
             const SizedBox(height: 10),
             if (_experience.isEmpty)
-              _emptyState('No experience added yet', Icons.work_outline)
+              _emptyState('Add your experience', Icons.work_outline)
             else
               ..._experience.asMap().entries.map((entry) {
                 final i = entry.key;
@@ -625,8 +627,7 @@ class _CvEditScreenState extends State<CvEditScreen> {
                       children: _languages.asMap().entries.map((entry) {
                         return _chip(
                           entry.value,
-                          () =>
-                              setState(() => _languages.removeAt(entry.key)),
+                          () => setState(() => _languages.removeAt(entry.key)),
                         );
                       }).toList(),
                     ),

@@ -254,7 +254,9 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
   Future<void> _openLink(String link) async {
     if (link.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No link available for this item')),
+        const SnackBar(
+          content: Text('This result does not include an external link.'),
+        ),
       );
       return;
     }
@@ -270,9 +272,9 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
     final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
 
     if (!launched && mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Could not open the link')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('We couldn\'t open this link.')),
+      );
     }
   }
 
@@ -476,9 +478,9 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
         hasScrollBody: false,
         child: AdminEmptyState(
           icon: Icons.ondemand_video_rounded,
-          title: 'No YouTube results yet',
+          title: 'Start with a YouTube search',
           message:
-              'Start with a topic search and we will bring back import-ready videos for review.',
+              'Use a topic search to bring back import-ready videos for review.',
         ),
       );
     }
@@ -504,7 +506,7 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
         hasScrollBody: false,
         child: AdminEmptyState(
           icon: Icons.search_off_rounded,
-          title: 'No YouTube results found',
+          title: 'No videos match this search',
           message:
               'Try a broader query or switch the domain and level context before searching again.',
         ),
@@ -572,7 +574,7 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
                   eyebrow: 'Library',
                   title: 'Manage Imported Videos',
                   subtitle:
-                      'Only YouTube imports appear here, so the workspace stays focused on video curation.',
+                      'This workspace is dedicated to YouTube imports, so video curation stays focused.',
                 ),
                 const SizedBox(height: 14),
                 Wrap(
@@ -610,7 +612,7 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
               padding: EdgeInsets.only(top: 60),
               child: AdminEmptyState(
                 icon: Icons.ondemand_video_rounded,
-                title: 'No imported videos yet',
+                title: 'No videos imported yet',
                 message:
                     'Import a few YouTube results first, then manage featuring, opening, and deleting from here.',
               ),

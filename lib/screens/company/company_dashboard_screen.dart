@@ -358,7 +358,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      'Failed to load dashboard',
+                      'Dashboard unavailable',
                       style: GoogleFonts.poppins(
                         color: CompanyDashboardPalette.textPrimary,
                         fontWeight: FontWeight.w700,
@@ -1066,7 +1066,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
           const SizedBox(height: 12),
           Text(
             totalThisWeek == 0
-                ? 'No applications were submitted during the last 7 days yet.'
+                ? 'No applications were submitted in the last 7 days.'
                 : 'Peak activity reached $peak ${_pluralize('application', peak)} in a single day.',
             style: GoogleFonts.poppins(
               fontSize: 12,
@@ -1438,13 +1438,13 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
   }) {
     final reviewedApplications = approvedApplications + rejectedApplications;
     final reviewSummary = reviewedApplications == 0
-        ? 'No reviewed applications yet. New decisions will show here once you approve or reject candidates.'
+        ? 'No reviewed applications yet. New decisions will be reflected here after you approve or reject candidates.'
         : '$approvedApplications approved and $rejectedApplications rejected so far across reviewed applications.';
     final pendingSummary = pendingApplications == 0
         ? 'No applications are waiting for review right now.'
         : '$pendingApplications ${_pluralize('application', pendingApplications)} still ${pendingApplications == 1 ? 'needs' : 'need'} review.';
     final expirySummary = expiringSoonCount == 0
-        ? 'No open job posts are expiring in the next 2 days.'
+        ? 'No open job posts expire in the next 2 days.'
         : '$expiringSoonCount open ${_pluralize('post', expiringSoonCount)} ${expiringSoonCount == 1 ? 'expires' : 'expire'} within 2 days.';
 
     return Container(
@@ -1606,7 +1606,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
           ),
           const SizedBox(height: 6),
           Text(
-            'Real student applications will appear here as soon as someone applies.',
+            'Student applications are added here as they come in.',
             textAlign: TextAlign.center,
             style: GoogleFonts.poppins(
               fontSize: 12.5,

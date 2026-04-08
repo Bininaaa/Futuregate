@@ -1732,7 +1732,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                         title: 'Primary CV PDF',
                         subtitle: cv.hasUploadedCv
                             ? 'File: ${cv.uploadedCvDisplayName}\nUploaded: ${_formatDate(cv.uploadedCvUploadedAt)}'
-                            : 'No CV uploaded',
+                            : 'No uploaded CV',
                         accentColor: _ApplicationsPalette.primary,
                         warningText: cv.hasUploadedCv && !cv.isUploadedCvPdf
                             ? 'This uploaded file is not a valid PDF. Ask the applicant to replace it with a PDF version.'
@@ -1759,7 +1759,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                             ? 'Built CV PDF is ready for review.'
                             : cv.hasBuilderContent
                             ? 'Built CV information is available, but no PDF has been exported yet.'
-                            : 'No built CV information available.',
+                            : 'No built CV details available.',
                         accentColor: _ApplicationsPalette.secondaryDark,
                         onView: cv.hasExportedPdf
                             ? () => _openApplicationDocument(
@@ -1905,7 +1905,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
       );
       if (!launched && mounted) {
         messenger.showSnackBar(
-          const SnackBar(content: Text('Could not open the document.')),
+          const SnackBar(content: Text('We couldn\'t open the document.')),
         );
       }
     } catch (error) {
@@ -2021,7 +2021,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
     if (message.contains('404') || message.contains('not found')) {
       return 'The requested file is no longer available.';
     }
-    return 'Could not open the document right now.';
+    return 'We couldn\'t open the document right now.';
   }
 
   Widget _buildCvSection(String title, List<String> items) {
@@ -2498,7 +2498,7 @@ class _FocusedApplicationBanner extends StatelessWidget {
       title: 'Focused application view',
       message: count == 1
           ? 'Showing the application you opened directly.'
-          : 'The requested application could not be found.',
+          : 'The requested application is no longer available.',
       tone: _ApplicationsPalette.primary,
       background: _ApplicationsPalette.primarySoft,
     );
@@ -2631,7 +2631,7 @@ class _LoadingState extends StatelessWidget {
           ),
           const SizedBox(height: 18),
           Text(
-            'Loading applications...',
+            'Loading your applications...',
             style: GoogleFonts.poppins(
               fontSize: 16,
               fontWeight: FontWeight.w600,
@@ -2667,13 +2667,13 @@ class _EmptyApplicationsState extends StatelessWidget {
     final title = isFocusedView
         ? 'This application is no longer available'
         : hasFilters
-        ? 'No applications match these filters'
+        ? 'No applications match this view'
         : 'No applications yet';
     final message = isFocusedView
-        ? 'The application you opened directly could not be found. It may have been removed or no longer belongs to this company.'
+        ? 'The application you opened is no longer available. It may have been removed or may no longer belong to this company.'
         : hasFilters
         ? 'Try clearing the filters or broadening the search to see more candidates.'
-        : 'As soon as candidates start applying, they will appear here with quick review actions and CV access.';
+        : 'Candidate applications are listed here with quick review actions and CV access.';
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),

@@ -22,7 +22,7 @@ class RecentOffersList extends StatelessWidget {
             ...offers.map((offer) {
               return ListTile(
                 leading: const Icon(Icons.work),
-                title: Text(offer['title'] ?? 'No title'),
+                title: Text(offer['title'] ?? 'Untitled offer'),
                 subtitle: Text(offer['companyName'] ?? 'Unknown company'),
               );
             }),

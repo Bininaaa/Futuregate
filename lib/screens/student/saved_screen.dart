@@ -330,7 +330,9 @@ class _SavedScreenState extends State<SavedScreen> {
     if (link.isEmpty) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No link available for this training.')),
+        const SnackBar(
+          content: Text('This training does not have a link yet.'),
+        ),
       );
       return;
     }
@@ -401,7 +403,9 @@ class _SavedScreenState extends State<SavedScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          error == null ? successMessage : 'Could not remove this saved item',
+          error == null
+              ? successMessage
+              : 'We couldn\'t remove this item right now.',
         ),
       ),
     );
@@ -657,7 +661,7 @@ class _SavedScreenState extends State<SavedScreen> {
                   const SliverFillRemaining(
                     hasScrollBody: false,
                     child: StudentOpportunityLoadingState(
-                      title: 'Loading saved items...',
+                      title: 'Loading your saved items...',
                       message:
                           'Pulling together your saved opportunities, scholarships, trainings, and ideas.',
                     ),
@@ -671,10 +675,10 @@ class _SavedScreenState extends State<SavedScreen> {
                           : Icons.bookmark_border_rounded,
                       title: hasFilters
                           ? 'No saved items match this view'
-                          : 'Nothing saved yet',
+                          : 'No saved items yet',
                       message: hasFilters
                           ? 'Try a different search or filter to see more saved items.'
-                          : 'Save opportunities, scholarships, trainings, or ideas, and they will appear here.',
+                          : 'Save opportunities, scholarships, trainings, or ideas to build your shortlist.',
                       actionLabel: 'Explore opportunities',
                       onAction: () => Navigator.push(
                         context,

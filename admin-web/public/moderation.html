@@ -773,7 +773,7 @@
       if (ideas.length === 0) {
         container.innerHTML =
           `<div class="empty-state"><div class="icon">?</div><p>${
-            showPendingOnly ? 'No pending ideas' : 'No project ideas yet'
+            showPendingOnly ? 'No pending ideas to review' : 'No project ideas to review yet'
           }</p></div>`;
         return;
       }
@@ -835,7 +835,7 @@
       const container = document.getElementById('applications-list');
       if (filtered.length === 0) {
         container.innerHTML =
-          '<div class="empty-state"><div class="icon">AP</div><p>No applications match the current filters</p></div>';
+          '<div class="empty-state"><div class="icon">AP</div><p>No applications match the current filters.</p></div>';
         return;
       }
 
@@ -885,7 +885,7 @@
         const ideaRef = doc(db, 'projectIdeas', id);
         const ideaSnap = await getDoc(ideaRef);
         if (!ideaSnap.exists()) {
-          showToast('Idea could not be found', 'error');
+          showToast('This idea is no longer available.', 'error');
           return;
         }
 
@@ -945,7 +945,7 @@
       const container = document.getElementById('opps-list');
       if (filteredOpps.length === 0) {
         container.innerHTML =
-          '<div class="empty-state"><div class="icon">!</div><p>No opportunities yet</p></div>';
+          '<div class="empty-state"><div class="icon">!</div><p>No opportunities published yet.</p></div>';
         return;
       }
 
@@ -965,7 +965,7 @@
             <div class="opp-card ${itemMatchesFocus(opp.id) ? 'card-highlight' : ''}">
               <div class="opp-icon" style="background:rgba(255,140,0,0.12);color:#FF8C00">OF</div>
               <div class="opp-info">
-                <div class="opp-title">${esc(opp.title || 'No title')}</div>
+                <div class="opp-title">${esc(opp.title || 'Untitled opportunity')}</div>
                 <div class="opp-company">${esc(opp.companyName || 'Unknown company')}</div>
                 <div class="opp-badges">
                   <span class="badge badge-${normalizedType}">${esc(typeLabel)}</span>
@@ -1003,7 +1003,7 @@
       const container = document.getElementById('scholarships-list');
       if (filteredScholarships.length === 0) {
         container.innerHTML =
-          '<div class="empty-state"><div class="icon">$</div><p>No scholarships yet</p></div>';
+          '<div class="empty-state"><div class="icon">$</div><p>No scholarships published yet.</p></div>';
         return;
       }
 
@@ -1014,7 +1014,7 @@
             <div class="opp-card ${itemMatchesFocus(scholarship.id) ? 'card-highlight' : ''}">
               <div class="opp-icon" style="background:rgba(233,30,99,0.12);color:#E91E63">SC</div>
               <div class="opp-info">
-                <div class="opp-title">${esc(scholarship.title || 'No title')}</div>
+                <div class="opp-title">${esc(scholarship.title || 'Untitled scholarship')}</div>
                 <div class="opp-company">${esc(scholarship.provider || 'Unknown provider')}</div>
                 <div class="opp-badges">
                   ${
@@ -1152,7 +1152,7 @@
         status.textContent =
           trainingState.results.length > 0
             ? `${trainingState.results.length} Google Books result${trainingState.results.length === 1 ? '' : 's'} found.`
-            : 'No Google Books matches found for this search.';
+            : 'No Google Books results match this search.';
       } else {
         status.className = 'training-status';
         status.textContent =
@@ -1167,19 +1167,19 @@
 
       if (!trainingState.hasSearched) {
         container.innerHTML =
-          '<div class="empty-state"><div class="icon">GB</div><p>Search for a Google Book to start importing.</p></div>';
+          '<div class="empty-state"><div class="icon">GB</div><p>Search Google Books to start importing titles.</p></div>';
         return;
       }
 
       if (trainingState.searchError) {
         container.innerHTML =
-          '<div class="empty-state"><div class="icon">!</div><p>Search failed. Check the message above and the browser console.</p></div>';
+          '<div class="empty-state"><div class="icon">!</div><p>Search could not be completed. Review the message above and try again.</p></div>';
         return;
       }
 
       if (trainingState.results.length === 0) {
         container.innerHTML =
-          '<div class="empty-state"><div class="icon">0</div><p>No Google Books results found for that search.</p></div>';
+          '<div class="empty-state"><div class="icon">0</div><p>No Google Books results match that search.</p></div>';
         return;
       }
 
@@ -1271,7 +1271,7 @@
         status.textContent =
           youtubeState.results.length > 0
             ? `${youtubeState.results.length} YouTube result${youtubeState.results.length === 1 ? '' : 's'} found.`
-            : 'No YouTube matches found for this search.';
+            : 'No YouTube results match this search.';
       } else {
         status.className = 'training-status';
         status.textContent =
@@ -1286,19 +1286,19 @@
 
       if (!youtubeState.hasSearched) {
         container.innerHTML =
-          '<div class="empty-state"><div class="icon">YT</div><p>Search for a YouTube video to start importing.</p></div>';
+          '<div class="empty-state"><div class="icon">YT</div><p>Search YouTube to start importing videos.</p></div>';
         return;
       }
 
       if (youtubeState.searchError) {
         container.innerHTML =
-          '<div class="empty-state"><div class="icon">!</div><p>Search failed. Check the message above and the browser console.</p></div>';
+          '<div class="empty-state"><div class="icon">!</div><p>Search could not be completed. Review the message above and try again.</p></div>';
         return;
       }
 
       if (youtubeState.results.length === 0) {
         container.innerHTML =
-          '<div class="empty-state"><div class="icon">0</div><p>No YouTube results found for that search.</p></div>';
+          '<div class="empty-state"><div class="icon">0</div><p>No YouTube results match that search.</p></div>';
         return;
       }
 
@@ -1376,7 +1376,7 @@
 
       if (filteredTrainings.length === 0) {
         container.innerHTML =
-          '<div class="empty-state"><div class="icon">TR</div><p>No training resources found yet.</p></div>';
+          '<div class="empty-state"><div class="icon">TR</div><p>No training resources are available yet.</p></div>';
         return;
       }
 
@@ -1516,8 +1516,8 @@
       if (!cv) {
         return `
           <div class="empty-card">
-            <div class="document-section-title">No CV uploaded</div>
-            <p>No uploaded or built CV file was found for this application.</p>
+            <div class="document-section-title">CV file unavailable</div>
+            <p>No uploaded or generated CV file is available for this application.</p>
           </div>
         `;
       }
@@ -1580,7 +1580,7 @@
                       : '<div class="document-feedback is-warning">This file is not a PDF. Viewing may download the file instead of previewing it.</div>'
                   }
                 `
-                : '<div class="document-card-meta">No uploaded primary CV file is available for this applicant.</div>'
+                : '<div class="document-card-meta">Primary CV file is not available for this applicant.</div>'
             }
           </div>
           <div class="document-card">
@@ -1616,8 +1616,8 @@
                   </div>
                 `
                 : builtInfoAvailable
-                ? '<div class="document-card-meta">Built CV information is available, but no exported PDF has been generated yet.</div>'
-                : '<div class="document-card-meta">No built CV information is available for this applicant.</div>'
+                ? '<div class="document-card-meta">Built CV details are available, but the PDF has not been generated yet.</div>'
+                : '<div class="document-card-meta">Built CV details are not available for this applicant.</div>'
             }
             ${
               builtInfoAvailable && cv.summary
@@ -1684,7 +1684,7 @@
     async function openApplicationCv(applicationId) {
       const application = allApplications.find((item) => item.id === applicationId);
       if (!application) {
-        showToast('Application not found', 'error');
+        showToast('This application is no longer available.', 'error');
         return;
       }
 
@@ -1805,7 +1805,7 @@
         (item) => item.googleBookId === bookId,
       );
       if (!selectedBook) {
-        showToast('Selected Google Book could not be found.', 'error');
+        showToast('The selected Google Book is no longer available.', 'error');
         return;
       }
 
@@ -1895,7 +1895,7 @@
         (item) => item.youtubeVideoId === videoId,
       );
       if (!selectedVideo) {
-        showToast('Selected YouTube video could not be found.', 'error');
+        showToast('The selected YouTube video is no longer available.', 'error');
         return;
       }
 
@@ -2103,7 +2103,7 @@
       const errors = Array.isArray(result?.errors) ? result.errors.length : 0;
 
       if (recipientsFound === 0) {
-        return 'No active student recipients were found for this scholarship.';
+        return 'No active student recipients are currently available for this scholarship.';
       }
 
       if (result?.alreadyNotified || (created === 0 && duplicatesSkipped > 0)) {

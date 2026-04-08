@@ -777,7 +777,7 @@ class CompanyProfileScreen extends StatelessWidget {
       );
       if (!launched && context.mounted) {
         messenger.showSnackBar(
-          const SnackBar(content: Text('Could not open the document.')),
+          const SnackBar(content: Text('We couldn\'t open the document.')),
         );
       }
     } catch (error) {
@@ -798,7 +798,7 @@ class CompanyProfileScreen extends StatelessWidget {
     if (message.contains('404') || message.contains('not found')) {
       return 'The requested document is no longer available.';
     }
-    return 'Could not open the document right now.';
+    return 'We couldn\'t open the document right now.';
   }
 }
 
@@ -1208,7 +1208,7 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
             Text(
               hasLogo
                   ? 'Your current company visual is live.'
-                  : 'No logo yet. Add one to make the profile feel more complete.',
+                  : 'Add a logo to make your company profile feel complete.',
               style: SettingsFlowTheme.body(),
               textAlign: TextAlign.center,
             ),
@@ -1318,7 +1318,7 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
           else ...[
             const SettingsInfoBanner(
               icon: Icons.upload_file_outlined,
-              title: 'No document uploaded yet',
+              title: 'No verification document uploaded yet',
               message:
                   'Upload a PDF, JPG, or PNG document up to 10 MB to complete this part of the profile.',
               color: CompanyDashboardPalette.accent,
@@ -1610,7 +1610,7 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
       );
       if (!launched && mounted) {
         messenger.showSnackBar(
-          const SnackBar(content: Text('Could not open the document.')),
+          const SnackBar(content: Text('We couldn\'t open the document.')),
         );
       }
     } catch (error) {
@@ -1631,7 +1631,7 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
     if (message.contains('404') || message.contains('not found')) {
       return 'The requested document is no longer available.';
     }
-    return 'Could not open the document right now.';
+    return 'We couldn\'t open the document right now.';
   }
 }
 

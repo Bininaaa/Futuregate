@@ -735,11 +735,11 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
                     if (filteredInternships.isEmpty)
                       _InternshipsEmptyState(
                         title: liveInternships.isEmpty
-                            ? 'No live internships yet'
-                            : 'No internships match these filters',
+                            ? 'No internships available right now'
+                            : 'No internships match this view',
                         subtitle: liveInternships.isEmpty
-                            ? 'Internships published in the database will appear here.'
-                            : 'Try another search or remove a chip to reveal more opportunities.',
+                            ? 'Check back soon for new internship listings.'
+                            : 'Try adjusting your search or filters to explore more opportunities.',
                       )
                     else
                       _ApplyThisWeekSection(
@@ -777,11 +777,11 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
                     if (filteredInternships.isEmpty)
                       _InternshipsEmptyState(
                         title: liveInternships.isEmpty
-                            ? 'No internships available'
-                            : 'Nothing to show right now',
+                            ? 'No internships available right now'
+                            : 'No internships match this view',
                         subtitle: liveInternships.isEmpty
-                            ? 'Publish internship opportunities in the database to populate this section.'
-                            : 'Live internships will appear here as soon as they match your search.',
+                            ? 'Check back soon for new internship listings.'
+                            : 'Try adjusting your search to see more internship matches.',
                       )
                     else
                       AnimatedSwitcher(

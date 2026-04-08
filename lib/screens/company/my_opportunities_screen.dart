@@ -2665,7 +2665,7 @@ class _LoadingState extends StatelessWidget {
           ),
           const SizedBox(height: 18),
           Text(
-            'Loading opportunities...',
+            'Loading your opportunities...',
             style: GoogleFonts.poppins(
               fontSize: 15,
               fontWeight: FontWeight.w600,
@@ -2725,7 +2725,7 @@ class _EmptyState extends StatelessWidget {
               const SizedBox(height: 16),
               Text(
                 hasExistingOpportunities
-                    ? 'No opportunities match these filters'
+                    ? 'No opportunities match this view'
                     : 'No opportunities published yet',
                 textAlign: TextAlign.center,
                 style: GoogleFonts.poppins(
@@ -2738,7 +2738,7 @@ class _EmptyState extends StatelessWidget {
               Text(
                 hasExistingOpportunities
                     ? 'Try clearing the filters or broadening your search to see more listings.'
-                    : 'Create your first role to start receiving applications and building your pipeline.',
+                    : 'Create your first role to start building your hiring pipeline.',
                 textAlign: TextAlign.center,
                 style: GoogleFonts.poppins(
                   fontSize: 13,

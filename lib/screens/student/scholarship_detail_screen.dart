@@ -49,9 +49,7 @@ class ScholarshipDetailScreen extends StatelessWidget {
 
   String get _description {
     final value = scholarship.description.trim();
-    return value.isEmpty
-        ? 'This scholarship does not include a detailed overview yet.'
-        : value;
+    return value.isEmpty ? 'A detailed overview is not available yet.' : value;
   }
 
   String get _eligibility {
@@ -145,7 +143,11 @@ class ScholarshipDetailScreen extends StatelessWidget {
     final uri = _linkUri;
     if (uri == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No scholarship link is available yet.')),
+        const SnackBar(
+          content: Text(
+            'This scholarship does not have an application link yet.',
+          ),
+        ),
       );
       return;
     }
@@ -153,7 +155,9 @@ class ScholarshipDetailScreen extends StatelessWidget {
     final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
     if (!launched && context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not open the scholarship link.')),
+        const SnackBar(
+          content: Text('We couldn\'t open the scholarship link.'),
+        ),
       );
     }
   }
@@ -517,7 +521,7 @@ class ScholarshipDetailScreen extends StatelessWidget {
                     AppEmptyFieldPlaceholder(
                       theme: _theme,
                       text:
-                          'The provider has not shared a valid external application link yet.',
+                          'An external application link is not available yet.',
                     ),
                 ],
               ),

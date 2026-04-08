@@ -262,7 +262,7 @@ async function loadStudentCvSummary(userId) {
 
 function friendlyDocumentErrorMessage(
   error,
-  fallback = 'Could not open the document right now.',
+  fallback = 'We couldn\'t open the document right now.',
 ) {
   const message = String(error?.message || error || '').toLowerCase();
   const status = Number(error?.status);

@@ -125,7 +125,7 @@ class AboutAvenirDzScreen extends StatelessWidget {
                   icon: Icons.public_rounded,
                   iconColor: SettingsFlowPalette.primaryDark,
                   title: 'Website & Social',
-                  subtitle: 'Public links will appear here as they launch',
+                  subtitle: 'Public links are added here as they go live',
                   onTap: () => _showInfoSheet(
                     context,
                     title: 'Website & Social',

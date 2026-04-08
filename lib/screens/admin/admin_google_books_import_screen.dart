@@ -259,7 +259,9 @@ class _AdminGoogleBooksImportScreenState
   Future<void> _openLink(String link) async {
     if (link.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No link available for this item')),
+        const SnackBar(
+          content: Text('This result does not include an external link.'),
+        ),
       );
       return;
     }
@@ -275,9 +277,9 @@ class _AdminGoogleBooksImportScreenState
     final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
 
     if (!launched && mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Could not open the link')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('We couldn\'t open this link.')),
+      );
     }
   }
 
@@ -506,9 +508,9 @@ class _AdminGoogleBooksImportScreenState
         hasScrollBody: false,
         child: AdminEmptyState(
           icon: Icons.menu_book_rounded,
-          title: 'No Google Books results yet',
+          title: 'Start with a Google Books search',
           message:
-              'Run a search with a topic, domain, or language filter to start importing curated books.',
+              'Use a topic, domain, or language filter to bring in curated books for review.',
         ),
       );
     }
@@ -534,7 +536,7 @@ class _AdminGoogleBooksImportScreenState
         hasScrollBody: false,
         child: AdminEmptyState(
           icon: Icons.search_off_rounded,
-          title: 'No books found',
+          title: 'No books match this search',
           message:
               'Try a broader query or change the language and domain filters before searching again.',
         ),
@@ -602,7 +604,7 @@ class _AdminGoogleBooksImportScreenState
                   eyebrow: 'Library',
                   title: 'Manage Imported Books',
                   subtitle:
-                      'Only Google Books imports appear here, so the workspace stays focused on book curation.',
+                      'This workspace is dedicated to Google Books imports, so book curation stays focused.',
                 ),
                 const SizedBox(height: 14),
                 Wrap(
@@ -640,7 +642,7 @@ class _AdminGoogleBooksImportScreenState
               padding: EdgeInsets.only(top: 60),
               child: AdminEmptyState(
                 icon: Icons.menu_book_rounded,
-                title: 'No imported books yet',
+                title: 'No books imported yet',
                 message:
                     'Import a few Google Books results first, then manage featuring, opening, and deleting from here.',
               ),

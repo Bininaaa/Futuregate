@@ -178,7 +178,7 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
           if (filteredTopics.isEmpty)
             const SettingsEmptyState(
               icon: Icons.search_off_rounded,
-              title: 'No matches found',
+              title: 'No help topics match your search',
               message:
                   'Try a broader search term, or contact support if you need hands-on help.',
             )

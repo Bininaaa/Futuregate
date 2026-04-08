@@ -377,7 +377,9 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                             child: CustomPaint(
                               painter: _ProfileCompletionRingPainter(
                                 progress: profileCompletion / 100,
-                                trackColor: Colors.white.withValues(alpha: 0.18),
+                                trackColor: Colors.white.withValues(
+                                  alpha: 0.18,
+                                ),
                                 progressColor: profileCompletion >= 100
                                     ? const Color(0xFF47D16C)
                                     : const Color(0xFFFFC857),
@@ -385,9 +387,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                               ),
                             ),
                           ),
-                          Center(
-                            child: ProfileAvatar(user: user, radius: 25),
-                          ),
+                          Center(child: ProfileAvatar(user: user, radius: 25)),
                           Positioned(
                             bottom: 0,
                             right: 0,
@@ -458,9 +458,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                   GestureDetector(
                     onTap: () => Navigator.push(
                       context,
-                      MaterialPageRoute(
-                        builder: (_) => const SettingsScreen(),
-                      ),
+                      MaterialPageRoute(builder: (_) => const SettingsScreen()),
                     ),
                     child: Container(
                       width: 42,
@@ -1092,7 +1090,9 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                             borderRadius: BorderRadius.circular(999),
                           ),
                           child: Text(
-                            totalSaved == 0 ? 'Empty' : '$totalSaved saved',
+                            totalSaved == 0
+                                ? 'Start saving'
+                                : '$totalSaved saved',
                             style: GoogleFonts.poppins(
                               fontSize: 9.8,
                               fontWeight: FontWeight.w700,
@@ -1512,7 +1512,8 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
         child: _buildEmptyState(
           icon: Icons.schedule_outlined,
           message: 'No urgent deadlines right now',
-          subtitle: 'Closing dates will show here as new opportunities arrive.',
+          subtitle:
+              'Upcoming deadlines are highlighted here as new opportunities go live.',
         ),
       );
     }
@@ -1848,8 +1849,8 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     if (items.isEmpty) {
       return _buildEmptyState(
         icon: Icons.auto_awesome,
-        message: 'No recommendations yet',
-        subtitle: 'Check back soon for curated opportunities.',
+        message: 'No recommendations right now',
+        subtitle: 'Check back soon for fresh curated opportunities.',
       );
     }
 
@@ -2231,9 +2232,9 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
         delegate: SliverChildListDelegate([
           _buildEmptyState(
             icon: Icons.bolt_rounded,
-            message: 'No activity yet',
+            message: 'No recent activity yet',
             subtitle:
-                'Apply, save, or refresh your CV and your latest momentum will show here.',
+                'Your latest applications, saves, and CV updates are reflected here.',
           ),
         ]),
       );
@@ -2761,7 +2762,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
       }
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('This saved resource has an invalid link.'),
+          content: Text('This saved resource link is not available.'),
         ),
       );
       return;
@@ -2771,7 +2772,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
 
     if (!launched && context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not open this saved resource.')),
+        const SnackBar(content: Text('We couldn\'t open this saved resource.')),
       );
     }
   }
@@ -3502,8 +3503,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
         accentColor = accentTeal;
         break;
       case 'Latest Activities':
-        subtitle =
-            'Your recent applications, saves, and CV updates.';
+        subtitle = 'Your recent applications, saves, and CV updates.';
         accentColor = accentTeal;
         break;
       default:

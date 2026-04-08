@@ -291,7 +291,7 @@ class _AppliedOpportunitiesScreenState
                   const SliverFillRemaining(
                     hasScrollBody: false,
                     child: StudentOpportunityLoadingState(
-                      title: 'Loading applied opportunities...',
+                      title: 'Loading your applications...',
                       message:
                           'Pulling together your submitted opportunities and their latest statuses.',
                     ),
@@ -305,10 +305,10 @@ class _AppliedOpportunitiesScreenState
                           : Icons.assignment_outlined,
                       title: hasFilters
                           ? 'No applications match this view'
-                          : 'You have not applied yet',
+                          : 'No applications yet',
                       message: hasFilters
                           ? 'Try a different search or filter to bring more of your application history back into view.'
-                          : 'Once you start applying, your submitted opportunities will show up here.',
+                          : 'Start applying to opportunities and track them here.',
                       actionLabel: 'Browse opportunities',
                       onAction: () => Navigator.push(
                         context,

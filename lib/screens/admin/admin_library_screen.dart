@@ -199,7 +199,7 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen> {
 
   String _libraryHealthMessage(List<TrainingModel> trainings) {
     if (trainings.isEmpty) {
-      return 'No resources have been imported yet. Start with books or video lessons, then feature the strongest material for students.';
+      return 'No resources have been imported yet. Import books or video lessons to start curating material for students.';
     }
 
     return 'The library currently mixes imported and internal resources. Use the source studios above whenever you want to add or refine curated content without leaving the admin area.';
