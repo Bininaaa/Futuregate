@@ -28,8 +28,5 @@ class MonthlyStat {
   final String month;
   final int count;
 
-  MonthlyStat({
-    required this.month,
-    required this.count,
-  });
+  MonthlyStat({required this.month, required this.count});
 }

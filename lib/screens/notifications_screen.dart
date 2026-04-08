@@ -19,6 +19,7 @@ import 'settings/settings_flow_widgets.dart';
 import 'student/chat_screen.dart' as student_chat;
 import 'student/opportunity_detail_screen.dart';
 import 'student/scholarship_detail_screen.dart';
+import '../widgets/shared/app_feedback.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
@@ -345,10 +346,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           }
           final data = doc.data()!;
           if (data['isHidden'] == true) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('This opportunity is currently hidden'),
-              ),
+            context.showAppSnackBar(
+              'This opportunity is currently hidden.',
+              title: 'Opportunity unavailable',
+              type: AppFeedbackType.warning,
             );
             return;
           }
@@ -367,10 +368,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           }
           final data = doc.data()!;
           if (data['isHidden'] == true) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('This scholarship is currently hidden'),
-              ),
+            context.showAppSnackBar(
+              'This scholarship is currently hidden.',
+              title: 'Scholarship unavailable',
+              type: AppFeedbackType.warning,
             );
             return;
           }
@@ -393,10 +394,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             return;
           }
           if ((doc.data()?['isHidden'] ?? false) == true) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('This training is currently hidden'),
-              ),
+            context.showAppSnackBar(
+              'This training resource is currently hidden.',
+              title: 'Training unavailable',
+              type: AppFeedbackType.warning,
             );
             return;
           }
@@ -462,10 +463,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           }
           final oppData = oppDoc.data()!;
           if (oppData['isHidden'] == true) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('This opportunity is currently hidden'),
-              ),
+            context.showAppSnackBar(
+              'This opportunity is currently hidden.',
+              title: 'Opportunity unavailable',
+              type: AppFeedbackType.warning,
             );
             return;
           }

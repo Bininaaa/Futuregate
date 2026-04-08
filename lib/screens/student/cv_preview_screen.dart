@@ -12,6 +12,7 @@ import '../../screens/settings/settings_flow_theme.dart';
 import '../../screens/settings/settings_flow_widgets.dart';
 import '../../services/cv_pdf_service.dart';
 import '../../widgets/app_shell_background.dart';
+import '../../widgets/shared/app_feedback.dart';
 import '../../widgets/student/student_workspace_shell.dart';
 
 class CvPreviewScreen extends StatefulWidget {
@@ -43,26 +44,17 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
     if (!mounted) return;
 
     if (error == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'CV exported and saved',
-            style: SettingsFlowTheme.body(Colors.white),
-          ),
-          backgroundColor: SettingsFlowPalette.success,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: SettingsFlowTheme.radius(12),
-          ),
-        ),
+      context.showAppSnackBar(
+        'Your CV PDF has been exported and saved.',
+        title: 'Export complete',
+        type: AppFeedbackType.success,
       );
       Navigator.pop(context, true);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(error),
-          backgroundColor: SettingsFlowPalette.error,
-        ),
+      context.showAppSnackBar(
+        error,
+        title: 'Export unavailable',
+        type: AppFeedbackType.error,
       );
     }
   }
@@ -129,26 +121,13 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
                     return Center(
                       child: Padding(
                         padding: const EdgeInsets.all(32),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(
-                              Icons.error_outline_rounded,
-                              size: 48,
-                              color: SettingsFlowPalette.error,
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              'Failed to generate PDF',
-                              style: SettingsFlowTheme.sectionTitle(),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              snapshot.error.toString(),
-                              style: SettingsFlowTheme.caption(),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
+                        child: AppEmptyStateNotice(
+                          type: AppFeedbackType.error,
+                          icon: Icons.picture_as_pdf_rounded,
+                          title: 'Preview unavailable',
+                          message:
+                              'We couldn\'t generate this PDF preview right now. ${snapshot.error}',
+                          accentColor: SettingsFlowPalette.error,
                         ),
                       ),
                     );

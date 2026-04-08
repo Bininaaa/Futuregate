@@ -16,6 +16,7 @@ import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/shared/app_content_system.dart';
+import '../../widgets/shared/app_feedback.dart';
 
 class OpportunityDetailScreen extends StatelessWidget {
   final OpportunityModel opportunity;
@@ -195,12 +196,13 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
     final authProvider = context.read<AuthProvider>();
     final applicationProvider = context.read<ApplicationProvider>();
     final cvProvider = context.read<CvProvider>();
-    final messenger = ScaffoldMessenger.of(context);
     final currentUser = authProvider.userModel;
 
     if (currentUser == null) {
-      messenger.showSnackBar(
-        const SnackBar(content: Text('You must be logged in to apply.')),
+      context.showAppSnackBar(
+        'Sign in to continue with your application.',
+        title: 'Login required',
+        type: AppFeedbackType.warning,
       );
       return;
     }
@@ -215,8 +217,10 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
     }
 
     if (eligibility != ApplicationEligibilityStatus.available) {
-      messenger.showSnackBar(
-        SnackBar(content: Text(_messageForStatus(eligibility))),
+      context.showAppSnackBar(
+        _messageForStatus(eligibility),
+        title: 'Application blocked',
+        type: AppFeedbackType.warning,
       );
       _refreshEligibility();
       return;
@@ -229,8 +233,10 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
 
     final cv = cvProvider.cv;
     if (cv == null) {
-      messenger.showSnackBar(
-        const SnackBar(content: Text('Please create your CV before applying.')),
+      context.showAppSnackBar(
+        'Create your CV before applying to this opportunity.',
+        title: 'CV required',
+        type: AppFeedbackType.warning,
       );
       return;
     }
@@ -246,8 +252,10 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
       return;
     }
 
-    messenger.showSnackBar(
-      SnackBar(content: Text(error ?? 'Application submitted successfully.')),
+    context.showAppSnackBar(
+      error ?? 'Your application has been submitted successfully.',
+      title: error == null ? 'Application sent' : 'Application unavailable',
+      type: error == null ? AppFeedbackType.success : AppFeedbackType.error,
     );
     _refreshEligibility();
   }
@@ -255,15 +263,16 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
   Future<void> _toggleSavedOpportunity() async {
     final authProvider = context.read<AuthProvider>();
     final savedProvider = context.read<SavedOpportunityProvider>();
-    final messenger = ScaffoldMessenger.of(context);
     final currentUser = authProvider.userModel;
 
     if (_isBookmarkBusy) {
       return;
     }
     if (currentUser == null) {
-      messenger.showSnackBar(
-        const SnackBar(content: Text('You must be logged in to save this.')),
+      context.showAppSnackBar(
+        'Sign in to save opportunities for later.',
+        title: 'Login required',
+        type: AppFeedbackType.warning,
       );
       return;
     }
@@ -297,7 +306,11 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
         return;
       }
 
-      messenger.showSnackBar(SnackBar(content: Text(error ?? message)));
+      context.showAppSnackBar(
+        error ?? message,
+        title: error == null ? 'Saved items updated' : 'Save unavailable',
+        type: error == null ? AppFeedbackType.success : AppFeedbackType.error,
+      );
     } finally {
       if (mounted) {
         setState(() => _isBookmarkBusy = false);

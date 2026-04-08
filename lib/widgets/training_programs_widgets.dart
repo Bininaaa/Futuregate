@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../utils/opportunity_dashboard_palette.dart';
+import 'shared/app_feedback.dart';
 
 class TrainingCourseBadgeData {
   final String label;
@@ -220,45 +221,11 @@ class TrainingInfoBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: OpportunityDashboardPalette.border),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 34,
-            height: 34,
-            decoration: BoxDecoration(
-              color: OpportunityDashboardPalette.warning.withValues(
-                alpha: 0.12,
-              ),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(
-              Icons.info_outline_rounded,
-              color: OpportunityDashboardPalette.warning,
-              size: 18,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              message,
-              style: GoogleFonts.poppins(
-                fontSize: 12.5,
-                fontWeight: FontWeight.w500,
-                height: 1.5,
-                color: OpportunityDashboardPalette.textSecondary,
-              ),
-            ),
-          ),
-        ],
-      ),
+    return AppInlineMessage(
+      type: AppFeedbackType.info,
+      message: message,
+      icon: Icons.info_outline_rounded,
+      accentColor: OpportunityDashboardPalette.primary,
     );
   }
 }
@@ -803,52 +770,13 @@ class TrainingProgramsEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
+    return AppEmptyStateNotice(
+      type: AppFeedbackType.neutral,
+      icon: Icons.search_off_rounded,
+      title: title,
+      message: subtitle,
+      accentColor: OpportunityDashboardPalette.primary,
       padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 26),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: OpportunityDashboardPalette.border),
-      ),
-      child: Column(
-        children: [
-          Container(
-            width: 56,
-            height: 56,
-            decoration: BoxDecoration(
-              color: OpportunityDashboardPalette.primary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: const Icon(
-              Icons.search_off_rounded,
-              color: OpportunityDashboardPalette.primary,
-              size: 28,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: GoogleFonts.poppins(
-              fontSize: 15,
-              fontWeight: FontWeight.w700,
-              color: OpportunityDashboardPalette.textPrimary,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            subtitle,
-            textAlign: TextAlign.center,
-            style: GoogleFonts.poppins(
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              height: 1.55,
-              color: OpportunityDashboardPalette.textSecondary,
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

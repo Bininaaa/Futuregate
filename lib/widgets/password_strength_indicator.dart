@@ -45,27 +45,31 @@ class PasswordStrengthIndicator extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-        ...rules.map((rule) => Padding(
-              padding: const EdgeInsets.only(bottom: 4),
-              child: Row(
-                children: [
-                  Icon(
-                    rule.met ? Icons.check_circle : Icons.cancel,
-                    size: 16,
-                    color: rule.met ? Colors.green : Colors.grey.shade400,
+        ...rules.map(
+          (rule) => Padding(
+            padding: const EdgeInsets.only(bottom: 4),
+            child: Row(
+              children: [
+                Icon(
+                  rule.met ? Icons.check_circle : Icons.cancel,
+                  size: 16,
+                  color: rule.met ? Colors.green : Colors.grey.shade400,
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  rule.label,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: rule.met
+                        ? Colors.green.shade700
+                        : Colors.grey.shade500,
+                    fontWeight: rule.met ? FontWeight.w500 : FontWeight.normal,
                   ),
-                  const SizedBox(width: 6),
-                  Text(
-                    rule.label,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: rule.met ? Colors.green.shade700 : Colors.grey.shade500,
-                      fontWeight: rule.met ? FontWeight.w500 : FontWeight.normal,
-                    ),
-                  ),
-                ],
-              ),
-            )),
+                ),
+              ],
+            ),
+          ),
+        ),
       ],
     );
   }

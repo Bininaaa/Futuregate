@@ -126,7 +126,7 @@
   </div>
 
   <script type="module">
-    import { checkAuth, formatTimestamp, roleColor, esc } from './js/auth.js';
+    import { checkAuth, emptyStateHtml, esc, feedbackCardHtml, formatTimestamp, roleColor } from './js/auth.js';
     import { db, collection, getDocs, query, orderBy, limit, where } from './js/firebase-config.js';
     import { createActivityState, loadRecentActivitiesPage } from './js/activity-service.js';
     import { activityTypeLabel, adminTargetUrl, typeColor, typeIcon } from './js/admin-utils.js';
@@ -276,7 +276,10 @@
         document.getElementById('content').style.display = 'block';
       } catch (error) {
         console.error('Dashboard load error:', error);
-        document.getElementById('loading').innerHTML = '<p style="color:#c33">Failed to load dashboard data.</p>';
+        document.getElementById('loading').innerHTML = feedbackCardHtml(
+          'Dashboard data could not be loaded right now. Please try again in a moment.',
+          { type: 'error', title: 'Unable to load the dashboard', icon: '!' },
+        );
       }
     }
 
@@ -334,7 +337,10 @@
       const el = document.getElementById(containerId);
       let html = `<div class="top-list"><h3>${title}</h3>`;
       if (items.length === 0) {
-        html += '<p style="color:#999;font-size:14px">No highlights available yet</p>';
+        html += emptyStateHtml(
+          'Highlights will appear here once enough activity is available to surface trends.',
+          { title: 'No highlights yet', icon: 'HL' },
+        );
       }
       items.forEach((item, index) => {
         html += `<div class="top-item">
@@ -410,7 +416,10 @@
         const activities = result.items.slice(0, 8);
 
         if (activities.length === 0) {
-          el.innerHTML = '<p style="color:#999">No recent activity yet</p>';
+          el.innerHTML = emptyStateHtml(
+            'Platform activity will appear here once users begin interacting with content.',
+            { title: 'No recent activity yet', icon: 'AC' },
+          );
           return;
         }
 
@@ -425,7 +434,10 @@
           </div>`).join('');
       } catch (error) {
         console.error('Failed to load dashboard activity:', error);
-        el.innerHTML = '<p style="color:#c33">Failed to load recent activity.</p>';
+        el.innerHTML = feedbackCardHtml(
+          'Recent activity could not be loaded right now.',
+          { type: 'error', title: 'Activity unavailable', icon: '!' },
+        );
       }
     }
 
@@ -446,10 +458,16 @@
             <div class="user-actions"><span class="status-dot ${user.isActive !== false ? 'active' : 'inactive'}"></span></div>
           </div>`;
         });
-        el.innerHTML = html || '<p style="color:#999">No users available yet</p>';
+        el.innerHTML = html || emptyStateHtml(
+          'Users will appear here as soon as accounts are created.',
+          { title: 'No users yet', icon: 'US' },
+        );
       } catch (error) {
         console.error('Failed to load recent users:', error);
-        document.getElementById('recent-users').innerHTML = '<p style="color:#c33">Failed to load recent users.</p>';
+        document.getElementById('recent-users').innerHTML = feedbackCardHtml(
+          'Recent user accounts could not be loaded right now.',
+          { type: 'error', title: 'Users unavailable', icon: '!' },
+        );
       }
     }
 
@@ -481,10 +499,16 @@
             </div>
           </div>`;
         });
-        el.innerHTML = html || '<p style="color:#999">No opportunities published yet</p>';
+        el.innerHTML = html || emptyStateHtml(
+          'Published opportunities will appear here once companies start posting.',
+          { title: 'No opportunities yet', icon: 'OP' },
+        );
       } catch (error) {
         console.error('Failed to load recent opportunities:', error);
-        document.getElementById('recent-opps').innerHTML = '<p style="color:#c33">Failed to load recent opportunities.</p>';
+        document.getElementById('recent-opps').innerHTML = feedbackCardHtml(
+          'Recent opportunities could not be loaded right now.',
+          { type: 'error', title: 'Opportunities unavailable', icon: '!' },
+        );
       }
     }
   </script>

@@ -93,8 +93,9 @@ class MessageBubble extends StatelessWidget {
             ],
           ),
           child: Column(
-            crossAxisAlignment:
-                isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+            crossAxisAlignment: isMe
+                ? CrossAxisAlignment.end
+                : CrossAxisAlignment.start,
             children: [
               Text(
                 message.text,
@@ -168,8 +169,10 @@ class MessageBubble extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(Icons.delete_outline, color: Colors.red),
-              title: Text('Delete for everyone',
-                  style: GoogleFonts.poppins(color: Colors.red)),
+              title: Text(
+                'Delete for everyone',
+                style: GoogleFonts.poppins(color: Colors.red),
+              ),
               onTap: () {
                 Navigator.pop(ctx);
                 onDelete?.call();

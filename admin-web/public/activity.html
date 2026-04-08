@@ -69,7 +69,7 @@
   </div>
 
   <script type="module">
-    import { checkAuth, esc, showToast } from './js/auth.js';
+    import { checkAuth, emptyStateHtml, esc, showToast } from './js/auth.js';
     import { createActivityState, loadRecentActivitiesPage } from './js/activity-service.js';
     import {
       activityTypeLabel,
@@ -156,7 +156,10 @@
       }
 
       if (filtered.length === 0) {
-        list.innerHTML = '<div class="empty-card">No activity matches the current filters.</div>';
+        list.innerHTML = emptyStateHtml(
+          'Try changing the selected filters or search terms to surface more activity.',
+          { title: 'No activity matches these filters', icon: 'AC' },
+        );
         return;
       }
 

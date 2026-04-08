@@ -12,6 +12,7 @@ import '../../widgets/ideas/idea_metrics_row.dart';
 import '../../widgets/ideas/innovation_hub_theme.dart';
 import '../../widgets/ideas/my_ideas_toggle.dart';
 import '../../widgets/profile_avatar.dart';
+import '../../widgets/shared/app_feedback.dart';
 import 'create_idea_screen.dart';
 import 'idea_details_screen.dart';
 import 'profile_screen.dart';
@@ -482,9 +483,11 @@ class _ProjectIdeasScreenState extends State<ProjectIdeasScreen> {
     );
 
     if (error != null && mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(error)));
+      context.showAppSnackBar(
+        error,
+        title: 'Update unavailable',
+        type: AppFeedbackType.error,
+      );
     }
   }
 

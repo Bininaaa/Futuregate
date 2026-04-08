@@ -35,7 +35,8 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
       await authProvider.loadCurrentUser();
     } else {
       setState(() {
-        _message = 'Email not verified yet. Please check your inbox and spam folder.';
+        _message =
+            'Email not verified yet. Please check your inbox and spam folder.';
         _isError = true;
       });
     }
@@ -81,11 +82,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFFF5F0FF),
-              Color(0xFFFFF5EB),
-              Color(0xFFFFF0F5),
-            ],
+            colors: [Color(0xFFF5F0FF), Color(0xFFFFF5EB), Color(0xFFFFF0F5)],
           ),
         ),
         child: SafeArea(
@@ -126,8 +123,11 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
           ),
         ],
       ),
-      child: const Icon(Icons.mark_email_unread_outlined,
-          size: 44, color: Colors.white),
+      child: const Icon(
+        Icons.mark_email_unread_outlined,
+        size: 44,
+        color: Colors.white,
+      ),
     );
   }
 
@@ -173,21 +173,21 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: _isError
-                    ? Colors.red.shade50
-                    : Colors.green.shade50,
+                color: _isError ? Colors.red.shade50 : Colors.green.shade50,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: _isError
-                      ? Colors.red.shade200
-                      : Colors.green.shade200,
+                  color: _isError ? Colors.red.shade200 : Colors.green.shade200,
                 ),
               ),
               child: Row(
                 children: [
                   Icon(
-                    _isError ? Icons.warning_amber_rounded : Icons.check_circle_outline,
-                    color: _isError ? Colors.red.shade600 : Colors.green.shade600,
+                    _isError
+                        ? Icons.warning_amber_rounded
+                        : Icons.check_circle_outline,
+                    color: _isError
+                        ? Colors.red.shade600
+                        : Colors.green.shade600,
                     size: 20,
                   ),
                   const SizedBox(width: 10),
@@ -196,7 +196,9 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                       _message!,
                       style: TextStyle(
                         fontSize: 13,
-                        color: _isError ? Colors.red.shade700 : Colors.green.shade700,
+                        color: _isError
+                            ? Colors.red.shade700
+                            : Colors.green.shade700,
                       ),
                     ),
                   ),

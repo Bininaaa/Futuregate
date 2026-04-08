@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/training_provider.dart';
 import '../../widgets/app_shell_background.dart';
+import '../../widgets/shared/app_feedback.dart';
 import '../../widgets/student/student_workspace_shell.dart';
 import '../../widgets/training_resource_card.dart';
 
@@ -42,27 +43,31 @@ class _SavedTrainingsScreenState extends State<SavedTrainingsScreen> {
 
   Future<void> _openLink(String link) async {
     if (link.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('This resource does not have a link yet.'),
-        ),
+      context.showAppSnackBar(
+        'This resource does not have a link yet.',
+        title: 'Link unavailable',
+        type: AppFeedbackType.warning,
       );
       return;
     }
 
     final uri = Uri.tryParse(link);
     if (uri == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Invalid link')));
+      context.showAppSnackBar(
+        'This resource link is not valid.',
+        title: 'Link unavailable',
+        type: AppFeedbackType.warning,
+      );
       return;
     }
 
     final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
 
     if (!launched && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('We couldn\'t open this link.')),
+      context.showAppSnackBar(
+        'We couldn\'t open this link right now.',
+        title: 'Open unavailable',
+        type: AppFeedbackType.error,
       );
     }
   }
@@ -85,13 +90,19 @@ class _SavedTrainingsScreenState extends State<SavedTrainingsScreen> {
     }
 
     if (error == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Removed from saved resources')),
+      context.showAppSnackBar(
+        'This resource was removed from your saved list.',
+        title: 'Saved items updated',
+        type: AppFeedbackType.success,
       );
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
+    context.showAppSnackBar(
+      error,
+      title: 'Update unavailable',
+      type: AppFeedbackType.error,
+    );
   }
 
   @override
@@ -118,8 +129,17 @@ class _SavedTrainingsScreenState extends State<SavedTrainingsScreen> {
           ],
         ),
         body: uid.isEmpty
-            ? const Center(
-                child: Text('You must be logged in to view saved resources'),
+            ? const Padding(
+                padding: EdgeInsets.all(24),
+                child: Center(
+                  child: AppEmptyStateNotice(
+                    type: AppFeedbackType.warning,
+                    icon: Icons.lock_outline_rounded,
+                    title: 'Login required',
+                    message:
+                        'Sign in to view the training resources you saved.',
+                  ),
+                ),
               )
             : provider.isSavedLoading && provider.savedTrainings.isEmpty
             ? const Center(child: CircularProgressIndicator())
@@ -128,19 +148,17 @@ class _SavedTrainingsScreenState extends State<SavedTrainingsScreen> {
             ? Center(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        provider.savedErrorMessage!,
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 12),
-                      ElevatedButton(
-                        onPressed: _refreshSaved,
-                        child: const Text('Retry'),
-                      ),
-                    ],
+                  child: AppEmptyStateNotice(
+                    type: AppFeedbackType.error,
+                    icon: Icons.cloud_off_rounded,
+                    title: 'Saved resources unavailable',
+                    message: provider.savedErrorMessage!,
+                    action: AppFeedbackButton(
+                      label: 'Retry',
+                      onPressed: _refreshSaved,
+                      icon: Icons.refresh_rounded,
+                      type: AppFeedbackType.error,
+                    ),
                   ),
                 ),
               )
@@ -150,17 +168,15 @@ class _SavedTrainingsScreenState extends State<SavedTrainingsScreen> {
                     ? ListView(
                         physics: const AlwaysScrollableScrollPhysics(),
                         children: const [
-                          SizedBox(height: 180),
-                          Icon(
-                            Icons.bookmark_border_rounded,
-                            size: 64,
-                            color: Colors.grey,
-                          ),
-                          SizedBox(height: 12),
-                          Center(
-                            child: Text(
-                              'You have no saved resources yet.',
-                              style: TextStyle(color: Colors.grey),
+                          SizedBox(height: 120),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 24),
+                            child: AppEmptyStateNotice(
+                              type: AppFeedbackType.neutral,
+                              icon: Icons.bookmark_border_rounded,
+                              title: 'No saved resources yet',
+                              message:
+                                  'Bookmark training resources to keep them here for later.',
                             ),
                           ),
                         ],

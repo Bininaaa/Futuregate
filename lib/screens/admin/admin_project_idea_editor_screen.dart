@@ -5,6 +5,7 @@ import '../../models/project_idea_model.dart';
 import '../../providers/admin_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../utils/admin_palette.dart';
+import '../../widgets/shared/app_feedback.dart';
 import 'admin_editor_widgets.dart';
 
 class AdminProjectIdeaEditorScreen extends StatefulWidget {
@@ -345,20 +346,20 @@ class _AdminProjectIdeaEditorScreenState
     setState(() => _isSubmitting = false);
 
     if (error != null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(error)));
+      context.showAppSnackBar(
+        error,
+        title: _isEditing ? 'Update unavailable' : 'Publish unavailable',
+        type: AppFeedbackType.error,
+      );
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          _isEditing
-              ? 'Admin idea updated successfully'
-              : 'Admin idea published successfully',
-        ),
-      ),
+    context.showAppSnackBar(
+      _isEditing
+          ? 'Admin idea updated successfully.'
+          : 'Admin idea published successfully.',
+      title: _isEditing ? 'Idea updated' : 'Idea published',
+      type: AppFeedbackType.success,
     );
     Navigator.of(context).pop(true);
   }

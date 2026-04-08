@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../widgets/app_shell_background.dart';
+import '../../widgets/shared/app_feedback.dart';
 import 'settings_flow_theme.dart';
 
 class SettingsPageScaffold extends StatelessWidget {
@@ -486,34 +487,12 @@ class SettingsInfoBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.08),
-        borderRadius: SettingsFlowTheme.radius(20),
-        border: Border.all(color: color.withValues(alpha: 0.18)),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SettingsIconBox(
-            icon: icon,
-            color: color,
-            backgroundColor: color.withValues(alpha: 0.14),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: SettingsFlowTheme.cardTitle(color)),
-                const SizedBox(height: 4),
-                Text(message, style: SettingsFlowTheme.caption(color)),
-              ],
-            ),
-          ),
-        ],
-      ),
+    return AppInlineMessage(
+      type: AppFeedbackType.info,
+      title: title,
+      message: message,
+      icon: icon,
+      accentColor: color,
     );
   }
 }
@@ -532,28 +511,13 @@ class SettingsEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SettingsPanel(
-      child: Column(
-        children: [
-          Container(
-            width: 68,
-            height: 68,
-            decoration: BoxDecoration(
-              color: SettingsFlowPalette.surfaceTint,
-              borderRadius: SettingsFlowTheme.radius(22),
-            ),
-            child: Icon(icon, color: SettingsFlowPalette.primary, size: 30),
-          ),
-          const SizedBox(height: 14),
-          Text(title, style: SettingsFlowTheme.sectionTitle()),
-          const SizedBox(height: 6),
-          Text(
-            message,
-            style: SettingsFlowTheme.caption(),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
+    return AppEmptyStateNotice(
+      type: AppFeedbackType.neutral,
+      icon: icon,
+      title: title,
+      message: message,
+      accentColor: SettingsFlowPalette.primary,
+      padding: const EdgeInsets.fromLTRB(22, 24, 22, 22),
     );
   }
 }

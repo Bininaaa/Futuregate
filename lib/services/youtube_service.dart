@@ -19,9 +19,7 @@ class YoutubeService {
 
     final token = await _getIdToken();
 
-    final uri = Uri.parse(
-      '${AppConstants.workerBaseUrl}/api/search/youtube',
-    );
+    final uri = Uri.parse('${AppConstants.workerBaseUrl}/api/search/youtube');
 
     final response = await http.post(
       uri,
@@ -29,10 +27,7 @@ class YoutubeService {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
       },
-      body: jsonEncode({
-        'query': trimmedQuery,
-        'maxResults': maxResults,
-      }),
+      body: jsonEncode({'query': trimmedQuery, 'maxResults': maxResults}),
     );
 
     if (response.statusCode != 200) {
@@ -52,10 +47,9 @@ class YoutubeService {
 
       return TrainingModel(
         id: videoId,
-        title:
-            (map['title'] ?? 'Untitled Video').toString().trim().isEmpty
-                ? 'Untitled Video'
-                : (map['title'] ?? 'Untitled Video').toString().trim(),
+        title: (map['title'] ?? 'Untitled Video').toString().trim().isEmpty
+            ? 'Untitled Video'
+            : (map['title'] ?? 'Untitled Video').toString().trim(),
         description: (map['description'] ?? '').toString().trim(),
         provider: (map['provider'] ?? 'YouTube').toString(),
         duration: 'Video',
@@ -69,8 +63,7 @@ class YoutubeService {
         thumbnail: (map['thumbnail'] ?? '').toString(),
         domain: '',
         language: '',
-        previewLink:
-            'https://www.youtube.com/watch?v=$videoId',
+        previewLink: 'https://www.youtube.com/watch?v=$videoId',
         isApproved: true,
         isFeatured: false,
       );

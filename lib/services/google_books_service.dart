@@ -57,8 +57,9 @@ class GoogleBooksService {
           const <String>[];
 
       final pageCount = map['pageCount'] as int?;
-      final durationText =
-          pageCount != null && pageCount > 0 ? '$pageCount pages' : 'Book';
+      final durationText = pageCount != null && pageCount > 0
+          ? '$pageCount pages'
+          : 'Book';
 
       return TrainingModel(
         id: (map['googleBookId'] ?? '').toString(),
@@ -67,8 +68,7 @@ class GoogleBooksService {
         provider: (map['provider'] ?? 'Google Books').toString(),
         duration: durationText,
         level: 'general',
-        link:
-            (map['infoLink'] ?? map['previewLink'] ?? '').toString(),
+        link: (map['infoLink'] ?? map['previewLink'] ?? '').toString(),
         createdBy: '',
         createdByRole: 'admin',
         type: 'book',

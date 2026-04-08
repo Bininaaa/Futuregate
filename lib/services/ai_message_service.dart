@@ -13,10 +13,7 @@ class AiMessageService {
     required String text,
     String? targetLanguage,
   }) async {
-    final body = <String, dynamic>{
-      'task': task,
-      'text': text,
-    };
+    final body = <String, dynamic>{'task': task, 'text': text};
     if (targetLanguage != null) {
       body['targetLanguage'] = targetLanguage;
     }

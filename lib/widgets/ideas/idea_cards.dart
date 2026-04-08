@@ -298,10 +298,7 @@ class IdeaWorkspaceCard extends StatelessWidget {
                 color: innovationStageColor(idea.displayStage),
               ),
               const SizedBox(width: 6),
-              _MiniBadge(
-                label: idea.displayCategory,
-                color: categoryColor,
-              ),
+              _MiniBadge(label: idea.displayCategory, color: categoryColor),
               const Spacer(),
               Icon(
                 Icons.people_outline_rounded,
@@ -334,10 +331,7 @@ class IdeaWorkspaceCard extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Expanded(
-                child: _ActionChipButton(
-                  label: 'Team',
-                  onTap: onManageTeam,
-                ),
+                child: _ActionChipButton(label: 'Team', onTap: onManageTeam),
               ),
             ],
           ),

@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../utils/document_upload_validator.dart';
 import '../../utils/validators.dart';
+import '../../widgets/shared/app_feedback.dart';
 import '../../widgets/password_strength_indicator.dart';
 
 class CompanyRegisterScreen extends StatefulWidget {
@@ -61,7 +62,7 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
 
     final selectedFile = _commercialRegisterFile;
     final commercialRegisterError = selectedFile == null
-        ? 'سجل تجاري is required.'
+        ? 'Upload your commercial register to continue.'
         : DocumentUploadValidator.validateCommercialRegister(
             fileName: selectedFile.name,
             sizeInBytes: selectedFile.size,
@@ -88,15 +89,10 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
 
     if (!mounted) return;
     if (error != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(error),
-          backgroundColor: Colors.red.shade400,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-        ),
+      context.showAppSnackBar(
+        error,
+        title: 'Registration unavailable',
+        type: AppFeedbackType.error,
       );
     } else {
       Navigator.of(context).popUntil((route) => route.isFirst);
@@ -503,7 +499,7 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'سجل تجاري',
+                      'Commercial Register',
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
@@ -581,7 +577,7 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
             OutlinedButton.icon(
               onPressed: _pickCommercialRegister,
               icon: const Icon(Icons.upload_file_outlined),
-              label: const Text('Upload سجل تجاري'),
+              label: const Text('Upload Commercial Register'),
               style: OutlinedButton.styleFrom(
                 foregroundColor: _navyBlue,
                 side: BorderSide(color: _navyBlue.withValues(alpha: 0.3)),
@@ -596,13 +592,9 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
             ),
           if (_commercialRegisterError != null) ...[
             const SizedBox(height: 10),
-            Text(
-              _commercialRegisterError!,
-              style: const TextStyle(
-                fontSize: 12,
-                color: Colors.red,
-                fontWeight: FontWeight.w600,
-              ),
+            AppFieldErrorText(
+              message: _commercialRegisterError!,
+              accentColor: _accentOrange,
             ),
           ],
         ],

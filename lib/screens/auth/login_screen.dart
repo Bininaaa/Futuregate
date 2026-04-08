@@ -3,6 +3,7 @@ import 'package:flutter/gestures.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../utils/validators.dart';
+import '../../widgets/shared/app_feedback.dart';
 import 'forgot_password_screen.dart';
 import 'role_chooser_screen.dart';
 
@@ -46,14 +47,10 @@ class _LoginScreenState extends State<LoginScreen> {
           _passwordError = 'Incorrect email or password. Please try again.';
         });
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(error),
-            backgroundColor: Colors.red.shade400,
-            behavior: SnackBarBehavior.floating,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          ),
+        context.showAppSnackBar(
+          error,
+          title: 'Login unavailable',
+          type: AppFeedbackType.error,
         );
       }
     }
@@ -66,13 +63,10 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!mounted) return;
 
     if (error != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(error),
-          backgroundColor: Colors.red.shade400,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        ),
+      context.showAppSnackBar(
+        error,
+        title: 'Google sign-in unavailable',
+        type: AppFeedbackType.error,
       );
     }
   }
@@ -87,11 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFFF5F0FF),
-              Color(0xFFFFF5EB),
-              Color(0xFFFFF0F5),
-            ],
+            colors: [Color(0xFFF5F0FF), Color(0xFFFFF5EB), Color(0xFFFFF0F5)],
           ),
         ),
         child: SafeArea(
@@ -270,8 +260,7 @@ class _LoginScreenState extends State<LoginScreen> {
               child: RichText(
                 text: TextSpan(
                   text: "Don't have an account? ",
-                  style:
-                      TextStyle(fontSize: 14, color: Colors.grey.shade600),
+                  style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
                   children: [
                     TextSpan(
                       text: 'Create account',
@@ -304,9 +293,7 @@ class _LoginScreenState extends State<LoginScreen> {
       onPressed: _onGoogleSignIn,
       style: OutlinedButton.styleFrom(
         padding: const EdgeInsets.symmetric(vertical: 14),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
         side: BorderSide(color: Colors.grey.shade300),
         backgroundColor: Colors.white,
       ),
@@ -316,9 +303,7 @@ class _LoginScreenState extends State<LoginScreen> {
           Container(
             width: 22,
             height: 22,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(4),
-            ),
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(4)),
             child: const Text(
               'G',
               textAlign: TextAlign.center,
@@ -400,8 +385,10 @@ class _LoginScreenState extends State<LoginScreen> {
             errorText: errorText,
             filled: true,
             fillColor: Colors.grey.shade50,
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 14,
+            ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
               borderSide: BorderSide(color: Colors.grey.shade200),
@@ -412,8 +399,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide:
-                  const BorderSide(color: _primaryOrange, width: 1.5),
+              borderSide: const BorderSide(color: _primaryOrange, width: 1.5),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),

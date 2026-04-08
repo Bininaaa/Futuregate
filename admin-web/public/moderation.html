@@ -288,7 +288,7 @@
   </div>
 
   <script type="module">
-    import { checkAuth, showToast, esc } from './js/auth.js';
+    import { checkAuth, emptyStateHtml, esc, feedbackCardHtml, showToast } from './js/auth.js';
     import {
       auth,
       db,
@@ -501,7 +501,10 @@
       } catch (error) {
         console.error('Load moderation error:', error);
         document.getElementById('loading').innerHTML =
-          '<p style="color:#c33">Failed to load moderation data.</p>';
+          feedbackCardHtml(
+            'Moderation data could not be loaded right now. Please refresh and try again.',
+            { type: 'error', title: 'Unable to load moderation data', icon: '!' },
+          );
       }
     }
 
@@ -772,9 +775,15 @@
       const container = document.getElementById('ideas-list');
       if (ideas.length === 0) {
         container.innerHTML =
-          `<div class="empty-state"><div class="icon">?</div><p>${
-            showPendingOnly ? 'No pending ideas to review' : 'No project ideas to review yet'
-          }</p></div>`;
+          showPendingOnly
+            ? emptyStateHtml(
+              'New submissions will appear here as soon as students send project ideas for review.',
+              { title: 'No pending ideas to review', icon: 'PI' },
+            )
+            : emptyStateHtml(
+              'Project ideas will appear here once students begin submitting them.',
+              { title: 'No project ideas to review yet', icon: 'PI' },
+            );
         return;
       }
 
@@ -835,7 +844,10 @@
       const container = document.getElementById('applications-list');
       if (filtered.length === 0) {
         container.innerHTML =
-          '<div class="empty-state"><div class="icon">AP</div><p>No applications match the current filters.</p></div>';
+          emptyStateHtml(
+            'Try adjusting the current filters or search terms to see more applications.',
+            { title: 'No applications match these filters', icon: 'AP' },
+          );
         return;
       }
 
@@ -945,7 +957,10 @@
       const container = document.getElementById('opps-list');
       if (filteredOpps.length === 0) {
         container.innerHTML =
-          '<div class="empty-state"><div class="icon">!</div><p>No opportunities published yet.</p></div>';
+          emptyStateHtml(
+            'Published opportunities will appear here once companies start posting.',
+            { title: 'No opportunities published yet', icon: 'OP' },
+          );
         return;
       }
 
@@ -1003,7 +1018,10 @@
       const container = document.getElementById('scholarships-list');
       if (filteredScholarships.length === 0) {
         container.innerHTML =
-          '<div class="empty-state"><div class="icon">$</div><p>No scholarships published yet.</p></div>';
+          emptyStateHtml(
+            'Scholarships will appear here once they have been created and published.',
+            { title: 'No scholarships published yet', icon: 'SC' },
+          );
         return;
       }
 
@@ -1167,19 +1185,28 @@
 
       if (!trainingState.hasSearched) {
         container.innerHTML =
-          '<div class="empty-state"><div class="icon">GB</div><p>Search Google Books to start importing titles.</p></div>';
+          emptyStateHtml(
+            'Start with a search to preview matching Google Books titles before importing.',
+            { title: 'Search Google Books to begin', icon: 'GB' },
+          );
         return;
       }
 
       if (trainingState.searchError) {
         container.innerHTML =
-          '<div class="empty-state"><div class="icon">!</div><p>Search could not be completed. Review the message above and try again.</p></div>';
+          emptyStateHtml(
+            'Review the status message above, then adjust the query and try again.',
+            { title: 'Google Books search could not be completed', icon: '!' },
+          );
         return;
       }
 
       if (trainingState.results.length === 0) {
         container.innerHTML =
-          '<div class="empty-state"><div class="icon">0</div><p>No Google Books results match that search.</p></div>';
+          emptyStateHtml(
+            'Try a broader search term or a different title, author, or keyword.',
+            { title: 'No Google Books results found', icon: '0' },
+          );
         return;
       }
 
@@ -1286,19 +1313,28 @@
 
       if (!youtubeState.hasSearched) {
         container.innerHTML =
-          '<div class="empty-state"><div class="icon">YT</div><p>Search YouTube to start importing videos.</p></div>';
+          emptyStateHtml(
+            'Start with a search to preview YouTube videos before importing them.',
+            { title: 'Search YouTube to begin', icon: 'YT' },
+          );
         return;
       }
 
       if (youtubeState.searchError) {
         container.innerHTML =
-          '<div class="empty-state"><div class="icon">!</div><p>Search could not be completed. Review the message above and try again.</p></div>';
+          emptyStateHtml(
+            'Review the status message above, then adjust the query and try again.',
+            { title: 'YouTube search could not be completed', icon: '!' },
+          );
         return;
       }
 
       if (youtubeState.results.length === 0) {
         container.innerHTML =
-          '<div class="empty-state"><div class="icon">0</div><p>No YouTube results match that search.</p></div>';
+          emptyStateHtml(
+            'Try a broader search term or a different title, topic, or keyword.',
+            { title: 'No YouTube results found', icon: '0' },
+          );
         return;
       }
 
@@ -1376,7 +1412,10 @@
 
       if (filteredTrainings.length === 0) {
         container.innerHTML =
-          '<div class="empty-state"><div class="icon">TR</div><p>No training resources are available yet.</p></div>';
+          emptyStateHtml(
+            'Training resources will appear here once books or videos have been imported.',
+            { title: 'No training resources yet', icon: 'TR' },
+          );
         return;
       }
 

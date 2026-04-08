@@ -36,6 +36,7 @@ import '../../utils/opportunity_type.dart';
 import '../../widgets/opportunity_dashboard_widgets.dart';
 import '../../widgets/opportunity_type_badge.dart';
 import '../../widgets/profile_avatar.dart';
+import '../../widgets/shared/app_feedback.dart';
 import '../notifications_screen.dart';
 import '../settings/settings_screen.dart';
 import 'applied_opportunities_screen.dart';
@@ -2760,10 +2761,10 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
       if (!mounted) {
         return;
       }
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('This saved resource link is not available.'),
-        ),
+      context.showAppSnackBar(
+        'This saved resource link is not available.',
+        title: 'Link unavailable',
+        type: AppFeedbackType.warning,
       );
       return;
     }
@@ -2771,8 +2772,10 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
 
     if (!launched && context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('We couldn\'t open this saved resource.')),
+      context.showAppSnackBar(
+        'We couldn\'t open this saved resource right now.',
+        title: 'Open unavailable',
+        type: AppFeedbackType.error,
       );
     }
   }

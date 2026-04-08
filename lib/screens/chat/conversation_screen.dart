@@ -17,6 +17,7 @@ import '../../widgets/chat/chat_input_bar.dart';
 import '../../widgets/chat/chat_message_bubble.dart';
 import '../../widgets/chat/chat_theme.dart';
 import '../../widgets/profile_avatar.dart';
+import '../../widgets/shared/app_feedback.dart';
 import 'user_profile_preview_screen.dart';
 
 class ConversationScreen extends StatefulWidget {
@@ -194,9 +195,11 @@ class _ConversationScreenState extends State<ConversationScreen> {
   Future<void> _handleAiTask(String task, {String? targetLanguage}) async {
     final text = _messageController.text.trim();
     if (text.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Type a message first')));
+      context.showAppSnackBar(
+        'Write a message before using AI tools.',
+        title: 'Message required',
+        type: AppFeedbackType.warning,
+      );
       return;
     }
 
@@ -214,9 +217,11 @@ class _ConversationScreenState extends State<ConversationScreen> {
       );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(_readableError(e.toString()))));
+      context.showAppSnackBar(
+        _readableError(e.toString()),
+        title: 'AI action unavailable',
+        type: AppFeedbackType.error,
+      );
     } finally {
       if (mounted) setState(() => _isAiProcessing = false);
     }
@@ -225,9 +230,11 @@ class _ConversationScreenState extends State<ConversationScreen> {
   void _showTranslateSheet() {
     final text = _messageController.text.trim();
     if (text.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Type a message first')));
+      context.showAppSnackBar(
+        'Write a message before choosing a translation.',
+        title: 'Message required',
+        type: AppFeedbackType.warning,
+      );
       return;
     }
 
@@ -325,9 +332,11 @@ class _ConversationScreenState extends State<ConversationScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
 
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(_readableError(error))));
+      context.showAppSnackBar(
+        _readableError(error),
+        title: 'Message unavailable',
+        type: AppFeedbackType.error,
+      );
       context.read<ChatProvider>().clearError();
     });
   }
@@ -395,14 +404,12 @@ class _ConversationScreenState extends State<ConversationScreen> {
 
     if (!mounted || provider.error != null) return;
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          archived
-              ? 'Conversation moved to Archived'
-              : 'Conversation restored to Inbox',
-        ),
-      ),
+    context.showAppSnackBar(
+      archived
+          ? 'This conversation has been moved to Archived.'
+          : 'This conversation is back in your inbox.',
+      title: archived ? 'Conversation archived' : 'Conversation restored',
+      type: AppFeedbackType.success,
     );
 
     if (archived) Navigator.pop(context);
@@ -422,8 +429,12 @@ class _ConversationScreenState extends State<ConversationScreen> {
 
     if (!mounted || provider.error != null) return;
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(muted ? 'Chat muted' : 'Chat unmuted')),
+    context.showAppSnackBar(
+      muted
+          ? 'Notifications for this chat are now muted.'
+          : 'Chat notifications are active again.',
+      title: muted ? 'Chat muted' : 'Chat unmuted',
+      type: AppFeedbackType.info,
     );
   }
 
@@ -449,9 +460,11 @@ class _ConversationScreenState extends State<ConversationScreen> {
     );
     if (!mounted || provider.error != null) return;
 
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Conversation deleted')));
+    context.showAppSnackBar(
+      'The conversation has been deleted.',
+      title: 'Conversation deleted',
+      type: AppFeedbackType.success,
+    );
     Navigator.pop(context);
   }
 

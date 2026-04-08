@@ -5,6 +5,7 @@ import '../../providers/auth_provider.dart';
 import '../../providers/cv_provider.dart';
 import '../../screens/settings/settings_flow_theme.dart';
 import '../../screens/settings/settings_flow_widgets.dart';
+import '../../widgets/shared/app_feedback.dart';
 
 class CvEditScreen extends StatefulWidget {
   const CvEditScreen({super.key});
@@ -135,18 +136,10 @@ class _CvEditScreenState extends State<CvEditScreen> {
     if (!mounted) return;
 
     if (error == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'CV saved',
-            style: SettingsFlowTheme.body(Colors.white),
-          ),
-          backgroundColor: SettingsFlowPalette.success,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: SettingsFlowTheme.radius(12),
-          ),
-        ),
+      context.showAppSnackBar(
+        'Your CV changes have been saved.',
+        title: 'CV saved',
+        type: AppFeedbackType.success,
       );
 
       final cv = context.read<CvProvider>().cv;
@@ -200,15 +193,10 @@ class _CvEditScreenState extends State<CvEditScreen> {
         Navigator.pop(context);
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(error, style: SettingsFlowTheme.body(Colors.white)),
-          backgroundColor: SettingsFlowPalette.error,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: SettingsFlowTheme.radius(12),
-          ),
-        ),
+      context.showAppSnackBar(
+        error,
+        title: 'Save unavailable',
+        type: AppFeedbackType.error,
       );
     }
   }

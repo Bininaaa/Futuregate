@@ -10,6 +10,7 @@ import '../../services/file_storage_service.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/ideas/innovation_hub_theme.dart';
 import '../../widgets/shared/app_content_system.dart';
+import '../../widgets/shared/app_feedback.dart';
 import '../../widgets/student/student_workspace_shell.dart';
 
 class CreateIdeaScreen extends StatefulWidget {
@@ -143,10 +144,10 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
       return;
     }
     if (_isUploadingImage) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please wait for the cover image upload to finish.'),
-        ),
+      context.showAppSnackBar(
+        'Please wait for the cover image upload to finish.',
+        title: 'Upload in progress',
+        type: AppFeedbackType.warning,
       );
       return;
     }
@@ -262,22 +263,28 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
     }
 
     if (error == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            widget.isEditMode
-                ? 'Idea updated successfully.'
-                : widget.isAdmin
-                ? 'Idea published successfully.'
-                : 'Idea submitted successfully.',
-          ),
-        ),
+      context.showAppSnackBar(
+        widget.isEditMode
+            ? 'Idea updated successfully.'
+            : widget.isAdmin
+            ? 'Idea published successfully.'
+            : 'Idea submitted successfully.',
+        title: widget.isEditMode
+            ? 'Idea updated'
+            : widget.isAdmin
+            ? 'Idea published'
+            : 'Idea submitted',
+        type: AppFeedbackType.success,
       );
       Navigator.pop(context, true);
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
+    context.showAppSnackBar(
+      error,
+      title: 'Submission unavailable',
+      type: AppFeedbackType.error,
+    );
   }
 
   void _commitCustomEntries() {
@@ -305,7 +312,6 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
       return;
     }
 
-    final messenger = ScaffoldMessenger.of(context);
     final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowedExtensions: const ['jpg', 'jpeg', 'png', 'webp'],
@@ -318,16 +324,20 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
 
     final file = result.files.single;
     if (file.size > 5 * 1024 * 1024) {
-      messenger.showSnackBar(
-        const SnackBar(content: Text('Image must be smaller than 5 MB.')),
+      context.showAppSnackBar(
+        'Choose an image smaller than 5 MB.',
+        title: 'Upload unavailable',
+        type: AppFeedbackType.warning,
       );
       return;
     }
 
     final currentUser = context.read<AuthProvider>().userModel;
     if (currentUser == null) {
-      messenger.showSnackBar(
-        const SnackBar(content: Text('Please sign in again to upload images.')),
+      context.showAppSnackBar(
+        'Please sign in again to upload images.',
+        title: 'Login required',
+        type: AppFeedbackType.warning,
       );
       return;
     }
@@ -352,8 +362,10 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
         _isUploadingImage = false;
       });
 
-      messenger.showSnackBar(
-        const SnackBar(content: Text('Cover image uploaded successfully.')),
+      context.showAppSnackBar(
+        'Cover image uploaded successfully.',
+        title: 'Upload complete',
+        type: AppFeedbackType.success,
       );
     } catch (error) {
       if (!mounted) {
@@ -361,8 +373,10 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
       }
 
       setState(() => _isUploadingImage = false);
-      messenger.showSnackBar(
-        SnackBar(content: Text(_formatUploadError(error))),
+      context.showAppSnackBar(
+        _formatUploadError(error),
+        title: 'Upload unavailable',
+        type: AppFeedbackType.error,
       );
     }
   }

@@ -25,11 +25,7 @@ class CvTemplatePreview extends StatelessWidget {
           child: FittedBox(
             fit: BoxFit.contain,
             alignment: Alignment.topCenter,
-            child: SizedBox(
-              width: 210,
-              height: 297,
-              child: _buildPreview(),
-            ),
+            child: SizedBox(width: 210, height: 297, child: _buildPreview()),
           ),
         ),
       ),
@@ -71,13 +67,17 @@ class _ClassicPreview extends StatelessWidget {
           Text(
             cv.fullName.isNotEmpty ? cv.fullName : 'Your Name',
             style: GoogleFonts.poppins(
-                fontSize: 10, fontWeight: FontWeight.w700, color: _dark),
+              fontSize: 10,
+              fontWeight: FontWeight.w700,
+              color: _dark,
+            ),
           ),
           const SizedBox(height: 1),
           Text(
-            [cv.email, cv.phone]
-                .where((s) => s.trim().isNotEmpty)
-                .join('  |  '),
+            [
+              cv.email,
+              cv.phone,
+            ].where((s) => s.trim().isNotEmpty).join('  |  '),
             style: GoogleFonts.poppins(fontSize: 3.5, color: _muted),
           ),
           const SizedBox(height: 4),
@@ -90,58 +90,88 @@ class _ClassicPreview extends StatelessWidget {
           ],
           if (cv.experience.isNotEmpty) ...[
             _section('EXPERIENCE'),
-            ...cv.experience.take(2).map((exp) => Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(exp['position'] ?? '',
+            ...cv.experience
+                .take(2)
+                .map(
+                  (exp) => Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              exp['position'] ?? '',
                               style: GoogleFonts.poppins(
-                                  fontSize: 4,
-                                  fontWeight: FontWeight.w600,
-                                  color: _dark)),
-                          Text(exp['duration'] ?? '',
+                                fontSize: 4,
+                                fontWeight: FontWeight.w600,
+                                color: _dark,
+                              ),
+                            ),
+                            Text(
+                              exp['duration'] ?? '',
                               style: GoogleFonts.poppins(
-                                  fontSize: 3, color: _muted)),
-                        ],
-                      ),
-                      Text(exp['company'] ?? '',
+                                fontSize: 3,
+                                color: _muted,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Text(
+                          exp['company'] ?? '',
                           style: GoogleFonts.poppins(
-                              fontSize: 3, color: _muted)),
-                    ],
+                            fontSize: 3,
+                            color: _muted,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                )),
+                ),
             const SizedBox(height: 4),
           ],
           if (cv.education.isNotEmpty) ...[
             _section('EDUCATION'),
-            ...cv.education.take(2).map((edu) => Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(edu['degree'] ?? '',
+            ...cv.education
+                .take(2)
+                .map(
+                  (edu) => Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              edu['degree'] ?? '',
                               style: GoogleFonts.poppins(
-                                  fontSize: 4,
-                                  fontWeight: FontWeight.w600,
-                                  color: _dark)),
-                          Text(edu['year'] ?? '',
+                                fontSize: 4,
+                                fontWeight: FontWeight.w600,
+                                color: _dark,
+                              ),
+                            ),
+                            Text(
+                              edu['year'] ?? '',
                               style: GoogleFonts.poppins(
-                                  fontSize: 3, color: _muted)),
-                        ],
-                      ),
-                      Text(edu['institution'] ?? '',
+                                fontSize: 3,
+                                color: _muted,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Text(
+                          edu['institution'] ?? '',
                           style: GoogleFonts.poppins(
-                              fontSize: 3, color: _muted)),
-                    ],
+                            fontSize: 3,
+                            color: _muted,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                )),
+                ),
           ],
           if (cv.skills.isNotEmpty) ...[
             const SizedBox(height: 4),
@@ -151,17 +181,25 @@ class _ClassicPreview extends StatelessWidget {
               child: Wrap(
                 spacing: 2,
                 runSpacing: 2,
-                children: cv.skills.take(4).map((s) => Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 3, vertical: 0.5),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: _rule, width: 0.3),
-                        borderRadius: BorderRadius.circular(4),
+                children: cv.skills
+                    .take(4)
+                    .map(
+                      (s) => Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 3,
+                          vertical: 0.5,
+                        ),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: _rule, width: 0.3),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          s,
+                          style: GoogleFonts.poppins(fontSize: 3, color: _dark),
+                        ),
                       ),
-                      child: Text(s,
-                          style: GoogleFonts.poppins(
-                              fontSize: 3, color: _dark)),
-                    )).toList(),
+                    )
+                    .toList(),
               ),
             ),
           ],
@@ -177,9 +215,14 @@ class _ClassicPreview extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title,
-              style: GoogleFonts.poppins(
-                  fontSize: 4.5, fontWeight: FontWeight.w700, color: _dark)),
+          Text(
+            title,
+            style: GoogleFonts.poppins(
+              fontSize: 4.5,
+              fontWeight: FontWeight.w700,
+              color: _dark,
+            ),
+          ),
           const Divider(color: _rule, thickness: 0.3, height: 2),
         ],
       ),
@@ -189,10 +232,12 @@ class _ClassicPreview extends StatelessWidget {
   Widget _body(String text) {
     return Align(
       alignment: Alignment.centerLeft,
-      child: Text(text,
-          maxLines: 3,
-          overflow: TextOverflow.ellipsis,
-          style: GoogleFonts.poppins(fontSize: 3.2, color: _muted)),
+      child: Text(
+        text,
+        maxLines: 3,
+        overflow: TextOverflow.ellipsis,
+        style: GoogleFonts.poppins(fontSize: 3.2, color: _muted),
+      ),
     );
   }
 }
@@ -223,9 +268,10 @@ class _ModernPreview extends StatelessWidget {
               Text(
                 cv.fullName.isNotEmpty ? cv.fullName : 'Your Name',
                 style: GoogleFonts.poppins(
-                    fontSize: 6,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white),
+                  fontSize: 6,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                ),
               ),
               const SizedBox(height: 6),
               Container(height: 0.3, color: const Color(0xFF3D5468)),
@@ -254,87 +300,110 @@ class _ModernPreview extends StatelessWidget {
               children: [
                 if (cv.summary.trim().isNotEmpty) ...[
                   _mainSection('PROFILE'),
-                  Text(cv.summary,
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.poppins(
-                          fontSize: 3.2, color: _slate)),
+                  Text(
+                    cv.summary,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.poppins(fontSize: 3.2, color: _slate),
+                  ),
                   const SizedBox(height: 6),
                 ],
                 if (cv.experience.isNotEmpty) ...[
                   _mainSection('EXPERIENCE'),
-                  ...cv.experience.take(2).map((exp) => Padding(
-                        padding: const EdgeInsets.only(bottom: 3),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              width: 2.5,
-                              height: 2.5,
-                              margin: const EdgeInsets.only(
-                                  top: 1.5, right: 3),
-                              decoration: const BoxDecoration(
+                  ...cv.experience
+                      .take(2)
+                      .map(
+                        (exp) => Padding(
+                          padding: const EdgeInsets.only(bottom: 3),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: 2.5,
+                                height: 2.5,
+                                margin: const EdgeInsets.only(
+                                  top: 1.5,
+                                  right: 3,
+                                ),
+                                decoration: const BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: _accent),
-                            ),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment:
-                                    CrossAxisAlignment.start,
-                                children: [
-                                  Text(exp['position'] ?? '',
-                                      style: GoogleFonts.poppins(
-                                          fontSize: 4,
-                                          fontWeight: FontWeight.w600)),
-                                  Text(
-                                    '${exp['company'] ?? ''} • ${exp['duration'] ?? ''}',
-                                    style: GoogleFonts.poppins(
-                                        fontSize: 3, color: _slate),
-                                  ),
-                                ],
+                                  color: _accent,
+                                ),
                               ),
-                            ),
-                          ],
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      exp['position'] ?? '',
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 4,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    Text(
+                                      '${exp['company'] ?? ''} • ${exp['duration'] ?? ''}',
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 3,
+                                        color: _slate,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      )),
+                      ),
                 ],
                 if (cv.education.isNotEmpty) ...[
                   const SizedBox(height: 6),
                   _mainSection('EDUCATION'),
-                  ...cv.education.take(2).map((edu) => Padding(
-                        padding: const EdgeInsets.only(bottom: 3),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              width: 2.5,
-                              height: 2.5,
-                              margin: const EdgeInsets.only(
-                                  top: 1.5, right: 3),
-                              decoration: const BoxDecoration(
+                  ...cv.education
+                      .take(2)
+                      .map(
+                        (edu) => Padding(
+                          padding: const EdgeInsets.only(bottom: 3),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: 2.5,
+                                height: 2.5,
+                                margin: const EdgeInsets.only(
+                                  top: 1.5,
+                                  right: 3,
+                                ),
+                                decoration: const BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: _accent),
-                            ),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment:
-                                    CrossAxisAlignment.start,
-                                children: [
-                                  Text(edu['degree'] ?? '',
-                                      style: GoogleFonts.poppins(
-                                          fontSize: 4,
-                                          fontWeight: FontWeight.w600)),
-                                  Text(
-                                    '${edu['institution'] ?? ''} • ${edu['year'] ?? ''}',
-                                    style: GoogleFonts.poppins(
-                                        fontSize: 3, color: _slate),
-                                  ),
-                                ],
+                                  color: _accent,
+                                ),
                               ),
-                            ),
-                          ],
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      edu['degree'] ?? '',
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 4,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    Text(
+                                      '${edu['institution'] ?? ''} • ${edu['year'] ?? ''}',
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 3,
+                                        color: _slate,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      )),
+                      ),
                 ],
               ],
             ),
@@ -347,22 +416,26 @@ class _ModernPreview extends StatelessWidget {
   Widget _sideLabel(String text) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 2),
-      child: Text(text,
-          style: GoogleFonts.poppins(
-              fontSize: 3.5,
-              fontWeight: FontWeight.w700,
-              color: _accent)),
+      child: Text(
+        text,
+        style: GoogleFonts.poppins(
+          fontSize: 3.5,
+          fontWeight: FontWeight.w700,
+          color: _accent,
+        ),
+      ),
     );
   }
 
   Widget _sideItem(String text) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 1),
-      child: Text(text,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: GoogleFonts.poppins(
-              fontSize: 3, color: const Color(0xFFCCD6DD))),
+      child: Text(
+        text,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: GoogleFonts.poppins(fontSize: 3, color: const Color(0xFFCCD6DD)),
+      ),
     );
   }
 
@@ -372,11 +445,14 @@ class _ModernPreview extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title,
-              style: GoogleFonts.poppins(
-                  fontSize: 5,
-                  fontWeight: FontWeight.w700,
-                  color: _navy)),
+          Text(
+            title,
+            style: GoogleFonts.poppins(
+              fontSize: 5,
+              fontWeight: FontWeight.w700,
+              color: _navy,
+            ),
+          ),
           Container(width: 12, height: 0.8, color: _accent),
         ],
       ),
@@ -404,87 +480,125 @@ class _MinimalPreview extends StatelessWidget {
           Text(
             cv.fullName.isNotEmpty ? cv.fullName : 'Your Name',
             style: GoogleFonts.poppins(
-                fontSize: 11, fontWeight: FontWeight.w300, color: _dark),
+              fontSize: 11,
+              fontWeight: FontWeight.w300,
+              color: _dark,
+            ),
           ),
           const SizedBox(height: 1),
           Text(
-            [cv.email, cv.phone]
-                .where((s) => s.trim().isNotEmpty)
-                .join('   •   '),
+            [
+              cv.email,
+              cv.phone,
+            ].where((s) => s.trim().isNotEmpty).join('   •   '),
             style: GoogleFonts.poppins(fontSize: 3.2, color: _med),
           ),
           const SizedBox(height: 5),
           Divider(color: _light, thickness: 0.3, height: 2),
           const SizedBox(height: 5),
           if (cv.summary.trim().isNotEmpty) ...[
-            Text(cv.summary,
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
-                style: GoogleFonts.poppins(fontSize: 3.2, color: _med)),
+            Text(
+              cv.summary,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.poppins(fontSize: 3.2, color: _med),
+            ),
             const SizedBox(height: 5),
             Divider(color: _light, thickness: 0.3, height: 2),
             const SizedBox(height: 5),
           ],
           if (cv.experience.isNotEmpty) ...[
             _section('Experience'),
-            ...cv.experience.take(2).map((exp) => Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(exp['position'] ?? '',
+            ...cv.experience
+                .take(2)
+                .map(
+                  (exp) => Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              exp['position'] ?? '',
                               style: GoogleFonts.poppins(
-                                  fontSize: 4,
-                                  fontWeight: FontWeight.w600,
-                                  color: _dark)),
-                          Text(exp['company'] ?? '',
+                                fontSize: 4,
+                                fontWeight: FontWeight.w600,
+                                color: _dark,
+                              ),
+                            ),
+                            Text(
+                              exp['company'] ?? '',
                               style: GoogleFonts.poppins(
-                                  fontSize: 3, color: _med)),
-                        ],
-                      ),
-                      Text(exp['duration'] ?? '',
+                                fontSize: 3,
+                                color: _med,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Text(
+                          exp['duration'] ?? '',
                           style: GoogleFonts.poppins(
-                              fontSize: 3, color: _light)),
-                    ],
+                            fontSize: 3,
+                            color: _light,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                )),
+                ),
             const SizedBox(height: 4),
           ],
           if (cv.education.isNotEmpty) ...[
             _section('Education'),
-            ...cv.education.take(2).map((edu) => Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(edu['degree'] ?? '',
+            ...cv.education
+                .take(2)
+                .map(
+                  (edu) => Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              edu['degree'] ?? '',
                               style: GoogleFonts.poppins(
-                                  fontSize: 4,
-                                  fontWeight: FontWeight.w600,
-                                  color: _dark)),
-                          Text(edu['institution'] ?? '',
+                                fontSize: 4,
+                                fontWeight: FontWeight.w600,
+                                color: _dark,
+                              ),
+                            ),
+                            Text(
+                              edu['institution'] ?? '',
                               style: GoogleFonts.poppins(
-                                  fontSize: 3, color: _med)),
-                        ],
-                      ),
-                      Text(edu['year'] ?? '',
+                                fontSize: 3,
+                                color: _med,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Text(
+                          edu['year'] ?? '',
                           style: GoogleFonts.poppins(
-                              fontSize: 3, color: _light)),
-                    ],
+                            fontSize: 3,
+                            color: _light,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                )),
+                ),
           ],
           if (cv.skills.isNotEmpty) ...[
             const SizedBox(height: 4),
             _section('Skills'),
-            Text(cv.skills.take(5).join(',  '),
-                style: GoogleFonts.poppins(fontSize: 3.2, color: _med)),
+            Text(
+              cv.skills.take(5).join(',  '),
+              style: GoogleFonts.poppins(fontSize: 3.2, color: _med),
+            ),
           ],
         ],
       ),
@@ -494,9 +608,14 @@ class _MinimalPreview extends StatelessWidget {
   Widget _section(String title) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 2),
-      child: Text(title,
-          style: GoogleFonts.poppins(
-              fontSize: 4.5, fontWeight: FontWeight.w600, color: _dark)),
+      child: Text(
+        title,
+        style: GoogleFonts.poppins(
+          fontSize: 4.5,
+          fontWeight: FontWeight.w600,
+          color: _dark,
+        ),
+      ),
     );
   }
 }
@@ -526,17 +645,21 @@ class _ProfessionalPreview extends StatelessWidget {
               Text(
                 cv.fullName.isNotEmpty ? cv.fullName : 'Your Name',
                 style: GoogleFonts.poppins(
-                    fontSize: 9,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white),
+                  fontSize: 9,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                ),
               ),
               const SizedBox(height: 1),
               Text(
-                [cv.email, cv.phone]
-                    .where((s) => s.trim().isNotEmpty)
-                    .join('   |   '),
+                [
+                  cv.email,
+                  cv.phone,
+                ].where((s) => s.trim().isNotEmpty).join('   |   '),
                 style: GoogleFonts.poppins(
-                    fontSize: 3, color: const Color(0xFFBDC3C7)),
+                  fontSize: 3,
+                  color: const Color(0xFFBDC3C7),
+                ),
               ),
             ],
           ),
@@ -546,10 +669,12 @@ class _ProfessionalPreview extends StatelessWidget {
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
             color: const Color(0xFFF7F8FA),
-            child: Text(cv.summary,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: GoogleFonts.poppins(fontSize: 3.2, color: _muted)),
+            child: Text(
+              cv.summary,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.poppins(fontSize: 3.2, color: _muted),
+            ),
           ),
         Expanded(
           child: Padding(
@@ -565,25 +690,34 @@ class _ProfessionalPreview extends StatelessWidget {
                       children: [
                         if (cv.experience.isNotEmpty) ...[
                           _colTitle('EXPERIENCE'),
-                          ...cv.experience.take(2).map((exp) => Padding(
-                                padding: const EdgeInsets.only(bottom: 3),
-                                child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
-                                  children: [
-                                    Text(exp['position'] ?? '',
+                          ...cv.experience
+                              .take(2)
+                              .map(
+                                (exp) => Padding(
+                                  padding: const EdgeInsets.only(bottom: 3),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        exp['position'] ?? '',
                                         style: GoogleFonts.poppins(
-                                            fontSize: 4,
-                                            fontWeight: FontWeight.w600,
-                                            color: _header)),
-                                    Text(
-                                      '${exp['company'] ?? ''} • ${exp['duration'] ?? ''}',
-                                      style: GoogleFonts.poppins(
-                                          fontSize: 3, color: _muted),
-                                    ),
-                                  ],
+                                          fontSize: 4,
+                                          fontWeight: FontWeight.w600,
+                                          color: _header,
+                                        ),
+                                      ),
+                                      Text(
+                                        '${exp['company'] ?? ''} • ${exp['duration'] ?? ''}',
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 3,
+                                          color: _muted,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              )),
+                              ),
                         ],
                       ],
                     ),
@@ -597,25 +731,34 @@ class _ProfessionalPreview extends StatelessWidget {
                       children: [
                         if (cv.education.isNotEmpty) ...[
                           _colTitle('EDUCATION'),
-                          ...cv.education.take(2).map((edu) => Padding(
-                                padding: const EdgeInsets.only(bottom: 3),
-                                child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
-                                  children: [
-                                    Text(edu['degree'] ?? '',
+                          ...cv.education
+                              .take(2)
+                              .map(
+                                (edu) => Padding(
+                                  padding: const EdgeInsets.only(bottom: 3),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        edu['degree'] ?? '',
                                         style: GoogleFonts.poppins(
-                                            fontSize: 4,
-                                            fontWeight: FontWeight.w600,
-                                            color: _header)),
-                                    Text(
-                                      '${edu['institution'] ?? ''} • ${edu['year'] ?? ''}',
-                                      style: GoogleFonts.poppins(
-                                          fontSize: 3, color: _muted),
-                                    ),
-                                  ],
+                                          fontSize: 4,
+                                          fontWeight: FontWeight.w600,
+                                          color: _header,
+                                        ),
+                                      ),
+                                      Text(
+                                        '${edu['institution'] ?? ''} • ${edu['year'] ?? ''}',
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 3,
+                                          color: _muted,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              )),
+                              ),
                           const SizedBox(height: 4),
                         ],
                         if (cv.skills.isNotEmpty) ...[
@@ -623,18 +766,28 @@ class _ProfessionalPreview extends StatelessWidget {
                           Wrap(
                             spacing: 2,
                             runSpacing: 2,
-                            children: cv.skills.take(4).map((s) => Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 3, vertical: 1),
-                                  decoration: BoxDecoration(
-                                    color: _accent,
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                  child: Text(s,
+                            children: cv.skills
+                                .take(4)
+                                .map(
+                                  (s) => Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 3,
+                                      vertical: 1,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: _accent,
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    child: Text(
+                                      s,
                                       style: GoogleFonts.poppins(
-                                          fontSize: 3,
-                                          color: Colors.white)),
-                                )).toList(),
+                                        fontSize: 3,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                                .toList(),
                           ),
                         ],
                       ],
@@ -655,11 +808,14 @@ class _ProfessionalPreview extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title,
-              style: GoogleFonts.poppins(
-                  fontSize: 4.5,
-                  fontWeight: FontWeight.w700,
-                  color: _header)),
+          Text(
+            title,
+            style: GoogleFonts.poppins(
+              fontSize: 4.5,
+              fontWeight: FontWeight.w700,
+              color: _header,
+            ),
+          ),
           Container(width: 10, height: 0.6, color: _accent),
         ],
       ),

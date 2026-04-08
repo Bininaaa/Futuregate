@@ -94,8 +94,12 @@ class ChatService {
         updates['contextLabel'] = contextLabel.trim();
       }
       if (normalizedCurrentUserId.isNotEmpty) {
-        updates['archivedBy'] = FieldValue.arrayRemove([normalizedCurrentUserId]);
-        updates['deletedBy'] = FieldValue.arrayRemove([normalizedCurrentUserId]);
+        updates['archivedBy'] = FieldValue.arrayRemove([
+          normalizedCurrentUserId,
+        ]);
+        updates['deletedBy'] = FieldValue.arrayRemove([
+          normalizedCurrentUserId,
+        ]);
       }
       if (updates.isNotEmpty) {
         await _safeConversationMetadataUpdate(
@@ -290,10 +294,12 @@ class ChatService {
           'companyUnreadCount': senderId == conversationData['studentId']
               ? FieldValue.increment(1)
               : 0,
-          'archivedBy':
-              FieldValue.arrayRemove(conversationVisibilityRestoreTargets),
-          'deletedBy':
-              FieldValue.arrayRemove(conversationVisibilityRestoreTargets),
+          'archivedBy': FieldValue.arrayRemove(
+            conversationVisibilityRestoreTargets,
+          ),
+          'deletedBy': FieldValue.arrayRemove(
+            conversationVisibilityRestoreTargets,
+          ),
           'status': 'active',
         });
       } else {
@@ -309,14 +315,16 @@ class ChatService {
           'lastMessageSenderName': senderName,
           'lastMessageTime': now,
           unreadField: FieldValue.increment(1),
-          'archivedBy':
-              FieldValue.arrayRemove(conversationVisibilityRestoreTargets),
+          'archivedBy': FieldValue.arrayRemove(
+            conversationVisibilityRestoreTargets,
+          ),
           'status': 'active',
         });
         await batch.commit();
         await _safeConversationMetadataUpdate(conversationRef, {
-          'deletedBy':
-              FieldValue.arrayRemove(conversationVisibilityRestoreTargets),
+          'deletedBy': FieldValue.arrayRemove(
+            conversationVisibilityRestoreTargets,
+          ),
         });
       }
     } on FirebaseException catch (error) {
@@ -729,10 +737,14 @@ class ChatService {
     return senderId == studentId ? companyId : studentId;
   }
 
-  List<String> _conversationStateTargets(String leftUserId, String rightUserId) {
-    return <String>{leftUserId.trim(), rightUserId.trim()}
-        .where((userId) => userId.isNotEmpty)
-        .toList(growable: false);
+  List<String> _conversationStateTargets(
+    String leftUserId,
+    String rightUserId,
+  ) {
+    return <String>{
+      leftUserId.trim(),
+      rightUserId.trim(),
+    }.where((userId) => userId.isNotEmpty).toList(growable: false);
   }
 
   String _senderNameFromConversation(

@@ -18,6 +18,7 @@ import '../../utils/opportunity_type.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/application_status_badge.dart';
 import '../../widgets/profile_avatar.dart';
+import '../../widgets/shared/app_feedback.dart';
 import 'chat_screen.dart';
 
 class ApplicationsScreen extends StatefulWidget {
@@ -1507,7 +1508,6 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
   Future<void> _openChatWithStudent(ApplicationModel application) async {
     final authProvider = context.read<AuthProvider>();
     final chatProvider = context.read<ChatProvider>();
-    final messenger = ScaffoldMessenger.of(context);
     final currentUser = authProvider.userModel;
 
     if (currentUser == null) {
@@ -1543,8 +1543,10 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
       if (!mounted) {
         return;
       }
-      messenger.showSnackBar(
-        SnackBar(content: Text('Could not open chat: $error')),
+      context.showAppSnackBar(
+        'Could not open chat: $error',
+        title: 'Chat unavailable',
+        type: AppFeedbackType.error,
       );
     }
   }
@@ -1557,18 +1559,21 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
   ) async {
     final authProvider = context.read<AuthProvider>();
     final currentUserId = authProvider.userModel?.uid;
-    final messenger = ScaffoldMessenger.of(context);
     final error = await provider.updateApplicationStatus(
       appId: application.id,
       status: status,
     );
 
-    if (!mounted) {
+    if (!context.mounted) {
       return;
     }
 
     if (error != null) {
-      messenger.showSnackBar(SnackBar(content: Text(error)));
+      context.showAppSnackBar(
+        error,
+        title: 'Update unavailable',
+        type: AppFeedbackType.error,
+      );
       return;
     }
 
@@ -1576,16 +1581,14 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
       await provider.loadApplications(currentUserId);
     }
 
-    if (!mounted) {
+    if (!context.mounted) {
       return;
     }
 
-    messenger.showSnackBar(
-      SnackBar(
-        content: Text(
-          'Application ${ApplicationStatus.sentenceLabel(status)}.',
-        ),
-      ),
+    context.showAppSnackBar(
+      'Application ${ApplicationStatus.sentenceLabel(status)}.',
+      title: 'Application updated',
+      type: AppFeedbackType.success,
     );
   }
 
@@ -1874,19 +1877,20 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
     bool download = false,
     bool requirePdf = false,
   }) async {
-    final messenger = ScaffoldMessenger.of(context);
-
     try {
       final document = await _documentAccessService.getApplicationCvDocument(
         applicationId: application.id,
         variant: variant,
       );
+      if (!mounted) {
+        return;
+      }
 
       if (requirePdf && !document.isPdf) {
-        messenger.showSnackBar(
-          const SnackBar(
-            content: Text('The requested file is not a valid PDF.'),
-          ),
+        context.showAppSnackBar(
+          'The requested file is not a valid PDF.',
+          title: 'Preview unavailable',
+          type: AppFeedbackType.warning,
         );
         return;
       }
@@ -1903,17 +1907,24 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
         mode: LaunchMode.platformDefault,
         webOnlyWindowName: '_blank',
       );
-      if (!launched && mounted) {
-        messenger.showSnackBar(
-          const SnackBar(content: Text('We couldn\'t open the document.')),
+      if (!mounted) {
+        return;
+      }
+      if (!launched) {
+        context.showAppSnackBar(
+          'We couldn\'t open the document right now.',
+          title: 'Document unavailable',
+          type: AppFeedbackType.error,
         );
       }
     } catch (error) {
       if (!mounted) {
         return;
       }
-      messenger.showSnackBar(
-        SnackBar(content: Text(_documentErrorMessage(error))),
+      context.showAppSnackBar(
+        _documentErrorMessage(error),
+        title: 'Document unavailable',
+        type: AppFeedbackType.error,
       );
     }
   }

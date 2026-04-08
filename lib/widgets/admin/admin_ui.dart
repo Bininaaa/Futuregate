@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../utils/admin_palette.dart';
 import '../../utils/display_text.dart';
+import '../shared/app_feedback.dart';
 
 class AdminShellBackground extends StatelessWidget {
   final Widget child;
@@ -621,41 +622,14 @@ class AdminEmptyState extends StatelessWidget {
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 72,
-              height: 72,
-              decoration: BoxDecoration(
-                color: AdminPalette.primarySoft,
-                borderRadius: BorderRadius.circular(24),
-              ),
-              child: Icon(icon, size: 32, color: AdminPalette.primary),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: GoogleFonts.poppins(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                color: AdminPalette.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: GoogleFonts.poppins(
-                fontSize: 12.5,
-                fontWeight: FontWeight.w500,
-                color: AdminPalette.textMuted,
-                height: 1.5,
-              ),
-            ),
-            if (action != null) ...[const SizedBox(height: 16), action!],
-          ],
+        child: AppEmptyStateNotice(
+          type: AppFeedbackType.neutral,
+          icon: icon,
+          title: title,
+          message: message,
+          accentColor: AdminPalette.primary,
+          action: action,
+          padding: const EdgeInsets.fromLTRB(24, 26, 24, 22),
         ),
       ),
     );

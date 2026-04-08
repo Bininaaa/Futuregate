@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../utils/validators.dart';
 import '../../widgets/password_strength_indicator.dart';
+import '../../widgets/shared/app_feedback.dart';
 import 'settings_flow_theme.dart';
 import 'settings_flow_widgets.dart';
 
@@ -64,20 +65,18 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     setState(() => _loading = false);
 
     if (error != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(error),
-          backgroundColor: SettingsFlowPalette.error,
-        ),
+      context.showAppSnackBar(
+        error,
+        title: 'Password update unavailable',
+        type: AppFeedbackType.error,
       );
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Password updated successfully.'),
-        backgroundColor: SettingsFlowPalette.success,
-      ),
+    context.showAppSnackBar(
+      'Your password has been updated successfully.',
+      title: 'Password updated',
+      type: AppFeedbackType.success,
     );
     Navigator.pop(context);
   }
@@ -188,22 +187,18 @@ class _ChangeEmailScreenState extends State<ChangeEmailScreen> {
     setState(() => _loading = false);
 
     if (error != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(error),
-          backgroundColor: SettingsFlowPalette.error,
-        ),
+      context.showAppSnackBar(
+        error,
+        title: 'Email update unavailable',
+        type: AppFeedbackType.error,
       );
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text(
-          'Verification email sent. Confirm your new address to complete the update.',
-        ),
-        backgroundColor: SettingsFlowPalette.success,
-      ),
+    context.showAppSnackBar(
+      'Verification email sent. Confirm your new address to complete the update.',
+      title: 'Verification sent',
+      type: AppFeedbackType.success,
     );
     Navigator.pop(context);
   }

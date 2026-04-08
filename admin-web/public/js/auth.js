@@ -162,18 +162,95 @@ function setupSidebar(userData, user) {
   });
 }
 
+function normalizeFeedbackType(type) {
+  const normalized = String(type || '').trim().toLowerCase();
+  if (['success', 'error', 'warning', 'info', 'neutral'].includes(normalized)) {
+    return normalized;
+  }
+  return 'info';
+}
+
+function feedbackMeta(type) {
+  switch (normalizeFeedbackType(type)) {
+    case 'success':
+      return { icon: 'OK', title: 'Success' };
+    case 'error':
+      return { icon: '!', title: 'Something went wrong' };
+    case 'warning':
+      return { icon: '!', title: 'Attention needed' };
+    case 'neutral':
+      return { icon: '...', title: 'Update' };
+    case 'info':
+    default:
+      return { icon: 'i', title: 'Notice' };
+  }
+}
+
+function feedbackCardHtml(message, options = {}) {
+  const normalizedType = normalizeFeedbackType(options.type);
+  const meta = feedbackMeta(normalizedType);
+  const title = String(options.title || meta.title || '').trim();
+  const icon = String(options.icon || meta.icon || '').trim();
+
+  return `
+    <div class="feedback-card is-${normalizedType}">
+      <div class="feedback-card-icon" aria-hidden="true">${esc(icon)}</div>
+      <div class="feedback-card-copy">
+        ${title ? `<div class="feedback-card-title">${esc(title)}</div>` : ''}
+        <p>${esc(message)}</p>
+      </div>
+    </div>
+  `;
+}
+
+function emptyStateHtml(message, options = {}) {
+  const normalizedType = normalizeFeedbackType(options.type || 'neutral');
+  const title = String(options.title || '').trim();
+  const icon = String(options.icon || feedbackMeta(normalizedType).icon || '...').trim();
+
+  return `
+    <div class="empty-state">
+      <div class="icon" aria-hidden="true">${esc(icon)}</div>
+      <div class="title">${esc(title || 'Nothing to show yet')}</div>
+      <p>${esc(message)}</p>
+    </div>
+  `;
+}
+
 function showToast(message, type) {
+  const normalizedType = normalizeFeedbackType(type);
+  const meta = feedbackMeta(normalizedType);
   let toast = document.getElementById('toast');
   if (!toast) {
     toast = document.createElement('div');
     toast.id = 'toast';
     toast.className = 'toast';
+    toast.setAttribute('role', 'status');
+    toast.setAttribute('aria-live', 'polite');
     document.body.appendChild(toast);
   }
-  toast.textContent = message;
-  toast.className = 'toast ' + type;
-  setTimeout(() => toast.classList.add('show'), 10);
-  setTimeout(() => toast.classList.remove('show'), 3000);
+
+  window.clearTimeout(toast._showTimer);
+  window.clearTimeout(toast._hideTimer);
+
+  toast.classList.remove('show');
+  toast.className = `toast is-${normalizedType}`;
+  toast.innerHTML = `
+    <div class="toast-content">
+      <div class="toast-icon" aria-hidden="true">${esc(meta.icon)}</div>
+      <div class="toast-copy">
+        <div class="toast-title">${esc(meta.title)}</div>
+        <div class="toast-message">${esc(message)}</div>
+      </div>
+    </div>
+  `;
+
+  toast._showTimer = window.setTimeout(() => {
+    toast.classList.add('show');
+  }, 10);
+  toast._hideTimer = window.setTimeout(() => {
+    toast.classList.remove('show');
+  }, 3600);
 }
 
 function formatTimestamp(ts) {
@@ -203,4 +280,14 @@ function esc(str) {
   return d.innerHTML;
 }
 
-export { checkAuth, showToast, formatTimestamp, roleColor, esc, stopUnreadNotificationsWatcher, updateNotificationBadges };
+export {
+  checkAuth,
+  emptyStateHtml,
+  esc,
+  feedbackCardHtml,
+  formatTimestamp,
+  roleColor,
+  showToast,
+  stopUnreadNotificationsWatcher,
+  updateNotificationBadges,
+};

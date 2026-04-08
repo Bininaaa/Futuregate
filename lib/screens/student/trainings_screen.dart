@@ -7,6 +7,7 @@ import '../../providers/auth_provider.dart';
 import '../../providers/training_provider.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
 import '../../widgets/app_shell_background.dart';
+import '../../widgets/shared/app_feedback.dart';
 import '../../widgets/training_programs_widgets.dart';
 import 'saved_trainings_screen.dart';
 
@@ -81,16 +82,20 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
     String emptyMessage = 'This training does not have a link yet.',
   }) async {
     if (link.trim().isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(emptyMessage)));
+      context.showAppSnackBar(
+        emptyMessage,
+        title: 'Link unavailable',
+        type: AppFeedbackType.warning,
+      );
       return;
     }
 
     final uri = Uri.tryParse(link);
     if (uri == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('This training link is not valid.')),
+      context.showAppSnackBar(
+        'This training link is not valid.',
+        title: 'Link unavailable',
+        type: AppFeedbackType.warning,
       );
       return;
     }
@@ -98,8 +103,10 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
     final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
 
     if (!launched && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('We couldn\'t open this training link.')),
+      context.showAppSnackBar(
+        'We couldn\'t open this training link right now.',
+        title: 'Open unavailable',
+        type: AppFeedbackType.error,
       );
     }
   }
@@ -108,10 +115,10 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
     final auth = context.read<AuthProvider>().userModel;
     final userId = auth?.uid.trim() ?? '';
     if (userId.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('You must be logged in to save resources'),
-        ),
+      context.showAppSnackBar(
+        'Sign in to save training resources for later.',
+        title: 'Login required',
+        type: AppFeedbackType.warning,
       );
       return;
     }
@@ -128,16 +135,18 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
     }
 
     final normalizedError = error?.replaceFirst('Exception: ', '').trim();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          normalizedError == null || normalizedError.isEmpty
-              ? wasSaved
-                    ? 'Removed from saved resources'
-                    : 'Resource saved'
-              : normalizedError,
-        ),
-      ),
+    context.showAppSnackBar(
+      normalizedError == null || normalizedError.isEmpty
+          ? wasSaved
+                ? 'Removed from saved resources'
+                : 'Resource saved'
+          : normalizedError,
+      title: normalizedError == null || normalizedError.isEmpty
+          ? 'Saved items updated'
+          : 'Update unavailable',
+      type: normalizedError == null || normalizedError.isEmpty
+          ? AppFeedbackType.success
+          : AppFeedbackType.error,
     );
   }
 

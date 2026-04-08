@@ -12,6 +12,7 @@ import '../../utils/admin_palette.dart';
 import '../../utils/display_text.dart';
 import '../../widgets/admin/admin_ui.dart';
 import '../../widgets/profile_avatar.dart';
+import '../../widgets/shared/app_feedback.dart';
 
 class UsersScreen extends StatefulWidget {
   const UsersScreen({
@@ -1184,9 +1185,11 @@ class _UsersScreenState extends State<UsersScreen> {
                       final error = await onConfirm();
                       if (!mounted) return;
                       if (error != null && context.mounted) {
-                        ScaffoldMessenger.of(
-                          context,
-                        ).showSnackBar(SnackBar(content: Text(error)));
+                        context.showAppSnackBar(
+                          error,
+                          title: 'Update unavailable',
+                          type: AppFeedbackType.error,
+                        );
                       }
                     },
                     color: accentColor,
@@ -1803,19 +1806,18 @@ class _UsersScreenState extends State<UsersScreen> {
     bool download = false,
     bool requirePdf = false,
   }) async {
-    final messenger = ScaffoldMessenger.of(context);
-
     try {
       final document = await _documentAccessService.getUserCvDocument(
         userId: userId,
         variant: variant,
       );
+      if (!mounted) return;
 
       if (requirePdf && !document.isPdf) {
-        messenger.showSnackBar(
-          const SnackBar(
-            content: Text('This document is not a valid PDF file.'),
-          ),
+        context.showAppSnackBar(
+          'This document is not a valid PDF file.',
+          title: 'Preview unavailable',
+          type: AppFeedbackType.warning,
         );
         return;
       }
@@ -1832,14 +1834,21 @@ class _UsersScreenState extends State<UsersScreen> {
         mode: LaunchMode.platformDefault,
         webOnlyWindowName: '_blank',
       );
-      if (!launched && mounted) {
-        messenger.showSnackBar(
-          const SnackBar(content: Text('We couldn\'t open the document.')),
+      if (!mounted) return;
+      if (!launched) {
+        context.showAppSnackBar(
+          'We couldn\'t open the document right now.',
+          title: 'Document unavailable',
+          type: AppFeedbackType.error,
         );
       }
     } catch (e) {
       if (!mounted) return;
-      messenger.showSnackBar(SnackBar(content: Text(_documentErrorMessage(e))));
+      context.showAppSnackBar(
+        _documentErrorMessage(e),
+        title: 'Document unavailable',
+        type: AppFeedbackType.error,
+      );
     }
   }
 
@@ -1847,8 +1856,6 @@ class _UsersScreenState extends State<UsersScreen> {
     String companyId, {
     bool download = false,
   }) async {
-    final messenger = ScaffoldMessenger.of(context);
-
     try {
       final document = await _documentAccessService
           .getCompanyCommercialRegister(companyId: companyId);
@@ -1865,13 +1872,19 @@ class _UsersScreenState extends State<UsersScreen> {
         webOnlyWindowName: '_blank',
       );
       if (!launched && mounted) {
-        messenger.showSnackBar(
-          const SnackBar(content: Text('We couldn\'t open the document.')),
+        context.showAppSnackBar(
+          'We couldn\'t open the document right now.',
+          title: 'Document unavailable',
+          type: AppFeedbackType.error,
         );
       }
     } catch (e) {
       if (!mounted) return;
-      messenger.showSnackBar(SnackBar(content: Text(_documentErrorMessage(e))));
+      context.showAppSnackBar(
+        _documentErrorMessage(e),
+        title: 'Document unavailable',
+        type: AppFeedbackType.error,
+      );
     }
   }
 

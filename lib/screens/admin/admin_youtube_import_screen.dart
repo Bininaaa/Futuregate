@@ -10,6 +10,7 @@ import '../../services/training_service.dart';
 import '../../services/youtube_service.dart';
 import '../../utils/admin_palette.dart';
 import '../../widgets/admin/admin_ui.dart';
+import '../../widgets/shared/app_feedback.dart';
 
 class AdminYoutubeImportScreen extends StatefulWidget {
   const AdminYoutubeImportScreen({super.key});
@@ -73,8 +74,10 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
     final query = _searchController.text.trim();
 
     if (query.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a search query')),
+      context.showAppSnackBar(
+        'Enter a search query to continue.',
+        title: 'Search required',
+        type: AppFeedbackType.warning,
       );
       return;
     }
@@ -110,9 +113,11 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
         _searchError = message;
       });
 
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(message)));
+      context.showAppSnackBar(
+        message,
+        title: 'Search unavailable',
+        type: AppFeedbackType.error,
+      );
     } finally {
       if (mounted) {
         setState(() {
@@ -126,9 +131,11 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
     final adminId = context.read<AuthProvider>().userModel?.uid ?? '';
 
     if (adminId.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Admin user not found')));
+      context.showAppSnackBar(
+        'Admin user not found.',
+        title: 'Import unavailable',
+        type: AppFeedbackType.error,
+      );
       return;
     }
 
@@ -155,17 +162,21 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
         return;
       }
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('"${video.title}" imported successfully')),
+      context.showAppSnackBar(
+        '"${video.title}" imported successfully.',
+        title: 'Import complete',
+        type: AppFeedbackType.success,
       );
     } catch (e) {
       if (!mounted) {
         return;
       }
 
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Import failed: $e')));
+      context.showAppSnackBar(
+        'Import failed: $e',
+        title: 'Import unavailable',
+        type: AppFeedbackType.error,
+      );
     } finally {
       if (mounted) {
         setState(() {
@@ -188,19 +199,21 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
     }
 
     if (error == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            training.isFeatured
-                ? 'Removed from featured resources'
-                : 'Marked as featured',
-          ),
-        ),
+      context.showAppSnackBar(
+        training.isFeatured
+            ? 'This resource was removed from featured.'
+            : 'This resource is now featured.',
+        title: 'Featured list updated',
+        type: AppFeedbackType.success,
       );
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
+    context.showAppSnackBar(
+      error,
+      title: 'Update unavailable',
+      type: AppFeedbackType.error,
+    );
   }
 
   Future<void> _deleteTraining(TrainingModel training) async {
@@ -242,38 +255,48 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
     }
 
     if (error == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('"${training.title}" deleted')));
+      context.showAppSnackBar(
+        '"${training.title}" deleted.',
+        title: 'Resource deleted',
+        type: AppFeedbackType.success,
+      );
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
+    context.showAppSnackBar(
+      error,
+      title: 'Delete unavailable',
+      type: AppFeedbackType.error,
+    );
   }
 
   Future<void> _openLink(String link) async {
     if (link.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('This result does not include an external link.'),
-        ),
+      context.showAppSnackBar(
+        'This result does not include an external link.',
+        title: 'Link unavailable',
+        type: AppFeedbackType.warning,
       );
       return;
     }
 
     final uri = Uri.tryParse(link);
     if (uri == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Invalid link')));
+      context.showAppSnackBar(
+        'This link is not valid.',
+        title: 'Link unavailable',
+        type: AppFeedbackType.warning,
+      );
       return;
     }
 
     final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
 
     if (!launched && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('We couldn\'t open this link.')),
+      context.showAppSnackBar(
+        'We couldn\'t open this link right now.',
+        title: 'Open unavailable',
+        type: AppFeedbackType.error,
       );
     }
   }

@@ -9,6 +9,7 @@ import '../../providers/saved_scholarship_provider.dart';
 import '../../providers/scholarship_provider.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
 import '../../widgets/app_shell_background.dart';
+import '../../widgets/shared/app_feedback.dart';
 import '../../widgets/student/student_workspace_shell.dart';
 import 'scholarship_detail_screen.dart';
 
@@ -235,15 +236,13 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          error ??
-              (existing != null
-                  ? 'Removed from saved scholarships'
-                  : 'Scholarship saved'),
-        ),
-      ),
+    context.showAppSnackBar(
+      error ??
+          (existing != null
+              ? 'This scholarship was removed from your saved list.'
+              : 'This scholarship has been saved.'),
+      title: error == null ? 'Saved items updated' : 'Update unavailable',
+      type: error == null ? AppFeedbackType.success : AppFeedbackType.error,
     );
   }
 

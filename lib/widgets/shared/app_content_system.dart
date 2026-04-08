@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'app_feedback.dart';
+
 enum AppContentTypography { product, innovation }
 
 class AppContentTheme {
@@ -251,6 +253,13 @@ InputDecoration _fieldDecoration({
       borderRadius: BorderRadius.circular(16),
       borderSide: BorderSide(color: theme.error, width: 1.4),
     ),
+    errorStyle: GoogleFonts.poppins(
+      fontSize: 11.6,
+      fontWeight: FontWeight.w600,
+      height: 1.35,
+      color: theme.error,
+    ),
+    errorMaxLines: 3,
   );
 }
 
@@ -755,39 +764,12 @@ class AppInfoHint extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(AppContentSpacing.md),
-      decoration: BoxDecoration(
-        color: theme.accentSoft,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: theme.border),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: theme.accent.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(icon, color: theme.accent, size: 18),
-          ),
-          const SizedBox(width: AppContentSpacing.sm),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(title, style: theme.label(size: 12.2)),
-                const SizedBox(height: 4),
-                Text(message, style: theme.body(size: 12)),
-              ],
-            ),
-          ),
-        ],
-      ),
+    return AppInlineMessage(
+      type: AppFeedbackType.info,
+      title: title,
+      message: message,
+      icon: icon,
+      accentColor: theme.accent,
     );
   }
 }

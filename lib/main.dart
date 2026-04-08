@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import 'firebase_options.dart';
@@ -23,6 +24,7 @@ import 'providers/notification_provider.dart';
 import 'providers/connectivity_provider.dart';
 import 'screens/auth_wrapper.dart';
 import 'screens/notifications_screen.dart';
+import 'widgets/shared/app_feedback.dart';
 
 /// Global navigator key — used for push notification tap navigation.
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -139,6 +141,13 @@ class _PresenceAwareAppState extends State<_PresenceAwareApp>
 
   @override
   Widget build(BuildContext context) {
+    const colorScheme = ColorScheme.light(
+      primary: Color(0xFF3B22F6),
+      secondary: Color(0xFF14B8A6),
+      surface: Colors.white,
+      error: Color(0xFFEF4444),
+    );
+
     context.select<AuthProvider, String?>(
       (provider) => provider.userModel?.uid,
     );
@@ -150,12 +159,24 @@ class _PresenceAwareAppState extends State<_PresenceAwareApp>
       title: 'AvenirDZ',
       theme: ThemeData(
         scaffoldBackgroundColor: const Color(0xFFF8FAFC),
-        colorScheme: const ColorScheme.light(
-          primary: Color(0xFF3B22F6),
-          secondary: Color(0xFF14B8A6),
-          surface: Colors.white,
-          error: Color(0xFFEF4444),
+        colorScheme: colorScheme,
+        snackBarTheme: const SnackBarThemeData(
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
         ),
+        inputDecorationTheme: InputDecorationTheme(
+          errorStyle: GoogleFonts.poppins(
+            fontSize: 11.6,
+            fontWeight: FontWeight.w600,
+            height: 1.35,
+            color: colorScheme.error,
+          ),
+          errorMaxLines: 3,
+        ),
+        extensions: <ThemeExtension<dynamic>>[
+          AppFeedbackTheme.fallback(colorScheme),
+        ],
         appBarTheme: const AppBarTheme(centerTitle: true, elevation: 0),
       ),
       home: const AuthWrapper(),

@@ -10,6 +10,7 @@ import '../../widgets/chat/chat_confirmation_dialog.dart';
 import '../../widgets/chat/chat_theme.dart';
 import '../../widgets/chat/conversation_list_item.dart';
 import '../../widgets/profile_avatar.dart';
+import '../../widgets/shared/app_feedback.dart';
 import 'conversation_screen.dart';
 import 'new_chat_screen.dart';
 import 'user_profile_preview_screen.dart';
@@ -554,10 +555,12 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
         _showProviderError(provider.error!);
         return;
       }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(muted ? 'Conversation muted' : 'Conversation unmuted'),
-        ),
+      context.showAppSnackBar(
+        muted
+            ? 'Notifications for this conversation are now muted.'
+            : 'Conversation notifications are active again.',
+        title: muted ? 'Conversation muted' : 'Conversation unmuted',
+        type: AppFeedbackType.info,
       );
       return;
     }
@@ -587,14 +590,12 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
         _showProviderError(provider.error!);
         return;
       }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            archived
-                ? 'Conversation moved to Archived'
-                : 'Conversation restored to Inbox',
-          ),
-        ),
+      context.showAppSnackBar(
+        archived
+            ? 'This conversation has been moved to Archived.'
+            : 'This conversation is back in your inbox.',
+        title: archived ? 'Conversation archived' : 'Conversation restored',
+        type: AppFeedbackType.success,
       );
       return;
     }
@@ -621,16 +622,18 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
       _showProviderError(provider.error!);
       return;
     }
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Conversation deleted')));
+    context.showAppSnackBar(
+      'The conversation has been deleted.',
+      title: 'Conversation deleted',
+      type: AppFeedbackType.success,
+    );
   }
 
   void _showProviderError(String error) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(error.replaceFirst(RegExp(r'^Exception:\\s*'), '')),
-      ),
+    context.showAppSnackBar(
+      error.replaceFirst(RegExp(r'^Exception:\\s*'), ''),
+      title: 'Messages unavailable',
+      type: AppFeedbackType.error,
     );
     context.read<ChatProvider>().clearError();
   }

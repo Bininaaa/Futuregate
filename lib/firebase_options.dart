@@ -66,5 +66,4 @@ class DefaultFirebaseOptions {
     projectId: 'avenirdz-7305d',
     storageBucket: 'avenirdz-7305d.firebasestorage.app',
   );
-
 }

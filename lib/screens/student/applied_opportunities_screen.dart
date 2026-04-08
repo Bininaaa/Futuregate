@@ -9,6 +9,7 @@ import '../../providers/auth_provider.dart';
 import '../../utils/application_status.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/app_shell_background.dart';
+import '../../widgets/shared/app_feedback.dart';
 import '../../widgets/student/student_workspace_shell.dart';
 import '../../widgets/student_opportunity_hub_widgets.dart';
 import 'opportunities_screen.dart';
@@ -154,10 +155,10 @@ class _AppliedOpportunitiesScreenState
         return;
       }
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('This opportunity is no longer available to open.'),
-        ),
+      context.showAppSnackBar(
+        'This opportunity is no longer available to open.',
+        title: 'Opportunity unavailable',
+        type: AppFeedbackType.warning,
       );
       return;
     }

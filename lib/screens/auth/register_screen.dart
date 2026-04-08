@@ -3,6 +3,7 @@ import 'package:flutter/gestures.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../utils/validators.dart';
+import '../../widgets/shared/app_feedback.dart';
 import '../../widgets/password_strength_indicator.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -95,13 +96,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     if (!mounted) return;
     if (error != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(error),
-          backgroundColor: Colors.red.shade400,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        ),
+      context.showAppSnackBar(
+        error,
+        title: 'Account creation unavailable',
+        type: AppFeedbackType.error,
       );
     } else {
       Navigator.of(context).popUntil((route) => route.isFirst);
@@ -109,24 +107,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Future<void> _onGoogleSignIn() async {
-  final authProvider = context.read<AuthProvider>();
-  final error = await authProvider.signInWithGoogle();
+    final authProvider = context.read<AuthProvider>();
+    final error = await authProvider.signInWithGoogle();
 
-  if (!mounted) return;
+    if (!mounted) return;
 
-  if (error != null) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(error),
-        backgroundColor: Colors.red.shade400,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      ),
-    );
-  } else {
-    Navigator.of(context).popUntil((route) => route.isFirst);
+    if (error != null) {
+      context.showAppSnackBar(
+        error,
+        title: 'Google sign-in unavailable',
+        type: AppFeedbackType.error,
+      );
+    } else {
+      Navigator.of(context).popUntil((route) => route.isFirst);
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -138,11 +133,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFFF5F0FF),
-              Color(0xFFFFF5EB),
-              Color(0xFFFFF0F5),
-            ],
+            colors: [Color(0xFFF5F0FF), Color(0xFFFFF5EB), Color(0xFFFFF0F5)],
           ),
         ),
         child: SafeArea(
@@ -237,11 +228,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           Positioned(
             left: 50,
             bottom: 30,
-            child: Icon(
-              Icons.public,
-              size: 42,
-              color: Colors.blue.shade300,
-            ),
+            child: Icon(Icons.public, size: 42, color: Colors.blue.shade300),
           ),
           Positioned(
             right: 50,
@@ -277,7 +264,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 color: Colors.orange.shade100,
                 borderRadius: BorderRadius.circular(6),
               ),
-              child: Icon(Icons.auto_stories, size: 22, color: Colors.orange.shade700),
+              child: Icon(
+                Icons.auto_stories,
+                size: 22,
+                color: Colors.orange.shade700,
+              ),
             ),
           ),
           Positioned(
@@ -290,7 +281,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 color: Colors.purple.shade50,
                 borderRadius: BorderRadius.circular(6),
               ),
-              child: Icon(Icons.auto_stories, size: 20, color: Colors.purple.shade400),
+              child: Icon(
+                Icons.auto_stories,
+                size: 20,
+                color: Colors.purple.shade400,
+              ),
             ),
           ),
         ],
@@ -438,9 +433,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       onPressed: _onGoogleSignIn,
       style: OutlinedButton.styleFrom(
         padding: const EdgeInsets.symmetric(vertical: 14),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
         side: BorderSide(color: Colors.grey.shade300),
         backgroundColor: Colors.white,
       ),
@@ -450,9 +443,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           Container(
             width: 22,
             height: 22,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(4),
-            ),
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(4)),
             child: const Text(
               'G',
               textAlign: TextAlign.center,
@@ -532,8 +523,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
             suffixIcon: suffixIcon,
             filled: true,
             fillColor: Colors.grey.shade50,
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 14,
+            ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
               borderSide: BorderSide(color: Colors.grey.shade200),
@@ -544,8 +537,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide:
-                  const BorderSide(color: _primaryOrange, width: 1.5),
+              borderSide: const BorderSide(color: _primaryOrange, width: 1.5),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
@@ -620,9 +612,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         option.label,
                         style: TextStyle(
                           fontSize: 12,
-                          fontWeight:
-                              isSelected ? FontWeight.w700 : FontWeight.w500,
-                          color: isSelected ? _primaryOrange : Colors.grey.shade700,
+                          fontWeight: isSelected
+                              ? FontWeight.w700
+                              : FontWeight.w500,
+                          color: isSelected
+                              ? _primaryOrange
+                              : Colors.grey.shade700,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),

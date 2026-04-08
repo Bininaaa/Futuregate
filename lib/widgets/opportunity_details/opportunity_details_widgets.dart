@@ -575,10 +575,7 @@ class ApplyBar extends StatelessWidget {
 
     List<Color> buttonGradient;
     if (hasStatus) {
-      buttonGradient = [
-        statusColor!,
-        statusColor!.withValues(alpha: 0.82),
-      ];
+      buttonGradient = [statusColor!, statusColor!.withValues(alpha: 0.82)];
     } else if (isDisabled) {
       buttonGradient = [
         theme.secondaryTextColor.withValues(alpha: 0.45),

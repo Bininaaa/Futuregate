@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../providers/admin_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../utils/opportunity_metadata.dart';
+import '../../widgets/shared/app_feedback.dart';
 import 'admin_editor_widgets.dart';
 
 class AdminScholarshipEditorScreen extends StatefulWidget {
@@ -349,20 +350,20 @@ class _AdminScholarshipEditorScreenState
     setState(() => _isSubmitting = false);
 
     if (error != null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(error)));
+      context.showAppSnackBar(
+        error,
+        title: _isEditing ? 'Update unavailable' : 'Publish unavailable',
+        type: AppFeedbackType.error,
+      );
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          _isEditing
-              ? 'Scholarship updated successfully'
-              : 'Scholarship published successfully',
-        ),
-      ),
+    context.showAppSnackBar(
+      _isEditing
+          ? 'Scholarship updated successfully.'
+          : 'Scholarship published successfully.',
+      title: _isEditing ? 'Scholarship updated' : 'Scholarship published',
+      type: AppFeedbackType.success,
     );
     Navigator.of(context).pop(true);
   }

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../models/saved_opportunity_model.dart';
 import '../services/saved_opportunity_service.dart';
 
-
 class SavedOpportunityProvider extends ChangeNotifier {
   final SavedOpportunityService _service = SavedOpportunityService();
 

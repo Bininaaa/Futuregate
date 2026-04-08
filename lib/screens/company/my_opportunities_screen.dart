@@ -12,6 +12,7 @@ import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/profile_avatar.dart';
+import '../../widgets/shared/app_feedback.dart';
 import '../notifications_screen.dart';
 import '../settings/settings_screen.dart';
 import 'profile_screen.dart';
@@ -279,7 +280,6 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
 
   Future<void> _toggleStatus(OpportunityModel opportunity) async {
     final provider = context.read<CompanyProvider>();
-    final messenger = ScaffoldMessenger.of(context);
     final nextStatus = opportunity.status == 'closed' ? 'open' : 'closed';
     final error = await provider.updateOpportunity(opportunity.id, {
       'status': nextStatus,
@@ -290,7 +290,11 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
     }
 
     if (error != null) {
-      messenger.showSnackBar(SnackBar(content: Text(error)));
+      context.showAppSnackBar(
+        error,
+        title: 'Update unavailable',
+        type: AppFeedbackType.error,
+      );
       return;
     }
 
@@ -299,7 +303,6 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
 
   Future<void> _deleteOpportunity(OpportunityModel opportunity) async {
     final provider = context.read<CompanyProvider>();
-    final messenger = ScaffoldMessenger.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) {
@@ -354,7 +357,11 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
     }
 
     if (error != null) {
-      messenger.showSnackBar(SnackBar(content: Text(error)));
+      context.showAppSnackBar(
+        error,
+        title: 'Delete unavailable',
+        type: AppFeedbackType.error,
+      );
       return;
     }
 
@@ -363,14 +370,12 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
       return;
     }
 
-    messenger.showSnackBar(
-      SnackBar(
-        content: Text(
-          wasClosed == true
-              ? 'Opportunity closed because applications already exist.'
-              : 'Opportunity deleted.',
-        ),
-      ),
+    context.showAppSnackBar(
+      wasClosed == true
+          ? 'Opportunity closed because applications already exist.'
+          : 'Opportunity deleted.',
+      title: wasClosed == true ? 'Opportunity closed' : 'Opportunity deleted',
+      type: AppFeedbackType.success,
     );
   }
 

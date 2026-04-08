@@ -61,7 +61,7 @@
   </div>
 
   <script type="module">
-    import { checkAuth, esc, showToast } from './js/auth.js';
+    import { checkAuth, emptyStateHtml, esc, showToast } from './js/auth.js';
     import { adminTargetUrl, formatFullTimestamp, typeColor, typeIcon } from './js/admin-utils.js';
     import {
       loadNotificationsPage,
@@ -173,7 +173,10 @@
       }
 
       if (items.length === 0) {
-        list.innerHTML = '<div class="empty-card">No notifications right now.</div>';
+        list.innerHTML = emptyStateHtml(
+          'Admin notifications will appear here as new moderation activity is created.',
+          { title: 'No notifications right now', icon: 'NT' },
+        );
         return;
       }
 

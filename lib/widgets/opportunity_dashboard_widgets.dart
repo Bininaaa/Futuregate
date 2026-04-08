@@ -6,6 +6,7 @@ import '../models/opportunity_model.dart';
 import '../utils/application_status.dart';
 import '../utils/opportunity_dashboard_palette.dart';
 import '../utils/opportunity_type.dart';
+import 'shared/app_feedback.dart';
 
 IconData _applicationStatusIcon(String status) {
   switch (ApplicationStatus.parse(status)) {
@@ -908,8 +909,7 @@ class TrendingOpportunityCard extends StatelessWidget {
                 const SizedBox(height: 8),
                 _OpportunityAccentChip(
                   label: ApplicationStatus.label(applicationStatus),
-                  foreground:
-                      ApplicationStatus.color(applicationStatus),
+                  foreground: ApplicationStatus.color(applicationStatus),
                   background: ApplicationStatus.color(
                     applicationStatus,
                   ).withValues(alpha: 0.14),
@@ -1008,16 +1008,14 @@ class OpportunityListTile extends StatelessWidget {
                       _OpportunityAccentChip(
                         label: badgeText!,
                         foreground: effectiveBadgeColor,
-                        background:
-                            effectiveBadgeColor.withValues(alpha: 0.16),
+                        background: effectiveBadgeColor.withValues(alpha: 0.16),
                       ),
                     ],
                     if (applicationStatus != null) ...[
                       const SizedBox(width: 6),
                       _OpportunityAccentChip(
                         label: ApplicationStatus.label(applicationStatus),
-                        foreground:
-                            ApplicationStatus.color(applicationStatus),
+                        foreground: ApplicationStatus.color(applicationStatus),
                         background: ApplicationStatus.color(
                           applicationStatus,
                         ).withValues(alpha: 0.14),
@@ -1143,8 +1141,7 @@ class OpportunityListTile extends StatelessWidget {
                             const SizedBox(height: 6),
                             _OpportunityMetadataText(
                               items: detailChips,
-                              color:
-                                  OpportunityDashboardPalette.textSecondary,
+                              color: OpportunityDashboardPalette.textSecondary,
                               fontSize: 10.4,
                             ),
                           ],
@@ -1187,47 +1184,13 @@ class OpportunityDashboardEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
+    return AppEmptyStateNotice(
+      type: AppFeedbackType.neutral,
+      icon: icon,
+      title: title,
+      message: subtitle,
+      accentColor: color,
       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 22),
-      decoration: BoxDecoration(
-        color: OpportunityDashboardPalette.surface,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: OpportunityDashboardPalette.border),
-      ),
-      child: Column(
-        children: [
-          Container(
-            width: 50,
-            height: 50,
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Icon(icon, color: color, size: 26),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            title,
-            style: GoogleFonts.poppins(
-              fontSize: 14.5,
-              fontWeight: FontWeight.w700,
-              color: OpportunityDashboardPalette.textPrimary,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 6),
-          Text(
-            subtitle,
-            style: GoogleFonts.poppins(
-              fontSize: 11.5,
-              color: OpportunityDashboardPalette.textSecondary,
-              height: 1.45,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
     );
   }
 }

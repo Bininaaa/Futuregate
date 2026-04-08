@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../utils/opportunity_dashboard_palette.dart';
+import 'shared/app_feedback.dart';
 
 class StudentOpportunityHubPalette {
   StudentOpportunityHubPalette._();
@@ -490,92 +491,21 @@ class StudentOpportunityEmptyState extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
       child: Center(
-        child: Container(
-          width: double.infinity,
+        child: AppEmptyStateNotice(
+          type: AppFeedbackType.neutral,
+          icon: icon,
+          title: title,
+          message: message,
+          accentColor: StudentOpportunityHubPalette.primary,
           padding: const EdgeInsets.all(28),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                StudentOpportunityHubPalette.surface,
-                StudentOpportunityHubPalette.primarySoft.withValues(
-                  alpha: 0.72,
-                ),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.circular(32),
-            border: Border.all(
-              color: StudentOpportunityHubPalette.primary.withValues(
-                alpha: 0.10,
-              ),
-            ),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 64,
-                height: 64,
-                decoration: BoxDecoration(
-                  color: StudentOpportunityHubPalette.primarySoft,
-                  borderRadius: BorderRadius.circular(22),
-                ),
-                child: Icon(
-                  icon,
-                  size: 30,
-                  color: StudentOpportunityHubPalette.primary,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                title,
-                style: GoogleFonts.poppins(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: StudentOpportunityHubPalette.textPrimary,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                message,
-                style: GoogleFonts.poppins(
-                  fontSize: 13,
-                  height: 1.55,
-                  color: StudentOpportunityHubPalette.textSecondary,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              if ((actionLabel ?? '').trim().isNotEmpty &&
-                  onAction != null) ...[
-                const SizedBox(height: 18),
-                ElevatedButton.icon(
+          action: (actionLabel ?? '').trim().isNotEmpty && onAction != null
+              ? AppFeedbackButton(
+                  label: actionLabel!,
                   onPressed: onAction,
-                  icon: const Icon(Icons.north_east_rounded, size: 18),
-                  label: Text(
-                    actionLabel!,
-                    style: GoogleFonts.poppins(
-                      fontSize: 12.5,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    elevation: 0,
-                    foregroundColor: Colors.white,
-                    backgroundColor: StudentOpportunityHubPalette.primary,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 18,
-                      vertical: 13,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(18),
-                    ),
-                  ),
-                ),
-              ],
-            ],
-          ),
+                  icon: Icons.north_east_rounded,
+                  accentColor: StudentOpportunityHubPalette.primary,
+                )
+              : null,
         ),
       ),
     );

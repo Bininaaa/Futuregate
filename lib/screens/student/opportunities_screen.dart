@@ -16,6 +16,7 @@ import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/opportunity_dashboard_widgets.dart';
+import '../../widgets/shared/app_feedback.dart';
 import '../../widgets/student/student_workspace_shell.dart';
 import 'internships_screen.dart';
 import 'jobs_screen.dart';
@@ -246,14 +247,13 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
   Future<void> _toggleSavedOpportunity(OpportunityModel opportunity) async {
     final authProvider = context.read<AuthProvider>();
     final savedProvider = context.read<SavedOpportunityProvider>();
-    final messenger = ScaffoldMessenger.of(context);
     final userId = authProvider.userModel?.uid;
 
     if (userId == null || userId.isEmpty) {
-      messenger.showSnackBar(
-        const SnackBar(
-          content: Text('You must be logged in to save opportunities'),
-        ),
+      context.showAppSnackBar(
+        'Sign in to save opportunities for later.',
+        title: 'Login required',
+        type: AppFeedbackType.warning,
       );
       return;
     }
@@ -285,7 +285,11 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
       return;
     }
 
-    messenger.showSnackBar(SnackBar(content: Text(error ?? message)));
+    context.showAppSnackBar(
+      error ?? message,
+      title: error == null ? 'Saved items updated' : 'Save unavailable',
+      type: error == null ? AppFeedbackType.success : AppFeedbackType.error,
+    );
   }
 
   Future<void> _showFilterSheet() async {

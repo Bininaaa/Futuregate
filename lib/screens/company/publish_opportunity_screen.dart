@@ -10,6 +10,7 @@ import '../../utils/opportunity_type.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/opportunity_type_selector.dart';
 import '../../widgets/shared/app_content_system.dart';
+import '../../widgets/shared/app_feedback.dart';
 
 class PublishOpportunityScreen extends StatefulWidget {
   final String? opportunityId;
@@ -907,8 +908,10 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
         return;
       }
       setState(() => _isSubmitting = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('You must be logged in to continue')),
+      context.showAppSnackBar(
+        'Sign in to continue publishing opportunities.',
+        title: 'Login required',
+        type: AppFeedbackType.warning,
       );
       return;
     }
@@ -951,21 +954,20 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
     setState(() => _isSubmitting = false);
 
     if (error != null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(error)));
+      context.showAppSnackBar(
+        error,
+        title: _isEditMode ? 'Update unavailable' : 'Publish unavailable',
+        type: AppFeedbackType.error,
+      );
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          _isEditMode
-              ? 'Opportunity updated successfully'
-              : '${OpportunityType.label(_selectedType)} published successfully',
-        ),
-        backgroundColor: Colors.green,
-      ),
+    context.showAppSnackBar(
+      _isEditMode
+          ? 'Your opportunity details have been updated.'
+          : '${OpportunityType.label(_selectedType)} published successfully.',
+      title: _isEditMode ? 'Opportunity updated' : 'Opportunity published',
+      type: AppFeedbackType.success,
     );
     Navigator.pop(context);
   }

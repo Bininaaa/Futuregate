@@ -83,31 +83,34 @@ class AuthProvider extends ChangeNotifier {
         .collection('users')
         .doc(uid)
         .snapshots()
-        .listen((snapshot) {
-          if (!snapshot.exists) return;
-          final data = snapshot.data();
-          if (data == null) return;
+        .listen(
+          (snapshot) {
+            if (!snapshot.exists) return;
+            final data = snapshot.data();
+            if (data == null) return;
 
-          final updatedUser = UserModel.fromMap(data);
+            final updatedUser = UserModel.fromMap(data);
 
-          if (!updatedUser.isActive) {
-            _stopUserDocListener();
-            _isBlockedOnLogin = true;
-            _userModel = null;
-            _authService.logout();
+            if (!updatedUser.isActive) {
+              _stopUserDocListener();
+              _isBlockedOnLogin = true;
+              _userModel = null;
+              _authService.logout();
+              notifyListeners();
+              return;
+            }
+
+            _userModel = updatedUser;
             notifyListeners();
-            return;
-          }
+          },
+          onError: (error, stackTrace) {
+            if (_isIgnorableFirebaseCancellation(error)) {
+              return;
+            }
 
-          _userModel = updatedUser;
-          notifyListeners();
-        }, onError: (error, stackTrace) {
-          if (_isIgnorableFirebaseCancellation(error)) {
-            return;
-          }
-
-          debugPrint('User profile listener error: $error');
-        });
+            debugPrint('User profile listener error: $error');
+          },
+        );
   }
 
   void _stopUserDocListener() {

@@ -8,6 +8,7 @@ import '../../utils/admin_palette.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/opportunity_type_selector.dart';
+import '../../widgets/shared/app_feedback.dart';
 import 'admin_editor_widgets.dart';
 
 class AdminOpportunityEditorScreen extends StatefulWidget {
@@ -489,20 +490,20 @@ class _AdminOpportunityEditorScreenState
     setState(() => _isSubmitting = false);
 
     if (error != null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(error)));
+      context.showAppSnackBar(
+        error,
+        title: _isEditing ? 'Update unavailable' : 'Publish unavailable',
+        type: AppFeedbackType.error,
+      );
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          _isEditing
-              ? 'Admin opportunity updated successfully'
-              : 'Admin opportunity published successfully',
-        ),
-      ),
+    context.showAppSnackBar(
+      _isEditing
+          ? 'Admin opportunity updated successfully.'
+          : 'Admin opportunity published successfully.',
+      title: _isEditing ? 'Opportunity updated' : 'Opportunity published',
+      type: AppFeedbackType.success,
     );
     Navigator.of(context).pop(true);
   }

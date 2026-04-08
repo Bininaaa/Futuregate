@@ -7,6 +7,7 @@ import '../../models/secure_document_link.dart';
 import '../../models/user_model.dart';
 import '../../services/document_access_service.dart';
 import '../profile_avatar.dart';
+import '../shared/app_feedback.dart';
 import 'chat_formatters.dart';
 import 'chat_theme.dart';
 
@@ -55,7 +56,9 @@ class ChatMessageBubble extends StatelessWidget {
       child: Align(
         alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
         child: Row(
-          mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+          mainAxisAlignment: isMe
+              ? MainAxisAlignment.end
+              : MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             if (!isMe)
@@ -77,7 +80,9 @@ class ChatMessageBubble extends StatelessWidget {
               ),
             Flexible(
               child: GestureDetector(
-                onLongPress: isMe && !message.isDeleted ? () => _showActions(context) : null,
+                onLongPress: isMe && !message.isDeleted
+                    ? () => _showActions(context)
+                    : null,
                 child: Container(
                   constraints: BoxConstraints(maxWidth: maxBubbleWidth),
                   padding: EdgeInsets.fromLTRB(
@@ -104,11 +109,14 @@ class ChatMessageBubble extends StatelessWidget {
                                 isMe: isMe,
                               ),
                             if (message.text.trim().isNotEmpty) ...[
-                              if (message.hasAttachment) const SizedBox(height: 10),
+                              if (message.hasAttachment)
+                                const SizedBox(height: 10),
                               Text(
                                 message.text.trim(),
                                 style: ChatThemeStyles.body(
-                                  isMe ? Colors.white : ChatThemePalette.textPrimary,
+                                  isMe
+                                      ? Colors.white
+                                      : ChatThemePalette.textPrimary,
                                 ).copyWith(fontSize: 13.5, height: 1.45),
                               ),
                             ],
@@ -138,7 +146,11 @@ class ChatMessageBubble extends StatelessWidget {
     return BoxDecoration(
       gradient: isMe
           ? const LinearGradient(
-              colors: [ChatThemePalette.primaryDark, ChatThemePalette.primary, Color(0xFF5B39FF)],
+              colors: [
+                ChatThemePalette.primaryDark,
+                ChatThemePalette.primary,
+                Color(0xFF5B39FF),
+              ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             )
@@ -202,15 +214,24 @@ class ChatMessageBubble extends StatelessWidget {
               children: [
                 if (message.isTextMessage)
                   ListTile(
-                    leading: const Icon(Icons.edit_outlined, color: ChatThemePalette.primary),
-                    title: Text('Edit message', style: ChatThemeStyles.cardTitle()),
+                    leading: const Icon(
+                      Icons.edit_outlined,
+                      color: ChatThemePalette.primary,
+                    ),
+                    title: Text(
+                      'Edit message',
+                      style: ChatThemeStyles.cardTitle(),
+                    ),
                     onTap: () {
                       Navigator.pop(context);
                       onEdit?.call();
                     },
                   ),
                 ListTile(
-                  leading: const Icon(Icons.delete_outline_rounded, color: ChatThemePalette.error),
+                  leading: const Icon(
+                    Icons.delete_outline_rounded,
+                    color: ChatThemePalette.error,
+                  ),
                   title: Text(
                     'Delete for everyone',
                     style: ChatThemeStyles.cardTitle(ChatThemePalette.error),
@@ -236,7 +257,9 @@ class _DeletedMessageRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = isMe ? Colors.white.withValues(alpha: 0.78) : ChatThemePalette.textSecondary;
+    final color = isMe
+        ? Colors.white.withValues(alpha: 0.78)
+        : ChatThemePalette.textSecondary;
 
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -246,10 +269,9 @@ class _DeletedMessageRow extends StatelessWidget {
         Flexible(
           child: Text(
             'This message was deleted',
-            style: ChatThemeStyles.body(color).copyWith(
-              fontStyle: FontStyle.italic,
-              fontSize: 12.5,
-            ),
+            style: ChatThemeStyles.body(
+              color,
+            ).copyWith(fontStyle: FontStyle.italic, fontSize: 12.5),
           ),
         ),
       ],
@@ -273,8 +295,8 @@ class _MessageFooter extends StatelessWidget {
     final statusIcon = isSeen
         ? Icons.done_all_rounded
         : isDelivered
-            ? Icons.done_all_rounded
-            : Icons.done_rounded;
+        ? Icons.done_all_rounded
+        : Icons.done_rounded;
     final statusColor = isMe
         ? (isSeen ? Colors.white : Colors.white.withValues(alpha: 0.68))
         : metaColor;
@@ -285,10 +307,9 @@ class _MessageFooter extends StatelessWidget {
         if (message.isEdited)
           Text(
             'edited',
-            style: ChatThemeStyles.meta(metaColor).copyWith(
-              fontStyle: FontStyle.italic,
-              fontSize: 10,
-            ),
+            style: ChatThemeStyles.meta(
+              metaColor,
+            ).copyWith(fontStyle: FontStyle.italic, fontSize: 10),
           ),
         if (message.isEdited) const SizedBox(width: 3),
         Text(
@@ -344,7 +365,10 @@ class _ImageAttachmentBubbleState extends State<_ImageAttachmentBubble> {
               borderRadius: BorderRadius.circular(16),
             ),
             child: snapshot.hasError
-                ? const Icon(Icons.broken_image_outlined, color: ChatThemePalette.textSecondary)
+                ? const Icon(
+                    Icons.broken_image_outlined,
+                    color: ChatThemePalette.textSecondary,
+                  )
                 : const SizedBox(
                     width: 24,
                     height: 24,
@@ -447,7 +471,11 @@ class _FileAttachmentBubble extends StatelessWidget {
                 color: iconBackground,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(Icons.insert_drive_file_outlined, color: iconColor, size: 20),
+              child: Icon(
+                Icons.insert_drive_file_outlined,
+                color: iconColor,
+                size: 20,
+              ),
             ),
             const SizedBox(width: 10),
             Expanded(
@@ -455,8 +483,12 @@ class _FileAttachmentBubble extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    message.fileName.trim().isEmpty ? 'Attachment' : message.fileName.trim(),
-                    style: ChatThemeStyles.cardTitle(titleColor).copyWith(fontSize: 13),
+                    message.fileName.trim().isEmpty
+                        ? 'Attachment'
+                        : message.fileName.trim(),
+                    style: ChatThemeStyles.cardTitle(
+                      titleColor,
+                    ).copyWith(fontSize: 13),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -466,7 +498,9 @@ class _FileAttachmentBubble extends StatelessWidget {
                       ChatFormatters.fileSizeLabel(message.fileSize),
                       _fileTypeLabel(message.mimeType, message.fileName),
                     ].where((item) => item.trim().isNotEmpty).join(' - '),
-                    style: ChatThemeStyles.meta(metaColor).copyWith(fontSize: 10),
+                    style: ChatThemeStyles.meta(
+                      metaColor,
+                    ).copyWith(fontSize: 10),
                   ),
                 ],
               ),
@@ -478,7 +512,6 @@ class _FileAttachmentBubble extends StatelessWidget {
   }
 
   Future<void> _openAttachment(BuildContext context) async {
-    final messenger = ScaffoldMessenger.of(context);
     try {
       final document = await DocumentAccessService().getChatAttachmentDocument(
         conversationId: conversationId,
@@ -495,8 +528,10 @@ class _FileAttachmentBubble extends StatelessWidget {
         webOnlyWindowName: '_blank',
       );
       if (!launched && context.mounted) {
-        messenger.showSnackBar(
-          const SnackBar(content: Text('Could not open this attachment.')),
+        context.showAppSnackBar(
+          'We couldn\'t open this attachment.',
+          title: 'Attachment unavailable',
+          type: AppFeedbackType.error,
         );
       }
     } catch (error) {
@@ -504,8 +539,10 @@ class _FileAttachmentBubble extends StatelessWidget {
         return;
       }
 
-      messenger.showSnackBar(
-        SnackBar(content: Text('Could not open this attachment: $error')),
+      context.showAppSnackBar(
+        'We couldn\'t open this attachment. $error',
+        title: 'Attachment unavailable',
+        type: AppFeedbackType.error,
       );
     }
   }
@@ -516,14 +553,17 @@ class _FileAttachmentBubble extends StatelessWidget {
       if (normalizedMimeType.startsWith('image/')) return 'IMAGE';
       if (normalizedMimeType == 'application/pdf') return 'PDF FILE';
       if (normalizedMimeType.contains('word')) return 'DOC FILE';
-      if (normalizedMimeType.contains('sheet') || normalizedMimeType.contains('excel')) {
+      if (normalizedMimeType.contains('sheet') ||
+          normalizedMimeType.contains('excel')) {
         return 'SPREADSHEET';
       }
     }
 
     final normalizedFileName = fileName.trim().toLowerCase();
     if (normalizedFileName.endsWith('.fig')) return 'FIGMA FILE';
-    if (normalizedFileName.contains('.')) return normalizedFileName.split('.').last.toUpperCase();
+    if (normalizedFileName.contains('.')) {
+      return normalizedFileName.split('.').last.toUpperCase();
+    }
     return 'FILE';
   }
 }

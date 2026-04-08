@@ -83,7 +83,7 @@
   </div>
 
   <script type="module">
-    import { checkAuth, showToast, roleColor, esc } from './js/auth.js';
+    import { checkAuth, emptyStateHtml, esc, feedbackCardHtml, roleColor, showToast } from './js/auth.js';
     import { db, collection, getDocs, doc, updateDoc, query, orderBy } from './js/firebase-config.js';
     import {
       friendlyDocumentErrorMessage,
@@ -149,7 +149,10 @@
         renderUsers();
       } catch (error) {
         console.error('Load users error:', error);
-        document.getElementById('loading').innerHTML = '<p style="color:#c33">Failed to load users.</p>';
+        document.getElementById('loading').innerHTML = feedbackCardHtml(
+          'User records could not be loaded right now. Please refresh and try again.',
+          { type: 'error', title: 'Unable to load users', icon: '!' },
+        );
       }
     }
 
@@ -169,7 +172,10 @@
       const users = filterUsers();
       const el = document.getElementById('users-list');
       if (users.length === 0) {
-        el.innerHTML = '<div class="empty-state"><div class="icon">&#x1F465;</div><p>No users match the current filters.</p></div>';
+        el.innerHTML = emptyStateHtml(
+          'Try adjusting the selected filters or search terms to broaden the results.',
+          { title: 'No users match these filters', icon: 'US' },
+        );
         return;
       }
 

@@ -9,6 +9,7 @@ import '../../screens/settings/account_security_screens.dart';
 import '../../screens/settings/settings_flow_theme.dart';
 import '../../screens/settings/settings_flow_widgets.dart';
 import '../../widgets/profile_avatar.dart';
+import '../../widgets/shared/app_feedback.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -88,11 +89,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
 
     if (error != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(error),
-          backgroundColor: SettingsFlowPalette.error,
-        ),
+      context.showAppSnackBar(
+        error,
+        title: 'Update unavailable',
+        type: AppFeedbackType.error,
       );
       return;
     }
@@ -103,11 +103,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Profile updated successfully.'),
-        backgroundColor: SettingsFlowPalette.success,
-      ),
+    context.showAppSnackBar(
+      'Your profile has been updated successfully.',
+      title: 'Profile updated',
+      type: AppFeedbackType.success,
     );
     Navigator.pop(context);
   }
@@ -128,11 +127,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
 
     if (error != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(error),
-          backgroundColor: SettingsFlowPalette.error,
-        ),
+      context.showAppSnackBar(
+        error,
+        title: 'Avatar unavailable',
+        type: AppFeedbackType.error,
       );
       return;
     }
@@ -155,11 +153,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
 
     if (error != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(error),
-          backgroundColor: SettingsFlowPalette.error,
-        ),
+      context.showAppSnackBar(
+        error,
+        title: 'Photo unavailable',
+        type: AppFeedbackType.error,
       );
       return;
     }
@@ -168,8 +165,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Future<void> _pickAndUploadPhoto() async {
-    final messenger = ScaffoldMessenger.of(context);
-
     if (_uploadingPhoto || _studentProvider.isLoading) {
       return;
     }
@@ -193,11 +188,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       if (!mounted) {
         return;
       }
-      messenger.showSnackBar(
-        const SnackBar(
-          content: Text('Image must be smaller than 5 MB.'),
-          backgroundColor: SettingsFlowPalette.error,
-        ),
+      context.showAppSnackBar(
+        'Choose an image smaller than 5 MB.',
+        title: 'Upload unavailable',
+        type: AppFeedbackType.warning,
       );
       return;
     }
@@ -223,11 +217,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     setState(() => _uploadingPhoto = false);
 
     if (error != null) {
-      messenger.showSnackBar(
-        SnackBar(
-          content: Text(error),
-          backgroundColor: SettingsFlowPalette.error,
-        ),
+      context.showAppSnackBar(
+        error,
+        title: 'Upload unavailable',
+        type: AppFeedbackType.error,
       );
       return;
     }
@@ -248,11 +241,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
 
     if (error != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(error),
-          backgroundColor: SettingsFlowPalette.error,
-        ),
+      context.showAppSnackBar(
+        error,
+        title: 'Remove unavailable',
+        type: AppFeedbackType.error,
       );
       return;
     }

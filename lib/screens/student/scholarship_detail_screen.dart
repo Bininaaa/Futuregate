@@ -9,6 +9,7 @@ import '../../providers/auth_provider.dart';
 import '../../providers/saved_scholarship_provider.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/shared/app_content_system.dart';
+import '../../widgets/shared/app_feedback.dart';
 
 class ScholarshipDetailScreen extends StatelessWidget {
   final ScholarshipModel scholarship;
@@ -142,22 +143,20 @@ class ScholarshipDetailScreen extends StatelessWidget {
   Future<void> _openLink(BuildContext context) async {
     final uri = _linkUri;
     if (uri == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'This scholarship does not have an application link yet.',
-          ),
-        ),
+      context.showAppSnackBar(
+        'This scholarship does not have an application link yet.',
+        title: 'Link unavailable',
+        type: AppFeedbackType.warning,
       );
       return;
     }
 
     final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
     if (!launched && context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('We couldn\'t open the scholarship link.'),
-        ),
+      context.showAppSnackBar(
+        'We couldn\'t open the scholarship link right now.',
+        title: 'Open unavailable',
+        type: AppFeedbackType.error,
       );
     }
   }
@@ -194,15 +193,13 @@ class ScholarshipDetailScreen extends StatelessWidget {
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          error ??
-              (existing != null
-                  ? 'Removed from saved scholarships'
-                  : 'Scholarship saved'),
-        ),
-      ),
+    context.showAppSnackBar(
+      error ??
+          (existing != null
+              ? 'This scholarship was removed from your saved list.'
+              : 'This scholarship has been saved.'),
+      title: error == null ? 'Saved items updated' : 'Update unavailable',
+      type: error == null ? AppFeedbackType.success : AppFeedbackType.error,
     );
   }
 

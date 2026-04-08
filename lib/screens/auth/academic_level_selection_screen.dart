@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
+import '../../widgets/shared/app_feedback.dart';
 
 class AcademicLevelSelectionScreen extends StatefulWidget {
   const AcademicLevelSelectionScreen({super.key});
@@ -53,14 +54,10 @@ class _AcademicLevelSelectionScreenState
     if (!mounted) return;
 
     if (error != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(error),
-          backgroundColor: Colors.red.shade400,
-          behavior: SnackBarBehavior.floating,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        ),
+      context.showAppSnackBar(
+        error,
+        title: 'Update unavailable',
+        type: AppFeedbackType.error,
       );
     }
   }
@@ -75,11 +72,7 @@ class _AcademicLevelSelectionScreenState
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFFF5F0FF),
-              Color(0xFFFFF5EB),
-              Color(0xFFFFF0F5),
-            ],
+            colors: [Color(0xFFF5F0FF), Color(0xFFFFF5EB), Color(0xFFFFF0F5)],
           ),
         ),
         child: SafeArea(
@@ -124,7 +117,11 @@ class _AcademicLevelSelectionScreenState
               ),
             ],
           ),
-          child: const Icon(Icons.school_rounded, size: 36, color: Colors.white),
+          child: const Icon(
+            Icons.school_rounded,
+            size: 36,
+            color: Colors.white,
+          ),
         ),
         const SizedBox(height: 20),
         const Text(
@@ -200,8 +197,7 @@ class _AcademicLevelSelectionScreenState
                     child: Icon(
                       level.icon,
                       size: 24,
-                      color:
-                          isSelected ? _primaryOrange : Colors.grey.shade500,
+                      color: isSelected ? _primaryOrange : Colors.grey.shade500,
                     ),
                   ),
                   const SizedBox(width: 16),
@@ -236,8 +232,11 @@ class _AcademicLevelSelectionScreenState
                         color: _primaryOrange,
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.check,
-                          size: 16, color: Colors.white),
+                      child: const Icon(
+                        Icons.check,
+                        size: 16,
+                        color: Colors.white,
+                      ),
                     )
                   else
                     Container(
@@ -272,8 +271,9 @@ class _AcademicLevelSelectionScreenState
           : ElevatedButton(
               onPressed: isEnabled ? _continue : null,
               style: ElevatedButton.styleFrom(
-                backgroundColor:
-                    isEnabled ? _primaryOrange : Colors.grey.shade300,
+                backgroundColor: isEnabled
+                    ? _primaryOrange
+                    : Colors.grey.shade300,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30),
@@ -298,10 +298,7 @@ class _AcademicLevelSelectionScreenState
       onPressed: () => authProvider.logout(),
       child: Text(
         'Sign out',
-        style: TextStyle(
-          fontSize: 14,
-          color: Colors.grey.shade500,
-        ),
+        style: TextStyle(fontSize: 14, color: Colors.grey.shade500),
       ),
     );
   }

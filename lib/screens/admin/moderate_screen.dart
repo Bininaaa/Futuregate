@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/admin_provider.dart';
+import '../../widgets/shared/app_feedback.dart';
 
 class ModerateScreen extends StatefulWidget {
   const ModerateScreen({super.key});
@@ -315,10 +316,10 @@ class _ModerateScreenState extends State<ModerateScreen>
                                           'approved',
                                         );
                                     if (error != null && context.mounted) {
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        SnackBar(content: Text(error)),
+                                      context.showAppSnackBar(
+                                        error,
+                                        title: 'Update unavailable',
+                                        type: AppFeedbackType.error,
                                       );
                                     }
                                   },
@@ -346,10 +347,10 @@ class _ModerateScreenState extends State<ModerateScreen>
                                           'rejected',
                                         );
                                     if (error != null && context.mounted) {
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        SnackBar(content: Text(error)),
+                                      context.showAppSnackBar(
+                                        error,
+                                        title: 'Update unavailable',
+                                        type: AppFeedbackType.error,
                                       );
                                     }
                                   },
@@ -508,9 +509,11 @@ class _ModerateScreenState extends State<ModerateScreen>
                   () async {
                     final error = await provider.deleteOpportunity(opp['id']);
                     if (error != null && context.mounted) {
-                      ScaffoldMessenger.of(
-                        context,
-                      ).showSnackBar(SnackBar(content: Text(error)));
+                      context.showAppSnackBar(
+                        error,
+                        title: 'Delete unavailable',
+                        type: AppFeedbackType.error,
+                      );
                     }
                   },
                 ),
@@ -644,9 +647,11 @@ class _ModerateScreenState extends State<ModerateScreen>
                   () async {
                     final error = await provider.deleteScholarship(sch['id']);
                     if (error != null && context.mounted) {
-                      ScaffoldMessenger.of(
-                        context,
-                      ).showSnackBar(SnackBar(content: Text(error)));
+                      context.showAppSnackBar(
+                        error,
+                        title: 'Delete unavailable',
+                        type: AppFeedbackType.error,
+                      );
                     }
                   },
                 ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../config/app_metadata.dart';
+import '../../widgets/shared/app_feedback.dart';
 import 'settings_flow_theme.dart';
 import 'settings_flow_widgets.dart';
 
@@ -150,8 +151,10 @@ class AboutAvenirDzScreen extends StatelessWidget {
 
     final launched = await launchUrl(uri);
     if (!launched && context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No email app is available right now.')),
+      context.showAppSnackBar(
+        'No email app is available right now.',
+        title: 'Email unavailable',
+        type: AppFeedbackType.warning,
       );
     }
   }

@@ -96,7 +96,9 @@ class _ConversationListItemState extends State<ConversationListItem> {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF0F172A).withValues(alpha: hasUnread ? 0.06 : 0.03),
+                    color: const Color(
+                      0xFF0F172A,
+                    ).withValues(alpha: hasUnread ? 0.06 : 0.03),
                     blurRadius: 16,
                     offset: const Offset(0, 4),
                   ),
@@ -126,7 +128,9 @@ class _ConversationListItemState extends State<ConversationListItem> {
                               child: Text(
                                 displayName,
                                 style: ChatThemeStyles.cardTitle().copyWith(
-                                  fontWeight: hasUnread ? FontWeight.w700 : FontWeight.w600,
+                                  fontWeight: hasUnread
+                                      ? FontWeight.w700
+                                      : FontWeight.w600,
                                   fontSize: 14.5,
                                 ),
                                 maxLines: 1,
@@ -135,15 +139,20 @@ class _ConversationListItemState extends State<ConversationListItem> {
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              ChatFormatters.inboxTimestamp(conversation.lastMessageTime),
-                              style: ChatThemeStyles.meta(
-                                hasUnread
-                                    ? ChatThemePalette.primary
-                                    : ChatThemePalette.textSecondary,
-                              ).copyWith(
-                                fontSize: 10.5,
-                                fontWeight: hasUnread ? FontWeight.w700 : FontWeight.w500,
+                              ChatFormatters.inboxTimestamp(
+                                conversation.lastMessageTime,
                               ),
+                              style:
+                                  ChatThemeStyles.meta(
+                                    hasUnread
+                                        ? ChatThemePalette.primary
+                                        : ChatThemePalette.textSecondary,
+                                  ).copyWith(
+                                    fontSize: 10.5,
+                                    fontWeight: hasUnread
+                                        ? FontWeight.w700
+                                        : FontWeight.w500,
+                                  ),
                             ),
                           ],
                         ),
@@ -153,15 +162,18 @@ class _ConversationListItemState extends State<ConversationListItem> {
                             Expanded(
                               child: Text(
                                 subtitle,
-                                style: ChatThemeStyles.body(
-                                  hasUnread
-                                      ? ChatThemePalette.textPrimary
-                                      : ChatThemePalette.textSecondary,
-                                ).copyWith(
-                                  fontSize: 12.5,
-                                  fontWeight: hasUnread ? FontWeight.w600 : FontWeight.w400,
-                                  height: 1.3,
-                                ),
+                                style:
+                                    ChatThemeStyles.body(
+                                      hasUnread
+                                          ? ChatThemePalette.textPrimary
+                                          : ChatThemePalette.textSecondary,
+                                    ).copyWith(
+                                      fontSize: 12.5,
+                                      fontWeight: hasUnread
+                                          ? FontWeight.w600
+                                          : FontWeight.w400,
+                                      height: 1.3,
+                                    ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -169,8 +181,14 @@ class _ConversationListItemState extends State<ConversationListItem> {
                             if (hasUnread) ...[
                               const SizedBox(width: 8),
                               Container(
-                                constraints: const BoxConstraints(minWidth: 22, minHeight: 22),
-                                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                                constraints: const BoxConstraints(
+                                  minWidth: 22,
+                                  minHeight: 22,
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 7,
+                                  vertical: 3,
+                                ),
                                 decoration: BoxDecoration(
                                   gradient: ChatThemePalette.primaryGradient,
                                   borderRadius: BorderRadius.circular(999),
@@ -178,10 +196,11 @@ class _ConversationListItemState extends State<ConversationListItem> {
                                 child: Center(
                                   child: Text(
                                     unreadCount > 99 ? '99+' : '$unreadCount',
-                                    style: ChatThemeStyles.meta(Colors.white).copyWith(
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w800,
-                                    ),
+                                    style: ChatThemeStyles.meta(Colors.white)
+                                        .copyWith(
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.w800,
+                                        ),
                                   ),
                                 ),
                               ),
@@ -199,7 +218,8 @@ class _ConversationListItemState extends State<ConversationListItem> {
                                   icon: Icons.work_outline_rounded,
                                   label: conversation.contextLabel.trim(),
                                   foregroundColor: ChatThemePalette.primaryDark,
-                                  backgroundColor: ChatThemePalette.primary.withValues(alpha: 0.07),
+                                  backgroundColor: ChatThemePalette.primary
+                                      .withValues(alpha: 0.07),
                                 ),
                               if (widget.isMuted)
                                 const _MetaPill(
@@ -270,13 +290,14 @@ class _ConversationAvatar extends StatelessWidget {
           child: conversation.isGroup
               ? CircleAvatar(
                   radius: 24,
-                  backgroundColor: ChatThemePalette.primary.withValues(alpha: 0.1),
+                  backgroundColor: ChatThemePalette.primary.withValues(
+                    alpha: 0.1,
+                  ),
                   child: Text(
                     _groupInitials(fallbackName),
-                    style: ChatThemeStyles.cardTitle(ChatThemePalette.primary).copyWith(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w800,
-                    ),
+                    style: ChatThemeStyles.cardTitle(
+                      ChatThemePalette.primary,
+                    ).copyWith(fontSize: 14, fontWeight: FontWeight.w800),
                   ),
                 )
               : ProfileAvatar(
@@ -346,10 +367,9 @@ class _MetaPill extends StatelessWidget {
             constraints: const BoxConstraints(maxWidth: 120),
             child: Text(
               label,
-              style: ChatThemeStyles.meta(foregroundColor).copyWith(
-                fontSize: 10,
-                fontWeight: FontWeight.w600,
-              ),
+              style: ChatThemeStyles.meta(
+                foregroundColor,
+              ).copyWith(fontSize: 10, fontWeight: FontWeight.w600),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),

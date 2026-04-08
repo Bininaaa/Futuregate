@@ -67,7 +67,9 @@ class ChatInputBar extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border(
-          top: BorderSide(color: ChatThemePalette.border.withValues(alpha: 0.5)),
+          top: BorderSide(
+            color: ChatThemePalette.border.withValues(alpha: 0.5),
+          ),
         ),
       ),
       child: SafeArea(
@@ -84,7 +86,8 @@ class ChatInputBar extends StatelessWidget {
                     label: 'Editing message',
                     onClear: onCancelEdit,
                   ),
-                if (isEditing && pendingAttachment != null) const SizedBox(height: 8),
+                if (isEditing && pendingAttachment != null)
+                  const SizedBox(height: 8),
                 if (pendingAttachment != null)
                   _AttachmentPreview(
                     attachment: pendingAttachment!,
@@ -130,7 +133,9 @@ class ChatInputBar extends StatelessWidget {
                   PopupMenuButton<String>(
                     tooltip: 'Attach',
                     color: ChatThemePalette.surface,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18),
+                    ),
                     onSelected: (value) {
                       if (value == 'image') {
                         onPickImage();
@@ -143,7 +148,11 @@ class ChatInputBar extends StatelessWidget {
                         value: 'image',
                         child: Row(
                           children: [
-                            const Icon(Icons.image_outlined, color: ChatThemePalette.primary, size: 20),
+                            const Icon(
+                              Icons.image_outlined,
+                              color: ChatThemePalette.primary,
+                              size: 20,
+                            ),
                             const SizedBox(width: 10),
                             Text('Photo', style: ChatThemeStyles.body()),
                           ],
@@ -153,7 +162,11 @@ class ChatInputBar extends StatelessWidget {
                         value: 'file',
                         child: Row(
                           children: [
-                            const Icon(Icons.attach_file_rounded, color: ChatThemePalette.secondary, size: 20),
+                            const Icon(
+                              Icons.attach_file_rounded,
+                              color: ChatThemePalette.secondary,
+                              size: 20,
+                            ),
                             const SizedBox(width: 10),
                             Text('File', style: ChatThemeStyles.body()),
                           ],
@@ -167,7 +180,11 @@ class ChatInputBar extends StatelessWidget {
                         color: ChatThemePalette.primary.withValues(alpha: 0.08),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.add_rounded, color: ChatThemePalette.primary, size: 22),
+                      child: const Icon(
+                        Icons.add_rounded,
+                        color: ChatThemePalette.primary,
+                        size: 22,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -190,12 +207,20 @@ class ChatInputBar extends StatelessWidget {
                               maxLines: 5,
                               textCapitalization: TextCapitalization.sentences,
                               textInputAction: TextInputAction.newline,
-                              style: ChatThemeStyles.body().copyWith(fontSize: 13.5),
+                              style: ChatThemeStyles.body().copyWith(
+                                fontSize: 13.5,
+                              ),
                               decoration: InputDecoration(
-                                hintText: isEditing ? 'Edit your message...' : 'Message...',
-                                hintStyle: ChatThemeStyles.body(ChatThemePalette.textSecondary).copyWith(fontSize: 13.5),
+                                hintText: isEditing
+                                    ? 'Edit your message...'
+                                    : 'Message...',
+                                hintStyle: ChatThemeStyles.body(
+                                  ChatThemePalette.textSecondary,
+                                ).copyWith(fontSize: 13.5),
                                 border: InputBorder.none,
-                                contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 10,
+                                ),
                               ),
                               onSubmitted: (_) => onSend(),
                             ),
@@ -224,7 +249,9 @@ class ChatInputBar extends StatelessWidget {
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: ChatThemePalette.primary.withValues(alpha: 0.25),
+                          color: ChatThemePalette.primary.withValues(
+                            alpha: 0.25,
+                          ),
                           blurRadius: 12,
                           offset: const Offset(0, 4),
                         ),
@@ -237,10 +264,15 @@ class ChatInputBar extends StatelessWidget {
                           ? const SizedBox(
                               width: 16,
                               height: 16,
-                              child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
                             )
                           : Icon(
-                              isEditing ? Icons.check_rounded : Icons.send_rounded,
+                              isEditing
+                                  ? Icons.check_rounded
+                                  : Icons.send_rounded,
                               color: Colors.white,
                               size: 20,
                             ),
@@ -282,7 +314,9 @@ class _StatusBanner extends StatelessWidget {
           Expanded(
             child: Text(
               label,
-              style: ChatThemeStyles.meta(ChatThemePalette.primary).copyWith(fontWeight: FontWeight.w600),
+              style: ChatThemeStyles.meta(
+                ChatThemePalette.primary,
+              ).copyWith(fontWeight: FontWeight.w600),
             ),
           ),
           InkWell(
@@ -290,7 +324,11 @@ class _StatusBanner extends StatelessWidget {
             borderRadius: BorderRadius.circular(99),
             child: const Padding(
               padding: EdgeInsets.all(2),
-              child: Icon(Icons.close_rounded, size: 16, color: ChatThemePalette.primary),
+              child: Icon(
+                Icons.close_rounded,
+                size: 16,
+                color: ChatThemePalette.primary,
+              ),
             ),
           ),
         ],
@@ -312,7 +350,9 @@ class _AttachmentPreview extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFFF5F7FA),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: ChatThemePalette.border.withValues(alpha: 0.5)),
+        border: Border.all(
+          color: ChatThemePalette.border.withValues(alpha: 0.5),
+        ),
       ),
       child: Row(
         children: [
@@ -326,8 +366,12 @@ class _AttachmentPreview extends StatelessWidget {
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(
-              attachment.isImage ? Icons.image_outlined : Icons.insert_drive_file_outlined,
-              color: attachment.isImage ? ChatThemePalette.secondary : ChatThemePalette.primary,
+              attachment.isImage
+                  ? Icons.image_outlined
+                  : Icons.insert_drive_file_outlined,
+              color: attachment.isImage
+                  ? ChatThemePalette.secondary
+                  : ChatThemePalette.primary,
               size: 18,
             ),
           ),
@@ -358,7 +402,11 @@ class _AttachmentPreview extends StatelessWidget {
             borderRadius: BorderRadius.circular(99),
             child: const Padding(
               padding: EdgeInsets.all(2),
-              child: Icon(Icons.close_rounded, size: 16, color: ChatThemePalette.textSecondary),
+              child: Icon(
+                Icons.close_rounded,
+                size: 16,
+                color: ChatThemePalette.textSecondary,
+              ),
             ),
           ),
         ],
@@ -372,11 +420,7 @@ class _AiChip extends StatelessWidget {
   final String label;
   final VoidCallback onTap;
 
-  const _AiChip({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-  });
+  const _AiChip({required this.icon, required this.label, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -398,10 +442,9 @@ class _AiChip extends StatelessWidget {
             const SizedBox(width: 4),
             Text(
               label,
-              style: ChatThemeStyles.meta(ChatThemePalette.primary).copyWith(
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-              ),
+              style: ChatThemeStyles.meta(
+                ChatThemePalette.primary,
+              ).copyWith(fontSize: 11, fontWeight: FontWeight.w600),
             ),
           ],
         ),
@@ -433,9 +476,9 @@ class _AiProcessingIndicator extends StatelessWidget {
           const SizedBox(width: 8),
           Text(
             'AI is processing...',
-            style: ChatThemeStyles.meta(ChatThemePalette.primary).copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+            style: ChatThemeStyles.meta(
+              ChatThemePalette.primary,
+            ).copyWith(fontWeight: FontWeight.w600),
           ),
         ],
       ),

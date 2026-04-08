@@ -16,6 +16,7 @@ import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/profile_avatar.dart';
+import '../../widgets/shared/app_feedback.dart';
 import '../notifications_screen.dart';
 import 'opportunity_detail_screen.dart';
 
@@ -215,14 +216,13 @@ class _JobsScreenState extends State<JobsScreen> {
   Future<void> _toggleSavedOpportunity(OpportunityModel opportunity) async {
     final authProvider = context.read<AuthProvider>();
     final savedProvider = context.read<SavedOpportunityProvider>();
-    final messenger = ScaffoldMessenger.of(context);
     final userId = authProvider.userModel?.uid;
 
     if (userId == null || userId.isEmpty) {
-      messenger.showSnackBar(
-        const SnackBar(
-          content: Text('You must be logged in to save opportunities'),
-        ),
+      context.showAppSnackBar(
+        'Sign in to save opportunities for later.',
+        title: 'Login required',
+        type: AppFeedbackType.warning,
       );
       return;
     }
@@ -254,7 +254,11 @@ class _JobsScreenState extends State<JobsScreen> {
       return;
     }
 
-    messenger.showSnackBar(SnackBar(content: Text(error ?? message)));
+    context.showAppSnackBar(
+      error ?? message,
+      title: error == null ? 'Saved items updated' : 'Save unavailable',
+      type: error == null ? AppFeedbackType.success : AppFeedbackType.error,
+    );
   }
 
   _JobStatusData? _statusDataForOpportunity(

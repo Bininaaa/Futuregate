@@ -63,6 +63,8 @@ class OpportunityProvider extends ChangeNotifier {
   }
 
   List<OpportunityModel> _deriveFeatured(List<OpportunityModel> opportunities) {
-    return opportunities.where((opportunity) => opportunity.isFeatured).toList();
+    return opportunities
+        .where((opportunity) => opportunity.isFeatured)
+        .toList();
   }
 }

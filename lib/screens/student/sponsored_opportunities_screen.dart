@@ -18,6 +18,7 @@ import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/profile_avatar.dart';
+import '../../widgets/shared/app_feedback.dart';
 import '../notifications_screen.dart';
 import 'opportunity_detail_screen.dart';
 
@@ -158,7 +159,6 @@ class _SponsoredOpportunitiesScreenState
   Future<void> _toggleSavedOpportunity(OpportunityModel opportunity) async {
     final authProvider = context.read<AuthProvider>();
     final savedProvider = context.read<SavedOpportunityProvider>();
-    final messenger = ScaffoldMessenger.of(context);
     final userId = authProvider.userModel?.uid;
 
     if (_busySaveIds.contains(opportunity.id)) {
@@ -166,10 +166,10 @@ class _SponsoredOpportunitiesScreenState
     }
 
     if (userId == null || userId.isEmpty) {
-      messenger.showSnackBar(
-        const SnackBar(
-          content: Text('You must be logged in to save opportunities'),
-        ),
+      context.showAppSnackBar(
+        'Sign in to save opportunities for later.',
+        title: 'Login required',
+        type: AppFeedbackType.warning,
       );
       return;
     }
@@ -206,7 +206,11 @@ class _SponsoredOpportunitiesScreenState
         return;
       }
 
-      messenger.showSnackBar(SnackBar(content: Text(error ?? message)));
+      context.showAppSnackBar(
+        error ?? message,
+        title: error == null ? 'Saved items updated' : 'Save unavailable',
+        type: error == null ? AppFeedbackType.success : AppFeedbackType.error,
+      );
     } finally {
       if (mounted) {
         setState(() {
@@ -218,13 +222,12 @@ class _SponsoredOpportunitiesScreenState
 
   Future<void> _applyNow(_SponsoredCardModel item) async {
     final opportunity = item.opportunity;
-    final messenger = ScaffoldMessenger.of(context);
 
     if (opportunity == null) {
-      messenger.showSnackBar(
-        const SnackBar(
-          content: Text('This sponsored preview is not live yet.'),
-        ),
+      context.showAppSnackBar(
+        'This sponsored preview is not live yet.',
+        title: 'Opportunity unavailable',
+        type: AppFeedbackType.warning,
       );
       return;
     }
@@ -239,8 +242,10 @@ class _SponsoredOpportunitiesScreenState
     final currentUser = authProvider.userModel;
 
     if (currentUser == null) {
-      messenger.showSnackBar(
-        const SnackBar(content: Text('You must be logged in to apply')),
+      context.showAppSnackBar(
+        'Sign in to continue with your application.',
+        title: 'Login required',
+        type: AppFeedbackType.warning,
       );
       return;
     }
@@ -260,8 +265,10 @@ class _SponsoredOpportunitiesScreenState
       }
 
       if (eligibility != ApplicationEligibilityStatus.available) {
-        messenger.showSnackBar(
-          SnackBar(content: Text(_messageForEligibility(eligibility))),
+        context.showAppSnackBar(
+          _messageForEligibility(eligibility),
+          title: 'Application blocked',
+          type: AppFeedbackType.warning,
         );
         return;
       }
@@ -274,10 +281,10 @@ class _SponsoredOpportunitiesScreenState
 
       final cv = cvProvider.cv;
       if (cv == null) {
-        messenger.showSnackBar(
-          const SnackBar(
-            content: Text('Please create your CV before applying'),
-          ),
+        context.showAppSnackBar(
+          'Create your CV before applying to this opportunity.',
+          title: 'CV required',
+          type: AppFeedbackType.warning,
         );
         return;
       }
@@ -293,8 +300,10 @@ class _SponsoredOpportunitiesScreenState
         return;
       }
 
-      messenger.showSnackBar(
-        SnackBar(content: Text(error ?? 'Application submitted successfully')),
+      context.showAppSnackBar(
+        error ?? 'Your application has been submitted successfully.',
+        title: error == null ? 'Application sent' : 'Application unavailable',
+        type: error == null ? AppFeedbackType.success : AppFeedbackType.error,
       );
     } finally {
       if (mounted) {

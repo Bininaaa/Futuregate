@@ -13,6 +13,7 @@ import '../../utils/company_dashboard_palette.dart';
 import '../../utils/document_upload_validator.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/profile_avatar.dart';
+import '../../widgets/shared/app_feedback.dart';
 import '../settings/about_avenirdz_screen.dart';
 import '../settings/help_center_screen.dart';
 import '../settings/logout_confirmation_sheet.dart';
@@ -749,9 +750,11 @@ class CompanyProfileScreen extends StatelessWidget {
       webOnlyWindowName: '_blank',
     );
     if (!launched && context.mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(failureMessage)));
+      context.showAppSnackBar(
+        failureMessage,
+        title: 'Open unavailable',
+        type: AppFeedbackType.error,
+      );
     }
   }
 
@@ -760,7 +763,6 @@ class CompanyProfileScreen extends StatelessWidget {
     required String companyId,
     bool download = false,
   }) async {
-    final messenger = ScaffoldMessenger.of(context);
     try {
       final document = await DocumentAccessService()
           .getCompanyCommercialRegister(companyId: companyId);
@@ -776,16 +778,20 @@ class CompanyProfileScreen extends StatelessWidget {
         webOnlyWindowName: '_blank',
       );
       if (!launched && context.mounted) {
-        messenger.showSnackBar(
-          const SnackBar(content: Text('We couldn\'t open the document.')),
+        context.showAppSnackBar(
+          'We couldn\'t open the document right now.',
+          title: 'Document unavailable',
+          type: AppFeedbackType.error,
         );
       }
     } catch (error) {
       if (!context.mounted) {
         return;
       }
-      messenger.showSnackBar(
-        SnackBar(content: Text(_documentErrorMessage(error))),
+      context.showAppSnackBar(
+        _documentErrorMessage(error),
+        title: 'Document unavailable',
+        type: AppFeedbackType.error,
       );
     }
   }
@@ -1419,7 +1425,6 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
   }
 
   Future<void> _pickAndUploadLogo() async {
-    final messenger = ScaffoldMessenger.of(context);
     final authProvider = context.read<AuthProvider>();
     final companyProvider = context.read<CompanyProvider>();
     final user = authProvider.userModel;
@@ -1441,8 +1446,10 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
       if (!mounted) {
         return;
       }
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Image must be smaller than 5 MB.')),
+      context.showAppSnackBar(
+        'Choose an image smaller than 5 MB.',
+        title: 'Upload unavailable',
+        type: AppFeedbackType.warning,
       );
       return;
     }
@@ -1459,7 +1466,11 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
         return;
       }
       if (error != null) {
-        messenger.showSnackBar(SnackBar(content: Text(error)));
+        context.showAppSnackBar(
+          error,
+          title: 'Upload unavailable',
+          type: AppFeedbackType.error,
+        );
         return;
       }
       await authProvider.loadCurrentUser();
@@ -1486,9 +1497,11 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
         return;
       }
       if (error != null) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(error)));
+        context.showAppSnackBar(
+          error,
+          title: 'Update unavailable',
+          type: AppFeedbackType.error,
+        );
         return;
       }
       await authProvider.loadCurrentUser();
@@ -1576,9 +1589,11 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
     setState(() => _saving = false);
 
     if (error != null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(error)));
+      context.showAppSnackBar(
+        error,
+        title: 'Update unavailable',
+        type: AppFeedbackType.error,
+      );
       return;
     }
 
@@ -1593,7 +1608,6 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
     required String companyId,
     bool download = false,
   }) async {
-    final messenger = ScaffoldMessenger.of(context);
     try {
       final document = await DocumentAccessService()
           .getCompanyCommercialRegister(companyId: companyId);
@@ -1609,16 +1623,20 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
         webOnlyWindowName: '_blank',
       );
       if (!launched && mounted) {
-        messenger.showSnackBar(
-          const SnackBar(content: Text('We couldn\'t open the document.')),
+        context.showAppSnackBar(
+          'We couldn\'t open the document right now.',
+          title: 'Document unavailable',
+          type: AppFeedbackType.error,
         );
       }
     } catch (error) {
       if (!mounted) {
         return;
       }
-      messenger.showSnackBar(
-        SnackBar(content: Text(_documentErrorMessage(error))),
+      context.showAppSnackBar(
+        _documentErrorMessage(error),
+        title: 'Document unavailable',
+        type: AppFeedbackType.error,
       );
     }
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../config/app_metadata.dart';
+import '../../widgets/shared/app_feedback.dart';
 import 'settings_flow_theme.dart';
 import 'settings_flow_widgets.dart';
 
@@ -262,7 +263,6 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
     BuildContext context, {
     required String subject,
   }) async {
-    final messenger = ScaffoldMessenger.of(context);
     final uri = Uri(
       scheme: 'mailto',
       path: AppMetadata.supportEmail,
@@ -270,11 +270,14 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
     );
 
     final launched = await launchUrl(uri);
+    if (!context.mounted) {
+      return;
+    }
     if (!launched) {
-      messenger.showSnackBar(
-        const SnackBar(
-          content: Text('No email app is available on this device.'),
-        ),
+      context.showAppSnackBar(
+        'No email app is available on this device.',
+        title: 'Email unavailable',
+        type: AppFeedbackType.warning,
       );
     }
   }

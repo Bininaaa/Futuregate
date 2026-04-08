@@ -13,6 +13,7 @@ import '../../widgets/ideas/idea_metrics_row.dart';
 import '../../widgets/ideas/innovation_hub_theme.dart';
 import '../../widgets/profile_avatar.dart';
 import '../../widgets/shared/app_content_system.dart';
+import '../../widgets/shared/app_feedback.dart';
 import '../chat/user_profile_preview_screen.dart';
 import 'edit_project_idea_screen.dart';
 
@@ -577,9 +578,11 @@ class IdeaDetailsScreen extends StatelessWidget {
     }
 
     if (error != null && context.mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(error)));
+      context.showAppSnackBar(
+        error,
+        title: 'Update unavailable',
+        type: AppFeedbackType.error,
+      );
     }
   }
 
@@ -607,8 +610,10 @@ class IdeaDetailsScreen extends StatelessWidget {
 
     final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
     if (!launched && context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not open that link.')),
+      context.showAppSnackBar(
+        'Could not open that link.',
+        title: 'Open unavailable',
+        type: AppFeedbackType.error,
       );
     }
   }

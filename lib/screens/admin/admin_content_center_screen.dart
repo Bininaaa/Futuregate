@@ -20,6 +20,7 @@ import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/admin/admin_ui.dart';
 import '../../widgets/profile_avatar.dart';
+import '../../widgets/shared/app_feedback.dart';
 import 'admin_library_screen.dart';
 import 'admin_opportunity_editor_screen.dart';
 import '../student/create_idea_screen.dart';
@@ -625,9 +626,11 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                   () async {
                     final error = await provider.deleteProjectIdea(idea.id);
                     if (error != null && context.mounted) {
-                      ScaffoldMessenger.of(
-                        context,
-                      ).showSnackBar(SnackBar(content: Text(error)));
+                      context.showAppSnackBar(
+                        error,
+                        title: 'Delete unavailable',
+                        type: AppFeedbackType.error,
+                      );
                     }
                   },
                 ),
@@ -654,9 +657,11 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                         'approved',
                       );
                       if (error != null && context.mounted) {
-                        ScaffoldMessenger.of(
-                          context,
-                        ).showSnackBar(SnackBar(content: Text(error)));
+                        context.showAppSnackBar(
+                          error,
+                          title: 'Update unavailable',
+                          type: AppFeedbackType.error,
+                        );
                       }
                     }
                   : null,
@@ -667,9 +672,11 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                         'rejected',
                       );
                       if (error != null && context.mounted) {
-                        ScaffoldMessenger.of(
-                          context,
-                        ).showSnackBar(SnackBar(content: Text(error)));
+                        context.showAppSnackBar(
+                          error,
+                          title: 'Update unavailable',
+                          type: AppFeedbackType.error,
+                        );
                       }
                     }
                   : null,
@@ -1291,9 +1298,11 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                       opportunityId,
                     );
                     if (error != null && context.mounted) {
-                      ScaffoldMessenger.of(
-                        context,
-                      ).showSnackBar(SnackBar(content: Text(error)));
+                      context.showAppSnackBar(
+                        error,
+                        title: 'Delete unavailable',
+                        type: AppFeedbackType.error,
+                      );
                     }
                   },
                 ),
@@ -1602,9 +1611,11 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                       scholarship['id'].toString(),
                     );
                     if (error != null && context.mounted) {
-                      ScaffoldMessenger.of(
-                        context,
-                      ).showSnackBar(SnackBar(content: Text(error)));
+                      context.showAppSnackBar(
+                        error,
+                        title: 'Delete unavailable',
+                        type: AppFeedbackType.error,
+                      );
                     }
                   },
                 ),
@@ -2275,9 +2286,12 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       return;
     }
 
-    final messenger = ScaffoldMessenger.of(context);
     if (error != null) {
-      messenger.showSnackBar(SnackBar(content: Text(error)));
+      context.showAppSnackBar(
+        error,
+        title: 'Update unavailable',
+        type: AppFeedbackType.error,
+      );
       return;
     }
 
@@ -2285,7 +2299,11 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     final message = nextHidden
         ? '$itemType "$normalizedTitle" hidden. You can restore it later.'
         : '$itemType "$normalizedTitle" is visible again.';
-    messenger.showSnackBar(SnackBar(content: Text(message)));
+    context.showAppSnackBar(
+      message,
+      title: nextHidden ? '$itemType hidden' : '$itemType visible',
+      type: AppFeedbackType.success,
+    );
   }
 
   Widget _buildContentCard({
@@ -3737,19 +3755,18 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     bool download = false,
     bool requirePdf = false,
   }) async {
-    final messenger = ScaffoldMessenger.of(context);
-
     try {
       final document = await _documentAccessService.getApplicationCvDocument(
         applicationId: applicationId,
         variant: variant,
       );
+      if (!mounted) return;
 
       if (requirePdf && !document.isPdf) {
-        messenger.showSnackBar(
-          const SnackBar(
-            content: Text('This document is not a valid PDF file.'),
-          ),
+        context.showAppSnackBar(
+          'This document is not a valid PDF file.',
+          title: 'Preview unavailable',
+          type: AppFeedbackType.warning,
         );
         return;
       }
@@ -3766,14 +3783,21 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
         mode: LaunchMode.platformDefault,
         webOnlyWindowName: '_blank',
       );
-      if (!launched && mounted) {
-        messenger.showSnackBar(
-          const SnackBar(content: Text('We couldn\'t open the document.')),
+      if (!mounted) return;
+      if (!launched) {
+        context.showAppSnackBar(
+          'We couldn\'t open the document right now.',
+          title: 'Document unavailable',
+          type: AppFeedbackType.error,
         );
       }
     } catch (e) {
       if (!mounted) return;
-      messenger.showSnackBar(SnackBar(content: Text(_documentErrorMessage(e))));
+      context.showAppSnackBar(
+        _documentErrorMessage(e),
+        title: 'Document unavailable',
+        type: AppFeedbackType.error,
+      );
     }
   }
 

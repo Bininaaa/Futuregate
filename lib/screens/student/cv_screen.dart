@@ -13,6 +13,7 @@ import '../../screens/settings/settings_flow_widgets.dart';
 import '../../services/document_access_service.dart';
 import '../../utils/document_upload_validator.dart';
 import '../../widgets/cv_templates/cv_template_preview.dart';
+import '../../widgets/shared/app_feedback.dart';
 import 'cv_edit_screen.dart';
 import 'cv_preview_screen.dart';
 import 'cv_template_selector_screen.dart';
@@ -92,16 +93,13 @@ class _CvScreenState extends State<CvScreen> {
 
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            error ??
-                'Template changed to ${CvTemplateConfig.getTemplate(selectedId).name}.',
-          ),
-          backgroundColor: error == null
-              ? SettingsFlowPalette.success
-              : SettingsFlowPalette.error,
-        ),
+      context.showAppSnackBar(
+        error ??
+            'Template updated to ${CvTemplateConfig.getTemplate(selectedId).name}.',
+        title: error == null
+            ? 'Template updated'
+            : 'Template update unavailable',
+        type: error == null ? AppFeedbackType.success : AppFeedbackType.error,
       );
     }
   }
@@ -117,14 +115,11 @@ class _CvScreenState extends State<CvScreen> {
   }
 
   Future<void> _generateCv(CvModel? cv) async {
-    final messenger = ScaffoldMessenger.of(context);
-
     if (cv == null || !cv.hasBuilderContent) {
-      messenger.showSnackBar(
-        const SnackBar(
-          content: Text('Add CV content first to generate a PDF.'),
-          backgroundColor: SettingsFlowPalette.warning,
-        ),
+      context.showAppSnackBar(
+        'Add your CV details before generating a PDF.',
+        title: 'Content needed',
+        type: AppFeedbackType.warning,
       );
       return;
     }
@@ -138,18 +133,14 @@ class _CvScreenState extends State<CvScreen> {
 
     if (!mounted) return;
 
-    messenger.showSnackBar(
-      SnackBar(
-        content: Text(error ?? 'CV exported successfully.'),
-        backgroundColor: error == null
-            ? SettingsFlowPalette.success
-            : SettingsFlowPalette.error,
-      ),
+    context.showAppSnackBar(
+      error ?? 'Your CV PDF is ready and has been saved.',
+      title: error == null ? 'CV exported' : 'Export unavailable',
+      type: error == null ? AppFeedbackType.success : AppFeedbackType.error,
     );
   }
 
   Future<void> _uploadExistingCv() async {
-    final messenger = ScaffoldMessenger.of(context);
     final uid = _uid;
     if (uid == null) return;
 
@@ -170,11 +161,10 @@ class _CvScreenState extends State<CvScreen> {
 
     if (validationError != null) {
       if (!mounted) return;
-      messenger.showSnackBar(
-        SnackBar(
-          content: Text(validationError),
-          backgroundColor: SettingsFlowPalette.error,
-        ),
+      context.showAppSnackBar(
+        validationError,
+        title: 'Upload unavailable',
+        type: AppFeedbackType.warning,
       );
       return;
     }
@@ -188,18 +178,14 @@ class _CvScreenState extends State<CvScreen> {
 
     if (!mounted) return;
 
-    messenger.showSnackBar(
-      SnackBar(
-        content: Text(error ?? 'CV uploaded successfully.'),
-        backgroundColor: error == null
-            ? SettingsFlowPalette.success
-            : SettingsFlowPalette.error,
-      ),
+    context.showAppSnackBar(
+      error ?? 'Your CV file has been uploaded.',
+      title: error == null ? 'Upload complete' : 'Upload unavailable',
+      type: error == null ? AppFeedbackType.success : AppFeedbackType.error,
     );
   }
 
   Future<void> _togglePrimaryCvMode(CvModel cv) async {
-    final messenger = ScaffoldMessenger.of(context);
     final uid = _uid;
     if (uid == null) return;
 
@@ -216,13 +202,10 @@ class _CvScreenState extends State<CvScreen> {
         ? 'Now using your uploaded CV.'
         : 'Now using your built CV.';
 
-    messenger.showSnackBar(
-      SnackBar(
-        content: Text(error ?? successMessage),
-        backgroundColor: error == null
-            ? SettingsFlowPalette.success
-            : SettingsFlowPalette.error,
-      ),
+    context.showAppSnackBar(
+      error ?? successMessage,
+      title: error == null ? 'Primary CV updated' : 'Update unavailable',
+      type: error == null ? AppFeedbackType.success : AppFeedbackType.error,
     );
   }
 
@@ -234,19 +217,18 @@ class _CvScreenState extends State<CvScreen> {
     final uid = _uid;
     if (uid == null) return;
 
-    final messenger = ScaffoldMessenger.of(context);
-
     try {
       final document = await _documentAccessService.getUserCvDocument(
         userId: uid,
         variant: variant,
       );
+      if (!mounted) return;
 
       if (requirePdf && !document.isPdf) {
-        messenger.showSnackBar(
-          const SnackBar(
-            content: Text('This document is not a valid PDF file.'),
-          ),
+        context.showAppSnackBar(
+          'This file is not a valid PDF yet.',
+          title: 'Preview unavailable',
+          type: AppFeedbackType.warning,
         );
         return;
       }
@@ -263,14 +245,21 @@ class _CvScreenState extends State<CvScreen> {
         webOnlyWindowName: '_blank',
       );
 
-      if (!launched && mounted) {
-        messenger.showSnackBar(
-          const SnackBar(content: Text('We couldn\'t open the document.')),
+      if (!mounted) return;
+      if (!launched) {
+        context.showAppSnackBar(
+          'We couldn\'t open the document right now.',
+          title: 'Open unavailable',
+          type: AppFeedbackType.error,
         );
       }
     } catch (e) {
       if (!mounted) return;
-      messenger.showSnackBar(SnackBar(content: Text(_documentErrorMessage(e))));
+      context.showAppSnackBar(
+        _documentErrorMessage(e),
+        title: 'Document unavailable',
+        type: AppFeedbackType.error,
+      );
     }
   }
 

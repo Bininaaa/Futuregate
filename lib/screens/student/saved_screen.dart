@@ -22,6 +22,7 @@ import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/ideas/innovation_hub_theme.dart';
+import '../../widgets/shared/app_feedback.dart';
 import '../../widgets/student/student_workspace_shell.dart';
 import '../../widgets/student_opportunity_hub_widgets.dart';
 import 'idea_details_screen.dart';
@@ -288,10 +289,10 @@ class _SavedScreenState extends State<SavedScreen> {
     }
 
     if (opportunity == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('This opportunity is no longer available.'),
-        ),
+      context.showAppSnackBar(
+        'This opportunity is no longer available.',
+        title: 'Opportunity unavailable',
+        type: AppFeedbackType.warning,
       );
       return;
     }
@@ -309,10 +310,10 @@ class _SavedScreenState extends State<SavedScreen> {
     }
 
     if (scholarship == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('This scholarship is no longer available.'),
-        ),
+      context.showAppSnackBar(
+        'This scholarship is no longer available.',
+        title: 'Scholarship unavailable',
+        type: AppFeedbackType.warning,
       );
       return;
     }
@@ -329,10 +330,10 @@ class _SavedScreenState extends State<SavedScreen> {
     final link = training.displayLink;
     if (link.isEmpty) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('This training does not have a link yet.'),
-        ),
+      context.showAppSnackBar(
+        'This training does not have a link yet.',
+        title: 'Link unavailable',
+        type: AppFeedbackType.warning,
       );
       return;
     }
@@ -400,14 +401,12 @@ class _SavedScreenState extends State<SavedScreen> {
 
     setState(() => _removingItemKey = null);
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          error == null
-              ? successMessage
-              : 'We couldn\'t remove this item right now.',
-        ),
-      ),
+    context.showAppSnackBar(
+      error == null
+          ? successMessage
+          : 'We couldn\'t remove this item right now.',
+      title: error == null ? 'Saved items updated' : 'Update unavailable',
+      type: error == null ? AppFeedbackType.success : AppFeedbackType.error,
     );
   }
 
