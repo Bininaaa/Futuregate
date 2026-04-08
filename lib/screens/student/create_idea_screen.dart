@@ -9,6 +9,7 @@ import '../../providers/project_idea_provider.dart';
 import '../../services/file_storage_service.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/ideas/innovation_hub_theme.dart';
+import '../../widgets/shared/app_content_system.dart';
 import '../../widgets/student/student_workspace_shell.dart';
 
 class CreateIdeaScreen extends StatefulWidget {
@@ -57,6 +58,25 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
       !widget.isAdmin &&
       widget.isEditMode &&
       (widget.idea?.status.toLowerCase() ?? '') != 'pending';
+
+  AppContentTheme get _theme => const AppContentTheme(
+    accent: InnovationHubPalette.primary,
+    accentDark: InnovationHubPalette.primaryDark,
+    accentSoft: InnovationHubPalette.cardTint,
+    secondary: InnovationHubPalette.secondary,
+    background: InnovationHubPalette.background,
+    surface: InnovationHubPalette.surface,
+    surfaceMuted: InnovationHubPalette.cardTint,
+    border: InnovationHubPalette.border,
+    textPrimary: InnovationHubPalette.textPrimary,
+    textSecondary: InnovationHubPalette.textSecondary,
+    textMuted: InnovationHubPalette.textSecondary,
+    success: InnovationHubPalette.success,
+    warning: InnovationHubPalette.warning,
+    error: InnovationHubPalette.error,
+    heroGradient: InnovationHubPalette.primaryGradient,
+    typography: AppContentTypography.innovation,
+  );
 
   @override
   void initState() {
@@ -413,35 +433,18 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                     padding: EdgeInsets.symmetric(vertical: 14),
                     child: Center(child: CircularProgressIndicator()),
                   )
-                : ElevatedButton(
+                : AppPrimaryButton(
+                    theme: _theme,
+                    label: _isUploadingImage
+                        ? 'Uploading cover image...'
+                        : _isLocked
+                        ? 'Editing locked after review'
+                        : widget.isEditMode
+                        ? 'Save Changes'
+                        : widget.isAdmin
+                        ? 'Publish Idea'
+                        : 'Submit Idea',
                     onPressed: _isUploadingImage ? null : _submit,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: InnovationHubPalette.primary,
-                      foregroundColor: Colors.white,
-                      disabledBackgroundColor: InnovationHubPalette.primary
-                          .withValues(alpha: 0.4),
-                      disabledForegroundColor: Colors.white,
-                      elevation: 0,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(18),
-                      ),
-                    ),
-                    child: Text(
-                      _isUploadingImage
-                          ? 'Uploading cover image...'
-                          : _isLocked
-                          ? 'Editing locked after review'
-                          : widget.isEditMode
-                          ? 'Save Changes'
-                          : widget.isAdmin
-                          ? 'Publish Idea'
-                          : 'Submit Idea',
-                      style: InnovationHubTypography.label(
-                        color: Colors.white,
-                        size: 14,
-                      ),
-                    ),
                   ),
           ),
         ),
@@ -460,9 +463,9 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                 if (widget.isAdmin) ...[
                   const SizedBox(height: 18),
                   _SectionCard(
-                    title: 'Publishing',
+                    title: 'Publish',
                     subtitle:
-                        'Choose whether the idea is visible in discovery.',
+                        'Keep visibility decisions in the same structured publishing area used across content flows.',
                     child: Column(
                       children: [
                         Row(
@@ -496,9 +499,9 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                 ],
                 const SizedBox(height: 18),
                 _SectionCard(
-                  title: 'Core Idea',
+                  title: 'Idea Basics',
                   subtitle:
-                      'Shape the concept and make the first impression feel sharp.',
+                      'Set the core headline, category, and stage so the idea reads clearly from the start.',
                   child: Column(
                     children: [
                       _StyledField(
@@ -533,13 +536,11 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                         },
                       ),
                       const SizedBox(height: 18),
-                      DropdownButtonFormField<String>(
-                        initialValue: _selectedLevel,
-                        dropdownColor: InnovationHubPalette.surface,
-                        decoration: _inputDecoration(
-                          label: 'Best suited for',
-                          hint: 'Select student level',
-                        ),
+                      AppFormDropdownField<String>(
+                        theme: _theme,
+                        value: _selectedLevel,
+                        label: 'Best suited for',
+                        hint: 'Select student level',
                         items: const [
                           DropdownMenuItem(
                             value: 'bac',
@@ -569,9 +570,9 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                 ),
                 const SizedBox(height: 18),
                 _SectionCard(
-                  title: 'Idea Story',
+                  title: 'Idea Description',
                   subtitle:
-                      'Give students and future collaborators a clear reason to care.',
+                      'Explain the concept, the problem behind it, and the solution you want collaborators to understand.',
                   child: Column(
                     children: [
                       _StyledField(
@@ -619,9 +620,9 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                 ),
                 const SizedBox(height: 18),
                 _SectionCard(
-                  title: 'Team Setup',
+                  title: 'Collaboration',
                   subtitle:
-                      'Show who you need to turn the concept into something real.',
+                      'Show the roles, skills, and resources that will help this idea move forward.',
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -682,9 +683,9 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                 ),
                 const SizedBox(height: 18),
                 _SectionCard(
-                  title: 'Cover & Links',
+                  title: 'Optional Extras',
                   subtitle:
-                      'Give the idea a strong first frame with a direct image upload and an optional deck link.',
+                      'Add the supporting materials, visibility settings, and attachments that make the post feel complete.',
                   child: Column(
                     children: [
                       _buildImageUploadCard(),
@@ -965,48 +966,47 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
   }
 
   Widget _buildHeroCard() {
-    return Container(
-      padding: const EdgeInsets.all(22),
-      decoration: BoxDecoration(
-        gradient: InnovationHubPalette.primaryGradient,
-        borderRadius: BorderRadius.circular(28),
-        boxShadow: [
-          BoxShadow(
-            color: InnovationHubPalette.primary.withValues(alpha: 0.26),
-            blurRadius: 24,
-            offset: const Offset(0, 12),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 52,
-            height: 52,
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.16),
-              borderRadius: BorderRadius.circular(18),
+    return AppFormHeaderCard(
+      theme: _theme,
+      icon: widget.isEditMode ? Icons.edit_rounded : Icons.lightbulb_outline,
+      title: widget.isEditMode
+          ? 'Refine your idea'
+          : widget.isAdmin
+          ? 'Publish an idea'
+          : 'Launch your next breakthrough',
+      subtitle: widget.isAdmin
+          ? 'Add a platform-curated idea with a strong story, clear metadata, and a predictable posting structure.'
+          : 'Build an idea profile that feels ready for collaborators, feedback, and student momentum.',
+      badges: <AppBadgeData>[
+        AppBadgeData(
+          label: _selectedCategory,
+          icon: innovationCategoryIcon(_selectedCategory),
+          color: _theme.accent,
+        ),
+        AppBadgeData(
+          label: _selectedStage,
+          icon: Icons.timeline_rounded,
+          color: innovationStageColor(_selectedStage),
+        ),
+      ],
+      footer: Row(
+        children: <Widget>[
+          Expanded(
+            child: AppMetaRow(
+              theme: _theme,
+              label: 'Visibility',
+              value: _isPublic ? 'Public-ready' : 'Private draft',
+              icon: _isPublic
+                  ? Icons.public_rounded
+                  : Icons.lock_outline_rounded,
             ),
-            child: const Icon(Icons.lightbulb_outline, color: Colors.white),
           ),
-          const SizedBox(height: 18),
-          Text(
-            widget.isEditMode
-                ? 'Refine your idea'
-                : widget.isAdmin
-                ? 'Publish an idea'
-                : 'Launch your next breakthrough',
-            style: InnovationHubTypography.title(color: Colors.white, size: 26),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            widget.isAdmin
-                ? 'Add a platform-curated idea with a strong story and clear metadata.'
-                : 'Build an idea profile that feels ready for collaborators, feedback, and student momentum.',
-            style: InnovationHubTypography.body(
-              color: Colors.white.withValues(alpha: 0.86),
-              size: 14.5,
+          Expanded(
+            child: AppMetaRow(
+              theme: _theme,
+              label: 'Focus',
+              value: academicLevelLabel(_selectedLevel),
+              icon: Icons.school_outlined,
             ),
           ),
         ],
@@ -1015,34 +1015,12 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
   }
 
   Widget _buildLockNotice() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: InnovationHubPalette.warning.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: InnovationHubPalette.warning.withValues(alpha: 0.28),
-        ),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Icon(
-            Icons.lock_outline_rounded,
-            color: InnovationHubPalette.warning,
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              'Only pending ideas can be edited. This idea has already moved past review, so the form is shown in locked mode.',
-              style: InnovationHubTypography.body(
-                color: InnovationHubPalette.textPrimary,
-                size: 13,
-              ),
-            ),
-          ),
-        ],
-      ),
+    return AppInfoHint(
+      theme: _theme,
+      icon: Icons.lock_outline_rounded,
+      title: 'Editing locked',
+      message:
+          'Only pending ideas can be edited. This idea has already moved past review, so the form is shown in locked mode.',
     );
   }
 
@@ -1052,48 +1030,12 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
     required String selected,
     required ValueChanged<String> onSelected,
   }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: InnovationHubTypography.label(
-            color: InnovationHubPalette.textPrimary,
-            size: 13,
-          ),
-        ),
-        const SizedBox(height: 10),
-        Wrap(
-          spacing: 10,
-          runSpacing: 10,
-          children: values
-              .map(
-                (value) => ChoiceChip(
-                  label: Text(value),
-                  selected: selected == value,
-                  onSelected: (_) => onSelected(value),
-                  selectedColor: InnovationHubPalette.primary,
-                  backgroundColor: InnovationHubPalette.cardTint,
-                  side: BorderSide(
-                    color: selected == value
-                        ? Colors.transparent
-                        : InnovationHubPalette.border,
-                  ),
-                  labelStyle: InnovationHubTypography.label(
-                    color: selected == value
-                        ? Colors.white
-                        : InnovationHubPalette.textPrimary,
-                    size: 12.5,
-                  ),
-                  showCheckmark: false,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(999),
-                  ),
-                ),
-              )
-              .toList(),
-        ),
-      ],
+    return AppChoiceWrap(
+      theme: _theme,
+      title: title,
+      values: values,
+      selectedValue: selected,
+      onSelected: onSelected,
     );
   }
 
@@ -1102,51 +1044,6 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
       return 'This field is required.';
     }
     return null;
-  }
-
-  InputDecoration _inputDecoration({
-    required String label,
-    required String hint,
-  }) {
-    return InputDecoration(
-      labelText: label,
-      hintText: hint,
-      labelStyle: InnovationHubTypography.body(
-        color: InnovationHubPalette.textSecondary,
-      ),
-      hintStyle: InnovationHubTypography.body(
-        color: InnovationHubPalette.textSecondary.withValues(alpha: 0.8),
-      ),
-      filled: true,
-      fillColor: InnovationHubPalette.cardTint,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(18),
-        borderSide: const BorderSide(color: InnovationHubPalette.border),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(18),
-        borderSide: const BorderSide(color: InnovationHubPalette.border),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(18),
-        borderSide: const BorderSide(
-          color: InnovationHubPalette.primary,
-          width: 1.4,
-        ),
-      ),
-      errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(18),
-        borderSide: const BorderSide(color: InnovationHubPalette.error),
-      ),
-      focusedErrorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(18),
-        borderSide: const BorderSide(
-          color: InnovationHubPalette.error,
-          width: 1.4,
-        ),
-      ),
-    );
   }
 }
 
@@ -1163,24 +1060,11 @@ class _SectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: InnovationHubPalette.surface,
-        borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: InnovationHubPalette.border),
-        boxShadow: InnovationHubPalette.softShadow(0.04),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(title, style: InnovationHubTypography.section(size: 18)),
-          const SizedBox(height: 8),
-          Text(subtitle, style: InnovationHubTypography.body(size: 13.5)),
-          const SizedBox(height: 18),
-          child,
-        ],
-      ),
+    return AppFormSectionCard(
+      theme: context.findAncestorStateOfType<_CreateIdeaScreenState>()!._theme,
+      title: title,
+      subtitle: subtitle,
+      child: child,
     );
   }
 }
@@ -1207,16 +1091,15 @@ class _StyledField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = context.findAncestorStateOfType<_CreateIdeaScreenState>();
-    return TextFormField(
+    return AppFormField(
+      theme: state!._theme,
       controller: controller,
+      label: label,
+      hint: hint,
       minLines: minLines,
       maxLines: maxLines,
       validator: validator,
       onChanged: onChanged,
-      style: InnovationHubTypography.body(
-        color: InnovationHubPalette.textPrimary,
-      ),
-      decoration: state?._inputDecoration(label: label, hint: hint),
     );
   }
 }
@@ -1236,94 +1119,13 @@ class _SelectionWrap extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: InnovationHubTypography.label(
-            color: InnovationHubPalette.textPrimary,
-            size: 13,
-          ),
-        ),
-        const SizedBox(height: 10),
-        Wrap(
-          spacing: 10,
-          runSpacing: 10,
-          children: suggestions
-              .map(
-                (value) => FilterChip(
-                  label: Text(value),
-                  selected: selectedValues.contains(value),
-                  onSelected: (_) => onToggle(value),
-                  selectedColor: InnovationHubPalette.primary.withValues(
-                    alpha: 0.14,
-                  ),
-                  backgroundColor: InnovationHubPalette.cardTint,
-                  side: BorderSide(
-                    color: selectedValues.contains(value)
-                        ? InnovationHubPalette.primary.withValues(alpha: 0.24)
-                        : InnovationHubPalette.border,
-                  ),
-                  labelStyle: InnovationHubTypography.label(
-                    color: selectedValues.contains(value)
-                        ? InnovationHubPalette.primary
-                        : InnovationHubPalette.textPrimary,
-                    size: 12,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(999),
-                  ),
-                  showCheckmark: false,
-                ),
-              )
-              .toList(),
-        ),
-        if (selectedValues.isNotEmpty) ...[
-          const SizedBox(height: 12),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: selectedValues
-                .map(
-                  (value) => Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: InnovationHubPalette.primary.withValues(
-                        alpha: 0.08,
-                      ),
-                      borderRadius: BorderRadius.circular(999),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          value,
-                          style: InnovationHubTypography.label(
-                            color: InnovationHubPalette.primary,
-                            size: 11.5,
-                          ),
-                        ),
-                        const SizedBox(width: 6),
-                        GestureDetector(
-                          onTap: () => onToggle(value),
-                          child: const Icon(
-                            Icons.close_rounded,
-                            size: 16,
-                            color: InnovationHubPalette.primary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                )
-                .toList(),
-          ),
-        ],
-      ],
+    final state = context.findAncestorStateOfType<_CreateIdeaScreenState>();
+    return AppChipSelector(
+      theme: state!._theme,
+      title: title,
+      suggestions: suggestions,
+      selectedValues: selectedValues,
+      onToggle: onToggle,
     );
   }
 }
@@ -1345,52 +1147,14 @@ class _AdminChoiceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(18),
-        child: Ink(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: selected
-                ? InnovationHubPalette.primary.withValues(alpha: 0.08)
-                : InnovationHubPalette.cardTint,
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(
-              color: selected
-                  ? InnovationHubPalette.primary.withValues(alpha: 0.3)
-                  : InnovationHubPalette.border,
-            ),
-          ),
-          child: Column(
-            children: [
-              Icon(
-                icon,
-                color: selected
-                    ? InnovationHubPalette.primary
-                    : InnovationHubPalette.textSecondary,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                label,
-                style: InnovationHubTypography.label(
-                  color: selected
-                      ? InnovationHubPalette.primary
-                      : InnovationHubPalette.textPrimary,
-                  size: 13,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                subtitle,
-                textAlign: TextAlign.center,
-                style: InnovationHubTypography.body(size: 11.5),
-              ),
-            ],
-          ),
-        ),
-      ),
+    final state = context.findAncestorStateOfType<_CreateIdeaScreenState>();
+    return AppChoiceCard(
+      theme: state!._theme,
+      label: label,
+      subtitle: subtitle,
+      selected: selected,
+      icon: icon,
+      onTap: onTap,
     );
   }
 }

@@ -502,7 +502,7 @@ class _JobsScreenState extends State<JobsScreen> {
       return workMode.toUpperCase();
     }
 
-    return 'FULL TIME';
+    return '';
   }
 
   String? _employmentBadgeLabel(OpportunityModel opportunity) {
@@ -588,7 +588,7 @@ class _JobsScreenState extends State<JobsScreen> {
   }
 
   String? _experienceChipLabel(OpportunityModel opportunity) {
-    final explicitLevel = _formatLevelChip(
+    return _formatLevelChip(
       opportunity.readString([
         'experienceLevel',
         'experience_level',
@@ -596,32 +596,8 @@ class _JobsScreenState extends State<JobsScreen> {
         'seniority',
         'careerStage',
         'level',
-        'tag',
       ]),
     );
-    if (explicitLevel != null) {
-      return explicitLevel;
-    }
-
-    final normalizedTitle = opportunity.title.toLowerCase();
-    if (normalizedTitle.contains('entry')) {
-      return 'ENTRY';
-    }
-    if (normalizedTitle.contains('junior')) {
-      return 'JUNIOR';
-    }
-    if (normalizedTitle.contains('intern')) {
-      return 'STUDENT';
-    }
-
-    final normalizedEmploymentType =
-        OpportunityMetadata.normalizeEmploymentType(opportunity.employmentType);
-    if (normalizedEmploymentType == 'internship' ||
-        OpportunityType.parse(opportunity.type) == OpportunityType.internship) {
-      return 'STUDENT';
-    }
-
-    return null;
   }
 
   String? _formatLevelChip(String? rawValue) {
@@ -2754,39 +2730,41 @@ class _FeaturedJobCard extends StatelessWidget {
                                 ),
                                 spinnerColor: Colors.white,
                               ),
-                              SizedBox(width: isTight ? 8 : 10),
-                              Container(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: denseLayout
-                                      ? (isTight ? 8 : 10)
-                                      : (isTight ? 10 : 12),
-                                  vertical: denseLayout
-                                      ? (isTight ? 5 : 6)
-                                      : (isTight ? 6 : 8),
-                                ),
-                                decoration: BoxDecoration(
-                                  color: style.badgeBackground,
-                                  borderRadius: BorderRadius.circular(
-                                    denseLayout
-                                        ? (isTight ? 12 : 14)
-                                        : (isTight ? 14 : 16),
+                              if (job.badge.trim().isNotEmpty) ...<Widget>[
+                                SizedBox(width: isTight ? 8 : 10),
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: denseLayout
+                                        ? (isTight ? 8 : 10)
+                                        : (isTight ? 10 : 12),
+                                    vertical: denseLayout
+                                        ? (isTight ? 5 : 6)
+                                        : (isTight ? 6 : 8),
                                   ),
-                                  border: Border.all(
-                                    color: style.badgeBorderColor,
+                                  decoration: BoxDecoration(
+                                    color: style.badgeBackground,
+                                    borderRadius: BorderRadius.circular(
+                                      denseLayout
+                                          ? (isTight ? 12 : 14)
+                                          : (isTight ? 14 : 16),
+                                    ),
+                                    border: Border.all(
+                                      color: style.badgeBorderColor,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    job.badge,
+                                    style: GoogleFonts.poppins(
+                                      fontSize: denseLayout
+                                          ? (isTight ? 8.4 : 9.2)
+                                          : (isTight ? 9 : 10),
+                                      fontWeight: FontWeight.w700,
+                                      color: Colors.white,
+                                      letterSpacing: 0.3,
+                                    ),
                                   ),
                                 ),
-                                child: Text(
-                                  job.badge,
-                                  style: GoogleFonts.poppins(
-                                    fontSize: denseLayout
-                                        ? (isTight ? 8.4 : 9.2)
-                                        : (isTight ? 9 : 10),
-                                    fontWeight: FontWeight.w700,
-                                    color: Colors.white,
-                                    letterSpacing: 0.3,
-                                  ),
-                                ),
-                              ),
+                              ],
                             ],
                           ),
                           const Spacer(),

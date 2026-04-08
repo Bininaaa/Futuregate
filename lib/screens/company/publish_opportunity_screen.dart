@@ -9,6 +9,7 @@ import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/opportunity_type_selector.dart';
+import '../../widgets/shared/app_content_system.dart';
 
 class PublishOpportunityScreen extends StatefulWidget {
   final String? opportunityId;
@@ -23,7 +24,6 @@ class PublishOpportunityScreen extends StatefulWidget {
 class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
   static const Color primary = CompanyDashboardPalette.primary;
   static const Color primaryDark = CompanyDashboardPalette.primaryDark;
-  static const Color surfaceAlt = Color(0xFFF8FAFC);
 
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
@@ -55,6 +55,32 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
       OpportunityMetadata.usesStructuredFields(_selectedType);
   bool get _isInternship =>
       OpportunityType.parse(_selectedType) == OpportunityType.internship;
+
+  AppContentTheme get _theme => const AppContentTheme(
+    accent: CompanyDashboardPalette.primary,
+    accentDark: CompanyDashboardPalette.primaryDark,
+    accentSoft: CompanyDashboardPalette.primarySoft,
+    secondary: CompanyDashboardPalette.secondary,
+    background: CompanyDashboardPalette.background,
+    surface: CompanyDashboardPalette.surface,
+    surfaceMuted: Color(0xFFF8FAFC),
+    border: CompanyDashboardPalette.border,
+    textPrimary: CompanyDashboardPalette.textPrimary,
+    textSecondary: CompanyDashboardPalette.textSecondary,
+    textMuted: CompanyDashboardPalette.textMuted,
+    success: CompanyDashboardPalette.success,
+    warning: CompanyDashboardPalette.warning,
+    error: CompanyDashboardPalette.error,
+    heroGradient: LinearGradient(
+      colors: <Color>[
+        CompanyDashboardPalette.primaryDark,
+        CompanyDashboardPalette.primary,
+        CompanyDashboardPalette.secondary,
+      ],
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+    ),
+  );
 
   @override
   void initState() {
@@ -182,41 +208,13 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      SizedBox(
-                        width: double.infinity,
-                        height: 54,
-                        child: ElevatedButton(
-                          onPressed: _isSubmitting ? null : _submit,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: primary,
-                            foregroundColor: Colors.white,
-                            disabledBackgroundColor: primary.withValues(
-                              alpha: 0.55,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(18),
-                            ),
-                            elevation: 0,
-                          ),
-                          child: _isSubmitting
-                              ? const SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2.4,
-                                    color: Colors.white,
-                                  ),
-                                )
-                              : Text(
-                                  _isEditMode
-                                      ? 'Save Changes'
-                                      : 'Publish ${OpportunityType.label(_selectedType)}',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                        ),
+                      AppPrimaryButton(
+                        theme: _theme,
+                        label: _isEditMode
+                            ? 'Save Changes'
+                            : 'Publish ${OpportunityType.label(_selectedType)}',
+                        onPressed: _isSubmitting ? null : _submit,
+                        isBusy: _isSubmitting,
                       ),
                     ],
                   ),
@@ -236,6 +234,9 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                         _buildHeroCard(),
                         const SizedBox(height: 16),
                         _buildSectionCard(
+                          title: 'Basic Information',
+                          subtitle:
+                              'Set the listing identity first so students can immediately understand what is being posted.',
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -243,6 +244,7 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                               const SizedBox(height: 8),
                               _buildField(
                                 controller: _titleController,
+                                label: 'Opportunity title',
                                 hint: _titleHintForType(),
                                 validator: _validateTitle,
                               ),
@@ -301,11 +303,23 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                                   ),
                                 ],
                               ),
+                              const SizedBox(height: 18),
+                              _buildSectionLabel('Location'),
+                              const SizedBox(height: 8),
+                              _buildField(
+                                controller: _locationController,
+                                label: 'Location',
+                                hint: _locationHintForType(),
+                                validator: _validateLocation,
+                              ),
                             ],
                           ),
                         ),
                         const SizedBox(height: 16),
                         _buildSectionCard(
+                          title: 'Description',
+                          subtitle:
+                              'Give the role or program a clear summary that reads well across cards and detail pages.',
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -315,21 +329,26 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                               const SizedBox(height: 8),
                               _buildField(
                                 controller: _descriptionController,
+                                label: OpportunityType.descriptionLabel(
+                                  _selectedType,
+                                ),
                                 hint: OpportunityType.descriptionHint(
                                   _selectedType,
                                 ),
                                 maxLines: 6,
                                 validator: _validateDescription,
                               ),
-                              const SizedBox(height: 18),
-                              _buildSectionLabel('Location'),
-                              const SizedBox(height: 8),
-                              _buildField(
-                                controller: _locationController,
-                                hint: _locationHintForType(),
-                                validator: _validateLocation,
-                              ),
-                              const SizedBox(height: 18),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        _buildSectionCard(
+                          title: 'Requirements And Eligibility',
+                          subtitle:
+                              'Surface the qualifications or criteria applicants should review before moving forward.',
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
                               _buildSectionLabel(
                                 OpportunityType.requirementsLabel(
                                   _selectedType,
@@ -338,30 +357,20 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                               const SizedBox(height: 8),
                               _buildField(
                                 controller: _requirementsController,
+                                label: OpportunityType.requirementsLabel(
+                                  _selectedType,
+                                ),
                                 hint: OpportunityType.requirementsHint(
                                   _selectedType,
                                 ),
                                 maxLines: 4,
                                 validator: _validateRequirements,
                               ),
-                              const SizedBox(height: 18),
-                              _buildSectionLabel('Application deadline'),
-                              const SizedBox(height: 8),
-                              _buildField(
-                                controller: _deadlineController,
-                                hint: 'Select a closing date',
-                                validator: _validateDeadline,
-                                onTap: _pickDate,
-                                readOnly: true,
-                                suffixIcon: const Icon(Icons.calendar_today),
-                              ),
                             ],
                           ),
                         ),
-                        if (_usesStructuredFields) ...[
-                          const SizedBox(height: 16),
-                          _buildStructuredOpportunityCard(),
-                        ],
+                        const SizedBox(height: 16),
+                        _buildStructuredOpportunityCard(),
                       ],
                     ),
                   ),
@@ -376,156 +385,48 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
         ? CompanyDashboardPalette.success
         : CompanyDashboardPalette.textSecondary;
 
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [_typeColor.withValues(alpha: 0.18), Colors.white],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+    return AppFormHeaderCard(
+      theme: _theme,
+      icon: OpportunityType.icon(_selectedType),
+      title: OpportunityType.headline(_selectedType),
+      subtitle: _selectedType == OpportunityType.sponsoring
+          ? 'Students will be notified when a sponsoring opportunity is published as open.'
+          : 'Use clear details and structured metadata so students can filter and compare opportunities quickly.',
+      badges: <AppBadgeData>[
+        AppBadgeData(
+          label: OpportunityType.label(_selectedType),
+          icon: OpportunityType.icon(_selectedType),
+          color: _typeColor,
         ),
-        borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: _typeColor.withValues(alpha: 0.18)),
-        boxShadow: [
-          BoxShadow(
-            color: _typeColor.withValues(alpha: 0.10),
-            blurRadius: 24,
-            offset: const Offset(0, 14),
-          ),
-        ],
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        AppBadgeData(
+          label: _selectedStatus == 'open' ? 'Open' : 'Closed',
+          icon: _selectedStatus == 'open'
+              ? Icons.visibility_outlined
+              : Icons.lock_outline_rounded,
+          color: statusColor,
+        ),
+      ],
+      footer: Row(
         children: [
-          Container(
-            width: 52,
-            height: 52,
-            decoration: BoxDecoration(
-              color: _typeColor.withValues(alpha: 0.14),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Icon(
-              OpportunityType.icon(_selectedType),
-              color: _typeColor,
-              size: 26,
-            ),
-          ),
-          const SizedBox(width: 14),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  OpportunityType.headline(_selectedType),
-                  style: GoogleFonts.poppins(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w700,
-                    color: primaryDark,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  _selectedType == OpportunityType.sponsoring
-                      ? 'Students will be notified when a sponsoring opportunity is published as open.'
-                      : 'Use clear details and structured metadata so students can filter and compare opportunities quickly.',
-                  style: GoogleFonts.poppins(
-                    fontSize: 12,
-                    color: CompanyDashboardPalette.textSecondary,
-                    height: 1.45,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
-                    _buildHeroBadge(
-                      OpportunityType.label(_selectedType),
-                      _typeColor.withValues(alpha: 0.12),
-                      _typeColor,
-                      icon: OpportunityType.icon(_selectedType),
-                    ),
-                    _buildHeroBadge(
-                      _selectedStatus == 'open' ? 'OPEN' : 'CLOSED',
-                      statusColor.withValues(alpha: 0.12),
-                      statusColor,
-                      icon: _selectedStatus == 'open'
-                          ? Icons.visibility_outlined
-                          : Icons.lock_outline_rounded,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 14),
-                Container(
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.86),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: _typeColor.withValues(alpha: 0.10),
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: _HeroInsight(
-                          label: 'Visibility',
-                          value: _selectedStatus == 'open'
-                              ? 'Live for students'
-                              : 'Saved privately',
-                          color: statusColor,
-                        ),
-                      ),
-                      Container(
-                        width: 1,
-                        height: 34,
-                        color: CompanyDashboardPalette.border,
-                      ),
-                      Expanded(
-                        child: _HeroInsight(
-                          label: 'Type',
-                          value: OpportunityType.label(_selectedType),
-                          color: _typeColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+            child: _HeroInsight(
+              label: 'Visibility',
+              value: _selectedStatus == 'open'
+                  ? 'Live for students'
+                  : 'Saved privately',
+              color: statusColor,
             ),
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildHeroBadge(
-    String label,
-    Color backgroundColor,
-    Color foregroundColor, {
-    IconData? icon,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (icon != null) ...[
-            Icon(icon, size: 14, color: foregroundColor),
-            const SizedBox(width: 6),
-          ],
-          Text(
-            label,
-            style: GoogleFonts.poppins(
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 0.2,
-              color: foregroundColor,
+          Container(
+            width: 1,
+            height: 34,
+            color: CompanyDashboardPalette.border,
+          ),
+          Expanded(
+            child: _HeroInsight(
+              label: 'Type',
+              value: OpportunityType.label(_selectedType),
+              color: _typeColor,
             ),
           ),
         ],
@@ -535,182 +436,213 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
 
   Widget _buildStructuredOpportunityCard() {
     return _buildSectionCard(
+      title: _usesStructuredFields ? 'Logistics' : 'Publish',
+      subtitle: _usesStructuredFields
+          ? 'Capture timing, compensation, and format details in one predictable section.'
+          : 'Set the deadline clearly so students understand when the listing closes.',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildSectionLabel(
-            _isInternship ? 'Internship compensation' : 'Compensation & format',
+          _buildSectionLabel('Application deadline'),
+          const SizedBox(height: 8),
+          _buildField(
+            controller: _deadlineController,
+            label: 'Application deadline',
+            hint: 'Select a closing date',
+            validator: _validateDeadline,
+            onTap: _pickDate,
+            readOnly: true,
+            suffixIcon: const Icon(Icons.calendar_today),
           ),
-          const SizedBox(height: 6),
-          Text(
-            _isInternship
-                ? 'Add structured details so internship cards can show pay, work mode, duration, and deadline cleanly.'
-                : 'These fields power compact job cards, detail views, and future filtering without breaking older records.',
-            style: GoogleFonts.poppins(
-              fontSize: 12,
-              color: CompanyDashboardPalette.textSecondary,
-              height: 1.45,
+          if (_usesStructuredFields) ...[
+            const SizedBox(height: 18),
+            _buildSectionLabel(
+              _isInternship
+                  ? 'Internship compensation'
+                  : 'Compensation & format',
             ),
-          ),
-          const SizedBox(height: 14),
-          Row(
-            children: [
-              Expanded(
-                child: _buildField(
-                  controller: _salaryMinController,
-                  hint: 'Salary min',
-                  keyboardType: const TextInputType.numberWithOptions(
-                    decimal: true,
+            const SizedBox(height: 6),
+            Text(
+              _isInternship
+                  ? 'Add structured details so internship cards can show pay, work mode, duration, and deadline cleanly.'
+                  : 'These fields power compact job cards, detail views, and future filtering without breaking older records.',
+              style: GoogleFonts.poppins(
+                fontSize: 12,
+                color: CompanyDashboardPalette.textSecondary,
+                height: 1.45,
+              ),
+            ),
+            const SizedBox(height: 14),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildField(
+                    controller: _salaryMinController,
+                    label: 'Salary minimum',
+                    hint: 'Salary min',
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                    validator: _validateSalaryMin,
                   ),
-                  validator: _validateSalaryMin,
                 ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: _buildField(
-                  controller: _salaryMaxController,
-                  hint: 'Salary max',
-                  keyboardType: const TextInputType.numberWithOptions(
-                    decimal: true,
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _buildField(
+                    controller: _salaryMaxController,
+                    label: 'Salary maximum',
+                    hint: 'Salary max',
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                    validator: _validateSalaryMax,
                   ),
-                  validator: _validateSalaryMax,
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
-          Row(
-            children: [
-              Expanded(
-                child: _buildDropdownField<String>(
-                  value: _selectedSalaryCurrency,
-                  hint: 'Currency',
-                  items: OpportunityMetadata.supportedCurrencies
-                      .map(
-                        (currency) => DropdownMenuItem<String>(
-                          value: currency,
-                          child: Text(currency),
-                        ),
-                      )
-                      .toList(),
-                  onChanged: (value) {
-                    setState(() => _selectedSalaryCurrency = value);
-                  },
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: _buildDropdownField<String>(
-                  value: _selectedSalaryPeriod,
-                  hint: 'Salary period',
-                  items: OpportunityMetadata.salaryPeriods
-                      .map(
-                        (period) => DropdownMenuItem<String>(
-                          value: period,
-                          child: Text(_titleCaseLabel(period)),
-                        ),
-                      )
-                      .toList(),
-                  onChanged: (value) {
-                    setState(() => _selectedSalaryPeriod = value);
-                  },
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
-          Row(
-            children: [
-              Expanded(
-                child: _buildDropdownField<String>(
-                  value: _selectedEmploymentType,
-                  hint: 'Employment type',
-                  items: OpportunityMetadata.employmentTypes
-                      .map(
-                        (type) => DropdownMenuItem<String>(
-                          value: type,
-                          child: Text(
-                            OpportunityMetadata.formatEmploymentType(type) ??
-                                _titleCaseLabel(type),
+              ],
+            ),
+            const SizedBox(height: 14),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildDropdownField<String>(
+                    value: _selectedSalaryCurrency,
+                    label: 'Currency',
+                    hint: 'Currency',
+                    items: OpportunityMetadata.supportedCurrencies
+                        .map(
+                          (currency) => DropdownMenuItem<String>(
+                            value: currency,
+                            child: Text(currency),
                           ),
-                        ),
-                      )
-                      .toList(),
-                  onChanged: (value) {
-                    setState(() => _selectedEmploymentType = value);
-                  },
+                        )
+                        .toList(),
+                    onChanged: (value) {
+                      setState(() => _selectedSalaryCurrency = value);
+                    },
+                  ),
                 ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: _buildDropdownField<String>(
-                  value: _selectedWorkMode,
-                  hint: 'Work mode',
-                  items: OpportunityMetadata.workModes
-                      .map(
-                        (mode) => DropdownMenuItem<String>(
-                          value: mode,
-                          child: Text(
-                            OpportunityMetadata.formatWorkMode(mode) ??
-                                _titleCaseLabel(mode),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _buildDropdownField<String>(
+                    value: _selectedSalaryPeriod,
+                    label: 'Salary period',
+                    hint: 'Salary period',
+                    items: OpportunityMetadata.salaryPeriods
+                        .map(
+                          (period) => DropdownMenuItem<String>(
+                            value: period,
+                            child: Text(_titleCaseLabel(period)),
                           ),
-                        ),
-                      )
-                      .toList(),
-                  onChanged: (value) {
-                    setState(() => _selectedWorkMode = value);
-                  },
+                        )
+                        .toList(),
+                    onChanged: (value) {
+                      setState(() => _selectedSalaryPeriod = value);
+                    },
+                  ),
                 ),
+              ],
+            ),
+            const SizedBox(height: 14),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildDropdownField<String>(
+                    value: _selectedEmploymentType,
+                    label: 'Employment type',
+                    hint: 'Employment type',
+                    items: OpportunityMetadata.employmentTypes
+                        .map(
+                          (type) => DropdownMenuItem<String>(
+                            value: type,
+                            child: Text(
+                              OpportunityMetadata.formatEmploymentType(type) ??
+                                  _titleCaseLabel(type),
+                            ),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: (value) {
+                      setState(() => _selectedEmploymentType = value);
+                    },
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _buildDropdownField<String>(
+                    value: _selectedWorkMode,
+                    label: 'Work mode',
+                    hint: 'Work mode',
+                    items: OpportunityMetadata.workModes
+                        .map(
+                          (mode) => DropdownMenuItem<String>(
+                            value: mode,
+                            child: Text(
+                              OpportunityMetadata.formatWorkMode(mode) ??
+                                  _titleCaseLabel(mode),
+                            ),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: (value) {
+                      setState(() => _selectedWorkMode = value);
+                    },
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 14),
+            _buildDropdownField<bool>(
+              value: _isPaid,
+              label: 'Paid status',
+              hint: 'Paid status',
+              items: const [
+                DropdownMenuItem<bool>(value: true, child: Text('Paid')),
+                DropdownMenuItem<bool>(value: false, child: Text('Unpaid')),
+              ],
+              onChanged: (value) {
+                setState(() => _isPaid = value);
+              },
+            ),
+            if (_isInternship) ...[
+              const SizedBox(height: 14),
+              _buildField(
+                controller: _durationController,
+                label: 'Duration',
+                hint: 'Duration, e.g. 2 months',
+                validator: _validateDuration,
               ),
             ],
-          ),
-          const SizedBox(height: 14),
-          _buildDropdownField<bool>(
-            value: _isPaid,
-            hint: 'Paid status',
-            items: const [
-              DropdownMenuItem<bool>(value: true, child: Text('Paid')),
-              DropdownMenuItem<bool>(value: false, child: Text('Unpaid')),
-            ],
-            onChanged: (value) {
-              setState(() => _isPaid = value);
-            },
-          ),
-          if (_isInternship) ...[
             const SizedBox(height: 14),
             _buildField(
-              controller: _durationController,
-              hint: 'Duration, e.g. 2 months',
-              validator: _validateDuration,
+              controller: _compensationTextController,
+              label: 'Compensation note',
+              hint: 'Optional compensation note for detail screens',
+              maxLines: 2,
+            ),
+          ] else ...[
+            const SizedBox(height: 14),
+            AppInfoHint(
+              theme: _theme,
+              icon: Icons.publish_rounded,
+              title: 'Ready to publish',
+              message:
+                  'This opportunity type keeps a lighter logistics setup, but the same structure and validation still apply.',
             ),
           ],
-          const SizedBox(height: 14),
-          _buildField(
-            controller: _compensationTextController,
-            hint: 'Optional compensation note for detail screens',
-            maxLines: 2,
-          ),
         ],
       ),
     );
   }
 
-  Widget _buildSectionCard({required Widget child}) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: CompanyDashboardPalette.border),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 20,
-            offset: const Offset(0, 12),
-          ),
-        ],
-      ),
+  Widget _buildSectionCard({
+    required String title,
+    required String subtitle,
+    required Widget child,
+  }) {
+    return AppFormSectionCard(
+      theme: _theme,
+      title: title,
+      subtitle: subtitle,
       child: child,
     );
   }
@@ -728,6 +660,7 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
 
   Widget _buildField({
     required TextEditingController controller,
+    required String label,
     required String hint,
     int maxLines = 1,
     String? Function(String?)? validator,
@@ -736,83 +669,34 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
     Widget? suffixIcon,
     TextInputType? keyboardType,
   }) {
-    return TextFormField(
+    return AppFormField(
+      theme: _theme,
       controller: controller,
+      label: label,
+      hint: hint,
       maxLines: maxLines,
       validator: validator,
       onTap: onTap,
       readOnly: readOnly,
       keyboardType: keyboardType,
-      style: GoogleFonts.poppins(
-        fontSize: 14,
-        color: CompanyDashboardPalette.textPrimary,
-      ),
-      decoration: _fieldDecoration(hint: hint, suffixIcon: suffixIcon),
+      suffixIcon: suffixIcon,
     );
   }
 
   Widget _buildDropdownField<T>({
     required T? value,
+    required String label,
     required String hint,
     required List<DropdownMenuItem<T>> items,
     required ValueChanged<T?> onChanged,
   }) {
-    return DropdownButtonFormField<T>(
-      initialValue: value,
-      isExpanded: true,
+    return AppFormDropdownField<T>(
+      theme: _theme,
+      value: value,
+      label: label,
+      hint: hint,
       items: items,
       onChanged: onChanged,
-      style: GoogleFonts.poppins(
-        fontSize: 14,
-        color: CompanyDashboardPalette.textPrimary,
-      ),
-      icon: const Icon(
-        Icons.keyboard_arrow_down_rounded,
-        color: CompanyDashboardPalette.textSecondary,
-      ),
-      decoration: _fieldDecoration(hint: hint),
-      hint: Text(
-        hint,
-        style: GoogleFonts.poppins(
-          color: CompanyDashboardPalette.textMuted,
-          fontSize: 13,
-        ),
-      ),
-      dropdownColor: Colors.white,
-    );
-  }
-
-  InputDecoration _fieldDecoration({required String hint, Widget? suffixIcon}) {
-    return InputDecoration(
-      hintText: hint,
-      hintStyle: GoogleFonts.poppins(
-        color: CompanyDashboardPalette.textMuted,
-        fontSize: 13,
-      ),
-      suffixIcon: suffixIcon,
-      filled: true,
-      fillColor: surfaceAlt,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
-        borderSide: BorderSide.none,
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
-        borderSide: const BorderSide(color: CompanyDashboardPalette.border),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
-        borderSide: BorderSide(color: _typeColor, width: 1.4),
-      ),
-      errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
-        borderSide: const BorderSide(color: Colors.red),
-      ),
-      focusedErrorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
-        borderSide: const BorderSide(color: Colors.red, width: 1.4),
-      ),
     );
   }
 
@@ -826,49 +710,16 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
         ? CompanyDashboardPalette.success
         : CompanyDashboardPalette.textSecondary;
 
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: () => setState(() => _selectedStatus = value),
-        borderRadius: BorderRadius.circular(18),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 180),
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(
-            color: isSelected ? chipColor.withValues(alpha: 0.12) : surfaceAlt,
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(
-              color: isSelected ? chipColor : CompanyDashboardPalette.border,
-              width: isSelected ? 1.4 : 1,
-            ),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: GoogleFonts.poppins(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
-                  color: isSelected
-                      ? chipColor
-                      : CompanyDashboardPalette.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                subtitle,
-                style: GoogleFonts.poppins(
-                  fontSize: 11,
-                  color: isSelected
-                      ? chipColor.withValues(alpha: 0.85)
-                      : CompanyDashboardPalette.textSecondary,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+    return AppChoiceCard(
+      theme: _theme,
+      label: label,
+      subtitle: subtitle,
+      selected: isSelected,
+      icon: value == 'open'
+          ? Icons.visibility_outlined
+          : Icons.lock_outline_rounded,
+      color: chipColor,
+      onTap: () => setState(() => _selectedStatus = value),
     );
   }
 

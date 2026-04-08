@@ -3,6 +3,33 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../utils/admin_palette.dart';
 import '../../widgets/admin/admin_ui.dart';
+import '../../widgets/shared/app_content_system.dart';
+
+const AppContentTheme _adminFormTheme = AppContentTheme(
+  accent: AdminPalette.primary,
+  accentDark: AdminPalette.primaryDark,
+  accentSoft: AdminPalette.primarySoft,
+  secondary: AdminPalette.secondary,
+  background: AdminPalette.background,
+  surface: AdminPalette.surface,
+  surfaceMuted: AdminPalette.surfaceMuted,
+  border: AdminPalette.border,
+  textPrimary: AdminPalette.textPrimary,
+  textSecondary: AdminPalette.textSecondary,
+  textMuted: AdminPalette.textMuted,
+  success: AdminPalette.success,
+  warning: AdminPalette.warning,
+  error: AdminPalette.danger,
+  heroGradient: LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: <Color>[
+      AdminPalette.primaryDark,
+      AdminPalette.primary,
+      AdminPalette.secondary,
+    ],
+  ),
+);
 
 class AdminEditorScaffold extends StatelessWidget {
   final String title;
@@ -115,31 +142,12 @@ class AdminEditorScaffold extends StatelessWidget {
               ),
             ],
           ),
-          child: SizedBox(
-            width: double.infinity,
-            height: 54,
-            child: FilledButton.icon(
-              onPressed: isSubmitting ? null : onSubmit,
-              icon: isSubmitting
-                  ? const SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2.3,
-                        color: Colors.white,
-                      ),
-                    )
-                  : const Icon(Icons.check_circle_outline_rounded),
-              label: Text(submitLabel),
-              style: FilledButton.styleFrom(
-                backgroundColor: accentColor,
-                foregroundColor: Colors.white,
-                disabledBackgroundColor: accentColor.withValues(alpha: 0.55),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(18),
-                ),
-              ),
-            ),
+          child: AppPrimaryButton(
+            theme: _adminFormTheme.copyWithAccent(accentColor),
+            label: submitLabel,
+            onPressed: isSubmitting ? null : onSubmit,
+            icon: Icons.check_circle_outline_rounded,
+            isBusy: isSubmitting,
           ),
         ),
       ),
@@ -161,32 +169,11 @@ class AdminEditorSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AdminSurface(
-      radius: 24,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: GoogleFonts.poppins(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              color: AdminPalette.textPrimary,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            subtitle,
-            style: GoogleFonts.poppins(
-              fontSize: 12.5,
-              height: 1.6,
-              color: AdminPalette.textSecondary,
-            ),
-          ),
-          const SizedBox(height: 16),
-          child,
-        ],
-      ),
+    return AppFormSectionCard(
+      theme: _adminFormTheme,
+      title: title,
+      subtitle: subtitle,
+      child: child,
     );
   }
 }
@@ -217,35 +204,17 @@ class AdminEditorField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: GoogleFonts.poppins(
-            fontSize: 12.5,
-            fontWeight: FontWeight.w700,
-            color: AdminPalette.textPrimary,
-          ),
-        ),
-        const SizedBox(height: 8),
-        TextFormField(
-          controller: controller,
-          maxLines: maxLines,
-          validator: validator,
-          keyboardType: keyboardType,
-          readOnly: readOnly,
-          onTap: onTap,
-          style: GoogleFonts.poppins(
-            fontSize: 13.5,
-            color: AdminPalette.textPrimary,
-          ),
-          decoration: adminEditorFieldDecoration(
-            hint: hint,
-            suffixIcon: suffixIcon,
-          ),
-        ),
-      ],
+    return AppFormField(
+      theme: _adminFormTheme,
+      controller: controller,
+      label: label,
+      hint: hint,
+      maxLines: maxLines,
+      validator: validator,
+      keyboardType: keyboardType,
+      readOnly: readOnly,
+      onTap: onTap,
+      suffixIcon: suffixIcon,
     );
   }
 }
@@ -266,35 +235,13 @@ class AdminEditorDropdown<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: GoogleFonts.poppins(
-            fontSize: 12.5,
-            fontWeight: FontWeight.w700,
-            color: AdminPalette.textPrimary,
-          ),
-        ),
-        const SizedBox(height: 8),
-        DropdownButtonFormField<T>(
-          initialValue: value,
-          isExpanded: true,
-          items: items,
-          onChanged: onChanged,
-          style: GoogleFonts.poppins(
-            fontSize: 13.5,
-            color: AdminPalette.textPrimary,
-          ),
-          decoration: adminEditorFieldDecoration(hint: label),
-          dropdownColor: Colors.white,
-          icon: const Icon(
-            Icons.keyboard_arrow_down_rounded,
-            color: AdminPalette.textSecondary,
-          ),
-        ),
-      ],
+    return AppFormDropdownField<T>(
+      theme: _adminFormTheme,
+      value: value,
+      label: label,
+      hint: label,
+      items: items,
+      onChanged: onChanged,
     );
   }
 }
@@ -319,54 +266,14 @@ class AdminEditorChoiceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(18),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 180),
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(
-            color: selected
-                ? color.withValues(alpha: 0.12)
-                : AdminPalette.surfaceMuted,
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(
-              color: selected ? color : AdminPalette.border,
-              width: selected ? 1.4 : 1,
-            ),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(
-                icon,
-                color: selected ? color : AdminPalette.textMuted,
-                size: 20,
-              ),
-              const SizedBox(height: 10),
-              Text(
-                label,
-                style: GoogleFonts.poppins(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
-                  color: selected ? color : AdminPalette.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                subtitle,
-                style: GoogleFonts.poppins(
-                  fontSize: 11,
-                  height: 1.45,
-                  color: selected ? color : AdminPalette.textSecondary,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+    return AppChoiceCard(
+      theme: _adminFormTheme,
+      label: label,
+      subtitle: subtitle,
+      selected: selected,
+      color: color,
+      icon: icon,
+      onTap: onTap,
     );
   }
 }
@@ -387,73 +294,14 @@ class AdminEditorToggleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AdminPalette.surfaceMuted,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AdminPalette.border),
-      ),
-      child: SwitchListTile(
-        value: value,
-        onChanged: onChanged,
-        activeThumbColor: AdminPalette.primary,
-        title: Text(
-          title,
-          style: GoogleFonts.poppins(
-            fontSize: 13.5,
-            fontWeight: FontWeight.w700,
-            color: AdminPalette.textPrimary,
-          ),
-        ),
-        subtitle: Text(
-          subtitle,
-          style: GoogleFonts.poppins(
-            fontSize: 11.5,
-            height: 1.45,
-            color: AdminPalette.textSecondary,
-          ),
-        ),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      ),
+    return AppSwitchTileCard(
+      theme: _adminFormTheme,
+      value: value,
+      onChanged: onChanged,
+      title: title,
+      subtitle: subtitle,
     );
   }
-}
-
-InputDecoration adminEditorFieldDecoration({
-  required String hint,
-  Widget? suffixIcon,
-}) {
-  return InputDecoration(
-    hintText: hint,
-    hintStyle: GoogleFonts.poppins(
-      fontSize: 12.5,
-      color: AdminPalette.textMuted,
-    ),
-    suffixIcon: suffixIcon,
-    filled: true,
-    fillColor: AdminPalette.surfaceMuted,
-    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-    border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(16),
-      borderSide: const BorderSide(color: AdminPalette.border),
-    ),
-    enabledBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(16),
-      borderSide: const BorderSide(color: AdminPalette.border),
-    ),
-    focusedBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(16),
-      borderSide: const BorderSide(color: AdminPalette.primary, width: 1.4),
-    ),
-    errorBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(16),
-      borderSide: const BorderSide(color: Colors.red),
-    ),
-    focusedErrorBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(16),
-      borderSide: const BorderSide(color: Colors.red, width: 1.4),
-    ),
-  );
 }
 
 String? Function(String?) adminRequiredMin(String label, {int min = 1}) {

@@ -121,9 +121,9 @@ class _AdminScholarshipEditorScreenState
             ),
             const SizedBox(height: 16),
             AdminEditorSection(
-              title: 'Scholarship basics',
+              title: 'Basic Information',
               subtitle:
-                  'Students should understand the provider, amount, and deadline at a glance.',
+                  'Start with the core scholarship identity so the opportunity reads clearly across cards and details.',
               child: Column(
                 children: [
                   AdminEditorField(
@@ -139,7 +139,16 @@ class _AdminScholarshipEditorScreenState
                     hint: 'Who offers this scholarship?',
                     validator: adminRequiredMin('Provider', min: 2),
                   ),
-                  const SizedBox(height: 14),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            AdminEditorSection(
+              title: 'Description',
+              subtitle:
+                  'Explain what the scholarship supports and why it stands out.',
+              child: Column(
+                children: [
                   AdminEditorField(
                     controller: _descriptionController,
                     label: 'Description',
@@ -147,7 +156,16 @@ class _AdminScholarshipEditorScreenState
                     maxLines: 5,
                     validator: adminRequiredMin('Description', min: 20),
                   ),
-                  const SizedBox(height: 14),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            AdminEditorSection(
+              title: 'Requirements And Eligibility',
+              subtitle:
+                  'Make the eligibility criteria explicit before students click out to apply.',
+              child: Column(
+                children: [
                   AdminEditorField(
                     controller: _eligibilityController,
                     label: 'Eligibility',
@@ -155,7 +173,16 @@ class _AdminScholarshipEditorScreenState
                     maxLines: 4,
                     validator: adminRequiredMin('Eligibility', min: 8),
                   ),
-                  const SizedBox(height: 14),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            AdminEditorSection(
+              title: 'Logistics',
+              subtitle:
+                  'Keep the amount, deadline, and destination details in one predictable section.',
+              child: Column(
+                children: [
                   AdminEditorField(
                     controller: _amountController,
                     label: 'Amount',
@@ -174,21 +201,6 @@ class _AdminScholarshipEditorScreenState
                     validator: _validateDeadline,
                   ),
                   const SizedBox(height: 14),
-                  AdminEditorField(
-                    controller: _linkController,
-                    label: 'Application link',
-                    hint: 'Optional direct link',
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-            AdminEditorSection(
-              title: 'Discovery details',
-              subtitle:
-                  'These optional fields improve how the scholarship looks in cards and filters.',
-              child: Column(
-                children: [
                   Row(
                     children: [
                       Expanded(
@@ -213,6 +225,21 @@ class _AdminScholarshipEditorScreenState
                     controller: _locationController,
                     label: 'Location label',
                     hint: 'Fallback location text',
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            AdminEditorSection(
+              title: 'Additional Information',
+              subtitle:
+                  'Use these optional fields to improve discovery, filtering, and outbound application clarity.',
+              child: Column(
+                children: [
+                  AdminEditorField(
+                    controller: _linkController,
+                    label: 'Application link',
+                    hint: 'Optional direct link',
                   ),
                   const SizedBox(height: 14),
                   AdminEditorField(

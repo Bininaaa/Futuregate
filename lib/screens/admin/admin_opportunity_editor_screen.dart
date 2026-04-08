@@ -133,9 +133,9 @@ class _AdminOpportunityEditorScreenState
         child: Column(
           children: [
             AdminEditorSection(
-              title: 'Publisher and visibility',
+              title: 'Basic Information',
               subtitle:
-                  'Admin opportunities still need a clear public-facing publisher name and live status.',
+                  'Keep the core publisher, title, type, status, and location fields together so the listing starts from the same structure used everywhere else.',
               child: Column(
                 children: [
                   AdminEditorField(
@@ -170,16 +170,7 @@ class _AdminOpportunityEditorScreenState
                       ),
                     ],
                   ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-            AdminEditorSection(
-              title: 'Opportunity basics',
-              subtitle:
-                  'Get the public-facing listing details right before adding structured compensation metadata.',
-              child: Column(
-                children: [
+                  const SizedBox(height: 14),
                   AdminEditorField(
                     controller: _titleController,
                     label: 'Opportunity title',
@@ -199,20 +190,38 @@ class _AdminOpportunityEditorScreenState
                   ),
                   const SizedBox(height: 14),
                   AdminEditorField(
+                    controller: _locationController,
+                    label: 'Location',
+                    hint: 'e.g. Algiers, Algeria',
+                    validator: adminRequiredMin('Location'),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            AdminEditorSection(
+              title: 'Description',
+              subtitle:
+                  'Give the role or program a clear narrative that will carry through cards and detail pages.',
+              child: Column(
+                children: [
+                  AdminEditorField(
                     controller: _descriptionController,
                     label: 'Description',
                     hint: 'Describe the role, scope, and value clearly',
                     maxLines: 6,
                     validator: adminRequiredMin('Description', min: 20),
                   ),
-                  const SizedBox(height: 14),
-                  AdminEditorField(
-                    controller: _locationController,
-                    label: 'Location',
-                    hint: 'e.g. Algiers, Algeria',
-                    validator: adminRequiredMin('Location'),
-                  ),
-                  const SizedBox(height: 14),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            AdminEditorSection(
+              title: 'Requirements And Eligibility',
+              subtitle:
+                  'Surface the expectations or criteria clearly before students decide to apply.',
+              child: Column(
+                children: [
                   AdminEditorField(
                     controller: _requirementsController,
                     label: _type == OpportunityType.sponsoring
@@ -228,7 +237,16 @@ class _AdminOpportunityEditorScreenState
                           : 'Requirements',
                     ),
                   ),
-                  const SizedBox(height: 14),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            AdminEditorSection(
+              title: 'Logistics',
+              subtitle:
+                  'Capture timing, compensation, and format details in one predictable publishing section.',
+              child: Column(
+                children: [
                   AdminEditorField(
                     controller: _deadlineController,
                     label: 'Application deadline',
@@ -238,17 +256,8 @@ class _AdminOpportunityEditorScreenState
                     onTap: _pickDeadline,
                     validator: _validateDeadline,
                   ),
-                ],
-              ),
-            ),
-            if (_usesStructuredFields) ...[
-              const SizedBox(height: 16),
-              AdminEditorSection(
-                title: 'Structured metadata',
-                subtitle:
-                    'These fields improve filtering, card badges, and detail presentation for students.',
-                child: Column(
-                  children: [
+                  if (_usesStructuredFields) ...[
+                    const SizedBox(height: 14),
                     Row(
                       children: [
                         Expanded(
@@ -384,9 +393,9 @@ class _AdminOpportunityEditorScreenState
                       maxLines: 2,
                     ),
                   ],
-                ),
+                ],
               ),
-            ],
+            ),
           ],
         ),
       ),
