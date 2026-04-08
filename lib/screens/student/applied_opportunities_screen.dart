@@ -9,8 +9,6 @@ import '../../providers/auth_provider.dart';
 import '../../utils/application_status.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/app_shell_background.dart';
-import '../../widgets/application_status_badge.dart';
-import '../../widgets/opportunity_type_badge.dart';
 import '../../widgets/student/student_workspace_shell.dart';
 import '../../widgets/student_opportunity_hub_widgets.dart';
 import 'opportunities_screen.dart';
@@ -77,7 +75,7 @@ class _AppliedOpportunitiesScreenState
   ) {
     final query = _searchQuery.trim().toLowerCase();
 
-    return provider.submittedApplications
+    final items = provider.submittedApplications
         .where((item) {
           if (!_matchesFilter(item)) {
             return false;
@@ -98,6 +96,14 @@ class _AppliedOpportunitiesScreenState
           return searchText.contains(query);
         })
         .toList(growable: false);
+
+    items.sort((first, second) {
+      final firstTime = first.appliedAt?.millisecondsSinceEpoch ?? 0;
+      final secondTime = second.appliedAt?.millisecondsSinceEpoch ?? 0;
+      return secondTime.compareTo(firstTime);
+    });
+
+    return items;
   }
 
   bool _matchesFilter(StudentApplicationItemModel item) {
@@ -164,6 +170,9 @@ class _AppliedOpportunitiesScreenState
     final provider = context.watch<ApplicationProvider>();
     final items = _filteredItems(provider);
     final totalCount = provider.submittedApplications.length;
+    final pendingCount = _countFor(provider, _ApplicationFilter.pending);
+    final approvedCount = _countFor(provider, _ApplicationFilter.approved);
+    final rejectedCount = _countFor(provider, _ApplicationFilter.rejected);
     final hasFilters =
         _selectedFilter != _ApplicationFilter.all || _searchQuery.isNotEmpty;
 
@@ -172,8 +181,7 @@ class _AppliedOpportunitiesScreenState
         backgroundColor: Colors.transparent,
         appBar: StudentWorkspaceAppBar(
           title: 'Applied Opportunities',
-          subtitle:
-              'Track every role you submitted and see what needs attention next.',
+          subtitle: 'Your submitted roles in one clean, compact timeline.',
           icon: Icons.assignment_turned_in_rounded,
           showBackButton: true,
           onBack: () => Navigator.maybePop(context),
@@ -181,7 +189,7 @@ class _AppliedOpportunitiesScreenState
             StudentWorkspaceActionButton(
               icon: Icons.refresh_rounded,
               tooltip: 'Refresh',
-              onTap: () => _loadApplications(),
+              onTap: _loadApplications,
             ),
           ],
         ),
@@ -201,36 +209,13 @@ class _AppliedOpportunitiesScreenState
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        StudentOpportunityHubHero(
-                          icon: Icons.assignment_turned_in_outlined,
-                          eyebrow: 'STUDENT APPLICATIONS',
-                          title: 'Track every move you made.',
-                          subtitle:
-                              'See what is still pending, what got approved, and which opportunities are worth revisiting next.',
-                          stats: [
-                            StudentOpportunityHeroStat(
-                              label: 'Total',
-                              value: '$totalCount',
-                              icon: Icons.layers_outlined,
-                              color: Colors.white,
-                            ),
-                            StudentOpportunityHeroStat(
-                              label: 'Pending',
-                              value:
-                                  '${_countFor(provider, _ApplicationFilter.pending)}',
-                              icon: Icons.hourglass_top_rounded,
-                              color: Colors.white,
-                            ),
-                            StudentOpportunityHeroStat(
-                              label: 'Approved',
-                              value:
-                                  '${_countFor(provider, _ApplicationFilter.approved)}',
-                              icon: Icons.verified_rounded,
-                              color: Colors.white,
-                            ),
-                          ],
+                        _AppliedCompactSummary(
+                          total: totalCount,
+                          pending: pendingCount,
+                          approved: approvedCount,
+                          rejected: rejectedCount,
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 12),
                         if ((provider.submittedApplicationsError ?? '')
                             .trim()
                             .isNotEmpty)
@@ -244,14 +229,14 @@ class _AppliedOpportunitiesScreenState
                         if ((provider.submittedApplicationsError ?? '')
                             .trim()
                             .isNotEmpty)
-                          const SizedBox(height: 14),
+                          const SizedBox(height: 12),
                         StudentOpportunitySearchField(
                           controller: _searchController,
                           hintText:
                               'Search by role, company, location, or status',
                           onChanged: (_) => setState(() {}),
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 10),
                         SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
                           child: Row(
@@ -267,7 +252,7 @@ class _AppliedOpportunitiesScreenState
                                     ),
                                     child: StudentOpportunityFilterChip(
                                       label:
-                                          '${_filterLabel(filter)} ${_countFor(provider, filter)}',
+                                          '${_filterLabel(filter)} (${_countFor(provider, filter)})',
                                       selected: filter == _selectedFilter,
                                       color: _filterColor(filter),
                                       onTap: () {
@@ -284,15 +269,15 @@ class _AppliedOpportunitiesScreenState
                                 .toList(growable: false),
                           ),
                         ),
-                        const SizedBox(height: 18),
+                        const SizedBox(height: 14),
                         Text(
                           hasFilters
-                              ? '${items.length} applications in this view'
+                              ? '${items.length} applications shown'
                               : totalCount == 1
-                              ? '1 application in your history'
-                              : '$totalCount applications in your history',
+                              ? '1 applied opportunity'
+                              : '$totalCount applied opportunities',
                           style: GoogleFonts.poppins(
-                            fontSize: 13,
+                            fontSize: 12.5,
                             fontWeight: FontWeight.w600,
                             color: StudentOpportunityHubPalette.textSecondary,
                           ),
@@ -306,7 +291,7 @@ class _AppliedOpportunitiesScreenState
                   const SliverFillRemaining(
                     hasScrollBody: false,
                     child: StudentOpportunityLoadingState(
-                      title: 'Loading your applications...',
+                      title: 'Loading applied opportunities...',
                       message:
                           'Pulling together your submitted opportunities and their latest statuses.',
                     ),
@@ -322,8 +307,8 @@ class _AppliedOpportunitiesScreenState
                           ? 'No applications match this view'
                           : 'You have not applied yet',
                       message: hasFilters
-                          ? 'Try clearing the search or switching filters to bring more of your application history back into view.'
-                          : 'Once you start applying, this page will become your clean timeline for tracking every submitted opportunity.',
+                          ? 'Try a different search or filter to bring more of your application history back into view.'
+                          : 'Once you start applying, your submitted opportunities will show up here.',
                       actionLabel: 'Browse opportunities',
                       onAction: () => Navigator.push(
                         context,
@@ -335,17 +320,17 @@ class _AppliedOpportunitiesScreenState
                   )
                 else
                   SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
+                    padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
                     sliver: SliverList(
                       delegate: SliverChildBuilderDelegate((context, index) {
                         final item = items[index];
                         return Padding(
                           padding: EdgeInsets.only(
-                            bottom: index == items.length - 1 ? 0 : 14,
+                            bottom: index == items.length - 1 ? 0 : 8,
                           ),
-                          child: _AppliedOpportunityCard(
+                          child: _AppliedHistoryCard(
                             item: item,
-                            onViewDetails: item.canOpenDetails
+                            onOpen: item.canOpenDetails
                                 ? () => _openOpportunity(item)
                                 : null,
                           ),
@@ -362,327 +347,126 @@ class _AppliedOpportunitiesScreenState
   }
 }
 
-class _AppliedOpportunityCard extends StatelessWidget {
-  final StudentApplicationItemModel item;
-  final VoidCallback? onViewDetails;
+class _AppliedCompactSummary extends StatelessWidget {
+  final int total;
+  final int pending;
+  final int approved;
+  final int rejected;
 
-  const _AppliedOpportunityCard({required this.item, this.onViewDetails});
+  const _AppliedCompactSummary({
+    required this.total,
+    required this.pending,
+    required this.approved,
+    required this.rejected,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final accent = item.hasOpportunity
-        ? OpportunityType.color(item.type)
-        : StudentOpportunityHubPalette.textMuted;
-    final description = _summarizeDescription(item.description);
-    final deadline = item.deadline;
-
     return Container(
-      padding: const EdgeInsets.all(18),
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.94),
-        borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: accent.withValues(alpha: 0.12)),
+        color: Colors.white.withValues(alpha: 0.92),
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(
+          color: StudentOpportunityHubPalette.border.withValues(alpha: 0.95),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: item.hasOpportunity
-                    ? OpportunityTypeBadge(type: item.type)
-                    : _UnavailableBadge(accent: accent),
+              Container(
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                  color: StudentOpportunityHubPalette.primary.withValues(
+                    alpha: 0.10,
+                  ),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: const Icon(
+                  Icons.assignment_turned_in_outlined,
+                  color: StudentOpportunityHubPalette.primary,
+                  size: 20,
+                ),
               ),
-              const SizedBox(width: 10),
-              StudentOpportunityMetaPill(
-                icon: Icons.schedule_rounded,
-                label: _relativeAppliedLabel(item.appliedAt),
-                tone: StudentOpportunityHubPalette.textMuted,
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+              const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      item.title,
+                      'Applied history',
                       style: GoogleFonts.poppins(
-                        fontSize: 18,
-                        height: 1.2,
+                        fontSize: 15,
                         fontWeight: FontWeight.w700,
                         color: StudentOpportunityHubPalette.textPrimary,
                       ),
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 2),
                     Text(
-                      item.companyName,
+                      'Everything you submitted, in one simple list.',
                       style: GoogleFonts.poppins(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
+                        fontSize: 12,
                         color: StudentOpportunityHubPalette.textSecondary,
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(width: 12),
-              ApplicationStatusBadge(status: item.status, fontSize: 10.5),
             ],
           ),
-          if (description.isNotEmpty) ...[
-            const SizedBox(height: 12),
-            Text(
-              description,
-              style: GoogleFonts.poppins(
-                fontSize: 12.5,
-                height: 1.55,
-                color: StudentOpportunityHubPalette.textSecondary,
-              ),
-            ),
-          ],
-          const SizedBox(height: 14),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              StudentOpportunityMetaPill(
-                icon: Icons.location_on_outlined,
-                label: item.location,
-              ),
-              StudentOpportunityMetaPill(
-                icon: Icons.calendar_today_outlined,
-                label: 'Applied ${_absoluteShortDate(item.appliedAt)}',
-              ),
-              StudentOpportunityMetaPill(
-                icon: deadline == null
-                    ? Icons.event_busy_outlined
-                    : Icons.flag_outlined,
-                label: deadline == null
-                    ? 'Deadline unavailable'
-                    : 'Closes ${DateFormat('MMM d').format(deadline)}',
-                tone: _deadlineTone(deadline),
-              ),
-              StudentOpportunityMetaPill(
-                icon: item.isOpen ? Icons.public_rounded : Icons.lock_outline,
-                label: item.isUnavailable
-                    ? 'No longer available'
-                    : item.isOpen
-                    ? 'Still open'
-                    : 'Closed',
-                tone: item.isUnavailable
-                    ? StudentOpportunityHubPalette.textMuted
-                    : item.isOpen
-                    ? StudentOpportunityHubPalette.secondary
-                    : StudentOpportunityHubPalette.accent,
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
-          _DecisionBanner(item: item),
-          const SizedBox(height: 14),
-          _AppliedActionButton(
-            label: item.canOpenDetails
-                ? 'View opportunity details'
-                : 'Unavailable',
-            icon: item.canOpenDetails
-                ? Icons.north_east_rounded
-                : Icons.block_rounded,
-            background: item.canOpenDetails
-                ? StudentOpportunityHubPalette.primary
-                : StudentOpportunityHubPalette.surfaceAlt,
-            foreground: item.canOpenDetails
-                ? Colors.white
-                : StudentOpportunityHubPalette.textMuted,
-            onTap: onViewDetails,
-          ),
-        ],
-      ),
-    );
-  }
+          const SizedBox(height: 12),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              const spacing = 10.0;
+              final tileWidth = (constraints.maxWidth - spacing) / 2;
 
-  static String _summarizeDescription(String value) {
-    final normalized = value.trim().replaceAll(RegExp(r'\s+'), ' ');
-    if (normalized.isEmpty) {
-      return '';
-    }
-    if (normalized.length <= 140) {
-      return normalized;
-    }
-    return '${normalized.substring(0, 137).trimRight()}...';
-  }
-
-  static String _relativeAppliedLabel(DateTime? value) {
-    if (value == null) {
-      return 'Date unavailable';
-    }
-
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final target = DateTime(value.year, value.month, value.day);
-    final difference = today.difference(target).inDays;
-
-    if (difference <= 0) {
-      return 'Today';
-    }
-    if (difference == 1) {
-      return 'Yesterday';
-    }
-    if (difference < 7) {
-      return '$difference days ago';
-    }
-    if (difference < 30) {
-      final weeks = (difference / 7).ceil();
-      return '$weeks ${weeks == 1 ? 'week' : 'weeks'} ago';
-    }
-
-    return DateFormat('MMM d').format(value);
-  }
-
-  static String _absoluteShortDate(DateTime? value) {
-    if (value == null) {
-      return 'Unknown';
-    }
-
-    return DateFormat('MMM d').format(value);
-  }
-
-  static Color? _deadlineTone(DateTime? deadline) {
-    if (deadline == null) {
-      return null;
-    }
-
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final target = DateTime(deadline.year, deadline.month, deadline.day);
-    final difference = target.difference(today).inDays;
-
-    if (difference < 0) {
-      return StudentOpportunityHubPalette.error;
-    }
-    if (difference <= 5) {
-      return StudentOpportunityHubPalette.accent;
-    }
-    return StudentOpportunityHubPalette.secondary;
-  }
-}
-
-class _UnavailableBadge extends StatelessWidget {
-  final Color accent;
-
-  const _UnavailableBadge({required this.accent});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: accent.withValues(alpha: 0.10),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Text(
-        'Archived',
-        style: GoogleFonts.poppins(
-          fontSize: 11,
-          fontWeight: FontWeight.w700,
-          color: accent,
-        ),
-      ),
-    );
-  }
-}
-
-class _DecisionBanner extends StatelessWidget {
-  final StudentApplicationItemModel item;
-
-  const _DecisionBanner({required this.item});
-
-  @override
-  Widget build(BuildContext context) {
-    final status = ApplicationStatus.parse(item.status);
-    late final IconData icon;
-    late final Color tone;
-    late final Color background;
-    late final String title;
-    late final String message;
-
-    switch (status) {
-      case ApplicationStatus.accepted:
-        icon = Icons.verified_rounded;
-        tone = StudentOpportunityHubPalette.success;
-        background = const Color(0xFFEFFCF4);
-        title = 'Approved';
-        message =
-            'This application moved forward. Keep an eye on your messages for any next steps from the company.';
-        break;
-      case ApplicationStatus.rejected:
-        icon = Icons.info_outline_rounded;
-        tone = StudentOpportunityHubPalette.error;
-        background = const Color(0xFFFFF1F2);
-        title = 'Not selected';
-        message =
-            'This one did not move ahead, but your history stays here so you can learn from it and keep momentum.';
-        break;
-      case ApplicationStatus.pending:
-      default:
-        icon = Icons.hourglass_top_rounded;
-        tone = StudentOpportunityHubPalette.warning;
-        background = const Color(0xFFFFF7E8);
-        title = 'Still under review';
-        message =
-            'The company has not made a final decision yet. You already did your part, so now it is a waiting game.';
-        break;
-    }
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: background,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: tone.withValues(alpha: 0.10)),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 34,
-            height: 34,
-            decoration: BoxDecoration(
-              color: tone.withValues(alpha: 0.10),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(icon, color: tone, size: 18),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: GoogleFonts.poppins(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    color: StudentOpportunityHubPalette.textPrimary,
+              return Wrap(
+                spacing: spacing,
+                runSpacing: spacing,
+                children: [
+                  SizedBox(
+                    width: tileWidth,
+                    child: _AppliedMiniStat(
+                      label: 'Total',
+                      value: '$total',
+                      color: StudentOpportunityHubPalette.primary,
+                      icon: Icons.layers_rounded,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  message,
-                  style: GoogleFonts.poppins(
-                    fontSize: 12,
-                    height: 1.5,
-                    color: StudentOpportunityHubPalette.textSecondary,
+                  SizedBox(
+                    width: tileWidth,
+                    child: _AppliedMiniStat(
+                      label: 'Pending',
+                      value: '$pending',
+                      color: StudentOpportunityHubPalette.warning,
+                      icon: Icons.hourglass_top_rounded,
+                    ),
                   ),
-                ),
-              ],
-            ),
+                  SizedBox(
+                    width: tileWidth,
+                    child: _AppliedMiniStat(
+                      label: 'Approved',
+                      value: '$approved',
+                      color: StudentOpportunityHubPalette.success,
+                      icon: Icons.verified_rounded,
+                    ),
+                  ),
+                  SizedBox(
+                    width: tileWidth,
+                    child: _AppliedMiniStat(
+                      label: 'Rejected',
+                      value: '$rejected',
+                      color: StudentOpportunityHubPalette.error,
+                      icon: Icons.cancel_outlined,
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
         ],
       ),
@@ -690,51 +474,389 @@ class _DecisionBanner extends StatelessWidget {
   }
 }
 
-class _AppliedActionButton extends StatelessWidget {
+class _AppliedMiniStat extends StatelessWidget {
   final String label;
+  final String value;
+  final Color color;
   final IconData icon;
-  final Color background;
-  final Color foreground;
-  final VoidCallback? onTap;
 
-  const _AppliedActionButton({
+  const _AppliedMiniStat({
     required this.label,
+    required this.value,
+    required this.color,
     required this.icon,
-    required this.background,
-    required this.foreground,
-    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        decoration: BoxDecoration(
-          color: background,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: foreground.withValues(alpha: 0.10)),
+    return Container(
+      height: 84,
+      padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Colors.white, color.withValues(alpha: 0.08)],
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 18, color: foreground),
-            const SizedBox(width: 8),
-            Flexible(
-              child: Text(
-                label,
-                overflow: TextOverflow.ellipsis,
-                style: GoogleFonts.poppins(
-                  fontSize: 12.5,
-                  fontWeight: FontWeight.w700,
-                  color: foreground,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: color.withValues(alpha: 0.16)),
+        boxShadow: [
+          BoxShadow(
+            color: color.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 28,
+                height: 28,
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.11),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(icon, size: 16, color: color),
+              ),
+              const Spacer(),
+              Container(
+                width: 8,
+                height: 8,
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.88),
+                  shape: BoxShape.circle,
                 ),
               ),
+            ],
+          ),
+          const Spacer(),
+          Text(
+            value,
+            style: GoogleFonts.poppins(
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+              color: StudentOpportunityHubPalette.textPrimary,
             ),
-          ],
+          ),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: GoogleFonts.poppins(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: StudentOpportunityHubPalette.textSecondary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AppliedHistoryCard extends StatelessWidget {
+  final StudentApplicationItemModel item;
+  final VoidCallback? onOpen;
+
+  const _AppliedHistoryCard({required this.item, this.onOpen});
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = item.hasOpportunity
+        ? OpportunityType.color(item.type)
+        : StudentOpportunityHubPalette.textMuted;
+    final deadline = item.deadline;
+    final statusTone = ApplicationStatus.color(item.status);
+    final summary = _summaryText(item);
+    final leadingIcon = item.hasOpportunity
+        ? OpportunityType.icon(item.type)
+        : Icons.archive_outlined;
+    final leadingTone = item.hasOpportunity
+        ? accent
+        : StudentOpportunityHubPalette.textMuted;
+    final locationLabel = _compactLocationLabel(item.location);
+
+    return _AppliedCardFrame(
+      accent: accent,
+      highlight: statusTone,
+      onTap: onOpen,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: leadingTone.withValues(alpha: 0.10),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(leadingIcon, color: leadingTone, size: 18),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        item.title,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: _AppliedCardText.title,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    _AppliedLabelChip(
+                      label: ApplicationStatus.label(item.status),
+                      tone: statusTone,
+                      filled: true,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 3),
+                Text.rich(
+                  TextSpan(
+                    children: [
+                      TextSpan(
+                        text: item.companyName,
+                        style: _AppliedCardText.subtitle,
+                      ),
+                      TextSpan(
+                        text: '  •  ',
+                        style: GoogleFonts.poppins(
+                          fontSize: 11.2,
+                          fontWeight: FontWeight.w600,
+                          color: StudentOpportunityHubPalette.textMuted,
+                        ),
+                      ),
+                      TextSpan(
+                        text: item.hasOpportunity
+                            ? OpportunityType.label(item.type)
+                            : 'Archived',
+                        style: GoogleFonts.poppins(
+                          fontSize: 11.2,
+                          fontWeight: FontWeight.w700,
+                          color: accent,
+                        ),
+                      ),
+                    ],
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                if (summary.isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    summary,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.poppins(
+                      fontSize: 11.1,
+                      fontWeight: FontWeight.w600,
+                      color: statusTone,
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 6,
+                  children: [
+                    _AppliedMetaChip(
+                      icon: Icons.schedule_rounded,
+                      label: _relativeAppliedLabel(item.appliedAt),
+                    ),
+                    _AppliedMetaChip(
+                      icon: _deadlineIcon(deadline),
+                      label: _deadlineLabel(deadline),
+                      tone: _deadlineTone(deadline),
+                    ),
+                    if (locationLabel != null)
+                      _AppliedMetaChip(
+                        icon: Icons.location_on_outlined,
+                        label: locationLabel,
+                      ),
+                    _AppliedMetaChip(
+                      icon: _availabilityIcon(item),
+                      label: _availabilityLabel(item),
+                      tone: _availabilityTone(item),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          Container(
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(
+              color: (onOpen == null ? leadingTone : accent).withValues(
+                alpha: 0.10,
+              ),
+              borderRadius: BorderRadius.circular(11),
+            ),
+            child: Icon(
+              onOpen == null
+                  ? Icons.block_rounded
+                  : Icons.chevron_right_rounded,
+              color: onOpen == null ? leadingTone : accent,
+              size: 18,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AppliedCardFrame extends StatelessWidget {
+  final Color accent;
+  final Color highlight;
+  final Widget child;
+  final VoidCallback? onTap;
+
+  const _AppliedCardFrame({
+    required this.accent,
+    required this.highlight,
+    required this.child,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: Ink(
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.95),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: accent.withValues(alpha: 0.12)),
         ),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(20),
+          child: Stack(
+            children: [
+              Positioned(
+                left: 8,
+                top: 10,
+                bottom: 10,
+                child: Container(
+                  width: 4,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [accent, highlight],
+                    ),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(18, 12, 12, 12),
+                child: child,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _AppliedLabelChip extends StatelessWidget {
+  final String label;
+  final Color tone;
+  final bool filled;
+
+  const _AppliedLabelChip({
+    required this.label,
+    this.tone = StudentOpportunityHubPalette.textMuted,
+    this.filled = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+      decoration: BoxDecoration(
+        color: filled
+            ? tone.withValues(alpha: 0.10)
+            : Colors.white.withValues(alpha: 0.82),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(
+          color: filled
+              ? tone.withValues(alpha: 0.18)
+              : StudentOpportunityHubPalette.border.withValues(alpha: 0.92),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            label,
+            style: GoogleFonts.poppins(
+              fontSize: 10.4,
+              fontWeight: FontWeight.w600,
+              color: filled ? tone : StudentOpportunityHubPalette.textSecondary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AppliedMetaChip extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color? tone;
+
+  const _AppliedMetaChip({required this.icon, required this.label, this.tone});
+
+  @override
+  Widget build(BuildContext context) {
+    final resolvedTone = tone ?? StudentOpportunityHubPalette.textMuted;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
+      decoration: BoxDecoration(
+        color: tone == null
+            ? Colors.white.withValues(alpha: 0.86)
+            : resolvedTone.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(
+          color: tone == null
+              ? StudentOpportunityHubPalette.border.withValues(alpha: 0.90)
+              : resolvedTone.withValues(alpha: 0.14),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 13, color: resolvedTone),
+          const SizedBox(width: 5),
+          Text(
+            label,
+            style: GoogleFonts.poppins(
+              fontSize: 10.6,
+              fontWeight: FontWeight.w600,
+              color: tone == null
+                  ? StudentOpportunityHubPalette.textSecondary
+                  : resolvedTone,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -806,4 +928,144 @@ class _InlineBanner extends StatelessWidget {
       ),
     );
   }
+}
+
+abstract final class _AppliedCardText {
+  static final TextStyle title = GoogleFonts.poppins(
+    fontSize: 14.6,
+    height: 1.18,
+    fontWeight: FontWeight.w700,
+    color: StudentOpportunityHubPalette.textPrimary,
+  );
+
+  static final TextStyle subtitle = GoogleFonts.poppins(
+    fontSize: 11.4,
+    fontWeight: FontWeight.w600,
+    color: StudentOpportunityHubPalette.textSecondary,
+  );
+}
+
+String _summaryText(StudentApplicationItemModel item) {
+  final normalized = item.description.trim().replaceAll(RegExp(r'\s+'), ' ');
+  if (normalized.isNotEmpty) {
+    if (normalized.length <= 88) {
+      return normalized;
+    }
+    return '${normalized.substring(0, 85).trimRight()}...';
+  }
+
+  return switch (ApplicationStatus.parse(item.status)) {
+    ApplicationStatus.accepted => 'Moved forward. Watch for next steps.',
+    ApplicationStatus.rejected => 'Not selected, but kept in your history.',
+    ApplicationStatus.pending => 'Awaiting a decision from the company.',
+    _ => 'Awaiting a decision from the company.',
+  };
+}
+
+String _relativeAppliedLabel(DateTime? value) {
+  if (value == null) {
+    return 'Date unavailable';
+  }
+
+  final now = DateTime.now();
+  final today = DateTime(now.year, now.month, now.day);
+  final target = DateTime(value.year, value.month, value.day);
+  final difference = today.difference(target).inDays;
+
+  if (difference <= 0) {
+    return 'Today';
+  }
+  if (difference == 1) {
+    return 'Yesterday';
+  }
+  if (difference < 7) {
+    return '${difference}d ago';
+  }
+  if (difference < 30) {
+    final weeks = (difference / 7).ceil();
+    return '${weeks}w ago';
+  }
+
+  return DateFormat('MMM d').format(value);
+}
+
+IconData _deadlineIcon(DateTime? deadline) {
+  if (deadline == null) {
+    return Icons.event_busy_outlined;
+  }
+
+  final now = DateTime.now();
+  final today = DateTime(now.year, now.month, now.day);
+  final target = DateTime(deadline.year, deadline.month, deadline.day);
+  return target.difference(today).inDays < 0
+      ? Icons.event_busy_outlined
+      : Icons.flag_outlined;
+}
+
+String _deadlineLabel(DateTime? deadline) {
+  if (deadline == null) {
+    return 'No deadline';
+  }
+
+  return DateFormat('MMM d').format(deadline);
+}
+
+Color? _deadlineTone(DateTime? deadline) {
+  if (deadline == null) {
+    return null;
+  }
+
+  final now = DateTime.now();
+  final today = DateTime(now.year, now.month, now.day);
+  final target = DateTime(deadline.year, deadline.month, deadline.day);
+  final difference = target.difference(today).inDays;
+
+  if (difference < 0) {
+    return StudentOpportunityHubPalette.error;
+  }
+  if (difference <= 5) {
+    return StudentOpportunityHubPalette.accent;
+  }
+  return StudentOpportunityHubPalette.secondary;
+}
+
+String _availabilityLabel(StudentApplicationItemModel item) {
+  if (item.isUnavailable) {
+    return 'Archived';
+  }
+  if (item.isOpen) {
+    return 'Open';
+  }
+  return 'Closed';
+}
+
+String? _compactLocationLabel(String value) {
+  final normalized = value.trim().replaceAll(RegExp(r'\s+'), ' ');
+  if (normalized.isEmpty || normalized == 'Location not specified') {
+    return null;
+  }
+  if (normalized.length <= 20) {
+    return normalized;
+  }
+  return '${normalized.substring(0, 17).trimRight()}...';
+}
+
+IconData _availabilityIcon(StudentApplicationItemModel item) {
+  if (item.isUnavailable) {
+    return Icons.visibility_off_outlined;
+  }
+  if (item.isOpen) {
+    return Icons.public_rounded;
+  }
+  return Icons.lock_outline_rounded;
+}
+
+Color _availabilityTone(StudentApplicationItemModel item) {
+  if (item.isUnavailable) {
+    return StudentOpportunityHubPalette.textMuted;
+  }
+  if (item.isOpen) {
+    return StudentOpportunityHubPalette.secondary;
+  }
+  return StudentOpportunityHubPalette.accent;
 }

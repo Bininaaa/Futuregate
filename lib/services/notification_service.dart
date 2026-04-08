@@ -279,9 +279,16 @@ class NotificationService {
   }
 
   Future<void> markAsRead(String notificationId) async {
-    await _firestore.collection('notifications').doc(notificationId).update({
-      'isRead': true,
-    });
+    try {
+      await _firestore.collection('notifications').doc(notificationId).update({
+        'isRead': true,
+      });
+    } on FirebaseException catch (error) {
+      if (error.code == 'not-found') {
+        return;
+      }
+      rethrow;
+    }
   }
 
   Future<void> markAllAsRead(String userId) async {

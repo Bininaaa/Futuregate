@@ -141,16 +141,6 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
     );
   }
 
-  void _showPlaceholderMessage() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text(
-          'Live training links will appear here once your catalog is connected',
-        ),
-      ),
-    );
-  }
-
   Future<void> _focusSearchField() async {
     await _ensureVisible(_searchSectionKey);
     if (!mounted) {
@@ -338,18 +328,11 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
   }
 
   List<String> _availableDomains(List<TrainingModel> trainings) {
-    const fallbackDomains = [
-      'All',
-      'Data & AI',
-      'Health & Growth',
-      'Cloud & DevOps',
-    ];
-
     final domains = trainings.map(_domainLabelFor).toSet().toList()
       ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
 
     if (domains.isEmpty) {
-      return fallbackDomains;
+      return const ['All'];
     }
 
     return ['All', ...domains];
@@ -376,83 +359,17 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
     return selected;
   }
 
-  List<TrainingCourseCardData> _placeholderCards() {
-    return const [
-      TrainingCourseCardData(
-        id: 'placeholder-google-data',
-        title: 'Professional Data Analytics Certificate',
-        providerName: 'Google',
-        providerLogoUrl: '',
-        imageUrl: '',
-        trainingType: 'course',
-        durationLabel: '6 weeks',
-        levelLabel: 'Beginner',
-        ratingLabel: '4.8 (12k+)',
-        categoryLabel: 'Data & AI',
-        accentColor: OpportunityDashboardPalette.primary,
-        secondaryAccentColor: OpportunityDashboardPalette.primaryDark,
-        fallbackIcon: Icons.analytics_outlined,
-        badges: [
-          TrainingCourseBadgeData(
-            label: 'FREE',
-            backgroundColor: Color(0xFFDCFCE7),
-            foregroundColor: OpportunityDashboardPalette.success,
-          ),
-          TrainingCourseBadgeData(
-            label: 'CERTIFIED',
-            backgroundColor: Color(0xFFDBEAFE),
-            foregroundColor: OpportunityDashboardPalette.primaryDark,
-          ),
-        ],
-        isPlaceholder: true,
-      ),
-      TrainingCourseCardData(
-        id: 'placeholder-yale-wellbeing',
-        title: 'The Science of Well-Being & Performance',
-        providerName: 'Yale University',
-        providerLogoUrl: '',
-        imageUrl: '',
-        trainingType: 'video',
-        durationLabel: '10 weeks',
-        levelLabel: 'Intermediate',
-        ratingLabel: '5.0 (45k+)',
-        categoryLabel: 'Health & Growth',
-        accentColor: OpportunityDashboardPalette.secondary,
-        secondaryAccentColor: OpportunityDashboardPalette.primary,
-        fallbackIcon: Icons.psychology_alt_outlined,
-        badges: [
-          TrainingCourseBadgeData(
-            label: 'CERTIFIED',
-            backgroundColor: Color(0xFFDBEAFE),
-            foregroundColor: OpportunityDashboardPalette.primaryDark,
-          ),
-        ],
-        isPlaceholder: true,
-      ),
-      TrainingCourseCardData(
-        id: 'placeholder-aws-cloud',
-        title: 'Cloud Foundations',
-        providerName: 'AWS Academy',
-        providerLogoUrl: '',
-        imageUrl: '',
-        trainingType: 'book',
-        durationLabel: '7 weeks',
-        levelLabel: 'Beginner',
-        ratingLabel: '4.7 (16k+)',
-        categoryLabel: 'Cloud & DevOps',
-        accentColor: OpportunityDashboardPalette.accent,
-        secondaryAccentColor: OpportunityDashboardPalette.primaryDark,
-        fallbackIcon: Icons.cloud_queue_rounded,
-        badges: [
-          TrainingCourseBadgeData(
-            label: 'FREE',
-            backgroundColor: Color(0xFFDCFCE7),
-            foregroundColor: OpportunityDashboardPalette.success,
-          ),
-        ],
-        isPlaceholder: true,
-      ),
-    ];
+  TrainingModel? _findTrainingById(
+    List<TrainingModel> trainings,
+    String trainingId,
+  ) {
+    for (final training in trainings) {
+      if (training.id == trainingId) {
+        return training;
+      }
+    }
+
+    return null;
   }
 
   TrainingCourseCardData _mapTrainingToCardData(TrainingModel training) {
@@ -475,7 +392,6 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
       secondaryAccentColor: accent.secondary,
       fallbackIcon: _iconForTraining(training),
       badges: _badgesForTraining(training),
-      isPlaceholder: false,
     );
   }
 
@@ -697,6 +613,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
     final domainFilteredTrainings = approvedTrainings
         .where((training) => _matchesDomain(training, activeDomain))
         .toList();
+    final hasApprovedTrainings = approvedTrainings.isNotEmpty;
     final recommendedTrainings = _recommendedTrainings(approvedTrainings);
     final catalogTrainings = activeDomain == 'All'
         ? approvedTrainings
@@ -704,11 +621,9 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
     final isSearching = _searchText.trim().isNotEmpty;
     final filteredTrainings = approvedTrainings.where(_matchesSearch).toList();
 
-    final topCards = approvedTrainings.isEmpty
-        ? _placeholderCards()
-        : (isSearching ? filteredTrainings : recommendedTrainings)
-              .map(_mapTrainingToCardData)
-              .toList();
+    final topCards = (isSearching ? filteredTrainings : recommendedTrainings)
+        .map(_mapTrainingToCardData)
+        .toList();
     final additionalCards =
         (!isSearching
                 ? catalogTrainings.map(_mapTrainingToCardData)
@@ -716,40 +631,36 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
             .toList();
     final sectionTitle = isSearching ? 'Search results' : 'Recommended for you';
     final showTopEmptyState =
-        approvedTrainings.isNotEmpty &&
-        isSearching &&
-        filteredTrainings.isEmpty;
+        !hasApprovedTrainings || (isSearching && filteredTrainings.isEmpty);
     final showDomainEmptyState =
+        hasApprovedTrainings &&
         !isSearching &&
         activeDomain != 'All' &&
-        approvedTrainings.isNotEmpty &&
         additionalCards.isEmpty;
-    final emptySubtitle = isSearching
+    final emptySubtitle = !hasApprovedTrainings
+        ? 'No training programs are available yet.'
+        : isSearching
         ? 'Try another keyword to find available training programs.'
         : activeDomain == 'All'
         ? 'No training programs are available yet.'
         : 'No training programs are available yet for $activeDomain.';
 
     Widget buildTrainingCard(TrainingCourseCardData card) {
-      final training = card.isPlaceholder
-          ? null
-          : approvedTrainings.firstWhere((item) => item.id == card.id);
-
-      void onTap() {
-        if (card.isPlaceholder) {
-          _showPlaceholderMessage();
-          return;
-        }
-
-        _openLink(training!.displayLink);
+      final training = _findTrainingById(approvedTrainings, card.id);
+      if (training == null) {
+        return const SizedBox.shrink();
       }
 
-      final isSaved = training != null && provider.isTrainingSaved(training.id);
-      final isSaveBusy =
-          training != null && provider.isTrainingBusy(training.id);
-      final onToggleSaved = training == null
-          ? null
-          : () => _toggleSavedTraining(training);
+      void onTap() {
+        _openLink(training.displayLink);
+      }
+
+      void onToggleSaved() {
+        _toggleSavedTraining(training);
+      }
+
+      final isSaved = provider.isTrainingSaved(training.id);
+      final isSaveBusy = provider.isTrainingBusy(training.id);
 
       final cardWidget = _trainingLayoutView == TrainingLayoutView.grid
           ? TrainingCourseCard(
@@ -839,8 +750,9 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
                     if (provider.errorMessage != null) ...[
                       const SizedBox(height: 16),
                       TrainingInfoBanner(
-                        message:
-                            '${provider.errorMessage!} Showing the best training content currently available.',
+                        message: provider.trainings.isEmpty
+                            ? provider.errorMessage!
+                            : '${provider.errorMessage!} Showing the training content currently available.',
                       ),
                     ],
                     const SizedBox(height: 18),
@@ -867,7 +779,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
                       )
                     else
                       ...topCards.map(buildTrainingCard),
-                    if (!isSearching) ...[
+                    if (!isSearching && hasApprovedTrainings) ...[
                       const SizedBox(height: 6),
                       const BrowseMoreTopicsCard(),
                       const SizedBox(height: 10),

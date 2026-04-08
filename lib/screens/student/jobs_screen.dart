@@ -317,11 +317,7 @@ class _JobsScreenState extends State<JobsScreen> {
         )
         .toList();
 
-    if (liveJobs.isNotEmpty) {
-      return liveJobs;
-    }
-
-    return _fallbackJobCards;
+    return liveJobs.isNotEmpty ? liveJobs : _fallbackJobCards;
   }
 
   List<_JobCardData> _applyFilters(List<_JobCardData> jobs) {
@@ -432,7 +428,6 @@ class _JobsScreenState extends State<JobsScreen> {
       logoUrl: opportunity.companyLogo.trim(),
       category: category,
       isFeaturedPreferred: isFeaturedPreferred,
-      isPlaceholder: false,
       opportunity: opportunity,
       searchText: searchable,
     );
@@ -853,7 +848,7 @@ class _JobsScreenState extends State<JobsScreen> {
     ).take(maxItems).toList();
   }
 
-  List<_JobCardData> get _fallbackJobCards => [
+  List<_JobCardData> get _fallbackJobCards => const []; /*
     _JobCardData.placeholder(
       title: 'Senior Product Designer',
       company: 'Nova Labs',
@@ -988,7 +983,7 @@ class _JobsScreenState extends State<JobsScreen> {
       levelTag: 'JUNIOR',
       category: _categories[0],
     ),
-  ];
+  */
 
   @override
   Widget build(BuildContext context) {
@@ -1067,6 +1062,9 @@ class _JobsScreenState extends State<JobsScreen> {
     final savedIds = savedProvider.savedOpportunities
         .map((item) => item.opportunityId)
         .toSet();
+    final hasActiveFilters =
+        _searchQuery.isNotEmpty || _selectedCategoryKey != null;
+    final showCatalogEmptyState = allJobs.isEmpty && !hasActiveFilters;
     final showLoadingBar =
         opportunityProvider.isLoading &&
         opportunityProvider.opportunities.isNotEmpty;
@@ -1242,9 +1240,12 @@ class _JobsScreenState extends State<JobsScreen> {
                   ),
                   sliver: SliverToBoxAdapter(
                     child: _JobsEmptyStateCard(
-                      title: 'No featured jobs found',
-                      message:
-                          'Try another keyword or clear your category filter to see more roles.',
+                      title: showCatalogEmptyState
+                          ? 'No jobs available yet'
+                          : 'No featured jobs found',
+                      message: showCatalogEmptyState
+                          ? 'Live job listings will appear here once companies publish them.'
+                          : 'Try another keyword or clear your category filter to see more roles.',
                       compact: isCompact,
                     ),
                   ),
@@ -1339,9 +1340,12 @@ class _JobsScreenState extends State<JobsScreen> {
                   ),
                   sliver: SliverToBoxAdapter(
                     child: _JobsEmptyStateCard(
-                      title: 'No roles match your search',
-                      message:
-                          'Search by title or company, or tap See All to reset categories.',
+                      title: showCatalogEmptyState
+                          ? 'No roles available yet'
+                          : 'No roles match your search',
+                      message: showCatalogEmptyState
+                          ? 'Live job listings will appear here once companies publish them.'
+                          : 'Search by title or company, or tap See All to reset categories.',
                       compact: isCompact,
                     ),
                   ),
@@ -1468,7 +1472,6 @@ class _PurpleAvailableRoleListCard extends StatelessWidget {
     final cardRadius = BorderRadius.circular(compact ? 17 : 19);
     final supportingLine = _supportingLine();
     final showExplicitFullTime =
-        !job.isPlaceholder &&
         job.typeBadge?.trim().toUpperCase() == 'FULL-TIME';
     final topSurface = Color.alphaBlend(
       palette.surfaceTint.withValues(alpha: 0.24),
@@ -4069,7 +4072,6 @@ class _JobCardData {
   final String logoUrl;
   final _JobCategoryData category;
   final bool isFeaturedPreferred;
-  final bool isPlaceholder;
   final OpportunityModel? opportunity;
   final String searchText;
 
@@ -4087,11 +4089,11 @@ class _JobCardData {
     required this.logoUrl,
     required this.category,
     required this.isFeaturedPreferred,
-    required this.isPlaceholder,
     required this.opportunity,
     required this.searchText,
   });
 
+  /*
   factory _JobCardData.placeholder({
     required String title,
     required String company,
@@ -4133,6 +4135,7 @@ class _JobCardData {
       ].join(' ').toLowerCase(),
     );
   }
+  */
 
   String get uniqueKey {
     if (id.isNotEmpty) {

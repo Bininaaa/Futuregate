@@ -69,10 +69,7 @@ class _SponsoredOpportunitiesScreenState
       value: _SponsoredFilter.competition,
       label: 'Competition',
     ),
-    _SponsoredFilterDefinition(
-      value: _SponsoredFilter.grants,
-      label: 'Grants',
-    ),
+    _SponsoredFilterDefinition(value: _SponsoredFilter.grants, label: 'Grants'),
     _SponsoredFilterDefinition(
       value: _SponsoredFilter.internships,
       label: 'Internships',
@@ -433,10 +430,7 @@ class _SponsoredOpportunitiesScreenState
     return normalized.isEmpty || normalized == 'open';
   }
 
-  int _sortSponsoredCards(
-    _SponsoredCardModel a,
-    _SponsoredCardModel b,
-  ) {
+  int _sortSponsoredCards(_SponsoredCardModel a, _SponsoredCardModel b) {
     final scoreDiff = _priorityScore(b).compareTo(_priorityScore(a));
     if (scoreDiff != 0) {
       return scoreDiff;
@@ -476,9 +470,7 @@ class _SponsoredOpportunitiesScreenState
     return score;
   }
 
-  List<_SponsoredCardModel> _applyFilters(
-    List<_SponsoredCardModel> items,
-  ) {
+  List<_SponsoredCardModel> _applyFilters(List<_SponsoredCardModel> items) {
     final query = _searchQuery.toLowerCase();
 
     return items.where((item) {
@@ -506,12 +498,8 @@ class _SponsoredOpportunitiesScreenState
       }
     }
 
-    addCandidates(
-      items.where((item) => item.opportunity?.isFeatured == true),
-    );
-    addCandidates(
-      items.where((item) => item.badgeLabel == 'FULLY FUNDED'),
-    );
+    addCandidates(items.where((item) => item.opportunity?.isFeatured == true));
+    addCandidates(items.where((item) => item.badgeLabel == 'FULLY FUNDED'));
     addCandidates(
       items.where(
         (item) =>
@@ -523,9 +511,7 @@ class _SponsoredOpportunitiesScreenState
     return result;
   }
 
-  _SponsoredCardModel _mapOpportunityToCardModel(
-    OpportunityModel opportunity,
-  ) {
+  _SponsoredCardModel _mapOpportunityToCardModel(OpportunityModel opportunity) {
     final title = opportunity.title.trim().isEmpty
         ? 'Sponsored Opportunity'
         : opportunity.title.trim();
@@ -930,6 +916,9 @@ class _SponsoredOpportunitiesScreenState
     final savedIds = savedProvider.savedOpportunities
         .map((item) => item.opportunityId)
         .toSet();
+    final hasActiveFilters =
+        _searchQuery.isNotEmpty || _activeFilter != _SponsoredFilter.all;
+    final showCatalogEmptyState = allCards.isEmpty && !hasActiveFilters;
     final countLabel = visibleCards.length == 1
         ? '1 program'
         : '${visibleCards.length} programs';
@@ -1049,8 +1038,7 @@ class _SponsoredOpportunitiesScreenState
                                   const SizedBox(width: 8),
                               itemBuilder: (context, index) {
                                 final filter = _filters[index];
-                                final isActive =
-                                    filter.value == _activeFilter;
+                                final isActive = filter.value == _activeFilter;
 
                                 return _SponsoredFilterChip(
                                   label: filter.label,
@@ -1085,10 +1073,13 @@ class _SponsoredOpportunitiesScreenState
                               padding: EdgeInsets.symmetric(
                                 horizontal: horizontalPadding,
                               ),
-                              child: const _SponsoredEmptyState(
-                                title: 'No sponsored programs found',
-                                message:
-                                    'Try adjusting your search or filters to uncover more partner-backed programs.',
+                              child: _SponsoredEmptyState(
+                                title: showCatalogEmptyState
+                                    ? 'No sponsored programs yet'
+                                    : 'No sponsored programs found',
+                                message: showCatalogEmptyState
+                                    ? 'Live sponsored programs will appear here once partners publish them.'
+                                    : 'Try adjusting your search or filters to uncover more partner-backed programs.',
                               ),
                             )
                           else
@@ -1117,21 +1108,21 @@ class _SponsoredOpportunitiesScreenState
                                     child: _FeaturedSponsoredCard(
                                       item: item,
                                       actionState: actionState,
-                                      isSaved: opportunity != null &&
+                                      isSaved:
+                                          opportunity != null &&
                                           savedIds.contains(opportunity.id),
-                                      isSaveBusy: opportunity != null &&
-                                          _busySaveIds.contains(
-                                            opportunity.id,
-                                          ),
-                                      isApplying: opportunity != null &&
+                                      isSaveBusy:
+                                          opportunity != null &&
+                                          _busySaveIds.contains(opportunity.id),
+                                      isApplying:
+                                          opportunity != null &&
                                           _busyApplyIds.contains(
                                             opportunity.id,
                                           ),
                                       compact: isCompact,
                                       onTap: opportunity == null
                                           ? null
-                                          : () =>
-                                              _openOpportunity(opportunity),
+                                          : () => _openOpportunity(opportunity),
                                       onApply: actionState.isEnabled
                                           ? () => _applyNow(item)
                                           : null,
@@ -1171,10 +1162,13 @@ class _SponsoredOpportunitiesScreenState
                               padding: EdgeInsets.symmetric(
                                 horizontal: horizontalPadding,
                               ),
-                              child: const _SponsoredEmptyState(
-                                title: 'Nothing to show right now',
-                                message:
-                                    'Live sponsored programs will appear here as they match your search.',
+                              child: _SponsoredEmptyState(
+                                title: showCatalogEmptyState
+                                    ? 'Nothing published yet'
+                                    : 'Nothing to show right now',
+                                message: showCatalogEmptyState
+                                    ? 'Live sponsored programs will appear here once partners publish them.'
+                                    : 'Live sponsored programs will appear here as they match your search.',
                               ),
                             )
                           else
@@ -1194,9 +1188,7 @@ class _SponsoredOpportunitiesScreenState
                                 },
                                 child: _viewMode == _SponsoredViewMode.grid
                                     ? GridView.builder(
-                                        key: const ValueKey(
-                                          'sponsored-grid',
-                                        ),
+                                        key: const ValueKey('sponsored-grid'),
                                         shrinkWrap: true,
                                         physics:
                                             const NeverScrollableScrollPhysics(),
@@ -1220,15 +1212,18 @@ class _SponsoredOpportunitiesScreenState
                                           return _SponsoredGridCard(
                                             item: item,
                                             actionState: actionState,
-                                            isSaved: opportunity != null &&
+                                            isSaved:
+                                                opportunity != null &&
                                                 savedIds.contains(
                                                   opportunity.id,
                                                 ),
-                                            isSaveBusy: opportunity != null &&
+                                            isSaveBusy:
+                                                opportunity != null &&
                                                 _busySaveIds.contains(
                                                   opportunity.id,
                                                 ),
-                                            isApplying: opportunity != null &&
+                                            isApplying:
+                                                opportunity != null &&
                                                 _busyApplyIds.contains(
                                                   opportunity.id,
                                                 ),
@@ -1242,17 +1237,14 @@ class _SponsoredOpportunitiesScreenState
                                                 : null,
                                             onToggleSaved: opportunity == null
                                                 ? null
-                                                : () =>
-                                                    _toggleSavedOpportunity(
-                                                      opportunity,
-                                                    ),
+                                                : () => _toggleSavedOpportunity(
+                                                    opportunity,
+                                                  ),
                                           );
                                         },
                                       )
                                     : Column(
-                                        key: const ValueKey(
-                                          'sponsored-list',
-                                        ),
+                                        key: const ValueKey('sponsored-list'),
                                         children: [
                                           for (
                                             var index = 0;
@@ -1261,7 +1253,8 @@ class _SponsoredOpportunitiesScreenState
                                           )
                                             Padding(
                                               padding: EdgeInsets.only(
-                                                bottom: index ==
+                                                bottom:
+                                                    index ==
                                                         visibleCards.length - 1
                                                     ? 0
                                                     : 10,
@@ -1281,7 +1274,8 @@ class _SponsoredOpportunitiesScreenState
                                                   return _SponsoredListTile(
                                                     item: listItem,
                                                     actionState: listAction,
-                                                    isSaved: listOpp != null &&
+                                                    isSaved:
+                                                        listOpp != null &&
                                                         savedIds.contains(
                                                           listOpp.id,
                                                         ),
@@ -1298,9 +1292,9 @@ class _SponsoredOpportunitiesScreenState
                                                     onTap: listOpp == null
                                                         ? null
                                                         : () =>
-                                                            _openOpportunity(
-                                                              listOpp,
-                                                            ),
+                                                              _openOpportunity(
+                                                                listOpp,
+                                                              ),
                                                     onApply:
                                                         listAction.isEnabled
                                                         ? () => _applyNow(
@@ -1311,9 +1305,9 @@ class _SponsoredOpportunitiesScreenState
                                                         listOpp == null
                                                         ? null
                                                         : () =>
-                                                            _toggleSavedOpportunity(
-                                                              listOpp,
-                                                            ),
+                                                              _toggleSavedOpportunity(
+                                                                listOpp,
+                                                              ),
                                                   );
                                                 },
                                               ),
@@ -1523,9 +1517,7 @@ class _SponsoredFilterChip extends StatelessWidget {
             style: GoogleFonts.poppins(
               fontSize: 11.5,
               fontWeight: FontWeight.w600,
-              color: isActive
-                  ? Colors.white
-                  : _SponsoredPalette.textPrimary,
+              color: isActive ? Colors.white : _SponsoredPalette.textPrimary,
             ),
           ),
         ),
@@ -1604,10 +1596,7 @@ class _SponsoredViewToggle extends StatelessWidget {
   final _SponsoredViewMode viewMode;
   final ValueChanged<_SponsoredViewMode> onChanged;
 
-  const _SponsoredViewToggle({
-    required this.viewMode,
-    required this.onChanged,
-  });
+  const _SponsoredViewToggle({required this.viewMode, required this.onChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -2549,6 +2538,7 @@ class _SponsoredCardModel {
     required this.createdAt,
   });
 
+  /*
   factory _SponsoredCardModel.placeholder({
     required String id,
     required String title,
@@ -2593,9 +2583,11 @@ class _SponsoredCardModel {
       createdAt: null,
     );
   }
+  */
 }
 
-final List<_SponsoredCardModel> _placeholderSponsoredCards = [
+final List<_SponsoredCardModel> _placeholderSponsoredCards =
+    const <_SponsoredCardModel>[]; /*
   _SponsoredCardModel.placeholder(
     id: 'jp-morgan-fintech',
     title: 'JP Morgan Fintech Summit',
@@ -2655,4 +2647,4 @@ final List<_SponsoredCardModel> _placeholderSponsoredCards = [
       _SponsoredFilter.startup,
     },
   ),
-];
+*/

@@ -116,7 +116,11 @@ class NotificationProvider extends ChangeNotifier {
   }
 
   Future<void> markAsRead(String notificationId) async {
-    await _service.markAsRead(notificationId);
+    try {
+      await _service.markAsRead(notificationId);
+    } catch (e) {
+      debugPrint('markAsRead error: $e');
+    }
   }
 
   Future<void> markAllAsRead(String userId) async {

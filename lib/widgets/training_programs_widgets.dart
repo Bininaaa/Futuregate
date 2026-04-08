@@ -33,7 +33,6 @@ class TrainingCourseCardData {
   final Color secondaryAccentColor;
   final IconData fallbackIcon;
   final List<TrainingCourseBadgeData> badges;
-  final bool isPlaceholder;
 
   const TrainingCourseCardData({
     required this.id,
@@ -50,7 +49,6 @@ class TrainingCourseCardData {
     required this.secondaryAccentColor,
     required this.fallbackIcon,
     required this.badges,
-    required this.isPlaceholder,
   });
 }
 

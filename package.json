@@ -11,6 +11,7 @@
   "scripts": {
     "seed:firebase": "node firebase_seed/seed.js",
     "seed:firebase:admin": "node firebase_seed/seed.js --admin-only",
+    "clear:notifications": "node firebase_seed/clear_notifications.js",
     "test": "node -e \"console.log('No root Node tests configured. Run npm run verify:flutter for the Flutter checks.')\"",
     "verify:flutter": "flutter analyze && flutter test",
     "build:web": "flutter build web"

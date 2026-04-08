@@ -2178,67 +2178,31 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     final cvProvider = context.watch<CvProvider>();
     final opportunityProvider = context.watch<OpportunityProvider>();
     final scholarshipProvider = context.watch<ScholarshipProvider>();
-
-    final urgentActivities = <_DashboardActivityEntry>[
-      ..._savedOpportunityActivityEntries(
-        context,
-        savedOpportunityProvider.savedOpportunities,
-        opportunityProvider,
-        urgentOnly: true,
-      ),
-      ..._savedScholarshipActivityEntries(
-        context,
-        savedScholarshipProvider.savedScholarships,
-        scholarshipProvider,
-        urgentOnly: true,
-      ),
-    ]..sort((a, b) => a.sortDate.compareTo(b.sortDate));
-
-    final urgentKeys =
-        urgentActivities.take(2).map((item) => item.dedupeKey).toSet();
-
-    final applicationActivities = _applicationActivityEntries(
-      context,
-      applicationProvider.submittedApplications,
-    );
     final cvActivity = _cvActivityEntry(context, cv ?? cvProvider.cv);
-    final savedActivities = <_DashboardActivityEntry>[
+
+    final activities = <_DashboardActivityEntry>[
+      ..._applicationActivityEntries(
+        context,
+        applicationProvider.submittedApplications,
+      ),
       ..._savedOpportunityActivityEntries(
         context,
         savedOpportunityProvider.savedOpportunities,
         opportunityProvider,
-        urgentOnly: false,
-        excludedKeys: urgentKeys,
       ),
       ..._savedScholarshipActivityEntries(
         context,
         savedScholarshipProvider.savedScholarships,
         scholarshipProvider,
-        urgentOnly: false,
-        excludedKeys: urgentKeys,
       ),
       ..._savedTrainingActivityEntries(
         context,
         trainingProvider.savedTrainings,
       ),
       ..._savedIdeaActivityEntries(context, projectIdeaProvider.savedIdeas),
-    ]..sort((a, b) => b.sortDate.compareTo(a.sortDate));
-
-    final activities = <_DashboardActivityEntry>[
-      ...urgentActivities.take(2),
-      if (applicationActivities.isNotEmpty) applicationActivities.first,
       ?cvActivity,
-      ...savedActivities.take(2),
-    ];
-
-    if (applicationActivities.length > 1 && activities.length < 5) {
-      activities.addAll(
-        applicationActivities.skip(1).take(5 - activities.length),
-      );
-    }
-    if (savedActivities.length > 2 && activities.length < 5) {
-      activities.addAll(savedActivities.skip(2).take(5 - activities.length));
-    }
+    ]..sort((a, b) => b.sortDate.compareTo(a.sortDate));
+    final visibleActivities = activities.take(5).toList(growable: false);
 
     final isLoading =
         activities.isEmpty &&
@@ -2279,9 +2243,9 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
       delegate: SliverChildBuilderDelegate((context, index) {
         return Padding(
           padding: const EdgeInsets.only(bottom: 12),
-          child: _buildLatestActivityCard(activities[index]),
+          child: _buildLatestActivityCard(visibleActivities[index]),
         );
-      }, childCount: activities.length),
+      }, childCount: visibleActivities.length),
     );
   }
 
@@ -2333,7 +2297,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                               style: GoogleFonts.poppins(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w700,
-                                color: item.trailingColor ?? textLight,
+                                color: textLight,
                               ),
                             ),
                           ),
@@ -2438,13 +2402,16 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
   List<_DashboardActivityEntry> _savedOpportunityActivityEntries(
     BuildContext context,
     List<SavedOpportunityModel> items,
-    OpportunityProvider provider, {
-    required bool urgentOnly,
-    Set<String> excludedKeys = const <String>{},
-  }) {
+    OpportunityProvider provider,
+  ) {
     final activities = <_DashboardActivityEntry>[];
 
     for (final item in items) {
+      final savedAt = item.savedAt?.toDate();
+      if (savedAt == null) {
+        continue;
+      }
+
       final deadline = OpportunityMetadata.parseDateTimeLike(item.deadline);
       final isUrgent =
           deadline != null &&
@@ -2452,17 +2419,9 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
           _daysUntil(deadline) <= 7;
       final key = 'saved_opp:${item.opportunityId}';
 
-      if (urgentOnly ? !isUrgent : excludedKeys.contains(key)) {
-        continue;
-      }
-
       final accent = isUrgent
           ? _closingSoonUrgencyColor(deadline)
           : OpportunityType.color(item.type);
-      final savedAt = item.savedAt?.toDate();
-      final timestamp = isUrgent
-          ? deadline
-          : (savedAt ?? deadline ?? DateTime.fromMillisecondsSinceEpoch(0));
       final companyName = item.companyName.trim();
       final subtitle = isUrgent
           ? companyName.isNotEmpty
@@ -2478,7 +2437,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
       activities.add(
         _DashboardActivityEntry(
           dedupeKey: key,
-          sortDate: timestamp,
+          sortDate: savedAt,
           badgeLabel: isUrgent
               ? 'Closing soon'
               : 'Saved ${OpportunityType.lowercaseLabel(item.type)}',
@@ -2495,20 +2454,13 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
               ? Icons.schedule_outlined
               : Icons.location_on_outlined,
           metaColor: deadline != null ? accent : null,
-          trailingLabel: isUrgent
-              ? _deadlineCountdown(deadline)
-              : _timeAgo(savedAt),
-          trailingColor: isUrgent ? accent : null,
+          trailingLabel: _timeAgo(savedAt),
           onTap: () => _openSavedOpportunityActivity(context, item, provider),
         ),
       );
     }
 
-    activities.sort(
-      (a, b) => urgentOnly
-          ? a.sortDate.compareTo(b.sortDate)
-          : b.sortDate.compareTo(a.sortDate),
-    );
+    activities.sort((a, b) => b.sortDate.compareTo(a.sortDate));
 
     return activities;
   }
@@ -2516,14 +2468,17 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
   List<_DashboardActivityEntry> _savedScholarshipActivityEntries(
     BuildContext context,
     List<SavedScholarshipModel> items,
-    ScholarshipProvider provider, {
-    required bool urgentOnly,
-    Set<String> excludedKeys = const <String>{},
-  }) {
+    ScholarshipProvider provider,
+  ) {
     const scholarshipAccent = Color(0xFF47D16C);
     final activities = <_DashboardActivityEntry>[];
 
     for (final item in items) {
+      final savedAt = item.savedAt?.toDate();
+      if (savedAt == null) {
+        continue;
+      }
+
       final deadline = OpportunityMetadata.parseDateTimeLike(item.deadline);
       final isUrgent =
           deadline != null &&
@@ -2531,17 +2486,9 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
           _daysUntil(deadline) <= 7;
       final key = 'saved_scholarship:${item.scholarshipId}';
 
-      if (urgentOnly ? !isUrgent : excludedKeys.contains(key)) {
-        continue;
-      }
-
       final accent = isUrgent
           ? _closingSoonUrgencyColor(deadline)
           : scholarshipAccent;
-      final savedAt = item.savedAt?.toDate();
-      final timestamp = isUrgent
-          ? deadline
-          : (savedAt ?? deadline ?? DateTime.fromMillisecondsSinceEpoch(0));
       final providerName = item.provider.trim();
       final subtitle = isUrgent
           ? providerName.isNotEmpty
@@ -2555,7 +2502,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
       activities.add(
         _DashboardActivityEntry(
           dedupeKey: key,
-          sortDate: timestamp,
+          sortDate: savedAt,
           badgeLabel: isUrgent ? 'Closing soon' : 'Saved scholarship',
           accent: accent,
           icon: isUrgent
@@ -2570,20 +2517,13 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
               ? Icons.schedule_outlined
               : Icons.school_outlined,
           metaColor: deadline != null ? accent : null,
-          trailingLabel: isUrgent
-              ? _deadlineCountdown(deadline)
-              : _timeAgo(savedAt),
-          trailingColor: isUrgent ? accent : null,
+          trailingLabel: _timeAgo(savedAt),
           onTap: () => _openSavedScholarshipActivity(context, item, provider),
         ),
       );
     }
 
-    activities.sort(
-      (a, b) => urgentOnly
-          ? a.sortDate.compareTo(b.sortDate)
-          : b.sortDate.compareTo(a.sortDate),
-    );
+    activities.sort((a, b) => b.sortDate.compareTo(a.sortDate));
 
     return activities;
   }
@@ -3563,7 +3503,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
         break;
       case 'Latest Activities':
         subtitle =
-            'Your recent applications, saves, CV updates, and urgent deadlines.';
+            'Your recent applications, saves, and CV updates.';
         accentColor = accentTeal;
         break;
       default:
@@ -3720,7 +3660,6 @@ class _DashboardActivityEntry {
   final IconData? metaIcon;
   final Color? metaColor;
   final String? trailingLabel;
-  final Color? trailingColor;
   final VoidCallback onTap;
 
   const _DashboardActivityEntry({
@@ -3735,7 +3674,6 @@ class _DashboardActivityEntry {
     this.metaIcon,
     this.metaColor,
     this.trailingLabel,
-    this.trailingColor,
     required this.onTap,
   });
 }
