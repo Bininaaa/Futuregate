@@ -102,7 +102,7 @@ class TrainingHeroIntro extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Training Programs',
+          'Build your next skill',
           style: GoogleFonts.poppins(
             fontSize: 25,
             fontWeight: FontWeight.w700,

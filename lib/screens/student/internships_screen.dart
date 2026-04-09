@@ -699,10 +699,12 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
               onOpenSaved: _openSavedItems,
               onOpenApplied: _openAppliedItems,
               compact: isCompact,
-              backgroundColor: _InternshipVisualPalette.surface,
-              borderColor: _InternshipVisualPalette.border,
+              backgroundColor: Colors.transparent,
+              borderColor: _InternshipVisualPalette.oceanTeal.withValues(
+                alpha: 0.18,
+              ),
               titleColor: _InternshipVisualPalette.deepTeal,
-              accentColor: _InternshipVisualPalette.deepTeal,
+              accentColor: _InternshipVisualPalette.oceanTeal,
             ),
             if (opportunityProvider.isLoading && liveInternships.isNotEmpty)
               const LinearProgressIndicator(
@@ -949,7 +951,7 @@ class _InternshipsIntro extends StatelessWidget {
             ),
           ),
           TextSpan(
-            text: 'internship',
+            text: 'placement',
             style: GoogleFonts.poppins(
               fontSize: 30,
               fontWeight: FontWeight.w700,

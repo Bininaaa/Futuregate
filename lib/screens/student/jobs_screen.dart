@@ -30,8 +30,8 @@ class JobsScreen extends StatefulWidget {
 enum _JobsViewMode { grid, list }
 
 class _JobsScreenState extends State<JobsScreen> {
-  static const List<_JobCategoryData> _categories = [
-    _JobCategoryData(
+  static const List<JobCategoryData> _categories = [
+    JobCategoryData(
       key: 'tech',
       label: 'Tech',
       icon: Icons.code_rounded,
@@ -66,7 +66,7 @@ class _JobsScreenState extends State<JobsScreen> {
         'it support',
       ],
     ),
-    _JobCategoryData(
+    JobCategoryData(
       key: 'design',
       label: 'Design',
       icon: Icons.brush_rounded,
@@ -86,7 +86,7 @@ class _JobsScreenState extends State<JobsScreen> {
         'brand design',
       ],
     ),
-    _JobCategoryData(
+    JobCategoryData(
       key: 'business',
       label: 'Business',
       icon: Icons.business_center_rounded,
@@ -107,7 +107,7 @@ class _JobsScreenState extends State<JobsScreen> {
         'office',
       ],
     ),
-    _JobCategoryData(
+    JobCategoryData(
       key: 'marketing',
       label: 'Marketing',
       icon: Icons.campaign_rounded,
@@ -126,7 +126,7 @@ class _JobsScreenState extends State<JobsScreen> {
         'copywriter',
       ],
     ),
-    _JobCategoryData(
+    JobCategoryData(
       key: 'legal',
       label: 'Legal',
       icon: Icons.gavel_rounded,
@@ -275,7 +275,7 @@ class _JobsScreenState extends State<JobsScreen> {
     );
   }
 
-  _JobStatusData? _statusDataForOpportunity(
+  JobStatusData? _statusDataForOpportunity(
     OpportunityModel? opportunity,
     Map<String, String> appliedStatuses,
   ) {
@@ -285,7 +285,7 @@ class _JobsScreenState extends State<JobsScreen> {
 
     final applicationStatus = appliedStatuses[opportunity.id];
     if (applicationStatus != null) {
-      return _JobStatusData(
+      return JobStatusData(
         label: ApplicationStatus.label(applicationStatus),
         color: ApplicationStatus.color(applicationStatus),
         icon: _jobApplicationStatusIcon(applicationStatus),
@@ -293,7 +293,7 @@ class _JobsScreenState extends State<JobsScreen> {
     }
 
     if (opportunity.isHidden) {
-      return const _JobStatusData(
+      return const JobStatusData(
         label: 'Unavailable',
         color: Color(0xFF64748B),
         icon: Icons.visibility_off_rounded,
@@ -302,7 +302,7 @@ class _JobsScreenState extends State<JobsScreen> {
 
     final normalizedStatus = opportunity.status.trim().toLowerCase();
     if (normalizedStatus.isNotEmpty && normalizedStatus != 'open') {
-      return const _JobStatusData(
+      return const JobStatusData(
         label: 'Closed',
         color: Color(0xFF64748B),
         icon: Icons.lock_outline_rounded,
@@ -312,7 +312,7 @@ class _JobsScreenState extends State<JobsScreen> {
     return null;
   }
 
-  List<_JobCardData> _buildJobCards(OpportunityProvider provider) {
+  List<JobCardData> _buildJobCards(OpportunityProvider provider) {
     final featuredIds = provider.featuredOpportunities
         .where(
           (opportunity) =>
@@ -338,7 +338,7 @@ class _JobsScreenState extends State<JobsScreen> {
     return liveJobs.isNotEmpty ? liveJobs : _fallbackJobCards;
   }
 
-  List<_JobCardData> _applyFilters(List<_JobCardData> jobs) {
+  List<JobCardData> _applyFilters(List<JobCardData> jobs) {
     final query = _searchQuery.toLowerCase();
 
     return jobs.where((job) {
@@ -351,11 +351,11 @@ class _JobsScreenState extends State<JobsScreen> {
     }).toList();
   }
 
-  List<_JobCardData> _selectFeaturedJobs(List<_JobCardData> jobs) {
-    final result = <_JobCardData>[];
+  List<JobCardData> _selectFeaturedJobs(List<JobCardData> jobs) {
+    final result = <JobCardData>[];
     final seen = <String>{};
 
-    void addCandidates(Iterable<_JobCardData> candidates) {
+    void addCandidates(Iterable<JobCardData> candidates) {
       for (final candidate in candidates) {
         if (result.length >= 5) {
           return;
@@ -373,8 +373,8 @@ class _JobsScreenState extends State<JobsScreen> {
     return result;
   }
 
-  List<_JobCardData> _selectAvailableRoles(List<_JobCardData> jobs) {
-    final availableRoles = <_JobCardData>[];
+  List<JobCardData> _selectAvailableRoles(List<JobCardData> jobs) {
+    final availableRoles = <JobCardData>[];
     final seen = <String>{};
 
     for (final job in jobs) {
@@ -386,7 +386,7 @@ class _JobsScreenState extends State<JobsScreen> {
     return availableRoles;
   }
 
-  _JobCardData _mapOpportunityToJobCard(
+  JobCardData _mapOpportunityToJobCard(
     OpportunityModel opportunity, {
     required bool isFeaturedPreferred,
   }) {
@@ -432,7 +432,7 @@ class _JobsScreenState extends State<JobsScreen> {
           '',
     ].join(' ').toLowerCase();
 
-    return _JobCardData(
+    return JobCardData(
       id: opportunity.id,
       title: title,
       company: company,
@@ -451,7 +451,7 @@ class _JobsScreenState extends State<JobsScreen> {
     );
   }
 
-  _JobCategoryData _categoryFor(OpportunityModel opportunity) {
+  JobCategoryData _categoryFor(OpportunityModel opportunity) {
     final searchable = <String>[
       opportunity.title,
       opportunity.description,
@@ -842,7 +842,7 @@ class _JobsScreenState extends State<JobsScreen> {
     ).take(maxItems).toList();
   }
 
-  List<_JobCardData> get _fallbackJobCards => const []; /*
+  List<JobCardData> get _fallbackJobCards => const []; /*
     _JobCardData.placeholder(
       title: 'Senior Product Designer',
       company: 'Nova Labs',
@@ -1083,11 +1083,11 @@ class _JobsScreenState extends State<JobsScreen> {
                   onOpenSaved: _openSavedItems,
                   onOpenApplied: _openAppliedItems,
                   compact: isCompact,
-                  backgroundColor: OpportunityDashboardPalette.surface,
-                  borderColor: OpportunityDashboardPalette.border.withValues(
-                    alpha: 0.75,
+                  backgroundColor: Colors.transparent,
+                  borderColor: OpportunityDashboardPalette.primary.withValues(
+                    alpha: 0.18,
                   ),
-                  titleColor: OpportunityDashboardPalette.textPrimary,
+                  titleColor: OpportunityDashboardPalette.primary,
                   accentColor: OpportunityDashboardPalette.primary,
                 ),
               ),
@@ -1279,9 +1279,9 @@ class _JobsScreenState extends State<JobsScreen> {
                         );
                         return SizedBox(
                           width: screenSize.width * featuredCardWidthFactor,
-                          child: _FeaturedJobCard(
+                          child: FeaturedJobCard(
                             job: job,
-                            style: _featuredStyleFor(index),
+                            style: featuredStyleFor(index),
                             compact: isCompact,
                             statusData: statusData,
                             isSaved:
@@ -1314,7 +1314,7 @@ class _JobsScreenState extends State<JobsScreen> {
                 ),
                 sliver: SliverToBoxAdapter(
                   child: _SectionHeader(
-                    title: 'Available Roles',
+                    title: 'Available Jobs',
                     countLabel: availableRoles.length == 1
                         ? '1 job'
                         : '${availableRoles.length} jobs',
@@ -1438,10 +1438,10 @@ class _JobsScreenState extends State<JobsScreen> {
 }
 
 class _PurpleAvailableRoleListCard extends StatelessWidget {
-  final _JobCardData job;
+  final JobCardData job;
   final VoidCallback? onTap;
   final bool compact;
-  final _JobStatusData? statusData;
+  final JobStatusData? statusData;
   final bool isSaved;
   final bool isSaveBusy;
   final VoidCallback? onToggleSaved;
@@ -1766,10 +1766,10 @@ class _AvailableRoleListMetaItem extends StatelessWidget {
   }
 }
 
-_FeaturedJobVariantStyle _featuredStyleFor(int index) {
-  const styles = <_FeaturedJobVariantStyle>[
-    _FeaturedJobVariantStyle(
-      decorationVariant: _FeaturedDecorationVariant.heroBloom,
+FeaturedJobVariantStyle featuredStyleFor(int index) {
+  const styles = <FeaturedJobVariantStyle>[
+    FeaturedJobVariantStyle(
+      decorationVariant: FeaturedDecorationVariant.heroBloom,
       gradientColors: [
         Color(0xFF7466FF),
         OpportunityDashboardPalette.primary,
@@ -1786,8 +1786,8 @@ _FeaturedJobVariantStyle _featuredStyleFor(int index) {
       accentColor: Color(0xFFBFB0FF),
       glowColor: Color(0xFF9D92FF),
     ),
-    _FeaturedJobVariantStyle(
-      decorationVariant: _FeaturedDecorationVariant.glassRibbon,
+    FeaturedJobVariantStyle(
+      decorationVariant: FeaturedDecorationVariant.glassRibbon,
       gradientColors: [Color(0xFF5F46FF), Color(0xFF3B22F6), Color(0xFF26146D)],
       gradientBegin: Alignment.topCenter,
       gradientEnd: Alignment.bottomRight,
@@ -1800,8 +1800,8 @@ _FeaturedJobVariantStyle _featuredStyleFor(int index) {
       accentColor: Color(0xFFCBBEFF),
       glowColor: Color(0xFF7B66FF),
     ),
-    _FeaturedJobVariantStyle(
-      decorationVariant: _FeaturedDecorationVariant.diagonalLight,
+    FeaturedJobVariantStyle(
+      decorationVariant: FeaturedDecorationVariant.diagonalLight,
       gradientColors: [Color(0xFF8773FF), Color(0xFF4C30F2), Color(0xFF2235C1)],
       gradientBegin: Alignment.topLeft,
       gradientEnd: Alignment.bottomCenter,
@@ -1814,8 +1814,8 @@ _FeaturedJobVariantStyle _featuredStyleFor(int index) {
       accentColor: Color(0xFFD3C8FF),
       glowColor: Color(0xFF8E80FF),
     ),
-    _FeaturedJobVariantStyle(
-      decorationVariant: _FeaturedDecorationVariant.geoPattern,
+    FeaturedJobVariantStyle(
+      decorationVariant: FeaturedDecorationVariant.geoPattern,
       gradientColors: [Color(0xFF4C32F4), Color(0xFF2F1AAA), Color(0xFF1B2B88)],
       gradientBegin: Alignment.topLeft,
       gradientEnd: Alignment.bottomRight,
@@ -1828,8 +1828,8 @@ _FeaturedJobVariantStyle _featuredStyleFor(int index) {
       accentColor: Color(0xFFAB9EFF),
       glowColor: Color(0xFF7368FF),
     ),
-    _FeaturedJobVariantStyle(
-      decorationVariant: _FeaturedDecorationVariant.buttonGlow,
+    FeaturedJobVariantStyle(
+      decorationVariant: FeaturedDecorationVariant.buttonGlow,
       gradientColors: [
         Color(0xFF7F6FFF),
         OpportunityDashboardPalette.primary,
@@ -2007,7 +2007,7 @@ class _SectionHeader extends StatelessWidget {
 }
 
 class _JobCategoryChip extends StatelessWidget {
-  final _JobCategoryData category;
+  final JobCategoryData category;
   final bool isSelected;
   final VoidCallback onTap;
   final bool compact;
@@ -2084,7 +2084,7 @@ class _JobCategoryChip extends StatelessWidget {
   }
 }
 
-enum _FeaturedDecorationVariant {
+enum FeaturedDecorationVariant {
   heroBloom,
   glassRibbon,
   diagonalLight,
@@ -2092,8 +2092,8 @@ enum _FeaturedDecorationVariant {
   buttonGlow,
 }
 
-class _FeaturedJobVariantStyle {
-  final _FeaturedDecorationVariant decorationVariant;
+class FeaturedJobVariantStyle {
+  final FeaturedDecorationVariant decorationVariant;
   final List<Color> gradientColors;
   final Alignment gradientBegin;
   final Alignment gradientEnd;
@@ -2106,7 +2106,7 @@ class _FeaturedJobVariantStyle {
   final Color accentColor;
   final Color glowColor;
 
-  const _FeaturedJobVariantStyle({
+  const FeaturedJobVariantStyle({
     required this.decorationVariant,
     required this.gradientColors,
     required this.gradientBegin,
@@ -2122,18 +2122,19 @@ class _FeaturedJobVariantStyle {
   });
 }
 
-class _FeaturedJobCard extends StatelessWidget {
-  final _JobCardData job;
-  final _FeaturedJobVariantStyle style;
+class FeaturedJobCard extends StatelessWidget {
+  final JobCardData job;
+  final FeaturedJobVariantStyle style;
   final VoidCallback? onTap;
   final VoidCallback? onApply;
   final bool compact;
-  final _JobStatusData? statusData;
+  final JobStatusData? statusData;
   final bool isSaved;
   final bool isSaveBusy;
   final VoidCallback? onToggleSaved;
 
-  const _FeaturedJobCard({
+  const FeaturedJobCard({
+    super.key,
     required this.job,
     required this.style,
     this.onTap,
@@ -2184,7 +2185,7 @@ class _FeaturedJobCard extends StatelessWidget {
     required double borderRadius,
   }) {
     switch (style.decorationVariant) {
-      case _FeaturedDecorationVariant.heroBloom:
+      case FeaturedDecorationVariant.heroBloom:
         return [
           Positioned(
             top: isTight ? -52 : -60,
@@ -2203,7 +2204,7 @@ class _FeaturedJobCard extends StatelessWidget {
             ),
           ),
         ];
-      case _FeaturedDecorationVariant.glassRibbon:
+      case FeaturedDecorationVariant.glassRibbon:
         return [
           Positioned(
             top: isTight ? -46 : -54,
@@ -2239,7 +2240,7 @@ class _FeaturedJobCard extends StatelessWidget {
             ),
           ),
         ];
-      case _FeaturedDecorationVariant.diagonalLight:
+      case FeaturedDecorationVariant.diagonalLight:
         return [
           Positioned(
             top: isTight ? 26 : 30,
@@ -2278,7 +2279,7 @@ class _FeaturedJobCard extends StatelessWidget {
             ),
           ),
         ];
-      case _FeaturedDecorationVariant.geoPattern:
+      case FeaturedDecorationVariant.geoPattern:
         return [
           Positioned(
             bottom: isTight ? 20 : 24,
@@ -2342,7 +2343,7 @@ class _FeaturedJobCard extends StatelessWidget {
             ),
           ),
         ];
-      case _FeaturedDecorationVariant.buttonGlow:
+      case FeaturedDecorationVariant.buttonGlow:
         return [
           Positioned(
             top: isTight ? 10 : 14,
@@ -2943,12 +2944,12 @@ class _JobStatusChip extends StatelessWidget {
   }
 }
 
-class _JobStatusData {
+class JobStatusData {
   final String label;
   final Color color;
   final IconData icon;
 
-  const _JobStatusData({
+  const JobStatusData({
     required this.label,
     required this.color,
     required this.icon,
@@ -3222,10 +3223,10 @@ List<Widget> _buildAvailableRoleDecorations({
 }
 
 class _AvailableRoleCard extends StatelessWidget {
-  final _JobCardData job;
+  final JobCardData job;
   final VoidCallback? onTap;
   final bool compact;
-  final _JobStatusData? statusData;
+  final JobStatusData? statusData;
   final bool isSaved;
   final bool isSaveBusy;
   final VoidCallback? onToggleSaved;
@@ -3563,7 +3564,7 @@ class _AvailableRoleMetaLine extends StatelessWidget {
 
 // ignore: unused_element
 class _AvailableRoleListCard extends StatelessWidget {
-  final _JobCardData job;
+  final JobCardData job;
   final VoidCallback? onTap;
   final bool compact;
 
@@ -3901,7 +3902,7 @@ class _JobsEmptyStateCard extends StatelessWidget {
   }
 }
 
-class _JobCategoryData {
+class JobCategoryData {
   final String key;
   final String label;
   final IconData icon;
@@ -3909,7 +3910,7 @@ class _JobCategoryData {
   final Color surfaceTint;
   final List<String> keywords;
 
-  const _JobCategoryData({
+  const JobCategoryData({
     required this.key,
     required this.label,
     required this.icon,
@@ -3919,7 +3920,7 @@ class _JobCategoryData {
   });
 }
 
-class _JobCardData {
+class JobCardData {
   final String id;
   final String title;
   final String company;
@@ -3931,12 +3932,12 @@ class _JobCardData {
   final String? typeBadge;
   final String? levelTag;
   final String logoUrl;
-  final _JobCategoryData category;
+  final JobCategoryData category;
   final bool isFeaturedPreferred;
   final OpportunityModel? opportunity;
   final String searchText;
 
-  const _JobCardData({
+  const JobCardData({
     required this.id,
     required this.title,
     required this.company,
@@ -3964,7 +3965,7 @@ class _JobCardData {
     required String badge,
     String? typeBadge,
     String? levelTag,
-    required _JobCategoryData category,
+    required JobCategoryData category,
     bool isFeaturedPreferred = false,
   }) {
     return _JobCardData(

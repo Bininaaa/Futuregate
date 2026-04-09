@@ -8,6 +8,7 @@ import '../../providers/training_provider.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/shared/app_feedback.dart';
+import '../../widgets/student/student_workspace_shell.dart';
 import '../../widgets/training_programs_widgets.dart';
 import 'saved_screen.dart';
 
@@ -21,19 +22,12 @@ class TrainingsScreen extends StatefulWidget {
 }
 
 class _TrainingsScreenState extends State<TrainingsScreen> {
-  final TextEditingController _searchController = TextEditingController();
-  final FocusNode _searchFocusNode = FocusNode();
-  final GlobalKey _searchSectionKey = GlobalKey();
-
-  String _searchText = '';
   String _selectedDomain = 'All';
   TrainingLayoutView _trainingLayoutView = TrainingLayoutView.grid;
 
   @override
   void initState() {
     super.initState();
-    _searchController.addListener(_handleSearchChanged);
-
     Future.microtask(() async {
       if (!mounted) {
         return;
@@ -44,22 +38,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
 
   @override
   void dispose() {
-    _searchController
-      ..removeListener(_handleSearchChanged)
-      ..dispose();
-    _searchFocusNode.dispose();
     super.dispose();
-  }
-
-  void _handleSearchChanged() {
-    final nextValue = _searchController.text.trim();
-    if (nextValue == _searchText) {
-      return;
-    }
-
-    setState(() {
-      _searchText = nextValue;
-    });
   }
 
   Future<void> _refreshData() async {
@@ -150,94 +129,12 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
     );
   }
 
-  Future<void> _focusSearchField() async {
-    await _ensureVisible(_searchSectionKey);
-    if (!mounted) {
-      return;
-    }
-    _searchFocusNode.requestFocus();
-  }
-
-  Future<void> _ensureVisible(GlobalKey key) async {
-    final targetContext = key.currentContext;
-    if (targetContext == null) {
-      return;
-    }
-
-    await Scrollable.ensureVisible(
-      targetContext,
-      duration: const Duration(milliseconds: 320),
-      curve: Curves.easeOutCubic,
-      alignment: 0.08,
-    );
-  }
-
   Future<void> _openSavedTrainings() async {
-    await Navigator.of(
-      context,
-    ).push(
+    await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) =>
             const SavedScreen(initialFilter: SavedScreenFilter.trainings),
       ),
-    );
-  }
-
-  Future<void> _showMenuSheet() async {
-    final canPop = Navigator.of(context).canPop();
-
-    await showModalBottomSheet<void>(
-      context: context,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-      ),
-      builder: (sheetContext) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 18),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 48,
-                  height: 5,
-                  decoration: BoxDecoration(
-                    color: OpportunityDashboardPalette.border,
-                    borderRadius: BorderRadius.circular(999),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                if (canPop)
-                  _TrainingMenuTile(
-                    icon: Icons.arrow_back_rounded,
-                    title: 'Back',
-                    onTap: () {
-                      Navigator.of(sheetContext).pop();
-                      Navigator.of(context).maybePop();
-                    },
-                  ),
-                _TrainingMenuTile(
-                  icon: Icons.bookmarks_outlined,
-                  title: 'Saved resources',
-                  onTap: () {
-                    Navigator.of(sheetContext).pop();
-                    _openSavedTrainings();
-                  },
-                ),
-                _TrainingMenuTile(
-                  icon: Icons.refresh_rounded,
-                  title: 'Refresh trainings',
-                  onTap: () {
-                    Navigator.of(sheetContext).pop();
-                    _refreshData();
-                  },
-                ),
-              ],
-            ),
-          ),
-        );
-      },
     );
   }
 
@@ -315,25 +212,25 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
     return score;
   }
 
-  bool _matchesSearch(TrainingModel training) {
-    final query = _searchText.trim().toLowerCase();
-    if (query.isEmpty) {
-      return true;
+  PreferredSizeWidget? _buildStandaloneAppBar() {
+    if (widget.embedded) {
+      return null;
     }
 
-    final searchableValues = [
-      training.title,
-      training.provider,
-      training.authors.join(' '),
-      training.domain,
-      training.description,
-      training.level,
-      training.duration,
-      training.type,
-      training.learnerCountLabel,
-    ];
-
-    return searchableValues.any((value) => value.toLowerCase().contains(query));
+    return StudentWorkspaceAppBar(
+      title: 'Training',
+      subtitle: 'Courses, books, and certifications that sharpen your journey.',
+      icon: Icons.cast_for_education_rounded,
+      showBackButton: true,
+      onBack: () => Navigator.maybePop(context),
+      actions: [
+        StudentWorkspaceActionButton(
+          icon: Icons.bookmark_outline_rounded,
+          tooltip: 'Saved resources',
+          onTap: _openSavedTrainings,
+        ),
+      ],
+    );
   }
 
   String _domainLabelFor(TrainingModel training) {
@@ -629,33 +526,25 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
         .toList();
     final hasApprovedTrainings = approvedTrainings.isNotEmpty;
     final recommendedTrainings = _recommendedTrainings(approvedTrainings);
-    final catalogTrainings = activeDomain == 'All'
-        ? approvedTrainings
-        : domainFilteredTrainings;
-    final isSearching = _searchText.trim().isNotEmpty;
-    final filteredTrainings = approvedTrainings.where(_matchesSearch).toList();
+    final recommendedIds = recommendedTrainings
+        .map((training) => training.id)
+        .toSet();
+    final catalogTrainings =
+        (activeDomain == 'All' ? approvedTrainings : domainFilteredTrainings)
+            .where((training) => !recommendedIds.contains(training.id))
+            .toList();
 
-    final topCards = (isSearching ? filteredTrainings : recommendedTrainings)
+    final topCards = recommendedTrainings.map(_mapTrainingToCardData).toList();
+    final additionalCards = catalogTrainings
         .map(_mapTrainingToCardData)
         .toList();
-    final additionalCards =
-        (!isSearching
-                ? catalogTrainings.map(_mapTrainingToCardData)
-                : const Iterable<TrainingCourseCardData>.empty())
-            .toList();
-    final sectionTitle = isSearching ? 'Search results' : 'Recommended for you';
-    final showTopEmptyState =
-        !hasApprovedTrainings || (isSearching && filteredTrainings.isEmpty);
+    final sectionTitle = 'Recommended for you';
+    final showTopEmptyState = !hasApprovedTrainings;
     final showDomainEmptyState =
         hasApprovedTrainings &&
-        !isSearching &&
         activeDomain != 'All' &&
-        additionalCards.isEmpty;
-    final emptySubtitle = !hasApprovedTrainings
-        ? 'No training programs are available right now.'
-        : isSearching
-        ? 'Try a different search to find more training programs.'
-        : activeDomain == 'All'
+        domainFilteredTrainings.isEmpty;
+    final emptySubtitle = !hasApprovedTrainings || activeDomain == 'All'
         ? 'No training programs are available right now.'
         : 'No training programs are available right now for $activeDomain.';
 
@@ -703,31 +592,22 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
     if (provider.isLoading && provider.trainings.isEmpty) {
       final loadingScaffold = Scaffold(
         backgroundColor: Colors.transparent,
-        body: SafeArea(
-          top: !widget.embedded,
-          child: const TrainingProgramsLoadingView(),
-        ),
+        appBar: _buildStandaloneAppBar(),
+        body: SafeArea(top: false, child: const TrainingProgramsLoadingView()),
       );
 
       if (widget.embedded) {
         return loadingScaffold;
       }
 
-      return AppShellBackground(
-        child: Scaffold(
-          backgroundColor: Colors.transparent,
-          body: SafeArea(
-            top: !widget.embedded,
-            child: const TrainingProgramsLoadingView(),
-          ),
-        ),
-      );
+      return AppShellBackground(child: loadingScaffold);
     }
 
     final scaffold = Scaffold(
       backgroundColor: Colors.transparent,
+      appBar: _buildStandaloneAppBar(),
       body: SafeArea(
-        top: !widget.embedded,
+        top: false,
         child: RefreshIndicator(
           onRefresh: _refreshData,
           color: OpportunityDashboardPalette.primary,
@@ -738,21 +618,8 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
                 padding: const EdgeInsets.fromLTRB(18, 10, 18, 24),
                 sliver: SliverList(
                   delegate: SliverChildListDelegate([
-                    TrainingHeaderBar(
-                      onMenuTap: _showMenuSheet,
-                      onSearchTap: _focusSearchField,
-                    ),
-                    const SizedBox(height: 22),
                     const TrainingHeroIntro(),
                     const SizedBox(height: 18),
-                    Container(
-                      key: _searchSectionKey,
-                      child: TrainingSearchBar(
-                        controller: _searchController,
-                        focusNode: _searchFocusNode,
-                        onClear: _searchController.clear,
-                      ),
-                    ),
                     if (provider.isSavedLoading) ...[
                       const SizedBox(height: 12),
                       const LinearProgressIndicator(minHeight: 2),
@@ -788,12 +655,12 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
                     const SizedBox(height: 12),
                     if (showTopEmptyState)
                       TrainingProgramsEmptyState(
-                        title: 'No training programs match your search',
+                        title: 'No training programs available right now',
                         subtitle: emptySubtitle,
                       )
                     else
                       ...topCards.map(buildTrainingCard),
-                    if (!isSearching && hasApprovedTrainings) ...[
+                    if (hasApprovedTrainings) ...[
                       const SizedBox(height: 6),
                       const BrowseMoreTopicsCard(),
                       const SizedBox(height: 10),
@@ -831,47 +698,6 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
     }
 
     return AppShellBackground(child: scaffold);
-  }
-}
-
-class _TrainingMenuTile extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final VoidCallback onTap;
-
-  const _TrainingMenuTile({
-    required this.icon,
-    required this.title,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      onTap: onTap,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 4),
-      leading: Container(
-        width: 38,
-        height: 38,
-        decoration: BoxDecoration(
-          color: OpportunityDashboardPalette.primary.withValues(alpha: 0.08),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Icon(icon, size: 20, color: OpportunityDashboardPalette.primary),
-      ),
-      title: Text(
-        title,
-        style: TextStyle(
-          fontSize: 14.5,
-          fontWeight: FontWeight.w600,
-          color: OpportunityDashboardPalette.textPrimary,
-        ),
-      ),
-      trailing: const Icon(
-        Icons.chevron_right_rounded,
-        color: OpportunityDashboardPalette.textSecondary,
-      ),
-    );
   }
 }
 

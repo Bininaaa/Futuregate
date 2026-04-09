@@ -16,6 +16,7 @@ import '../../widgets/shared/app_feedback.dart';
 import 'create_idea_screen.dart';
 import 'idea_details_screen.dart';
 import 'profile_screen.dart';
+import 'saved_screen.dart';
 
 enum _IdeaFilter { all, approved, pending, rejected, interested }
 
@@ -210,8 +211,8 @@ class _ProjectIdeasScreenState extends State<ProjectIdeasScreen> {
           ),
         ),
         _HeaderActionButton(
-          icon: Icons.search_rounded,
-          onTap: () => _searchFocusNode.requestFocus(),
+          icon: Icons.bookmark_outline_rounded,
+          onTap: _openSavedIdeas,
         ),
       ],
     );
@@ -505,6 +506,16 @@ class _ProjectIdeasScreenState extends State<ProjectIdeasScreen> {
         type: AppFeedbackType.error,
       );
     }
+  }
+
+  Future<void> _openSavedIdeas() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) =>
+            const SavedScreen(initialFilter: SavedScreenFilter.ideas),
+      ),
+    );
   }
 
   void _showManageTeamSheet(ProjectIdeaModel idea) {

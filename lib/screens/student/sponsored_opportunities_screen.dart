@@ -887,14 +887,14 @@ class _SponsoredOpportunitiesScreenState
           children: [
             StudentWorkspaceUtilityHeader(
               user: authProvider.userModel,
-              title: 'Sponsored Programs',
+              title: 'Sponsored',
               onProfileTap: _openProfile,
               onOpenSaved: _openSavedItems,
               onOpenApplied: _openAppliedItems,
               compact: isCompact,
-              backgroundColor: _SponsoredPalette.surface,
-              borderColor: _SponsoredPalette.border,
-              titleColor: _SponsoredPalette.textPrimary,
+              backgroundColor: Colors.transparent,
+              borderColor: _SponsoredPalette.accent.withValues(alpha: 0.18),
+              titleColor: _SponsoredPalette.accentDark,
               accentColor: _SponsoredPalette.accent,
             ),
             if (opportunityProvider.isLoading && allOpportunities.isNotEmpty)
@@ -954,7 +954,7 @@ class _SponsoredOpportunitiesScreenState
                                     ),
                                   ),
                                   TextSpan(
-                                    text: 'sponsored path',
+                                    text: 'funded path',
                                     style: GoogleFonts.poppins(
                                       fontSize: headlineFontSize,
                                       fontWeight: FontWeight.w700,

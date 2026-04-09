@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/notification_provider.dart';
-import '../../utils/opportunity_dashboard_palette.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/student/student_workspace_shell.dart';
 import '../notifications_screen.dart';
-import '../settings/logout_confirmation_sheet.dart';
 import 'chat_list_screen.dart';
 import 'opportunities_screen.dart';
 import 'project_ideas_screen.dart';
+import 'saved_screen.dart';
 import 'scholarships_screen.dart';
 import 'student_dashboard_screen.dart';
 import 'student_home_navigation.dart';
@@ -177,6 +176,69 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  Future<void> _openNotifications() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const NotificationsScreen()),
+    );
+  }
+
+  Future<void> _openSavedFilter(SavedScreenFilter filter) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => SavedScreen(initialFilter: filter)),
+    );
+  }
+
+  List<Widget> _buildTopBarActions(int unreadCount) {
+    return switch (_currentIndex) {
+      1 => [
+        StudentWorkspaceActionButton(
+          icon: Icons.notifications_outlined,
+          tooltip: 'Notifications',
+          badgeCount: unreadCount,
+          onTap: _openNotifications,
+        ),
+      ],
+      2 => [
+        StudentWorkspaceActionButton(
+          icon: Icons.notifications_outlined,
+          tooltip: 'Notifications',
+          badgeCount: unreadCount,
+          onTap: _openNotifications,
+        ),
+        StudentWorkspaceActionButton(
+          icon: Icons.bookmark_outline_rounded,
+          tooltip: 'Saved scholarships',
+          onTap: () => _openSavedFilter(SavedScreenFilter.scholarships),
+        ),
+      ],
+      3 => [
+        StudentWorkspaceActionButton(
+          icon: Icons.bookmark_outline_rounded,
+          tooltip: 'Saved training',
+          onTap: () => _openSavedFilter(SavedScreenFilter.trainings),
+        ),
+      ],
+      4 => [
+        StudentWorkspaceActionButton(
+          icon: Icons.bookmark_outline_rounded,
+          tooltip: 'Saved ideas',
+          onTap: () => _openSavedFilter(SavedScreenFilter.ideas),
+        ),
+      ],
+      5 => [
+        StudentWorkspaceActionButton(
+          icon: Icons.notifications_outlined,
+          tooltip: 'Notifications',
+          badgeCount: unreadCount,
+          onTap: _openNotifications,
+        ),
+      ],
+      _ => const <Widget>[],
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     final unreadCount = context.watch<NotificationProvider>().unreadCount;
@@ -194,27 +256,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   title: destination.title,
                   subtitle: destination.subtitle,
                   icon: destination.icon,
-                  actions: [
-                    StudentWorkspaceActionButton(
-                      icon: Icons.notifications_outlined,
-                      tooltip: 'Notifications',
-                      badgeCount: unreadCount,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const NotificationsScreen(),
-                          ),
-                        );
-                      },
-                    ),
-                    StudentWorkspaceActionButton(
-                      icon: Icons.logout_rounded,
-                      tooltip: 'Logout',
-                      color: OpportunityDashboardPalette.error,
-                      onTap: () => showLogoutConfirmationSheet(context),
-                    ),
-                  ],
+                  actions: _buildTopBarActions(unreadCount),
                 ),
               Expanded(
                 child: Padding(
