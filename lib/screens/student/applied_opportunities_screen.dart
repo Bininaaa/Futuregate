@@ -14,6 +14,7 @@ import '../../widgets/student/student_workspace_shell.dart';
 import '../../widgets/student_opportunity_hub_widgets.dart';
 import 'opportunities_screen.dart';
 import 'opportunity_detail_screen.dart';
+import 'profile_screen.dart';
 
 class AppliedOpportunitiesScreen extends StatefulWidget {
   const AppliedOpportunitiesScreen({super.key});
@@ -166,9 +167,20 @@ class _AppliedOpportunitiesScreenState
     await OpportunityDetailScreen.show(context, opportunity);
   }
 
+  void _openProfile() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const ProfileScreen()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<ApplicationProvider>();
+    final authProvider = context.watch<AuthProvider>();
+    final mediaQuery = MediaQuery.of(context);
+    final screenSize = mediaQuery.size;
+    final isCompact = screenSize.width < 390 || screenSize.height < 780;
     final items = _filteredItems(provider);
     final totalCount = provider.submittedApplications.length;
     final pendingCount = _countFor(provider, _ApplicationFilter.pending);
@@ -180,167 +192,188 @@ class _AppliedOpportunitiesScreenState
     return AppShellBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        appBar: StudentWorkspaceAppBar(
-          title: 'Applied Opportunities',
-          subtitle: 'Your submitted roles in one clean, compact timeline.',
-          icon: Icons.assignment_turned_in_rounded,
-          showBackButton: true,
-          onBack: () => Navigator.maybePop(context),
-          actions: [
-            StudentWorkspaceActionButton(
-              icon: Icons.refresh_rounded,
-              tooltip: 'Refresh',
-              onTap: _loadApplications,
-            ),
-          ],
-        ),
         body: SafeArea(
-          top: false,
-          child: RefreshIndicator(
-            color: StudentOpportunityHubPalette.primary,
-            onRefresh: _loadApplications,
-            child: CustomScrollView(
-              physics: const BouncingScrollPhysics(
-                parent: AlwaysScrollableScrollPhysics(),
-              ),
-              slivers: [
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _AppliedCompactSummary(
-                          total: totalCount,
-                          pending: pendingCount,
-                          approved: approvedCount,
-                          rejected: rejectedCount,
-                        ),
-                        const SizedBox(height: 12),
-                        if ((provider.submittedApplicationsError ?? '')
-                            .trim()
-                            .isNotEmpty)
-                          _InlineBanner(
-                            icon: Icons.info_outline_rounded,
-                            title: 'Application data is unavailable right now.',
-                            message: provider.submittedApplicationsError!,
-                            tone: StudentOpportunityHubPalette.error,
-                            background: const Color(0xFFFFF1F2),
-                          ),
-                        if ((provider.submittedApplicationsError ?? '')
-                            .trim()
-                            .isNotEmpty)
-                          const SizedBox(height: 12),
-                        StudentOpportunitySearchField(
-                          controller: _searchController,
-                          hintText:
-                              'Search by role, company, location, or status',
-                          onChanged: (_) => setState(() {}),
-                        ),
-                        const SizedBox(height: 10),
-                        SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            children: _ApplicationFilter.values
-                                .map(
-                                  (filter) => Padding(
-                                    padding: EdgeInsets.only(
-                                      right:
-                                          filter ==
-                                              _ApplicationFilter.values.last
-                                          ? 0
-                                          : 8,
-                                    ),
-                                    child: StudentOpportunityFilterChip(
-                                      label:
-                                          '${_filterLabel(filter)} (${_countFor(provider, filter)})',
-                                      selected: filter == _selectedFilter,
-                                      color: _filterColor(filter),
-                                      onTap: () {
-                                        if (_selectedFilter == filter) {
-                                          return;
-                                        }
-                                        setState(
-                                          () => _selectedFilter = filter,
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                )
-                                .toList(growable: false),
-                          ),
-                        ),
-                        const SizedBox(height: 14),
-                        Text(
-                          hasFilters
-                              ? '${items.length} applications shown'
-                              : totalCount == 1
-                              ? '1 applied opportunity'
-                              : '$totalCount applied opportunities',
-                          style: GoogleFonts.poppins(
-                            fontSize: 12.5,
-                            fontWeight: FontWeight.w600,
-                            color: StudentOpportunityHubPalette.textSecondary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+          bottom: false,
+          child: Column(
+            children: [
+              StudentWorkspaceUtilityHeader(
+                user: authProvider.userModel,
+                title: 'Applied',
+                onProfileTap: _openProfile,
+                compact: isCompact,
+                backgroundColor: Colors.transparent,
+                borderColor: StudentOpportunityHubPalette.primary.withValues(
+                  alpha: 0.18,
                 ),
-                if (provider.submittedApplicationsLoading &&
-                    provider.submittedApplications.isEmpty)
-                  const SliverFillRemaining(
-                    hasScrollBody: false,
-                    child: StudentOpportunityLoadingState(
-                      title: 'Loading your applications...',
-                      message:
-                          'Pulling together your submitted opportunities and their latest statuses.',
+                titleColor: StudentOpportunityHubPalette.textPrimary,
+                accentColor: StudentOpportunityHubPalette.primary,
+                showSavedShortcut: false,
+                showAppliedShortcut: false,
+                useSafeArea: false,
+                actions: [
+                  StudentWorkspaceUtilityHeaderAction(
+                    icon: Icons.refresh_rounded,
+                    tooltip: 'Refresh applications',
+                    onTap: _loadApplications,
+                  ),
+                ],
+              ),
+              Expanded(
+                child: RefreshIndicator(
+                  color: StudentOpportunityHubPalette.primary,
+                  onRefresh: _loadApplications,
+                  child: CustomScrollView(
+                    physics: const BouncingScrollPhysics(
+                      parent: AlwaysScrollableScrollPhysics(),
                     ),
-                  )
-                else if (items.isEmpty)
-                  SliverFillRemaining(
-                    hasScrollBody: false,
-                    child: StudentOpportunityEmptyState(
-                      icon: hasFilters
-                          ? Icons.filter_alt_off_rounded
-                          : Icons.assignment_outlined,
-                      title: hasFilters
-                          ? 'No applications match this view'
-                          : 'No applications yet',
-                      message: hasFilters
-                          ? 'Try a different search or filter to bring more of your application history back into view.'
-                          : 'Start applying to opportunities and track them here.',
-                      actionLabel: 'Browse opportunities',
-                      onAction: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const OpportunitiesScreen(),
+                    slivers: [
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _AppliedCompactSummary(
+                                total: totalCount,
+                                pending: pendingCount,
+                                approved: approvedCount,
+                                rejected: rejectedCount,
+                              ),
+                              const SizedBox(height: 12),
+                              if ((provider.submittedApplicationsError ?? '')
+                                  .trim()
+                                  .isNotEmpty)
+                                _InlineBanner(
+                                  icon: Icons.info_outline_rounded,
+                                  title:
+                                      'Application data is unavailable right now.',
+                                  message: provider.submittedApplicationsError!,
+                                  tone: StudentOpportunityHubPalette.error,
+                                  background: const Color(0xFFFFF1F2),
+                                ),
+                              if ((provider.submittedApplicationsError ?? '')
+                                  .trim()
+                                  .isNotEmpty)
+                                const SizedBox(height: 12),
+                              StudentOpportunitySearchField(
+                                controller: _searchController,
+                                hintText:
+                                    'Search by role, company, location, or status',
+                                onChanged: (_) => setState(() {}),
+                              ),
+                              const SizedBox(height: 10),
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  children: _ApplicationFilter.values
+                                      .map(
+                                        (filter) => Padding(
+                                          padding: EdgeInsets.only(
+                                            right:
+                                                filter ==
+                                                    _ApplicationFilter
+                                                        .values
+                                                        .last
+                                                ? 0
+                                                : 8,
+                                          ),
+                                          child: StudentOpportunityFilterChip(
+                                            label:
+                                                '${_filterLabel(filter)} (${_countFor(provider, filter)})',
+                                            selected: filter == _selectedFilter,
+                                            color: _filterColor(filter),
+                                            onTap: () {
+                                              if (_selectedFilter == filter) {
+                                                return;
+                                              }
+                                              setState(
+                                                () => _selectedFilter = filter,
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      )
+                                      .toList(growable: false),
+                                ),
+                              ),
+                              const SizedBox(height: 14),
+                              Text(
+                                hasFilters
+                                    ? '${items.length} applications shown'
+                                    : totalCount == 1
+                                    ? '1 applied opportunity'
+                                    : '$totalCount applied opportunities',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 12.5,
+                                  fontWeight: FontWeight.w600,
+                                  color: StudentOpportunityHubPalette
+                                      .textSecondary,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  )
-                else
-                  SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
-                    sliver: SliverList(
-                      delegate: SliverChildBuilderDelegate((context, index) {
-                        final item = items[index];
-                        return Padding(
-                          padding: EdgeInsets.only(
-                            bottom: index == items.length - 1 ? 0 : 8,
+                      if (provider.submittedApplicationsLoading &&
+                          provider.submittedApplications.isEmpty)
+                        const SliverFillRemaining(
+                          hasScrollBody: false,
+                          child: StudentOpportunityLoadingState(
+                            title: 'Loading your applications...',
+                            message:
+                                'Pulling together your submitted opportunities and their latest statuses.',
                           ),
-                          child: _AppliedHistoryCard(
-                            item: item,
-                            onOpen: item.canOpenDetails
-                                ? () => _openOpportunity(item)
-                                : null,
+                        )
+                      else if (items.isEmpty)
+                        SliverFillRemaining(
+                          hasScrollBody: false,
+                          child: StudentOpportunityEmptyState(
+                            icon: hasFilters
+                                ? Icons.filter_alt_off_rounded
+                                : Icons.assignment_outlined,
+                            title: hasFilters
+                                ? 'No applications match this view'
+                                : 'No applications yet',
+                            message: hasFilters
+                                ? 'Try a different search or filter to bring more of your application history back into view.'
+                                : 'Start applying to opportunities and track them here.',
+                            actionLabel: 'Browse opportunities',
+                            onAction: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const OpportunitiesScreen(),
+                              ),
+                            ),
                           ),
-                        );
-                      }, childCount: items.length),
-                    ),
+                        )
+                      else
+                        SliverPadding(
+                          padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
+                          sliver: SliverList(
+                            delegate: SliverChildBuilderDelegate((
+                              context,
+                              index,
+                            ) {
+                              final item = items[index];
+                              return Padding(
+                                padding: EdgeInsets.only(
+                                  bottom: index == items.length - 1 ? 0 : 8,
+                                ),
+                                child: _AppliedHistoryCard(
+                                  item: item,
+                                  onOpen: item.canOpenDetails
+                                      ? () => _openOpportunity(item)
+                                      : null,
+                                ),
+                              );
+                            }, childCount: items.length),
+                          ),
+                        ),
+                    ],
                   ),
-              ],
-            ),
+                ),
+              ),
+            ],
           ),
         ),
       ),

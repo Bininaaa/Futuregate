@@ -233,113 +233,162 @@ class StudentWorkspaceUtilityHeader extends StatelessWidget {
   final UserModel? user;
   final String title;
   final VoidCallback onProfileTap;
-  final VoidCallback onOpenSaved;
-  final VoidCallback onOpenApplied;
+  final VoidCallback? onOpenSaved;
+  final VoidCallback? onOpenApplied;
   final bool compact;
   final Color backgroundColor;
   final Color borderColor;
   final Color titleColor;
   final Color accentColor;
+  final List<StudentWorkspaceUtilityHeaderAction> actions;
+  final bool showSavedShortcut;
+  final bool showAppliedShortcut;
+  final bool useSafeArea;
+  final EdgeInsetsGeometry? padding;
 
   const StudentWorkspaceUtilityHeader({
     super.key,
     required this.user,
     required this.title,
     required this.onProfileTap,
-    required this.onOpenSaved,
-    required this.onOpenApplied,
+    this.onOpenSaved,
+    this.onOpenApplied,
     required this.compact,
     required this.backgroundColor,
     required this.borderColor,
     required this.titleColor,
     required this.accentColor,
+    this.actions = const <StudentWorkspaceUtilityHeaderAction>[],
+    this.showSavedShortcut = true,
+    this.showAppliedShortcut = true,
+    this.useSafeArea = true,
+    this.padding,
   });
 
   @override
   Widget build(BuildContext context) {
-    final sectionPadding = EdgeInsets.fromLTRB(
-      compact ? 16 : 20,
-      compact ? 10 : 16,
-      compact ? 16 : 20,
-      compact ? 10 : 16,
-    );
-
-    return SafeArea(
-      bottom: false,
-      child: Padding(
-        padding: sectionPadding,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            _StudentWorkspaceUtilityAvatar(
-              user: user,
-              title: title,
-              compact: compact,
-              accentColor: accentColor,
-              onTap: onProfileTap,
-            ),
-            SizedBox(width: compact ? 12 : 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'STUDENT SPACE',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.poppins(
-                      fontSize: compact ? 9.2 : 9.8,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 1.4,
-                      color: accentColor.withValues(alpha: 0.62),
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.spaceGrotesk(
-                      fontSize: compact ? 21 : 28,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: -0.7,
-                      color: titleColor,
-                      height: 0.96,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Row(
+    final sectionPadding =
+        padding ??
+        EdgeInsets.fromLTRB(
+          compact ? 16 : 20,
+          compact ? 10 : 16,
+          compact ? 16 : 20,
+          compact ? 10 : 16,
+        );
+    final trailingActions = <Widget>[
+      if (showSavedShortcut)
+        StudentWorkspaceUtilityActionButton(
+          icon: Icons.bookmark_outline_rounded,
+          tooltip: 'Saved items',
+          compact: compact,
+          accentColor: accentColor,
+          borderColor: borderColor,
+          backgroundColor: backgroundColor,
+          onTap: onOpenSaved,
+        ),
+      if (showAppliedShortcut)
+        StudentWorkspaceUtilityActionButton(
+          icon: Icons.assignment_turned_in_outlined,
+          tooltip: 'Applied opportunities',
+          compact: compact,
+          accentColor: accentColor,
+          borderColor: borderColor,
+          backgroundColor: backgroundColor,
+          onTap: onOpenApplied,
+        ),
+      ...actions.map(
+        (action) => StudentWorkspaceUtilityActionButton(
+          icon: action.icon,
+          tooltip: action.tooltip,
+          compact: compact,
+          accentColor: accentColor,
+          borderColor: borderColor,
+          backgroundColor: backgroundColor,
+          onTap: action.onTap,
+        ),
+      ),
+    ];
+    final content = Padding(
+      padding: sectionPadding,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          _StudentWorkspaceUtilityAvatar(
+            user: user,
+            title: title,
+            compact: compact,
+            accentColor: accentColor,
+            onTap: onProfileTap,
+          ),
+          SizedBox(width: compact ? 12 : 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                _StudentWorkspaceUtilityIcon(
-                  icon: Icons.bookmark_outline_rounded,
-                  tooltip: 'Saved items',
-                  compact: compact,
-                  accentColor: accentColor,
-                  borderColor: borderColor,
-                  backgroundColor: backgroundColor,
-                  onTap: onOpenSaved,
+                Text(
+                  'STUDENT SPACE',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.poppins(
+                    fontSize: compact ? 9.2 : 9.8,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 1.4,
+                    color: accentColor.withValues(alpha: 0.62),
+                  ),
                 ),
-                const SizedBox(width: 8),
-                _StudentWorkspaceUtilityIcon(
-                  icon: Icons.assignment_turned_in_outlined,
-                  tooltip: 'Applied opportunities',
-                  compact: compact,
-                  accentColor: accentColor,
-                  borderColor: borderColor,
-                  backgroundColor: backgroundColor,
-                  onTap: onOpenApplied,
+                const SizedBox(height: 2),
+                Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.spaceGrotesk(
+                    fontSize: compact ? 21 : 28,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: -0.7,
+                    color: titleColor,
+                    height: 0.96,
+                  ),
                 ),
               ],
             ),
-          ],
-        ),
+          ),
+          if (trailingActions.isNotEmpty)
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for (
+                  var index = 0;
+                  index < trailingActions.length;
+                  index++
+                ) ...[
+                  if (index > 0) const SizedBox(width: 8),
+                  trailingActions[index],
+                ],
+              ],
+            ),
+        ],
       ),
     );
+
+    if (!useSafeArea) {
+      return content;
+    }
+
+    return SafeArea(bottom: false, child: content);
   }
+}
+
+class StudentWorkspaceUtilityHeaderAction {
+  final IconData icon;
+  final String tooltip;
+  final VoidCallback onTap;
+
+  const StudentWorkspaceUtilityHeaderAction({
+    required this.icon,
+    required this.tooltip,
+    required this.onTap,
+  });
 }
 
 class _StudentWorkspaceUtilityAvatar extends StatelessWidget {
@@ -395,16 +444,17 @@ class _StudentWorkspaceUtilityAvatar extends StatelessWidget {
   }
 }
 
-class _StudentWorkspaceUtilityIcon extends StatelessWidget {
+class StudentWorkspaceUtilityActionButton extends StatelessWidget {
   final IconData icon;
   final String tooltip;
   final bool compact;
   final Color accentColor;
   final Color borderColor;
   final Color backgroundColor;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
-  const _StudentWorkspaceUtilityIcon({
+  const StudentWorkspaceUtilityActionButton({
+    super.key,
     required this.icon,
     required this.tooltip,
     required this.compact,

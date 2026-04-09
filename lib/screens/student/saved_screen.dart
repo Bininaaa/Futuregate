@@ -28,6 +28,7 @@ import '../../widgets/student_opportunity_hub_widgets.dart';
 import 'idea_details_screen.dart';
 import 'opportunities_screen.dart';
 import 'opportunity_detail_screen.dart';
+import 'profile_screen.dart';
 import 'scholarship_detail_screen.dart';
 
 enum SavedScreenFilter { all, opportunities, scholarships, trainings, ideas }
@@ -369,6 +370,13 @@ class _SavedScreenState extends State<SavedScreen> {
     );
   }
 
+  void _openProfile() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const ProfileScreen()),
+    );
+  }
+
   Future<void> _removeItem(_SavedHubItem item) async {
     final studentId = context.read<AuthProvider>().userModel?.uid.trim() ?? '';
     if (studentId.isEmpty || _removingItemKey != null) {
@@ -431,6 +439,10 @@ class _SavedScreenState extends State<SavedScreen> {
     final savedScholarshipProvider = context.watch<SavedScholarshipProvider>();
     final trainingProvider = context.watch<TrainingProvider>();
     final savedIdeasProvider = context.watch<ProjectIdeaProvider>();
+    final authProvider = context.watch<AuthProvider>();
+    final mediaQuery = MediaQuery.of(context);
+    final screenSize = mediaQuery.size;
+    final isCompact = screenSize.width < 390 || screenSize.height < 780;
 
     final items = _buildItems(
       opportunities: savedOpportunityProvider.savedOpportunities,
@@ -458,275 +470,301 @@ class _SavedScreenState extends State<SavedScreen> {
     return AppShellBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        appBar: StudentWorkspaceAppBar(
-          title: 'Saved Items',
-          subtitle:
-              'Your saved opportunities, scholarships, trainings, and ideas.',
-          icon: Icons.bookmark_rounded,
-          showBackButton: true,
-          onBack: () => Navigator.maybePop(context),
-          actions: [
-            StudentWorkspaceActionButton(
-              icon: Icons.refresh_rounded,
-              tooltip: 'Refresh',
-              onTap: () => _loadSavedContent(),
-            ),
-          ],
-        ),
         body: SafeArea(
-          top: false,
-          child: RefreshIndicator(
-            color: StudentOpportunityHubPalette.primary,
-            onRefresh: _loadSavedContent,
-            child: CustomScrollView(
-              physics: const BouncingScrollPhysics(
-                parent: AlwaysScrollableScrollPhysics(),
+          bottom: false,
+          child: Column(
+            children: [
+              StudentWorkspaceUtilityHeader(
+                user: authProvider.userModel,
+                title: 'Saved',
+                onProfileTap: _openProfile,
+                compact: isCompact,
+                backgroundColor: Colors.transparent,
+                borderColor: StudentOpportunityHubPalette.primary.withValues(
+                  alpha: 0.18,
+                ),
+                titleColor: StudentOpportunityHubPalette.textPrimary,
+                accentColor: StudentOpportunityHubPalette.primary,
+                showSavedShortcut: false,
+                showAppliedShortcut: false,
+                useSafeArea: false,
+                actions: [
+                  StudentWorkspaceUtilityHeaderAction(
+                    icon: Icons.refresh_rounded,
+                    tooltip: 'Refresh saved items',
+                    onTap: _loadSavedContent,
+                  ),
+                ],
               ),
-              slivers: [
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _SavedCompactSummary(
-                          total: totalSaved,
-                          opportunities: savedOpportunityProvider
-                              .savedOpportunities
-                              .length,
-                          scholarships:
-                              savedScholarshipProvider.savedScholarships.length,
-                          trainings: trainingProvider.savedTrainings.length,
-                          ideas: savedIdeasProvider.savedIdeas.length,
-                        ),
-                        const SizedBox(height: 12),
-                        if ((savedIdeasProvider.savedIdeasError ?? '')
-                            .trim()
-                            .isNotEmpty)
-                          _InlineBanner(
-                            icon: Icons.info_outline_rounded,
-                            title: 'Some saved ideas could not load right now.',
-                            message: savedIdeasProvider.savedIdeasError!,
-                            tone: StudentOpportunityHubPalette.error,
-                            background: const Color(0xFFFFF1F2),
-                          ),
-                        if ((savedIdeasProvider.savedIdeasError ?? '')
-                            .trim()
-                            .isNotEmpty)
-                          const SizedBox(height: 12),
-                        StudentOpportunitySearchField(
-                          controller: _searchController,
-                          hintText:
-                              'Search by title, company, provider, or category',
-                          onChanged: (_) => setState(() {}),
-                        ),
-                        const SizedBox(height: 10),
-                        SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            children: _SavedHubFilter.values
-                                .map(
-                                  (filter) => Padding(
-                                    padding: EdgeInsets.only(
-                                      right:
-                                          filter == _SavedHubFilter.values.last
-                                          ? 0
-                                          : 8,
-                                    ),
-                                    child: StudentOpportunityFilterChip(
-                                      label:
-                                          '${_filterLabel(filter)} (${_countForFilter(opportunities: savedOpportunityProvider.savedOpportunities, scholarships: savedScholarshipProvider.savedScholarships, trainings: trainingProvider.savedTrainings, ideas: savedIdeasProvider.savedIdeas, filter: filter)})',
-                                      selected: filter == _selectedFilter,
-                                      color: _filterColor(filter),
-                                      onTap: () {
-                                        if (_selectedFilter == filter) {
-                                          return;
-                                        }
-                                        setState(() {
-                                          _selectedFilter = filter;
-                                          if (filter !=
-                                              _SavedHubFilter.opportunities) {
-                                            _selectedOpportunityType = null;
-                                          }
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                )
-                                .toList(growable: false),
-                          ),
-                        ),
-                        AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 220),
-                          switchInCurve: Curves.easeOut,
-                          switchOutCurve: Curves.easeIn,
-                          child:
-                              _selectedFilter == _SavedHubFilter.opportunities
-                              ? Padding(
-                                  key: const ValueKey(
-                                    'saved-opportunity-type-filters',
-                                  ),
-                                  padding: const EdgeInsets.only(top: 10),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Opportunity type',
-                                        style: GoogleFonts.poppins(
-                                          fontSize: 11.2,
-                                          fontWeight: FontWeight.w600,
-                                          color: StudentOpportunityHubPalette
-                                              .textSecondary,
+              Expanded(
+                child: RefreshIndicator(
+                  color: StudentOpportunityHubPalette.primary,
+                  onRefresh: _loadSavedContent,
+                  child: CustomScrollView(
+                    physics: const BouncingScrollPhysics(
+                      parent: AlwaysScrollableScrollPhysics(),
+                    ),
+                    slivers: [
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _SavedCompactSummary(
+                                total: totalSaved,
+                                opportunities: savedOpportunityProvider
+                                    .savedOpportunities
+                                    .length,
+                                scholarships: savedScholarshipProvider
+                                    .savedScholarships
+                                    .length,
+                                trainings:
+                                    trainingProvider.savedTrainings.length,
+                                ideas: savedIdeasProvider.savedIdeas.length,
+                              ),
+                              const SizedBox(height: 12),
+                              if ((savedIdeasProvider.savedIdeasError ?? '')
+                                  .trim()
+                                  .isNotEmpty)
+                                _InlineBanner(
+                                  icon: Icons.info_outline_rounded,
+                                  title:
+                                      'Some saved ideas could not load right now.',
+                                  message: savedIdeasProvider.savedIdeasError!,
+                                  tone: StudentOpportunityHubPalette.error,
+                                  background: const Color(0xFFFFF1F2),
+                                ),
+                              if ((savedIdeasProvider.savedIdeasError ?? '')
+                                  .trim()
+                                  .isNotEmpty)
+                                const SizedBox(height: 12),
+                              StudentOpportunitySearchField(
+                                controller: _searchController,
+                                hintText:
+                                    'Search by title, company, provider, or category',
+                                onChanged: (_) => setState(() {}),
+                              ),
+                              const SizedBox(height: 10),
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  children: _SavedHubFilter.values
+                                      .map(
+                                        (filter) => Padding(
+                                          padding: EdgeInsets.only(
+                                            right:
+                                                filter ==
+                                                    _SavedHubFilter.values.last
+                                                ? 0
+                                                : 8,
+                                          ),
+                                          child: StudentOpportunityFilterChip(
+                                            label:
+                                                '${_filterLabel(filter)} (${_countForFilter(opportunities: savedOpportunityProvider.savedOpportunities, scholarships: savedScholarshipProvider.savedScholarships, trainings: trainingProvider.savedTrainings, ideas: savedIdeasProvider.savedIdeas, filter: filter)})',
+                                            selected: filter == _selectedFilter,
+                                            color: _filterColor(filter),
+                                            onTap: () {
+                                              if (_selectedFilter == filter) {
+                                                return;
+                                              }
+                                              setState(() {
+                                                _selectedFilter = filter;
+                                                if (filter !=
+                                                    _SavedHubFilter
+                                                        .opportunities) {
+                                                  _selectedOpportunityType =
+                                                      null;
+                                                }
+                                              });
+                                            },
+                                          ),
                                         ),
-                                      ),
-                                      const SizedBox(height: 8),
-                                      SingleChildScrollView(
-                                        scrollDirection: Axis.horizontal,
-                                        child: Row(
+                                      )
+                                      .toList(growable: false),
+                                ),
+                              ),
+                              AnimatedSwitcher(
+                                duration: const Duration(milliseconds: 220),
+                                switchInCurve: Curves.easeOut,
+                                switchOutCurve: Curves.easeIn,
+                                child:
+                                    _selectedFilter ==
+                                        _SavedHubFilter.opportunities
+                                    ? Padding(
+                                        key: const ValueKey(
+                                          'saved-opportunity-type-filters',
+                                        ),
+                                        padding: const EdgeInsets.only(top: 10),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                right: 8,
-                                              ),
-                                              child: StudentOpportunityFilterChip(
-                                                label:
-                                                    'All opps (${_countForOpportunityTypeFilter(savedOpportunityProvider.savedOpportunities, null)})',
-                                                selected:
-                                                    _selectedOpportunityType ==
-                                                    null,
+                                            Text(
+                                              'Opportunity type',
+                                              style: GoogleFonts.poppins(
+                                                fontSize: 11.2,
+                                                fontWeight: FontWeight.w600,
                                                 color:
                                                     StudentOpportunityHubPalette
-                                                        .primary,
-                                                onTap: () {
-                                                  if (_selectedOpportunityType ==
-                                                      null) {
-                                                    return;
-                                                  }
-                                                  setState(
-                                                    () =>
-                                                        _selectedOpportunityType =
-                                                            null,
-                                                  );
-                                                },
+                                                        .textSecondary,
                                               ),
                                             ),
-                                            ...OpportunityType.values.map(
-                                              (type) => Padding(
-                                                padding: EdgeInsets.only(
-                                                  right:
-                                                      type ==
-                                                          OpportunityType
-                                                              .values
-                                                              .last
-                                                      ? 0
-                                                      : 8,
-                                                ),
-                                                child: StudentOpportunityFilterChip(
-                                                  label:
-                                                      '${_opportunityTypeFilterLabel(type)} (${_countForOpportunityTypeFilter(savedOpportunityProvider.savedOpportunities, type)})',
-                                                  selected:
-                                                      _selectedOpportunityType ==
-                                                      type,
-                                                  color:
-                                                      _opportunityTypeFilterColor(
-                                                        type,
+                                            const SizedBox(height: 8),
+                                            SingleChildScrollView(
+                                              scrollDirection: Axis.horizontal,
+                                              child: Row(
+                                                children: [
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                          right: 8,
+                                                        ),
+                                                    child: StudentOpportunityFilterChip(
+                                                      label:
+                                                          'All opps (${_countForOpportunityTypeFilter(savedOpportunityProvider.savedOpportunities, null)})',
+                                                      selected:
+                                                          _selectedOpportunityType ==
+                                                          null,
+                                                      color:
+                                                          StudentOpportunityHubPalette
+                                                              .primary,
+                                                      onTap: () {
+                                                        if (_selectedOpportunityType ==
+                                                            null) {
+                                                          return;
+                                                        }
+                                                        setState(
+                                                          () =>
+                                                              _selectedOpportunityType =
+                                                                  null,
+                                                        );
+                                                      },
+                                                    ),
+                                                  ),
+                                                  ...OpportunityType.values.map(
+                                                    (type) => Padding(
+                                                      padding: EdgeInsets.only(
+                                                        right:
+                                                            type ==
+                                                                OpportunityType
+                                                                    .values
+                                                                    .last
+                                                            ? 0
+                                                            : 8,
                                                       ),
-                                                  onTap: () {
-                                                    if (_selectedOpportunityType ==
-                                                        type) {
-                                                      return;
-                                                    }
-                                                    setState(
-                                                      () =>
-                                                          _selectedOpportunityType =
+                                                      child: StudentOpportunityFilterChip(
+                                                        label:
+                                                            '${_opportunityTypeFilterLabel(type)} (${_countForOpportunityTypeFilter(savedOpportunityProvider.savedOpportunities, type)})',
+                                                        selected:
+                                                            _selectedOpportunityType ==
+                                                            type,
+                                                        color:
+                                                            _opportunityTypeFilterColor(
                                                               type,
-                                                    );
-                                                  },
-                                                ),
+                                                            ),
+                                                        onTap: () {
+                                                          if (_selectedOpportunityType ==
+                                                              type) {
+                                                            return;
+                                                          }
+                                                          setState(
+                                                            () =>
+                                                                _selectedOpportunityType =
+                                                                    type,
+                                                          );
+                                                        },
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
                                             ),
                                           ],
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                )
-                              : const SizedBox.shrink(),
-                        ),
-                        const SizedBox(height: 14),
-                        Text(
-                          hasFilters
-                              ? '${items.length} items shown'
-                              : totalSaved == 1
-                              ? '1 saved item'
-                              : '$totalSaved saved items',
-                          style: GoogleFonts.poppins(
-                            fontSize: 12.5,
-                            fontWeight: FontWeight.w600,
-                            color: StudentOpportunityHubPalette.textSecondary,
+                                      )
+                                    : const SizedBox.shrink(),
+                              ),
+                              const SizedBox(height: 14),
+                              Text(
+                                hasFilters
+                                    ? '${items.length} items shown'
+                                    : totalSaved == 1
+                                    ? '1 saved item'
+                                    : '$totalSaved saved items',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 12.5,
+                                  fontWeight: FontWeight.w600,
+                                  color: StudentOpportunityHubPalette
+                                      .textSecondary,
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                if (isInitialLoading)
-                  const SliverFillRemaining(
-                    hasScrollBody: false,
-                    child: StudentOpportunityLoadingState(
-                      title: 'Loading your saved items...',
-                      message:
-                          'Pulling together your saved opportunities, scholarships, trainings, and ideas.',
-                    ),
-                  )
-                else if (items.isEmpty)
-                  SliverFillRemaining(
-                    hasScrollBody: false,
-                    child: StudentOpportunityEmptyState(
-                      icon: hasFilters
-                          ? Icons.filter_alt_off_rounded
-                          : Icons.bookmark_border_rounded,
-                      title: hasFilters
-                          ? 'No saved items match this view'
-                          : 'No saved items yet',
-                      message: hasFilters
-                          ? 'Try a different search or filter to see more saved items.'
-                          : 'Save opportunities, scholarships, trainings, or ideas to build your shortlist.',
-                      actionLabel: 'Explore opportunities',
-                      onAction: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const OpportunitiesScreen(),
                         ),
                       ),
-                    ),
-                  )
-                else
-                  SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
-                    sliver: SliverList(
-                      delegate: SliverChildBuilderDelegate((context, index) {
-                        final item = items[index];
-                        final itemKey = _itemKey(item);
+                      if (isInitialLoading)
+                        const SliverFillRemaining(
+                          hasScrollBody: false,
+                          child: StudentOpportunityLoadingState(
+                            title: 'Loading your saved items...',
+                            message:
+                                'Pulling together your saved opportunities, scholarships, trainings, and ideas.',
+                          ),
+                        )
+                      else if (items.isEmpty)
+                        SliverFillRemaining(
+                          hasScrollBody: false,
+                          child: StudentOpportunityEmptyState(
+                            icon: hasFilters
+                                ? Icons.filter_alt_off_rounded
+                                : Icons.bookmark_border_rounded,
+                            title: hasFilters
+                                ? 'No saved items match this view'
+                                : 'No saved items yet',
+                            message: hasFilters
+                                ? 'Try a different search or filter to see more saved items.'
+                                : 'Save opportunities, scholarships, trainings, or ideas to build your shortlist.',
+                            actionLabel: 'Explore opportunities',
+                            onAction: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const OpportunitiesScreen(),
+                              ),
+                            ),
+                          ),
+                        )
+                      else
+                        SliverPadding(
+                          padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
+                          sliver: SliverList(
+                            delegate: SliverChildBuilderDelegate((
+                              context,
+                              index,
+                            ) {
+                              final item = items[index];
+                              final itemKey = _itemKey(item);
 
-                        return Padding(
-                          padding: EdgeInsets.only(
-                            bottom: index == items.length - 1 ? 0 : 10,
+                              return Padding(
+                                padding: EdgeInsets.only(
+                                  bottom: index == items.length - 1 ? 0 : 10,
+                                ),
+                                child: _SavedHubCard(
+                                  item: item,
+                                  isOpening: _openingItemKey == itemKey,
+                                  isRemoving: _removingItemKey == itemKey,
+                                  onOpen: () => _openItem(item),
+                                  onRemove: () => _removeItem(item),
+                                ),
+                              );
+                            }, childCount: items.length),
                           ),
-                          child: _SavedHubCard(
-                            item: item,
-                            isOpening: _openingItemKey == itemKey,
-                            isRemoving: _removingItemKey == itemKey,
-                            onOpen: () => _openItem(item),
-                            onRemove: () => _removeItem(item),
-                          ),
-                        );
-                      }, childCount: items.length),
-                    ),
+                        ),
+                    ],
                   ),
-              ],
-            ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
