@@ -46,11 +46,14 @@ import 'cv_screen.dart';
 import 'saved_screen.dart';
 import 'profile_screen.dart';
 import 'idea_details_screen.dart';
+import 'internships_screen.dart';
+import 'jobs_screen.dart';
 import 'opportunities_screen.dart';
 import 'opportunity_detail_screen.dart';
 import 'project_ideas_screen.dart';
 import 'scholarship_detail_screen.dart';
 import 'student_home_navigation.dart';
+import 'sponsored_opportunities_screen.dart';
 import 'trainings_screen.dart';
 import 'scholarships_screen.dart';
 
@@ -1172,24 +1175,24 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
         icon: Icons.work_outline_rounded,
         color: const Color(0xFF6C63FF),
         onTap: () =>
-            _openQuickAccessDiscover(context, filter: OpportunityType.job),
+            _openQuickAccessPage(context, builder: (_) => const JobsScreen()),
       ),
       _QuickAccessTileItem(
         title: 'Internships',
         icon: Icons.school_outlined,
         color: const Color(0xFF19C37D),
-        onTap: () => _openQuickAccessDiscover(
+        onTap: () => _openQuickAccessPage(
           context,
-          filter: OpportunityType.internship,
+          builder: (_) => const InternshipsScreen(),
         ),
       ),
       _QuickAccessTileItem(
         title: 'Sponsored',
         icon: Icons.campaign_outlined,
         color: const Color(0xFFFFB341),
-        onTap: () => _openQuickAccessDiscover(
+        onTap: () => _openQuickAccessPage(
           context,
-          filter: OpportunityType.sponsoring,
+          builder: (_) => const SponsoredOpportunitiesScreen(),
         ),
       ),
       _QuickAccessTileItem(
@@ -1824,18 +1827,11 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     );
   }
 
-  void _openQuickAccessDiscover(BuildContext context, {String? filter}) {
-    if (widget.embedded) {
-      StudentHomeNavigation.switchToDiscover(context, filter: filter);
-      return;
-    }
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => OpportunitiesScreen(initialFilter: filter),
-      ),
-    );
+  void _openQuickAccessPage(
+    BuildContext context, {
+    required WidgetBuilder builder,
+  }) {
+    Navigator.push(context, MaterialPageRoute(builder: builder));
   }
 
   void _openQuickAccessTab(

@@ -111,12 +111,14 @@ class IdeaCard extends StatelessWidget {
 class IdeaListCard extends StatelessWidget {
   final ProjectIdeaModel idea;
   final VoidCallback onTap;
+  final bool showStatus;
   final Widget? trailingAction;
 
   const IdeaListCard({
     super.key,
     required this.idea,
     required this.onTap,
+    this.showStatus = false,
     this.trailingAction,
   });
 
@@ -178,11 +180,13 @@ class IdeaListCard extends StatelessWidget {
                           label: idea.displayStage,
                           color: innovationStageColor(idea.displayStage),
                         ),
-                        const SizedBox(width: 6),
-                        _MiniBadge(
-                          label: idea.statusLabel,
-                          color: innovationStatusColor(idea.status),
-                        ),
+                        if (showStatus) ...[
+                          const SizedBox(width: 6),
+                          _MiniBadge(
+                            label: idea.statusLabel,
+                            color: innovationStatusColor(idea.status),
+                          ),
+                        ],
                         const Spacer(),
                         Icon(
                           Icons.people_outline_rounded,

@@ -20,8 +20,14 @@ import 'create_idea_screen.dart';
 class IdeaDetailsScreen extends StatelessWidget {
   final String ideaId;
   final ProjectIdeaModel? initialIdea;
+  final bool showModerationStatus;
 
-  const IdeaDetailsScreen({super.key, required this.ideaId, this.initialIdea});
+  const IdeaDetailsScreen({
+    super.key,
+    required this.ideaId,
+    this.initialIdea,
+    this.showModerationStatus = false,
+  });
 
   AppContentTheme get _theme => const AppContentTheme(
     accent: InnovationHubPalette.primary,
@@ -229,11 +235,12 @@ class IdeaDetailsScreen extends StatelessWidget {
                   icon: Icons.timeline_outlined,
                   color: stageColor,
                 ),
-                AppBadgeData(
-                  label: idea.statusLabel,
-                  icon: Icons.flag_outlined,
-                  color: statusColor,
-                ),
+                if (showModerationStatus)
+                  AppBadgeData(
+                    label: idea.statusLabel,
+                    icon: Icons.flag_outlined,
+                    color: statusColor,
+                  ),
                 if (idea.level.trim().isNotEmpty)
                   AppBadgeData(
                     label: academicLevelLabel(idea.level),
@@ -284,12 +291,13 @@ class IdeaDetailsScreen extends StatelessWidget {
                   icon: Icons.timeline_outlined,
                   color: stageColor,
                 ),
-                AppInfoTileData(
-                  label: 'Status',
-                  value: idea.statusLabel,
-                  icon: Icons.flag_outlined,
-                  color: statusColor,
-                ),
+                if (showModerationStatus)
+                  AppInfoTileData(
+                    label: 'Status',
+                    value: idea.statusLabel,
+                    icon: Icons.flag_outlined,
+                    color: statusColor,
+                  ),
                 AppInfoTileData(
                   label: 'Category',
                   value: idea.displayCategory,
@@ -469,55 +477,6 @@ class IdeaDetailsScreen extends StatelessWidget {
                 ),
               ),
             ],
-            const SizedBox(height: 16),
-            AppDetailSection(
-              theme: _theme,
-              title: 'Metadata',
-              icon: Icons.fact_check_outlined,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  AppMetaRow(
-                    theme: _theme,
-                    label: 'Domain',
-                    value: idea.domain,
-                  ),
-                  AppMetaRow(
-                    theme: _theme,
-                    label: 'Category',
-                    value: idea.displayCategory,
-                  ),
-                  AppMetaRow(
-                    theme: _theme,
-                    label: 'Stage',
-                    value: idea.displayStage,
-                  ),
-                  AppMetaRow(
-                    theme: _theme,
-                    label: 'Visibility',
-                    value: idea.isPublic ? 'Public idea' : 'Private idea',
-                  ),
-                  AppMetaRow(
-                    theme: _theme,
-                    label: 'Status',
-                    value: idea.statusLabel,
-                  ),
-                  AppMetaRow(
-                    theme: _theme,
-                    label: 'Submitted by',
-                    value: idea.submittedBy,
-                  ),
-                  if (idea.updatedAt != null)
-                    AppMetaRow(
-                      theme: _theme,
-                      label: 'Updated at',
-                      value: DateFormat(
-                        'MMM d, yyyy',
-                      ).format(idea.updatedAt!.toDate()),
-                    ),
-                ],
-              ),
-            ),
             if (idea.tags.isNotEmpty) ...<Widget>[
               const SizedBox(height: 16),
               AppDetailSection(

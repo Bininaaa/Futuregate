@@ -7,6 +7,8 @@ import '../../providers/admin_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/project_idea_provider.dart';
 import '../../services/file_storage_service.dart';
+import '../settings/settings_flow_theme.dart';
+import '../settings/settings_flow_widgets.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/ideas/innovation_hub_theme.dart';
 import '../../widgets/shared/app_content_system.dart';
@@ -43,6 +45,8 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
   late final TextEditingController _attachmentUrlController;
   late final TextEditingController _customSkillsController;
   late final TextEditingController _customRolesController;
+  late final TextEditingController _categoryController;
+  late final TextEditingController _stageController;
 
   late String _selectedCategory;
   late String _selectedStage;
@@ -76,7 +80,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
     warning: InnovationHubPalette.warning,
     error: InnovationHubPalette.error,
     heroGradient: InnovationHubPalette.primaryGradient,
-    typography: AppContentTypography.innovation,
+    typography: AppContentTypography.product,
   );
 
   @override
@@ -116,6 +120,8 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
     _isPublic = idea?.isPublic ?? true;
     _selectedSkills = {...?idea?.displaySkills};
     _selectedRoles = {...?idea?.displayTeamNeeded};
+    _categoryController = TextEditingController(text: _selectedCategory);
+    _stageController = TextEditingController(text: _selectedStage);
     _imageUrl = (idea?.imageUrl ?? '').trim();
     _uploadedImageName = _deriveImageLabel(_imageUrl);
     _adminStatus = idea != null
@@ -136,6 +142,8 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
     _attachmentUrlController.dispose();
     _customSkillsController.dispose();
     _customRolesController.dispose();
+    _categoryController.dispose();
+    _stageController.dispose();
     super.dispose();
   }
 
@@ -288,21 +296,228 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
   }
 
   void _commitCustomEntries() {
-    for (final skill in _customSkillsController.text.split(',')) {
-      final trimmed = skill.trim();
-      if (trimmed.isNotEmpty) {
-        _selectedSkills.add(trimmed);
-      }
-    }
-    _customSkillsController.clear();
+    _addEntriesToSet(
+      controller: _customSkillsController,
+      values: _selectedSkills,
+    );
+    _addEntriesToSet(
+      controller: _customRolesController,
+      values: _selectedRoles,
+    );
+  }
 
-    for (final role in _customRolesController.text.split(',')) {
-      final trimmed = role.trim();
+  void _addEntriesToSet({
+    required TextEditingController controller,
+    required Set<String> values,
+  }) {
+    for (final rawValue in controller.text.split(',')) {
+      final trimmed = rawValue.trim();
       if (trimmed.isNotEmpty) {
-        _selectedRoles.add(trimmed);
+        values.add(trimmed);
       }
     }
-    _customRolesController.clear();
+    controller.clear();
+  }
+
+  void _addCustomSkills() {
+    setState(() {
+      _addEntriesToSet(
+        controller: _customSkillsController,
+        values: _selectedSkills,
+      );
+    });
+  }
+
+  void _addCustomRoles() {
+    setState(() {
+      _addEntriesToSet(
+        controller: _customRolesController,
+        values: _selectedRoles,
+      );
+    });
+  }
+
+  Future<void> _pickCategory() async {
+    final value = await _showOptionPicker(
+      title: 'Select category',
+      options: innovationHubDefaultCategories,
+      currentValue: _selectedCategory,
+    );
+    if (value == null || !mounted) {
+      return;
+    }
+    setState(() {
+      _selectedCategory = value;
+      _categoryController.text = value;
+    });
+  }
+
+  Future<void> _pickStage() async {
+    final value = await _showOptionPicker(
+      title: 'Select stage',
+      options: innovationHubStageOptions,
+      currentValue: _selectedStage,
+    );
+    if (value == null || !mounted) {
+      return;
+    }
+    setState(() {
+      _selectedStage = value;
+      _stageController.text = value;
+    });
+  }
+
+  Future<String?> _showOptionPicker({
+    required String title,
+    required List<String> options,
+    required String currentValue,
+  }) {
+    return showModalBottomSheet<String>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) {
+        return SafeArea(
+          child: Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 48,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: SettingsFlowPalette.border,
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(title, style: SettingsFlowTheme.sectionTitle()),
+                  const SizedBox(height: 4),
+                  Text('Choose one option', style: SettingsFlowTheme.caption()),
+                  const SizedBox(height: 16),
+                  Flexible(
+                    child: ListView.separated(
+                      shrinkWrap: true,
+                      itemCount: options.length,
+                      separatorBuilder: (_, _) => const SizedBox(height: 10),
+                      itemBuilder: (context, index) {
+                        final option = options[index];
+                        final isSelected = option == currentValue;
+                        return InkWell(
+                          borderRadius: SettingsFlowTheme.radius(18),
+                          onTap: () => Navigator.of(context).pop(option),
+                          child: Ink(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 14,
+                            ),
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? SettingsFlowPalette.primary.withValues(
+                                      alpha: 0.08,
+                                    )
+                                  : SettingsFlowPalette.surface,
+                              borderRadius: SettingsFlowTheme.radius(18),
+                              border: Border.all(
+                                color: isSelected
+                                    ? SettingsFlowPalette.primary.withValues(
+                                        alpha: 0.18,
+                                      )
+                                    : SettingsFlowPalette.border,
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    option,
+                                    style: SettingsFlowTheme.body(
+                                      isSelected
+                                          ? SettingsFlowPalette.primary
+                                          : SettingsFlowPalette.textPrimary,
+                                    ),
+                                  ),
+                                ),
+                                if (isSelected)
+                                  const Icon(
+                                    Icons.check_circle_rounded,
+                                    size: 18,
+                                    color: SettingsFlowPalette.primary,
+                                  ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  InputDecoration _cvStyleInputDecoration({
+    required String label,
+    required String hint,
+    required IconData prefixIcon,
+    required Widget suffixIcon,
+  }) {
+    return InputDecoration(
+      labelText: label,
+      hintText: hint,
+      prefixIcon: Icon(
+        prefixIcon,
+        size: 20,
+        color: SettingsFlowPalette.textSecondary,
+      ),
+      suffixIcon: suffixIcon,
+      labelStyle: SettingsFlowTheme.caption(),
+      hintStyle: SettingsFlowTheme.caption(
+        SettingsFlowPalette.textSecondary.withValues(alpha: 0.5),
+      ),
+      filled: true,
+      fillColor: SettingsFlowPalette.background,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: SettingsFlowPalette.border),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: SettingsFlowPalette.border),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(
+          color: SettingsFlowPalette.primary,
+          width: 1.5,
+        ),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: SettingsFlowPalette.error),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(
+          color: SettingsFlowPalette.error,
+          width: 1.5,
+        ),
+      ),
+    );
   }
 
   Future<void> _pickAndUploadImage() async {
@@ -532,22 +747,22 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                             'A smarter way for students to find support fast.',
                       ),
                       const SizedBox(height: 18),
-                      _buildChoiceGroup(
+                      _CvSingleSelectField(
                         title: 'Category',
-                        values: innovationHubDefaultCategories,
-                        selected: _selectedCategory,
-                        onSelected: (value) {
-                          setState(() => _selectedCategory = value);
-                        },
+                        controller: _categoryController,
+                        fieldLabel: 'Choose a category',
+                        hint: 'Pick the idea category',
+                        prefixIcon: Icons.category_outlined,
+                        onTap: _pickCategory,
                       ),
                       const SizedBox(height: 18),
-                      _buildChoiceGroup(
+                      _CvSingleSelectField(
                         title: 'Stage',
-                        values: innovationHubStageOptions,
-                        selected: _selectedStage,
-                        onSelected: (value) {
-                          setState(() => _selectedStage = value);
-                        },
+                        controller: _stageController,
+                        fieldLabel: 'Choose a stage',
+                        hint: 'Pick the current stage',
+                        prefixIcon: Icons.timeline_rounded,
+                        onTap: _pickStage,
                       ),
                       const SizedBox(height: 18),
                       AppFormDropdownField<String>(
@@ -642,46 +857,28 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                     children: [
                       _SelectionWrap(
                         title: 'Team Needed',
-                        suggestions: innovationHubRoleOptions,
                         selectedValues: _selectedRoles,
-                        onToggle: (value) {
-                          setState(() {
-                            if (_selectedRoles.contains(value)) {
-                              _selectedRoles.remove(value);
-                            } else {
-                              _selectedRoles.add(value);
-                            }
-                          });
-                        },
-                      ),
-                      const SizedBox(height: 12),
-                      _StyledField(
                         controller: _customRolesController,
-                        label: 'Add custom roles',
-                        hint: 'Mentor, Community Lead, Data Analyst',
-                        onChanged: (_) => setState(() {}),
+                        fieldLabel: 'Add a role',
+                        hint: 'Developer, Designer, Researcher',
+                        prefixIcon: Icons.groups_2_outlined,
+                        onSubmitted: _addCustomRoles,
+                        onDelete: (value) {
+                          setState(() => _selectedRoles.remove(value));
+                        },
                       ),
                       const SizedBox(height: 18),
                       _SelectionWrap(
                         title: 'Skills Needed',
-                        suggestions: innovationHubSkillSuggestions,
                         selectedValues: _selectedSkills,
-                        onToggle: (value) {
-                          setState(() {
-                            if (_selectedSkills.contains(value)) {
-                              _selectedSkills.remove(value);
-                            } else {
-                              _selectedSkills.add(value);
-                            }
-                          });
-                        },
-                      ),
-                      const SizedBox(height: 12),
-                      _StyledField(
                         controller: _customSkillsController,
-                        label: 'Add custom skills',
-                        hint: 'Firebase, UX Research, Fundraising',
-                        onChanged: (_) => setState(() {}),
+                        fieldLabel: 'Add a skill',
+                        hint: 'Flutter, Firebase, UX Research',
+                        prefixIcon: Icons.auto_awesome_outlined,
+                        onSubmitted: _addCustomSkills,
+                        onDelete: (value) {
+                          setState(() => _selectedSkills.remove(value));
+                        },
                       ),
                       const SizedBox(height: 14),
                       _StyledField(
@@ -728,14 +925,14 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                               .withValues(alpha: 0.3),
                           title: Text(
                             'Ready for public discovery',
-                            style: InnovationHubTypography.label(
+                            style: _theme.label(
                               color: InnovationHubPalette.textPrimary,
                               size: 13,
                             ),
                           ),
                           subtitle: Text(
                             'Approved ideas appear in Discover. Pending ideas still stay visible in My Ideas.',
-                            style: InnovationHubTypography.body(size: 12.5),
+                            style: _theme.body(size: 12.5),
                           ),
                         ),
                       ),
@@ -798,7 +995,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                   children: [
                     Text(
                       hasImage ? 'Cover image ready' : 'Upload a cover image',
-                      style: InnovationHubTypography.label(
+                      style: _theme.label(
                         color: InnovationHubPalette.textPrimary,
                         size: 13.5,
                       ),
@@ -808,7 +1005,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                       hasImage
                           ? 'Your idea now has a visual header that will show across Discover, My Ideas, and the details view.'
                           : 'Choose a JPG, PNG, or WebP image to make the idea feel polished from the first glance.',
-                      style: InnovationHubTypography.body(size: 12.5),
+                      style: _theme.body(size: 12.5),
                     ),
                   ],
                 ),
@@ -859,7 +1056,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                           : 'Cover image uploaded',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: InnovationHubTypography.body(
+                      style: _theme.body(
                         color: InnovationHubPalette.textPrimary,
                         size: 12.5,
                       ),
@@ -897,7 +1094,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                   Expanded(
                     child: Text(
                       'A strong visual makes the featured cards and detail hero feel much more alive.',
-                      style: InnovationHubTypography.body(
+                      style: _theme.body(
                         color: InnovationHubPalette.textPrimary,
                         size: 12.5,
                       ),
@@ -947,10 +1144,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                         : hasImage
                         ? 'Change image'
                         : 'Upload image',
-                    style: InnovationHubTypography.label(
-                      color: Colors.white,
-                      size: 13,
-                    ),
+                    style: _theme.label(color: Colors.white, size: 13),
                   ),
                 ),
               ),
@@ -960,7 +1154,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                   onPressed: _isUploadingImage ? null : _removeImage,
                   child: Text(
                     'Remove',
-                    style: InnovationHubTypography.label(
+                    style: _theme.label(
                       color: InnovationHubPalette.error,
                       size: 13,
                     ),
@@ -972,7 +1166,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
           const SizedBox(height: 10),
           Text(
             'Best results: 16:9 cover, under 5 MB.',
-            style: InnovationHubTypography.body(size: 12.5),
+            style: _theme.body(size: 12.5),
           ),
         ],
       ),
@@ -1038,21 +1232,6 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
     );
   }
 
-  Widget _buildChoiceGroup({
-    required String title,
-    required List<String> values,
-    required String selected,
-    required ValueChanged<String> onSelected,
-  }) {
-    return AppChoiceWrap(
-      theme: _theme,
-      title: title,
-      values: values,
-      selectedValue: selected,
-      onSelected: onSelected,
-    );
-  }
-
   String? _requiredValidator(String? value) {
     if (value == null || value.trim().isEmpty) {
       return 'This field is required.';
@@ -1090,7 +1269,6 @@ class _StyledField extends StatelessWidget {
   final int minLines;
   final int maxLines;
   final String? Function(String?)? validator;
-  final ValueChanged<String>? onChanged;
 
   const _StyledField({
     required this.controller,
@@ -1099,7 +1277,6 @@ class _StyledField extends StatelessWidget {
     this.minLines = 1,
     this.maxLines = 1,
     this.validator,
-    this.onChanged,
   });
 
   @override
@@ -1113,33 +1290,170 @@ class _StyledField extends StatelessWidget {
       minLines: minLines,
       maxLines: maxLines,
       validator: validator,
-      onChanged: onChanged,
+    );
+  }
+}
+
+class _CvSingleSelectField extends StatelessWidget {
+  final String title;
+  final TextEditingController controller;
+  final String fieldLabel;
+  final String hint;
+  final IconData prefixIcon;
+  final VoidCallback onTap;
+
+  const _CvSingleSelectField({
+    required this.title,
+    required this.controller,
+    required this.fieldLabel,
+    required this.hint,
+    required this.prefixIcon,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final state = context.findAncestorStateOfType<_CreateIdeaScreenState>()!;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title, style: SettingsFlowTheme.sectionTitle()),
+        const SizedBox(height: 10),
+        SettingsPanel(
+          child: TextFormField(
+            controller: controller,
+            readOnly: true,
+            onTap: onTap,
+            style: SettingsFlowTheme.body(),
+            decoration: state._cvStyleInputDecoration(
+              label: fieldLabel,
+              hint: hint,
+              prefixIcon: prefixIcon,
+              suffixIcon: IconButton(
+                icon: const Icon(
+                  Icons.add_circle_outline,
+                  color: SettingsFlowPalette.primary,
+                ),
+                onPressed: onTap,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
 
 class _SelectionWrap extends StatelessWidget {
   final String title;
-  final List<String> suggestions;
   final Set<String> selectedValues;
-  final ValueChanged<String> onToggle;
+  final TextEditingController controller;
+  final String fieldLabel;
+  final String hint;
+  final IconData prefixIcon;
+  final VoidCallback onSubmitted;
+  final ValueChanged<String> onDelete;
 
   const _SelectionWrap({
     required this.title,
-    required this.suggestions,
     required this.selectedValues,
-    required this.onToggle,
+    required this.controller,
+    required this.fieldLabel,
+    required this.hint,
+    required this.prefixIcon,
+    required this.onSubmitted,
+    required this.onDelete,
   });
 
   @override
   Widget build(BuildContext context) {
-    final state = context.findAncestorStateOfType<_CreateIdeaScreenState>();
-    return AppChipSelector(
-      theme: state!._theme,
-      title: title,
-      suggestions: suggestions,
-      selectedValues: selectedValues,
-      onToggle: onToggle,
+    final state = context.findAncestorStateOfType<_CreateIdeaScreenState>()!;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title, style: SettingsFlowTheme.sectionTitle()),
+        const SizedBox(height: 10),
+        SettingsPanel(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (selectedValues.isNotEmpty) ...[
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: selectedValues
+                      .map(
+                        (value) => _CvValueChip(
+                          label: value,
+                          onDelete: () => onDelete(value),
+                        ),
+                      )
+                      .toList(growable: false),
+                ),
+                const SizedBox(height: 12),
+              ],
+              TextFormField(
+                controller: controller,
+                style: SettingsFlowTheme.body(),
+                decoration: state._cvStyleInputDecoration(
+                  label: fieldLabel,
+                  hint: hint,
+                  prefixIcon: prefixIcon,
+                  suffixIcon: IconButton(
+                    icon: const Icon(
+                      Icons.add_circle_outline,
+                      color: SettingsFlowPalette.primary,
+                    ),
+                    onPressed: onSubmitted,
+                  ),
+                ),
+                onFieldSubmitted: (_) => onSubmitted(),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _CvValueChip extends StatelessWidget {
+  final String label;
+  final VoidCallback onDelete;
+
+  const _CvValueChip({required this.label, required this.onDelete});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.only(left: 12, right: 6, top: 6, bottom: 6),
+      decoration: BoxDecoration(
+        color: SettingsFlowPalette.primary.withValues(alpha: 0.08),
+        borderRadius: SettingsFlowTheme.radius(10),
+        border: Border.all(
+          color: SettingsFlowPalette.primary.withValues(alpha: 0.15),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            label,
+            style: SettingsFlowTheme.caption(SettingsFlowPalette.primary),
+          ),
+          const SizedBox(width: 4),
+          GestureDetector(
+            onTap: onDelete,
+            child: Icon(
+              Icons.close_rounded,
+              size: 16,
+              color: SettingsFlowPalette.primary.withValues(alpha: 0.5),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

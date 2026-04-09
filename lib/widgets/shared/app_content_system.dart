@@ -581,32 +581,19 @@ class AppChoiceWrap extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(title, style: theme.label(size: 12)),
-        const SizedBox(height: AppContentSpacing.sm),
+        const SizedBox(height: 8),
         Wrap(
-          spacing: AppContentSpacing.sm,
-          runSpacing: AppContentSpacing.sm,
+          spacing: 8,
+          runSpacing: 8,
           children: values
               .map((value) {
                 final isSelected = selectedValue == value;
-                return FilterChip(
-                  label: Text(value),
+                return _AppSelectorChip(
+                  theme: theme,
+                  label: value,
                   selected: isSelected,
-                  onSelected: (_) => onSelected(value),
-                  showCheckmark: false,
-                  selectedColor: theme.accent.withValues(alpha: 0.12),
-                  backgroundColor: theme.surfaceMuted,
-                  side: BorderSide(
-                    color: isSelected
-                        ? theme.accent.withValues(alpha: 0.26)
-                        : theme.border,
-                  ),
-                  labelStyle: theme.label(
-                    size: 11.4,
-                    color: isSelected ? theme.accent : theme.textPrimary,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(999),
-                  ),
+                  trailingIcon: isSelected ? Icons.check_rounded : null,
+                  onTap: () => onSelected(value),
                 );
               })
               .toList(growable: false),
@@ -634,80 +621,105 @@ class AppChipSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final orderedValues = <String>[
+      ...suggestions,
+      ...selectedValues.where((value) => !suggestions.contains(value)),
+    ];
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(title, style: theme.label(size: 12)),
-        const SizedBox(height: AppContentSpacing.sm),
+        const SizedBox(height: 8),
         Wrap(
-          spacing: AppContentSpacing.sm,
-          runSpacing: AppContentSpacing.sm,
-          children: suggestions
+          spacing: 8,
+          runSpacing: 8,
+          children: orderedValues
               .map((value) {
                 final isSelected = selectedValues.contains(value);
-                return FilterChip(
-                  label: Text(value),
+                return _AppSelectorChip(
+                  theme: theme,
+                  label: value,
                   selected: isSelected,
-                  onSelected: (_) => onToggle(value),
-                  showCheckmark: false,
-                  selectedColor: theme.accent.withValues(alpha: 0.12),
-                  backgroundColor: theme.surfaceMuted,
-                  side: BorderSide(
-                    color: isSelected
-                        ? theme.accent.withValues(alpha: 0.24)
-                        : theme.border,
-                  ),
-                  labelStyle: theme.label(
-                    size: 11.4,
-                    color: isSelected ? theme.accent : theme.textPrimary,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(999),
-                  ),
+                  trailingIcon: isSelected ? Icons.close_rounded : null,
+                  onTap: () => onToggle(value),
                 );
               })
               .toList(growable: false),
         ),
-        if (selectedValues.isNotEmpty) ...<Widget>[
-          const SizedBox(height: AppContentSpacing.sm),
-          Wrap(
-            spacing: AppContentSpacing.xs,
-            runSpacing: AppContentSpacing.xs,
-            children: selectedValues
-                .map(
-                  (value) => Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: theme.accent.withValues(alpha: 0.08),
-                      borderRadius: BorderRadius.circular(999),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        Text(
-                          value,
-                          style: theme.label(size: 10.8, color: theme.accent),
-                        ),
-                        const SizedBox(width: 6),
-                        GestureDetector(
-                          onTap: () => onToggle(value),
-                          child: Icon(
-                            Icons.close_rounded,
-                            size: 16,
-                            color: theme.accent,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                )
-                .toList(growable: false),
-          ),
-        ],
       ],
+    );
+  }
+}
+
+class _AppSelectorChip extends StatelessWidget {
+  final AppContentTheme theme;
+  final String label;
+  final bool selected;
+  final IconData? trailingIcon;
+  final VoidCallback onTap;
+
+  const _AppSelectorChip({
+    required this.theme,
+    required this.label,
+    required this.selected,
+    required this.trailingIcon,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final accentColor = theme.accent;
+    final hasTrailingIcon = trailingIcon != null;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(10),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          padding: EdgeInsets.only(
+            left: 12,
+            right: hasTrailingIcon ? 6 : 12,
+            top: 6,
+            bottom: 6,
+          ),
+          decoration: BoxDecoration(
+            color: selected
+                ? accentColor.withValues(alpha: 0.08)
+                : theme.surface,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: selected
+                  ? accentColor.withValues(alpha: 0.15)
+                  : theme.border,
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Text(
+                label,
+                style: theme.body(
+                  size: 11.5,
+                  weight: FontWeight.w500,
+                  height: 1.45,
+                  color: selected ? accentColor : theme.textPrimary,
+                ),
+              ),
+              if (hasTrailingIcon) ...<Widget>[
+                const SizedBox(width: 4),
+                Icon(
+                  trailingIcon,
+                  size: 16,
+                  color: accentColor.withValues(alpha: 0.5),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

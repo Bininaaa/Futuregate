@@ -303,13 +303,18 @@ class _ProjectIdeasScreenState extends State<ProjectIdeasScreen> {
   }
 
   Widget _buildFilterChips() {
-    final filters = <_IdeaFilter, String>{
-      _IdeaFilter.all: 'All',
-      _IdeaFilter.approved: 'Approved',
-      _IdeaFilter.pending: 'Pending',
-      _IdeaFilter.rejected: 'Rejected',
-      _IdeaFilter.interested: 'Interested',
-    };
+    final auth = context.read<AuthProvider>().userModel;
+    final filters = _segment == IdeasHubSegment.discover
+        ? <_IdeaFilter, String>{
+            _IdeaFilter.all: 'All',
+            if (auth != null) _IdeaFilter.interested: 'Interested',
+          }
+        : <_IdeaFilter, String>{
+            _IdeaFilter.all: 'All',
+            _IdeaFilter.approved: 'Approved',
+            _IdeaFilter.pending: 'Pending',
+            _IdeaFilter.rejected: 'Rejected',
+          };
 
     return SizedBox(
       height: 32,
@@ -416,6 +421,15 @@ class _ProjectIdeasScreenState extends State<ProjectIdeasScreen> {
   }) {
     if (_filter == _IdeaFilter.all) return source;
 
+    if (isDiscover) {
+      if (_filter == _IdeaFilter.interested) {
+        return source
+            .where((i) => i.isJoinedByCurrentUser)
+            .toList(growable: false);
+      }
+      return source;
+    }
+
     switch (_filter) {
       case _IdeaFilter.approved:
         return source
@@ -430,9 +444,7 @@ class _ProjectIdeasScreenState extends State<ProjectIdeasScreen> {
             .where((i) => i.status.toLowerCase() == 'rejected')
             .toList(growable: false);
       case _IdeaFilter.interested:
-        return source
-            .where((i) => i.isJoinedByCurrentUser)
-            .toList(growable: false);
+        return source;
       case _IdeaFilter.all:
         return source;
     }
@@ -468,7 +480,11 @@ class _ProjectIdeasScreenState extends State<ProjectIdeasScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => IdeaDetailsScreen(ideaId: idea.id, initialIdea: idea),
+        builder: (_) => IdeaDetailsScreen(
+          ideaId: idea.id,
+          initialIdea: idea,
+          showModerationStatus: _segment == IdeasHubSegment.mine,
+        ),
       ),
     );
   }
@@ -596,6 +612,7 @@ class _DiscoverIdeasSection extends StatelessWidget {
               child: IdeaListCard(
                 idea: idea,
                 onTap: () => onIdeaTap(idea),
+                showStatus: false,
                 trailingAction: trailingActionBuilder?.call(idea),
               ),
             ),
