@@ -546,15 +546,14 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
   }
 
   String? _compensationText(OpportunityModel opportunity) {
-    final label = OpportunityMetadata.buildCompensationLabel(
-      salaryMin: opportunity.salaryMin,
-      salaryMax: opportunity.salaryMax,
-      salaryCurrency: opportunity.salaryCurrency,
-      salaryPeriod: opportunity.salaryPeriod,
-      compensationText: opportunity.compensationText,
-      isPaid: opportunity.isPaid,
-      preferCompensationText: true,
-    );
+    final label =
+        OpportunityMetadata.formatSalaryRange(
+          salaryMin: opportunity.salaryMin,
+          salaryMax: opportunity.salaryMax,
+          salaryCurrency: opportunity.salaryCurrency,
+          salaryPeriod: opportunity.salaryPeriod,
+        ) ??
+        OpportunityMetadata.formatPaidLabel(_effectiveIsPaid(opportunity));
     if (label == null) {
       return null;
     }

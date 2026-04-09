@@ -879,7 +879,7 @@ class _SavedCompactSummary extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Saved history',
+                      'Your shortlist',
                       style: GoogleFonts.poppins(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
@@ -888,7 +888,7 @@ class _SavedCompactSummary extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      'Everything you saved, in one simple list.',
+                      'Quick access to roles, funding, learning, and ideas worth revisiting.',
                       style: GoogleFonts.poppins(
                         fontSize: 11,
                         color: StudentOpportunityHubPalette.textSecondary,

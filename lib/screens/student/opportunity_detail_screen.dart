@@ -326,7 +326,7 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
       'Company: $_companyName',
       'Type: ${OpportunityType.label(_effectiveType)}',
       if (_locationValue.isNotEmpty) 'Location: $_locationValue',
-      if (_compensationLabel != null) 'Compensation: ${_compensationLabel!}',
+      if (_salaryLabel != null) '$_primaryCompensationLabel: ${_salaryLabel!}',
       if (_durationLabel != null) 'Duration: ${_durationLabel!}',
       if (_deadlineLabel != null) 'Deadline: ${_deadlineLabel!}',
       '',
@@ -420,15 +420,37 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
     return fallback.isEmpty ? null : fallback;
   }
 
-  String? get _compensationLabel => OpportunityMetadata.buildCompensationLabel(
+  String get _primaryCompensationLabel =>
+      _effectiveType == OpportunityType.sponsoring ? 'Funding' : 'Salary';
+
+  String get _compensationNoteTitle =>
+      _effectiveType == OpportunityType.sponsoring
+          ? 'Funding note'
+          : 'Compensation note';
+
+  String? get _salaryLabel => OpportunityMetadata.formatSalaryRange(
     salaryMin: widget.opportunity.salaryMin,
     salaryMax: widget.opportunity.salaryMax,
     salaryCurrency: widget.opportunity.salaryCurrency,
     salaryPeriod: widget.opportunity.salaryPeriod,
-    compensationText: widget.opportunity.compensationText,
-    isPaid: widget.opportunity.isPaid,
-    preferCompensationText: true,
   );
+
+  String? get _compensationNote {
+    final note = OpportunityMetadata.sanitizeText(
+      widget.opportunity.compensationText,
+    );
+    if (note == null) {
+      return null;
+    }
+
+    final salary = _salaryLabel;
+    if (salary != null &&
+        note.trim().toLowerCase() == salary.trim().toLowerCase()) {
+      return null;
+    }
+
+    return note;
+  }
 
   String? get _durationLabel {
     final normalizedDuration = OpportunityMetadata.normalizeDuration(
@@ -758,10 +780,10 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
                 icon: OpportunityType.icon(_effectiveType),
               ),
               AppInfoTileData(
-                label: 'Compensation',
-                value: _compensationLabel ?? '',
+                label: _primaryCompensationLabel,
+                value: _salaryLabel ?? '',
                 icon: Icons.payments_outlined,
-                emphasize: _compensationLabel != null,
+                emphasize: _salaryLabel != null,
               ),
               AppInfoTileData(
                 label: 'Location',
@@ -800,6 +822,14 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
               ),
             ],
           ),
+          if (_compensationNote != null) ...<Widget>[
+            const SizedBox(height: 12),
+            _OpportunityCompensationNote(
+              theme: _theme,
+              title: _compensationNoteTitle,
+              note: _compensationNote!,
+            ),
+          ],
           const SizedBox(height: 16),
           AppDetailSection(
             theme: _theme,
@@ -948,8 +978,8 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
                 ),
                 AppMetaRow(
                   theme: _theme,
-                  label: 'Compensation',
-                  value: _compensationLabel ?? '',
+                  label: _primaryCompensationLabel,
+                  value: _salaryLabel ?? '',
                 ),
                 AppMetaRow(
                   theme: _theme,
@@ -1036,6 +1066,80 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
     }
 
     return AppShellBackground(child: scaffold);
+  }
+}
+
+class _OpportunityCompensationNote extends StatelessWidget {
+  final AppContentTheme theme;
+  final String title;
+  final String note;
+
+  const _OpportunityCompensationNote({
+    required this.theme,
+    required this.title,
+    required this.note,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final trimmedNote = note.trim();
+    if (trimmedNote.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: theme.accentSoft.withValues(alpha: 0.56),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: theme.accent.withValues(alpha: 0.16)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Container(
+            width: 28,
+            height: 28,
+            decoration: BoxDecoration(
+              color: theme.accent.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(
+              Icons.sticky_note_2_outlined,
+              size: 15,
+              color: theme.accent,
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  title,
+                  style: theme.label(
+                    size: 11.3,
+                    color: theme.accentDark,
+                    weight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  trimmedNote,
+                  style: theme.body(
+                    size: 12.1,
+                    color: theme.textSecondary,
+                    weight: FontWeight.w500,
+                    height: 1.45,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 

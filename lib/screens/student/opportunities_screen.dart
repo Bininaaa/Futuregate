@@ -303,6 +303,14 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
   }
 
   void _openTrainings() {
+    if (widget.embedded) {
+      StudentHomeNavigation.switchToTab(
+        context,
+        StudentHomeNavigation.trainingTab,
+      );
+      return;
+    }
+
     Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => const TrainingsScreen()),
@@ -1238,123 +1246,19 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
   }
 
   String? _compensationText(OpportunityModel opportunity) {
-    final structuredLabel = OpportunityMetadata.buildCompensationLabel(
+    // Opportunity cards should only show structured salary data, not the
+    // optional compensation note reserved for the detail screen.
+    final structuredLabel = OpportunityMetadata.formatSalaryRange(
       salaryMin: opportunity.salaryMin,
       salaryMax: opportunity.salaryMax,
       salaryCurrency: opportunity.salaryCurrency,
       salaryPeriod: opportunity.salaryPeriod,
-      compensationText: opportunity.compensationText,
-      isPaid: opportunity.isPaid,
     );
     if (structuredLabel != null) {
       return structuredLabel;
     }
 
-    final legacyCompensation = _sanitizeCompensationText(
-      OpportunityMetadata.extractCompensationText(opportunity.rawData),
-    );
-    if (legacyCompensation != null) {
-      return legacyCompensation;
-    }
-
-    final extracted = _sanitizeCompensationText(
-      _extractCompensationFromText(opportunity),
-    );
-    if (extracted != null) {
-      return extracted;
-    }
-
     return OpportunityMetadata.formatPaidLabel(_effectiveIsPaid(opportunity));
-  }
-
-  String? _extractCompensationFromText(OpportunityModel opportunity) {
-    final text = '${opportunity.description} ${opportunity.requirements}'
-        .replaceAll('\n', ' ');
-    final patterns = [
-      RegExp(
-        r'((?:salary|stipend|compensation|payment|pay)\s*[:\-]?\s*[^,;\n]{3,40})',
-        caseSensitive: false,
-      ),
-      RegExp(
-        r'((?:USD|EUR|DZD|\$)\s?[0-9][0-9,.\s/-]{1,24})',
-        caseSensitive: false,
-      ),
-      RegExp(
-        r'((?:paid|unpaid)\s+(?:internship|role|position|opportunity))',
-        caseSensitive: false,
-      ),
-    ];
-
-    for (final pattern in patterns) {
-      final match = pattern.firstMatch(text);
-      final result = match?.group(1)?.trim();
-      if (result != null && result.isNotEmpty) {
-        return result;
-      }
-    }
-
-    return null;
-  }
-
-  String? _sanitizeCompensationText(String? rawValue) {
-    if (rawValue == null) {
-      return null;
-    }
-
-    var value = rawValue.trim().replaceAll(RegExp(r'\s+'), ' ');
-    if (value.isEmpty) {
-      return null;
-    }
-
-    value = value.replaceFirst(
-      RegExp(
-        r'^(salary|stipend|compensation|payment|pay)\s*[:\-]?\s*',
-        caseSensitive: false,
-      ),
-      '',
-    );
-
-    final normalized = value.toLowerCase();
-    if (normalized.isEmpty) {
-      return null;
-    }
-
-    if (normalized.contains('http') ||
-        normalized.contains('www.') ||
-        normalized.contains('.png') ||
-        normalized.contains('.jpg') ||
-        normalized.contains('.jpeg') ||
-        normalized.contains('.webp')) {
-      return null;
-    }
-
-    if (normalized.contains('unpaid')) {
-      return null;
-    }
-
-    final looksLikePaidLabel =
-        normalized == 'paid' ||
-        normalized == 'paid internship' ||
-        normalized == 'paid role' ||
-        normalized == 'paid opportunity';
-    if (looksLikePaidLabel) {
-      return 'Paid';
-    }
-
-    final hasCompensationSignal = RegExp(
-      r'(\$|usd|eur|dzd|k\b|/month|per month|per hour|monthly|hourly|\d)',
-      caseSensitive: false,
-    ).hasMatch(value);
-
-    if (!hasCompensationSignal) {
-      return null;
-    }
-
-    if (value.length > 36) {
-      return null;
-    }
-
-    return value;
   }
 
   String? _workModeLabel(OpportunityModel opportunity) {
@@ -1412,7 +1316,6 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
       salaryMax: opportunity.salaryMax,
       salaryCurrency: opportunity.salaryCurrency,
       salaryPeriod: opportunity.salaryPeriod,
-      compensationText: opportunity.compensationText,
       isPaid: _effectiveIsPaid(opportunity),
       employmentType: opportunity.employmentType,
       workMode: _normalizedWorkMode(opportunity),
@@ -1424,12 +1327,6 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
     }
 
     final legacyItems = <String>[];
-    final compensation = _sanitizeCompensationText(
-      _extractCompensationFromText(opportunity),
-    );
-    if (compensation != null) {
-      legacyItems.add(compensation);
-    }
     final workMode = _workModeLabel(opportunity);
     if (workMode != null) {
       legacyItems.add(workMode);

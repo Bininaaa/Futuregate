@@ -432,7 +432,7 @@ class _AppliedCompactSummary extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Applied history',
+                      'Application pipeline',
                       style: GoogleFonts.poppins(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
@@ -441,7 +441,7 @@ class _AppliedCompactSummary extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      'Everything you submitted, in one simple list.',
+                      'Track each submission and see what deserves your next move.',
                       style: GoogleFonts.poppins(
                         fontSize: 11,
                         color: StudentOpportunityHubPalette.textSecondary,
