@@ -4,11 +4,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/opportunity_model.dart';
-import '../../models/user_model.dart';
 import '../../providers/application_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/cv_provider.dart';
-import '../../providers/notification_provider.dart';
 import '../../providers/opportunity_provider.dart';
 import '../../providers/saved_opportunity_provider.dart';
 import '../../services/application_service.dart';
@@ -17,10 +15,12 @@ import '../../utils/opportunity_dashboard_palette.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/app_shell_background.dart';
-import '../../widgets/profile_avatar.dart';
 import '../../widgets/shared/app_feedback.dart';
-import '../notifications_screen.dart';
+import '../../widgets/student/student_workspace_shell.dart';
+import 'applied_opportunities_screen.dart';
 import 'opportunity_detail_screen.dart';
+import 'profile_screen.dart';
+import 'saved_screen.dart';
 
 class SponsoredOpportunitiesScreen extends StatefulWidget {
   const SponsoredOpportunitiesScreen({super.key});
@@ -147,10 +147,24 @@ class _SponsoredOpportunitiesScreenState
     }
   }
 
-  void _openNotifications() {
+  void _openProfile() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => const NotificationsScreen()),
+      MaterialPageRoute(builder: (_) => const ProfileScreen()),
+    );
+  }
+
+  void _openSavedItems() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const SavedScreen()),
+    );
+  }
+
+  void _openAppliedItems() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const AppliedOpportunitiesScreen()),
     );
   }
 
@@ -833,7 +847,6 @@ class _SponsoredOpportunitiesScreenState
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
     final applicationProvider = context.watch<ApplicationProvider>();
-    final notificationProvider = context.watch<NotificationProvider>();
     final opportunityProvider = context.watch<OpportunityProvider>();
     final savedProvider = context.watch<SavedOpportunityProvider>();
     final mediaQuery = MediaQuery.of(context);
@@ -872,10 +885,17 @@ class _SponsoredOpportunitiesScreenState
         backgroundColor: Colors.transparent,
         body: Column(
           children: [
-            _SponsoredHeaderBar(
+            StudentWorkspaceUtilityHeader(
               user: authProvider.userModel,
-              unreadCount: notificationProvider.unreadCount,
-              onNotificationsPressed: _openNotifications,
+              title: 'Sponsored Programs',
+              onProfileTap: _openProfile,
+              onOpenSaved: _openSavedItems,
+              onOpenApplied: _openAppliedItems,
+              compact: isCompact,
+              backgroundColor: _SponsoredPalette.surface,
+              borderColor: _SponsoredPalette.border,
+              titleColor: _SponsoredPalette.textPrimary,
+              accentColor: _SponsoredPalette.accent,
             ),
             if (opportunityProvider.isLoading && allOpportunities.isNotEmpty)
               const LinearProgressIndicator(
@@ -1166,98 +1186,6 @@ class _SponsoredOpportunitiesScreenState
                         ],
                       ),
               ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _SponsoredHeaderBar extends StatelessWidget {
-  final UserModel? user;
-  final int unreadCount;
-  final VoidCallback onNotificationsPressed;
-
-  const _SponsoredHeaderBar({
-    required this.user,
-    required this.unreadCount,
-    required this.onNotificationsPressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      bottom: false,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
-        child: Row(
-          children: [
-            ProfileAvatar(user: user, radius: 19),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    user?.fullName ?? 'Student',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.poppins(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: _SponsoredPalette.textPrimary,
-                    ),
-                  ),
-                  Text(
-                    'Sponsored Programs',
-                    style: GoogleFonts.poppins(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w500,
-                      color: _SponsoredPalette.textSecondary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Stack(
-              children: [
-                Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: onNotificationsPressed,
-                    borderRadius: BorderRadius.circular(14),
-                    child: Ink(
-                      width: 38,
-                      height: 38,
-                      decoration: BoxDecoration(
-                        color: _SponsoredPalette.surface,
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(color: _SponsoredPalette.border),
-                      ),
-                      child: const Icon(
-                        Icons.notifications_outlined,
-                        color: _SponsoredPalette.textPrimary,
-                        size: 18,
-                      ),
-                    ),
-                  ),
-                ),
-                if (unreadCount > 0)
-                  Positioned(
-                    top: 4,
-                    right: 4,
-                    child: Container(
-                      width: 8,
-                      height: 8,
-                      decoration: const BoxDecoration(
-                        color: _SponsoredPalette.accent,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ),
-              ],
             ),
           ],
         ),

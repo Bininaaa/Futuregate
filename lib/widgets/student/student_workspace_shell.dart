@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../models/user_model.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
+import '../profile_avatar.dart';
 
 class StudentWorkspaceTopBar extends StatelessWidget {
   final String title;
@@ -219,6 +221,213 @@ class StudentWorkspaceActionButton extends StatelessWidget {
                     ),
                 ],
               ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class StudentWorkspaceUtilityHeader extends StatelessWidget {
+  final UserModel? user;
+  final String title;
+  final VoidCallback onProfileTap;
+  final VoidCallback onOpenSaved;
+  final VoidCallback onOpenApplied;
+  final bool compact;
+  final Color backgroundColor;
+  final Color borderColor;
+  final Color titleColor;
+  final Color accentColor;
+
+  const StudentWorkspaceUtilityHeader({
+    super.key,
+    required this.user,
+    required this.title,
+    required this.onProfileTap,
+    required this.onOpenSaved,
+    required this.onOpenApplied,
+    required this.compact,
+    required this.backgroundColor,
+    required this.borderColor,
+    required this.titleColor,
+    required this.accentColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final sectionPadding = EdgeInsets.fromLTRB(
+      compact ? 16 : 20,
+      compact ? 10 : 16,
+      compact ? 16 : 20,
+      compact ? 10 : 16,
+    );
+
+    return Container(
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        border: Border(
+          bottom: BorderSide(color: borderColor.withValues(alpha: 0.92)),
+        ),
+      ),
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: sectionPadding,
+          child: Row(
+            children: [
+              _StudentWorkspaceUtilityAvatar(
+                user: user,
+                title: title,
+                compact: compact,
+                accentColor: accentColor,
+                onTap: onProfileTap,
+              ),
+              SizedBox(width: compact ? 10 : 12),
+              Expanded(
+                child: Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.poppins(
+                    fontSize: compact ? 18 : 22,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: -0.2,
+                    color: titleColor,
+                  ),
+                ),
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _StudentWorkspaceUtilityIcon(
+                    icon: Icons.bookmark_outline_rounded,
+                    tooltip: 'Saved items',
+                    compact: compact,
+                    accentColor: accentColor,
+                    borderColor: borderColor,
+                    backgroundColor: backgroundColor,
+                    onTap: onOpenSaved,
+                  ),
+                  const SizedBox(width: 8),
+                  _StudentWorkspaceUtilityIcon(
+                    icon: Icons.assignment_turned_in_outlined,
+                    tooltip: 'Applied opportunities',
+                    compact: compact,
+                    accentColor: accentColor,
+                    borderColor: borderColor,
+                    backgroundColor: backgroundColor,
+                    onTap: onOpenApplied,
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _StudentWorkspaceUtilityAvatar extends StatelessWidget {
+  final UserModel? user;
+  final String title;
+  final bool compact;
+  final Color accentColor;
+  final VoidCallback onTap;
+
+  const _StudentWorkspaceUtilityAvatar({
+    required this.user,
+    required this.title,
+    required this.compact,
+    required this.accentColor,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final fallbackName = title.isEmpty ? 'S' : title[0].toUpperCase();
+
+    return Tooltip(
+      message: 'Profile',
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(999),
+          child: Ink(
+            padding: const EdgeInsets.all(2),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: accentColor.withValues(alpha: 0.22)),
+              boxShadow: [
+                BoxShadow(
+                  color: accentColor.withValues(alpha: 0.08),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: ProfileAvatar(
+              user: user,
+              radius: compact ? 15 : 18,
+              fallbackName: fallbackName,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _StudentWorkspaceUtilityIcon extends StatelessWidget {
+  final IconData icon;
+  final String tooltip;
+  final bool compact;
+  final Color accentColor;
+  final Color borderColor;
+  final Color backgroundColor;
+  final VoidCallback onTap;
+
+  const _StudentWorkspaceUtilityIcon({
+    required this.icon,
+    required this.tooltip,
+    required this.compact,
+    required this.accentColor,
+    required this.borderColor,
+    required this.backgroundColor,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final size = compact ? 40.0 : 44.0;
+    final radius = compact ? 14.0 : 16.0;
+    final resolvedBackground = Color.alphaBlend(
+      accentColor.withValues(alpha: 0.06),
+      backgroundColor,
+    );
+
+    return Tooltip(
+      message: tooltip,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(radius),
+          child: Ink(
+            width: size,
+            height: size,
+            decoration: BoxDecoration(
+              color: resolvedBackground,
+              borderRadius: BorderRadius.circular(radius),
+              border: Border.all(color: borderColor),
+            ),
+            child: Icon(
+              icon,
+              color: OpportunityDashboardPalette.textPrimary,
+              size: compact ? 18 : 20,
             ),
           ),
         ),

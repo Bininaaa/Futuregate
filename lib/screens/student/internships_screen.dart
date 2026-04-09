@@ -4,10 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/opportunity_model.dart';
-import '../../models/user_model.dart';
 import '../../providers/application_provider.dart';
 import '../../providers/auth_provider.dart';
-import '../../providers/notification_provider.dart';
 import '../../providers/opportunity_provider.dart';
 import '../../providers/saved_opportunity_provider.dart';
 import '../../utils/application_status.dart';
@@ -15,10 +13,12 @@ import '../../utils/opportunity_dashboard_palette.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/app_shell_background.dart';
-import '../../widgets/profile_avatar.dart';
 import '../../widgets/shared/app_feedback.dart';
-import '../notifications_screen.dart';
+import '../../widgets/student/student_workspace_shell.dart';
+import 'applied_opportunities_screen.dart';
 import 'opportunity_detail_screen.dart';
+import 'profile_screen.dart';
+import 'saved_screen.dart';
 
 class InternshipsScreen extends StatefulWidget {
   const InternshipsScreen({super.key});
@@ -121,10 +121,24 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
     await Future.wait(futures);
   }
 
-  void _openNotifications() {
+  void _openProfile() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => const NotificationsScreen()),
+      MaterialPageRoute(builder: (_) => const ProfileScreen()),
+    );
+  }
+
+  void _openSavedItems() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const SavedScreen()),
+    );
+  }
+
+  void _openAppliedItems() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const AppliedOpportunitiesScreen()),
     );
   }
 
@@ -642,7 +656,6 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
     final applicationProvider = context.watch<ApplicationProvider>();
-    final notificationProvider = context.watch<NotificationProvider>();
     final opportunityProvider = context.watch<OpportunityProvider>();
     final savedProvider = context.watch<SavedOpportunityProvider>();
     final mediaQuery = MediaQuery.of(context);
@@ -679,10 +692,17 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
         backgroundColor: Colors.transparent,
         body: Column(
           children: [
-            _InternshipsHeaderBar(
+            StudentWorkspaceUtilityHeader(
               user: authProvider.userModel,
-              unreadCount: notificationProvider.unreadCount,
-              onNotificationsPressed: _openNotifications,
+              title: 'Internships',
+              onProfileTap: _openProfile,
+              onOpenSaved: _openSavedItems,
+              onOpenApplied: _openAppliedItems,
+              compact: isCompact,
+              backgroundColor: _InternshipVisualPalette.surface,
+              borderColor: _InternshipVisualPalette.border,
+              titleColor: _InternshipVisualPalette.deepTeal,
+              accentColor: _InternshipVisualPalette.deepTeal,
             ),
             if (opportunityProvider.isLoading && liveInternships.isNotEmpty)
               const LinearProgressIndicator(
@@ -905,132 +925,6 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _InternshipsHeaderBar extends StatelessWidget {
-  final UserModel? user;
-  final int unreadCount;
-  final VoidCallback onNotificationsPressed;
-
-  const _InternshipsHeaderBar({
-    required this.user,
-    required this.unreadCount,
-    required this.onNotificationsPressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        color: _InternshipVisualPalette.surface,
-        border: Border(
-          bottom: BorderSide(color: _InternshipVisualPalette.border),
-        ),
-      ),
-      child: SafeArea(
-        bottom: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(2),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: _InternshipVisualPalette.mint.withValues(
-                      alpha: 0.20,
-                    ),
-                  ),
-                ),
-                child: ProfileAvatar(user: user, radius: 14, fallbackName: 'I'),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  'Internships',
-                  style: GoogleFonts.poppins(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: _InternshipVisualPalette.deepTeal,
-                  ),
-                ),
-              ),
-              _NotificationBellButton(
-                unreadCount: unreadCount,
-                onTap: onNotificationsPressed,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _NotificationBellButton extends StatelessWidget {
-  final int unreadCount;
-  final VoidCallback onTap;
-
-  const _NotificationBellButton({
-    required this.unreadCount,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Ink(
-          width: 42,
-          height: 42,
-          decoration: BoxDecoration(
-            color: _InternshipVisualPalette.surface,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: _InternshipVisualPalette.border),
-          ),
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              const Icon(
-                Icons.notifications_none_rounded,
-                color: _InternshipVisualPalette.textPrimary,
-                size: 21,
-              ),
-              if (unreadCount > 0)
-                Positioned(
-                  top: 9,
-                  right: 9,
-                  child: Container(
-                    constraints: const BoxConstraints(
-                      minWidth: 16,
-                      minHeight: 16,
-                    ),
-                    padding: const EdgeInsets.symmetric(horizontal: 3),
-                    decoration: const BoxDecoration(
-                      color: OpportunityDashboardPalette.error,
-                      shape: BoxShape.circle,
-                    ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      unreadCount > 9 ? '9+' : '$unreadCount',
-                      style: GoogleFonts.poppins(
-                        fontSize: 8,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-            ],
-          ),
         ),
       ),
     );

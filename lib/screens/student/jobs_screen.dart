@@ -4,10 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/opportunity_model.dart';
-import '../../models/user_model.dart';
 import '../../providers/application_provider.dart';
 import '../../providers/auth_provider.dart';
-import '../../providers/notification_provider.dart';
 import '../../providers/opportunity_provider.dart';
 import '../../providers/saved_opportunity_provider.dart';
 import '../../utils/application_status.dart';
@@ -15,10 +13,12 @@ import '../../utils/opportunity_dashboard_palette.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/app_shell_background.dart';
-import '../../widgets/profile_avatar.dart';
 import '../../widgets/shared/app_feedback.dart';
-import '../notifications_screen.dart';
+import '../../widgets/student/student_workspace_shell.dart';
+import 'applied_opportunities_screen.dart';
 import 'opportunity_detail_screen.dart';
+import 'profile_screen.dart';
+import 'saved_screen.dart';
 
 class JobsScreen extends StatefulWidget {
   const JobsScreen({super.key});
@@ -202,10 +202,24 @@ class _JobsScreenState extends State<JobsScreen> {
     await Future.wait(futures);
   }
 
-  void _openNotifications() {
+  void _openSavedItems() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => const NotificationsScreen()),
+      MaterialPageRoute(builder: (_) => const SavedScreen()),
+    );
+  }
+
+  void _openAppliedItems() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const AppliedOpportunitiesScreen()),
+    );
+  }
+
+  void _openProfile() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const ProfileScreen()),
     );
   }
 
@@ -969,7 +983,6 @@ class _JobsScreenState extends State<JobsScreen> {
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
     final applicationProvider = context.watch<ApplicationProvider>();
-    final notificationProvider = context.watch<NotificationProvider>();
     final opportunityProvider = context.watch<OpportunityProvider>();
     final savedProvider = context.watch<SavedOpportunityProvider>();
     final mediaQuery = MediaQuery.of(context);
@@ -1063,11 +1076,19 @@ class _JobsScreenState extends State<JobsScreen> {
             keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             slivers: [
               SliverToBoxAdapter(
-                child: _JobsHeaderBar(
+                child: StudentWorkspaceUtilityHeader(
                   user: authProvider.userModel,
-                  unreadCount: notificationProvider.unreadCount,
-                  onNotificationsPressed: _openNotifications,
+                  title: 'Jobs',
+                  onProfileTap: _openProfile,
+                  onOpenSaved: _openSavedItems,
+                  onOpenApplied: _openAppliedItems,
                   compact: isCompact,
+                  backgroundColor: OpportunityDashboardPalette.surface,
+                  borderColor: OpportunityDashboardPalette.border.withValues(
+                    alpha: 0.75,
+                  ),
+                  titleColor: OpportunityDashboardPalette.textPrimary,
+                  accentColor: OpportunityDashboardPalette.primary,
                 ),
               ),
               if (showLoadingBar)
@@ -1828,148 +1849,6 @@ _FeaturedJobVariantStyle _featuredStyleFor(int index) {
   ];
 
   return styles[index % styles.length];
-}
-
-class _JobsHeaderBar extends StatelessWidget {
-  final UserModel? user;
-  final int unreadCount;
-  final VoidCallback onNotificationsPressed;
-  final bool compact;
-
-  const _JobsHeaderBar({
-    required this.user,
-    required this.unreadCount,
-    required this.onNotificationsPressed,
-    required this.compact,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.fromLTRB(
-        compact ? 16 : 20,
-        compact ? 10 : 16,
-        compact ? 16 : 20,
-        compact ? 10 : 16,
-      ),
-      decoration: BoxDecoration(
-        color: OpportunityDashboardPalette.surface,
-        border: Border(
-          bottom: BorderSide(
-            color: OpportunityDashboardPalette.border.withValues(alpha: 0.75),
-          ),
-        ),
-      ),
-      child: SafeArea(
-        bottom: false,
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(2),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: OpportunityDashboardPalette.primary.withValues(
-                    alpha: 0.16,
-                  ),
-                ),
-              ),
-              child: ProfileAvatar(
-                user: user,
-                radius: compact ? 15 : 18,
-                fallbackName: 'J',
-              ),
-            ),
-            SizedBox(width: compact ? 8 : 12),
-            Expanded(
-              child: Text(
-                'Jobs',
-                style: GoogleFonts.poppins(
-                  fontSize: compact ? 18 : 22,
-                  fontWeight: FontWeight.w700,
-                  color: OpportunityDashboardPalette.textPrimary,
-                ),
-              ),
-            ),
-            _NotificationBellButton(
-              unreadCount: unreadCount,
-              onTap: onNotificationsPressed,
-              compact: compact,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _NotificationBellButton extends StatelessWidget {
-  final int unreadCount;
-  final VoidCallback onTap;
-  final bool compact;
-
-  const _NotificationBellButton({
-    required this.unreadCount,
-    required this.onTap,
-    required this.compact,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final buttonSize = compact ? 40.0 : 46.0;
-
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(compact ? 14 : 16),
-        child: Ink(
-          width: buttonSize,
-          height: buttonSize,
-          decoration: BoxDecoration(
-            color: OpportunityDashboardPalette.surface,
-            borderRadius: BorderRadius.circular(compact ? 14 : 16),
-            border: Border.all(color: OpportunityDashboardPalette.border),
-          ),
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              Icon(
-                Icons.notifications_none_rounded,
-                color: OpportunityDashboardPalette.textPrimary,
-                size: compact ? 19 : 22,
-              ),
-              if (unreadCount > 0)
-                Positioned(
-                  top: compact ? 8 : 10,
-                  right: compact ? 8 : 10,
-                  child: Container(
-                    constraints: BoxConstraints(
-                      minWidth: compact ? 16 : 18,
-                      minHeight: compact ? 16 : 18,
-                    ),
-                    padding: EdgeInsets.symmetric(horizontal: compact ? 3 : 4),
-                    decoration: const BoxDecoration(
-                      color: OpportunityDashboardPalette.error,
-                      shape: BoxShape.circle,
-                    ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      unreadCount > 9 ? '9+' : '$unreadCount',
-                      style: GoogleFonts.poppins(
-                        fontSize: compact ? 8 : 9,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 }
 
 class _JobsSearchBar extends StatelessWidget {
