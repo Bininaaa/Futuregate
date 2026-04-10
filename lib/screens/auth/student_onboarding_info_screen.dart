@@ -71,6 +71,7 @@ class _StudentOnboardingInfoScreenState
   }
 
   Future<void> _submit() async {
+    FocusScope.of(context).unfocus();
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -113,9 +114,9 @@ class _StudentOnboardingInfoScreenState
     final user = authProvider.userModel;
     final academicLevel = (user?.academicLevel ?? '').trim();
     final isDoctorat = academicLevel == 'doctorat';
-    final levelOption = authLevelOption(
+    final levelLabel = authLevelOption(
       academicLevel.isEmpty ? 'bac' : academicLevel,
-    );
+    ).label;
     final email = (user?.email ?? '').trim();
 
     return AuthFlowScaffold(
@@ -124,223 +125,482 @@ class _StudentOnboardingInfoScreenState
         onPressed: authProvider.isLoading ? null : authProvider.logout,
         icon: const Icon(Icons.logout_rounded),
       ),
-      child: AuthSplitLayout(
-        hero: AuthHeroPanel(
-          icon: Icons.badge_rounded,
-          eyebrow: 'Profile step',
-          title: 'Add the student details that personalize your experience.',
-          subtitle:
-              'We already created your account with Google. This short setup helps the app match you with stronger recommendations from day one.',
-          chips: <String>[
-            levelOption.label,
-            'Google sign-in',
-            'Editable later',
-          ],
-          metrics: const <AuthHeroMetric>[
-            AuthHeroMetric(value: '2/2', label: 'Setup progress'),
-            AuthHeroMetric(value: 'Student', label: 'Account role'),
-          ],
-          features: const <AuthFeaturePoint>[
-            AuthFeaturePoint(
-              title: 'Better matching',
-              subtitle:
-                  'University and field data improve what shows up in Discover and Scholarships.',
-              icon: Icons.tune_rounded,
-              color: AuthFlowPalette.orange,
-            ),
-            AuthFeaturePoint(
-              title: 'Cleaner profile',
-              subtitle:
-                  'Your name, location, and bio shape how your student profile appears across the app.',
-              icon: Icons.person_search_rounded,
-              color: Color(0xFF14B8A6),
-            ),
-          ],
-        ),
-        content: AuthPanelCard(
-          padding: const EdgeInsets.all(24),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                const AuthSectionHeading(
-                  title: 'Finish your student setup',
-                  subtitle:
-                      'Complete the essentials now. You can refine everything later from Edit Profile.',
-                ),
-                const SizedBox(height: 18),
-                const AuthProgressStrip(
-                  step: 2,
-                  total: 2,
-                  label: 'Final details before home',
-                ),
-                const SizedBox(height: 18),
-                if (email.isNotEmpty) ...<Widget>[
-                  AuthReadOnlyTile(
-                    label: 'Google account email',
-                    value: email,
-                    icon: Icons.alternate_email_rounded,
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 620),
+          child: AuthPanelCard(
+            padding: const EdgeInsets.all(28),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  const AuthCompactHeader(
+                    icon: Icons.badge_rounded,
+                    title: 'Finish profile',
+                    subtitle: 'Add your student details.',
+                    stickers: <AuthStickerSpec>[
+                      AuthStickerSpec(
+                        icon: Icons.school_rounded,
+                        color: AuthFlowPalette.orange,
+                      ),
+                      AuthStickerSpec(
+                        icon: Icons.person_rounded,
+                        color: Color(0xFF14B8A6),
+                      ),
+                      AuthStickerSpec(
+                        icon: Icons.check_circle_rounded,
+                        color: Color(0xFF3B22F6),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 16),
-                ],
-                AppInlineMessage(
-                  type: AppFeedbackType.info,
-                  title: 'Quick note',
-                  message:
-                      'Only your full name, university, and field of study are required here. The rest can stay lightweight for now.',
-                  accentColor: AuthFlowPalette.orange,
-                  compact: true,
-                ),
-                const SizedBox(height: 18),
-                AuthTextField(
-                  controller: _fullNameController,
-                  label: 'Full Name',
-                  hint: 'How you want your name to appear',
-                  icon: Icons.badge_outlined,
-                  validator: Validators.validateFullName,
-                  textInputAction: TextInputAction.next,
-                ),
-                const SizedBox(height: 14),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Expanded(
-                      child: AuthTextField(
-                        controller: _universityController,
-                        label: 'University',
-                        hint: 'Your university or institute',
-                        icon: Icons.school_outlined,
-                        validator: (value) =>
-                            _requiredValue('University', value),
-                        textInputAction: TextInputAction.next,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: AuthTextField(
-                        controller: _fieldOfStudyController,
-                        label: 'Field of Study',
-                        hint: 'Computer science, law, biology...',
-                        icon: Icons.auto_stories_outlined,
-                        validator: (value) =>
-                            _requiredValue('Field of study', value),
-                        textInputAction: TextInputAction.next,
-                      ),
-                    ),
+                  const SizedBox(height: 22),
+                  Wrap(
+                    alignment: WrapAlignment.center,
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: <Widget>[
+                      const _SetupBadge(label: 'Step 2 of 2'),
+                      _SetupBadge(label: levelLabel),
+                      if (email.isNotEmpty) const _SetupBadge(label: 'Google'),
+                    ],
+                  ),
+                  if (email.isNotEmpty || levelLabel.isNotEmpty) ...<Widget>[
+                    const SizedBox(height: 18),
+                    _ProfileMetaSection(email: email, levelLabel: levelLabel),
                   ],
-                ),
-                const SizedBox(height: 14),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Expanded(
-                      child: AuthTextField(
-                        controller: _phoneController,
-                        label: 'Phone',
-                        hint: '+213 ...',
-                        icon: Icons.phone_outlined,
-                        keyboardType: TextInputType.phone,
-                        textInputAction: TextInputAction.next,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: AuthTextField(
-                        controller: _locationController,
-                        label: 'Location',
-                        hint: 'City or region',
-                        icon: Icons.location_on_outlined,
-                        textInputAction: TextInputAction.next,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 14),
-                AuthTextField(
-                  controller: _bioController,
-                  label: 'Bio',
-                  hint: 'A short line about your interests, goals, or focus.',
-                  icon: Icons.notes_rounded,
-                  minLines: 3,
-                  maxLines: 5,
-                  textInputAction: TextInputAction.newline,
-                ),
-                if (isDoctorat) ...<Widget>[
                   const SizedBox(height: 18),
-                  AppFormSectionCard(
-                    theme: authFlowTheme.copyWithAccent(AuthFlowPalette.orange),
-                    title: 'Doctorat details',
-                    subtitle:
-                        'Optional research details you already support in the student profile.',
-                    child: Column(
-                      children: <Widget>[
-                        AuthTextField(
-                          controller: _researchTopicController,
-                          label: 'Research Topic',
-                          hint: 'Your thesis or research direction',
-                          icon: Icons.topic_outlined,
-                          textInputAction: TextInputAction.next,
-                        ),
-                        const SizedBox(height: 12),
-                        Row(
+                  AuthTextField(
+                    controller: _fullNameController,
+                    label: 'Full Name',
+                    hint: 'How your name should appear',
+                    icon: Icons.badge_outlined,
+                    validator: Validators.validateFullName,
+                    textInputAction: TextInputAction.next,
+                    autofillHints: const <String>[AutofillHints.name],
+                  ),
+                  const SizedBox(height: 14),
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final isWide = constraints.maxWidth >= 520;
+
+                      if (isWide) {
+                        return Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            Expanded(
-                              child: AuthTextField(
-                                controller: _laboratoryController,
-                                label: 'Laboratory',
-                                hint: 'Research lab or team',
-                                icon: Icons.biotech_outlined,
-                                textInputAction: TextInputAction.next,
-                              ),
-                            ),
+                            Expanded(child: _buildUniversityField()),
                             const SizedBox(width: 12),
-                            Expanded(
-                              child: AuthTextField(
-                                controller: _researchDomainController,
-                                label: 'Research Domain',
-                                hint: 'AI, materials, finance...',
-                                icon: Icons.category_outlined,
-                                textInputAction: TextInputAction.next,
-                              ),
-                            ),
+                            Expanded(child: _buildFieldOfStudyField()),
                           ],
-                        ),
-                        const SizedBox(height: 12),
-                        AuthTextField(
-                          controller: _supervisorController,
-                          label: 'Supervisor',
-                          hint: 'Supervisor name',
-                          icon: Icons.person_outline_rounded,
-                          textInputAction: TextInputAction.done,
-                        ),
-                      ],
+                        );
+                      }
+
+                      return Column(
+                        children: <Widget>[
+                          _buildUniversityField(),
+                          const SizedBox(height: 14),
+                          _buildFieldOfStudyField(),
+                        ],
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 14),
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final isWide = constraints.maxWidth >= 520;
+
+                      if (isWide) {
+                        return Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Expanded(child: _buildPhoneField()),
+                            const SizedBox(width: 12),
+                            Expanded(child: _buildLocationField()),
+                          ],
+                        );
+                      }
+
+                      return Column(
+                        children: <Widget>[
+                          _buildPhoneField(),
+                          const SizedBox(height: 14),
+                          _buildLocationField(),
+                        ],
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 14),
+                  _AboutYouField(controller: _bioController),
+                  if (isDoctorat) ...<Widget>[
+                    const SizedBox(height: 16),
+                    _ResearchCard(
+                      researchTopicController: _researchTopicController,
+                      laboratoryController: _laboratoryController,
+                      supervisorController: _supervisorController,
+                      researchDomainController: _researchDomainController,
                     ),
+                  ],
+                  const SizedBox(height: 22),
+                  AppPrimaryButton(
+                    theme: authFlowTheme,
+                    label: 'Finish',
+                    icon: Icons.check_circle_outline_rounded,
+                    isBusy: authProvider.isLoading,
+                    onPressed: authProvider.isLoading ? null : _submit,
+                  ),
+                  const SizedBox(height: 10),
+                  AppSecondaryButton(
+                    theme: authFlowTheme,
+                    label: 'Sign Out',
+                    icon: Icons.logout_rounded,
+                    onPressed: authProvider.isLoading
+                        ? null
+                        : authProvider.logout,
                   ),
                 ],
-                const SizedBox(height: 22),
-                AppPrimaryButton(
-                  theme: authFlowTheme,
-                  label: 'Finish Setup',
-                  icon: Icons.check_circle_outline_rounded,
-                  isBusy: authProvider.isLoading,
-                  onPressed: authProvider.isLoading ? null : _submit,
-                ),
-                const SizedBox(height: 10),
-                AppSecondaryButton(
-                  theme: authFlowTheme,
-                  label: 'Sign Out',
-                  icon: Icons.logout_rounded,
-                  onPressed: authProvider.isLoading
-                      ? null
-                      : authProvider.logout,
-                ),
-              ],
+              ),
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildUniversityField() {
+    return AuthTextField(
+      controller: _universityController,
+      label: 'University',
+      hint: 'Your university',
+      icon: Icons.school_outlined,
+      validator: (value) => _requiredValue('University', value),
+      textInputAction: TextInputAction.next,
+    );
+  }
+
+  Widget _buildFieldOfStudyField() {
+    return AuthTextField(
+      controller: _fieldOfStudyController,
+      label: 'Field of Study',
+      hint: 'Computer science',
+      icon: Icons.auto_stories_outlined,
+      validator: (value) => _requiredValue('Field of study', value),
+      textInputAction: TextInputAction.next,
+    );
+  }
+
+  Widget _buildPhoneField() {
+    return AuthTextField(
+      controller: _phoneController,
+      label: 'Phone',
+      hint: '+213 ...',
+      icon: Icons.phone_outlined,
+      keyboardType: TextInputType.phone,
+      textInputAction: TextInputAction.next,
+      autofillHints: const <String>[AutofillHints.telephoneNumber],
+    );
+  }
+
+  Widget _buildLocationField() {
+    return AuthTextField(
+      controller: _locationController,
+      label: 'Location',
+      hint: 'City',
+      icon: Icons.location_on_outlined,
+      textInputAction: TextInputAction.next,
+      autofillHints: const <String>[AutofillHints.addressCity],
+    );
+  }
+}
+
+class _SetupBadge extends StatelessWidget {
+  final String label;
+
+  const _SetupBadge({required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+      decoration: BoxDecoration(
+        color: authFlowTheme.surfaceMuted,
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: authFlowTheme.border),
+      ),
+      child: Text(
+        label,
+        style: authFlowTheme.label(
+          size: 10.9,
+          color: authFlowTheme.textPrimary,
+        ),
+      ),
+    );
+  }
+}
+
+class _ProfileMetaSection extends StatelessWidget {
+  final String email;
+  final String levelLabel;
+
+  const _ProfileMetaSection({required this.email, required this.levelLabel});
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final showTwoColumns = email.isNotEmpty && constraints.maxWidth >= 520;
+
+        if (showTwoColumns) {
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Expanded(
+                child: AuthReadOnlyTile(
+                  label: 'Email',
+                  value: email,
+                  icon: Icons.alternate_email_rounded,
+                  maxLines: 1,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: AuthReadOnlyTile(
+                  label: 'Level',
+                  value: levelLabel,
+                  icon: Icons.school_rounded,
+                ),
+              ),
+            ],
+          );
+        }
+
+        return Column(
+          children: <Widget>[
+            if (email.isNotEmpty) ...<Widget>[
+              AuthReadOnlyTile(
+                label: 'Email',
+                value: email,
+                icon: Icons.alternate_email_rounded,
+                maxLines: 1,
+              ),
+              const SizedBox(height: 12),
+            ],
+            AuthReadOnlyTile(
+              label: 'Level',
+              value: levelLabel,
+              icon: Icons.school_rounded,
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _ResearchCard extends StatelessWidget {
+  final TextEditingController researchTopicController;
+  final TextEditingController laboratoryController;
+  final TextEditingController supervisorController;
+  final TextEditingController researchDomainController;
+
+  const _ResearchCard({
+    required this.researchTopicController,
+    required this.laboratoryController,
+    required this.supervisorController,
+    required this.researchDomainController,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AuthFlowPalette.orangeSoft.withValues(alpha: 0.55),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: AuthFlowPalette.orange.withValues(alpha: 0.2),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Row(
+            children: <Widget>[
+              Text(
+                'Research',
+                style: authFlowTheme.section(
+                  size: 14.3,
+                  color: authFlowTheme.textPrimary,
+                  weight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.7),
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: Text(
+                  'Optional',
+                  style: authFlowTheme.label(
+                    size: 10.7,
+                    color: AuthFlowPalette.orange,
+                    weight: FontWeight.w800,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          AuthTextField(
+            controller: researchTopicController,
+            label: 'Research Topic',
+            hint: 'Your topic',
+            icon: Icons.topic_outlined,
+            textInputAction: TextInputAction.next,
+          ),
+          const SizedBox(height: 12),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final isWide = constraints.maxWidth >= 520;
+
+              if (isWide) {
+                return Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Expanded(
+                      child: AuthTextField(
+                        controller: laboratoryController,
+                        label: 'Laboratory',
+                        hint: 'Lab name',
+                        icon: Icons.biotech_outlined,
+                        textInputAction: TextInputAction.next,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: AuthTextField(
+                        controller: researchDomainController,
+                        label: 'Research Domain',
+                        hint: 'AI, finance...',
+                        icon: Icons.category_outlined,
+                        textInputAction: TextInputAction.next,
+                      ),
+                    ),
+                  ],
+                );
+              }
+
+              return Column(
+                children: <Widget>[
+                  AuthTextField(
+                    controller: laboratoryController,
+                    label: 'Laboratory',
+                    hint: 'Lab name',
+                    icon: Icons.biotech_outlined,
+                    textInputAction: TextInputAction.next,
+                  ),
+                  const SizedBox(height: 12),
+                  AuthTextField(
+                    controller: researchDomainController,
+                    label: 'Research Domain',
+                    hint: 'AI, finance...',
+                    icon: Icons.category_outlined,
+                    textInputAction: TextInputAction.next,
+                  ),
+                ],
+              );
+            },
+          ),
+          const SizedBox(height: 12),
+          AuthTextField(
+            controller: supervisorController,
+            label: 'Supervisor',
+            hint: 'Supervisor name',
+            icon: Icons.person_outline_rounded,
+            textInputAction: TextInputAction.done,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AboutYouField extends StatelessWidget {
+  final TextEditingController controller;
+
+  const _AboutYouField({required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Row(
+          children: <Widget>[
+            Container(
+              width: 34,
+              height: 34,
+              decoration: BoxDecoration(
+                color: authFlowTheme.accentSoft,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                Icons.notes_rounded,
+                size: 18,
+                color: authFlowTheme.accent,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Text(
+              'About You',
+              style: authFlowTheme.label(
+                size: 12.1,
+                color: authFlowTheme.textPrimary,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: controller,
+          minLines: 3,
+          maxLines: 4,
+          keyboardType: TextInputType.multiline,
+          textInputAction: TextInputAction.newline,
+          textAlignVertical: TextAlignVertical.top,
+          style: authFlowTheme.body(
+            size: 13.4,
+            color: authFlowTheme.textPrimary,
+            weight: FontWeight.w600,
+          ),
+          decoration: InputDecoration(
+            hintText: 'Short intro',
+            hintStyle: authFlowTheme.body(
+              size: 12.6,
+              color: authFlowTheme.textMuted,
+            ),
+            filled: true,
+            fillColor: authFlowTheme.surfaceMuted,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 18,
+              vertical: 16,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(20),
+              borderSide: BorderSide(color: authFlowTheme.border),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(20),
+              borderSide: BorderSide(color: authFlowTheme.border),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(20),
+              borderSide: BorderSide(color: authFlowTheme.accent, width: 1.4),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

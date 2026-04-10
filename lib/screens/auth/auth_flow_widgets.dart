@@ -1179,12 +1179,14 @@ class AuthReadOnlyTile extends StatelessWidget {
   final String label;
   final String value;
   final IconData icon;
+  final int maxLines;
 
   const AuthReadOnlyTile({
     super.key,
     required this.label,
     required this.value,
     required this.icon,
+    this.maxLines = 1,
   });
 
   @override
@@ -1222,6 +1224,9 @@ class AuthReadOnlyTile extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   value,
+                  maxLines: maxLines,
+                  overflow: TextOverflow.ellipsis,
+                  softWrap: false,
                   style: authFlowTheme.body(
                     size: 13,
                     color: authFlowTheme.textPrimary,

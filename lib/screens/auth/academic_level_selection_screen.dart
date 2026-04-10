@@ -17,14 +17,34 @@ class AcademicLevelSelectionScreen extends StatefulWidget {
 class _AcademicLevelSelectionScreenState
     extends State<AcademicLevelSelectionScreen> {
   String? _selectedLevel;
+  bool _seededInitialValue = false;
 
-  Future<void> _continue() async {
-    if (_selectedLevel == null) {
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_seededInitialValue) {
       return;
     }
 
+    final currentLevel =
+        context.read<AuthProvider>().userModel?.academicLevel?.trim() ?? '';
+    if (currentLevel.isNotEmpty) {
+      _selectedLevel = currentLevel;
+    }
+
+    _seededInitialValue = true;
+  }
+
+  Future<void> _continue() async {
+    final selectedLevel = _selectedLevel;
+    if (selectedLevel == null) {
+      return;
+    }
+
+    FocusScope.of(context).unfocus();
+
     final authProvider = context.read<AuthProvider>();
-    final error = await authProvider.updateAcademicLevel(_selectedLevel!);
+    final error = await authProvider.updateAcademicLevel(selectedLevel);
 
     if (!mounted || error == null) {
       return;
@@ -42,6 +62,9 @@ class _AcademicLevelSelectionScreenState
     final authProvider = context.watch<AuthProvider>();
     final needsProfileStep =
         authProvider.userModel?.needsStudentOnboarding ?? false;
+    final selectedLabel = _selectedLevel == null
+        ? null
+        : authAcademicLevelLabel(_selectedLevel!);
 
     return AuthFlowScaffold(
       trailing: IconButton(
@@ -50,69 +73,54 @@ class _AcademicLevelSelectionScreenState
         icon: const Icon(Icons.logout_rounded),
       ),
       child: Center(
-        child: AuthSplitLayout(
-          hero: AuthHeroPanel(
-            icon: Icons.school_rounded,
-            eyebrow: 'Level setup',
-            title:
-                'Choose the academic level that should guide your student experience.',
-            subtitle:
-                'This step shapes discovery, profile context, and how the app tunes recommendations around your studies.',
-            chips: const <String>[
-              'Personalized feed',
-              'Student profile',
-              'Discover relevance',
-            ],
-            metrics: <AuthHeroMetric>[
-              AuthHeroMetric(
-                value: needsProfileStep ? '1/2' : 'Final',
-                label: needsProfileStep ? 'Setup progress' : 'Setup stage',
-              ),
-            ],
-            features: const <AuthFeaturePoint>[
-              AuthFeaturePoint(
-                title: 'Better recommendations',
-                subtitle:
-                    'Your level helps the app emphasize what feels realistic and useful for your current stage.',
-                icon: Icons.track_changes_rounded,
-                color: AuthFlowPalette.orange,
-              ),
-            ],
-          ),
-          content: AuthPanelCard(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 580),
+          child: AuthPanelCard(
+            padding: const EdgeInsets.all(28),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                const AuthSectionHeading(
-                  title: 'Select academic level',
-                  subtitle:
-                      'You can update it later, but getting it right now makes the student side of the app much sharper.',
+                const AuthCompactHeader(
+                  icon: Icons.school_rounded,
+                  title: 'Choose level',
+                  subtitle: 'Select your academic level.',
+                  stickers: <AuthStickerSpec>[
+                    AuthStickerSpec(
+                      icon: Icons.menu_book_rounded,
+                      color: AuthFlowPalette.orange,
+                    ),
+                    AuthStickerSpec(
+                      icon: Icons.auto_awesome_rounded,
+                      color: Color(0xFF14B8A6),
+                    ),
+                    AuthStickerSpec(
+                      icon: Icons.workspace_premium_rounded,
+                      color: Color(0xFF3B22F6),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 18),
-                AuthProgressStrip(
-                  step: 1,
-                  total: needsProfileStep ? 2 : 1,
-                  label: needsProfileStep
-                      ? 'Level first, profile next'
-                      : 'Last setup step',
+                const SizedBox(height: 22),
+                Wrap(
+                  alignment: WrapAlignment.center,
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: <Widget>[
+                    _SetupBadge(label: 'Step 1 of 2'),
+                    if (needsProfileStep)
+                      const _SetupBadge(label: 'Profile next'),
+                    if (selectedLabel != null)
+                      _SetupBadge(label: selectedLabel),
+                  ],
                 ),
-                if (needsProfileStep) ...<Widget>[
-                  const SizedBox(height: 14),
-                  AppInlineMessage(
-                    type: AppFeedbackType.info,
-                    title: 'Next step',
-                    message:
-                        'After choosing your level, you will land on a short page to fill in your student information.',
-                    compact: true,
-                    accentColor: AuthFlowPalette.orange,
-                  ),
-                ],
-                const SizedBox(height: 18),
-                _buildLevelCards(),
+                const SizedBox(height: 22),
+                _LevelPicker(
+                  selectedLevel: _selectedLevel,
+                  onSelected: (value) => setState(() => _selectedLevel = value),
+                ),
                 const SizedBox(height: 22),
                 AppPrimaryButton(
                   theme: authFlowTheme,
-                  label: needsProfileStep ? 'Continue to Profile' : 'Continue',
+                  label: 'Continue',
                   icon: Icons.arrow_forward_rounded,
                   isBusy: authProvider.isLoading,
                   onPressed: _selectedLevel == null || authProvider.isLoading
@@ -135,126 +143,152 @@ class _AcademicLevelSelectionScreenState
       ),
     );
   }
+}
 
-  Widget _buildLevelCards() {
-    return Column(
-      children: authAcademicLevels
-          .map((level) {
-            final isSelected = _selectedLevel == level.value;
+class _SetupBadge extends StatelessWidget {
+  final String label;
 
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: GestureDetector(
-                onTap: () => setState(() => _selectedLevel = level.value),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(18),
-                  decoration: BoxDecoration(
-                    color: isSelected
-                        ? authFlowTheme.accentSoft.withValues(alpha: 0.78)
-                        : Colors.white.withValues(alpha: 0.92),
-                    borderRadius: BorderRadius.circular(24),
-                    border: Border.all(
-                      color: isSelected
-                          ? authFlowTheme.accent
-                          : authFlowTheme.border,
-                      width: isSelected ? 1.5 : 1,
+  const _SetupBadge({required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+      decoration: BoxDecoration(
+        color: authFlowTheme.surfaceMuted,
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: authFlowTheme.border),
+      ),
+      child: Text(
+        label,
+        style: authFlowTheme.label(
+          size: 10.9,
+          color: authFlowTheme.textPrimary,
+        ),
+      ),
+    );
+  }
+}
+
+class _LevelPicker extends StatelessWidget {
+  final String? selectedLevel;
+  final ValueChanged<String> onSelected;
+
+  const _LevelPicker({required this.selectedLevel, required this.onSelected});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: authFlowTheme.surface.withValues(alpha: 0.78),
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: authFlowTheme.border),
+      ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final isWide = constraints.maxWidth >= 490;
+
+          return GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: authAcademicLevels.length,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: isWide ? 2 : 1,
+              mainAxisSpacing: 10,
+              crossAxisSpacing: 10,
+              childAspectRatio: isWide ? 2.15 : 3.1,
+            ),
+            itemBuilder: (context, index) {
+              final option = authAcademicLevels[index];
+              final isSelected = selectedLevel == option.value;
+              final accent = _levelAccent(option.value);
+
+              return Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(20),
+                  onTap: () => onSelected(option.value),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 180),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 12,
                     ),
-                    boxShadow: isSelected
-                        ? <BoxShadow>[
-                            BoxShadow(
-                              color: authFlowTheme.accent.withValues(
-                                alpha: 0.14,
-                              ),
-                              blurRadius: 20,
-                              offset: const Offset(0, 14),
-                            ),
-                          ]
-                        : <BoxShadow>[
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.04),
-                              blurRadius: 14,
-                              offset: const Offset(0, 8),
-                            ),
-                          ],
-                  ),
-                  child: Row(
-                    children: <Widget>[
-                      Container(
-                        width: 46,
-                        height: 46,
-                        decoration: BoxDecoration(
-                          color: isSelected
-                              ? authFlowTheme.accent.withValues(alpha: 0.12)
-                              : authFlowTheme.surfaceMuted,
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        child: Icon(
-                          level.icon,
-                          size: 24,
-                          color: isSelected
-                              ? authFlowTheme.accent
-                              : authFlowTheme.textMuted,
-                        ),
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? accent.withValues(alpha: 0.1)
+                          : authFlowTheme.surfaceMuted,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: isSelected ? accent : authFlowTheme.border,
+                        width: isSelected ? 1.5 : 1,
                       ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              level.label,
-                              style: authFlowTheme.section(
-                                size: 15.3,
-                                weight: FontWeight.w700,
-                                color: authFlowTheme.textPrimary,
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              level.description,
-                              style: authFlowTheme.body(
-                                size: 11.8,
-                                color: authFlowTheme.textSecondary,
-                              ),
-                            ),
-                          ],
+                    ),
+                    child: Row(
+                      children: <Widget>[
+                        Container(
+                          width: 38,
+                          height: 38,
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? accent.withValues(alpha: 0.14)
+                                : Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Icon(
+                            option.icon,
+                            color: isSelected
+                                ? accent
+                                : authFlowTheme.textMuted,
+                            size: 19,
+                          ),
                         ),
-                      ),
-                      if (isSelected)
-                        Container(
-                          width: 26,
-                          height: 26,
-                          decoration: BoxDecoration(
-                            color: authFlowTheme.accent,
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.check,
-                            size: 16,
-                            color: Colors.white,
-                          ),
-                        )
-                      else
-                        Container(
-                          width: 26,
-                          height: 26,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: authFlowTheme.textMuted,
-                              width: 2,
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            option.label,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: authFlowTheme.section(
+                              size: 13.5,
+                              weight: FontWeight.w700,
+                              color: authFlowTheme.textPrimary,
                             ),
                           ),
                         ),
-                    ],
+                        const SizedBox(width: 8),
+                        Icon(
+                          isSelected
+                              ? Icons.check_circle_rounded
+                              : Icons.radio_button_unchecked_rounded,
+                          color: isSelected ? accent : authFlowTheme.textMuted,
+                          size: 18,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            );
-          })
-          .toList(growable: false),
+              );
+            },
+          );
+        },
+      ),
     );
+  }
+}
+
+Color _levelAccent(String value) {
+  switch (value) {
+    case 'bac':
+      return authFlowTheme.accent;
+    case 'licence':
+      return const Color(0xFF14B8A6);
+    case 'master':
+      return AuthFlowPalette.orange;
+    case 'doctorat':
+      return const Color(0xFF0F766E);
+    default:
+      return authFlowTheme.accent;
   }
 }

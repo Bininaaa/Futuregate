@@ -259,6 +259,10 @@ service cloud.firestore {
       return data.keys().hasAny(['provider']);
     }
 
+    function hasStudentOnboardingPendingField(data) {
+      return data.keys().hasAny(['studentOnboardingPending']);
+    }
+
     function hasLogoField(data) {
       return data.keys().hasAny(['logo']);
     }
@@ -400,6 +404,28 @@ service cloud.firestore {
         !hasProviderField(oldData) &&
         isSupportedProvider(newData.provider) &&
         matchesCurrentSignInProvider(newData.provider)
+      );
+    }
+
+    function hasCompatibleStudentOnboardingPending(newData, oldData) {
+      return (
+        !hasStudentOnboardingPendingField(newData) &&
+        !hasStudentOnboardingPendingField(oldData)
+      ) || (
+        hasStudentOnboardingPendingField(newData) &&
+        hasStudentOnboardingPendingField(oldData) &&
+        (
+          newData.studentOnboardingPending == oldData.studentOnboardingPending ||
+          (
+            oldData.role == 'student' &&
+            oldData.studentOnboardingPending == true &&
+            newData.studentOnboardingPending == false
+          )
+        )
+      ) || (
+        hasStudentOnboardingPendingField(newData) &&
+        !hasStudentOnboardingPendingField(oldData) &&
+        newData.studentOnboardingPending == false
       );
     }
 
@@ -557,7 +583,8 @@ service cloud.firestore {
             'lastSeenAt',
             'isActive',
             'createdAt',
-            'provider'
+            'provider',
+            'studentOnboardingPending'
           ]) &&
           request.resource.data.uid == uid &&
           request.resource.data.email == request.auth.token.email &&
@@ -565,6 +592,15 @@ service cloud.firestore {
               request.resource.data.role == 'company') &&
           (request.resource.data.provider == 'email' ||
               request.resource.data.provider == 'google') &&
+          request.resource.data.studentOnboardingPending is bool &&
+          (
+            request.resource.data.role == 'student' ||
+            request.resource.data.studentOnboardingPending == false
+          ) &&
+          (
+            request.resource.data.provider == 'google' ||
+            request.resource.data.studentOnboardingPending == false
+          ) &&
           (
             request.resource.data.role == 'student' ||
             (
@@ -625,7 +661,8 @@ service cloud.firestore {
               'lastSeenAt',
               'fcmToken',
               'fcmTokenUpdatedAt',
-              'fcmTokenPlatform'
+              'fcmTokenPlatform',
+              'studentOnboardingPending'
             ]) &&
             request.resource.data.uid == resource.data.uid &&
             request.resource.data.email == resource.data.email &&
@@ -655,6 +692,10 @@ service cloud.firestore {
               resource.data
             ) &&
             hasCompatibleProvider(
+              request.resource.data,
+              resource.data
+            ) &&
+            hasCompatibleStudentOnboardingPending(
               request.resource.data,
               resource.data
             ) &&
@@ -699,6 +740,10 @@ service cloud.firestore {
               resource.data
             ) &&
             hasCompatibleProvider(
+              request.resource.data,
+              resource.data
+            ) &&
+            hasCompatibleStudentOnboardingPending(
               request.resource.data,
               resource.data
             )
