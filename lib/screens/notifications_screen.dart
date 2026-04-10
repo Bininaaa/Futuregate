@@ -6,10 +6,12 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../models/notification_model.dart';
 import '../models/opportunity_model.dart';
+import '../models/project_idea_model.dart';
 import '../models/scholarship_model.dart';
 import '../models/training_model.dart';
 import '../providers/auth_provider.dart';
 import '../providers/notification_provider.dart';
+import '../utils/opportunity_type.dart';
 import 'admin/admin_content_center_screen.dart';
 import 'company/applications_screen.dart';
 import 'company/chat_screen.dart' as company_chat;
@@ -17,6 +19,7 @@ import 'admin/users_screen.dart';
 import 'settings/settings_flow_theme.dart';
 import 'settings/settings_flow_widgets.dart';
 import 'student/chat_screen.dart' as student_chat;
+import 'student/idea_details_screen.dart';
 import 'student/opportunity_detail_screen.dart';
 import 'student/scholarship_detail_screen.dart';
 import '../widgets/shared/app_feedback.dart';
@@ -30,6 +33,13 @@ class NotificationsScreen extends StatefulWidget {
 
 class _NotificationsScreenState extends State<NotificationsScreen> {
   _NotificationFilter _selectedFilter = _NotificationFilter.all;
+  _NotificationContentFilter _selectedContentFilter =
+      _NotificationContentFilter.all;
+  _OpportunityNotificationFilter _selectedOpportunityFilter =
+      _OpportunityNotificationFilter.all;
+  final Map<String, String> _opportunityTypeByTargetId = <String, String>{};
+  final Set<String> _queuedOpportunityTypeIds = <String>{};
+  final Set<String> _loadingOpportunityTypeIds = <String>{};
 
   @override
   Widget build(BuildContext context) {
@@ -38,15 +48,33 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     final user = authProvider.userModel;
     final userId = user?.uid ?? '';
     final role = user?.role ?? '';
+    final isStudent = role == 'student';
+
+    if (isStudent) {
+      _scheduleOpportunityTypeLoading(provider.notifications);
+    }
+
     final visibleNotifications = provider.notifications
         .where(_matchesFilter)
         .toList();
+    final summaryTitle = _summaryTitle(provider, visibleNotifications.length);
+    final summaryMessage = _summaryMessage(
+      role,
+      provider,
+      visibleNotifications.length,
+    );
+    final emptyTitle = _emptyStateTitle();
+    final emptyMessage = _emptyStateMessage();
 
     return Scaffold(
       backgroundColor: SettingsFlowPalette.background,
       appBar: AppBar(
         title: Text(
-          role == 'admin' ? 'Admin Notifications' : 'Notifications',
+          role == 'admin'
+              ? 'Admin Notifications'
+              : role == 'company'
+              ? 'Company Notifications'
+              : 'Notifications',
           style: SettingsFlowTheme.appBarTitle(),
         ),
         backgroundColor: Colors.transparent,
@@ -104,16 +132,12 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            provider.unreadCount > 0
-                                ? '${provider.unreadCount} unread updates'
-                                : 'All caught up',
+                            summaryTitle,
                             style: SettingsFlowTheme.sectionTitle(),
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            provider.notifications.isEmpty
-                                ? 'Your notification center will fill up as applications, chats, and opportunities change.'
-                                : 'Track application decisions, saved item changes, new opportunities, and messages in one place.',
+                            summaryMessage,
                             style: SettingsFlowTheme.caption(),
                           ),
                         ],
@@ -127,7 +151,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   child: ListView(
                     scrollDirection: Axis.horizontal,
                     padding: const EdgeInsets.symmetric(horizontal: 16),
-                    children: _NotificationFilter.values
+                    children: _availableFilters(role)
                         .map(
                           (filter) => Padding(
                             padding: const EdgeInsets.only(right: 8),
@@ -149,7 +173,16 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                                 ),
                               ),
                               onSelected: (_) {
-                                setState(() => _selectedFilter = filter);
+                                setState(() {
+                                  _selectedFilter = filter;
+                                  if (filter !=
+                                      _NotificationFilter.newContent) {
+                                    _selectedContentFilter =
+                                        _NotificationContentFilter.all;
+                                    _selectedOpportunityFilter =
+                                        _OpportunityNotificationFilter.all;
+                                  }
+                                });
                               },
                             ),
                           ),
@@ -157,16 +190,139 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                         .toList(),
                   ),
                 ),
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 180),
+                  child:
+                      isStudent &&
+                          _selectedFilter == _NotificationFilter.newContent
+                      ? Padding(
+                          key: const ValueKey('content_filters'),
+                          padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+                          child: SizedBox(
+                            height: 40,
+                            child: ListView(
+                              scrollDirection: Axis.horizontal,
+                              children: _NotificationContentFilter.values
+                                  .map(
+                                    (filter) => Padding(
+                                      padding: const EdgeInsets.only(right: 8),
+                                      child: ChoiceChip(
+                                        label: Text(
+                                          _contentFilterLabel(filter),
+                                        ),
+                                        selected:
+                                            _selectedContentFilter == filter,
+                                        showCheckmark: false,
+                                        labelStyle: SettingsFlowTheme.micro(
+                                          _selectedContentFilter == filter
+                                              ? Colors.white
+                                              : SettingsFlowPalette.textPrimary,
+                                        ),
+                                        selectedColor:
+                                            SettingsFlowPalette.primaryDark,
+                                        backgroundColor:
+                                            SettingsFlowPalette.surface,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              SettingsFlowTheme.radius(999),
+                                          side: const BorderSide(
+                                            color: SettingsFlowPalette.border,
+                                          ),
+                                        ),
+                                        onSelected: (_) {
+                                          setState(() {
+                                            _selectedContentFilter = filter;
+                                            if (filter !=
+                                                _NotificationContentFilter
+                                                    .opportunities) {
+                                              _selectedOpportunityFilter =
+                                                  _OpportunityNotificationFilter
+                                                      .all;
+                                            }
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                  )
+                                  .toList(),
+                            ),
+                          ),
+                        )
+                      : const SizedBox.shrink(
+                          key: ValueKey('no_content_filters'),
+                        ),
+                ),
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 180),
+                  child:
+                      isStudent &&
+                          _selectedFilter == _NotificationFilter.newContent &&
+                          _selectedContentFilter ==
+                              _NotificationContentFilter.opportunities
+                      ? Padding(
+                          key: const ValueKey('opportunity_filters'),
+                          padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+                          child: SizedBox(
+                            height: 40,
+                            child: ListView(
+                              scrollDirection: Axis.horizontal,
+                              children: _OpportunityNotificationFilter.values
+                                  .map(
+                                    (filter) => Padding(
+                                      padding: const EdgeInsets.only(right: 8),
+                                      child: ChoiceChip(
+                                        label: Text(
+                                          _opportunityFilterLabel(filter),
+                                        ),
+                                        selected:
+                                            _selectedOpportunityFilter ==
+                                            filter,
+                                        showCheckmark: false,
+                                        labelStyle: SettingsFlowTheme.micro(
+                                          _selectedOpportunityFilter == filter
+                                              ? Colors.white
+                                              : SettingsFlowPalette.textPrimary,
+                                        ),
+                                        selectedColor: OpportunityType.color(
+                                          _accentOpportunityTypeForFilter(
+                                            filter,
+                                          ),
+                                        ),
+                                        backgroundColor:
+                                            SettingsFlowPalette.surface,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              SettingsFlowTheme.radius(999),
+                                          side: const BorderSide(
+                                            color: SettingsFlowPalette.border,
+                                          ),
+                                        ),
+                                        onSelected: (_) {
+                                          setState(
+                                            () => _selectedOpportunityFilter =
+                                                filter,
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  )
+                                  .toList(),
+                            ),
+                          ),
+                        )
+                      : const SizedBox.shrink(
+                          key: ValueKey('no_opportunity_filters'),
+                        ),
+                ),
                 const SizedBox(height: 10),
                 Expanded(
                   child: visibleNotifications.isEmpty
-                      ? const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 16),
+                      ? Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
                           child: SettingsEmptyState(
                             icon: Icons.notifications_none_rounded,
-                            title: 'No notifications right now',
-                            message:
-                                'Try another filter or check back after your next application or message update.',
+                            title: emptyTitle,
+                            message: emptyMessage,
                           ),
                         )
                       : ListView.separated(
@@ -178,6 +334,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                             final notification = visibleNotifications[index];
                             return _NotificationCard(
                               notification: notification,
+                              opportunityType: isStudent
+                                  ? _resolvedOpportunityType(notification)
+                                  : '',
                               onTap: () =>
                                   _handleTap(context, notification, provider),
                             );
@@ -193,6 +352,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     switch (_selectedFilter) {
       case _NotificationFilter.all:
         return true;
+      case _NotificationFilter.newContent:
+        return _isContentNotification(notification) &&
+            _matchesContentFilter(notification);
       case _NotificationFilter.unread:
         return !notification.isRead;
       case _NotificationFilter.applications:
@@ -202,12 +364,410 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     }
   }
 
+  List<_NotificationFilter> _availableFilters(String role) {
+    if (role == 'student') {
+      return const <_NotificationFilter>[
+        _NotificationFilter.all,
+        _NotificationFilter.newContent,
+        _NotificationFilter.unread,
+        _NotificationFilter.applications,
+        _NotificationFilter.messages,
+      ];
+    }
+
+    return const <_NotificationFilter>[
+      _NotificationFilter.all,
+      _NotificationFilter.unread,
+      _NotificationFilter.applications,
+      _NotificationFilter.messages,
+    ];
+  }
+
   String _filterLabel(_NotificationFilter filter) {
     return switch (filter) {
       _NotificationFilter.all => 'All',
+      _NotificationFilter.newContent => 'New content',
       _NotificationFilter.unread => 'Unread',
       _NotificationFilter.applications => 'Applications',
       _NotificationFilter.messages => 'Messages',
+    };
+  }
+
+  bool _isContentNotification(NotificationModel notification) {
+    return const {
+      'opportunity',
+      'scholarship',
+      'training',
+      'project_idea',
+    }.contains(notification.type);
+  }
+
+  bool _matchesContentFilter(NotificationModel notification) {
+    switch (_selectedContentFilter) {
+      case _NotificationContentFilter.all:
+        return true;
+      case _NotificationContentFilter.opportunities:
+        return notification.type == 'opportunity' &&
+            _matchesOpportunityFilter(notification);
+      case _NotificationContentFilter.trainings:
+        return notification.type == 'training';
+      case _NotificationContentFilter.scholarships:
+        return notification.type == 'scholarship';
+      case _NotificationContentFilter.ideas:
+        return notification.type == 'project_idea';
+    }
+  }
+
+  String _contentFilterLabel(_NotificationContentFilter filter) {
+    return switch (filter) {
+      _NotificationContentFilter.all => 'All new',
+      _NotificationContentFilter.opportunities => 'Opportunities',
+      _NotificationContentFilter.trainings => 'Trainings',
+      _NotificationContentFilter.scholarships => 'Scholarships',
+      _NotificationContentFilter.ideas => 'Ideas',
+    };
+  }
+
+  bool _matchesOpportunityFilter(NotificationModel notification) {
+    switch (_selectedOpportunityFilter) {
+      case _OpportunityNotificationFilter.all:
+        return true;
+      case _OpportunityNotificationFilter.jobs:
+        return _resolvedOpportunityType(notification) == OpportunityType.job;
+      case _OpportunityNotificationFilter.internships:
+        return _resolvedOpportunityType(notification) ==
+            OpportunityType.internship;
+      case _OpportunityNotificationFilter.sponsored:
+        return _resolvedOpportunityType(notification) ==
+            OpportunityType.sponsoring;
+    }
+  }
+
+  String _opportunityFilterLabel(_OpportunityNotificationFilter filter) {
+    return switch (filter) {
+      _OpportunityNotificationFilter.all => 'All opps',
+      _OpportunityNotificationFilter.jobs => 'Jobs',
+      _OpportunityNotificationFilter.internships => 'Internships',
+      _OpportunityNotificationFilter.sponsored => 'Sponsored',
+    };
+  }
+
+  String _accentOpportunityTypeForFilter(
+    _OpportunityNotificationFilter filter,
+  ) {
+    return switch (filter) {
+      _OpportunityNotificationFilter.internships => OpportunityType.internship,
+      _OpportunityNotificationFilter.sponsored => OpportunityType.sponsoring,
+      _OpportunityNotificationFilter.jobs ||
+      _OpportunityNotificationFilter.all => OpportunityType.job,
+    };
+  }
+
+  String _resolvedOpportunityType(NotificationModel notification) {
+    if (notification.type != 'opportunity') {
+      return '';
+    }
+
+    final targetId = notification.targetId.trim();
+    final cachedType = _opportunityTypeByTargetId[targetId]?.trim() ?? '';
+    if (cachedType.isNotEmpty) {
+      return OpportunityType.parse(cachedType);
+    }
+
+    final eventKey = notification.eventKey.trim().toLowerCase();
+    if (eventKey.startsWith('opportunity-')) {
+      final rawType = eventKey.substring('opportunity-'.length);
+      final separatorIndex = rawType.indexOf(':');
+      final candidate = separatorIndex == -1
+          ? rawType
+          : rawType.substring(0, separatorIndex);
+      if (const <String>{
+        OpportunityType.job,
+        OpportunityType.internship,
+        OpportunityType.sponsoring,
+        'sponsored',
+        'sponsorship',
+      }.contains(candidate)) {
+        return OpportunityType.parse(candidate);
+      }
+    }
+
+    final title = notification.title.toLowerCase();
+    if (title.contains('internship')) {
+      return OpportunityType.internship;
+    }
+    if (title.contains('sponsor')) {
+      return OpportunityType.sponsoring;
+    }
+    if (title.contains('job')) {
+      return OpportunityType.job;
+    }
+
+    return '';
+  }
+
+  void _scheduleOpportunityTypeLoading(List<NotificationModel> notifications) {
+    final ids = notifications
+        .where((notification) => notification.type == 'opportunity')
+        .map((notification) => notification.targetId.trim())
+        .where(
+          (id) =>
+              id.isNotEmpty &&
+              !_opportunityTypeByTargetId.containsKey(id) &&
+              !_queuedOpportunityTypeIds.contains(id) &&
+              !_loadingOpportunityTypeIds.contains(id),
+        )
+        .toSet()
+        .toList(growable: false);
+
+    if (ids.isEmpty) {
+      return;
+    }
+
+    _queuedOpportunityTypeIds.addAll(ids);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        _queuedOpportunityTypeIds.removeAll(ids);
+        return;
+      }
+      _loadOpportunityTypes(ids);
+    });
+  }
+
+  Future<void> _loadOpportunityTypes(List<String> opportunityIds) async {
+    _queuedOpportunityTypeIds.removeAll(opportunityIds);
+    _loadingOpportunityTypeIds.addAll(opportunityIds);
+
+    try {
+      final snapshots = await Future.wait(
+        opportunityIds.map(
+          (id) => FirebaseFirestore.instance
+              .collection('opportunities')
+              .doc(id)
+              .get(),
+        ),
+      );
+
+      if (!mounted) {
+        _loadingOpportunityTypeIds.removeAll(opportunityIds);
+        return;
+      }
+
+      final resolvedTypes = <String, String>{};
+      for (var index = 0; index < opportunityIds.length; index++) {
+        final id = opportunityIds[index];
+        final snapshot = snapshots[index];
+        if (snapshot.exists) {
+          resolvedTypes[id] = OpportunityType.parse(
+            snapshot.data()?['type']?.toString(),
+          );
+        } else {
+          resolvedTypes[id] = '';
+        }
+      }
+
+      setState(() {
+        _opportunityTypeByTargetId.addAll(resolvedTypes);
+        _loadingOpportunityTypeIds.removeAll(opportunityIds);
+      });
+    } catch (_) {
+      _loadingOpportunityTypeIds.removeAll(opportunityIds);
+    }
+  }
+
+  String _summaryTitle(NotificationProvider provider, int visibleCount) {
+    if (provider.notifications.isEmpty) {
+      return 'All caught up';
+    }
+
+    switch (_selectedFilter) {
+      case _NotificationFilter.all:
+        return provider.unreadCount > 0
+            ? '${provider.unreadCount} unread updates'
+            : 'All caught up';
+      case _NotificationFilter.unread:
+        return visibleCount > 0
+            ? '$visibleCount unread notifications'
+            : 'No unread notifications';
+      case _NotificationFilter.applications:
+        return visibleCount == 1
+            ? '1 application update'
+            : '$visibleCount application updates';
+      case _NotificationFilter.messages:
+        return visibleCount == 1
+            ? '1 message update'
+            : '$visibleCount message updates';
+      case _NotificationFilter.newContent:
+        return switch (_selectedContentFilter) {
+          _NotificationContentFilter.all =>
+            visibleCount == 1
+                ? '1 new content alert'
+                : '$visibleCount new content alerts',
+          _NotificationContentFilter.opportunities => _opportunitySummaryTitle(
+            visibleCount,
+          ),
+          _NotificationContentFilter.trainings =>
+            visibleCount == 1
+                ? '1 new training alert'
+                : '$visibleCount new training alerts',
+          _NotificationContentFilter.scholarships =>
+            visibleCount == 1
+                ? '1 new scholarship alert'
+                : '$visibleCount new scholarship alerts',
+          _NotificationContentFilter.ideas =>
+            visibleCount == 1 ? '1 idea alert' : '$visibleCount idea alerts',
+        };
+    }
+  }
+
+  String _summaryMessage(
+    String role,
+    NotificationProvider provider,
+    int visibleCount,
+  ) {
+    if (provider.notifications.isEmpty) {
+      if (role == 'company') {
+        return 'Your company notification center will fill up as applicants and chats change.';
+      }
+      if (role == 'admin') {
+        return 'Your admin notification center will fill up as reviews, content, and platform updates arrive.';
+      }
+      return 'Your notification center will fill up as applications, chats, opportunities, trainings, scholarships, and ideas change.';
+    }
+
+    switch (_selectedFilter) {
+      case _NotificationFilter.all:
+        if (role == 'company') {
+          return 'Track applicant activity and conversations in one place.';
+        }
+        if (role == 'admin') {
+          return 'Track reviews, content activity, and platform alerts in one place.';
+        }
+        return 'Track application decisions, new content, and messages in one place.';
+      case _NotificationFilter.unread:
+        return visibleCount > 0
+            ? 'Focus on the updates you have not opened yet.'
+            : 'Everything has already been reviewed.';
+      case _NotificationFilter.applications:
+        return 'Follow new applications, approvals, and rejections without leaving this inbox.';
+      case _NotificationFilter.messages:
+        return 'Keep up with active conversations and jump straight back into chat.';
+      case _NotificationFilter.newContent:
+        return switch (_selectedContentFilter) {
+          _NotificationContentFilter.all =>
+            'Browse fresh opportunities, trainings, scholarships, and idea-related updates together.',
+          _NotificationContentFilter.opportunities =>
+            _opportunitySummaryMessage(),
+          _NotificationContentFilter.trainings =>
+            'Catch newly added learning resources and training programs.',
+          _NotificationContentFilter.scholarships =>
+            'Review fresh scholarship announcements as soon as they arrive.',
+          _NotificationContentFilter.ideas =>
+            'Keep idea submissions and idea status updates easy to scan.',
+        };
+    }
+  }
+
+  String _emptyStateTitle() {
+    switch (_selectedFilter) {
+      case _NotificationFilter.all:
+        return 'No notifications right now';
+      case _NotificationFilter.unread:
+        return 'No unread notifications';
+      case _NotificationFilter.applications:
+        return 'No application updates';
+      case _NotificationFilter.messages:
+        return 'No message updates';
+      case _NotificationFilter.newContent:
+        return switch (_selectedContentFilter) {
+          _NotificationContentFilter.all => 'No new content alerts',
+          _NotificationContentFilter.opportunities =>
+            _opportunityEmptyStateTitle(),
+          _NotificationContentFilter.trainings => 'No training alerts',
+          _NotificationContentFilter.scholarships => 'No scholarship alerts',
+          _NotificationContentFilter.ideas => 'No idea alerts',
+        };
+    }
+  }
+
+  String _emptyStateMessage() {
+    switch (_selectedFilter) {
+      case _NotificationFilter.all:
+        return 'Check back after your next application, message, or content update.';
+      case _NotificationFilter.unread:
+        return 'You have already opened everything in your inbox.';
+      case _NotificationFilter.applications:
+        return 'Application decisions and submissions will appear here.';
+      case _NotificationFilter.messages:
+        return 'New conversations and replies will show up here.';
+      case _NotificationFilter.newContent:
+        return switch (_selectedContentFilter) {
+          _NotificationContentFilter.all =>
+            'Try another content filter or check back after the next published item.',
+          _NotificationContentFilter.opportunities =>
+            _opportunityEmptyStateMessage(),
+          _NotificationContentFilter.trainings =>
+            'New training notifications will show up here.',
+          _NotificationContentFilter.scholarships =>
+            'New scholarship notifications will show up here.',
+          _NotificationContentFilter.ideas =>
+            'Idea notifications will show up here.',
+        };
+    }
+  }
+
+  String _opportunitySummaryTitle(int visibleCount) {
+    return switch (_selectedOpportunityFilter) {
+      _OpportunityNotificationFilter.jobs =>
+        visibleCount == 1 ? '1 new job alert' : '$visibleCount new job alerts',
+      _OpportunityNotificationFilter.internships =>
+        visibleCount == 1
+            ? '1 new internship alert'
+            : '$visibleCount new internship alerts',
+      _OpportunityNotificationFilter.sponsored =>
+        visibleCount == 1
+            ? '1 new sponsored opportunity alert'
+            : '$visibleCount new sponsored opportunity alerts',
+      _OpportunityNotificationFilter.all =>
+        visibleCount == 1
+            ? '1 new opportunity alert'
+            : '$visibleCount new opportunity alerts',
+    };
+  }
+
+  String _opportunitySummaryMessage() {
+    return switch (_selectedOpportunityFilter) {
+      _OpportunityNotificationFilter.jobs =>
+        'Stay on top of new job openings shared with students.',
+      _OpportunityNotificationFilter.internships =>
+        'Keep internship opportunities easy to scan and revisit.',
+      _OpportunityNotificationFilter.sponsored =>
+        'Review new sponsored programs and premium student offers in one place.',
+      _OpportunityNotificationFilter.all =>
+        'Stay on top of new jobs, internships, and sponsored opportunities.',
+    };
+  }
+
+  String _opportunityEmptyStateTitle() {
+    return switch (_selectedOpportunityFilter) {
+      _OpportunityNotificationFilter.jobs => 'No job alerts',
+      _OpportunityNotificationFilter.internships => 'No internship alerts',
+      _OpportunityNotificationFilter.sponsored =>
+        'No sponsored opportunity alerts',
+      _OpportunityNotificationFilter.all => 'No opportunity alerts',
+    };
+  }
+
+  String _opportunityEmptyStateMessage() {
+    return switch (_selectedOpportunityFilter) {
+      _OpportunityNotificationFilter.jobs =>
+        'New job notifications will show up here.',
+      _OpportunityNotificationFilter.internships =>
+        'New internship notifications will show up here.',
+      _OpportunityNotificationFilter.sponsored =>
+        'New sponsored opportunity notifications will show up here.',
+      _OpportunityNotificationFilter.all =>
+        'New opportunity notifications will show up here.',
     };
   }
 
@@ -405,13 +965,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             ...doc.data()!,
             'id': doc.id,
           });
-          final url = training.displayLink;
-          if (url.isNotEmpty) {
-            final uri = Uri.tryParse(url);
-            if (uri != null) {
-              await launchUrl(uri, mode: LaunchMode.externalApplication);
-            }
-          }
+          await _openTrainingLink(context, training);
           return;
 
         case 'application':
@@ -485,32 +1039,15 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           if (!doc.exists || !context.mounted) {
             return;
           }
-          final data = doc.data()!;
-          showDialog(
-            context: context,
-            builder: (_) => AlertDialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: SettingsFlowTheme.radius(24),
+          final idea = ProjectIdeaModel.fromMap({...doc.data()!, 'id': doc.id});
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => IdeaDetailsScreen(
+                ideaId: idea.id,
+                initialIdea: idea,
+                showModerationStatus: true,
               ),
-              title: Text(
-                data['title'] ?? 'Project Idea',
-                style: SettingsFlowTheme.sectionTitle(),
-              ),
-              content: Text(
-                data['description'] ?? '',
-                style: SettingsFlowTheme.caption(
-                  SettingsFlowPalette.textPrimary,
-                ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text(
-                    'Close',
-                    style: SettingsFlowTheme.micro(SettingsFlowPalette.primary),
-                  ),
-                ),
-              ],
             ),
           );
           return;
@@ -541,13 +1078,52 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
     return notif.targetId.trim();
   }
+
+  Future<void> _openTrainingLink(
+    BuildContext context,
+    TrainingModel training,
+  ) async {
+    final url = training.displayLink.trim();
+    if (url.isEmpty) {
+      context.showAppSnackBar(
+        'This training does not have a link yet.',
+        title: 'Link unavailable',
+        type: AppFeedbackType.warning,
+      );
+      return;
+    }
+
+    final uri = Uri.tryParse(url);
+    if (uri == null) {
+      context.showAppSnackBar(
+        'This training link is not valid.',
+        title: 'Link unavailable',
+        type: AppFeedbackType.warning,
+      );
+      return;
+    }
+
+    final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!launched && context.mounted) {
+      context.showAppSnackBar(
+        'We couldn\'t open this training link right now.',
+        title: 'Open unavailable',
+        type: AppFeedbackType.error,
+      );
+    }
+  }
 }
 
 class _NotificationCard extends StatelessWidget {
   final NotificationModel notification;
+  final String opportunityType;
   final VoidCallback onTap;
 
-  const _NotificationCard({required this.notification, required this.onTap});
+  const _NotificationCard({
+    required this.notification,
+    required this.onTap,
+    this.opportunityType = '',
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -579,13 +1155,16 @@ class _NotificationCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SettingsIconBox(
-                icon: _iconForType(notification.type),
+                icon: _iconForType(notification.type, opportunityType),
                 color: notification.isRead
                     ? SettingsFlowPalette.textSecondary
-                    : _accentForType(notification.type),
+                    : _accentForType(notification.type, opportunityType),
                 backgroundColor: notification.isRead
                     ? SettingsFlowPalette.border.withValues(alpha: 0.45)
-                    : _accentForType(notification.type).withValues(alpha: 0.12),
+                    : _accentForType(
+                        notification.type,
+                        opportunityType,
+                      ).withValues(alpha: 0.12),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -632,8 +1211,14 @@ class _NotificationCard extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               SettingsStatusPill(
-                                label: _labelForType(notification.type),
-                                color: _accentForType(notification.type),
+                                label: _labelForType(
+                                  notification.type,
+                                  opportunityType,
+                                ),
+                                color: _accentForType(
+                                  notification.type,
+                                  opportunityType,
+                                ),
                               ),
                               if (createdAt != null) ...[
                                 const SizedBox(height: 6),
@@ -649,8 +1234,14 @@ class _NotificationCard extends StatelessWidget {
                         return Row(
                           children: [
                             SettingsStatusPill(
-                              label: _labelForType(notification.type),
-                              color: _accentForType(notification.type),
+                              label: _labelForType(
+                                notification.type,
+                                opportunityType,
+                              ),
+                              color: _accentForType(
+                                notification.type,
+                                opportunityType,
+                              ),
                             ),
                             const Spacer(),
                             Text(
@@ -671,12 +1262,14 @@ class _NotificationCard extends StatelessWidget {
     );
   }
 
-  IconData _iconForType(String type) {
+  IconData _iconForType(String type, [String opportunityType = '']) {
     switch (type) {
       case 'chat':
         return Icons.chat_bubble_outline_rounded;
       case 'opportunity':
-        return Icons.work_outline_rounded;
+        return opportunityType.trim().isNotEmpty
+            ? OpportunityType.icon(opportunityType)
+            : Icons.work_outline_rounded;
       case 'scholarship':
         return Icons.school_outlined;
       case 'training':
@@ -692,14 +1285,16 @@ class _NotificationCard extends StatelessWidget {
     }
   }
 
-  Color _accentForType(String type) {
+  Color _accentForType(String type, [String opportunityType = '']) {
     switch (type) {
       case 'chat':
         return SettingsFlowPalette.secondary;
       case 'application':
         return SettingsFlowPalette.primary;
       case 'opportunity':
-        return SettingsFlowPalette.accent;
+        return opportunityType.trim().isNotEmpty
+            ? OpportunityType.color(opportunityType)
+            : SettingsFlowPalette.accent;
       case 'scholarship':
         return SettingsFlowPalette.success;
       case 'training':
@@ -713,14 +1308,16 @@ class _NotificationCard extends StatelessWidget {
     }
   }
 
-  String _labelForType(String type) {
+  String _labelForType(String type, [String opportunityType = '']) {
     switch (type) {
       case 'chat':
         return 'Message';
       case 'application':
         return 'Application';
       case 'opportunity':
-        return 'Opportunity';
+        return opportunityType.trim().isNotEmpty
+            ? OpportunityType.label(opportunityType)
+            : 'Opportunity';
       case 'scholarship':
         return 'Scholarship';
       case 'training':
@@ -754,4 +1351,14 @@ class _NotificationCard extends StatelessWidget {
   }
 }
 
-enum _NotificationFilter { all, unread, applications, messages }
+enum _NotificationFilter { all, unread, applications, messages, newContent }
+
+enum _NotificationContentFilter {
+  all,
+  opportunities,
+  trainings,
+  scholarships,
+  ideas,
+}
+
+enum _OpportunityNotificationFilter { all, jobs, internships, sponsored }
