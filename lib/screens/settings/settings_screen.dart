@@ -25,9 +25,7 @@ class SettingsScreen extends StatelessWidget {
       return const Scaffold(body: Center(child: Text('Not logged in')));
     }
 
-    final providerLabel = authProvider.isEmailProvider
-        ? 'Email & Password'
-        : 'Google';
+    final providerLabel = authProvider.linkedProviderLabel;
     final isCompany = user.role == 'company';
 
     if (isCompany) {

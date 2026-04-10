@@ -7,6 +7,7 @@ Cloudflare Worker backend that replaces the Firebase Functions runtime paths for
 | Method | Path | Auth | Description |
 |---|---|---|---|
 | `GET` | `/api/health` | none | Health check |
+| `POST` | `/api/auth/password-reset` | none | Sends a reset email only when the account has email/password sign-in linked |
 | `POST` | `/api/search/google-books` | signed-in user | Google Books proxy |
 | `POST` | `/api/search/youtube` | signed-in user | YouTube proxy |
 | `POST` | `/api/trainings/import/google-book` | admin | Import Google Book and notify students |
@@ -30,10 +31,13 @@ wrangler secret put GOOGLE_BOOKS_API_KEY
 wrangler secret put YOUTUBE_API_KEY
 wrangler secret put FIREBASE_PROJECT_ID
 wrangler secret put FIREBASE_SERVICE_ACCOUNT_KEY
+wrangler secret put FIREBASE_WEB_API_KEY
 wrangler secret put ALLOWED_ORIGINS
 ```
 
-`FIREBASE_SERVICE_ACCOUNT_KEY` is the full Firebase service-account JSON string. The Worker uses it for Firestore REST access and FCM HTTP v1 sends.
+`FIREBASE_SERVICE_ACCOUNT_KEY` is the full Firebase service-account JSON string. The Worker uses it for Firestore REST access, FCM HTTP v1 sends, and admin Identity Platform lookups.
+
+`FIREBASE_WEB_API_KEY` should be the public Firebase Web API key from the same project. The Worker uses it for `accounts:createAuthUri` so it can detect whether an email has `password`, `google.com`, or both sign-in methods before sending reset emails.
 
 ## Local development
 

@@ -7,11 +7,16 @@ import {
   firestoreBatchWrite,
   sendFcmMessage,
 } from "./firestore.js";
+import { getAccessToken } from "./google-auth.js";
 
 const GOOGLE_BOOKS_API_URL = "https://www.googleapis.com/books/v1/volumes";
 const YOUTUBE_API_URL = "https://www.googleapis.com/youtube/v3/search";
+const IDENTITY_TOOLKIT_API_URL = "https://identitytoolkit.googleapis.com/v1";
 const MAX_BOOKS_RESULTS = 20;
 const MAX_CHAT_PREVIEW_LENGTH = 100;
+const PASSWORD_SIGN_IN_METHOD = "password";
+const GOOGLE_PROVIDER_ID = "google.com";
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -274,6 +279,275 @@ async function requireUser(
     profile,
     userDoc,
   };
+}
+
+function isValidEmail(value) {
+  return EMAIL_PATTERN.test(trim(value));
+}
+
+function passwordResetRequestIp(request) {
+  const cfConnectingIp =
+    trim(request.headers.get("CF-Connecting-IP")) ||
+    trim(request.headers.get("cf-connecting-ip"));
+  if (cfConnectingIp) {
+    return cfConnectingIp;
+  }
+
+  const forwardedFor = trim(request.headers.get("x-forwarded-for"));
+  if (forwardedFor) {
+    return trim(forwardedFor.split(",")[0]);
+  }
+
+  const realIp = trim(request.headers.get("x-real-ip"));
+  if (realIp) {
+    return realIp;
+  }
+
+  const hostname = trim(new URL(request.url).hostname).toLowerCase();
+  if (hostname === "localhost" || hostname === "127.0.0.1") {
+    return "127.0.0.1";
+  }
+
+  return "";
+}
+
+function identityToolkitContinueUrl(env) {
+  const projectId = trim(env.FIREBASE_PROJECT_ID);
+  return `https://${projectId}.firebaseapp.com/__/auth/handler`;
+}
+
+function extractIdentityToolkitErrorMessage(payload, fallbackMessage) {
+  const details = payload && typeof payload === "object" ? payload.error : null;
+  const message =
+    trim(details?.message) ||
+    trim(details?.status) ||
+    trim(payload?.error) ||
+    trim(fallbackMessage);
+  return message || "Identity Toolkit request failed.";
+}
+
+async function identityToolkitRequest(
+  env,
+  path,
+  { body = null, includeApiKey = false } = {},
+) {
+  const accessToken = await getAccessToken(env);
+  const url = new URL(`${IDENTITY_TOOLKIT_API_URL}${path}`);
+
+  if (includeApiKey) {
+    const apiKey = trim(env.FIREBASE_WEB_API_KEY);
+    if (!apiKey) {
+      throw new Error(
+        "Password reset is not configured: FIREBASE_WEB_API_KEY is missing.",
+      );
+    }
+    url.searchParams.set("key", apiKey);
+  }
+
+  const response = await fetch(url.toString(), {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body ?? {}),
+  });
+
+  const rawBody = await response.text();
+  let payload = {};
+  if (rawBody) {
+    try {
+      payload = JSON.parse(rawBody);
+    } catch {
+      payload = { error: rawBody };
+    }
+  }
+
+  if (!response.ok) {
+    throw Object.assign(
+      new Error(
+        extractIdentityToolkitErrorMessage(
+          payload,
+          `Identity Toolkit request failed with status ${response.status}.`,
+        ),
+      ),
+      {
+        statusCode: response.status,
+        payload,
+      },
+    );
+  }
+
+  return payload;
+}
+
+async function fetchSignInMethodsForEmail(env, email) {
+  const payload = await identityToolkitRequest(env, "/accounts:createAuthUri", {
+    includeApiKey: true,
+    body: {
+      identifier: email,
+      continueUri: identityToolkitContinueUrl(env),
+    },
+  });
+
+  const signInMethods = Array.isArray(payload?.signinMethods)
+    ? payload.signinMethods.map((value) => trim(value)).filter(Boolean)
+    : [];
+
+  return {
+    registered: payload?.registered === true,
+    signInMethods,
+  };
+}
+
+async function lookupAccountByEmail(env, email) {
+  const projectId = encodeURIComponent(trim(env.FIREBASE_PROJECT_ID));
+  const payload = await identityToolkitRequest(
+    env,
+    `/projects/${projectId}/accounts:lookup`,
+    {
+      body: {
+        email: [email],
+      },
+    },
+  );
+
+  const users = Array.isArray(payload?.users) ? payload.users : [];
+  const account = users.find((user) => user && typeof user === "object");
+  return account && typeof account === "object" ? account : null;
+}
+
+function accountProviderIds(account) {
+  return new Set(
+    (Array.isArray(account?.providerUserInfo) ? account.providerUserInfo : [])
+      .map((providerInfo) => trim(providerInfo?.providerId))
+      .filter(Boolean),
+  );
+}
+
+function accountHasPasswordMethod(account, signInMethods = []) {
+  const normalizedMethods = Array.isArray(signInMethods)
+    ? signInMethods.map((value) => trim(value)).filter(Boolean)
+    : [];
+  if (normalizedMethods.includes(PASSWORD_SIGN_IN_METHOD)) {
+    return true;
+  }
+
+  const providerIds = accountProviderIds(account);
+  if (providerIds.has(PASSWORD_SIGN_IN_METHOD)) {
+    return true;
+  }
+
+  if (trim(account?.passwordHash)) {
+    return true;
+  }
+
+  const passwordUpdatedAt = Number(account?.passwordUpdatedAt);
+  return Number.isFinite(passwordUpdatedAt) && passwordUpdatedAt > 0;
+}
+
+function accountHasGoogleMethod(account, signInMethods = []) {
+  const normalizedMethods = Array.isArray(signInMethods)
+    ? signInMethods.map((value) => trim(value)).filter(Boolean)
+    : [];
+  if (normalizedMethods.includes(GOOGLE_PROVIDER_ID)) {
+    return true;
+  }
+
+  return accountProviderIds(account).has(GOOGLE_PROVIDER_ID);
+}
+
+async function sendPasswordResetEmail(env, email, userIp) {
+  const projectId = encodeURIComponent(trim(env.FIREBASE_PROJECT_ID));
+  await identityToolkitRequest(
+    env,
+    `/projects/${projectId}/accounts:sendOobCode`,
+    {
+      body: {
+        requestType: "PASSWORD_RESET",
+        email,
+        userIp,
+      },
+    },
+  );
+}
+
+async function handlePasswordReset(request, env) {
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return err("Invalid JSON body.");
+  }
+
+  const email = trim(body?.email);
+  if (!isValidEmail(email)) {
+    return err("The email address is not valid.", 400);
+  }
+
+  const userIp = passwordResetRequestIp(request);
+  if (!userIp) {
+    return err("Could not determine the caller IP for password reset.", 500);
+  }
+
+  try {
+    const signInContext = await fetchSignInMethodsForEmail(env, email);
+    if (!signInContext.registered) {
+      return json({ success: true });
+    }
+
+    let hasPassword = signInContext.signInMethods.includes(
+      PASSWORD_SIGN_IN_METHOD,
+    );
+    let hasGoogle = signInContext.signInMethods.includes(GOOGLE_PROVIDER_ID);
+
+    if (!hasPassword || !hasGoogle) {
+      const account = await lookupAccountByEmail(env, email);
+      hasPassword =
+        hasPassword ||
+        accountHasPasswordMethod(account, signInContext.signInMethods);
+      hasGoogle =
+        hasGoogle || accountHasGoogleMethod(account, signInContext.signInMethods);
+    }
+
+    if (hasGoogle && !hasPassword) {
+      return err(
+        "This account uses Google sign-in. Sign in with Google first, then add a password from Settings if you want reset emails later.",
+        409,
+      );
+    }
+
+    await sendPasswordResetEmail(env, email, userIp);
+    return json({ success: true });
+  } catch (error) {
+    const message = trim(error?.message).toUpperCase();
+
+    if (!message) {
+      throw error;
+    }
+
+    if (message.includes("INVALID_EMAIL")) {
+      return err("The email address is not valid.", 400);
+    }
+
+    if (message.includes("EMAIL_NOT_FOUND")) {
+      return json({ success: true });
+    }
+
+    if (
+      message.includes("TOO_MANY_ATTEMPTS_TRY_LATER") ||
+      message.includes("RESET_PASSWORD_EXCEED_LIMIT") ||
+      message.includes("CAPTCHA_CHECK_FAILED")
+    ) {
+      return err("Too many attempts. Please try again later.", 429);
+    }
+
+    if (message.includes("OPERATION_NOT_ALLOWED")) {
+      return err("Password reset is not configured right now.", 503);
+    }
+
+    throw error;
+  }
 }
 
 function normalizeBookItem(item) {
@@ -3210,6 +3484,9 @@ function matchRoute(method, path) {
   if (method === "GET" && path === "/api/health") {
     return { handler: "health" };
   }
+  if (method === "POST" && path === "/api/auth/password-reset") {
+    return { handler: "passwordReset" };
+  }
   if (method === "POST" && path === "/api/project-ideas/submit") {
     return { handler: "submitProjectIdea" };
   }
@@ -3371,6 +3648,9 @@ export default {
       switch (route.handler) {
         case "health":
           response = handleHealth();
+          break;
+        case "passwordReset":
+          response = await handlePasswordReset(request, env);
           break;
         case "submitProjectIdea":
           response = await handleSubmitProjectIdea(request, env);

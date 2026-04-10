@@ -393,7 +393,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   icon: Icons.email_outlined,
                   readOnly: true,
                   suffix: TextButton(
-                    onPressed: authProvider.isEmailProvider
+                    onPressed: authProvider.canChangeEmail
                         ? () => Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -402,7 +402,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           )
                         : null,
                     child: Text(
-                      authProvider.isEmailProvider ? 'Change' : 'Managed',
+                      authProvider.canChangeEmail
+                          ? 'Change'
+                          : authProvider.hasGoogleProvider
+                          ? 'Google'
+                          : 'Managed',
                       style: SettingsFlowTheme.micro(
                         SettingsFlowPalette.primary,
                       ),

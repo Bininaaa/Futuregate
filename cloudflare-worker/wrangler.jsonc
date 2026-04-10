@@ -9,6 +9,7 @@
   //   YOUTUBE_API_KEY
   //   FIREBASE_PROJECT_ID
   //   FIREBASE_SERVICE_ACCOUNT_KEY  (full JSON string of the service account)
+  //   FIREBASE_WEB_API_KEY          (public Firebase Web API key for the same project)
   //   ALLOWED_ORIGINS               (comma-separated origins, e.g. "https://admin.example.com,http://localhost:5000")
   //   STORAGE_API_BASE_URL          (e.g. "https://avenirdz-storage-api.example.workers.dev")
   //   FILE_ACCESS_SECRET            (shared HMAC secret with the storage worker for secure document links)

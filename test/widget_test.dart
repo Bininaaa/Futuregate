@@ -16,11 +16,15 @@ class FakeAuthProvider extends ChangeNotifier implements AuthProvider {
     this.currentUser,
     bool blockedOnLogin = false,
     this.initialLoadDone = true,
+    this.passwordProviderLinked = false,
+    this.googleProviderLinked = false,
   }) : _blockedOnLogin = blockedOnLogin;
 
   final bool loading;
   final bool initialLoadDone;
   final UserModel? currentUser;
+  final bool passwordProviderLinked;
+  final bool googleProviderLinked;
   bool loadCurrentUserCalled = false;
   bool _blockedOnLogin;
 
@@ -120,7 +124,44 @@ class FakeAuthProvider extends ChangeNotifier implements AuthProvider {
   }
 
   @override
-  bool get isEmailProvider => false;
+  bool get hasPasswordProvider => passwordProviderLinked;
+
+  @override
+  bool get hasGoogleProvider => googleProviderLinked;
+
+  @override
+  bool get hasMultipleSignInMethods =>
+      passwordProviderLinked && googleProviderLinked;
+
+  @override
+  bool get canAddPassword => googleProviderLinked && !passwordProviderLinked;
+
+  @override
+  bool get isEmailProvider => passwordProviderLinked && !googleProviderLinked;
+
+  @override
+  bool get canChangePassword => passwordProviderLinked;
+
+  @override
+  bool get canChangeEmail => passwordProviderLinked && !googleProviderLinked;
+
+  @override
+  bool get requiresEmailVerification =>
+      passwordProviderLinked && !googleProviderLinked;
+
+  @override
+  String get linkedProviderLabel {
+    if (passwordProviderLinked && googleProviderLinked) {
+      return 'Google + Email & Password';
+    }
+    if (passwordProviderLinked) {
+      return 'Email & Password';
+    }
+    if (googleProviderLinked) {
+      return 'Google';
+    }
+    return 'Unknown';
+  }
 
   @override
   bool get isEmailVerified => true;
@@ -135,6 +176,9 @@ class FakeAuthProvider extends ChangeNotifier implements AuthProvider {
   Future<String?> sendPasswordResetEmail(String email) async => null;
 
   @override
+  Future<String?> addPassword({required String newPassword}) async => null;
+
+  @override
   Future<String?> changePassword({
     required String currentPassword,
     required String newPassword,
@@ -147,7 +191,18 @@ class FakeAuthProvider extends ChangeNotifier implements AuthProvider {
   }) async => null;
 
   @override
-  String get signInProvider => 'email';
+  String get signInProvider {
+    if (passwordProviderLinked && googleProviderLinked) {
+      return 'multiple';
+    }
+    if (passwordProviderLinked) {
+      return 'email';
+    }
+    if (googleProviderLinked) {
+      return 'google';
+    }
+    return 'unknown';
+  }
 }
 
 class FakeConnectivityProvider extends ChangeNotifier

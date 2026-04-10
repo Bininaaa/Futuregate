@@ -422,7 +422,23 @@ class AuthProvider extends ChangeNotifier {
 
   // --------------- Email Verification ---------------
 
-  bool get isEmailProvider => _authService.getSignInProvider() == 'email';
+  bool get hasPasswordProvider => _authService.hasPasswordProvider;
+
+  bool get hasGoogleProvider => _authService.hasGoogleProvider;
+
+  bool get hasMultipleSignInMethods => _authService.hasMultipleSignInMethods;
+
+  bool get canAddPassword => _authService.canAddPassword;
+
+  bool get isEmailProvider => hasPasswordProvider && !hasGoogleProvider;
+
+  bool get canChangePassword => _authService.canChangePassword;
+
+  bool get canChangeEmail => _authService.canChangeEmail;
+
+  bool get requiresEmailVerification => _authService.requiresEmailVerification;
+
+  String get linkedProviderLabel => _authService.linkedProviderLabel;
 
   bool get isEmailVerified => _authService.isEmailVerified;
 
@@ -454,12 +470,51 @@ class AuthProvider extends ChangeNotifier {
       if (e.code == 'invalid-email') {
         return 'The email address is not valid.';
       }
+      if (e.code == 'password-reset-google-only') {
+        return e.message ??
+            'This account uses Google sign-in. Sign in with Google, then add a password from Settings if you want reset emails later.';
+      }
       if (e.code == 'too-many-requests') {
         return 'Too many attempts. Please try again later.';
       }
       return e.message ?? 'Failed to send reset email.';
     } catch (e) {
       return 'An unexpected error occurred.';
+    }
+  }
+
+  // --------------- Add Password ---------------
+
+  Future<String?> addPassword({required String newPassword}) async {
+    try {
+      await _authService.addPassword(newPassword: newPassword);
+      _userModel = await _authService.getCurrentUserProfile();
+      return null;
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        return 'Password is too weak.';
+      }
+      if (e.code == 'password-already-available') {
+        return 'This account already has email and password sign-in enabled.';
+      }
+      if (e.code == 'credential-already-in-use') {
+        return 'This email is already linked to another password account.';
+      }
+      if (e.code == 'provider-already-linked') {
+        return 'Email and password sign-in is already linked to this account.';
+      }
+      if (e.code == 'requires-recent-login') {
+        return 'For security, sign in again with Google and then try adding a password.';
+      }
+      if (e.code == 'missing-email') {
+        return e.message ??
+            'This account does not have an email address available for password sign-in.';
+      }
+      return e.message ?? 'Failed to add a password.';
+    } catch (e) {
+      return 'An unexpected error occurred.';
+    } finally {
+      notifyListeners();
     }
   }
 
@@ -476,6 +531,13 @@ class AuthProvider extends ChangeNotifier {
       );
       return null;
     } on FirebaseAuthException catch (e) {
+      if (e.code == 'password-change-not-supported' ||
+          e.code == 'password-provider-not-linked') {
+        return 'Password changes are only available after email and password sign-in is linked to this account.';
+      }
+      if (e.code == 'requires-recent-login') {
+        return 'For security, sign in again and then try changing your password.';
+      }
       if (e.code == 'wrong-password' || e.code == 'invalid-credential') {
         return 'Current password is incorrect.';
       }
@@ -504,6 +566,14 @@ class AuthProvider extends ChangeNotifier {
       );
       return null;
     } on FirebaseAuthException catch (e) {
+      if (e.code == 'email-change-not-supported' ||
+          e.code == 'password-provider-not-linked') {
+        return e.message ??
+            'This account cannot change its sign-in email from inside the app.';
+      }
+      if (e.code == 'requires-recent-login') {
+        return 'For security, sign in again and then try changing your email.';
+      }
       if (e.code == 'wrong-password' || e.code == 'invalid-credential') {
         return 'Current password is incorrect.';
       }

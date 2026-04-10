@@ -26,7 +26,8 @@ class CompanyProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = context.watch<AuthProvider>().userModel;
+    final authProvider = context.watch<AuthProvider>();
+    final user = authProvider.userModel;
     if (user == null) {
       return const AppShellBackground(
         child: Scaffold(
@@ -39,6 +40,7 @@ class CompanyProfileScreen extends StatelessWidget {
     final companyName = _companyName(user);
     final description = _companyDescription(user);
     final websiteUri = _websiteUri(user.website ?? '');
+    final providerLabel = authProvider.linkedProviderLabel;
 
     return AppShellBackground(
       child: Scaffold(
@@ -150,7 +152,7 @@ class CompanyProfileScreen extends StatelessWidget {
                           'The essentials students and applicants usually look for first.',
                     ),
                     const SizedBox(height: 10),
-                    _buildDetailsGrid(context, user, websiteUri),
+                    _buildDetailsGrid(context, user, websiteUri, providerLabel),
                     const SizedBox(height: 18),
                     const SettingsSectionHeading(
                       title: 'Verification',
@@ -427,6 +429,7 @@ class CompanyProfileScreen extends StatelessWidget {
     BuildContext context,
     UserModel user,
     Uri? websiteUri,
+    String providerLabel,
   ) {
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -510,9 +513,7 @@ class CompanyProfileScreen extends StatelessWidget {
               child: _DetailTile(
                 icon: Icons.verified_user_outlined,
                 label: 'Account',
-                value: user.isEmailProvider
-                    ? 'Email and password sign-in'
-                    : 'Google sign-in',
+                value: providerLabel,
                 accentColor: CompanyDashboardPalette.success,
               ),
             ),

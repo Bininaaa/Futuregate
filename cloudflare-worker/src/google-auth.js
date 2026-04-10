@@ -96,7 +96,7 @@ async function getAccessToken(env) {
 
   const sa = parseServiceAccountKey(env.FIREBASE_SERVICE_ACCOUNT_KEY);
   const scopes =
-    'https://www.googleapis.com/auth/datastore https://www.googleapis.com/auth/firebase.messaging';
+    'https://www.googleapis.com/auth/datastore https://www.googleapis.com/auth/firebase.messaging https://www.googleapis.com/auth/identitytoolkit';
 
   const jwt = await createSignedJwt(sa.client_email, sa.private_key, scopes);
 

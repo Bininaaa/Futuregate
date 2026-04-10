@@ -120,7 +120,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
     // Email verification gate: only for non-admin email/password users.
     // Admins are identified by their Firestore role and bypass this check
     // so they are never locked out by unverified Firebase Auth email status.
-    if (user.isEmailProvider &&
+    if (authProvider.requiresEmailVerification &&
         !user.isAdmin &&
         !authProvider.isEmailVerified) {
       return const EmailVerificationScreen();

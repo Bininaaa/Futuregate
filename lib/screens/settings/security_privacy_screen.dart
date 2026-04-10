@@ -13,7 +13,12 @@ class SecurityPrivacyScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
     final user = authProvider.userModel;
-    final isEmailProvider = authProvider.isEmailProvider;
+    final hasGoogleProvider = authProvider.hasGoogleProvider;
+    final hasPasswordProvider = authProvider.hasPasswordProvider;
+    final canAddPassword = authProvider.canAddPassword;
+    final canChangePassword = authProvider.canChangePassword;
+    final canChangeEmail = authProvider.canChangeEmail;
+    final providerLabel = authProvider.linkedProviderLabel;
 
     return SettingsPageScaffold(
       title: 'Security & Privacy',
@@ -66,7 +71,22 @@ class SecurityPrivacyScreen extends StatelessWidget {
           SettingsPanel(
             child: Column(
               children: [
-                if (isEmailProvider) ...[
+                if (canAddPassword) ...[
+                  SettingsListRow(
+                    icon: Icons.password_rounded,
+                    iconColor: SettingsFlowPalette.primary,
+                    title: 'Add Password',
+                    subtitle: 'Keep Google sign-in and add email/password too',
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const AddPasswordScreen(),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                ],
+                if (canChangePassword) ...[
                   SettingsListRow(
                     icon: Icons.password_rounded,
                     iconColor: SettingsFlowPalette.primary,
@@ -80,6 +100,8 @@ class SecurityPrivacyScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 10),
+                ],
+                if (canChangeEmail) ...[
                   SettingsListRow(
                     icon: Icons.alternate_email_rounded,
                     iconColor: SettingsFlowPalette.secondary,
@@ -95,12 +117,16 @@ class SecurityPrivacyScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 10),
-                ] else ...[
-                  const SettingsInfoBanner(
+                ],
+                if (hasGoogleProvider) ...[
+                  SettingsInfoBanner(
                     icon: Icons.link_rounded,
-                    title: 'Google-managed account',
-                    message:
-                        'Your password and sign-in email are managed by Google. Security changes should be made through your Google account settings.',
+                    title: hasPasswordProvider
+                        ? 'Google-linked account'
+                        : 'Google-managed account',
+                    message: hasPasswordProvider
+                        ? 'This account can sign in with both Google and email/password, but the sign-in email stays managed through Google.'
+                        : 'This account signs in with Google. You can add a password if you want email/password access too, but the sign-in email itself stays managed through Google.',
                     color: SettingsFlowPalette.secondary,
                   ),
                   const SizedBox(height: 10),
@@ -109,16 +135,16 @@ class SecurityPrivacyScreen extends StatelessWidget {
                   icon: Icons.verified_user_outlined,
                   iconColor: SettingsFlowPalette.success,
                   title: 'Two-step verification',
-                  subtitle: isEmailProvider
-                      ? 'Available through your email provider'
-                      : 'Manage it through your Google account',
+                  subtitle: hasGoogleProvider
+                      ? 'Manage it through your Google account'
+                      : 'Available through your email provider',
                   onTap: () => _showDetailsSheet(
                     context,
                     title: 'Two-step verification',
                     icon: Icons.verified_user_outlined,
-                    message: isEmailProvider
-                        ? 'A dedicated in-app two-step setup is not enabled yet. For now, keep your mailbox protected and use a strong password.'
-                        : 'This account signs in with Google, so two-step verification is managed directly by Google.',
+                    message: hasGoogleProvider
+                        ? 'This account signs in with $providerLabel, so two-step verification is managed directly by Google.'
+                        : 'A dedicated in-app two-step setup is not enabled yet. For now, keep your mailbox protected and use a strong password.',
                   ),
                 ),
                 const SizedBox(height: 10),

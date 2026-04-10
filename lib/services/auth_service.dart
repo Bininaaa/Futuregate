@@ -7,10 +7,13 @@ import 'package:google_sign_in/google_sign_in.dart';
 import '../models/user_model.dart';
 import 'notification_worker_service.dart';
 import 'storage_service.dart';
+import 'worker_api_service.dart';
 
 class AuthService {
   static const String _googleClientId =
       '620923930909-fjgicjfe2ftr5khlslq0fj2m3e3s6bh5.apps.googleusercontent.com';
+  static const String _googleProviderId = 'google.com';
+  static const String _passwordProviderId = 'password';
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -18,12 +21,57 @@ class AuthService {
   final NotificationWorkerService _notificationWorker =
       NotificationWorkerService();
   final StorageService _storageService = StorageService();
+  final WorkerApiService _workerApi = WorkerApiService();
 
   bool _googleInitialized = false;
 
   User? get currentFirebaseUser => _auth.currentUser;
 
   Stream<User?> get authStateChanges => _auth.authStateChanges();
+
+  Set<String> get linkedProviderIds {
+    final user = _auth.currentUser;
+    if (user == null) {
+      return const <String>{};
+    }
+
+    return user.providerData
+        .map((info) => info.providerId.trim())
+        .where((providerId) => providerId.isNotEmpty)
+        .toSet();
+  }
+
+  bool get hasGoogleProvider => linkedProviderIds.contains(_googleProviderId);
+
+  bool get hasPasswordProvider =>
+      linkedProviderIds.contains(_passwordProviderId);
+
+  bool get hasMultipleSignInMethods => linkedProviderIds.length > 1;
+
+  bool get canAddPassword => hasGoogleProvider && !hasPasswordProvider;
+
+  bool get canChangePassword => hasPasswordProvider;
+
+  bool get canChangeEmail => hasPasswordProvider && !hasGoogleProvider;
+
+  bool get requiresEmailVerification =>
+      hasPasswordProvider && !hasGoogleProvider;
+
+  String get linkedProviderLabel {
+    if (hasGoogleProvider && hasPasswordProvider) {
+      return 'Google + Email & Password';
+    }
+
+    if (hasPasswordProvider) {
+      return 'Email & Password';
+    }
+
+    if (hasGoogleProvider) {
+      return 'Google';
+    }
+
+    return 'Unknown';
+  }
 
   Future<void> _initGoogleSignIn() async {
     if (_googleInitialized) return;
@@ -339,7 +387,48 @@ class AuthService {
   // --------------- Password Reset ---------------
 
   Future<void> sendPasswordResetEmail(String email) async {
-    await _auth.sendPasswordResetEmail(email: email);
+    final normalizedEmail = email.trim();
+
+    try {
+      await _workerApi.postPublic(
+        '/api/auth/password-reset',
+        body: <String, dynamic>{'email': normalizedEmail},
+      );
+    } on WorkerApiException catch (error) {
+      final message = error.message.trim();
+
+      if (error.statusCode == 400) {
+        throw FirebaseAuthException(
+          code: 'invalid-email',
+          message: message.isNotEmpty
+              ? message
+              : 'The email address is not valid.',
+        );
+      }
+
+      if (error.statusCode == 409) {
+        throw FirebaseAuthException(
+          code: 'password-reset-google-only',
+          message: message.isNotEmpty
+              ? message
+              : 'This account uses Google sign-in. Sign in with Google, then add a password from Settings if you want reset emails later.',
+        );
+      }
+
+      if (error.statusCode == 429) {
+        throw FirebaseAuthException(
+          code: 'too-many-requests',
+          message: message.isNotEmpty
+              ? message
+              : 'Too many attempts. Please try again later.',
+        );
+      }
+
+      throw FirebaseAuthException(
+        code: 'password-reset-failed',
+        message: message.isNotEmpty ? message : 'Failed to send reset email.',
+      );
+    }
   }
 
   // --------------- Re-authentication ---------------
@@ -347,6 +436,13 @@ class AuthService {
   Future<void> reauthenticate(String password) async {
     final user = _auth.currentUser;
     if (user == null) throw Exception('No user signed in');
+    if (!hasPasswordProvider) {
+      throw FirebaseAuthException(
+        code: 'password-provider-not-linked',
+        message:
+            'This account does not use email and password for sensitive changes.',
+      );
+    }
 
     final credential = EmailAuthProvider.credential(
       email: user.email!,
@@ -355,12 +451,54 @@ class AuthService {
     await user.reauthenticateWithCredential(credential);
   }
 
+  // --------------- Add Password ---------------
+
+  Future<void> addPassword({required String newPassword}) async {
+    final user = _auth.currentUser;
+    if (user == null) throw Exception('No user signed in');
+
+    if (!canAddPassword) {
+      throw FirebaseAuthException(
+        code: 'password-already-available',
+        message: 'This account already has email and password sign-in enabled.',
+      );
+    }
+
+    final email = (user.email ?? '').trim();
+    if (email.isEmpty) {
+      throw FirebaseAuthException(
+        code: 'missing-email',
+        message:
+            'This account does not have an email address available for password sign-in.',
+      );
+    }
+
+    final credential = EmailAuthProvider.credential(
+      email: email,
+      password: newPassword,
+    );
+
+    final userCredential = await user.linkWithCredential(credential);
+    final linkedUser = userCredential.user ?? _auth.currentUser;
+    if (linkedUser != null) {
+      await _syncUserEmailToProfile(linkedUser);
+    }
+  }
+
   // --------------- Change Password ---------------
 
   Future<void> changePassword({
     required String currentPassword,
     required String newPassword,
   }) async {
+    if (!canChangePassword) {
+      throw FirebaseAuthException(
+        code: 'password-change-not-supported',
+        message:
+            'Password changes are only available for accounts with email and password sign-in.',
+      );
+    }
+
     await reauthenticate(currentPassword);
     await _auth.currentUser!.updatePassword(newPassword);
   }
@@ -371,6 +509,15 @@ class AuthService {
     required String currentPassword,
     required String newEmail,
   }) async {
+    if (!canChangeEmail) {
+      throw FirebaseAuthException(
+        code: 'email-change-not-supported',
+        message: hasGoogleProvider
+            ? 'This account is linked to Google, so the sign-in email must be managed through Google.'
+            : 'Email changes are only available for email and password accounts.',
+      );
+    }
+
     await reauthenticate(currentPassword);
     await _auth.currentUser!.verifyBeforeUpdateEmail(newEmail);
   }
@@ -378,17 +525,14 @@ class AuthService {
   // --------------- Provider Detection ---------------
 
   String getSignInProvider() {
-    final user = _auth.currentUser;
-    if (user == null) return 'unknown';
-    for (final info in user.providerData) {
-      if (info.providerId == 'google.com') return 'google';
-      if (info.providerId == 'password') return 'email';
-    }
+    if (hasGoogleProvider && hasPasswordProvider) return 'multiple';
+    if (hasGoogleProvider) return 'google';
+    if (hasPasswordProvider) return 'email';
     return 'unknown';
   }
 
   Future<void> logout() async {
-    final shouldSignOutGoogle = getSignInProvider() == 'google';
+    final shouldSignOutGoogle = hasGoogleProvider;
     await _auth.signOut();
 
     if (shouldSignOutGoogle) {
@@ -438,7 +582,14 @@ class AuthService {
 
     setIfMissing('uid', user.uid);
     setIfBlank('fullName', user.displayName ?? '');
-    setIfBlank('email', user.email ?? '');
+    final normalizedAuthEmail = (user.email ?? '').trim();
+    final normalizedStoredEmail = (existingData['email'] ?? '')
+        .toString()
+        .trim();
+    if (normalizedAuthEmail.isNotEmpty &&
+        normalizedAuthEmail != normalizedStoredEmail) {
+      patch['email'] = normalizedAuthEmail;
+    }
     setIfMissing('role', 'student');
     setIfMissing('academicLevel', '');
     setIfMissing('phone', '');
@@ -481,16 +632,27 @@ class AuthService {
 
   String _detectProviderForUser(User user) {
     for (final info in user.providerData) {
-      if (info.providerId == 'google.com') {
+      if (info.providerId == _googleProviderId) {
         return 'google';
       }
 
-      if (info.providerId == 'password') {
+      if (info.providerId == _passwordProviderId) {
         return 'email';
       }
     }
 
     return '';
+  }
+
+  Future<void> _syncUserEmailToProfile(User user) async {
+    final email = (user.email ?? '').trim();
+    if (email.isEmpty) {
+      return;
+    }
+
+    await _firestore.collection('users').doc(user.uid).set({
+      'email': email,
+    }, SetOptions(merge: true));
   }
 
   Future<void> _cleanupGoogleSignInSession() async {

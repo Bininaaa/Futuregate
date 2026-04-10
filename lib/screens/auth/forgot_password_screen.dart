@@ -97,6 +97,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               ),
             ],
           ),
+          const SizedBox(height: 22),
+          AppInlineMessage(
+            type: AppFeedbackType.warning,
+            title: 'Using Google sign-in?',
+            message:
+                'If you created this account with Google, use Google to sign in now. After that, you can add a password from Settings if you want email/password access too.',
+            compact: true,
+          ),
           if ((_errorMessage ?? '').trim().isNotEmpty) ...<Widget>[
             const SizedBox(height: 22),
             AppInlineMessage(
@@ -166,6 +174,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           message: 'Open your inbox and follow the reset link.',
           compact: true,
           accentColor: const Color(0xFF179D6C),
+        ),
+        const SizedBox(height: 14),
+        AppInlineMessage(
+          type: AppFeedbackType.warning,
+          message:
+              'If this account normally signs in with Google, return and use Google now, then add a password later from Settings if needed.',
+          compact: true,
         ),
         const SizedBox(height: 22),
         AppPrimaryButton(
