@@ -82,6 +82,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
 
   bool _didLoadBaseData = false;
   String? _loadedStudentId;
+  bool _isBootstrappingDashboard = true;
   late DateTime _now;
   Timer? _clockTimer;
 
@@ -92,11 +93,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     _startClock();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      _loadBaseData();
-      final studentId = context.read<AuthProvider>().userModel?.uid.trim();
-      if (studentId != null && studentId.isNotEmpty) {
-        _loadStudentData(studentId);
-      }
+      _bootstrapDashboard();
     });
   }
 
@@ -119,57 +116,80 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     });
   }
 
-  void _loadBaseData() {
+  Future<void> _bootstrapDashboard() async {
+    final studentId = context.read<AuthProvider>().userModel?.uid.trim();
+    final futures = <Future<void>>[_loadBaseData()];
+
+    if (studentId != null && studentId.isNotEmpty) {
+      futures.add(_loadStudentData(studentId));
+    }
+
+    try {
+      await Future.wait(futures);
+    } finally {
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        _isBootstrappingDashboard = false;
+      });
+    }
+  }
+
+  Future<void> _loadBaseData() async {
     if (_didLoadBaseData) {
       return;
     }
 
     _didLoadBaseData = true;
-    context.read<OpportunityProvider>().fetchFeaturedOpportunities();
-    context.read<OpportunityProvider>().fetchOpportunities();
-    context.read<TrainingProvider>().fetchTrainings();
-    context.read<ScholarshipProvider>().fetchScholarships();
+    await Future.wait([
+      context.read<OpportunityProvider>().fetchOpportunities(),
+      context.read<TrainingProvider>().fetchTrainings(),
+      context.read<ScholarshipProvider>().fetchScholarships(),
+    ]);
   }
 
-  void _loadStudentData(String studentId) {
+  Future<void> _loadStudentData(String studentId) async {
     if (_loadedStudentId == studentId) {
       return;
     }
 
     _loadedStudentId = studentId;
-    context.read<StudentProvider>().loadStudentProfile(studentId);
-    context.read<SavedOpportunityProvider>().fetchSavedOpportunities(studentId);
-    context.read<SavedScholarshipProvider>().fetchSavedScholarships(studentId);
-    context.read<TrainingProvider>().fetchSavedTrainings(studentId);
-    context.read<ProjectIdeaProvider>().fetchSavedIdeas(studentId);
-    context.read<ApplicationProvider>().fetchSubmittedApplications(studentId);
-    context.read<CvProvider>().loadCv(studentId);
-  }
-
-  void _ensureDashboardData(UserModel? user) {
-    final studentId = user?.uid.trim();
-    if (_didLoadBaseData &&
-        (studentId == null ||
-            studentId.isEmpty ||
-            _loadedStudentId == studentId)) {
-      return;
-    }
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) {
-        return;
-      }
-
-      _loadBaseData();
-      if (studentId != null && studentId.isNotEmpty) {
-        _loadStudentData(studentId);
-      }
-    });
+    await Future.wait([
+      context.read<StudentProvider>().loadStudentProfile(studentId),
+      context.read<SavedOpportunityProvider>().fetchSavedOpportunities(
+        studentId,
+      ),
+      context.read<SavedScholarshipProvider>().fetchSavedScholarships(
+        studentId,
+      ),
+      context.read<TrainingProvider>().fetchSavedTrainings(studentId),
+      context.read<ProjectIdeaProvider>().fetchSavedIdeas(studentId),
+      context.read<ApplicationProvider>().fetchSubmittedApplications(studentId),
+      context.read<CvProvider>().loadCv(studentId),
+    ]);
   }
 
   @override
   Widget build(BuildContext context) {
     final authUser = context.watch<AuthProvider>().userModel;
+    if (_isBootstrappingDashboard) {
+      final loadingScaffold = const Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SafeArea(
+          top: false,
+          child: OpportunityDashboardLoadingSkeleton(),
+        ),
+      );
+
+      if (widget.embedded) {
+        return loadingScaffold;
+      }
+
+      return AppShellBackground(child: loadingScaffold);
+    }
+
     final user = context.watch<StudentProvider>().student ?? authUser;
     final cv = context.watch<CvProvider>().cv;
     final opportunityProvider = context.watch<OpportunityProvider>();
@@ -192,7 +212,6 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
       savedTrainingCount: trainingProvider.savedTrainings.length,
       savedIdeaCount: projectIdeaProvider.savedIdeas.length,
     );
-    _ensureDashboardData(user);
 
     final scaffold = Scaffold(
       backgroundColor: Colors.transparent,

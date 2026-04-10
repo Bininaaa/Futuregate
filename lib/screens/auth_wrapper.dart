@@ -55,7 +55,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
       return NoInternetScreen(onRetry: () => connectivityProvider.checkNow());
     }
 
-    if (!authProvider.isInitialLoadDone && authProvider.isLoading) {
+    if (!authProvider.isInitialLoadDone) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
