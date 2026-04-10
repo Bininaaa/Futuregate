@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -626,52 +624,6 @@ class TrainingCourseListCard extends StatelessWidget {
   }
 }
 
-class BrowseMoreTopicsCard extends StatelessWidget {
-  const BrowseMoreTopicsCard({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return CustomPaint(
-      painter: _DashedRoundedBorderPainter(
-        color: OpportunityDashboardPalette.border,
-        radius: 26,
-      ),
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.fromLTRB(24, 22, 24, 22),
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.72),
-          borderRadius: BorderRadius.circular(26),
-        ),
-        child: Column(
-          children: [
-            Text(
-              'Browse More Topics',
-              textAlign: TextAlign.center,
-              style: GoogleFonts.poppins(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-                color: OpportunityDashboardPalette.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Explore 500+ other professional certifications',
-              textAlign: TextAlign.center,
-              style: GoogleFonts.poppins(
-                fontSize: 12.5,
-                fontWeight: FontWeight.w500,
-                height: 1.55,
-                color: OpportunityDashboardPalette.textSecondary,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 enum TrainingLayoutView { grid, list }
 
 class TrainingLayoutToggle extends StatelessWidget {
@@ -708,12 +660,14 @@ class TrainingLayoutToggle extends StatelessWidget {
 class TrainingCatalogueSelector extends StatelessWidget {
   final List<String> domains;
   final String selectedDomain;
+  final Widget? headerTrailing;
   final ValueChanged<String> onSelected;
 
   const TrainingCatalogueSelector({
     super.key,
     required this.domains,
     required this.selectedDomain,
+    this.headerTrailing,
     required this.onSelected,
   });
 
@@ -722,22 +676,38 @@ class TrainingCatalogueSelector extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Catalogue',
-          style: GoogleFonts.poppins(
-            fontSize: 13.5,
-            fontWeight: FontWeight.w700,
-            color: OpportunityDashboardPalette.textPrimary,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          'Choose your domain',
-          style: GoogleFonts.poppins(
-            fontSize: 11.5,
-            fontWeight: FontWeight.w500,
-            color: OpportunityDashboardPalette.textSecondary,
-          ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Catalogue',
+                    style: GoogleFonts.poppins(
+                      fontSize: 13.5,
+                      fontWeight: FontWeight.w700,
+                      color: OpportunityDashboardPalette.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Choose your domain',
+                    style: GoogleFonts.poppins(
+                      fontSize: 11.5,
+                      fontWeight: FontWeight.w500,
+                      color: OpportunityDashboardPalette.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (headerTrailing != null) ...[
+              const SizedBox(width: 12),
+              headerTrailing!,
+            ],
+          ],
         ),
         const SizedBox(height: 10),
         Wrap(
@@ -1774,47 +1744,6 @@ class _SaveTrainingButton extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-class _DashedRoundedBorderPainter extends CustomPainter {
-  final Color color;
-  final double radius;
-
-  const _DashedRoundedBorderPainter({
-    required this.color,
-    required this.radius,
-  });
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.2;
-
-    final rect = Offset.zero & size;
-    final path = Path()
-      ..addRRect(
-        RRect.fromRectAndRadius(
-          rect.deflate(paint.strokeWidth / 2),
-          Radius.circular(radius),
-        ),
-      );
-
-    for (final metric in path.computeMetrics()) {
-      var distance = 0.0;
-      while (distance < metric.length) {
-        final end = math.min(distance + 8, metric.length);
-        canvas.drawPath(metric.extractPath(distance, end), paint);
-        distance = end + 6;
-      }
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant _DashedRoundedBorderPainter oldDelegate) {
-    return oldDelegate.color != color || oldDelegate.radius != radius;
   }
 }
 

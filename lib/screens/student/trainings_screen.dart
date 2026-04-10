@@ -253,21 +253,79 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
     return activeDomain == 'All' || _domainLabelFor(training) == activeDomain;
   }
 
-  List<TrainingModel> _recommendedTrainings(List<TrainingModel> items) {
+  List<String> _profileRecommendationKeywords({
+    required String fieldOfStudy,
+    required String researchDomain,
+  }) {
+    final keywords = <String>{};
+
+    for (final value in <String>[fieldOfStudy, researchDomain]) {
+      final normalized = value.trim().toLowerCase();
+      if (normalized.length >= 3) {
+        keywords.add(normalized);
+      }
+
+      for (final part in normalized.split(RegExp(r'[^a-z0-9]+'))) {
+        if (part.length >= 4) {
+          keywords.add(part);
+        }
+      }
+    }
+
+    return keywords.toList(growable: false);
+  }
+
+  bool _matchesRecommendationProfile(
+    TrainingModel training,
+    List<String> profileKeywords,
+  ) {
+    if (profileKeywords.isEmpty) {
+      return false;
+    }
+
+    final searchableText = [
+      training.domain,
+      training.title,
+      training.description,
+      training.provider,
+    ].join(' ').toLowerCase();
+
+    return profileKeywords.any(searchableText.contains);
+  }
+
+  List<TrainingModel> _recommendedTrainings(
+    List<TrainingModel> items, {
+    List<String> profileKeywords = const <String>[],
+  }) {
     if (items.isEmpty) {
       return const [];
     }
 
-    final featured = items.where((item) => item.isFeatured).toList();
-    final remaining = items.where((item) => !item.isFeatured).toList();
-    final selected = <TrainingModel>[...featured.take(3)];
+    final selected = <TrainingModel>[];
 
-    final needed = 3 - selected.length;
-    if (needed > 0) {
-      selected.addAll(remaining.take(needed));
+    void addCandidates(Iterable<TrainingModel> candidates) {
+      for (final training in candidates) {
+        if (selected.any((item) => item.id == training.id)) {
+          continue;
+        }
+
+        selected.add(training);
+        if (selected.length == 2) {
+          return;
+        }
+      }
     }
 
-    return selected;
+    addCandidates(
+      items.where(
+        (training) =>
+            _matchesRecommendationProfile(training, profileKeywords),
+      ),
+    );
+    addCandidates(items.where((training) => training.isFeatured));
+    addCandidates(items);
+
+    return selected.take(2).toList(growable: false);
   }
 
   TrainingModel? _findTrainingById(
@@ -515,9 +573,14 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final currentUser = context.watch<AuthProvider>().userModel;
     final provider = context.watch<TrainingProvider>();
     final approvedTrainings = _sortedApprovedTrainings(provider.trainings);
     final availableDomains = _availableDomains(approvedTrainings);
+    final profileKeywords = _profileRecommendationKeywords(
+      fieldOfStudy: currentUser?.fieldOfStudy ?? '',
+      researchDomain: currentUser?.researchDomain ?? '',
+    );
     final activeDomain = availableDomains.contains(_selectedDomain)
         ? _selectedDomain
         : 'All';
@@ -525,7 +588,10 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
         .where((training) => _matchesDomain(training, activeDomain))
         .toList();
     final hasApprovedTrainings = approvedTrainings.isNotEmpty;
-    final recommendedTrainings = _recommendedTrainings(approvedTrainings);
+    final recommendedTrainings = _recommendedTrainings(
+      approvedTrainings,
+      profileKeywords: profileKeywords,
+    );
     final recommendedIds = recommendedTrainings
         .map((training) => training.id)
         .toSet();
@@ -548,7 +614,10 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
         ? 'No training programs are available right now.'
         : 'No training programs are available right now for $activeDomain.';
 
-    Widget buildTrainingCard(TrainingCourseCardData card) {
+    Widget buildTrainingCard(
+      TrainingCourseCardData card, {
+      TrainingLayoutView layoutView = TrainingLayoutView.grid,
+    }) {
       final training = _findTrainingById(approvedTrainings, card.id);
       if (training == null) {
         return const SizedBox.shrink();
@@ -565,7 +634,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
       final isSaved = provider.isTrainingSaved(training.id);
       final isSaveBusy = provider.isTrainingBusy(training.id);
 
-      final cardWidget = _trainingLayoutView == TrainingLayoutView.grid
+      final cardWidget = layoutView == TrainingLayoutView.grid
           ? TrainingCourseCard(
               data: card,
               onTap: onTap,
@@ -637,21 +706,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
                       ),
                     ],
                     const SizedBox(height: 18),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TrainingSectionTitle(title: sectionTitle),
-                        ),
-                        TrainingLayoutToggle(
-                          view: _trainingLayoutView,
-                          onChanged: (view) {
-                            setState(() {
-                              _trainingLayoutView = view;
-                            });
-                          },
-                        ),
-                      ],
-                    ),
+                    TrainingSectionTitle(title: sectionTitle),
                     const SizedBox(height: 12),
                     if (showTopEmptyState)
                       TrainingProgramsEmptyState(
@@ -661,12 +716,18 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
                     else
                       ...topCards.map(buildTrainingCard),
                     if (hasApprovedTrainings) ...[
-                      const SizedBox(height: 6),
-                      const BrowseMoreTopicsCard(),
                       const SizedBox(height: 10),
                       TrainingCatalogueSelector(
                         domains: availableDomains,
                         selectedDomain: activeDomain,
+                        headerTrailing: TrainingLayoutToggle(
+                          view: _trainingLayoutView,
+                          onChanged: (view) {
+                            setState(() {
+                              _trainingLayoutView = view;
+                            });
+                          },
+                        ),
                         onSelected: (domain) {
                           setState(() {
                             _selectedDomain = domain;
@@ -681,7 +742,12 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
                         ),
                       ] else if (additionalCards.isNotEmpty) ...[
                         const SizedBox(height: 16),
-                        ...additionalCards.map(buildTrainingCard),
+                        ...additionalCards.map(
+                          (card) => buildTrainingCard(
+                            card,
+                            layoutView: _trainingLayoutView,
+                          ),
+                        ),
                       ],
                     ],
                   ]),

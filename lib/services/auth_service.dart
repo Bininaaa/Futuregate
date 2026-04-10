@@ -2,12 +2,16 @@ import 'dart:typed_data';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:google_sign_in/google_sign_in.dart';
 import '../models/user_model.dart';
 import 'notification_worker_service.dart';
 import 'storage_service.dart';
 
 class AuthService {
+  static const String _googleClientId =
+      '620923930909-fjgicjfe2ftr5khlslq0fj2m3e3s6bh5.apps.googleusercontent.com';
+
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
@@ -24,7 +28,10 @@ class AuthService {
   Future<void> _initGoogleSignIn() async {
     if (_googleInitialized) return;
 
-    await _googleSignIn.initialize();
+    await _googleSignIn.initialize(
+      clientId: kIsWeb ? _googleClientId : null,
+      serverClientId: _googleClientId,
+    );
     _googleInitialized = true;
   }
 
@@ -86,6 +93,7 @@ class AuthService {
       'isActive': true,
       'createdAt': FieldValue.serverTimestamp(),
       'provider': 'email',
+      'studentOnboardingPending': false,
     };
 
     try {
@@ -168,6 +176,7 @@ class AuthService {
       'isActive': true,
       'createdAt': FieldValue.serverTimestamp(),
       'provider': 'email',
+      'studentOnboardingPending': false,
     };
 
     try {
@@ -193,73 +202,119 @@ class AuthService {
   Future<UserCredential> signInWithGoogle() async {
     await _initGoogleSignIn();
 
-    final GoogleSignInAccount googleUser = await _googleSignIn.authenticate();
+    try {
+      final GoogleSignInAccount googleUser = await _googleSignIn.authenticate();
 
-    final GoogleSignInAuthentication googleAuth = googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth = googleUser.authentication;
+      final idToken = googleAuth.idToken?.trim() ?? '';
 
-    final OAuthCredential credential = GoogleAuthProvider.credential(
-      idToken: googleAuth.idToken,
-    );
+      if (idToken.isEmpty) {
+        throw FirebaseAuthException(
+          code: 'missing-google-id-token',
+          message:
+              'Google sign-in could not retrieve the required account token.',
+        );
+      }
 
-    final UserCredential userCredential = await _auth.signInWithCredential(
-      credential,
-    );
-
-    final User? user = userCredential.user;
-
-    if (user == null) {
-      throw Exception('Google sign in failed');
-    }
-
-    final docRef = _firestore.collection('users').doc(user.uid);
-    final doc = await docRef.get();
-
-    if (!doc.exists) {
-      final userData = {
-        'uid': user.uid,
-        'fullName': user.displayName ?? '',
-        'email': user.email ?? '',
-        'role': 'student',
-        'academicLevel': '',
-        'phone': '',
-        'location': '',
-        'profileImage': user.photoURL ?? '',
-        'photoType': null,
-        'avatarId': null,
-        'university': '',
-        'fieldOfStudy': '',
-        'bio': '',
-        'companyName': '',
-        'sector': '',
-        'description': '',
-        'website': '',
-        'logo': '',
-        'adminLevel': '',
-        'researchTopic': '',
-        'laboratory': '',
-        'supervisor': '',
-        'researchDomain': '',
-        'approvalStatus': '',
-        'isActive': true,
-        'createdAt': FieldValue.serverTimestamp(),
-        'provider': 'google',
-      };
-
-      await docRef.set(userData);
-    } else {
-      await _repairLegacyUserProfile(
-        user: user,
-        docRef: docRef,
-        existingData: doc.data() ?? const <String, dynamic>{},
+      final OAuthCredential credential = GoogleAuthProvider.credential(
+        idToken: idToken,
       );
-    }
 
-    return userCredential;
+      final UserCredential userCredential = await _auth.signInWithCredential(
+        credential,
+      );
+
+      final User? user = userCredential.user;
+
+      if (user == null) {
+        throw FirebaseAuthException(
+          code: 'google-user-missing',
+          message: 'Google sign in failed.',
+        );
+      }
+
+      final docRef = _firestore.collection('users').doc(user.uid);
+      final doc = await docRef.get();
+
+      if (!doc.exists) {
+        final userData = {
+          'uid': user.uid,
+          'fullName': user.displayName ?? '',
+          'email': user.email ?? '',
+          'role': 'student',
+          'academicLevel': '',
+          'phone': '',
+          'location': '',
+          'profileImage': user.photoURL ?? '',
+          'photoType': null,
+          'avatarId': null,
+          'university': '',
+          'fieldOfStudy': '',
+          'bio': '',
+          'companyName': '',
+          'sector': '',
+          'description': '',
+          'website': '',
+          'logo': '',
+          'adminLevel': '',
+          'researchTopic': '',
+          'laboratory': '',
+          'supervisor': '',
+          'researchDomain': '',
+          'approvalStatus': '',
+          'isActive': true,
+          'createdAt': FieldValue.serverTimestamp(),
+          'provider': 'google',
+          'studentOnboardingPending': true,
+        };
+
+        await docRef.set(userData);
+      } else {
+        await _repairLegacyUserProfile(
+          user: user,
+          docRef: docRef,
+          existingData: doc.data() ?? const <String, dynamic>{},
+        );
+      }
+
+      return userCredential;
+    } catch (_) {
+      await _cleanupGoogleSignInSession();
+      rethrow;
+    }
   }
 
   Future<void> updateAcademicLevel(String uid, String academicLevel) async {
     await _firestore.collection('users').doc(uid).update({
       'academicLevel': academicLevel,
+    });
+  }
+
+  Future<void> completeStudentOnboarding({
+    required String uid,
+    required String fullName,
+    required String phone,
+    required String location,
+    required String university,
+    required String fieldOfStudy,
+    required String bio,
+    String researchTopic = '',
+    String laboratory = '',
+    String supervisor = '',
+    String researchDomain = '',
+  }) async {
+    await _firestore.collection('users').doc(uid).update({
+      'fullName': fullName,
+      'phone': phone,
+      'location': location,
+      'university': university,
+      'fieldOfStudy': fieldOfStudy,
+      'bio': bio,
+      'researchTopic': researchTopic,
+      'laboratory': laboratory,
+      'supervisor': supervisor,
+      'researchDomain': researchDomain,
+      'studentOnboardingPending': false,
     });
   }
 
@@ -333,7 +388,12 @@ class AuthService {
   }
 
   Future<void> logout() async {
+    final shouldSignOutGoogle = getSignInProvider() == 'google';
     await _auth.signOut();
+
+    if (shouldSignOutGoogle) {
+      await _cleanupGoogleSignInSession();
+    }
   }
 
   Future<UserModel?> getCurrentUserProfile() async {
@@ -399,6 +459,7 @@ class AuthService {
     setIfMissing('supervisor', '');
     setIfMissing('researchDomain', '');
     setIfMissing('isActive', true);
+    setIfMissing('studentOnboardingPending', false);
 
     if (!existingData.containsKey('profileImage')) {
       patch['profileImage'] = (user.photoURL ?? '').trim();
@@ -430,5 +491,20 @@ class AuthService {
     }
 
     return '';
+  }
+
+  Future<void> _cleanupGoogleSignInSession() async {
+    try {
+      await _auth.signOut();
+    } catch (_) {
+      // Ignore cleanup failures after auth exceptions.
+    }
+
+    try {
+      await _initGoogleSignIn();
+      await _googleSignIn.signOut();
+    } catch (_) {
+      // Ignore cleanup failures after auth exceptions.
+    }
   }
 }

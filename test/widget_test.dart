@@ -96,7 +96,26 @@ class FakeAuthProvider extends ChangeNotifier implements AuthProvider {
   bool get needsAcademicLevel => false;
 
   @override
+  bool get needsStudentOnboarding => false;
+
+  @override
   Future<String?> updateAcademicLevel(String level) async {
+    return null;
+  }
+
+  @override
+  Future<String?> completeStudentOnboarding({
+    required String fullName,
+    required String phone,
+    required String location,
+    required String university,
+    required String fieldOfStudy,
+    required String bio,
+    String researchTopic = '',
+    String laboratory = '',
+    String supervisor = '',
+    String researchDomain = '',
+  }) async {
     return null;
   }
 

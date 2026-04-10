@@ -127,13 +127,11 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     try {
       await Future.wait(futures);
     } finally {
-      if (!mounted) {
-        return;
+      if (mounted) {
+        setState(() {
+          _isBootstrappingDashboard = false;
+        });
       }
-
-      setState(() {
-        _isBootstrappingDashboard = false;
-      });
     }
   }
 

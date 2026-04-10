@@ -20,6 +20,7 @@ import '../widgets/no_internet_screen.dart';
 import 'auth/login_screen.dart';
 import 'auth/academic_level_selection_screen.dart';
 import 'auth/email_verification_screen.dart';
+import 'auth/student_onboarding_info_screen.dart';
 import 'admin/home_screen.dart' as admin;
 import 'company/company_approval_status_screen.dart';
 import 'company/home_screen.dart' as company;
@@ -131,6 +132,10 @@ class _AuthWrapperState extends State<AuthWrapper> {
 
     if (user.needsAcademicLevel) {
       return const AcademicLevelSelectionScreen();
+    }
+
+    if (user.needsStudentOnboarding) {
+      return const StudentOnboardingInfoScreen();
     }
 
     if (user.role == 'student') {

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../config/app_navigation.dart';
 import '../models/user_model.dart';
@@ -24,6 +25,8 @@ class AuthProvider extends ChangeNotifier {
   bool get isBlockedOnLogin => _isBlockedOnLogin;
 
   bool get needsAcademicLevel => _userModel?.needsAcademicLevel ?? false;
+  bool get needsStudentOnboarding =>
+      _userModel?.needsStudentOnboarding ?? false;
 
   void clearBlockedFlag() {
     _isBlockedOnLogin = false;
@@ -293,12 +296,64 @@ class AuthProvider extends ChangeNotifier {
       }
 
       return null;
+    } on GoogleSignInException catch (e) {
+      return _mapGoogleSignInError(e);
+    } on FirebaseAuthException catch (e) {
+      return _mapGoogleSignInError(e);
     } catch (e) {
-      return e.toString();
+      return _mapGoogleSignInError(e);
     } finally {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  static String _mapGoogleSignInError(Object error) {
+    if (error is GoogleSignInException) {
+      switch (error.code) {
+        case GoogleSignInExceptionCode.canceled:
+          return 'Google sign-in was canceled.';
+        case GoogleSignInExceptionCode.interrupted:
+          return 'Google sign-in was interrupted. Please try again.';
+        case GoogleSignInExceptionCode.clientConfigurationError:
+        case GoogleSignInExceptionCode.providerConfigurationError:
+          return 'Google sign-in is not configured correctly for this app build.';
+        case GoogleSignInExceptionCode.uiUnavailable:
+          return 'Google sign-in could not open right now. Please try again.';
+        case GoogleSignInExceptionCode.userMismatch:
+          return 'Google sign-in used a different account than expected. Please try again.';
+        case GoogleSignInExceptionCode.unknownError:
+          final description = (error.description ?? '').trim();
+          if (description.isNotEmpty) {
+            return description;
+          }
+          return 'Google sign-in failed. Please try again.';
+      }
+    }
+
+    if (error is FirebaseAuthException) {
+      switch (error.code) {
+        case 'missing-google-id-token':
+          return 'Google sign-in did not return the required token. Check the Google/Firebase setup.';
+        case 'account-exists-with-different-credential':
+          return 'This email is already linked to another sign-in method.';
+        case 'invalid-credential':
+          return 'Google sign-in returned an invalid credential. Please try again.';
+        case 'network-request-failed':
+          return 'Network error. Please check your connection and try again.';
+        default:
+          return error.message ?? 'Google sign-in failed. Please try again.';
+      }
+    }
+
+    final message = error.toString().trim();
+    if (message.isEmpty) {
+      return 'Google sign-in failed. Please try again.';
+    }
+
+    return message.startsWith('Exception: ')
+        ? message.substring('Exception: '.length)
+        : message;
   }
 
   Future<String?> updateAcademicLevel(String academicLevel) async {
@@ -309,6 +364,51 @@ class AuthProvider extends ChangeNotifier {
       if (_userModel == null) return 'User not found';
 
       await _authService.updateAcademicLevel(_userModel!.uid, academicLevel);
+      _userModel = await _authService.getCurrentUserProfile();
+
+      return null;
+    } catch (e) {
+      return e.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<String?> completeStudentOnboarding({
+    required String fullName,
+    required String phone,
+    required String location,
+    required String university,
+    required String fieldOfStudy,
+    required String bio,
+    String researchTopic = '',
+    String laboratory = '',
+    String supervisor = '',
+    String researchDomain = '',
+  }) async {
+    try {
+      _isLoading = true;
+      notifyListeners();
+
+      if (_userModel == null) {
+        return 'User not found';
+      }
+
+      await _authService.completeStudentOnboarding(
+        uid: _userModel!.uid,
+        fullName: fullName,
+        phone: phone,
+        location: location,
+        university: university,
+        fieldOfStudy: fieldOfStudy,
+        bio: bio,
+        researchTopic: researchTopic,
+        laboratory: laboratory,
+        supervisor: supervisor,
+        researchDomain: researchDomain,
+      );
+
       _userModel = await _authService.getCurrentUserProfile();
 
       return null;

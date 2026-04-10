@@ -34,11 +34,14 @@ class UserModel {
   final Timestamp? lastSeenAt;
   final bool isActive;
   final String provider; // 'email' or 'google'
+  final bool studentOnboardingPending;
 
   bool get isEmailProvider => provider == 'email';
   bool get isGoogleProvider => provider == 'google';
   bool get isAdmin => role == 'admin';
   bool get isCompany => role == 'company';
+  bool get needsStudentOnboarding =>
+      role == 'student' && studentOnboardingPending;
 
   UserModel({
     required this.uid,
@@ -74,6 +77,7 @@ class UserModel {
     this.approvalStatus = '',
     this.isOnline = false,
     this.lastSeenAt,
+    this.studentOnboardingPending = false,
   });
 
   bool get needsAcademicLevel =>
@@ -139,6 +143,7 @@ class UserModel {
       lastSeenAt: _parseTimestamp(map['lastSeenAt']),
       isActive: map['isActive'] ?? true,
       provider: map['provider'] ?? 'email',
+      studentOnboardingPending: map['studentOnboardingPending'] == true,
     );
   }
 
@@ -177,6 +182,7 @@ class UserModel {
       'lastSeenAt': lastSeenAt,
       'isActive': isActive,
       'provider': provider,
+      'studentOnboardingPending': studentOnboardingPending,
     };
   }
 
@@ -214,6 +220,7 @@ class UserModel {
     Timestamp? lastSeenAt,
     bool? isActive,
     String? provider,
+    bool? studentOnboardingPending,
   }) {
     return UserModel(
       uid: uid ?? this.uid,
@@ -254,6 +261,8 @@ class UserModel {
       lastSeenAt: lastSeenAt ?? this.lastSeenAt,
       isActive: isActive ?? this.isActive,
       provider: provider ?? this.provider,
+      studentOnboardingPending:
+          studentOnboardingPending ?? this.studentOnboardingPending,
     );
   }
 
