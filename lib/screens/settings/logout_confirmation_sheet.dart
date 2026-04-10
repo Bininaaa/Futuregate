@@ -58,7 +58,7 @@ class LogoutConfirmationSheet extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'Log out of AvenirDZ?',
+            'Sign out of AvenirDZ?',
             style: SettingsFlowTheme.sectionTitle(),
             textAlign: TextAlign.center,
           ),
@@ -76,7 +76,7 @@ class LogoutConfirmationSheet extends StatelessWidget {
                 onPressed: () => Navigator.pop(context, false),
               ),
               SettingsPrimaryButton(
-                label: 'Logout',
+                label: 'Sign out',
                 backgroundColor: SettingsFlowPalette.error,
                 onPressed: () => Navigator.pop(context, true),
               ),

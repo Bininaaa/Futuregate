@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../config/app_navigation.dart';
 import '../models/user_model.dart';
 import '../services/auth_service.dart';
 
@@ -431,6 +432,7 @@ class AuthProvider extends ChangeNotifier {
     await _authService.logout();
     _userModel = null;
     notifyListeners();
+    appNavigatorKey.currentState?.popUntil((route) => route.isFirst);
   }
 
   @override

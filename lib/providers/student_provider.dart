@@ -147,4 +147,10 @@ class StudentProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  void clearStudent() {
+    _student = null;
+    _isLoading = false;
+    notifyListeners();
+  }
 }

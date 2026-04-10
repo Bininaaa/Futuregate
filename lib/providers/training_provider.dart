@@ -187,4 +187,13 @@ class TrainingProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  void clearSavedState() {
+    _savedTrainings = <TrainingModel>[];
+    _savedTrainingIds.clear();
+    _busyTrainingIds.clear();
+    _isSavedLoading = false;
+    _savedErrorMessage = null;
+    notifyListeners();
+  }
 }

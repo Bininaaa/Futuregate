@@ -170,7 +170,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           const SizedBox(width: 8),
                           AdminIconActionButton(
                             icon: Icons.logout_rounded,
-                            tooltip: 'Logout',
+                            tooltip: 'Sign out',
                             color: AdminPalette.danger,
                             onTap: _showLogoutDialog,
                           ),
@@ -308,8 +308,8 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('Logout'),
-        content: const Text('Are you sure you want to logout?'),
+        title: const Text('Sign out'),
+        content: const Text('Are you sure you want to sign out?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
@@ -321,7 +321,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Navigator.pop(ctx);
               context.read<AuthProvider>().logout();
             },
-            child: const Text('Logout'),
+            child: const Text('Sign out'),
           ),
         ],
       ),

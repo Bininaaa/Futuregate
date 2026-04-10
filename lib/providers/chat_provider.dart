@@ -721,6 +721,28 @@ class ChatProvider extends ChangeNotifier {
         message.contains('http request was aborted');
   }
 
+  void resetSession() {
+    _conversationsSub?.cancel();
+    _conversationsSub = null;
+    _messagesSub?.cancel();
+    _messagesSub = null;
+    for (final subscription in _unreadSubs.values) {
+      subscription.cancel();
+    }
+    _unreadSubs.clear();
+    _conversations = <ConversationModel>[];
+    _messages = <MessageModel>[];
+    _isLoading = false;
+    _isSending = false;
+    _error = null;
+    _currentUserId = '';
+    _currentUserRole = '';
+    _activeConversationId = '';
+    _unreadCounts.clear();
+    _resetConversationStateHydration();
+    notifyListeners();
+  }
+
   @override
   void dispose() {
     _conversationsSub?.cancel();

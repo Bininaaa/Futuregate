@@ -4,6 +4,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
+import 'config/app_navigation.dart';
 import 'firebase_options.dart';
 import 'services/notification_service.dart';
 import 'services/presence_service.dart';
@@ -25,9 +26,6 @@ import 'providers/connectivity_provider.dart';
 import 'screens/auth_wrapper.dart';
 import 'screens/notifications_screen.dart';
 import 'widgets/shared/app_feedback.dart';
-
-/// Global navigator key — used for push notification tap navigation.
-final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -53,7 +51,7 @@ void main() async {
 }
 
 void _handleNotificationTap(Map<String, dynamic> data) {
-  final state = navigatorKey.currentState;
+  final state = appNavigatorKey.currentState;
   if (state == null) {
     // App not ready yet — store for later consumption in auth_wrapper.
     NotificationService.pendingNotificationData = data;
@@ -154,7 +152,7 @@ class _PresenceAwareAppState extends State<_PresenceAwareApp>
     WidgetsBinding.instance.addPostFrameCallback((_) => _syncPresence());
 
     return MaterialApp(
-      navigatorKey: navigatorKey,
+      navigatorKey: appNavigatorKey,
       debugShowCheckedModeBanner: false,
       title: 'AvenirDZ',
       theme: ThemeData(

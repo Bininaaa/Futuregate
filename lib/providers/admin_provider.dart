@@ -680,6 +680,39 @@ class AdminProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  void resetSession() {
+    _stats = <String, dynamic>{};
+    _recentUsers = <UserModel>[];
+    _recentOpportunities = <Map<String, dynamic>>[];
+    _recentActivity = <AdminActivityModel>[];
+    _dashboardLoading = false;
+    _dashboardError = null;
+    _allUsers = <UserModel>[];
+    _filteredUsers = <UserModel>[];
+    _userRoleFilter = 'all';
+    _userLevelFilter = 'all';
+    _companyApprovalFilter = 'all';
+    _userSearch = '';
+    _usersLoading = false;
+    _usersError = null;
+    _allProjectIdeas = <ProjectIdeaModel>[];
+    _allApplications = <AdminApplicationItemModel>[];
+    _allOpportunities = <Map<String, dynamic>>[];
+    _allScholarships = <Map<String, dynamic>>[];
+    _allTrainings = <TrainingModel>[];
+    _busyIdeaIds.clear();
+    _busyContentKeys.clear();
+    _moderationLoading = false;
+    _moderationInitialized = false;
+    _moderationError = null;
+    _activityLoading = false;
+    _activityLoadingMore = false;
+    _activityHasMore = true;
+    _activityError = null;
+    _activitySources = _createActivitySourceStates();
+    notifyListeners();
+  }
 }
 
 Map<String, _AdminActivitySourceState> _createActivitySourceStates() {

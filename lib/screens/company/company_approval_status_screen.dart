@@ -276,7 +276,7 @@ class CompanyApprovalStatusScreen extends StatelessWidget {
                           OutlinedButton.icon(
                             onPressed: auth.logout,
                             icon: const Icon(Icons.logout_rounded),
-                            label: const Text('Log Out'),
+                            label: const Text('Sign out'),
                             style: OutlinedButton.styleFrom(
                               minimumSize: const Size(double.infinity, 52),
                               foregroundColor: _ink,

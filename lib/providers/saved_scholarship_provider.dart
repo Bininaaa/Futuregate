@@ -84,4 +84,11 @@ class SavedScholarshipProvider extends ChangeNotifier {
       return _formatError(e);
     }
   }
+
+  void clearSavedScholarships() {
+    _savedScholarships = <SavedScholarshipModel>[];
+    _isLoading = false;
+    _hasLoaded = false;
+    notifyListeners();
+  }
 }

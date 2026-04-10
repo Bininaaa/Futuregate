@@ -126,4 +126,13 @@ class ApplicationProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  void clearSession() {
+    _isLoading = false;
+    _submittedApplicationsCount = 0;
+    _submittedApplicationsLoading = false;
+    _submittedApplicationsError = null;
+    _submittedApplications = <StudentApplicationItemModel>[];
+    notifyListeners();
+  }
 }

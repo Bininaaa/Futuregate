@@ -729,7 +729,7 @@ class CompanyProfileScreen extends StatelessWidget {
           SettingsListRow(
             icon: Icons.logout_rounded,
             iconColor: SettingsFlowPalette.error,
-            title: 'Logout',
+            title: 'Sign out',
             subtitle: 'Sign out of the company workspace',
             destructive: true,
             onTap: () => showLogoutConfirmationSheet(context),

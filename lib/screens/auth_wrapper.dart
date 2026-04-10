@@ -2,19 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
+import '../providers/admin_provider.dart';
+import '../providers/application_provider.dart';
 import '../providers/auth_provider.dart';
-import '../providers/notification_provider.dart';
+import '../providers/chat_provider.dart';
+import '../providers/company_provider.dart';
 import '../providers/connectivity_provider.dart';
+import '../providers/cv_provider.dart';
+import '../providers/notification_provider.dart';
+import '../providers/project_idea_provider.dart';
+import '../providers/saved_opportunity_provider.dart';
+import '../providers/saved_scholarship_provider.dart';
+import '../providers/student_provider.dart';
+import '../providers/training_provider.dart';
 import '../services/notification_service.dart';
 import '../widgets/no_internet_screen.dart';
 import 'auth/login_screen.dart';
-import 'notifications_screen.dart';
 import 'auth/academic_level_selection_screen.dart';
 import 'auth/email_verification_screen.dart';
-import 'student/home_screen.dart' as student;
-import 'company/home_screen.dart' as company;
-import 'company/company_approval_status_screen.dart';
 import 'admin/home_screen.dart' as admin;
+import 'company/company_approval_status_screen.dart';
+import 'company/home_screen.dart' as company;
+import 'notifications_screen.dart';
+import 'student/home_screen.dart' as student;
 
 class AuthWrapper extends StatefulWidget {
   const AuthWrapper({super.key});
@@ -67,6 +77,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
         if (_notificationUserId != null) {
           _notificationUserId = null;
           notificationProvider.stopListening();
+          _resetSignedOutSession();
         }
         return;
       }
@@ -132,6 +143,19 @@ class _AuthWrapperState extends State<AuthWrapper> {
 
     return const LoginScreen();
   }
+
+  void _resetSignedOutSession() {
+    context.read<StudentProvider>().clearStudent();
+    context.read<CvProvider>().clearCv();
+    context.read<ApplicationProvider>().clearSession();
+    context.read<SavedOpportunityProvider>().clearSavedOpportunities();
+    context.read<SavedScholarshipProvider>().clearSavedScholarships();
+    context.read<TrainingProvider>().clearSavedState();
+    context.read<ProjectIdeaProvider>().clearUserSession();
+    context.read<CompanyProvider>().clearSession();
+    context.read<ChatProvider>().resetSession();
+    context.read<AdminProvider>().resetSession();
+  }
 }
 
 class _BlockedScreen extends StatelessWidget {
@@ -191,7 +215,7 @@ class _BlockedScreen extends StatelessWidget {
                   onPressed: onLogout,
                   icon: const Icon(Icons.logout, size: 20),
                   label: Text(
-                    'Log Out',
+                    'Back to sign in',
                     style: GoogleFonts.poppins(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,

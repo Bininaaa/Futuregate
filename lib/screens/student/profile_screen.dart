@@ -85,6 +85,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final cvProvider = context.watch<CvProvider>();
 
     final currentUser = authProvider.userModel;
+    if (currentUser == null) {
+      final placeholder = Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Center(
+          child: Text(
+            'Not signed in',
+            style: GoogleFonts.poppins(
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+              color: SettingsFlowPalette.textSecondary,
+            ),
+          ),
+        ),
+      );
+
+      if (widget.embedded) {
+        return placeholder;
+      }
+
+      return AppShellBackground(child: placeholder);
+    }
+
     final student = studentProvider.student ?? currentUser;
     final cv = cvProvider.cv;
 
@@ -100,10 +122,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final completionTitle = _completionTitle(completion);
     final completionMessage = _completionMessage(completion, missingItems);
     final focusItem = _focusItem(missingItems);
-    final hasBio = (student?.bio ?? '').trim().isNotEmpty;
+    final hasBio = (student.bio ?? '').trim().isNotEmpty;
     final displayName = _resolveDisplayName(student);
     final headline = _resolveHeadline(student, cv);
-    final bio = hasBio ? student!.bio!.trim() : null;
+    final bio = hasBio ? student.bio!.trim() : null;
     final unread = notificationProvider.unreadCount;
 
     final scaffold = Scaffold(

@@ -160,4 +160,11 @@ class CvProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  void clearCv() {
+    _cv = null;
+    _isLoading = false;
+    _isExporting = false;
+    notifyListeners();
+  }
 }

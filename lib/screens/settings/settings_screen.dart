@@ -240,7 +240,7 @@ class SettingsScreen extends StatelessWidget {
               child: SettingsListRow(
                 icon: Icons.logout_rounded,
                 iconColor: SettingsFlowPalette.error,
-                title: 'Logout',
+                title: 'Sign out',
                 subtitle: 'Sign out of the company workspace',
                 destructive: true,
                 onTap: () => showLogoutConfirmationSheet(context),
@@ -383,6 +383,21 @@ class SettingsScreen extends StatelessWidget {
                   ),
                 ),
               ],
+            ),
+          ),
+          const SizedBox(height: 18),
+          SettingsPanel(
+            color: SettingsFlowPalette.dangerTint,
+            border: Border.all(
+              color: SettingsFlowPalette.error.withValues(alpha: 0.16),
+            ),
+            child: SettingsListRow(
+              icon: Icons.logout_rounded,
+              iconColor: SettingsFlowPalette.error,
+              title: 'Sign out',
+              subtitle: 'End this session on the current device',
+              destructive: true,
+              onTap: () => showLogoutConfirmationSheet(context),
             ),
           ),
         ],

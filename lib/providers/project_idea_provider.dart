@@ -527,4 +527,26 @@ class ProjectIdeaProvider extends ChangeNotifier {
         return idea.copyWith(isSavedByCurrentUser: enabled);
     }
   }
+
+  void clearUserSession() {
+    _myIdeas = <ProjectIdeaModel>[];
+    _savedIdeas = <SavedIdeaModel>[];
+    _isLoading = false;
+    _savedIdeasLoading = false;
+    _savedIdeasError = null;
+    _currentUserId = '';
+    _filterDomain = null;
+    _filterStatus = null;
+    _busyInteractionKeys.clear();
+    _approvedIdeas = _approvedIdeas
+        .map(
+          (idea) => idea.copyWith(
+            isSavedByCurrentUser: false,
+            isSparkedByCurrentUser: false,
+            isJoinedByCurrentUser: false,
+          ),
+        )
+        .toList(growable: false);
+    notifyListeners();
+  }
 }

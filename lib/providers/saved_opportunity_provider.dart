@@ -62,4 +62,10 @@ class SavedOpportunityProvider extends ChangeNotifier {
       return e.toString();
     }
   }
+
+  void clearSavedOpportunities() {
+    _savedOpportunities = <SavedOpportunityModel>[];
+    _isLoading = false;
+    notifyListeners();
+  }
 }

@@ -297,4 +297,20 @@ class CompanyProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  void clearSession() {
+    _opportunities = <OpportunityModel>[];
+    _applications = <ApplicationModel>[];
+    _stats = <String, dynamic>{};
+    _dashboardLoading = false;
+    _opportunitiesLoading = false;
+    _applicationsLoading = false;
+    _dashboardError = null;
+    _opportunitiesError = null;
+    _applicationsError = null;
+    _mutationLoading = false;
+    _mutationError = null;
+    _busyAppIds.clear();
+    notifyListeners();
+  }
 }
