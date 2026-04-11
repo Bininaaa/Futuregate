@@ -157,13 +157,13 @@ class AdminEditorScaffold extends StatelessWidget {
 
 class AdminEditorSection extends StatelessWidget {
   final String title;
-  final String subtitle;
+  final String? subtitle;
   final Widget child;
 
   const AdminEditorSection({
     super.key,
     required this.title,
-    required this.subtitle,
+    this.subtitle,
     required this.child,
   });
 

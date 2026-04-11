@@ -195,29 +195,13 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                       ),
                     ],
                   ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        _isEditMode
-                            ? 'Keep this opportunity polished before saving your changes.'
-                            : 'Review the role details and publish when everything is ready.',
-                        style: GoogleFonts.poppins(
-                          fontSize: 12,
-                          color: CompanyDashboardPalette.textSecondary,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      AppPrimaryButton(
-                        theme: _theme,
-                        label: _isEditMode
-                            ? 'Save Changes'
-                            : 'Publish ${OpportunityType.label(_selectedType)}',
-                        onPressed: _isSubmitting ? null : _submit,
-                        isBusy: _isSubmitting,
-                      ),
-                    ],
+                  child: AppPrimaryButton(
+                    theme: _theme,
+                    label: _isEditMode
+                        ? 'Save Changes'
+                        : 'Publish ${OpportunityType.label(_selectedType)}',
+                    onPressed: _isSubmitting ? null : _submit,
+                    isBusy: _isSubmitting,
                   ),
                 ),
               ),
@@ -233,34 +217,21 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _buildHeroCard(),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 12),
                         _buildSectionCard(
                           title: 'Basic Information',
-                          subtitle:
-                              'Set the listing identity first so students can immediately understand what is being posted.',
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              _buildSectionLabel('Opportunity title'),
-                              const SizedBox(height: 8),
                               _buildField(
                                 controller: _titleController,
                                 label: 'Opportunity title',
                                 hint: _titleHintForType(),
                                 validator: _validateTitle,
                               ),
-                              const SizedBox(height: 18),
+                              const SizedBox(height: 14),
                               _buildSectionLabel('Opportunity type'),
-                              const SizedBox(height: 6),
-                              Text(
-                                'Choose the listing category that best matches this role.',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 12,
-                                  color: CompanyDashboardPalette.textSecondary,
-                                  height: 1.45,
-                                ),
-                              ),
-                              const SizedBox(height: 12),
+                              const SizedBox(height: 10),
                               OpportunityTypeSelector(
                                 selected: _selectedType,
                                 onChanged: (value) {
@@ -273,18 +244,9 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                                   });
                                 },
                               ),
-                              const SizedBox(height: 18),
+                              const SizedBox(height: 14),
                               _buildSectionLabel('Publishing status'),
-                              const SizedBox(height: 6),
-                              Text(
-                                'Open listings are visible to students. Closed listings stay saved privately.',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 12,
-                                  color: CompanyDashboardPalette.textSecondary,
-                                  height: 1.45,
-                                ),
-                              ),
-                              const SizedBox(height: 12),
+                              const SizedBox(height: 10),
                               Row(
                                 children: [
                                   Expanded(
@@ -304,9 +266,7 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 18),
-                              _buildSectionLabel('Location'),
-                              const SizedBox(height: 8),
+                              const SizedBox(height: 14),
                               _buildField(
                                 controller: _locationController,
                                 label: 'Location',
@@ -316,61 +276,37 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                             ],
                           ),
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 12),
                         _buildSectionCard(
                           title: 'Description',
-                          subtitle:
-                              'Give the role or program a clear summary that reads well across cards and detail pages.',
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              _buildSectionLabel(
-                                OpportunityType.descriptionLabel(_selectedType),
-                              ),
-                              const SizedBox(height: 8),
-                              _buildField(
-                                controller: _descriptionController,
-                                label: OpportunityType.descriptionLabel(
-                                  _selectedType,
-                                ),
-                                hint: OpportunityType.descriptionHint(
-                                  _selectedType,
-                                ),
-                                maxLines: 6,
-                                validator: _validateDescription,
-                              ),
-                            ],
+                          child: _buildField(
+                            controller: _descriptionController,
+                            label: OpportunityType.descriptionLabel(
+                              _selectedType,
+                            ),
+                            hint: OpportunityType.descriptionHint(
+                              _selectedType,
+                            ),
+                            maxLines: 6,
+                            validator: _validateDescription,
                           ),
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 12),
                         _buildSectionCard(
                           title: 'Requirements And Eligibility',
-                          subtitle:
-                              'Surface the qualifications or criteria applicants should review before moving forward.',
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              _buildSectionLabel(
-                                OpportunityType.requirementsLabel(
-                                  _selectedType,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              _buildField(
-                                controller: _requirementsController,
-                                label: OpportunityType.requirementsLabel(
-                                  _selectedType,
-                                ),
-                                hint: OpportunityType.requirementsHint(
-                                  _selectedType,
-                                ),
-                                maxLines: 4,
-                                validator: _validateRequirements,
-                              ),
-                            ],
+                          child: _buildField(
+                            controller: _requirementsController,
+                            label: OpportunityType.requirementsLabel(
+                              _selectedType,
+                            ),
+                            hint: OpportunityType.requirementsHint(
+                              _selectedType,
+                            ),
+                            maxLines: 4,
+                            validator: _validateRequirements,
                           ),
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 12),
                         _buildStructuredOpportunityCard(),
                       ],
                     ),
@@ -390,9 +326,9 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
       theme: _theme,
       icon: OpportunityType.icon(_selectedType),
       title: OpportunityType.headline(_selectedType),
-      subtitle: _selectedType == OpportunityType.sponsoring
-          ? 'Students will be notified when a sponsoring opportunity is published as open.'
-          : 'Use clear details and structured metadata so students can filter and compare opportunities quickly.',
+      subtitle: _isEditMode
+          ? 'Update the fields below and save.'
+          : 'Fill in the fields below, then publish.',
       badges: <AppBadgeData>[
         AppBadgeData(
           label: OpportunityType.label(_selectedType),
@@ -407,45 +343,15 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
           color: statusColor,
         ),
       ],
-      footer: Row(
-        children: [
-          Expanded(
-            child: _HeroInsight(
-              label: 'Visibility',
-              value: _selectedStatus == 'open'
-                  ? 'Live for students'
-                  : 'Saved privately',
-              color: statusColor,
-            ),
-          ),
-          Container(
-            width: 1,
-            height: 34,
-            color: CompanyDashboardPalette.border,
-          ),
-          Expanded(
-            child: _HeroInsight(
-              label: 'Type',
-              value: OpportunityType.label(_selectedType),
-              color: _typeColor,
-            ),
-          ),
-        ],
-      ),
     );
   }
 
   Widget _buildStructuredOpportunityCard() {
     return _buildSectionCard(
       title: _usesStructuredFields ? 'Logistics' : 'Publish',
-      subtitle: _usesStructuredFields
-          ? 'Capture timing, compensation, and format details in one predictable section.'
-          : 'Set the deadline clearly so students understand when the listing closes.',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildSectionLabel('Application deadline'),
-          const SizedBox(height: 8),
           _buildField(
             controller: _deadlineController,
             label: 'Application deadline',
@@ -456,24 +362,13 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
             suffixIcon: const Icon(Icons.calendar_today),
           ),
           if (_usesStructuredFields) ...[
-            const SizedBox(height: 18),
+            const SizedBox(height: 14),
             _buildSectionLabel(
               _isInternship
                   ? 'Internship compensation'
                   : 'Compensation & format',
             ),
-            const SizedBox(height: 6),
-            Text(
-              _isInternship
-                  ? 'Add structured details so internship cards can show pay, work mode, duration, and deadline cleanly.'
-                  : 'These fields power compact job cards, detail views, and future filtering without breaking older records.',
-              style: GoogleFonts.poppins(
-                fontSize: 12,
-                color: CompanyDashboardPalette.textSecondary,
-                height: 1.45,
-              ),
-            ),
-            const SizedBox(height: 14),
+            const SizedBox(height: 10),
             Row(
               children: [
                 Expanded(
@@ -501,7 +396,7 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 14),
+            const SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
@@ -543,7 +438,7 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 14),
+            const SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
@@ -591,7 +486,7 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 14),
+            const SizedBox(height: 12),
             _buildDropdownField<bool>(
               value: _isPaid,
               label: 'Paid status',
@@ -605,7 +500,7 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
               },
             ),
             if (_isInternship) ...[
-              const SizedBox(height: 14),
+              const SizedBox(height: 12),
               _buildField(
                 controller: _durationController,
                 label: 'Duration',
@@ -613,21 +508,12 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                 validator: _validateDuration,
               ),
             ],
-            const SizedBox(height: 14),
+            const SizedBox(height: 12),
             _buildField(
               controller: _compensationTextController,
               label: 'Compensation note',
               hint: 'Optional compensation note for detail screens',
               maxLines: 2,
-            ),
-          ] else ...[
-            const SizedBox(height: 14),
-            AppInfoHint(
-              theme: _theme,
-              icon: Icons.publish_rounded,
-              title: 'Ready to publish',
-              message:
-                  'This opportunity type keeps a lighter logistics setup, but the same structure and validation still apply.',
             ),
           ],
         ],
@@ -637,7 +523,7 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
 
   Widget _buildSectionCard({
     required String title,
-    required String subtitle,
+    String? subtitle,
     required Widget child,
   }) {
     return AppFormSectionCard(
@@ -1049,46 +935,3 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
   }
 }
 
-class _HeroInsight extends StatelessWidget {
-  final String label;
-  final String value;
-  final Color color;
-
-  const _HeroInsight({
-    required this.label,
-    required this.value,
-    required this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: GoogleFonts.poppins(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: CompanyDashboardPalette.textMuted,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            value,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: GoogleFonts.poppins(
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-              color: color,
-              height: 1.3,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}

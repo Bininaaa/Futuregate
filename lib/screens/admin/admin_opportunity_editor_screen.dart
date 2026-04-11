@@ -125,8 +125,9 @@ class _AdminOpportunityEditorScreenState
           : 'Publish Opportunity',
       icon: Icons.work_outline_rounded,
       accentColor: OpportunityType.color(_type),
-      subtitle:
-          'Create a platform-managed opportunity with the same structured filtering and detail quality used across the student opportunity catalog.',
+      subtitle: _isEditing
+          ? 'Update the fields below and save.'
+          : 'Fill in the fields below, then publish.',
       isSubmitting: _isSubmitting,
       onSubmit: _submit,
       child: Form(
@@ -135,8 +136,6 @@ class _AdminOpportunityEditorScreenState
           children: [
             AdminEditorSection(
               title: 'Basic Information',
-              subtitle:
-                  'Keep the core publisher, title, type, status, and location fields together so the listing starts from the same structure used everywhere else.',
               child: Column(
                 children: [
                   AdminEditorField(
@@ -145,7 +144,7 @@ class _AdminOpportunityEditorScreenState
                     hint: 'e.g. FutureGate Admin',
                     validator: adminRequiredMin('Publisher name', min: 3),
                   ),
-                  const SizedBox(height: 14),
+                  const SizedBox(height: 12),
                   Row(
                     children: [
                       Expanded(
@@ -171,14 +170,14 @@ class _AdminOpportunityEditorScreenState
                       ),
                     ],
                   ),
-                  const SizedBox(height: 14),
+                  const SizedBox(height: 12),
                   AdminEditorField(
                     controller: _titleController,
                     label: 'Opportunity title',
                     hint: 'e.g. Junior Flutter Developer',
                     validator: adminRequiredMin('Title', min: 4),
                   ),
-                  const SizedBox(height: 14),
+                  const SizedBox(height: 12),
                   OpportunityTypeSelector(
                     selected: _type,
                     onChanged: (value) {
@@ -189,7 +188,7 @@ class _AdminOpportunityEditorScreenState
                       });
                     },
                   ),
-                  const SizedBox(height: 14),
+                  const SizedBox(height: 12),
                   AdminEditorField(
                     controller: _locationController,
                     label: 'Location',
@@ -199,53 +198,39 @@ class _AdminOpportunityEditorScreenState
                 ],
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
             AdminEditorSection(
               title: 'Description',
-              subtitle:
-                  'Give the role or program a clear narrative that will carry through cards and detail pages.',
-              child: Column(
-                children: [
-                  AdminEditorField(
-                    controller: _descriptionController,
-                    label: 'Description',
-                    hint: 'Describe the role, scope, and value clearly',
-                    maxLines: 6,
-                    validator: adminRequiredMin('Description', min: 20),
-                  ),
-                ],
+              child: AdminEditorField(
+                controller: _descriptionController,
+                label: 'Description',
+                hint: 'Describe the role, scope, and value clearly',
+                maxLines: 6,
+                validator: adminRequiredMin('Description', min: 20),
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
             AdminEditorSection(
               title: 'Requirements And Eligibility',
-              subtitle:
-                  'Surface the expectations or criteria clearly before students decide to apply.',
-              child: Column(
-                children: [
-                  AdminEditorField(
-                    controller: _requirementsController,
-                    label: _type == OpportunityType.sponsoring
-                        ? 'Eligibility'
-                        : 'Requirements',
-                    hint: _type == OpportunityType.sponsoring
-                        ? 'Share eligibility and supporting details'
-                        : 'Share the background, skills, or experience needed',
-                    maxLines: 4,
-                    validator: adminRequiredMin(
-                      _type == OpportunityType.sponsoring
-                          ? 'Eligibility'
-                          : 'Requirements',
-                    ),
-                  ),
-                ],
+              child: AdminEditorField(
+                controller: _requirementsController,
+                label: _type == OpportunityType.sponsoring
+                    ? 'Eligibility'
+                    : 'Requirements',
+                hint: _type == OpportunityType.sponsoring
+                    ? 'Share eligibility and supporting details'
+                    : 'Share the background, skills, or experience needed',
+                maxLines: 4,
+                validator: adminRequiredMin(
+                  _type == OpportunityType.sponsoring
+                      ? 'Eligibility'
+                      : 'Requirements',
+                ),
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
             AdminEditorSection(
               title: 'Logistics',
-              subtitle:
-                  'Capture timing, compensation, and format details in one predictable publishing section.',
               child: Column(
                 children: [
                   AdminEditorField(
@@ -258,7 +243,7 @@ class _AdminOpportunityEditorScreenState
                     validator: _validateDeadline,
                   ),
                   if (_usesStructuredFields) ...[
-                    const SizedBox(height: 14),
+                    const SizedBox(height: 12),
                     Row(
                       children: [
                         Expanded(
@@ -282,7 +267,7 @@ class _AdminOpportunityEditorScreenState
                         ),
                       ],
                     ),
-                    const SizedBox(height: 14),
+                    const SizedBox(height: 12),
                     Row(
                       children: [
                         Expanded(
@@ -320,7 +305,7 @@ class _AdminOpportunityEditorScreenState
                         ),
                       ],
                     ),
-                    const SizedBox(height: 14),
+                    const SizedBox(height: 12),
                     Row(
                       children: [
                         Expanded(
@@ -368,7 +353,7 @@ class _AdminOpportunityEditorScreenState
                         ),
                       ],
                     ),
-                    const SizedBox(height: 14),
+                    const SizedBox(height: 12),
                     AdminEditorDropdown<bool>(
                       value: _isPaid,
                       label: 'Paid status',
@@ -379,14 +364,14 @@ class _AdminOpportunityEditorScreenState
                       onChanged: (value) => setState(() => _isPaid = value),
                     ),
                     if (_isInternship) ...[
-                      const SizedBox(height: 14),
+                      const SizedBox(height: 12),
                       AdminEditorField(
                         controller: _durationController,
                         label: 'Duration',
                         hint: 'e.g. 3 months',
                       ),
                     ],
-                    const SizedBox(height: 14),
+                    const SizedBox(height: 12),
                     AdminEditorField(
                       controller: _compensationTextController,
                       label: 'Compensation note',

@@ -351,22 +351,24 @@ class AppFormHeaderCard extends StatelessWidget {
 class AppFormSectionCard extends StatelessWidget {
   final AppContentTheme theme;
   final String title;
-  final String subtitle;
+  final String? subtitle;
   final Widget child;
 
   const AppFormSectionCard({
     super.key,
     required this.theme,
     required this.title,
-    required this.subtitle,
+    this.subtitle,
     required this.child,
   });
 
   @override
   Widget build(BuildContext context) {
+    final subtitleText = subtitle?.trim();
+    final hasSubtitle = subtitleText != null && subtitleText.isNotEmpty;
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(AppContentSpacing.lg),
+      padding: const EdgeInsets.all(AppContentSpacing.md),
       decoration: BoxDecoration(
         color: theme.surface,
         borderRadius: BorderRadius.circular(AppContentSpacing.xxl),
@@ -377,9 +379,11 @@ class AppFormSectionCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(title, style: theme.section(size: 15.5)),
-          const SizedBox(height: AppContentSpacing.xs),
-          Text(subtitle, style: theme.body(size: 12.2)),
-          const SizedBox(height: AppContentSpacing.lg),
+          if (hasSubtitle) ...[
+            const SizedBox(height: AppContentSpacing.xs),
+            Text(subtitleText, style: theme.body(size: 12.2)),
+          ],
+          const SizedBox(height: AppContentSpacing.md),
           child,
         ],
       ),
