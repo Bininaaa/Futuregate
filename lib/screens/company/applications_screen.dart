@@ -382,15 +382,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                       sliver: SliverList(
                         delegate: SliverChildBuilderDelegate((context, index) {
                           final item = items[index];
-                          return _buildApplicationCard(
-                            item,
-                            provider,
-                            opportunityApplicantCount:
-                                opportunityCounts[item
-                                    .application
-                                    .opportunityId] ??
-                                0,
-                          );
+                          return _buildApplicationCard(item, provider);
                         }, childCount: items.length),
                       ),
                     ),
@@ -471,9 +463,9 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
     return !difference.isNegative && difference.inHours < 48;
   }
 
-  String _relativeDateLabel(Timestamp? value) {
+  String? _relativeDateLabel(Timestamp? value) {
     if (value == null) {
-      return 'Date unavailable';
+      return null;
     }
 
     final appliedAt = value.toDate();
@@ -871,50 +863,105 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
   }
 
   _OpportunityTypeTone _toneForType(String? rawType) {
-    switch (OpportunityType.parse(rawType)) {
-      case OpportunityType.internship:
-        return const _OpportunityTypeTone(
-          background: Color(0xFFEAF3FF),
-          foreground: OpportunityType.internshipColor,
-        );
-      case OpportunityType.sponsoring:
-        return const _OpportunityTypeTone(
-          background: _ApplicationsPalette.accentSoft,
-          foreground: _ApplicationsPalette.accent,
-        );
-      case OpportunityType.job:
-      default:
-        return const _OpportunityTypeTone(
-          background: _ApplicationsPalette.primarySoft,
-          foreground: _ApplicationsPalette.primary,
-        );
+    final type = OpportunityType.parse(rawType);
+    return _OpportunityTypeTone(
+      background: OpportunityType.softBackground(type),
+      foreground: OpportunityType.color(type),
+    );
+  }
+
+  _OpportunityTypeTone _toneForOpportunity(OpportunityModel? opportunity) {
+    if (opportunity == null) {
+      return const _OpportunityTypeTone(
+        background: _ApplicationsPalette.surfaceAlt,
+        foreground: _ApplicationsPalette.textSecondary,
+      );
     }
+
+    return _toneForType(opportunity.type);
   }
 
   String _typeLabel(String? rawType) {
     return OpportunityType.label(OpportunityType.parse(rawType)).toUpperCase();
   }
 
-  String _appliedDateLabel(Timestamp? value) {
+  String? _appliedDateLabel(Timestamp? value) {
     if (value == null) {
-      return 'Date unavailable';
+      return null;
     }
     return DateFormat('MMM d, yyyy').format(value.toDate());
   }
 
+  String? _opportunityTitleLabel(OpportunityModel? opportunity) {
+    return OpportunityMetadata.sanitizeText(opportunity?.title);
+  }
+
+  String? _opportunityLocationLabel(OpportunityModel? opportunity) {
+    return OpportunityMetadata.sanitizeText(opportunity?.location);
+  }
+
+  String? _deadlineDisplayLabel(OpportunityModel? opportunity, DateTime? date) {
+    if (date != null) {
+      return DateFormat('MMM d, yyyy').format(date);
+    }
+
+    return OpportunityMetadata.sanitizeText(opportunity?.deadline);
+  }
+
+  List<MapEntry<String, String>> _applicationSnapshotRows(
+    ApplicationModel application,
+    OpportunityModel? opportunity,
+    DateTime? deadline,
+  ) {
+    final rows = <MapEntry<String, String>>[];
+    final appliedLabel = _appliedDateLabel(application.appliedAt);
+    if (appliedLabel != null) {
+      rows.add(MapEntry('Applied on', appliedLabel));
+    }
+
+    if (opportunity != null) {
+      rows.add(MapEntry('Role type', OpportunityType.label(opportunity.type)));
+
+      final location = _opportunityLocationLabel(opportunity);
+      if (location != null) {
+        rows.add(MapEntry('Location', location));
+      }
+
+      final workMode = OpportunityMetadata.formatWorkMode(opportunity.workMode);
+      if (workMode != null) {
+        rows.add(MapEntry('Work mode', workMode));
+      }
+
+      final employmentType = OpportunityMetadata.formatEmploymentType(
+        opportunity.employmentType,
+      );
+      if (employmentType != null) {
+        rows.add(MapEntry('Employment type', employmentType));
+      }
+
+      final deadlineLabel = _deadlineDisplayLabel(opportunity, deadline);
+      if (deadlineLabel != null) {
+        rows.add(MapEntry('Deadline', deadlineLabel));
+      }
+    }
+
+    return rows;
+  }
+
   Widget _buildApplicationCard(
     _ApplicationListItem item,
-    CompanyProvider provider, {
-    required int opportunityApplicantCount,
-  }) {
+    CompanyProvider provider,
+  ) {
     final application = item.application;
     final opportunity = item.opportunity;
-    final typeTone = _toneForType(opportunity?.type);
+    final typeTone = _toneForOpportunity(opportunity);
     final isPending =
         ApplicationStatus.parse(application.status) ==
         ApplicationStatus.pending;
     final relativeAppliedLabel = _relativeDateLabel(application.appliedAt);
     final isFresh = _isFreshApplication(application.appliedAt);
+    final titleLabel = _opportunityTitleLabel(opportunity);
+    final locationLabel = _opportunityLocationLabel(opportunity);
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
@@ -925,16 +972,14 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
           onTap: () => _showApplicationDetailsSheet(item, provider),
           child: Container(
             decoration: BoxDecoration(
-              color: _ApplicationsPalette.surface,
+              color: typeTone.background,
               borderRadius: BorderRadius.circular(18),
               border: Border.all(
-                color: isPending
-                    ? _ApplicationsPalette.primary.withValues(alpha: 0.18)
-                    : _ApplicationsPalette.border,
+                color: typeTone.foreground.withValues(alpha: 0.22),
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.025),
+                  color: typeTone.foreground.withValues(alpha: 0.08),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -951,10 +996,10 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                       Container(
                         padding: const EdgeInsets.all(3),
                         decoration: BoxDecoration(
-                          color: _ApplicationsPalette.surface,
+                          color: Colors.white.withValues(alpha: 0.92),
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: typeTone.foreground.withValues(alpha: 0.18),
+                            color: typeTone.foreground.withValues(alpha: 0.24),
                           ),
                         ),
                         child: ProfileAvatar(
@@ -1007,28 +1052,30 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                                 ],
                               ],
                             ),
-                            const SizedBox(height: 4),
-                            Text(
-                              opportunity?.title ?? 'Unknown opportunity',
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: GoogleFonts.poppins(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: _ApplicationsPalette.textSecondary,
-                                height: 1.3,
+                            if (titleLabel != null) ...[
+                              const SizedBox(height: 4),
+                              Text(
+                                titleLabel,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.poppins(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: _ApplicationsPalette.textSecondary,
+                                  height: 1.3,
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 6),
-                            Text(
-                              opportunityApplicantCount <= 1
-                                  ? 'Applied $relativeAppliedLabel'
-                                  : 'Applied $relativeAppliedLabel • $opportunityApplicantCount applicants',
-                              style: GoogleFonts.poppins(
-                                fontSize: 11.5,
-                                color: _ApplicationsPalette.textMuted,
+                            ],
+                            if (relativeAppliedLabel != null) ...[
+                              const SizedBox(height: 6),
+                              Text(
+                                'Applied $relativeAppliedLabel',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 11.5,
+                                  color: _ApplicationsPalette.textMuted,
+                                ),
                               ),
-                            ),
+                            ],
                           ],
                         ),
                       ),
@@ -1052,25 +1099,16 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                     spacing: 6,
                     runSpacing: 6,
                     children: [
-                      _TypePill(
-                        label: _typeLabel(opportunity?.type),
-                        tone: typeTone,
-                      ),
-                      if ((opportunity?.location ?? '').trim().isNotEmpty)
+                      if (opportunity != null)
+                        _TypePill(
+                          label: _typeLabel(opportunity.type),
+                          tone: typeTone,
+                        ),
+                      if (locationLabel != null)
                         _MetaPill(
                           icon: Icons.place_rounded,
-                          label: opportunity!.location.trim(),
+                          label: locationLabel,
                         ),
-                      _MetaPill(
-                        icon: Icons.groups_rounded,
-                        label: opportunityApplicantCount == 1
-                            ? '1 applicant'
-                            : '$opportunityApplicantCount applicants',
-                      ),
-                      _MetaPill(
-                        icon: Icons.event_rounded,
-                        label: _appliedDateLabel(application.appliedAt),
-                      ),
                     ],
                   ),
                   const SizedBox(height: 12),
@@ -1084,22 +1122,22 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                         label: 'Message',
                         icon: Icons.chat_outlined,
                         foreground: _ApplicationsPalette.primary,
-                        background: _ApplicationsPalette.primarySoft,
+                        background: Colors.white.withValues(alpha: 0.86),
                         onTap: () => _openChatWithStudent(application),
                       ),
                       _ActionPillButton(
                         label: 'View CV',
                         icon: Icons.description_outlined,
                         foreground: _ApplicationsPalette.secondaryDark,
-                        background: const Color(0xFFE8FFFB),
+                        background: Colors.white.withValues(alpha: 0.86),
                         onTap: () =>
                             _showCvSheet(context, application, provider),
                       ),
                       _ActionPillButton(
                         label: 'Review',
                         icon: Icons.open_in_new_rounded,
-                        foreground: _ApplicationsPalette.textSecondary,
-                        background: _ApplicationsPalette.surfaceAlt,
+                        foreground: typeTone.foreground,
+                        background: Colors.white.withValues(alpha: 0.92),
                         onTap: () =>
                             _showApplicationDetailsSheet(item, provider),
                       ),
@@ -1114,7 +1152,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                         vertical: 10,
                       ),
                       decoration: BoxDecoration(
-                        color: _ApplicationsPalette.primarySoft,
+                        color: Colors.white.withValues(alpha: 0.7),
                         borderRadius: BorderRadius.circular(14),
                         border: Border.all(
                           color: _ApplicationsPalette.primary.withValues(
@@ -1188,7 +1226,12 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                       child: TextButton.icon(
                         onPressed: () =>
                             _showApplicationDetailsSheet(item, provider),
-                        icon: const Icon(Icons.arrow_outward_rounded, size: 16),
+                        icon: Icon(
+                          opportunity == null
+                              ? Icons.arrow_outward_rounded
+                              : OpportunityType.icon(opportunity.type),
+                          size: 16,
+                        ),
                         label: Text(
                           'Open review',
                           style: GoogleFonts.poppins(
@@ -1197,7 +1240,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                           ),
                         ),
                         style: TextButton.styleFrom(
-                          foregroundColor: _ApplicationsPalette.primary,
+                          foregroundColor: typeTone.foreground,
                           padding: const EdgeInsets.symmetric(
                             horizontal: 10,
                             vertical: 8,
@@ -1222,13 +1265,18 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
   ) async {
     final application = item.application;
     final opportunity = item.opportunity;
-    final tone = _toneForType(opportunity?.type);
+    final tone = _toneForOpportunity(opportunity);
     final isPending =
         ApplicationStatus.parse(application.status) ==
         ApplicationStatus.pending;
     final deadline =
         opportunity?.applicationDeadline ??
         OpportunityMetadata.parseDateTimeLike(opportunity?.deadline);
+    final snapshotRows = _applicationSnapshotRows(
+      application,
+      opportunity,
+      deadline,
+    );
 
     await showModalBottomSheet<void>(
       context: context,
@@ -1273,10 +1321,11 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                     const SizedBox(height: 18),
                     _DetailHeroCard(
                       studentName: application.studentName,
-                      opportunityTitle:
-                          opportunity?.title ?? 'Unknown opportunity',
+                      opportunityTitle: _opportunityTitleLabel(opportunity),
                       appliedLabel: _appliedDateLabel(application.appliedAt),
-                      typeLabel: _typeLabel(opportunity?.type),
+                      typeLabel: opportunity == null
+                          ? null
+                          : _typeLabel(opportunity.type),
                       typeTone: tone,
                       status: application.status,
                       studentId: application.studentId,
@@ -1358,111 +1407,35 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                       ),
                     ],
                     const SizedBox(height: 18),
-                    _DetailSection(
-                      title: 'Application Overview',
-                      child: Column(
-                        children: [
-                          _DetailInfoRow(
-                            label: 'Status',
-                            value: ApplicationStatus.label(application.status),
-                          ),
-                          _DetailInfoRow(
-                            label: 'Applied On',
-                            value: _appliedDateLabel(application.appliedAt),
-                          ),
-                          _DetailInfoRow(
-                            label: 'Application ID',
-                            value: application.id,
-                          ),
-                          _DetailInfoRow(
-                            label: 'CV ID',
-                            value: application.cvId.isEmpty
-                                ? 'Not available'
-                                : application.cvId,
-                            isLast: true,
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    _DetailSection(
-                      title: 'Candidate',
-                      child: Column(
-                        children: [
-                          _DetailInfoRow(
-                            label: 'Student Name',
-                            value: application.studentName,
-                          ),
-                          _DetailInfoRow(
-                            label: 'Student ID',
-                            value: application.studentId,
-                            isLast: true,
-                          ),
-                        ],
-                      ),
-                    ),
-                    if (opportunity != null) ...[
-                      const SizedBox(height: 12),
+                    if (snapshotRows.isNotEmpty) ...[
                       _DetailSection(
-                        title: 'Opportunity',
+                        title: 'Application Snapshot',
                         child: Column(
                           children: [
-                            _DetailInfoRow(
-                              label: 'Role',
-                              value: opportunity.title,
-                            ),
-                            _DetailInfoRow(
-                              label: 'Type',
-                              value: OpportunityType.label(opportunity.type),
-                            ),
-                            _DetailInfoRow(
-                              label: 'Location',
-                              value: opportunity.location.trim().isEmpty
-                                  ? 'Not specified'
-                                  : opportunity.location.trim(),
-                            ),
-                            _DetailInfoRow(
-                              label: 'Employment',
-                              value:
-                                  OpportunityMetadata.formatEmploymentType(
-                                    opportunity.employmentType,
-                                  ) ??
-                                  'Not specified',
-                            ),
-                            _DetailInfoRow(
-                              label: 'Work Mode',
-                              value:
-                                  OpportunityMetadata.formatWorkMode(
-                                    opportunity.workMode,
-                                  ) ??
-                                  'Not specified',
-                            ),
-                            _DetailInfoRow(
-                              label: 'Deadline',
-                              value: deadline != null
-                                  ? DateFormat('MMM d, yyyy').format(deadline)
-                                  : opportunity.deadline.trim().isNotEmpty
-                                  ? opportunity.deadline.trim()
-                                  : 'Not specified',
-                              isLast: true,
-                            ),
+                            for (final (index, row) in snapshotRows.indexed)
+                              _DetailInfoRow(
+                                label: row.key,
+                                value: row.value,
+                                isLast: index == snapshotRows.length - 1,
+                              ),
                           ],
                         ),
                       ),
-                      if (opportunity.description.trim().isNotEmpty) ...[
-                        const SizedBox(height: 12),
-                        _DetailSection(
-                          title: 'Role Summary',
-                          child: Text(
-                            opportunity.description.trim(),
-                            style: GoogleFonts.poppins(
-                              fontSize: 13,
-                              color: _ApplicationsPalette.textSecondary,
-                              height: 1.55,
-                            ),
+                    ],
+                    if (opportunity != null &&
+                        opportunity.description.trim().isNotEmpty) ...[
+                      const SizedBox(height: 12),
+                      _DetailSection(
+                        title: 'Role Summary',
+                        child: Text(
+                          opportunity.description.trim(),
+                          style: GoogleFonts.poppins(
+                            fontSize: 13,
+                            color: _ApplicationsPalette.textSecondary,
+                            height: 1.55,
                           ),
                         ),
-                      ],
+                      ),
                     ],
                   ],
                 ),
@@ -2903,9 +2876,9 @@ class _DecisionButton extends StatelessWidget {
 
 class _DetailHeroCard extends StatelessWidget {
   final String studentName;
-  final String opportunityTitle;
-  final String appliedLabel;
-  final String typeLabel;
+  final String? opportunityTitle;
+  final String? appliedLabel;
+  final String? typeLabel;
   final _OpportunityTypeTone typeTone;
   final String status;
   final String studentId;
@@ -2963,14 +2936,16 @@ class _DetailHeroCard extends StatelessWidget {
                         color: _ApplicationsPalette.textPrimary,
                       ),
                     ),
-                    const SizedBox(height: 3),
-                    Text(
-                      opportunityTitle,
-                      style: GoogleFonts.poppins(
-                        fontSize: 13,
-                        color: _ApplicationsPalette.textSecondary,
+                    if (opportunityTitle != null) ...[
+                      const SizedBox(height: 3),
+                      Text(
+                        opportunityTitle!,
+                        style: GoogleFonts.poppins(
+                          fontSize: 13,
+                          color: _ApplicationsPalette.textSecondary,
+                        ),
                       ),
-                    ),
+                    ],
                   ],
                 ),
               ),
@@ -2982,11 +2957,13 @@ class _DetailHeroCard extends StatelessWidget {
             spacing: 8,
             runSpacing: 8,
             children: [
-              _TypePill(label: typeLabel, tone: typeTone),
-              _MetaPill(
-                icon: Icons.schedule_rounded,
-                label: 'Applied $appliedLabel',
-              ),
+              if (typeLabel != null)
+                _TypePill(label: typeLabel!, tone: typeTone),
+              if (appliedLabel != null)
+                _MetaPill(
+                  icon: Icons.schedule_rounded,
+                  label: 'Applied $appliedLabel',
+                ),
             ],
           ),
         ],
