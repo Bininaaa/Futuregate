@@ -11,15 +11,20 @@ import '../../models/opportunity_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/chat_provider.dart';
 import '../../providers/company_provider.dart';
+import '../../providers/notification_provider.dart';
 import '../../services/document_access_service.dart';
 import '../../utils/application_status.dart';
+import '../../utils/company_dashboard_palette.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/application_status_badge.dart';
 import '../../widgets/profile_avatar.dart';
 import '../../widgets/shared/app_feedback.dart';
+import '../notifications_screen.dart';
+import '../settings/settings_screen.dart';
 import 'chat_screen.dart';
+import 'profile_screen.dart';
 
 class ApplicationsScreen extends StatefulWidget {
   final String? initialApplicationId;
@@ -204,7 +209,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
 
   String _statusLabel(_ApplicationStatusFilter filter) {
     return switch (filter) {
-      _ApplicationStatusFilter.all => 'All Applications',
+      _ApplicationStatusFilter.all => 'All',
       _ApplicationStatusFilter.pending => 'Pending',
       _ApplicationStatusFilter.approved => 'Approved',
       _ApplicationStatusFilter.rejected => 'Rejected',
@@ -246,6 +251,17 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
   Widget build(BuildContext context) {
     final user = context.watch<AuthProvider>().userModel;
     final provider = context.watch<CompanyProvider>();
+    final unreadCount = context.watch<NotificationProvider>().unreadCount;
+
+    if (user == null) {
+      return AppShellBackground(
+        child: const Scaffold(
+          backgroundColor: Colors.transparent,
+          body: Center(child: Text('Not logged in')),
+        ),
+      );
+    }
+
     final items = _filteredItems(provider);
     final isFocusedView = (widget.initialApplicationId ?? '').trim().isNotEmpty;
     final resultsCount = items.length;
@@ -254,40 +270,18 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
       provider,
       _ApplicationStatusFilter.pending,
     );
+    final reviewedCount = totalApplications - pendingCount;
     final opportunityCounts = _applicationCountsByOpportunity(provider);
     final pendingOpportunityCount = _pendingOpportunityCount(provider);
-    final companyName = [user?.companyName ?? '', user?.fullName ?? '']
-        .map((value) => value.trim())
-        .firstWhere((value) => value.isNotEmpty, orElse: () => 'Your company');
 
     _maybeOpenFocusedDetails(items, provider);
 
     return AppShellBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        appBar: widget.showBackButton
-            ? AppBar(
-                title: Text(
-                  'Applications',
-                  style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.w700,
-                    color: _ApplicationsPalette.textPrimary,
-                  ),
-                ),
-                backgroundColor: Colors.transparent,
-                surfaceTintColor: Colors.transparent,
-                scrolledUnderElevation: 0,
-                elevation: 0,
-                automaticallyImplyLeading: true,
-                iconTheme: const IconThemeData(
-                  color: _ApplicationsPalette.textPrimary,
-                ),
-              )
-            : null,
         body: GestureDetector(
           onTap: () => FocusScope.of(context).unfocus(),
           child: SafeArea(
-            top: !widget.showBackButton,
             bottom: false,
             child: RefreshIndicator(
               color: _ApplicationsPalette.primary,
@@ -300,22 +294,20 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                 slivers: [
                   SliverToBoxAdapter(
                     child: Padding(
-                      padding: EdgeInsets.fromLTRB(
-                        20,
-                        widget.showBackButton ? 8 : 14,
-                        20,
-                        20,
-                      ),
+                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 18),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _buildApplicationsHero(
-                            companyName: companyName,
+                            user: user,
+                            unreadCount: unreadCount,
                             isFocusedView: isFocusedView,
                             totalApplications: totalApplications,
                             pendingCount: pendingCount,
+                            reviewedCount: reviewedCount,
                           ),
-                          if (pendingOpportunityCount > 0) ...[
+                          if (pendingOpportunityCount > 0 &&
+                              !isFocusedView) ...[
                             const SizedBox(height: 12),
                             _InlineBanner(
                               icon: Icons.warning_amber_rounded,
@@ -336,7 +328,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                           if ((provider.applicationsError ?? '')
                               .trim()
                               .isNotEmpty) ...[
-                            const SizedBox(height: 16),
+                            const SizedBox(height: 12),
                             _InlineBanner(
                               icon: Icons.info_outline_rounded,
                               title: 'Application data is unavailable.',
@@ -346,10 +338,10 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                             ),
                           ],
                           if (isFocusedView) ...[
-                            const SizedBox(height: 16),
+                            const SizedBox(height: 12),
                             _FocusedApplicationBanner(count: resultsCount),
                           ] else ...[
-                            const SizedBox(height: 18),
+                            const SizedBox(height: 14),
                             _buildFiltersPanel(
                               provider,
                               resultsCount: resultsCount,
@@ -357,7 +349,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                               opportunityCounts: opportunityCounts,
                             ),
                           ],
-                          const SizedBox(height: 18),
+                          const SizedBox(height: 16),
                           Container(
                             key: _candidateQueueKey,
                             child: _buildQueueHeader(
@@ -386,7 +378,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                     )
                   else
                     SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 120),
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 120),
                       sliver: SliverList(
                         delegate: SliverChildBuilderDelegate((context, index) {
                           final item = items[index];
@@ -507,106 +499,151 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
     return DateFormat('MMM d').format(appliedAt);
   }
 
+  Widget _buildTopBar({
+    required dynamic user,
+    required int unreadCount,
+    required bool isFocusedView,
+  }) {
+    final subtitle = isFocusedView
+        ? 'Focused review mode'
+        : 'Review and respond to candidates';
+
+    return Row(
+      children: [
+        _HeaderIconButton(
+          icon: widget.showBackButton
+              ? Icons.arrow_back_rounded
+              : Icons.menu_rounded,
+          onTap: () {
+            if (widget.showBackButton) {
+              Navigator.of(context).maybePop();
+              return;
+            }
+
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (_) => const SettingsScreen()));
+          },
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Applications',
+                style: GoogleFonts.poppins(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  color: _ApplicationsPalette.textPrimary,
+                  height: 1.1,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 2),
+              Text(
+                subtitle,
+                style: GoogleFonts.poppins(
+                  fontSize: 11,
+                  color: _ApplicationsPalette.textMuted,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+        ),
+        if (!widget.showBackButton) ...[
+          _NotificationIconButton(
+            unreadCount: unreadCount,
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const NotificationsScreen()),
+              );
+            },
+          ),
+          const SizedBox(width: 10),
+          GestureDetector(
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const CompanyProfileScreen()),
+              );
+            },
+            child: Container(
+              padding: const EdgeInsets.all(2),
+              decoration: BoxDecoration(
+                color: _ApplicationsPalette.surface,
+                shape: BoxShape.circle,
+                border: Border.all(color: _ApplicationsPalette.border),
+              ),
+              child: ProfileAvatar(user: user, radius: 16),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
   Widget _buildApplicationsHero({
-    required String companyName,
+    required dynamic user,
+    required int unreadCount,
     required bool isFocusedView,
     required int totalApplications,
     required int pendingCount,
+    required int reviewedCount,
   }) {
-    final subtitle = isFocusedView
-        ? 'Focused review mode for a single application.'
-        : 'Track and review incoming applications quickly.';
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(26),
-        gradient: const LinearGradient(
-          colors: [
-            _ApplicationsPalette.primaryDark,
-            _ApplicationsPalette.primary,
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildTopBar(
+          user: user,
+          unreadCount: unreadCount,
+          isFocusedView: isFocusedView,
         ),
-        boxShadow: [
-          BoxShadow(
-            color: _ApplicationsPalette.primary.withValues(alpha: 0.18),
-            blurRadius: 22,
-            offset: const Offset(0, 12),
+        const SizedBox(height: 16),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 12),
+          decoration: BoxDecoration(
+            color: _ApplicationsPalette.surface,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: _ApplicationsPalette.border),
           ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 42,
-                height: 42,
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.14),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.14),
+          child: IntrinsicHeight(
+            child: Row(
+              children: [
+                Expanded(
+                  child: _HeroStatTile(
+                    label: 'Total',
+                    value: '$totalApplications',
+                    icon: Icons.inbox_rounded,
+                    color: _ApplicationsPalette.primary,
                   ),
                 ),
-                child: const Icon(
-                  Icons.groups_rounded,
-                  color: Colors.white,
-                  size: 22,
+                const _KpiDivider(),
+                Expanded(
+                  child: _HeroStatTile(
+                    label: 'Pending',
+                    value: '$pendingCount',
+                    icon: Icons.schedule_rounded,
+                    color: _ApplicationsPalette.warning,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Review Desk',
-                      style: GoogleFonts.poppins(
-                        fontSize: 19,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      '$companyName - $subtitle',
-                      style: GoogleFonts.poppins(
-                        fontSize: 11.5,
-                        color: Colors.white.withValues(alpha: 0.82),
-                      ),
-                    ),
-                  ],
+                const _KpiDivider(),
+                Expanded(
+                  child: _HeroStatTile(
+                    label: 'Reviewed',
+                    value: '$reviewedCount',
+                    icon: Icons.task_alt_rounded,
+                    color: _ApplicationsPalette.success,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: _HeroStatTile(
-                  label: 'Total',
-                  value: '$totalApplications',
-                  icon: Icons.inbox_rounded,
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: _HeroStatTile(
-                  label: 'Pending',
-                  value: '$pendingCount',
-                  icon: Icons.schedule_rounded,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -616,144 +653,88 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
     required int totalApplications,
     required Map<String, int> opportunityCounts,
   }) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
-      decoration: BoxDecoration(
-        color: _ApplicationsPalette.surface,
-        borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: _ApplicationsPalette.border),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 26,
-            offset: const Offset(0, 16),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Review Controls',
-                      style: GoogleFonts.poppins(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        color: _ApplicationsPalette.textPrimary,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Showing $resultsCount of $totalApplications applications',
-                      style: GoogleFonts.poppins(
-                        fontSize: 12.5,
-                        color: _ApplicationsPalette.textSecondary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              if (_activeFilterCount > 0)
-                _CounterBadge(count: _activeFilterCount, label: 'Active'),
-            ],
-          ),
-          const SizedBox(height: 16),
-          _SearchField(
-            controller: _searchController,
-            hintText: 'Search by candidate, opportunity, location, or type...',
-          ),
-          const SizedBox(height: 18),
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  'Status',
-                  style: GoogleFonts.poppins(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    color: _ApplicationsPalette.textPrimary,
-                  ),
-                ),
-              ),
-              TextButton(
-                onPressed: _hasActiveFilters ? _clearFilters : null,
-                style: TextButton.styleFrom(
-                  padding: EdgeInsets.zero,
-                  minimumSize: Size.zero,
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                ),
-                child: Text(
-                  'Clear filters',
-                  style: GoogleFonts.poppins(
-                    fontSize: 12.5,
-                    fontWeight: FontWeight.w600,
-                    color: _hasActiveFilters
-                        ? _ApplicationsPalette.primary
-                        : _ApplicationsPalette.textMuted,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
+    final sectionLabelStyle = GoogleFonts.poppins(
+      fontSize: 11,
+      fontWeight: FontWeight.w700,
+      letterSpacing: 0.6,
+      color: _ApplicationsPalette.textMuted,
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text('FILTERS', style: sectionLabelStyle),
+            const Spacer(),
+            if (_activeFilterCount > 0)
+              _CounterBadge(count: _activeFilterCount, label: 'Active'),
+          ],
+        ),
+        const SizedBox(height: 10),
+        _SearchField(
+          controller: _searchController,
+          hintText: 'Search by candidate, opportunity, location, or type...',
+        ),
+        const SizedBox(height: 12),
+        Text('STATUS', style: sectionLabelStyle),
+        const SizedBox(height: 8),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          physics: const BouncingScrollPhysics(),
+          child: Row(
             children: _ApplicationStatusFilter.values
                 .map(
-                  (filter) => _FilterChip(
-                    label: _statusLabel(filter),
-                    count: _statusCount(provider, filter),
-                    selected: _selectedStatusFilter == filter,
-                    icon: switch (filter) {
-                      _ApplicationStatusFilter.all => Icons.layers_outlined,
-                      _ApplicationStatusFilter.pending =>
-                        Icons.schedule_rounded,
-                      _ApplicationStatusFilter.approved =>
-                        Icons.check_circle_outline_rounded,
-                      _ApplicationStatusFilter.rejected =>
-                        Icons.cancel_outlined,
-                    },
-                    activeColor: filter == _ApplicationStatusFilter.approved
-                        ? _ApplicationsPalette.success
-                        : filter == _ApplicationStatusFilter.rejected
-                        ? _ApplicationsPalette.error
-                        : filter == _ApplicationStatusFilter.pending
-                        ? _ApplicationsPalette.warning
-                        : _ApplicationsPalette.primary,
-                    onTap: () => setState(() => _selectedStatusFilter = filter),
+                  (filter) => Padding(
+                    padding: const EdgeInsets.only(right: 6),
+                    child: _FilterChip(
+                      label: _statusLabel(filter),
+                      count: _statusCount(provider, filter),
+                      selected: _selectedStatusFilter == filter,
+                      icon: switch (filter) {
+                        _ApplicationStatusFilter.all => Icons.layers_outlined,
+                        _ApplicationStatusFilter.pending =>
+                          Icons.schedule_rounded,
+                        _ApplicationStatusFilter.approved =>
+                          Icons.check_circle_outline_rounded,
+                        _ApplicationStatusFilter.rejected =>
+                          Icons.cancel_outlined,
+                      },
+                      activeColor: switch (filter) {
+                        _ApplicationStatusFilter.approved =>
+                          _ApplicationsPalette.success,
+                        _ApplicationStatusFilter.rejected =>
+                          _ApplicationsPalette.error,
+                        _ApplicationStatusFilter.pending =>
+                          _ApplicationsPalette.warning,
+                        _ApplicationStatusFilter.all =>
+                          _ApplicationsPalette.primary,
+                      },
+                      onTap: () =>
+                          setState(() => _selectedStatusFilter = filter),
+                    ),
                   ),
                 )
                 .toList(growable: false),
           ),
-          const SizedBox(height: 18),
-          Text(
-            'Type',
-            style: GoogleFonts.poppins(
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
-              color: _ApplicationsPalette.textPrimary,
-            ),
-          ),
-          const SizedBox(height: 10),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
+        ),
+        const SizedBox(height: 12),
+        Text('TYPE', style: sectionLabelStyle),
+        const SizedBox(height: 8),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          physics: const BouncingScrollPhysics(),
+          child: Row(
             children: [
               _TypeFilterChip(
-                label: 'All Types',
+                label: 'All',
                 icon: Icons.widgets_outlined,
                 selected: _selectedTypeFilter == _allTypeFilter,
                 tone: _toneForType(null),
                 onTap: () =>
                     setState(() => _selectedTypeFilter = _allTypeFilter),
               ),
+              const SizedBox(width: 6),
               _TypeFilterChip(
                 label: 'Jobs',
                 icon: OpportunityType.icon(OpportunityType.job),
@@ -762,6 +743,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                 onTap: () =>
                     setState(() => _selectedTypeFilter = OpportunityType.job),
               ),
+              const SizedBox(width: 6),
               _TypeFilterChip(
                 label: 'Internships',
                 icon: OpportunityType.icon(OpportunityType.internship),
@@ -771,6 +753,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                   () => _selectedTypeFilter = OpportunityType.internship,
                 ),
               ),
+              const SizedBox(width: 6),
               _TypeFilterChip(
                 label: 'Sponsored',
                 icon: OpportunityType.icon(OpportunityType.sponsoring),
@@ -782,51 +765,73 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
               ),
             ],
           ),
-          if (provider.opportunities.isNotEmpty) ...[
-            const SizedBox(height: 18),
-            Text(
-              'Roles',
-              style: GoogleFonts.poppins(
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
-                color: _ApplicationsPalette.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 10),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              physics: const BouncingScrollPhysics(),
-              child: Row(
-                children: [
-                  _OpportunityFilterChip(
-                    label: 'All Roles',
-                    count: totalApplications,
-                    selected:
-                        _selectedOpportunityFilter == _allOpportunityFilter,
-                    onTap: () => setState(
-                      () => _selectedOpportunityFilter = _allOpportunityFilter,
-                    ),
+        ),
+        if (provider.opportunities.isNotEmpty) ...[
+          const SizedBox(height: 12),
+          Text('ROLES', style: sectionLabelStyle),
+          const SizedBox(height: 8),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            child: Row(
+              children: [
+                _OpportunityFilterChip(
+                  label: 'All Roles',
+                  count: totalApplications,
+                  selected: _selectedOpportunityFilter == _allOpportunityFilter,
+                  onTap: () => setState(
+                    () => _selectedOpportunityFilter = _allOpportunityFilter,
                   ),
-                  const SizedBox(width: 8),
-                  ...provider.opportunities.map(
-                    (opportunity) => Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: _OpportunityFilterChip(
-                        label: opportunity.title,
-                        count: opportunityCounts[opportunity.id] ?? 0,
-                        selected: _selectedOpportunityFilter == opportunity.id,
-                        onTap: () => setState(
-                          () => _selectedOpportunityFilter = opportunity.id,
-                        ),
+                ),
+                const SizedBox(width: 6),
+                ...provider.opportunities.map(
+                  (opportunity) => Padding(
+                    padding: const EdgeInsets.only(right: 6),
+                    child: _OpportunityFilterChip(
+                      label: opportunity.title,
+                      count: opportunityCounts[opportunity.id] ?? 0,
+                      selected: _selectedOpportunityFilter == opportunity.id,
+                      onTap: () => setState(
+                        () => _selectedOpportunityFilter = opportunity.id,
                       ),
                     ),
                   ),
-                ],
+                ),
+              ],
+            ),
+          ),
+        ],
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                'Showing $resultsCount of $totalApplications applications',
+                style: GoogleFonts.poppins(
+                  fontSize: 11.5,
+                  fontWeight: FontWeight.w600,
+                  color: _ApplicationsPalette.textMuted,
+                ),
               ),
             ),
+            if (_hasActiveFilters)
+              GestureDetector(
+                onTap: _clearFilters,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Text(
+                    'Clear',
+                    style: GoogleFonts.poppins(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: _ApplicationsPalette.primary,
+                    ),
+                  ),
+                ),
+              ),
           ],
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -841,35 +846,26 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
         ? 'Filtered results: $resultsCount of $totalApplications applications.'
         : 'Latest candidates ready for review, messaging, and CV checks.';
 
-    return Row(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                isFocusedView ? 'Application Spotlight' : 'Candidate Queue',
-                style: GoogleFonts.poppins(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                  color: _ApplicationsPalette.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                subtitle,
-                style: GoogleFonts.poppins(
-                  fontSize: 12.5,
-                  height: 1.45,
-                  color: _ApplicationsPalette.textSecondary,
-                ),
-              ),
-            ],
+        Text(
+          isFocusedView ? 'Application Spotlight' : 'Candidate Queue',
+          style: GoogleFonts.poppins(
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            color: _ApplicationsPalette.textPrimary,
           ),
         ),
-        const SizedBox(width: 12),
-        _CounterBadge(count: resultsCount, label: 'Visible'),
+        const SizedBox(height: 4),
+        Text(
+          subtitle,
+          style: GoogleFonts.poppins(
+            fontSize: 12,
+            height: 1.45,
+            color: _ApplicationsPalette.textSecondary,
+          ),
+        ),
       ],
     );
   }
@@ -921,36 +917,31 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
     final isFresh = _isFreshApplication(application.appliedAt);
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 14),
+      padding: const EdgeInsets.only(bottom: 10),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: BorderRadius.circular(18),
           onTap: () => _showApplicationDetailsSheet(item, provider),
           child: Container(
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  _ApplicationsPalette.surface,
-                  typeTone.background.withValues(alpha: 0.58),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(28),
+              color: _ApplicationsPalette.surface,
+              borderRadius: BorderRadius.circular(18),
               border: Border.all(
-                color: typeTone.foreground.withValues(alpha: 0.14),
+                color: isPending
+                    ? _ApplicationsPalette.primary.withValues(alpha: 0.18)
+                    : _ApplicationsPalette.border,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.04),
-                  blurRadius: 20,
-                  offset: const Offset(0, 12),
+                  color: Colors.black.withValues(alpha: 0.025),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
                 ),
               ],
             ),
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(14),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -958,25 +949,16 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(4),
+                        padding: const EdgeInsets.all(3),
                         decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.94),
+                          color: _ApplicationsPalette.surface,
                           shape: BoxShape.circle,
                           border: Border.all(
                             color: typeTone.foreground.withValues(alpha: 0.18),
                           ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: typeTone.foreground.withValues(
-                                alpha: 0.12,
-                              ),
-                              blurRadius: 16,
-                              offset: const Offset(0, 8),
-                            ),
-                          ],
                         ),
                         child: ProfileAvatar(
-                          radius: 22,
+                          radius: 21,
                           userId: application.studentId,
                           fallbackName: application.studentName,
                           role: 'student',
@@ -995,7 +977,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: GoogleFonts.poppins(
-                                      fontSize: 16,
+                                      fontSize: 14.5,
                                       fontWeight: FontWeight.w700,
                                       color: _ApplicationsPalette.textPrimary,
                                     ),
@@ -1015,7 +997,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                                     child: Text(
                                       'NEW',
                                       style: GoogleFonts.poppins(
-                                        fontSize: 10,
+                                        fontSize: 9.5,
                                         fontWeight: FontWeight.w700,
                                         color: _ApplicationsPalette.accent,
                                         letterSpacing: 0.4,
@@ -1028,10 +1010,11 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                             const SizedBox(height: 4),
                             Text(
                               opportunity?.title ?? 'Unknown opportunity',
-                              maxLines: 1,
+                              maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: GoogleFonts.poppins(
-                                fontSize: 12.5,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
                                 color: _ApplicationsPalette.textSecondary,
                                 height: 1.3,
                               ),
@@ -1054,56 +1037,44 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           ApplicationStatusBadge(status: application.status),
-                          const SizedBox(height: 12),
-                          Container(
-                            width: 42,
-                            height: 42,
-                            decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.84),
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(
-                                color: typeTone.foreground.withValues(
-                                  alpha: 0.12,
-                                ),
-                              ),
-                            ),
-                            child: Icon(
-                              OpportunityType.icon(opportunity?.type ?? ''),
-                              color: typeTone.foreground,
-                              size: 20,
-                            ),
+                          const SizedBox(height: 14),
+                          const Icon(
+                            Icons.chevron_right_rounded,
+                            size: 18,
+                            color: _ApplicationsPalette.textMuted,
                           ),
                         ],
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    physics: const BouncingScrollPhysics(),
-                    child: Row(
-                      children: [
-                        _TypePill(
-                          label: _typeLabel(opportunity?.type),
-                          tone: typeTone,
-                        ),
-                        if ((opportunity?.location ?? '')
-                            .trim()
-                            .isNotEmpty) ...[
-                          const SizedBox(width: 8),
-                          _MetaPill(
-                            icon: Icons.place_rounded,
-                            label: opportunity!.location.trim(),
-                          ),
-                        ],
-                        const SizedBox(width: 8),
+                  const SizedBox(height: 12),
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 6,
+                    children: [
+                      _TypePill(
+                        label: _typeLabel(opportunity?.type),
+                        tone: typeTone,
+                      ),
+                      if ((opportunity?.location ?? '').trim().isNotEmpty)
                         _MetaPill(
-                          icon: Icons.event_rounded,
-                          label: _appliedDateLabel(application.appliedAt),
+                          icon: Icons.place_rounded,
+                          label: opportunity!.location.trim(),
                         ),
-                      ],
-                    ),
+                      _MetaPill(
+                        icon: Icons.groups_rounded,
+                        label: opportunityApplicantCount == 1
+                            ? '1 applicant'
+                            : '$opportunityApplicantCount applicants',
+                      ),
+                      _MetaPill(
+                        icon: Icons.event_rounded,
+                        label: _appliedDateLabel(application.appliedAt),
+                      ),
+                    ],
                   ),
+                  const SizedBox(height: 12),
+                  Container(height: 1, color: _ApplicationsPalette.border),
                   const SizedBox(height: 12),
                   Wrap(
                     spacing: 8,
@@ -1124,97 +1095,94 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                         onTap: () =>
                             _showCvSheet(context, application, provider),
                       ),
+                      _ActionPillButton(
+                        label: 'Review',
+                        icon: Icons.open_in_new_rounded,
+                        foreground: _ApplicationsPalette.textSecondary,
+                        background: _ApplicationsPalette.surfaceAlt,
+                        onTap: () =>
+                            _showApplicationDetailsSheet(item, provider),
+                      ),
                     ],
                   ),
                   if (isPending) ...[
                     const SizedBox(height: 12),
                     Container(
                       width: double.infinity,
-                      padding: const EdgeInsets.all(12),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 10,
+                      ),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.90),
-                        borderRadius: BorderRadius.circular(20),
+                        color: _ApplicationsPalette.primarySoft,
+                        borderRadius: BorderRadius.circular(14),
                         border: Border.all(
-                          color: _ApplicationsPalette.border.withValues(
-                            alpha: 0.95,
+                          color: _ApplicationsPalette.primary.withValues(
+                            alpha: 0.12,
                           ),
                         ),
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      child: Row(
                         children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 6,
-                            ),
-                            decoration: BoxDecoration(
-                              color: _ApplicationsPalette.primarySoft,
-                              borderRadius: BorderRadius.circular(999),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Icon(
-                                  Icons.schedule_rounded,
-                                  size: 15,
-                                  color: _ApplicationsPalette.primary,
-                                ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  'Pending review',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 11.5,
-                                    fontWeight: FontWeight.w700,
-                                    color: _ApplicationsPalette.primary,
-                                  ),
-                                ),
-                              ],
-                            ),
+                          const Icon(
+                            Icons.schedule_rounded,
+                            size: 15,
+                            color: _ApplicationsPalette.primary,
                           ),
-                          const SizedBox(height: 10),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: _DecisionButton(
-                                  label: provider.isAppBusy(application.id)
-                                      ? 'Working...'
-                                      : 'Approve',
-                                  background: _ApplicationsPalette.success,
-                                  onTap: provider.isAppBusy(application.id)
-                                      ? null
-                                      : () => _updateStatus(
-                                          context,
-                                          application,
-                                          ApplicationStatus.accepted,
-                                          provider,
-                                        ),
-                                ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              'Pending review. Choose an outcome to keep the queue moving.',
+                              style: GoogleFonts.poppins(
+                                fontSize: 11.5,
+                                fontWeight: FontWeight.w600,
+                                color: _ApplicationsPalette.primary,
                               ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: _DecisionButton(
-                                  label: provider.isAppBusy(application.id)
-                                      ? 'Working...'
-                                      : 'Reject',
-                                  background: _ApplicationsPalette.error,
-                                  onTap: provider.isAppBusy(application.id)
-                                      ? null
-                                      : () => _updateStatus(
-                                          context,
-                                          application,
-                                          ApplicationStatus.rejected,
-                                          provider,
-                                        ),
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
                         ],
                       ),
                     ),
-                  ] else ...[
                     const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _DecisionButton(
+                            label: provider.isAppBusy(application.id)
+                                ? 'Working...'
+                                : 'Approve',
+                            background: _ApplicationsPalette.success,
+                            onTap: provider.isAppBusy(application.id)
+                                ? null
+                                : () => _updateStatus(
+                                    context,
+                                    application,
+                                    ApplicationStatus.accepted,
+                                    provider,
+                                  ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: _DecisionButton(
+                            label: provider.isAppBusy(application.id)
+                                ? 'Working...'
+                                : 'Reject',
+                            background: _ApplicationsPalette.error,
+                            onTap: provider.isAppBusy(application.id)
+                                ? null
+                                : () => _updateStatus(
+                                    context,
+                                    application,
+                                    ApplicationStatus.rejected,
+                                    provider,
+                                  ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ] else ...[
+                    const SizedBox(height: 6),
                     Align(
                       alignment: Alignment.centerRight,
                       child: TextButton.icon(
@@ -1224,8 +1192,8 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                         label: Text(
                           'Open review',
                           style: GoogleFonts.poppins(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
+                            fontSize: 11.5,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
                         style: TextButton.styleFrom(
@@ -1234,6 +1202,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                             horizontal: 10,
                             vertical: 8,
                           ),
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
                       ),
                     ),
@@ -2066,21 +2035,20 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
 }
 
 class _ApplicationsPalette {
-  static const Color primary = Color(0xFF4328D8);
-  static const Color primaryDark = Color(0xFF3721B8);
-  static const Color primarySoft = Color(0xFFEEF2FF);
-  static const Color secondaryDark = Color(0xFF0F9E90);
-  static const Color accent = Color(0xFFF59E0B);
+  static const Color primary = CompanyDashboardPalette.primary;
+  static const Color primarySoft = CompanyDashboardPalette.primarySoft;
+  static const Color secondaryDark = CompanyDashboardPalette.secondaryDark;
+  static const Color accent = CompanyDashboardPalette.accent;
   static const Color accentSoft = Color(0xFFFFF7E6);
-  static const Color surface = Color(0xFFFFFFFF);
-  static const Color surfaceAlt = Color(0xFFF1F5F9);
-  static const Color border = Color(0xFFE2E8F0);
-  static const Color textPrimary = Color(0xFF0F172A);
-  static const Color textSecondary = Color(0xFF475569);
+  static const Color surface = CompanyDashboardPalette.surface;
+  static const Color surfaceAlt = Color(0xFFF8FAFC);
+  static const Color border = Color(0xFFE5E7EB);
+  static const Color textPrimary = CompanyDashboardPalette.textPrimary;
+  static const Color textSecondary = CompanyDashboardPalette.textSecondary;
   static const Color textMuted = Color(0xFF94A3B8);
-  static const Color success = Color(0xFF22C55E);
-  static const Color warning = Color(0xFFF59E0B);
-  static const Color error = Color(0xFFEF4444);
+  static const Color success = CompanyDashboardPalette.success;
+  static const Color warning = CompanyDashboardPalette.warning;
+  static const Color error = CompanyDashboardPalette.error;
 }
 
 class _ApplicationListItem {
@@ -2103,62 +2071,136 @@ class _OpportunityTypeTone {
   });
 }
 
+class _HeaderIconButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const _HeaderIconButton({required this.icon, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: onTap,
+        child: Container(
+          width: 38,
+          height: 38,
+          decoration: BoxDecoration(
+            color: _ApplicationsPalette.surface,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: _ApplicationsPalette.border),
+          ),
+          child: Icon(icon, color: _ApplicationsPalette.textPrimary, size: 18),
+        ),
+      ),
+    );
+  }
+}
+
+class _NotificationIconButton extends StatelessWidget {
+  final int unreadCount;
+  final VoidCallback onTap;
+
+  const _NotificationIconButton({
+    required this.unreadCount,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        _HeaderIconButton(icon: Icons.notifications_none_rounded, onTap: onTap),
+        if (unreadCount > 0)
+          Positioned(
+            top: 2,
+            right: 2,
+            child: Container(
+              constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              decoration: BoxDecoration(
+                color: _ApplicationsPalette.error,
+                borderRadius: BorderRadius.circular(999),
+                border: Border.all(color: Colors.white, width: 1.5),
+              ),
+              child: Center(
+                child: Text(
+                  unreadCount > 9 ? '9+' : '$unreadCount',
+                  style: GoogleFonts.poppins(
+                    fontSize: 8.5,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _KpiDivider extends StatelessWidget {
+  const _KpiDivider();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 1,
+      margin: const EdgeInsets.symmetric(vertical: 4),
+      color: _ApplicationsPalette.border,
+    );
+  }
+}
+
 class _HeroStatTile extends StatelessWidget {
   final String label;
   final String value;
   final IconData icon;
+  final Color color;
 
   const _HeroStatTile({
     required this.label,
     required this.value,
     required this.icon,
+    required this.color,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
-      ),
-      child: Row(
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      child: Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: 28,
-            height: 28,
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.10),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(icon, size: 16, color: Colors.white),
-          ),
-          const SizedBox(width: 8),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
+          Row(
             children: [
+              Icon(icon, size: 13, color: color),
+              const SizedBox(width: 5),
               Text(
-                label.toUpperCase(),
+                label,
                 style: GoogleFonts.poppins(
-                  fontSize: 9.5,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 0.4,
-                  color: Colors.white.withValues(alpha: 0.72),
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                value,
-                style: GoogleFonts.poppins(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
+                  fontSize: 10.5,
+                  fontWeight: FontWeight.w600,
+                  color: _ApplicationsPalette.textMuted,
+                  letterSpacing: 0.2,
                 ),
               ),
             ],
+          ),
+          const SizedBox(height: 6),
+          Text(
+            value,
+            style: GoogleFonts.poppins(
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+              color: _ApplicationsPalette.textPrimary,
+              height: 1.05,
+            ),
           ),
         ],
       ),
@@ -2176,41 +2218,35 @@ class _SearchField extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: _ApplicationsPalette.surfaceAlt,
-        borderRadius: BorderRadius.circular(24),
+        color: _ApplicationsPalette.surface,
+        borderRadius: BorderRadius.circular(14),
         border: Border.all(color: _ApplicationsPalette.border),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.025),
-            blurRadius: 18,
-            offset: const Offset(0, 10),
-          ),
-        ],
       ),
       child: TextField(
         controller: controller,
         cursorColor: _ApplicationsPalette.primary,
         style: GoogleFonts.poppins(
-          fontSize: 14,
+          fontSize: 13,
           color: _ApplicationsPalette.textPrimary,
         ),
         decoration: InputDecoration(
           border: InputBorder.none,
+          isDense: true,
           contentPadding: const EdgeInsets.symmetric(
-            horizontal: 18,
-            vertical: 17,
+            horizontal: 14,
+            vertical: 13,
           ),
           prefixIcon: const Padding(
             padding: EdgeInsets.only(left: 10, right: 6),
             child: Icon(
               Icons.search_rounded,
-              color: _ApplicationsPalette.primary,
-              size: 22,
+              color: _ApplicationsPalette.textMuted,
+              size: 18,
             ),
           ),
           prefixIconConstraints: const BoxConstraints(
-            minWidth: 54,
-            minHeight: 22,
+            minWidth: 40,
+            minHeight: 20,
           ),
           suffixIcon: controller.text.trim().isEmpty
               ? null
@@ -2218,6 +2254,7 @@ class _SearchField extends StatelessWidget {
                   onPressed: controller.clear,
                   icon: const Icon(
                     Icons.close_rounded,
+                    size: 16,
                     color: _ApplicationsPalette.textMuted,
                   ),
                 ),
@@ -2300,13 +2337,15 @@ class _FilterChip extends StatelessWidget {
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 180),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: selected ? activeColor.withValues(alpha: 0.10) : Colors.white,
-          borderRadius: BorderRadius.circular(18),
+          color: selected
+              ? activeColor.withValues(alpha: 0.10)
+              : _ApplicationsPalette.surface,
+          borderRadius: BorderRadius.circular(999),
           border: Border.all(
             color: selected
-                ? activeColor.withValues(alpha: 0.22)
+                ? activeColor.withValues(alpha: 0.32)
                 : _ApplicationsPalette.border,
           ),
         ),
@@ -2324,7 +2363,7 @@ class _FilterChip extends StatelessWidget {
             Text(
               label,
               style: GoogleFonts.poppins(
-                fontSize: 12,
+                fontSize: 11,
                 fontWeight: FontWeight.w600,
                 color: selected
                     ? activeColor
@@ -2379,13 +2418,13 @@ class _TypeFilterChip extends StatelessWidget {
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 180),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: selected ? tone.background : Colors.white,
-          borderRadius: BorderRadius.circular(18),
+          color: selected ? tone.background : _ApplicationsPalette.surface,
+          borderRadius: BorderRadius.circular(999),
           border: Border.all(
             color: selected
-                ? tone.foreground.withValues(alpha: 0.18)
+                ? tone.foreground.withValues(alpha: 0.32)
                 : _ApplicationsPalette.border,
           ),
         ),
@@ -2405,7 +2444,7 @@ class _TypeFilterChip extends StatelessWidget {
             Text(
               label,
               style: GoogleFonts.poppins(
-                fontSize: 12,
+                fontSize: 11,
                 fontWeight: FontWeight.w600,
                 color: selected
                     ? tone.foreground
@@ -2438,15 +2477,15 @@ class _OpportunityFilterChip extends StatelessWidget {
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 180),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           color: selected
               ? _ApplicationsPalette.primarySoft
               : _ApplicationsPalette.surface,
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(999),
           border: Border.all(
             color: selected
-                ? _ApplicationsPalette.primary.withValues(alpha: 0.16)
+                ? _ApplicationsPalette.primary.withValues(alpha: 0.32)
                 : _ApplicationsPalette.border,
           ),
         ),
@@ -2460,7 +2499,7 @@ class _OpportunityFilterChip extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: GoogleFonts.poppins(
-                  fontSize: 12,
+                  fontSize: 11,
                   fontWeight: FontWeight.w600,
                   color: selected
                       ? _ApplicationsPalette.primary
@@ -2539,11 +2578,11 @@ class _InlineBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: background,
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: tone.withValues(alpha: 0.10)),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: tone.withValues(alpha: 0.14)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -2553,7 +2592,7 @@ class _InlineBanner extends StatelessWidget {
             height: 34,
             decoration: BoxDecoration(
               color: tone.withValues(alpha: 0.10),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(icon, color: tone, size: 18),
           ),
@@ -2619,44 +2658,22 @@ class _LoadingState extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            width: 62,
-            height: 62,
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [
-                  _ApplicationsPalette.primaryDark,
-                  _ApplicationsPalette.primary,
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(22),
-            ),
-            child: const Center(
-              child: CircularProgressIndicator(
-                color: Colors.white,
-                strokeWidth: 2.8,
-              ),
+          const SizedBox(
+            width: 28,
+            height: 28,
+            child: CircularProgressIndicator(
+              color: _ApplicationsPalette.primary,
+              strokeWidth: 2.4,
             ),
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: 14),
           Text(
             'Loading your applications...',
             style: GoogleFonts.poppins(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: _ApplicationsPalette.textPrimary,
-            ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            'Pulling the latest candidate activity for your company.',
-            style: GoogleFonts.poppins(
               fontSize: 12.5,
+              fontWeight: FontWeight.w600,
               color: _ApplicationsPalette.textSecondary,
             ),
-            textAlign: TextAlign.center,
           ),
         ],
       ),
@@ -2691,27 +2708,11 @@ class _EmptyApplicationsState extends StatelessWidget {
       child: Center(
         child: Container(
           width: double.infinity,
-          padding: const EdgeInsets.all(28),
+          padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                _ApplicationsPalette.surface,
-                _ApplicationsPalette.primarySoft.withValues(alpha: 0.55),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.circular(32),
-            border: Border.all(
-              color: _ApplicationsPalette.primary.withValues(alpha: 0.08),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.04),
-                blurRadius: 24,
-                offset: const Offset(0, 14),
-              ),
-            ],
+            color: _ApplicationsPalette.surface,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: _ApplicationsPalette.border),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -2721,7 +2722,7 @@ class _EmptyApplicationsState extends StatelessWidget {
                 height: 62,
                 decoration: BoxDecoration(
                   color: _ApplicationsPalette.primarySoft,
-                  borderRadius: BorderRadius.circular(22),
+                  borderRadius: BorderRadius.circular(18),
                 ),
                 child: const Icon(
                   Icons.inbox_outlined,
@@ -2796,10 +2797,8 @@ class _MetaPill extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.82),
-        border: Border.all(
-          color: _ApplicationsPalette.border.withValues(alpha: 0.85),
-        ),
+        color: _ApplicationsPalette.surfaceAlt,
+        border: Border.all(color: _ApplicationsPalette.border),
         borderRadius: BorderRadius.circular(999),
       ),
       child: Row(
@@ -2841,11 +2840,11 @@ class _ActionPillButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           color: background,
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: foreground.withValues(alpha: 0.10)),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: foreground.withValues(alpha: 0.16)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -2855,8 +2854,8 @@ class _ActionPillButton extends StatelessWidget {
             Text(
               label,
               style: GoogleFonts.poppins(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
+                fontSize: 11.5,
+                fontWeight: FontWeight.w700,
                 color: foreground,
               ),
             ),
@@ -2890,12 +2889,12 @@ class _DecisionButton extends StatelessWidget {
           elevation: 0,
           shadowColor: background.withValues(alpha: 0.22),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(12),
           ),
         ),
         child: Text(
           label,
-          style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w700),
+          style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w700),
         ),
       ),
     );
@@ -2926,15 +2925,8 @@ class _DetailHeroCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            _ApplicationsPalette.surface,
-            typeTone.background.withValues(alpha: 0.78),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(28),
+        color: _ApplicationsPalette.surface,
+        borderRadius: BorderRadius.circular(18),
         border: Border.all(color: typeTone.foreground.withValues(alpha: 0.12)),
       ),
       child: Column(
@@ -2945,7 +2937,7 @@ class _DetailHeroCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.94),
+                  color: _ApplicationsPalette.surface,
                   shape: BoxShape.circle,
                   border: Border.all(
                     color: typeTone.foreground.withValues(alpha: 0.16),
@@ -3023,11 +3015,11 @@ class _WideActionButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
           color: background,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: foreground.withValues(alpha: 0.10)),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: foreground.withValues(alpha: 0.16)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -3065,15 +3057,8 @@ class _DetailSection extends StatelessWidget {
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: _ApplicationsPalette.surface,
-        borderRadius: BorderRadius.circular(26),
+        borderRadius: BorderRadius.circular(18),
         border: Border.all(color: _ApplicationsPalette.border),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.025),
-            blurRadius: 18,
-            offset: const Offset(0, 10),
-          ),
-        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
