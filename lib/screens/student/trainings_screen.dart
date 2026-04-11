@@ -592,13 +592,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
       approvedTrainings,
       profileKeywords: profileKeywords,
     );
-    final recommendedIds = recommendedTrainings
-        .map((training) => training.id)
-        .toSet();
-    final catalogTrainings =
-        (activeDomain == 'All' ? approvedTrainings : domainFilteredTrainings)
-            .where((training) => !recommendedIds.contains(training.id))
-            .toList();
+    final catalogTrainings = domainFilteredTrainings;
 
     final topCards = recommendedTrainings.map(_mapTrainingToCardData).toList();
     final additionalCards = catalogTrainings
