@@ -1,6 +1,6 @@
-# AvenirDZ
+# FutureGate
 
-AvenirDZ is a role-based Flutter and Firebase application that connects students, companies, and administrators in one platform. It helps students discover opportunities and academic resources, allows companies to manage recruitment flows, and provides admins with moderation and platform oversight tools.
+FutureGate is a role-based Flutter and Firebase application that connects students, companies, and administrators in one platform. It helps students discover opportunities and academic resources, allows companies to manage recruitment flows, and provides admins with moderation and platform oversight tools.
 
 ## Overview
 

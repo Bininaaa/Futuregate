@@ -734,7 +734,7 @@ class TrendingOpportunityCard extends StatelessWidget {
         MediaQuery.sizeOf(context).width < 380 || textScale > 1.08;
     final companyLabel = companyName?.trim().isNotEmpty == true
         ? companyName!.trim()
-        : 'AvenirDZ partner';
+        : 'FutureGate partner';
     final locationLabel = locationText?.trim();
     final metaItems = _metaItems();
     final cardWidth = isCompactLayout ? 206.0 : 220.0;

@@ -153,7 +153,7 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
                   subtitle: AppMetadata.supportEmail,
                   onTap: () => _launchEmail(
                     context,
-                    subject: 'AvenirDZ Support Request',
+                    subject: 'FutureGate Support Request',
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -163,7 +163,7 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
                   title: 'Report a Problem',
                   subtitle: 'Share screenshots, steps, or account issues',
                   onTap: () =>
-                      _launchEmail(context, subject: 'AvenirDZ Bug Report'),
+                      _launchEmail(context, subject: 'FutureGate Bug Report'),
                 ),
               ],
             ),

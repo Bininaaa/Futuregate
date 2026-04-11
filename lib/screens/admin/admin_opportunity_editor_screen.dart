@@ -57,7 +57,7 @@ class _AdminOpportunityEditorScreenState
     final auth = context.read<AuthProvider>().userModel;
     _publisherController.text = auth?.fullName.trim().isNotEmpty == true
         ? auth!.fullName.trim()
-        : 'AvenirDZ Admin';
+        : 'FutureGate Admin';
 
     final raw = widget.initialOpportunity;
     if (raw == null) return;
@@ -142,7 +142,7 @@ class _AdminOpportunityEditorScreenState
                   AdminEditorField(
                     controller: _publisherController,
                     label: 'Publisher name',
-                    hint: 'e.g. AvenirDZ Admin',
+                    hint: 'e.g. FutureGate Admin',
                     validator: adminRequiredMin('Publisher name', min: 3),
                   ),
                   const SizedBox(height: 14),

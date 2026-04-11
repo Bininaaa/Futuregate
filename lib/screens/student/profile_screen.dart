@@ -16,7 +16,7 @@ import '../../providers/saved_scholarship_provider.dart';
 import '../../providers/student_provider.dart';
 import '../../providers/training_provider.dart';
 import '../../screens/notifications_screen.dart';
-import '../../screens/settings/about_avenirdz_screen.dart';
+import '../../screens/settings/about_futuregate_screen.dart';
 import '../../screens/settings/help_center_screen.dart';
 import '../../screens/settings/logout_confirmation_sheet.dart';
 import '../../screens/settings/security_privacy_screen.dart';
@@ -198,7 +198,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     onSettings: () => _push(const SettingsScreen()),
                     onSecurity: () => _push(const SecurityPrivacyScreen()),
                     onHelp: () => _push(const HelpCenterScreen()),
-                    onAbout: () => _push(const AboutAvenirDzScreen()),
+                    onAbout: () => _push(const AboutFutureGateScreen()),
                     onLogout: () => showLogoutConfirmationSheet(context),
                   );
 
@@ -1849,7 +1849,7 @@ class _LinksCard extends StatelessWidget {
           _LinkRow(
             icon: Icons.info_outline_rounded,
             color: SettingsFlowPalette.accent,
-            title: 'About AvenirDZ',
+            title: 'About FutureGate',
             subtitle: 'Learn more about the platform.',
             onTap: onAbout,
           ),

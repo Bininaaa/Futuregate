@@ -14,7 +14,7 @@ import '../../utils/document_upload_validator.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/profile_avatar.dart';
 import '../../widgets/shared/app_feedback.dart';
-import '../settings/about_avenirdz_screen.dart';
+import '../settings/about_futuregate_screen.dart';
 import '../settings/help_center_screen.dart';
 import '../settings/logout_confirmation_sheet.dart';
 import '../settings/settings_flow_theme.dart';
@@ -719,11 +719,11 @@ class CompanyProfileScreen extends StatelessWidget {
           SettingsListRow(
             icon: Icons.info_outline_rounded,
             iconColor: CompanyDashboardPalette.info,
-            title: 'About AvenirDZ',
+            title: 'About FutureGate',
             subtitle: 'Platform mission and version details',
             onTap: () => Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => const AboutAvenirDzScreen()),
+              MaterialPageRoute(builder: (_) => const AboutFutureGateScreen()),
             ),
           ),
           const SizedBox(height: 10),

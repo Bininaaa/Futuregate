@@ -25,8 +25,8 @@ class NotificationService {
   static Map<String, dynamic>? pendingNotificationData;
 
   static const String _channelId = 'avenirdz_notifications';
-  static const String _channelName = 'AvenirDZ Notifications';
-  static const String _channelDesc = 'Notifications from AvenirDZ';
+  static const String _channelName = 'FutureGate Notifications';
+  static const String _channelDesc = 'Notifications from FutureGate';
 
   static const String _webVapidKey = String.fromEnvironment(
     'FCM_WEB_VAPID_KEY',

@@ -22,7 +22,7 @@ class RoleChooserScreen extends StatelessWidget {
               children: <Widget>[
                 const AuthCompactHeader(
                   icon: Icons.person_add_rounded,
-                  title: 'Join AvenirDZ',
+                  title: 'Join FutureGate',
                   subtitle: 'Choose your account type.',
                   stickers: <AuthStickerSpec>[
                     AuthStickerSpec(

@@ -6,13 +6,13 @@ import '../../widgets/shared/app_feedback.dart';
 import 'settings_flow_theme.dart';
 import 'settings_flow_widgets.dart';
 
-class AboutAvenirDzScreen extends StatelessWidget {
-  const AboutAvenirDzScreen({super.key});
+class AboutFutureGateScreen extends StatelessWidget {
+  const AboutFutureGateScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return SettingsPageScaffold(
-      title: 'About AvenirDZ',
+      title: 'About FutureGate',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -31,7 +31,7 @@ class AboutAvenirDzScreen extends StatelessWidget {
                     ),
                     child: Center(
                       child: Text(
-                        'A',
+                        'F',
                         style: SettingsFlowTheme.heroTitle(
                           Colors.white,
                         ).copyWith(fontSize: 28),
@@ -60,7 +60,7 @@ class AboutAvenirDzScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'AvenirDZ is designed as a bridge between students, their growing skills, and the real opportunities that can shape their next milestone.',
+                  'FutureGate is designed as a bridge between students, their growing skills, and the real opportunities that can shape their next milestone.',
                   style: SettingsFlowTheme.caption(),
                 ),
               ],
@@ -97,7 +97,7 @@ class AboutAvenirDzScreen extends StatelessWidget {
                     context,
                     title: 'Terms',
                     message:
-                        'AvenirDZ expects accurate profiles, respectful communication, and responsible use of the application and content tools available in the app.',
+                        'FutureGate expects accurate profiles, respectful communication, and responsible use of the application and content tools available in the app.',
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -110,7 +110,7 @@ class AboutAvenirDzScreen extends StatelessWidget {
                     context,
                     title: 'Privacy Policy',
                     message:
-                        'Profile, CV, notification, and application data are used only to provide the matching, review, and communication features that power the AvenirDZ experience.',
+                        'Profile, CV, notification, and application data are used only to provide the matching, review, and communication features that power the FutureGate experience.',
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -146,7 +146,7 @@ class AboutAvenirDzScreen extends StatelessWidget {
     final uri = Uri(
       scheme: 'mailto',
       path: AppMetadata.supportEmail,
-      queryParameters: {'subject': 'About AvenirDZ'},
+      queryParameters: {'subject': 'About FutureGate'},
     );
 
     final launched = await launchUrl(uri);

@@ -1,4 +1,4 @@
-# AvenirDZ Cloudflare Worker Backend
+# FutureGate Cloudflare Worker Backend
 
 Cloudflare Worker backend that replaces the Firebase Functions runtime paths for search, training admin actions, and notification orchestration.
 

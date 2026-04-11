@@ -321,7 +321,7 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
   Future<void> _shareOpportunity() async {
     final lines = <String>[
       widget.opportunity.title.trim().isEmpty
-          ? 'Opportunity on AvenirDZ'
+          ? 'Opportunity on FutureGate'
           : widget.opportunity.title.trim(),
       'Company: $_companyName',
       'Type: ${OpportunityType.label(_effectiveType)}',
@@ -330,14 +330,14 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
       if (_durationLabel != null) 'Duration: ${_durationLabel!}',
       if (_deadlineLabel != null) 'Deadline: ${_deadlineLabel!}',
       '',
-      'Shared from AvenirDZ',
+      'Shared from FutureGate',
     ];
 
     await SharePlus.instance.share(
       ShareParams(
         text: lines.join('\n'),
         subject: widget.opportunity.title.trim().isEmpty
-            ? 'Opportunity from AvenirDZ'
+            ? 'Opportunity from FutureGate'
             : widget.opportunity.title.trim(),
       ),
     );
@@ -391,7 +391,7 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
 
   String get _companyName {
     final companyName = widget.opportunity.companyName.trim();
-    return companyName.isEmpty ? 'AvenirDZ partner' : companyName;
+    return companyName.isEmpty ? 'FutureGate partner' : companyName;
   }
 
   String get _locationValue {
@@ -425,8 +425,8 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
 
   String get _compensationNoteTitle =>
       _effectiveType == OpportunityType.sponsoring
-          ? 'Funding note'
-          : 'Compensation note';
+      ? 'Funding note'
+      : 'Compensation note';
 
   String? get _salaryLabel => OpportunityMetadata.formatSalaryRange(
     salaryMin: widget.opportunity.salaryMin,

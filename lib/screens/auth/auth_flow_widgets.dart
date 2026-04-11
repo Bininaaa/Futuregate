@@ -179,7 +179,7 @@ class AuthFlowScaffold extends StatelessWidget {
                                   ),
                                   const SizedBox(width: 8),
                                   Text(
-                                    'AvenirDZ',
+                                    'FutureGate',
                                     style: GoogleFonts.sora(
                                       fontSize: 12.5,
                                       fontWeight: FontWeight.w700,

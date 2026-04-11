@@ -2,7 +2,7 @@
   "name": "avenirdz-api",
   "version": "1.0.0",
   "private": true,
-  "description": "AvenirDZ Cloudflare Worker backend",
+  "description": "FutureGate Cloudflare Worker backend",
   "main": "src/index.js",
   "scripts": {
     "dev": "wrangler dev",

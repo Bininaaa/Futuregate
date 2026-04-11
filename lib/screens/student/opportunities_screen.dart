@@ -1201,7 +1201,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
 
   String _companyName(OpportunityModel opportunity) {
     final companyName = opportunity.companyName.trim();
-    return companyName.isEmpty ? 'AvenirDZ partner' : companyName;
+    return companyName.isEmpty ? 'FutureGate partner' : companyName;
   }
 
   String? _companyNameOrNull(OpportunityModel opportunity) {

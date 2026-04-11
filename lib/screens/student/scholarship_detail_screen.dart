@@ -45,7 +45,7 @@ class ScholarshipDetailScreen extends StatelessWidget {
 
   String get _provider {
     final value = scholarship.provider.trim();
-    return value.isEmpty ? 'AvenirDZ Partner' : value;
+    return value.isEmpty ? 'FutureGate Partner' : value;
   }
 
   String get _description {

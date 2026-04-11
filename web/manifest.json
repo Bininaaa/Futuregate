@@ -1,11 +1,11 @@
 {
-    "name": "avenirdz",
-    "short_name": "avenirdz",
+    "name": "FutureGate",
+    "short_name": "FutureGate",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "FutureGate helps students turn ambition into action through curated opportunities, clearer profiles, and stronger career readiness.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

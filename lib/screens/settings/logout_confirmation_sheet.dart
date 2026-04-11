@@ -58,7 +58,7 @@ class LogoutConfirmationSheet extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'Sign out of AvenirDZ?',
+            'Sign out of FutureGate?',
             style: SettingsFlowTheme.sectionTitle(),
             textAlign: TextAlign.center,
           ),

@@ -5,7 +5,7 @@ class AppConstants {
       'https://avenirdz-api.yasserabh13.workers.dev';
 
   // ── Admin configuration ──────────────────────────────────────────
-  // Change this to your new admin email. This is the single source of
-  // truth used across the app and the seed script.
-  static const String adminEmail = 'avenirdz13@gmail.com';
+  // Support contact shown in the app. The seed admin auth email is configured
+  // separately to avoid changing live login infrastructure.
+  static const String adminEmail = 'futuregatee13@gmail.com';
 }

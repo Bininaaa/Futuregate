@@ -459,7 +459,7 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
 
   String _companyName(OpportunityModel opportunity) {
     final trimmed = opportunity.companyName.trim();
-    return trimmed.isEmpty ? 'AvenirDZ Partner' : trimmed;
+    return trimmed.isEmpty ? 'FutureGate Partner' : trimmed;
   }
 
   String? _locationLabel(OpportunityModel opportunity) {

@@ -54,7 +54,7 @@ class SecurityPrivacyScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 5),
                   Text(
-                    'Update credentials, review privacy touchpoints, and keep access to your AvenirDZ profile secure.',
+                    'Update credentials, review privacy touchpoints, and keep access to your FutureGate profile secure.',
                     style: SettingsFlowTheme.caption(),
                   ),
                 ],
@@ -185,7 +185,7 @@ class SecurityPrivacyScreen extends StatelessWidget {
                     title: 'Data permissions',
                     icon: Icons.tune_rounded,
                     message:
-                        'AvenirDZ stores the profile details, CV content, saved items, and application activity needed to match students with opportunities and support application review.',
+                        'FutureGate stores the profile details, CV content, saved items, and application activity needed to match students with opportunities and support application review.',
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -213,7 +213,7 @@ class SecurityPrivacyScreen extends StatelessWidget {
                     title: 'Terms of Use',
                     icon: Icons.gavel_rounded,
                     message:
-                        'Use AvenirDZ responsibly, keep account information accurate, and avoid submitting misleading applications or content that violates platform rules.',
+                        'Use FutureGate responsibly, keep account information accurate, and avoid submitting misleading applications or content that violates platform rules.',
                   ),
                 ),
               ],

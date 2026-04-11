@@ -39,7 +39,7 @@ const db = admin.firestore();
 const ADMIN_UID = 'zjCtD53DBxMqQAIRwCdma9l1Hwj1';
 const ADMIN_EMAIL = 'avenirdz13@gmail.com';
 const ADMIN_PASSWORD = 'Admin123456!';
-const ADMIN_NAME = 'Admin AvenirDZ';
+const ADMIN_NAME = 'Admin FutureGate';
 const ADMIN_ONLY_MODE = process.argv.includes('--admin-only');
 
 function isUserNotFoundError(error) {

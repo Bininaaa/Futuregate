@@ -86,6 +86,6 @@ server.on('error', (err) => {
 });
 
 server.listen(PORT, HOST, () => {
-  console.log(`AvenirDZ Admin server running at http://localhost:${PORT}`);
+  console.log(`FutureGate Admin server running at http://localhost:${PORT}`);
   console.log('Press Ctrl+C to stop.');
 });

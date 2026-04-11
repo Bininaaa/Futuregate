@@ -47,7 +47,7 @@ void main() async {
   // user can see the full notification and tap through to the target.
   NotificationService.onNotificationTap = _handleNotificationTap;
 
-  runApp(const AvenirDZApp());
+  runApp(const FutureGateApp());
 }
 
 void _handleNotificationTap(Map<String, dynamic> data) {
@@ -60,8 +60,8 @@ void _handleNotificationTap(Map<String, dynamic> data) {
   state.push(MaterialPageRoute(builder: (_) => const NotificationsScreen()));
 }
 
-class AvenirDZApp extends StatelessWidget {
-  const AvenirDZApp({super.key});
+class FutureGateApp extends StatelessWidget {
+  const FutureGateApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -154,7 +154,7 @@ class _PresenceAwareAppState extends State<_PresenceAwareApp>
     return MaterialApp(
       navigatorKey: appNavigatorKey,
       debugShowCheckedModeBanner: false,
-      title: 'AvenirDZ',
+      title: 'FutureGate',
       theme: ThemeData(
         scaffoldBackgroundColor: const Color(0xFFF8FAFC),
         colorScheme: colorScheme,

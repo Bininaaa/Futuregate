@@ -6,7 +6,7 @@ import '../../providers/auth_provider.dart';
 import '../company/profile_screen.dart';
 import '../notifications_screen.dart';
 import '../student/edit_profile_screen.dart';
-import 'about_avenirdz_screen.dart';
+import 'about_futuregate_screen.dart';
 import 'help_center_screen.dart';
 import 'logout_confirmation_sheet.dart';
 import 'security_privacy_screen.dart';
@@ -206,12 +206,12 @@ class SettingsScreen extends StatelessWidget {
                   SettingsListRow(
                     icon: Icons.info_outline_rounded,
                     iconColor: SettingsFlowPalette.primaryDark,
-                    title: 'About AvenirDZ',
+                    title: 'About FutureGate',
                     subtitle: 'Mission, version, and platform details',
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => const AboutAvenirDzScreen(),
+                        builder: (_) => const AboutFutureGateScreen(),
                       ),
                     ),
                   ),

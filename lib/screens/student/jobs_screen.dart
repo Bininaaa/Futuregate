@@ -480,7 +480,7 @@ class _JobsScreenState extends State<JobsScreen> {
 
   String _companyName(OpportunityModel opportunity) {
     final companyName = opportunity.companyName.trim();
-    return companyName.isEmpty ? 'AvenirDZ partner' : companyName;
+    return companyName.isEmpty ? 'FutureGate partner' : companyName;
   }
 
   String? _locationLabel(OpportunityModel opportunity) {

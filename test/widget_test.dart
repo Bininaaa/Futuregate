@@ -317,7 +317,7 @@ void main() {
     await tester.pumpWidget(buildTestApp(authProvider));
     await tester.pump();
 
-    expect(find.text('AvenirDZ'), findsOneWidget);
+    expect(find.text('FutureGate'), findsOneWidget);
     expect(find.text('Login'), findsAtLeastNWidgets(1));
     expect(authProvider.loadCurrentUserCalled, isTrue);
   });

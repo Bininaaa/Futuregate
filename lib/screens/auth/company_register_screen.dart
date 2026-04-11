@@ -174,7 +174,7 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
           ),
           const Expanded(
             child: Text(
-              'AvenirDZ',
+              'FutureGate',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 22,
