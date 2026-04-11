@@ -8,7 +8,11 @@
       "Bash(dart analyze:*)",
       "Bash(firebase --version)",
       "Bash(firebase projects:list)",
-      "Bash(firebase deploy:*)"
+      "Bash(firebase deploy:*)",
+      "Bash(python -c \"from PIL import Image; im = Image.open\\('c:/AV4/assets/images/FutureGate.png'\\); print\\(im.size, im.mode, im.format\\)\")",
+      "Bash(python -m pip install Pillow --quiet)",
+      "Bash(python tools/generate_branding.py)",
+      "Bash(flutter pub:*)"
     ]
   }
 }

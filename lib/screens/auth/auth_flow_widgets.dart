@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../widgets/shared/app_content_system.dart';
+import '../../widgets/shared/app_logo.dart';
 
 const AppContentTheme authFlowTheme = AppContentTheme(
   accent: Color(0xFF3B22F6),
@@ -164,19 +165,7 @@ class AuthFlowScaffold extends StatelessWidget {
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: <Widget>[
-                                  Container(
-                                    width: 20,
-                                    height: 20,
-                                    decoration: BoxDecoration(
-                                      gradient: const LinearGradient(
-                                        colors: <Color>[
-                                          Color(0xFF3B22F6),
-                                          Color(0xFF14B8A6),
-                                        ],
-                                      ),
-                                      borderRadius: BorderRadius.circular(6),
-                                    ),
-                                  ),
+                                  const AppLogo(height: 22),
                                   const SizedBox(width: 8),
                                   Text(
                                     'FutureGate',

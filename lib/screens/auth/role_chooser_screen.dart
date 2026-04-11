@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../widgets/shared/app_content_system.dart';
+import '../../widgets/shared/app_logo.dart';
 import 'auth_flow_widgets.dart';
 import 'company_register_screen.dart';
 import 'register_screen.dart';
@@ -20,6 +21,8 @@ class RoleChooserScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
+                const Center(child: AppLogo(height: 44)),
+                const SizedBox(height: 18),
                 const AuthCompactHeader(
                   icon: Icons.person_add_rounded,
                   title: 'Join FutureGate',

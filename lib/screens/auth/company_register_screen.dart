@@ -6,6 +6,7 @@ import '../../providers/auth_provider.dart';
 import '../../utils/document_upload_validator.dart';
 import '../../utils/validators.dart';
 import '../../widgets/shared/app_feedback.dart';
+import '../../widgets/shared/app_logo.dart';
 import '../../widgets/password_strength_indicator.dart';
 
 class CompanyRegisterScreen extends StatefulWidget {
@@ -173,15 +174,7 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
             ),
           ),
           const Expanded(
-            child: Text(
-              'FutureGate',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: _navyBlue,
-              ),
-            ),
+            child: Center(child: AppLogo(height: 32)),
           ),
           const SizedBox(width: 48),
         ],

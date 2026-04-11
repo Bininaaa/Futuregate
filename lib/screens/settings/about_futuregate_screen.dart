@@ -3,6 +3,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../config/app_metadata.dart';
 import '../../widgets/shared/app_feedback.dart';
+import '../../widgets/shared/app_logo.dart';
 import 'settings_flow_theme.dart';
 import 'settings_flow_widgets.dart';
 
@@ -23,20 +24,24 @@ class AboutFutureGateScreen extends StatelessWidget {
               children: [
                 SettingsAdaptiveHeader(
                   leading: Container(
-                    width: 64,
-                    height: 64,
+                    width: 72,
+                    height: 72,
+                    padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      gradient: SettingsFlowPalette.primaryGradient,
+                      color: Colors.white,
                       borderRadius: SettingsFlowTheme.radius(22),
-                    ),
-                    child: Center(
-                      child: Text(
-                        'F',
-                        style: SettingsFlowTheme.heroTitle(
-                          Colors.white,
-                        ).copyWith(fontSize: 28),
+                      border: Border.all(
+                        color: Colors.black.withValues(alpha: 0.06),
                       ),
+                      boxShadow: <BoxShadow>[
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.05),
+                          blurRadius: 14,
+                          offset: const Offset(0, 6),
+                        ),
+                      ],
                     ),
+                    child: const AppLogo(),
                   ),
                   content: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
