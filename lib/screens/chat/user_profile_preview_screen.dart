@@ -125,7 +125,7 @@ class _UserProfilePreviewScreenState extends State<UserProfilePreviewScreen> {
                             _roleLabel(user),
                             style: ChatThemeStyles.meta(
                               _roleColor(user),
-                            ).copyWith(fontWeight: FontWeight.w700),
+                            ).copyWith(fontWeight: FontWeight.w600),
                           ),
                         ),
                         const SizedBox(height: 10),
@@ -138,7 +138,7 @@ class _UserProfilePreviewScreenState extends State<UserProfilePreviewScreen> {
                             (user?.isOnline ?? false)
                                 ? ChatThemePalette.success
                                 : ChatThemePalette.textSecondary,
-                          ).copyWith(fontWeight: FontWeight.w700),
+                          ).copyWith(fontWeight: FontWeight.w600),
                         ),
                         if (headline.isNotEmpty) ...[
                           const SizedBox(height: 14),

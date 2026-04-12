@@ -197,7 +197,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
                             Text(
                               'Recent contacts',
                               style: ChatThemeStyles.meta().copyWith(
-                                fontWeight: FontWeight.w700,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                             const SizedBox(height: 12),
@@ -209,7 +209,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
                                 ? 'Suggested'
                                 : 'Contacts',
                             style: ChatThemeStyles.meta().copyWith(
-                              fontWeight: FontWeight.w700,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                           const SizedBox(height: 12),

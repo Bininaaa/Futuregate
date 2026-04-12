@@ -8,6 +8,7 @@ import '../../models/user_model.dart';
 import '../../services/document_access_service.dart';
 import '../profile_avatar.dart';
 import '../shared/app_feedback.dart';
+import 'chat_action_sheet.dart';
 import 'chat_formatters.dart';
 import 'chat_theme.dart';
 
@@ -200,50 +201,28 @@ class ChatMessageBubble extends StatelessWidget {
       context: context,
       backgroundColor: Colors.transparent,
       builder: (context) {
-        return SafeArea(
-          child: Container(
-            margin: const EdgeInsets.all(14),
-            padding: const EdgeInsets.symmetric(vertical: 6),
-            decoration: BoxDecoration(
-              color: ChatThemePalette.surface,
-              borderRadius: BorderRadius.circular(22),
-              boxShadow: ChatThemeStyles.softShadow(0.08),
+        return ChatActionSheet(
+          actions: [
+            if (message.isTextMessage)
+              ChatActionSheetItem(
+                icon: Icons.edit_outlined,
+                label: 'Edit message',
+                accentColor: ChatThemePalette.primary,
+                onTap: () {
+                  Navigator.pop(context);
+                  onEdit?.call();
+                },
+              ),
+            ChatActionSheetItem(
+              icon: Icons.delete_outline_rounded,
+              label: 'Delete for everyone',
+              accentColor: ChatThemePalette.error,
+              onTap: () {
+                Navigator.pop(context);
+                onDelete?.call();
+              },
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (message.isTextMessage)
-                  ListTile(
-                    leading: const Icon(
-                      Icons.edit_outlined,
-                      color: ChatThemePalette.primary,
-                    ),
-                    title: Text(
-                      'Edit message',
-                      style: ChatThemeStyles.cardTitle(),
-                    ),
-                    onTap: () {
-                      Navigator.pop(context);
-                      onEdit?.call();
-                    },
-                  ),
-                ListTile(
-                  leading: const Icon(
-                    Icons.delete_outline_rounded,
-                    color: ChatThemePalette.error,
-                  ),
-                  title: Text(
-                    'Delete for everyone',
-                    style: ChatThemeStyles.cardTitle(ChatThemePalette.error),
-                  ),
-                  onTap: () {
-                    Navigator.pop(context);
-                    onDelete?.call();
-                  },
-                ),
-              ],
-            ),
-          ),
+          ],
         );
       },
     );

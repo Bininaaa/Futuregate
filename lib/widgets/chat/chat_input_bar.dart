@@ -192,7 +192,7 @@ class ChatInputBar extends StatelessWidget {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 14),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFF5F7FA),
+                        color: ChatThemePalette.surfaceMuted,
                         borderRadius: BorderRadius.circular(22),
                         border: Border.all(
                           color: ChatThemePalette.border.withValues(alpha: 0.6),
@@ -314,9 +314,7 @@ class _StatusBanner extends StatelessWidget {
           Expanded(
             child: Text(
               label,
-              style: ChatThemeStyles.meta(
-                ChatThemePalette.primary,
-              ).copyWith(fontWeight: FontWeight.w600),
+              style: ChatThemeStyles.meta(ChatThemePalette.primary),
             ),
           ),
           InkWell(
@@ -348,7 +346,7 @@ class _AttachmentPreview extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
-        color: const Color(0xFFF5F7FA),
+        color: ChatThemePalette.surfaceMuted,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
           color: ChatThemePalette.border.withValues(alpha: 0.5),
@@ -444,7 +442,7 @@ class _AiChip extends StatelessWidget {
               label,
               style: ChatThemeStyles.meta(
                 ChatThemePalette.primary,
-              ).copyWith(fontSize: 11, fontWeight: FontWeight.w600),
+              ).copyWith(fontSize: 11),
             ),
           ],
         ),
@@ -476,9 +474,7 @@ class _AiProcessingIndicator extends StatelessWidget {
           const SizedBox(width: 8),
           Text(
             'AI is processing...',
-            style: ChatThemeStyles.meta(
-              ChatThemePalette.primary,
-            ).copyWith(fontWeight: FontWeight.w600),
+            style: ChatThemeStyles.meta(ChatThemePalette.primary),
           ),
         ],
       ),

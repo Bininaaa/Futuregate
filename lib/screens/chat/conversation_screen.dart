@@ -616,7 +616,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                       ),
                       Expanded(
                         child: Container(
-                          color: const Color(0xFFF8FAFC),
+                          color: ChatThemePalette.background,
                           child: messages.isEmpty
                               ? _EmptyConversationState(
                                   contextLabel: contextLabel,
@@ -889,7 +889,7 @@ class _ConversationHeader extends StatelessWidget {
                       title,
                       style: ChatThemeStyles.cardTitle().copyWith(
                         fontSize: 15,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w600,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -975,7 +975,7 @@ class _ConversationHeader extends StatelessWidget {
                 width: 36,
                 height: 36,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF1F5F9),
+                  color: ChatThemePalette.surfaceMuted,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(
@@ -1005,14 +1005,14 @@ class _DateDivider extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
           decoration: BoxDecoration(
-            color: const Color(0xFFE8ECF4),
+            color: ChatThemePalette.surfaceMuted,
             borderRadius: BorderRadius.circular(999),
           ),
           child: Text(
             label,
             style: ChatThemeStyles.meta(
               ChatThemePalette.textSecondary,
-            ).copyWith(fontSize: 10.5, fontWeight: FontWeight.w600),
+            ).copyWith(fontSize: 10.5),
           ),
         ),
       ),
@@ -1056,7 +1056,7 @@ class _EmptyConversationState extends StatelessWidget {
               textAlign: TextAlign.center,
               style: ChatThemeStyles.cardTitle().copyWith(
                 fontSize: 16,
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w600,
               ),
             ),
             const SizedBox(height: 8),
@@ -1083,7 +1083,7 @@ class _EmptyConversationState extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: ChatThemeStyles.meta(
                     ChatThemePalette.primary,
-                  ).copyWith(fontWeight: FontWeight.w600, fontSize: 11),
+                  ).copyWith(fontSize: 11),
                 ),
               ),
             ],
@@ -1120,7 +1120,7 @@ class _TranslateOption extends StatelessWidget {
               label,
               style: ChatThemeStyles.body().copyWith(
                 fontSize: 14,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ],

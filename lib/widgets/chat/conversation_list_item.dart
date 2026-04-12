@@ -129,8 +129,8 @@ class _ConversationListItemState extends State<ConversationListItem> {
                                 displayName,
                                 style: ChatThemeStyles.cardTitle().copyWith(
                                   fontWeight: hasUnread
-                                      ? FontWeight.w700
-                                      : FontWeight.w600,
+                                      ? FontWeight.w600
+                                      : FontWeight.w500,
                                   fontSize: 14.5,
                                 ),
                                 maxLines: 1,
@@ -150,7 +150,7 @@ class _ConversationListItemState extends State<ConversationListItem> {
                                   ).copyWith(
                                     fontSize: 10.5,
                                     fontWeight: hasUnread
-                                        ? FontWeight.w700
+                                        ? FontWeight.w600
                                         : FontWeight.w500,
                                   ),
                             ),
@@ -170,7 +170,7 @@ class _ConversationListItemState extends State<ConversationListItem> {
                                     ).copyWith(
                                       fontSize: 12.5,
                                       fontWeight: hasUnread
-                                          ? FontWeight.w600
+                                          ? FontWeight.w500
                                           : FontWeight.w400,
                                       height: 1.3,
                                     ),
@@ -199,7 +199,7 @@ class _ConversationListItemState extends State<ConversationListItem> {
                                     style: ChatThemeStyles.meta(Colors.white)
                                         .copyWith(
                                           fontSize: 10,
-                                          fontWeight: FontWeight.w800,
+                                          fontWeight: FontWeight.w600,
                                         ),
                                   ),
                                 ),
@@ -297,7 +297,7 @@ class _ConversationAvatar extends StatelessWidget {
                     _groupInitials(fallbackName),
                     style: ChatThemeStyles.cardTitle(
                       ChatThemePalette.primary,
-                    ).copyWith(fontSize: 14, fontWeight: FontWeight.w800),
+                    ).copyWith(fontSize: 14, fontWeight: FontWeight.w600),
                   ),
                 )
               : ProfileAvatar(
@@ -369,7 +369,7 @@ class _MetaPill extends StatelessWidget {
               label,
               style: ChatThemeStyles.meta(
                 foregroundColor,
-              ).copyWith(fontSize: 10, fontWeight: FontWeight.w600),
+              ).copyWith(fontSize: 10),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),

@@ -6,6 +6,7 @@ import '../../models/user_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/chat_provider.dart';
 import '../../widgets/app_shell_background.dart';
+import '../../widgets/chat/chat_action_sheet.dart';
 import '../../widgets/chat/chat_confirmation_dialog.dart';
 import '../../widgets/chat/chat_theme.dart';
 import '../../widgets/chat/conversation_list_item.dart';
@@ -165,7 +166,7 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
                         width: 40,
                         height: 40,
                         decoration: BoxDecoration(
-                          color: const Color(0xFFF1F5F9),
+                          color: ChatThemePalette.surfaceMuted,
                           borderRadius: BorderRadius.circular(14),
                         ),
                         child: const Icon(
@@ -196,7 +197,7 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
                             : '${filtered.length} conversations',
                         style: ChatThemeStyles.meta(
                           ChatThemePalette.textSecondary,
-                        ).copyWith(fontSize: 12, fontWeight: FontWeight.w600),
+                        ).copyWith(fontSize: 12),
                       ),
                     ),
                   if (widget.embedded) const SizedBox(height: 10),
@@ -204,7 +205,7 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
                     height: 44,
                     padding: const EdgeInsets.symmetric(horizontal: 14),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF1F5F9),
+                      color: ChatThemePalette.surfaceMuted,
                       borderRadius: BorderRadius.circular(14),
                     ),
                     child: Row(
@@ -530,8 +531,38 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
     final selected = await showModalBottomSheet<String>(
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (context) =>
-          _ActionSheet(isArchived: isArchived, isMuted: isMuted),
+      builder: (context) => ChatActionSheet(
+        actions: [
+          ChatActionSheetItem(
+            icon: Icons.person_outline_rounded,
+            label: 'View Profile',
+            accentColor: ChatThemePalette.primary,
+            onTap: () => Navigator.pop(context, 'profile'),
+          ),
+          ChatActionSheetItem(
+            icon: isMuted
+                ? Icons.notifications_active_outlined
+                : Icons.notifications_off_outlined,
+            label: isMuted ? 'Unmute' : 'Mute',
+            accentColor: ChatThemePalette.textSecondary,
+            onTap: () => Navigator.pop(context, 'mute'),
+          ),
+          ChatActionSheetItem(
+            icon: isArchived
+                ? Icons.unarchive_outlined
+                : Icons.archive_outlined,
+            label: isArchived ? 'Unarchive' : 'Archive',
+            accentColor: ChatThemePalette.secondary,
+            onTap: () => Navigator.pop(context, 'archive'),
+          ),
+          ChatActionSheetItem(
+            icon: Icons.delete_outline_rounded,
+            label: 'Delete',
+            accentColor: ChatThemePalette.error,
+            onTap: () => Navigator.pop(context, 'delete'),
+          ),
+        ],
+      ),
     );
 
     if (!mounted || selected == null) {
@@ -682,7 +713,7 @@ class _FilterChip extends StatelessWidget {
               ChatThemeStyles.meta(
                 selected ? Colors.white : ChatThemePalette.textSecondary,
               ).copyWith(
-                fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
+                fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
                 fontSize: 11.5,
               ),
         ),
@@ -725,7 +756,7 @@ class _EmptyState extends StatelessWidget {
               textAlign: TextAlign.center,
               style: ChatThemeStyles.cardTitle().copyWith(
                 fontSize: 16,
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w600,
               ),
             ),
             const SizedBox(height: 8),
@@ -735,76 +766,6 @@ class _EmptyState extends StatelessWidget {
               style: ChatThemeStyles.body(
                 ChatThemePalette.textSecondary,
               ).copyWith(fontSize: 13, height: 1.5),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _ActionSheet extends StatelessWidget {
-  final bool isArchived;
-  final bool isMuted;
-
-  const _ActionSheet({required this.isArchived, required this.isMuted});
-
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Container(
-        margin: const EdgeInsets.all(14),
-        padding: const EdgeInsets.symmetric(vertical: 6),
-        decoration: BoxDecoration(
-          color: ChatThemePalette.surface,
-          borderRadius: BorderRadius.circular(22),
-          boxShadow: ChatThemeStyles.softShadow(0.08),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(
-                Icons.person_outline_rounded,
-                color: ChatThemePalette.primary,
-              ),
-              title: Text('View Profile', style: ChatThemeStyles.cardTitle()),
-              onTap: () => Navigator.pop(context, 'profile'),
-            ),
-            ListTile(
-              leading: Icon(
-                isMuted
-                    ? Icons.notifications_active_outlined
-                    : Icons.notifications_off_outlined,
-                color: ChatThemePalette.textSecondary,
-              ),
-              title: Text(
-                isMuted ? 'Unmute' : 'Mute',
-                style: ChatThemeStyles.cardTitle(),
-              ),
-              onTap: () => Navigator.pop(context, 'mute'),
-            ),
-            ListTile(
-              leading: Icon(
-                isArchived ? Icons.unarchive_outlined : Icons.archive_outlined,
-                color: ChatThemePalette.secondary,
-              ),
-              title: Text(
-                isArchived ? 'Unarchive' : 'Archive',
-                style: ChatThemeStyles.cardTitle(),
-              ),
-              onTap: () => Navigator.pop(context, 'archive'),
-            ),
-            ListTile(
-              leading: const Icon(
-                Icons.delete_outline_rounded,
-                color: ChatThemePalette.error,
-              ),
-              title: Text(
-                'Delete',
-                style: ChatThemeStyles.cardTitle(ChatThemePalette.error),
-              ),
-              onTap: () => Navigator.pop(context, 'delete'),
             ),
           ],
         ),
