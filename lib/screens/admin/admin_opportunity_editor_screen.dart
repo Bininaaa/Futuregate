@@ -432,6 +432,8 @@ class _AdminOpportunityEditorScreenState
       'companyId': auth.uid,
       'companyName': _publisherController.text.trim(),
       'companyLogo': companyLogo,
+      'createdBy': auth.uid,
+      'createdByRole': 'admin',
       'title': _titleController.text.trim(),
       'description': _descriptionController.text.trim(),
       'type': _type,

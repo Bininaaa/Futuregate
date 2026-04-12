@@ -15,6 +15,7 @@ import '../../providers/admin_provider.dart';
 import '../../services/company_service.dart';
 import '../../services/document_access_service.dart';
 import '../../utils/admin_palette.dart';
+import '../../utils/application_status.dart';
 import '../../utils/display_text.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
@@ -856,6 +857,13 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     List<AdminApplicationItemModel> applications,
   ) {
     final opportunityTitle = (opportunity['title'] ?? 'Opportunity').toString();
+    final opportunityId = (opportunity['id'] ?? '').toString().trim();
+    final adminId = context.read<AuthProvider>().userModel?.uid.trim() ?? '';
+    final opportunityModel = OpportunityModel.fromMap(opportunity);
+    final canManageApplications =
+        adminId.isNotEmpty &&
+        opportunityModel.isAdminPosted &&
+        opportunityModel.companyId.trim() == adminId;
 
     showModalBottomSheet(
       context: context,
@@ -863,86 +871,121 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
-      builder: (_) => DraggableScrollableSheet(
-        initialChildSize: 0.72,
-        minChildSize: 0.4,
-        maxChildSize: 0.94,
-        expand: false,
-        builder: (context, scrollController) => ListView(
-          controller: scrollController,
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
-          children: [
-            _buildSheetHandle(),
-            const SizedBox(height: 16),
-            AdminSurface(
-              radius: 24,
-              gradient: AdminPalette.heroGradient(AdminPalette.activity),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Icon(
-                    Icons.assignment_outlined,
-                    color: Colors.white,
-                    size: 28,
+      builder: (_) => Consumer<AdminProvider>(
+        builder: (context, provider, _) {
+          final liveApplications = opportunityId.isEmpty
+              ? applications
+              : _applicationsForOpportunity(provider, opportunityId);
+
+          return DraggableScrollableSheet(
+            initialChildSize: 0.72,
+            minChildSize: 0.4,
+            maxChildSize: 0.94,
+            expand: false,
+            builder: (context, scrollController) => ListView(
+              controller: scrollController,
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+              children: [
+                _buildSheetHandle(),
+                const SizedBox(height: 16),
+                AdminSurface(
+                  radius: 24,
+                  gradient: AdminPalette.heroGradient(AdminPalette.activity),
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.12),
                   ),
-                  const SizedBox(height: 12),
-                  Text(
-                    'Applications for $opportunityTitle',
-                    style: const TextStyle(
-                      fontSize: 21,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    '${applications.length} application${applications.length == 1 ? '' : 's'} linked to this opportunity.',
-                    style: const TextStyle(fontSize: 13, color: Colors.white70),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 14),
-            if (applications.isEmpty)
-              const AdminEmptyState(
-                icon: Icons.assignment_late_outlined,
-                title: 'No applications to review yet',
-                message:
-                    'There are no submitted applications for this opportunity right now.',
-              )
-            else
-              ...applications.map((item) {
-                final statusColor = _statusColor(item.status);
-                return _buildContentCard(
-                  id: item.id,
-                  leading: ProfileAvatar(
-                    radius: 18,
-                    userId: item.application.studentId,
-                    fallbackName: item.studentName,
-                    role: 'student',
-                  ),
-                  title: item.studentName,
-                  subtitle: item.companyName.isNotEmpty
-                      ? item.companyName
-                      : 'Application',
-                  badges: [
-                    _BadgeData(item.status, statusColor),
-                    if (item.appliedAt != null)
-                      _BadgeData(
-                        DateFormat('MMM d').format(item.appliedAt!.toDate()),
-                        AdminPalette.info,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Icon(
+                        Icons.assignment_outlined,
+                        color: Colors.white,
+                        size: 28,
                       ),
-                  ],
-                  metaText: _formatTimestamp(item.appliedAt),
-                  onTap: () {
-                    Navigator.pop(context);
-                    _showApplicationDetails(item);
-                  },
-                );
-              }),
-          ],
-        ),
+                      const SizedBox(height: 12),
+                      Text(
+                        'Applications for $opportunityTitle',
+                        style: const TextStyle(
+                          fontSize: 21,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        '${liveApplications.length} application${liveApplications.length == 1 ? '' : 's'} linked to this opportunity.',
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: Colors.white70,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 14),
+                if (liveApplications.isEmpty)
+                  const AdminEmptyState(
+                    icon: Icons.assignment_late_outlined,
+                    title: 'No applications to review yet',
+                    message:
+                        'There are no submitted applications for this opportunity right now.',
+                  )
+                else
+                  ...liveApplications.map((item) {
+                    final statusColor = _statusColor(item.status);
+                    final canReview =
+                        canManageApplications &&
+                        item.canBeManagedByAdmin(adminId) &&
+                        ApplicationStatus.parse(item.status) ==
+                            ApplicationStatus.pending;
+                    final isBusy = provider.busyContentKeys.contains(
+                      'application:${item.id}',
+                    );
+
+                    return _buildContentCard(
+                      id: item.id,
+                      leading: ProfileAvatar(
+                        radius: 18,
+                        userId: item.application.studentId,
+                        fallbackName: item.studentName,
+                        role: 'student',
+                      ),
+                      title: item.studentName,
+                      subtitle: item.companyName.isNotEmpty
+                          ? item.companyName
+                          : 'Application',
+                      badges: [
+                        _BadgeData(
+                          ApplicationStatus.label(item.status),
+                          statusColor,
+                        ),
+                        if (item.appliedAt != null)
+                          _BadgeData(
+                            DateFormat(
+                              'MMM d',
+                            ).format(item.appliedAt!.toDate()),
+                            AdminPalette.info,
+                          ),
+                      ],
+                      metaText: _formatTimestamp(item.appliedAt),
+                      footer: canReview
+                          ? _buildResponsiveActionGroup(
+                              _buildAdminApplicationDecisionButtons(
+                                item,
+                                isBusy: isBusy,
+                              ),
+                            )
+                          : null,
+                      onTap: () {
+                        Navigator.pop(context);
+                        _showApplicationDetails(item);
+                      },
+                    );
+                  }),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
@@ -3545,6 +3588,109 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     }
   }
 
+  List<Widget> _buildAdminApplicationDecisionButtons(
+    AdminApplicationItemModel item, {
+    required bool isBusy,
+  }) {
+    return [
+      FilledButton.icon(
+        onPressed: isBusy
+            ? null
+            : () {
+                Navigator.pop(context);
+                _updateAdminApplicationStatus(item, ApplicationStatus.accepted);
+              },
+        icon: const Icon(Icons.verified_outlined, size: 18),
+        label: Text(isBusy ? 'Working...' : 'Approve'),
+        style: FilledButton.styleFrom(
+          backgroundColor: AdminPalette.success,
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: 14),
+        ),
+      ),
+      OutlinedButton.icon(
+        onPressed: isBusy
+            ? null
+            : () {
+                Navigator.pop(context);
+                _updateAdminApplicationStatus(item, ApplicationStatus.rejected);
+              },
+        icon: const Icon(Icons.block_outlined, size: 18),
+        label: const Text('Reject'),
+        style: OutlinedButton.styleFrom(
+          foregroundColor: AdminPalette.danger,
+          side: BorderSide(color: AdminPalette.danger.withValues(alpha: 0.34)),
+          padding: const EdgeInsets.symmetric(vertical: 14),
+        ),
+      ),
+    ];
+  }
+
+  Widget _buildApplicationDetailsActions(AdminApplicationItemModel item) {
+    final adminId = context.read<AuthProvider>().userModel?.uid.trim() ?? '';
+    final canReview =
+        item.canBeManagedByAdmin(adminId) &&
+        ApplicationStatus.parse(item.status) == ApplicationStatus.pending;
+    final provider = context.read<AdminProvider>();
+    final isBusy = provider.busyContentKeys.contains('application:${item.id}');
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        FilledButton.icon(
+          onPressed: () {
+            Navigator.pop(context);
+            _showApplicationCv(item.application.id);
+          },
+          icon: const Icon(Icons.description_outlined, size: 18),
+          label: const Text('View CV'),
+          style: FilledButton.styleFrom(
+            backgroundColor: AdminPalette.activity,
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(vertical: 15),
+          ),
+        ),
+        if (canReview) ...[
+          const SizedBox(height: 10),
+          _buildResponsiveActionGroup(
+            _buildAdminApplicationDecisionButtons(item, isBusy: isBusy),
+          ),
+        ],
+      ],
+    );
+  }
+
+  Future<void> _updateAdminApplicationStatus(
+    AdminApplicationItemModel item,
+    String status,
+  ) async {
+    final adminId = context.read<AuthProvider>().userModel?.uid.trim() ?? '';
+    if (!item.canBeManagedByAdmin(adminId)) {
+      context.showAppSnackBar(
+        'You can only update applications for opportunities you posted as admin.',
+        title: 'Application unavailable',
+        type: AppFeedbackType.warning,
+      );
+      return;
+    }
+
+    final error = await context.read<AdminProvider>().updateApplicationStatus(
+      appId: item.id,
+      status: status,
+      adminId: adminId,
+    );
+
+    if (!mounted) {
+      return;
+    }
+
+    context.showAppSnackBar(
+      error ?? 'Application ${ApplicationStatus.sentenceLabel(status)}.',
+      title: error == null ? 'Application updated' : 'Update unavailable',
+      type: error == null ? AppFeedbackType.success : AppFeedbackType.error,
+    );
+  }
+
   void _showApplicationDetails(AdminApplicationItemModel item) {
     _showContentDetailsSheet(
       title: item.studentName,
@@ -3555,14 +3701,10 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       detailLines: [
         _SheetDetailLine('Opportunity', item.opportunityTitle),
         _SheetDetailLine('Company', item.companyName),
-        _SheetDetailLine('Status', item.status),
+        _SheetDetailLine('Status', ApplicationStatus.label(item.status)),
         _SheetDetailLine('Applied', _formatTimestamp(item.appliedAt)),
       ],
-      actionLabel: 'View CV',
-      onAction: () {
-        Navigator.pop(context);
-        _showApplicationCv(item.application.id);
-      },
+      actionFooter: _buildApplicationDetailsActions(item),
     );
   }
 
@@ -4623,6 +4765,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     required List<_SheetDetailLine> detailLines,
     String? actionLabel,
     VoidCallback? onAction,
+    Widget? actionFooter,
     Color? accentColor,
     IconData heroIcon = Icons.auto_awesome_mosaic_rounded,
     String detailsEyebrow = 'Details',
@@ -4738,6 +4881,10 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                   padding: const EdgeInsets.symmetric(vertical: 15),
                 ),
               ),
+            ],
+            if (actionFooter != null) ...[
+              const SizedBox(height: 8),
+              actionFooter,
             ],
           ],
         ),

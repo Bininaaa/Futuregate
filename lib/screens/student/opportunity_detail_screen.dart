@@ -365,6 +365,15 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
       return;
     }
 
+    if (widget.opportunity.isAdminPosted) {
+      context.showAppSnackBar(
+        'The company will contact you by email soon.',
+        title: 'Application approved',
+        type: AppFeedbackType.info,
+      );
+      return;
+    }
+
     final currentUser = context.read<AuthProvider>().userModel;
     if (currentUser == null) {
       context.showAppSnackBar(
@@ -754,7 +763,11 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
     final savedProvider = context.watch<SavedOpportunityProvider>();
     final applicationProvider = context.watch<ApplicationProvider>();
     final acceptedApplication = _acceptedApplication(applicationProvider);
-    final canOpenApprovedChat = acceptedApplication != null;
+    final isAcceptedApplication = acceptedApplication != null;
+    final isAdminAcceptedOpportunity =
+        isAcceptedApplication && widget.opportunity.isAdminPosted;
+    final canOpenCompanyChat =
+        isAcceptedApplication && !widget.opportunity.isAdminPosted;
     final isSaved = _existingSavedOpportunity(savedProvider) != null;
     final applyBar = FutureBuilder<ApplicationEligibilityStatus>(
       future: _eligibilityFuture,
@@ -777,7 +790,7 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  if (canOpenApprovedChat) ...<Widget>[
+                  if (canOpenCompanyChat) ...<Widget>[
                     _ApprovedChatCue(theme: _theme, companyName: _companyName),
                     const SizedBox(height: 10),
                     AppPrimaryButton(
@@ -863,12 +876,7 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
       ),
       bottomNavigationBar: applyBar,
       body: ListView(
-        padding: EdgeInsets.fromLTRB(
-          16,
-          8,
-          16,
-          canOpenApprovedChat ? 178 : 132,
-        ),
+        padding: EdgeInsets.fromLTRB(16, 8, 16, canOpenCompanyChat ? 178 : 132),
         children: <Widget>[
           AppDetailHeroCard(
             theme: _theme,
@@ -917,6 +925,10 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
               ],
             ),
           ),
+          if (isAdminAcceptedOpportunity) ...<Widget>[
+            const SizedBox(height: 16),
+            _ApprovedEmailContactNotice(theme: _theme),
+          ],
           const SizedBox(height: 16),
           AppInfoTileGrid(
             theme: _theme,
@@ -1213,6 +1225,69 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
     }
 
     return AppShellBackground(child: scaffold);
+  }
+}
+
+class _ApprovedEmailContactNotice extends StatelessWidget {
+  final AppContentTheme theme;
+
+  const _ApprovedEmailContactNotice({required this.theme});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: theme.success.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: theme.success.withValues(alpha: 0.16)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Container(
+            width: 34,
+            height: 34,
+            decoration: BoxDecoration(
+              color: theme.success.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(
+              Icons.mark_email_read_outlined,
+              size: 18,
+              color: theme.success,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  'Application approved',
+                  style: theme.label(
+                    size: 12.8,
+                    color: theme.success,
+                    weight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'The company will contact you by email soon.',
+                  style: theme.body(
+                    size: 12.2,
+                    color: theme.textSecondary,
+                    weight: FontWeight.w500,
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 

@@ -7,6 +7,8 @@ class AdminApplicationItemModel {
   final String opportunityTitle;
   final String companyName;
   final String companyId;
+  final String opportunityCreatedBy;
+  final String opportunityCreatedByRole;
   final Timestamp? opportunityCreatedAt;
 
   const AdminApplicationItemModel({
@@ -14,6 +16,8 @@ class AdminApplicationItemModel {
     this.opportunityTitle = '',
     this.companyName = '',
     this.companyId = '',
+    this.opportunityCreatedBy = '',
+    this.opportunityCreatedByRole = '',
     this.opportunityCreatedAt,
   });
 
@@ -22,6 +26,15 @@ class AdminApplicationItemModel {
   String get status => application.status;
   String get opportunityId => application.opportunityId;
   Timestamp? get appliedAt => application.appliedAt;
+  bool get isAdminPostedOpportunity =>
+      opportunityCreatedByRole.trim().toLowerCase() == 'admin';
+
+  bool canBeManagedByAdmin(String adminId) {
+    final normalizedAdminId = adminId.trim();
+    return normalizedAdminId.isNotEmpty &&
+        isAdminPostedOpportunity &&
+        companyId.trim() == normalizedAdminId;
+  }
 
   bool matchesQuery(String query) {
     final normalizedQuery = query.trim().toLowerCase();

@@ -821,6 +821,8 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
       'companyId': user.uid,
       'companyName': user.companyName ?? user.fullName,
       'companyLogo': user.logo ?? '',
+      'createdBy': user.uid,
+      'createdByRole': 'company',
       'status': _selectedStatus,
       ...structuredData,
     };
@@ -934,4 +936,3 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
         .join(' ');
   }
 }
-

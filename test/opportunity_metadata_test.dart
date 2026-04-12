@@ -1,3 +1,5 @@
+import 'package:avenirdz/models/admin_application_item_model.dart';
+import 'package:avenirdz/models/application_model.dart';
 import 'package:avenirdz/models/opportunity_model.dart';
 import 'package:avenirdz/utils/opportunity_metadata.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -80,5 +82,82 @@ void main() {
       ),
       'Stipend disclosed during interview',
     );
+  });
+
+  test('OpportunityModel detects only explicit admin-posted opportunities', () {
+    final adminOpportunity = OpportunityModel.fromMap({
+      'id': 'opp_admin',
+      'companyId': 'admin_1',
+      'companyName': 'FutureGate',
+      'companyLogo': '',
+      'title': 'Curated Role',
+      'description': 'A role posted by an admin.',
+      'type': 'job',
+      'location': 'Algiers',
+      'requirements': 'Flutter',
+      'status': 'open',
+      'deadline': '2026-04-30',
+      'createdByRole': ' ADMIN ',
+    });
+
+    final companyOpportunity = OpportunityModel.fromMap({
+      'id': 'opp_company',
+      'companyId': 'company_1',
+      'companyName': 'TechDZ',
+      'companyLogo': '',
+      'title': 'Company Role',
+      'description': 'A role posted by a company.',
+      'type': 'job',
+      'location': 'Algiers',
+      'requirements': 'Flutter',
+      'status': 'open',
+      'deadline': '2026-04-30',
+      'createdByRole': 'company',
+    });
+
+    final legacyOpportunity = OpportunityModel.fromMap({
+      'id': 'opp_legacy',
+      'companyId': 'owner_1',
+      'companyName': 'Unknown',
+      'companyLogo': '',
+      'title': 'Legacy Role',
+      'description': 'A role without origin metadata.',
+      'type': 'job',
+      'location': 'Algiers',
+      'requirements': 'Flutter',
+      'status': 'open',
+      'deadline': '2026-04-30',
+    });
+
+    expect(adminOpportunity.isAdminPosted, isTrue);
+    expect(companyOpportunity.isAdminPosted, isFalse);
+    expect(legacyOpportunity.isAdminPosted, isFalse);
+  });
+
+  test('Admin applications are manageable only for the owning admin post', () {
+    final application = ApplicationModel(
+      id: 'app_1',
+      studentId: 'student_1',
+      studentName: 'Student',
+      opportunityId: 'opp_1',
+      companyId: 'admin_1',
+      cvId: 'cv_1',
+      status: 'pending',
+    );
+
+    final adminPostedApplication = AdminApplicationItemModel(
+      application: application,
+      companyId: 'admin_1',
+      opportunityCreatedByRole: 'admin',
+    );
+    final companyPostedApplication = AdminApplicationItemModel(
+      application: application,
+      companyId: 'company_1',
+      opportunityCreatedByRole: 'company',
+    );
+
+    expect(adminPostedApplication.canBeManagedByAdmin('admin_1'), isTrue);
+    expect(adminPostedApplication.canBeManagedByAdmin('admin_2'), isFalse);
+    expect(companyPostedApplication.canBeManagedByAdmin('admin_1'), isFalse);
   });
 }

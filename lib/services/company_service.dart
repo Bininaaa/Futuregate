@@ -397,6 +397,8 @@ class CompanyService {
       'companyId',
       'companyName',
       'companyLogo',
+      'createdBy',
+      'createdByRole',
       'deadline',
     ]) {
       if (!nextData.containsKey(field)) {

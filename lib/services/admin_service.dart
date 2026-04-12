@@ -7,6 +7,7 @@ import '../models/application_model.dart';
 import '../models/training_model.dart';
 import '../models/user_model.dart';
 import '../models/project_idea_model.dart';
+import '../utils/application_status.dart';
 import '../utils/opportunity_type.dart';
 import 'company_service.dart';
 import 'notification_worker_service.dart';
@@ -961,9 +962,68 @@ class AdminService {
         opportunityTitle: (opportunityMeta?['title'] ?? '').toString(),
         companyName: (opportunityMeta?['companyName'] ?? '').toString(),
         companyId: (opportunityMeta?['companyId'] ?? '').toString(),
+        opportunityCreatedBy: (opportunityMeta?['createdBy'] ?? '').toString(),
+        opportunityCreatedByRole: (opportunityMeta?['createdByRole'] ?? '')
+            .toString(),
         opportunityCreatedAt: opportunityMeta?['createdAt'] as Timestamp?,
       );
     }).toList();
+  }
+
+  Future<void> updateAdminApplicationStatus({
+    required String appId,
+    required String status,
+    required String adminId,
+  }) async {
+    final normalizedAdminId = adminId.trim();
+    if (normalizedAdminId.isEmpty) {
+      throw Exception('Admin account is required to update applications');
+    }
+
+    final appRef = _firestore.collection('applications').doc(appId);
+    final appDoc = await appRef.get();
+    if (!appDoc.exists) {
+      throw Exception('Application not found');
+    }
+
+    final appData = appDoc.data() ?? const <String, dynamic>{};
+    final opportunityId = (appData['opportunityId'] ?? '').toString().trim();
+    if (opportunityId.isEmpty) {
+      throw Exception('Application is not linked to an opportunity');
+    }
+
+    final opportunityDoc = await _firestore
+        .collection('opportunities')
+        .doc(opportunityId)
+        .get();
+    final opportunityData = opportunityDoc.data();
+    final opportunityOwnerId = (opportunityData?['companyId'] ?? '')
+        .toString()
+        .trim();
+    final opportunityRole = (opportunityData?['createdByRole'] ?? '')
+        .toString()
+        .trim()
+        .toLowerCase();
+
+    if (!opportunityDoc.exists ||
+        opportunityOwnerId != normalizedAdminId ||
+        opportunityRole != 'admin') {
+      throw Exception(
+        'Admins can only update applications for their own admin-posted opportunities',
+      );
+    }
+
+    final currentStatus = ApplicationStatus.parse(appData['status']);
+    final nextStatus = ApplicationStatus.parse(status);
+    if (currentStatus == nextStatus) {
+      return;
+    }
+
+    await appRef.update({'status': nextStatus});
+
+    if (ApplicationStatus.shouldNotifyTransition(currentStatus, nextStatus)) {
+      await _notificationWorker.notifyApplicationStatusChanged(appId);
+    }
   }
 
   Future<bool> updateProjectIdeaStatus(String id, String status) async {

@@ -6,6 +6,7 @@ import '../models/user_model.dart';
 import '../models/project_idea_model.dart';
 import '../models/training_model.dart';
 import '../services/admin_service.dart';
+import '../utils/application_status.dart';
 
 class AdminProvider extends ChangeNotifier {
   static const int _dashboardActivityPerCollectionLimit = 4;
@@ -445,6 +446,52 @@ class AdminProvider extends ChangeNotifier {
       return 'Failed to update idea status';
     } finally {
       _busyIdeaIds.remove(id);
+      notifyListeners();
+    }
+  }
+
+  Future<String?> updateApplicationStatus({
+    required String appId,
+    required String status,
+    required String adminId,
+  }) async {
+    final key = 'application:$appId';
+    if (_busyContentKeys.contains(key)) {
+      return 'Application update is already in progress';
+    }
+
+    try {
+      _busyContentKeys.add(key);
+      notifyListeners();
+
+      await _adminService.updateAdminApplicationStatus(
+        appId: appId,
+        status: status,
+        adminId: adminId,
+      );
+
+      final index = _allApplications.indexWhere((item) => item.id == appId);
+      if (index != -1) {
+        final item = _allApplications[index];
+        _allApplications[index] = AdminApplicationItemModel(
+          application: item.application.copyWith(
+            status: ApplicationStatus.parse(status),
+          ),
+          opportunityTitle: item.opportunityTitle,
+          companyName: item.companyName,
+          companyId: item.companyId,
+          opportunityCreatedBy: item.opportunityCreatedBy,
+          opportunityCreatedByRole: item.opportunityCreatedByRole,
+          opportunityCreatedAt: item.opportunityCreatedAt,
+        );
+      }
+      notifyListeners();
+      return null;
+    } catch (e) {
+      debugPrint('updateApplicationStatus error: $e');
+      return 'Failed to update application status';
+    } finally {
+      _busyContentKeys.remove(key);
       notifyListeners();
     }
   }

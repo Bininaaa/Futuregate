@@ -162,6 +162,11 @@ class OpportunityModel {
   bool get usesStructuredMetadata =>
       OpportunityMetadata.usesStructuredFields(type);
 
+  String get createdByRole =>
+      (readString(<String>['createdByRole']) ?? '').trim().toLowerCase();
+
+  bool get isAdminPosted => createdByRole == 'admin';
+
   String get deadlineLabel {
     if (applicationDeadline != null) {
       return OpportunityMetadata.formatDateForStorage(applicationDeadline!);

@@ -891,6 +891,8 @@ service cloud.firestore {
             'requirements',
             'status',
             'deadline',
+            'createdBy',
+            'createdByRole',
             'createdAt',
             'updatedAt',
             'salaryMin',
@@ -906,6 +908,11 @@ service cloud.firestore {
           ]) &&
           request.resource.data.id == opportunityId &&
           request.resource.data.companyId == request.auth.uid &&
+          request.resource.data.createdBy == request.auth.uid &&
+          (
+            (isAdmin() && request.resource.data.createdByRole == 'admin') ||
+            (isCompany() && request.resource.data.createdByRole == 'company')
+          ) &&
           isOpportunityType(request.resource.data.type) &&
           isOpportunityStatus(request.resource.data.status) &&
           hasValidOpportunityMetadata(request.resource.data);
@@ -934,6 +941,8 @@ service cloud.firestore {
               'requirements',
               'status',
               'deadline',
+              'createdBy',
+              'createdByRole',
               'updatedAt',
               'salaryMin',
               'salaryMax',
@@ -948,6 +957,8 @@ service cloud.firestore {
             ]) &&
             request.resource.data.id == resource.data.id &&
             request.resource.data.companyId == resource.data.companyId &&
+            request.resource.data.createdBy == request.auth.uid &&
+            request.resource.data.createdByRole == 'admin' &&
             request.resource.data.createdAt == resource.data.createdAt &&
             isOpportunityType(request.resource.data.type) &&
             isOpportunityStatus(request.resource.data.status) &&
@@ -966,6 +977,8 @@ service cloud.firestore {
               'requirements',
               'status',
               'deadline',
+              'createdBy',
+              'createdByRole',
               'updatedAt',
               'salaryMin',
               'salaryMax',
@@ -980,6 +993,8 @@ service cloud.firestore {
             ]) &&
             request.resource.data.id == resource.data.id &&
             request.resource.data.companyId == resource.data.companyId &&
+            request.resource.data.createdBy == request.auth.uid &&
+            request.resource.data.createdByRole == 'company' &&
             request.resource.data.createdAt == resource.data.createdAt &&
             isOpportunityType(request.resource.data.type) &&
             isOpportunityStatus(request.resource.data.status) &&
@@ -1024,7 +1039,27 @@ service cloud.firestore {
             )
           );
 
-      allow update: if isAdmin() ||
+      allow update: if (
+          (
+            isAdmin() &&
+            resource.data.companyId == request.auth.uid &&
+            exists(opportunityPath(resource.data.opportunityId)) &&
+            get(opportunityPath(resource.data.opportunityId)).data.companyId ==
+                request.auth.uid &&
+            get(opportunityPath(resource.data.opportunityId)).data.createdByRole ==
+                'admin' &&
+            request.resource.data.diff(resource.data).changedKeys().hasOnly([
+              'status'
+            ]) &&
+            request.resource.data.id == resource.data.id &&
+            request.resource.data.studentId == resource.data.studentId &&
+            request.resource.data.studentName == resource.data.studentName &&
+            request.resource.data.opportunityId == resource.data.opportunityId &&
+            request.resource.data.companyId == resource.data.companyId &&
+            request.resource.data.cvId == resource.data.cvId &&
+            request.resource.data.appliedAt == resource.data.appliedAt &&
+            isApplicationStatus(request.resource.data.status)
+          ) ||
           (
             isCompany() &&
             resource.data.companyId == request.auth.uid &&
@@ -1039,7 +1074,8 @@ service cloud.firestore {
             request.resource.data.cvId == resource.data.cvId &&
             request.resource.data.appliedAt == resource.data.appliedAt &&
             isApplicationStatus(request.resource.data.status)
-          );
+          )
+        );
 
       allow delete: if isAdmin();
     }
