@@ -970,8 +970,8 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                                         style: GoogleFonts.poppins(
                                           fontSize: 14.5,
                                           fontWeight: FontWeight.w700,
-                                          color: _ApplicationsPalette
-                                              .textPrimary,
+                                          color:
+                                              _ApplicationsPalette.textPrimary,
                                         ),
                                       ),
                                     ),
@@ -985,16 +985,16 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                                         decoration: BoxDecoration(
                                           color:
                                               _ApplicationsPalette.accentSoft,
-                                          borderRadius:
-                                              BorderRadius.circular(999),
+                                          borderRadius: BorderRadius.circular(
+                                            999,
+                                          ),
                                         ),
                                         child: Text(
                                           'NEW',
                                           style: GoogleFonts.poppins(
                                             fontSize: 9,
                                             fontWeight: FontWeight.w700,
-                                            color:
-                                                _ApplicationsPalette.accent,
+                                            color: _ApplicationsPalette.accent,
                                             letterSpacing: 0.4,
                                           ),
                                         ),
@@ -1011,8 +1011,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                                     style: GoogleFonts.poppins(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w500,
-                                      color:
-                                          _ApplicationsPalette.textSecondary,
+                                      color: _ApplicationsPalette.textSecondary,
                                     ),
                                   ),
                                 ],
@@ -1066,163 +1065,412 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
     final application = item.application;
     final opportunity = item.opportunity;
     final tone = _toneForOpportunity(opportunity);
-    final isPending =
-        ApplicationStatus.parse(application.status) ==
-        ApplicationStatus.pending;
+    final studentName = _studentNameLabel(application);
+    final opportunityTitle =
+        _opportunityTitleLabel(opportunity) ?? 'Opportunity unavailable';
+    final typeLabel = opportunity == null ? null : _typeLabel(opportunity.type);
+    final appliedDateLabel = _appliedDateLabel(application.appliedAt);
+    final relativeAppliedLabel = _relativeDateLabel(application.appliedAt);
+    final status = ApplicationStatus.parse(application.status);
+    final isPending = status == ApplicationStatus.pending;
 
     await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
+      useSafeArea: true,
       backgroundColor: Colors.transparent,
       builder: (sheetContext) {
-        return SafeArea(
-          child: DraggableScrollableSheet(
-            initialChildSize: 0.58,
-            maxChildSize: 0.9,
-            minChildSize: 0.45,
-            expand: false,
-            builder: (context, scrollController) {
-              return Container(
-                decoration: BoxDecoration(
-                  color: _ApplicationsPalette.surface,
-                  borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(28),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.1),
-                      blurRadius: 24,
-                      offset: const Offset(0, -4),
-                    ),
-                  ],
+        return DraggableScrollableSheet(
+          initialChildSize: 0.68,
+          maxChildSize: 0.88,
+          minChildSize: 0.44,
+          expand: false,
+          builder: (context, scrollController) {
+            return Container(
+              decoration: BoxDecoration(
+                color: _ApplicationsPalette.surface,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(26),
                 ),
-                child: ListView(
-                  controller: scrollController,
-                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
-                  children: [
-                    Center(
-                      child: Container(
-                        width: 44,
-                        height: 4,
-                        decoration: BoxDecoration(
-                          color: _ApplicationsPalette.border,
-                          borderRadius: BorderRadius.circular(999),
-                        ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.12),
+                    blurRadius: 28,
+                    offset: const Offset(0, -6),
+                  ),
+                ],
+              ),
+              child: ListView(
+                controller: scrollController,
+                padding: const EdgeInsets.fromLTRB(18, 10, 18, 28),
+                children: [
+                  _SheetHeaderBar(
+                    title: 'Application details',
+                    subtitle: isPending
+                        ? 'Review the candidate before making a decision.'
+                        : 'Keep the candidate context close at hand.',
+                    onClose: () => Navigator.pop(sheetContext),
+                  ),
+                  const SizedBox(height: 14),
+                  _DetailHeroCard(
+                    studentName: studentName,
+                    opportunityTitle: opportunityTitle,
+                    appliedLabel: appliedDateLabel,
+                    relativeAppliedLabel: relativeAppliedLabel,
+                    typeLabel: typeLabel,
+                    typeTone: tone,
+                    status: application.status,
+                    studentId: application.studentId,
+                    onTapProfile: () {
+                      Navigator.pop(sheetContext);
+                      _openStudentProfile(application);
+                    },
+                  ),
+                  const SizedBox(height: 14),
+                  _ActionRail(
+                    children: [
+                      _WideActionButton(
+                        label: 'Profile',
+                        icon: Icons.person_outline_rounded,
+                        background: _ApplicationsPalette.primarySoft,
+                        foreground: _ApplicationsPalette.primary,
+                        onTap: () {
+                          Navigator.pop(sheetContext);
+                          _openStudentProfile(application);
+                        },
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                    _DetailHeroCard(
-                      studentName: application.studentName,
-                      opportunityTitle: _opportunityTitleLabel(opportunity),
-                      appliedLabel: _appliedDateLabel(application.appliedAt),
-                      typeLabel: opportunity == null
-                          ? null
-                          : _typeLabel(opportunity.type),
-                      typeTone: tone,
-                      status: application.status,
-                      studentId: application.studentId,
-                      onTapProfile: () {
-                        Navigator.pop(sheetContext);
-                        _openStudentProfile(application);
-                      },
-                    ),
-                    const SizedBox(height: 14),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _WideActionButton(
-                            label: 'Profile',
-                            icon: Icons.person_outline_rounded,
-                            background: _ApplicationsPalette.primarySoft,
-                            foreground: _ApplicationsPalette.primary,
-                            onTap: () {
-                              Navigator.pop(sheetContext);
-                              _openStudentProfile(application);
-                            },
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: _WideActionButton(
-                            label: 'Message',
-                            icon: Icons.chat_bubble_outline_rounded,
-                            background: const Color(0xFFE8FFFB),
-                            foreground: _ApplicationsPalette.secondaryDark,
-                            onTap: () {
-                              Navigator.pop(sheetContext);
-                              _openChatWithStudent(application);
-                            },
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: _WideActionButton(
-                            label: 'View CV',
-                            icon: Icons.description_outlined,
-                            background: const Color(0xFFFFF6E4),
-                            foreground: _ApplicationsPalette.accent,
-                            onTap: () {
-                              Navigator.pop(sheetContext);
-                              _showCvSheet(context, application, provider);
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                    if (isPending) ...[
-                      const SizedBox(height: 12),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _DecisionButton(
-                              label: provider.isAppBusy(application.id)
-                                  ? 'Working...'
-                                  : 'Approve',
-                              background: _ApplicationsPalette.success,
-                              onTap: provider.isAppBusy(application.id)
-                                  ? null
-                                  : () {
-                                      Navigator.pop(sheetContext);
-                                      _updateStatus(
-                                        context,
-                                        application,
-                                        ApplicationStatus.accepted,
-                                        provider,
-                                      );
-                                    },
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: _DecisionButton(
-                              label: provider.isAppBusy(application.id)
-                                  ? 'Working...'
-                                  : 'Reject',
-                              background: _ApplicationsPalette.error,
-                              onTap: provider.isAppBusy(application.id)
-                                  ? null
-                                  : () {
-                                      Navigator.pop(sheetContext);
-                                      _updateStatus(
-                                        context,
-                                        application,
-                                        ApplicationStatus.rejected,
-                                        provider,
-                                      );
-                                    },
-                            ),
-                          ),
-                        ],
+                      _WideActionButton(
+                        label: 'Message',
+                        icon: Icons.chat_bubble_outline_rounded,
+                        background: const Color(0xFFE8FFFB),
+                        foreground: _ApplicationsPalette.secondaryDark,
+                        onTap: () {
+                          Navigator.pop(sheetContext);
+                          _openChatWithStudent(application);
+                        },
+                      ),
+                      _WideActionButton(
+                        label: 'View CV',
+                        icon: Icons.description_outlined,
+                        background: const Color(0xFFFFF6E4),
+                        foreground: _ApplicationsPalette.accent,
+                        onTap: () {
+                          Navigator.pop(sheetContext);
+                          _showCvSheet(context, application, provider);
+                        },
                       ),
                     ],
-                  ],
-                ),
-              );
-            },
-          ),
+                  ),
+                  const SizedBox(height: 14),
+                  _OpportunityLinkButton(
+                    title: opportunity == null
+                        ? 'Opportunity unavailable'
+                        : 'View opportunity details',
+                    subtitle: opportunityTitle,
+                    icon: OpportunityType.icon(
+                      opportunity?.type ?? OpportunityType.job,
+                    ),
+                    tone: tone.foreground,
+                    onTap: () => _openOpportunityDetailsFromSheet(
+                      sheetContext,
+                      opportunity,
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  _DecisionPanel(
+                    status: status,
+                    isBusy: provider.isAppBusy(application.id),
+                    onApprove: isPending
+                        ? () {
+                            Navigator.pop(sheetContext);
+                            _updateStatus(
+                              context,
+                              application,
+                              ApplicationStatus.accepted,
+                              provider,
+                            );
+                          }
+                        : null,
+                    onReject: isPending
+                        ? () {
+                            Navigator.pop(sheetContext);
+                            _updateStatus(
+                              context,
+                              application,
+                              ApplicationStatus.rejected,
+                              provider,
+                            );
+                          }
+                        : null,
+                  ),
+                ],
+              ),
+            );
+          },
         );
       },
     );
+  }
+
+  String _studentNameLabel(ApplicationModel application) {
+    return OpportunityMetadata.sanitizeText(application.studentName) ??
+        'Unnamed candidate';
+  }
+
+  List<_DetailRowItem> _opportunityDetailRows(OpportunityModel? opportunity) {
+    if (opportunity == null) {
+      return const [];
+    }
+
+    final rows = <_DetailRowItem>[
+      _DetailRowItem(
+        label: 'Location',
+        value: _opportunityLocationLabel(opportunity),
+        icon: Icons.place_outlined,
+      ),
+      _DetailRowItem(
+        label: 'Deadline',
+        value: _deadlineLabel(opportunity),
+        icon: Icons.event_available_outlined,
+      ),
+      _DetailRowItem(
+        label: 'Compensation',
+        value: _compensationLabel(opportunity),
+        icon: Icons.payments_outlined,
+      ),
+    ];
+
+    return rows
+        .where((row) => row.value.trim().isNotEmpty)
+        .toList(growable: false);
+  }
+
+  List<String> _opportunityMetadataItems(OpportunityModel? opportunity) {
+    if (opportunity == null) {
+      return const [];
+    }
+
+    return OpportunityMetadata.buildMetadataItems(
+      type: opportunity.type,
+      salaryMin: opportunity.salaryMin,
+      salaryMax: opportunity.salaryMax,
+      salaryCurrency: opportunity.salaryCurrency,
+      salaryPeriod: opportunity.salaryPeriod,
+      compensationText: opportunity.compensationText,
+      isPaid: opportunity.isPaid,
+      employmentType: opportunity.employmentType,
+      workMode: opportunity.workMode,
+      duration: opportunity.duration,
+      maxItems: 5,
+    );
+  }
+
+  String _opportunityLocationLabel(OpportunityModel opportunity) {
+    return OpportunityMetadata.sanitizeText(opportunity.location) ??
+        'Location not specified';
+  }
+
+  String _deadlineLabel(OpportunityModel opportunity) {
+    final deadline =
+        opportunity.applicationDeadline ??
+        OpportunityMetadata.parseDateTimeLike(opportunity.deadlineLabel);
+    if (deadline != null) {
+      return OpportunityMetadata.formatDateLabel(deadline);
+    }
+
+    return OpportunityMetadata.sanitizeText(opportunity.deadlineLabel) ??
+        'Not specified';
+  }
+
+  String _compensationLabel(OpportunityModel opportunity) {
+    return OpportunityMetadata.buildCompensationLabel(
+          salaryMin: opportunity.salaryMin,
+          salaryMax: opportunity.salaryMax,
+          salaryCurrency: opportunity.salaryCurrency,
+          salaryPeriod: opportunity.salaryPeriod,
+          compensationText: opportunity.compensationText,
+          isPaid: opportunity.isPaid,
+        ) ??
+        'Not specified';
+  }
+
+  void _openOpportunityDetailsFromSheet(
+    BuildContext sheetContext,
+    OpportunityModel? opportunity,
+  ) {
+    if (opportunity == null) {
+      context.showAppSnackBar(
+        'The linked opportunity is no longer available.',
+        title: 'Opportunity unavailable',
+        type: AppFeedbackType.warning,
+      );
+      return;
+    }
+
+    Navigator.pop(sheetContext);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
+      _showOpportunityDetailsSheet(opportunity);
+    });
+  }
+
+  Future<void> _showOpportunityDetailsSheet(
+    OpportunityModel opportunity,
+  ) async {
+    final tone = _toneForOpportunity(opportunity);
+    final metadata = _opportunityMetadataItems(opportunity);
+    final detailRows = _opportunityDetailRows(opportunity);
+    final description =
+        OpportunityMetadata.sanitizeText(opportunity.description) ??
+        'No description provided.';
+    final requirements = _opportunityRequirementItems(opportunity);
+    final benefits = _opportunityBenefits(opportunity);
+
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.82,
+          maxChildSize: 0.94,
+          minChildSize: 0.48,
+          expand: false,
+          builder: (context, scrollController) {
+            return Container(
+              decoration: BoxDecoration(
+                color: _ApplicationsPalette.surface,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(26),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.12),
+                    blurRadius: 28,
+                    offset: const Offset(0, -6),
+                  ),
+                ],
+              ),
+              child: ListView(
+                controller: scrollController,
+                padding: const EdgeInsets.fromLTRB(18, 10, 18, 28),
+                children: [
+                  _SheetHeaderBar(
+                    title: 'Opportunity details',
+                    subtitle: 'The role this candidate applied for.',
+                    onClose: () => Navigator.pop(sheetContext),
+                  ),
+                  const SizedBox(height: 14),
+                  _OpportunityDetailsHero(
+                    opportunity: opportunity,
+                    tone: tone,
+                    location: _opportunityLocationLabel(opportunity),
+                    statusLabel: _opportunityStatusLabel(opportunity.status),
+                  ),
+                  if (metadata.isNotEmpty) ...[
+                    const SizedBox(height: 14),
+                    _DetailSectionCard(
+                      title: 'Role details',
+                      icon: Icons.tune_outlined,
+                      child: Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: metadata
+                            .map(
+                              (label) => _MetaPill(
+                                icon: Icons.check_circle_outline_rounded,
+                                label: label,
+                              ),
+                            )
+                            .toList(growable: false),
+                      ),
+                    ),
+                  ],
+                  if (detailRows.isNotEmpty) ...[
+                    const SizedBox(height: 14),
+                    _DetailSectionCard(
+                      title: 'Timeline and location',
+                      icon: Icons.event_note_outlined,
+                      child: _DetailRows(rows: detailRows),
+                    ),
+                  ],
+                  const SizedBox(height: 14),
+                  _DetailSectionCard(
+                    title: OpportunityType.descriptionLabel(opportunity.type),
+                    icon: Icons.notes_outlined,
+                    child: _DetailBodyText(description),
+                  ),
+                  const SizedBox(height: 14),
+                  _DetailSectionCard(
+                    title: OpportunityType.requirementsLabel(opportunity.type),
+                    icon: Icons.checklist_rounded,
+                    child: requirements.isEmpty
+                        ? const _DetailBodyText('No requirements provided.')
+                        : _DetailBulletList(items: requirements),
+                  ),
+                  if (benefits.isNotEmpty) ...[
+                    const SizedBox(height: 14),
+                    _DetailSectionCard(
+                      title: 'Benefits',
+                      icon: Icons.workspace_premium_outlined,
+                      child: _DetailBulletList(items: benefits),
+                    ),
+                  ],
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  List<String> _opportunityRequirementItems(OpportunityModel opportunity) {
+    if (opportunity.requirementItems.isNotEmpty) {
+      return opportunity.requirementItems;
+    }
+
+    final fallback = OpportunityMetadata.sanitizeText(opportunity.requirements);
+    return fallback == null ? const [] : [fallback];
+  }
+
+  List<String> _opportunityBenefits(OpportunityModel opportunity) {
+    if (opportunity.benefits.isNotEmpty) {
+      return opportunity.benefits;
+    }
+
+    return OpportunityMetadata.stringListFromValue(
+      opportunity.firstValue([
+        'benefits',
+        'benefitList',
+        'perks',
+        'advantages',
+        'support',
+      ]),
+      maxItems: 6,
+    );
+  }
+
+  String _opportunityStatusLabel(String rawStatus) {
+    final normalized = rawStatus
+        .trim()
+        .replaceAll(RegExp(r'[_-]+'), ' ')
+        .replaceAll(RegExp(r'\s+'), ' ');
+    if (normalized.isEmpty) {
+      return 'Status unavailable';
+    }
+
+    return normalized
+        .split(' ')
+        .where((part) => part.isNotEmpty)
+        .map(
+          (part) =>
+              '${part[0].toUpperCase()}${part.substring(1).toLowerCase()}',
+        )
+        .join(' ');
   }
 
   void _openStudentProfile(ApplicationModel application) {
@@ -2565,16 +2813,114 @@ class _MetaPill extends StatelessWidget {
         border: Border.all(color: _ApplicationsPalette.border),
         borderRadius: BorderRadius.circular(999),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 240),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 14, color: _ApplicationsPalette.textMuted),
+            const SizedBox(width: 6),
+            Flexible(
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: GoogleFonts.poppins(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: _ApplicationsPalette.textSecondary,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DetailRowItem {
+  final String label;
+  final String value;
+  final IconData icon;
+
+  const _DetailRowItem({
+    required this.label,
+    required this.value,
+    required this.icon,
+  });
+}
+
+class _SheetHeaderBar extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final VoidCallback onClose;
+
+  const _SheetHeaderBar({
+    required this.title,
+    required this.subtitle,
+    required this.onClose,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      header: true,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 14, color: _ApplicationsPalette.textMuted),
-          const SizedBox(width: 6),
+          SizedBox(
+            height: 34,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Container(
+                  width: 42,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: _ApplicationsPalette.border,
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Material(
+                    color: _ApplicationsPalette.surfaceAlt,
+                    borderRadius: BorderRadius.circular(12),
+                    child: InkWell(
+                      onTap: onClose,
+                      borderRadius: BorderRadius.circular(12),
+                      child: const SizedBox(
+                        width: 34,
+                        height: 34,
+                        child: Icon(
+                          Icons.close_rounded,
+                          size: 18,
+                          color: _ApplicationsPalette.textSecondary,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 8),
           Text(
-            label,
+            title,
             style: GoogleFonts.poppins(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
+              fontSize: 20,
+              fontWeight: FontWeight.w800,
+              color: _ApplicationsPalette.textPrimary,
+              height: 1.12,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            subtitle,
+            style: GoogleFonts.poppins(
+              fontSize: 12.5,
+              height: 1.45,
               color: _ApplicationsPalette.textSecondary,
             ),
           ),
@@ -2584,13 +2930,521 @@ class _MetaPill extends StatelessWidget {
   }
 }
 
+class _ActionRail extends StatelessWidget {
+  final List<Widget> children;
+
+  const _ActionRail({required this.children});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        for (var index = 0; index < children.length; index++) ...[
+          if (index > 0) const SizedBox(width: 8),
+          Expanded(child: children[index]),
+        ],
+      ],
+    );
+  }
+}
+
+class _OpportunityLinkButton extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final Color tone;
+  final VoidCallback onTap;
+
+  const _OpportunityLinkButton({
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.tone,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      button: true,
+      label: title,
+      child: Material(
+        color: tone.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(16),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16),
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: tone.withValues(alpha: 0.18)),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 42,
+                  height: 42,
+                  decoration: BoxDecoration(
+                    color: tone.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(icon, size: 21, color: tone),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.poppins(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w800,
+                          color: _ApplicationsPalette.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        subtitle,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.poppins(
+                          fontSize: 11.5,
+                          color: _ApplicationsPalette.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Icon(Icons.chevron_right_rounded, size: 22, color: tone),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _OpportunityDetailsHero extends StatelessWidget {
+  final OpportunityModel opportunity;
+  final _OpportunityTypeTone tone;
+  final String location;
+  final String statusLabel;
+
+  const _OpportunityDetailsHero({
+    required this.opportunity,
+    required this.tone,
+    required this.location,
+    required this.statusLabel,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final title =
+        OpportunityMetadata.sanitizeText(opportunity.title) ??
+        'Untitled opportunity';
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: tone.background,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: tone.foreground.withValues(alpha: 0.16)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 46,
+                height: 46,
+                decoration: BoxDecoration(
+                  color: _ApplicationsPalette.surface.withValues(alpha: 0.78),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Icon(
+                  OpportunityType.icon(opportunity.type),
+                  color: tone.foreground,
+                  size: 22,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.poppins(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w800,
+                        color: _ApplicationsPalette.textPrimary,
+                        height: 1.22,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.place_outlined,
+                          size: 14,
+                          color: _ApplicationsPalette.textSecondary,
+                        ),
+                        const SizedBox(width: 5),
+                        Expanded(
+                          child: Text(
+                            location,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.poppins(
+                              fontSize: 12,
+                              color: _ApplicationsPalette.textSecondary,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              _TypePill(
+                label: OpportunityType.label(opportunity.type).toUpperCase(),
+                tone: tone,
+              ),
+              _MetaPill(
+                icon: Icons.radio_button_checked_rounded,
+                label: statusLabel,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DetailSectionCard extends StatelessWidget {
+  final String title;
+  final IconData icon;
+  final Widget child;
+
+  const _DetailSectionCard({
+    required this.title,
+    required this.icon,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: _ApplicationsPalette.surface,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: _ApplicationsPalette.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  color: _ApplicationsPalette.surfaceAlt,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: _ApplicationsPalette.border),
+                ),
+                child: Icon(
+                  icon,
+                  size: 17,
+                  color: _ApplicationsPalette.primary,
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.poppins(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w800,
+                    color: _ApplicationsPalette.textPrimary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          child,
+        ],
+      ),
+    );
+  }
+}
+
+class _DetailBodyText extends StatelessWidget {
+  final String text;
+
+  const _DetailBodyText(this.text);
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      text,
+      style: GoogleFonts.poppins(
+        fontSize: 12.5,
+        height: 1.6,
+        color: _ApplicationsPalette.textSecondary,
+      ),
+    );
+  }
+}
+
+class _DetailBulletList extends StatelessWidget {
+  final List<String> items;
+
+  const _DetailBulletList({required this.items});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: items
+          .map(
+            (item) => Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 6,
+                    height: 6,
+                    margin: const EdgeInsets.only(top: 7),
+                    decoration: const BoxDecoration(
+                      color: _ApplicationsPalette.primary,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(child: _DetailBodyText(item)),
+                ],
+              ),
+            ),
+          )
+          .toList(growable: false),
+    );
+  }
+}
+
+class _DetailRows extends StatelessWidget {
+  final List<_DetailRowItem> rows;
+
+  const _DetailRows({required this.rows});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        for (var index = 0; index < rows.length; index++) ...[
+          _DetailInfoRow(item: rows[index]),
+          if (index != rows.length - 1)
+            const Divider(height: 16, color: _ApplicationsPalette.border),
+        ],
+      ],
+    );
+  }
+}
+
+class _DetailInfoRow extends StatelessWidget {
+  final _DetailRowItem item;
+
+  const _DetailInfoRow({required this.item});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(item.icon, size: 17, color: _ApplicationsPalette.textSecondary),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Text(
+            item.label,
+            style: GoogleFonts.poppins(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: _ApplicationsPalette.textSecondary,
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          flex: 2,
+          child: Text(
+            item.value,
+            textAlign: TextAlign.right,
+            style: GoogleFonts.poppins(
+              fontSize: 12.5,
+              fontWeight: FontWeight.w700,
+              color: _ApplicationsPalette.textPrimary,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _DecisionPanel extends StatelessWidget {
+  final String status;
+  final bool isBusy;
+  final VoidCallback? onApprove;
+  final VoidCallback? onReject;
+
+  const _DecisionPanel({
+    required this.status,
+    required this.isBusy,
+    this.onApprove,
+    this.onReject,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final normalizedStatus = ApplicationStatus.parse(status);
+    final tone = switch (normalizedStatus) {
+      ApplicationStatus.accepted => _ApplicationsPalette.success,
+      ApplicationStatus.rejected => _ApplicationsPalette.error,
+      _ => _ApplicationsPalette.accent,
+    };
+    final icon = switch (normalizedStatus) {
+      ApplicationStatus.accepted => Icons.verified_outlined,
+      ApplicationStatus.rejected => Icons.block_outlined,
+      _ => Icons.rate_review_outlined,
+    };
+    final title = switch (normalizedStatus) {
+      ApplicationStatus.accepted => 'Candidate approved',
+      ApplicationStatus.rejected => 'Candidate rejected',
+      _ => 'Ready for decision',
+    };
+    final message = switch (normalizedStatus) {
+      ApplicationStatus.accepted =>
+        'This application is approved. Use message or CV review for next steps.',
+      ApplicationStatus.rejected =>
+        'This application is rejected. The profile and CV remain available for reference.',
+      _ =>
+        'Approve the candidate to move them forward, or reject if the fit is not right.',
+    };
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: tone.withValues(alpha: 0.07),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: tone.withValues(alpha: 0.16)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: tone.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, size: 20, color: tone),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                        color: _ApplicationsPalette.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      message,
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        height: 1.45,
+                        color: _ApplicationsPalette.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          if (normalizedStatus == ApplicationStatus.pending) ...[
+            const SizedBox(height: 14),
+            Row(
+              children: [
+                Expanded(
+                  child: _DecisionButton(
+                    label: isBusy ? 'Working...' : 'Approve',
+                    icon: Icons.check_rounded,
+                    background: _ApplicationsPalette.success,
+                    onTap: isBusy ? null : onApprove,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _DecisionButton(
+                    label: isBusy ? 'Working...' : 'Reject',
+                    icon: Icons.close_rounded,
+                    background: _ApplicationsPalette.error,
+                    onTap: isBusy ? null : onReject,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
 class _DecisionButton extends StatelessWidget {
   final String label;
+  final IconData icon;
   final Color background;
   final VoidCallback? onTap;
 
   const _DecisionButton({
     required this.label,
+    required this.icon,
     required this.background,
     required this.onTap,
   });
@@ -2598,21 +3452,22 @@ class _DecisionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 44,
-      child: ElevatedButton(
+      height: 46,
+      child: ElevatedButton.icon(
         onPressed: onTap,
+        icon: Icon(icon, size: 17),
+        label: Text(
+          label,
+          overflow: TextOverflow.ellipsis,
+          style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w800),
+        ),
         style: ElevatedButton.styleFrom(
           backgroundColor: background,
           foregroundColor: Colors.white,
           elevation: 0,
-          shadowColor: background.withValues(alpha: 0.22),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-        ),
-        child: Text(
-          label,
-          style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w700),
         ),
       ),
     );
@@ -2621,8 +3476,9 @@ class _DecisionButton extends StatelessWidget {
 
 class _DetailHeroCard extends StatelessWidget {
   final String studentName;
-  final String? opportunityTitle;
+  final String opportunityTitle;
   final String? appliedLabel;
+  final String? relativeAppliedLabel;
   final String? typeLabel;
   final _OpportunityTypeTone typeTone;
   final String status;
@@ -2633,6 +3489,7 @@ class _DetailHeroCard extends StatelessWidget {
     required this.studentName,
     required this.opportunityTitle,
     required this.appliedLabel,
+    required this.relativeAppliedLabel,
     required this.typeLabel,
     required this.typeTone,
     required this.status,
@@ -2642,83 +3499,110 @@ class _DetailHeroCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: _ApplicationsPalette.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: _ApplicationsPalette.border),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              InkWell(
-                onTap: onTapProfile,
-                borderRadius: BorderRadius.circular(999),
-                child: ProfileAvatar(
-                  radius: 26,
-                  userId: studentId,
-                  fallbackName: studentName,
-                  role: 'student',
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: InkWell(
-                  onTap: onTapProfile,
-                  borderRadius: BorderRadius.circular(8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        studentName,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.poppins(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w700,
-                          color: _ApplicationsPalette.textPrimary,
+    final appliedText = relativeAppliedLabel ?? appliedLabel;
+
+    return Semantics(
+      button: onTapProfile != null,
+      label: 'Open candidate profile for $studentName',
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTapProfile,
+          borderRadius: BorderRadius.circular(20),
+          child: Ink(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: _ApplicationsPalette.surface,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: _ApplicationsPalette.border),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        ProfileAvatar(
+                          radius: 30,
+                          userId: studentId,
+                          fallbackName: studentName,
+                          role: 'student',
                         ),
-                      ),
-                      if (opportunityTitle != null) ...[
-                        const SizedBox(height: 2),
-                        Text(
-                          opportunityTitle!,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.poppins(
-                            fontSize: 12.5,
-                            color: _ApplicationsPalette.textSecondary,
+                        Positioned(
+                          right: -2,
+                          bottom: -2,
+                          child: Container(
+                            width: 18,
+                            height: 18,
+                            decoration: BoxDecoration(
+                              color: typeTone.foreground,
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: _ApplicationsPalette.surface,
+                                width: 2,
+                              ),
+                            ),
                           ),
                         ),
                       ],
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            studentName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.poppins(
+                              fontSize: 19,
+                              fontWeight: FontWeight.w800,
+                              color: _ApplicationsPalette.textPrimary,
+                              height: 1.15,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            opportunityTitle,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.poppins(
+                              fontSize: 12.5,
+                              height: 1.35,
+                              color: _ApplicationsPalette.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    ApplicationStatusBadge(status: status, fontSize: 10.5),
+                  ],
+                ),
+                if (typeLabel != null || appliedText != null) ...[
+                  const SizedBox(height: 14),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      if (typeLabel != null)
+                        _TypePill(label: typeLabel!, tone: typeTone),
+                      if (appliedText != null)
+                        _MetaPill(
+                          icon: Icons.schedule_rounded,
+                          label: 'Applied $appliedText',
+                        ),
                     ],
                   ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              ApplicationStatusBadge(status: status, fontSize: 10.5),
-            ],
-          ),
-          if (typeLabel != null || appliedLabel != null) ...[
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                if (typeLabel != null)
-                  _TypePill(label: typeLabel!, tone: typeTone),
-                if (appliedLabel != null)
-                  _MetaPill(
-                    icon: Icons.schedule_rounded,
-                    label: 'Applied $appliedLabel',
-                  ),
+                ],
               ],
             ),
-          ],
-        ],
+          ),
+        ),
       ),
     );
   }
@@ -2741,35 +3625,42 @@ class _WideActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        decoration: BoxDecoration(
-          color: background,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: foreground.withValues(alpha: 0.16)),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 18, color: foreground),
-            const SizedBox(width: 8),
-            Flexible(
-              child: Text(
-                label,
-                overflow: TextOverflow.ellipsis,
-                style: GoogleFonts.poppins(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                  color: foreground,
-                ),
-              ),
+    return Semantics(
+      button: true,
+      label: label,
+      child: Material(
+        color: background,
+        borderRadius: BorderRadius.circular(14),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(14),
+          child: Container(
+            height: 54,
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: foreground.withValues(alpha: 0.16)),
             ),
-          ],
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(icon, size: 18, color: foreground),
+                const SizedBox(height: 5),
+                Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.poppins(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w800,
+                    color: foreground,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
   }
 }
-
