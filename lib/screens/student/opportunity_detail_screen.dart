@@ -6,8 +6,10 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../models/opportunity_model.dart';
 import '../../models/saved_opportunity_model.dart';
+import '../../models/student_application_item_model.dart';
 import '../../providers/application_provider.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/chat_provider.dart';
 import '../../providers/cv_provider.dart';
 import '../../providers/saved_opportunity_provider.dart';
 import '../../services/application_service.dart';
@@ -17,6 +19,7 @@ import '../../utils/opportunity_type.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/shared/app_content_system.dart';
 import '../../widgets/shared/app_feedback.dart';
+import 'chat_screen.dart';
 
 class OpportunityDetailScreen extends StatelessWidget {
   final OpportunityModel opportunity;
@@ -60,6 +63,8 @@ class OpportunityDetailsScreen extends StatefulWidget {
 class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
   late Future<ApplicationEligibilityStatus> _eligibilityFuture;
   bool _isBookmarkBusy = false;
+  bool _isApplying = false;
+  bool _isChatOpening = false;
 
   String get _effectiveType =>
       OpportunityType.parse(widget.type ?? widget.opportunity.type);
@@ -193,6 +198,10 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
   }
 
   Future<void> _apply() async {
+    if (_isApplying) {
+      return;
+    }
+
     final authProvider = context.read<AuthProvider>();
     final applicationProvider = context.read<ApplicationProvider>();
     final cvProvider = context.read<CvProvider>();
@@ -207,57 +216,65 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
       return;
     }
 
-    final eligibility = await applicationProvider.getEligibility(
-      studentId: currentUser.uid,
-      opportunityId: widget.opportunity.id,
-    );
+    setState(() => _isApplying = true);
 
-    if (!mounted) {
-      return;
-    }
+    try {
+      final eligibility = await applicationProvider.getEligibility(
+        studentId: currentUser.uid,
+        opportunityId: widget.opportunity.id,
+      );
 
-    if (eligibility != ApplicationEligibilityStatus.available) {
+      if (!mounted) {
+        return;
+      }
+
+      if (eligibility != ApplicationEligibilityStatus.available) {
+        context.showAppSnackBar(
+          _messageForStatus(eligibility),
+          title: 'Application blocked',
+          type: AppFeedbackType.warning,
+        );
+        _refreshEligibility();
+        return;
+      }
+
+      await cvProvider.loadCv(currentUser.uid);
+      if (!mounted) {
+        return;
+      }
+
+      final cv = cvProvider.cv;
+      if (cv == null) {
+        context.showAppSnackBar(
+          'Create your CV before applying to this opportunity.',
+          title: 'CV required',
+          type: AppFeedbackType.warning,
+        );
+        return;
+      }
+
+      final error = await applicationProvider.applyToOpportunity(
+        studentId: currentUser.uid,
+        studentName: currentUser.fullName,
+        opportunityId: widget.opportunity.id,
+        cvId: cv.id,
+      );
+
+      if (!mounted) {
+        return;
+      }
+
       context.showAppSnackBar(
-        _messageForStatus(eligibility),
-        title: 'Application blocked',
-        type: AppFeedbackType.warning,
+        error ?? 'Your application has been submitted successfully.',
+        title: error == null ? 'Application sent' : 'Application unavailable',
+        type: error == null ? AppFeedbackType.success : AppFeedbackType.error,
       );
       _refreshEligibility();
-      return;
+    } finally {
+      if (mounted) {
+        setState(() => _isApplying = false);
+      }
     }
-
-    await cvProvider.loadCv(currentUser.uid);
-    if (!mounted) {
-      return;
-    }
-
-    final cv = cvProvider.cv;
-    if (cv == null) {
-      context.showAppSnackBar(
-        'Create your CV before applying to this opportunity.',
-        title: 'CV required',
-        type: AppFeedbackType.warning,
-      );
-      return;
-    }
-
-    final error = await applicationProvider.applyToOpportunity(
-      studentId: currentUser.uid,
-      studentName: currentUser.fullName,
-      opportunityId: widget.opportunity.id,
-      cvId: cv.id,
-    );
-
-    if (!mounted) {
-      return;
-    }
-
-    context.showAppSnackBar(
-      error ?? 'Your application has been submitted successfully.',
-      title: error == null ? 'Application sent' : 'Application unavailable',
-      type: error == null ? AppFeedbackType.success : AppFeedbackType.error,
-    );
-    _refreshEligibility();
   }
 
   Future<void> _toggleSavedOpportunity() async {
@@ -343,17 +360,121 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
     );
   }
 
-  String? get _appliedStatus {
+  Future<void> _openCompanyChat() async {
+    if (_isChatOpening) {
+      return;
+    }
+
+    final currentUser = context.read<AuthProvider>().userModel;
+    if (currentUser == null) {
+      context.showAppSnackBar(
+        'Sign in to chat with the company.',
+        title: 'Login required',
+        type: AppFeedbackType.warning,
+      );
+      return;
+    }
+
+    final applicationProvider = context.read<ApplicationProvider>();
+    final acceptedApplication = _acceptedApplication(applicationProvider);
+    final companyId =
+        acceptedApplication?.application.companyId.trim().isNotEmpty == true
+        ? acceptedApplication!.application.companyId.trim()
+        : widget.opportunity.companyId.trim();
+
+    if (companyId.isEmpty) {
+      context.showAppSnackBar(
+        'Company details are missing for this opportunity.',
+        title: 'Chat unavailable',
+        type: AppFeedbackType.error,
+      );
+      return;
+    }
+
+    setState(() => _isChatOpening = true);
+
+    try {
+      final chatProvider = context.read<ChatProvider>();
+      final conversation = await chatProvider.getOrCreateConversation(
+        studentId: currentUser.uid,
+        studentName: currentUser.fullName,
+        companyId: companyId,
+        companyName: _companyName,
+        contextType: 'application',
+        contextLabel: 'Application conversation',
+        currentUserId: currentUser.uid,
+        currentUserRole: currentUser.role,
+      );
+
+      if (!mounted) {
+        return;
+      }
+
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => ChatScreen(
+            conversationId: conversation.id,
+            otherName: conversation.companyName,
+            recipientId: conversation.companyId,
+            otherRole: 'company',
+            contextLabel: 'Application conversation',
+          ),
+        ),
+      );
+    } catch (error) {
+      if (!mounted) {
+        return;
+      }
+
+      context.showAppSnackBar(
+        'Could not open chat: $error',
+        title: 'Chat unavailable',
+        type: AppFeedbackType.error,
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isChatOpening = false);
+      }
+    }
+  }
+
+  StudentApplicationItemModel? _submittedApplication(
+    ApplicationProvider provider,
+  ) {
+    for (final item in provider.submittedApplications) {
+      if (item.opportunityId == widget.opportunity.id) {
+        return item;
+      }
+    }
+
+    return null;
+  }
+
+  StudentApplicationItemModel? _acceptedApplication(
+    ApplicationProvider provider,
+  ) {
+    final item = _submittedApplication(provider);
+    if (item == null ||
+        ApplicationStatus.parse(item.status) != ApplicationStatus.accepted) {
+      return null;
+    }
+
+    return item;
+  }
+
+  String? _appliedStatusFor(ApplicationProvider provider) {
     final userId = context.read<AuthProvider>().userModel?.uid;
     if (userId == null || userId.isEmpty) {
       return null;
     }
-    return context.read<ApplicationProvider>().applicationStatusFor(
-      widget.opportunity.id,
-    );
+
+    return provider.applicationStatusFor(widget.opportunity.id);
   }
 
-  String _buttonLabelForStatus(ApplicationEligibilityStatus status) {
+  String _buttonLabelForStatus(
+    ApplicationEligibilityStatus status,
+    ApplicationProvider applicationProvider,
+  ) {
     switch (status) {
       case ApplicationEligibilityStatus.requiresLogin:
         return 'Login to Apply';
@@ -362,7 +483,7 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
             ? 'Apply for Funding'
             : 'Apply Now';
       case ApplicationEligibilityStatus.alreadyApplied:
-        final appStatus = _appliedStatus;
+        final appStatus = _appliedStatusFor(applicationProvider);
         if (appStatus != null) {
           return 'Status: ${ApplicationStatus.label(appStatus)}';
         }
@@ -631,6 +752,9 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     final savedProvider = context.watch<SavedOpportunityProvider>();
+    final applicationProvider = context.watch<ApplicationProvider>();
+    final acceptedApplication = _acceptedApplication(applicationProvider);
+    final canOpenApprovedChat = acceptedApplication != null;
     final isSaved = _existingSavedOpportunity(savedProvider) != null;
     final applyBar = FutureBuilder<ApplicationEligibilityStatus>(
       future: _eligibilityFuture,
@@ -653,14 +777,32 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  AppPrimaryButton(
-                    theme: _theme,
-                    label: _buttonLabelForStatus(status),
-                    icon: canApply
-                        ? Icons.send_rounded
-                        : Icons.info_outline_rounded,
-                    onPressed: canApply ? _apply : () => _refreshEligibility(),
-                  ),
+                  if (canOpenApprovedChat) ...<Widget>[
+                    _ApprovedChatCue(theme: _theme, companyName: _companyName),
+                    const SizedBox(height: 10),
+                    AppPrimaryButton(
+                      theme: _theme,
+                      label: _isChatOpening
+                          ? 'Opening chat...'
+                          : 'Chat with Company',
+                      icon: Icons.chat_bubble_outline_rounded,
+                      isBusy: _isChatOpening,
+                      onPressed: _openCompanyChat,
+                    ),
+                  ] else
+                    AppPrimaryButton(
+                      theme: _theme,
+                      label: _isApplying
+                          ? 'Applying...'
+                          : _buttonLabelForStatus(status, applicationProvider),
+                      icon: canApply
+                          ? Icons.send_rounded
+                          : Icons.info_outline_rounded,
+                      isBusy: _isApplying,
+                      onPressed: canApply
+                          ? _apply
+                          : () => _refreshEligibility(),
+                    ),
                   const SizedBox(height: 10),
                   Row(
                     children: <Widget>[
@@ -721,7 +863,12 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
       ),
       bottomNavigationBar: applyBar,
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 132),
+        padding: EdgeInsets.fromLTRB(
+          16,
+          8,
+          16,
+          canOpenApprovedChat ? 178 : 132,
+        ),
         children: <Widget>[
           AppDetailHeroCard(
             theme: _theme,
@@ -1066,6 +1213,76 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
     }
 
     return AppShellBackground(child: scaffold);
+  }
+}
+
+class _ApprovedChatCue extends StatelessWidget {
+  final AppContentTheme theme;
+  final String companyName;
+
+  const _ApprovedChatCue({required this.theme, required this.companyName});
+
+  @override
+  Widget build(BuildContext context) {
+    final trimmedCompany = companyName.trim();
+    final companyLabel = trimmedCompany.isEmpty
+        ? 'the company'
+        : trimmedCompany;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: theme.success.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: theme.success.withValues(alpha: 0.16)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Container(
+            width: 28,
+            height: 28,
+            decoration: BoxDecoration(
+              color: theme.success.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(Icons.verified_rounded, size: 15, color: theme.success),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Text(
+                  'Application approved',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.label(
+                    size: 12.2,
+                    color: theme.success,
+                    weight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'You can now message $companyLabel.',
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.body(
+                    size: 11.6,
+                    color: theme.textSecondary,
+                    weight: FontWeight.w500,
+                    height: 1.35,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
