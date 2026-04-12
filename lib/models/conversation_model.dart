@@ -20,6 +20,10 @@ class ConversationModel {
   final List<String> deletedBy;
   final String contextType;
   final String contextLabel;
+  final String applicationId;
+  final String createdById;
+  final String createdByRole;
+  final bool companyHasMessaged;
   final bool isGroup;
   final String groupName;
   final String groupAvatarUrl;
@@ -44,6 +48,10 @@ class ConversationModel {
     List<String> deletedBy = const <String>[],
     this.contextType = '',
     this.contextLabel = '',
+    this.applicationId = '',
+    this.createdById = '',
+    this.createdByRole = '',
+    this.companyHasMessaged = false,
     this.isGroup = false,
     this.groupName = '',
     this.groupAvatarUrl = '',
@@ -74,6 +82,10 @@ class ConversationModel {
       deletedBy: _parseStringList(map['deletedBy']),
       contextType: (map['contextType'] ?? '').toString().trim(),
       contextLabel: (map['contextLabel'] ?? '').toString().trim(),
+      applicationId: (map['applicationId'] ?? '').toString().trim(),
+      createdById: (map['createdById'] ?? '').toString().trim(),
+      createdByRole: (map['createdByRole'] ?? '').toString().trim(),
+      companyHasMessaged: map['companyHasMessaged'] == true,
       isGroup: map['isGroup'] == true,
       groupName: (map['groupName'] ?? '').toString().trim(),
       groupAvatarUrl: (map['groupAvatarUrl'] ?? '').toString().trim(),
@@ -101,6 +113,10 @@ class ConversationModel {
       'deletedBy': List<String>.from(deletedBy),
       'contextType': contextType,
       'contextLabel': contextLabel,
+      'applicationId': applicationId,
+      'createdById': createdById,
+      'createdByRole': createdByRole,
+      'companyHasMessaged': companyHasMessaged,
       'isGroup': isGroup,
       'groupName': groupName,
       'groupAvatarUrl': groupAvatarUrl,

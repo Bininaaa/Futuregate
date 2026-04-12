@@ -42,6 +42,7 @@ class _FakeChatService implements ChatService {
     String contextType = '',
     String contextLabel = '',
     String currentUserId = '',
+    required String currentUserRole,
   }) async {
     throw UnimplementedError();
   }
@@ -180,46 +181,74 @@ void main() {
     expect(conversation.isDeletedFor('company-1'), isFalse);
   });
 
-  test('ChatProvider persists delete and reverts failed archive optimism', () async {
-    final fakeService = _FakeChatService();
-    final provider = ChatProvider(
-      chatService: fakeService,
-      localStateService: _FakeChatLocalStateService(ChatLocalState()),
-    );
+  test('ConversationModel stores application chat metadata', () {
     final conversation = ConversationModel.fromMap(<String, dynamic>{
       'id': 'conversation-1',
       'studentId': 'student-1',
       'studentName': 'Student',
       'companyId': 'company-1',
       'companyName': 'Company',
-      'lastMessage': 'Hello',
+      'lastMessage': '',
       'status': 'active',
+      'applicationId': 'application-1',
+      'createdById': 'company-1',
+      'createdByRole': 'company',
+      'companyHasMessaged': true,
     });
 
-    await provider.deleteConversation(
-      conversationId: conversation.id,
-      userId: 'student-1',
-    );
-
-    expect(
-      provider.isConversationDeletedFor(conversation, 'student-1'),
-      isTrue,
-    );
-    expect(fakeService.deleteCalls, hasLength(1));
-    expect(fakeService.deleteCalls.single['conversationId'], 'conversation-1');
-    expect(fakeService.deleteCalls.single['userId'], 'student-1');
-
-    fakeService.failArchive = true;
-    await provider.archiveConversation(
-      conversationId: conversation.id,
-      userId: 'student-1',
-      archived: true,
-    );
-
-    expect(provider.error, contains('archive failed'));
-    expect(
-      provider.isConversationArchivedFor(conversation, 'student-1'),
-      isFalse,
-    );
+    expect(conversation.applicationId, 'application-1');
+    expect(conversation.createdById, 'company-1');
+    expect(conversation.createdByRole, 'company');
+    expect(conversation.companyHasMessaged, isTrue);
+    expect(conversation.toMap()['applicationId'], 'application-1');
   });
+
+  test(
+    'ChatProvider persists delete and reverts failed archive optimism',
+    () async {
+      final fakeService = _FakeChatService();
+      final provider = ChatProvider(
+        chatService: fakeService,
+        localStateService: _FakeChatLocalStateService(ChatLocalState()),
+      );
+      final conversation = ConversationModel.fromMap(<String, dynamic>{
+        'id': 'conversation-1',
+        'studentId': 'student-1',
+        'studentName': 'Student',
+        'companyId': 'company-1',
+        'companyName': 'Company',
+        'lastMessage': 'Hello',
+        'status': 'active',
+      });
+
+      await provider.deleteConversation(
+        conversationId: conversation.id,
+        userId: 'student-1',
+      );
+
+      expect(
+        provider.isConversationDeletedFor(conversation, 'student-1'),
+        isTrue,
+      );
+      expect(fakeService.deleteCalls, hasLength(1));
+      expect(
+        fakeService.deleteCalls.single['conversationId'],
+        'conversation-1',
+      );
+      expect(fakeService.deleteCalls.single['userId'], 'student-1');
+
+      fakeService.failArchive = true;
+      await provider.archiveConversation(
+        conversationId: conversation.id,
+        userId: 'student-1',
+        archived: true,
+      );
+
+      expect(provider.error, contains('archive failed'));
+      expect(
+        provider.isConversationArchivedFor(conversation, 'student-1'),
+        isFalse,
+      );
+    },
+  );
 }

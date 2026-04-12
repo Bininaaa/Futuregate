@@ -547,6 +547,82 @@ service cloud.firestore {
               get(conversationPath(conversationId)).data.companyId == request.auth.uid);
     }
 
+    function hasLinkedApplication(data) {
+      return data.keys().hasAll(['applicationId']) &&
+          data.applicationId is string &&
+          data.applicationId.size() > 0 &&
+          exists(applicationPath(data.applicationId)) &&
+          get(applicationPath(data.applicationId)).data.studentId == data.studentId &&
+          get(applicationPath(data.applicationId)).data.companyId == data.companyId;
+    }
+
+    function linkedApplicationStatus(data) {
+      return get(applicationPath(data.applicationId)).data.status;
+    }
+
+    function isConversationCreator(data) {
+      return data.get('createdById', '') == request.auth.uid &&
+          (
+            (
+              isStudent() &&
+              data.get('createdByRole', '') == 'student' &&
+              data.studentId == request.auth.uid
+            ) ||
+            (
+              isCompany() &&
+              data.get('createdByRole', '') == 'company' &&
+              data.companyId == request.auth.uid
+            )
+          );
+    }
+
+    function canCreateApplicationConversation(data) {
+      return hasLinkedApplication(data) &&
+          isConversationCreator(data) &&
+          data.companyHasMessaged == false &&
+          (
+            (
+              isStudent() &&
+              data.studentId == request.auth.uid &&
+              linkedApplicationStatus(data) == 'accepted'
+            ) ||
+            (
+              isCompany() &&
+              data.companyId == request.auth.uid
+            )
+          );
+    }
+
+    function hasCompatibleConversationMessagingFlag() {
+      return request.resource.data.get('companyHasMessaged', false) ==
+          resource.data.get('companyHasMessaged', false) ||
+          (
+            isCompany() &&
+            resource.data.companyId == request.auth.uid &&
+            resource.data.get('companyHasMessaged', false) == false &&
+            request.resource.data.get('companyHasMessaged', false) == true
+          );
+    }
+
+    function canSendApplicationMessage(conversationId) {
+      let conversation = get(conversationPath(conversationId)).data;
+      return hasLinkedApplication(conversation) &&
+          (
+            (
+              isCompany() &&
+              conversation.companyId == request.auth.uid
+            ) ||
+            (
+              isStudent() &&
+              conversation.studentId == request.auth.uid &&
+              (
+                linkedApplicationStatus(conversation) == 'accepted' ||
+                conversation.get('companyHasMessaged', false) == true
+              )
+            )
+          );
+    }
+
     match /users/{uid} {
       allow create: if isSelf(uid) &&
           request.resource.data.keys().hasOnly([
@@ -1392,6 +1468,10 @@ service cloud.firestore {
             'deletedBy',
             'contextType',
             'contextLabel',
+            'applicationId',
+            'createdById',
+            'createdByRole',
+            'companyHasMessaged',
             'isGroup',
             'groupName',
             'groupAvatarUrl'
@@ -1401,7 +1481,9 @@ service cloud.firestore {
             (isStudent() && request.resource.data.studentId == request.auth.uid) ||
             (isCompany() && request.resource.data.companyId == request.auth.uid)
           ) &&
-          isConversationStatus(request.resource.data.status);
+          isConversationStatus(request.resource.data.status) &&
+          request.resource.data.companyHasMessaged is bool &&
+          canCreateApplicationConversation(request.resource.data);
 
       allow update: if isAdmin() ||
           (
@@ -1421,18 +1503,24 @@ service cloud.firestore {
               'mutedBy',
               'deletedBy',
               'contextType',
-              'contextLabel'
+              'contextLabel',
+              'applicationId',
+              'companyHasMessaged'
             ]) &&
             request.resource.data.id == resource.data.id &&
             request.resource.data.studentId == resource.data.studentId &&
             request.resource.data.studentName == resource.data.studentName &&
             request.resource.data.companyId == resource.data.companyId &&
             request.resource.data.companyName == resource.data.companyName &&
+            request.resource.data.get('createdById', '') == resource.data.get('createdById', '') &&
+            request.resource.data.get('createdByRole', '') == resource.data.get('createdByRole', '') &&
             request.resource.data.get('startedAt', null) == resource.data.get('startedAt', null) &&
             request.resource.data.get('isGroup', null) == resource.data.get('isGroup', null) &&
             request.resource.data.get('groupName', null) == resource.data.get('groupName', null) &&
             request.resource.data.get('groupAvatarUrl', null) == resource.data.get('groupAvatarUrl', null) &&
-            isConversationStatus(request.resource.data.get('status', 'active'))
+            isConversationStatus(request.resource.data.get('status', 'active')) &&
+            hasLinkedApplication(request.resource.data) &&
+            hasCompatibleConversationMessagingFlag()
           );
 
       allow delete: if isAdmin();
@@ -1469,7 +1557,8 @@ service cloud.firestore {
             (
               (isStudent() && request.resource.data.senderRole == 'student') ||
               (isCompany() && request.resource.data.senderRole == 'company')
-            );
+            ) &&
+            canSendApplicationMessage(conversationId);
 
         allow update: if isAdmin() ||
             (

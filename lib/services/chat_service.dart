@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import '../models/conversation_model.dart';
 import '../models/message_model.dart';
 import '../models/user_model.dart';
+import '../utils/application_status.dart';
 import 'file_storage_service.dart';
 import 'notification_worker_service.dart';
 import 'worker_api_service.dart';
@@ -69,7 +70,21 @@ class ChatService {
     String contextType = '',
     String contextLabel = '',
     String currentUserId = '',
+    required String currentUserRole,
   }) async {
+    final normalizedCurrentUserId = currentUserId.trim();
+    final actorRole = _resolveActorRole(
+      currentUserRole: currentUserRole,
+      currentUserId: normalizedCurrentUserId,
+      studentId: studentId,
+      companyId: companyId,
+    );
+    final application = await _resolveApplicationForConversationStart(
+      studentId: studentId,
+      companyId: companyId,
+      currentUserRole: actorRole,
+    );
+
     final query = await _firestore
         .collection('conversations')
         .where('studentId', isEqualTo: studentId)
@@ -81,9 +96,31 @@ class ChatService {
       final existingSnapshot = query.docs.first;
       final existingData = existingSnapshot.data();
       final updates = <String, dynamic>{};
-      final normalizedCurrentUserId = currentUserId.trim();
       if (!_hasValidConversationStatus(existingData['status'])) {
         updates['status'] = 'active';
+      }
+      final existingApplicationId = (existingData['applicationId'] ?? '')
+          .toString()
+          .trim();
+      final existingApplication = existingApplicationId.isEmpty
+          ? null
+          : await _applicationById(existingApplicationId);
+      if (existingApplicationId.isEmpty ||
+          (actorRole == 'student' &&
+              existingApplication?.isAccepted != true &&
+              application.isAccepted)) {
+        updates['applicationId'] = application.id;
+      }
+      if ((existingData['createdById'] ?? '').toString().trim().isEmpty &&
+          normalizedCurrentUserId.isNotEmpty) {
+        updates['createdById'] = normalizedCurrentUserId;
+      }
+      if ((existingData['createdByRole'] ?? '').toString().trim().isEmpty &&
+          actorRole.isNotEmpty) {
+        updates['createdByRole'] = actorRole;
+      }
+      if (!existingData.containsKey('companyHasMessaged')) {
+        updates['companyHasMessaged'] = false;
       }
       if ((existingData['contextType'] ?? '').toString().trim().isEmpty &&
           contextType.trim().isNotEmpty) {
@@ -113,6 +150,14 @@ class ChatService {
             'contextType': updates['contextType'],
           if (updates.containsKey('contextLabel'))
             'contextLabel': updates['contextLabel'],
+          if (updates.containsKey('applicationId'))
+            'applicationId': updates['applicationId'],
+          if (updates.containsKey('createdById'))
+            'createdById': updates['createdById'],
+          if (updates.containsKey('createdByRole'))
+            'createdByRole': updates['createdByRole'],
+          if (updates.containsKey('companyHasMessaged'))
+            'companyHasMessaged': updates['companyHasMessaged'],
           if (normalizedCurrentUserId.isNotEmpty)
             'archivedBy': _removeUserFromStringList(
               existingData['archivedBy'],
@@ -155,13 +200,15 @@ class ChatService {
       'isGroup': false,
       'groupName': '',
       'groupAvatarUrl': '',
+      'contextType': contextType.trim(),
+      'contextLabel': contextLabel.trim(),
+      'applicationId': application.id,
+      'createdById': normalizedCurrentUserId,
+      'createdByRole': actorRole,
+      'companyHasMessaged': false,
     };
 
     await _createConversationWithFallbacks(docRef, legacyConversationData);
-    await _safeConversationMetadataUpdate(docRef, {
-      'contextType': contextType.trim(),
-      'contextLabel': contextLabel.trim(),
-    });
 
     final conversation = ConversationModel(
       id: docRef.id,
@@ -175,6 +222,10 @@ class ChatService {
       status: 'active',
       contextType: contextType.trim(),
       contextLabel: contextLabel.trim(),
+      applicationId: application.id,
+      createdById: normalizedCurrentUserId,
+      createdByRole: actorRole,
+      companyHasMessaged: false,
     );
 
     return conversation;
@@ -214,6 +265,26 @@ class ChatService {
 
     final conversationData =
         conversationSnap.data() ?? const <String, dynamic>{};
+    final chatApplication = await _assertCanSendMessage(
+      conversationData: conversationData,
+      senderId: senderId,
+      senderRole: senderRole,
+    );
+    final senderIsCompany =
+        _resolveActorRole(
+          currentUserRole: senderRole,
+          currentUserId: senderId,
+          studentId: (conversationData['studentId'] ?? '').toString(),
+          companyId: (conversationData['companyId'] ?? '').toString(),
+        ) ==
+        'company';
+    if ((conversationData['applicationId'] ?? '').toString().trim() !=
+        chatApplication.id) {
+      await _safeConversationMetadataUpdate(conversationRef, {
+        'applicationId': chatApplication.id,
+      });
+      conversationData['applicationId'] = chatApplication.id;
+    }
     final resolvedStatus = _resolvedConversationStatus(
       conversationData['status'],
     );
@@ -301,6 +372,7 @@ class ChatService {
             conversationVisibilityRestoreTargets,
           ),
           'status': 'active',
+          if (senderIsCompany) 'companyHasMessaged': true,
         });
       } else {
         final unreadField = senderId == conversationData['studentId']
@@ -319,6 +391,7 @@ class ChatService {
             conversationVisibilityRestoreTargets,
           ),
           'status': 'active',
+          if (senderIsCompany) 'companyHasMessaged': true,
         });
         await batch.commit();
         await _safeConversationMetadataUpdate(conversationRef, {
@@ -696,6 +769,208 @@ class ChatService {
     return '';
   }
 
+  Future<_ChatApplication> _resolveApplicationForConversationStart({
+    required String studentId,
+    required String companyId,
+    required String currentUserRole,
+  }) async {
+    final applications = await _applicationsForPair(
+      studentId: studentId,
+      companyId: companyId,
+      preferStudentQuery: currentUserRole == 'student',
+    );
+
+    if (applications.isEmpty) {
+      throw Exception(
+        currentUserRole == 'company'
+            ? 'This student has not applied to your company.'
+            : 'You can chat with a company after applying and getting approved.',
+      );
+    }
+
+    if (currentUserRole == 'student') {
+      final accepted = applications.where((item) => item.isAccepted).toList();
+      if (accepted.isEmpty) {
+        throw Exception(
+          'You can chat with this company after your application is approved.',
+        );
+      }
+      return accepted.first;
+    }
+
+    if (currentUserRole != 'company') {
+      throw Exception('Only students and companies can start chats.');
+    }
+
+    return applications.first;
+  }
+
+  Future<_ChatApplication> _assertCanSendMessage({
+    required Map<String, dynamic> conversationData,
+    required String senderId,
+    required String senderRole,
+  }) async {
+    final studentId = (conversationData['studentId'] ?? '').toString().trim();
+    final companyId = (conversationData['companyId'] ?? '').toString().trim();
+    final actorRole = _resolveActorRole(
+      currentUserRole: senderRole,
+      currentUserId: senderId,
+      studentId: studentId,
+      companyId: companyId,
+    );
+
+    if (actorRole == 'company') {
+      if (senderId.trim() != companyId) {
+        throw Exception('Only the company can send from this chat.');
+      }
+      final application = await _applicationForConversation(conversationData);
+      if (application == null) {
+        throw Exception('This student has not applied to your company.');
+      }
+      return application;
+    }
+
+    if (actorRole == 'student') {
+      if (senderId.trim() != studentId) {
+        throw Exception('Only the student can send from this chat.');
+      }
+      final application = await _applicationForConversation(conversationData);
+      if (application == null) {
+        throw Exception(
+          'You can chat with a company after applying and getting approved.',
+        );
+      }
+      if (application.isAccepted ||
+          conversationData['companyHasMessaged'] == true) {
+        return application;
+      }
+
+      throw Exception(
+        'You can chat after the company approves your application or messages you.',
+      );
+    }
+
+    throw Exception('Only students and companies can send chat messages.');
+  }
+
+  Future<_ChatApplication?> _applicationForConversation(
+    Map<String, dynamic> conversationData,
+  ) async {
+    final applicationId = (conversationData['applicationId'] ?? '')
+        .toString()
+        .trim();
+    final studentId = (conversationData['studentId'] ?? '').toString().trim();
+    final companyId = (conversationData['companyId'] ?? '').toString().trim();
+
+    if (applicationId.isNotEmpty) {
+      final application = await _applicationById(applicationId);
+      if (application != null &&
+          application.studentId == studentId &&
+          application.companyId == companyId) {
+        return application;
+      }
+    }
+
+    final applications = await _applicationsForPair(
+      studentId: studentId,
+      companyId: companyId,
+    );
+    if (applications.isEmpty) {
+      return null;
+    }
+
+    final accepted = applications.where((item) => item.isAccepted).toList();
+    return accepted.isNotEmpty ? accepted.first : applications.first;
+  }
+
+  Future<_ChatApplication?> _applicationById(String applicationId) async {
+    final normalizedApplicationId = applicationId.trim();
+    if (normalizedApplicationId.isEmpty) {
+      return null;
+    }
+
+    final snapshot = await _firestore
+        .collection('applications')
+        .doc(normalizedApplicationId)
+        .get();
+    final data = snapshot.data();
+    if (!snapshot.exists || data == null) {
+      return null;
+    }
+
+    return _ChatApplication.fromMap({
+      ...data,
+      'id': (data['id'] ?? snapshot.id).toString(),
+    });
+  }
+
+  Future<List<_ChatApplication>> _applicationsForPair({
+    required String studentId,
+    required String companyId,
+    bool preferStudentQuery = false,
+  }) async {
+    final normalizedStudentId = studentId.trim();
+    final normalizedCompanyId = companyId.trim();
+    if (normalizedStudentId.isEmpty || normalizedCompanyId.isEmpty) {
+      return const <_ChatApplication>[];
+    }
+
+    final query = preferStudentQuery
+        ? _firestore
+              .collection('applications')
+              .where('studentId', isEqualTo: normalizedStudentId)
+        : _firestore
+              .collection('applications')
+              .where('companyId', isEqualTo: normalizedCompanyId);
+    final snapshot = await query.get();
+    final applications = snapshot.docs
+        .map((doc) {
+          final data = doc.data();
+          return _ChatApplication.fromMap({
+            ...data,
+            'id': (data['id'] ?? doc.id).toString(),
+          });
+        })
+        .where(
+          (application) =>
+              application.studentId == normalizedStudentId &&
+              application.companyId == normalizedCompanyId,
+        )
+        .toList();
+
+    applications.sort((left, right) {
+      final leftTime = left.appliedAt?.millisecondsSinceEpoch ?? 0;
+      final rightTime = right.appliedAt?.millisecondsSinceEpoch ?? 0;
+      return rightTime.compareTo(leftTime);
+    });
+
+    return applications;
+  }
+
+  String _resolveActorRole({
+    required String currentUserRole,
+    required String currentUserId,
+    required String studentId,
+    required String companyId,
+  }) {
+    final normalizedRole = currentUserRole.trim().toLowerCase();
+    if (normalizedRole == 'student' || normalizedRole == 'company') {
+      return normalizedRole;
+    }
+
+    final normalizedCurrentUserId = currentUserId.trim();
+    if (normalizedCurrentUserId.isNotEmpty) {
+      if (normalizedCurrentUserId == studentId.trim()) {
+        return 'student';
+      }
+      if (normalizedCurrentUserId == companyId.trim()) {
+        return 'company';
+      }
+    }
+
+    return '';
+  }
+
   String _normalizeMessageType(
     String value, {
     required String attachmentFileName,
@@ -960,6 +1235,10 @@ class ChatService {
         'lastMessage': payload['lastMessage'],
         'lastMessageTime': payload['lastMessageTime'],
         'status': payload['status'],
+        'applicationId': payload['applicationId'],
+        'createdById': payload['createdById'],
+        'createdByRole': payload['createdByRole'],
+        'companyHasMessaged': payload['companyHasMessaged'],
       },
       {
         'id': payload['id'],
@@ -969,6 +1248,10 @@ class ChatService {
         'companyName': payload['companyName'],
         'lastMessage': payload['lastMessage'],
         'lastMessageTime': payload['lastMessageTime'],
+        'applicationId': payload['applicationId'],
+        'createdById': payload['createdById'],
+        'createdByRole': payload['createdByRole'],
+        'companyHasMessaged': payload['companyHasMessaged'],
       },
     ];
 
@@ -1042,5 +1325,35 @@ class ChatService {
     }
 
     return items;
+  }
+}
+
+class _ChatApplication {
+  final String id;
+  final String studentId;
+  final String companyId;
+  final String status;
+  final Timestamp? appliedAt;
+
+  const _ChatApplication({
+    required this.id,
+    required this.studentId,
+    required this.companyId,
+    required this.status,
+    this.appliedAt,
+  });
+
+  bool get isAccepted => status == ApplicationStatus.accepted;
+
+  factory _ChatApplication.fromMap(Map<String, dynamic> map) {
+    return _ChatApplication(
+      id: (map['id'] ?? '').toString().trim(),
+      studentId: (map['studentId'] ?? '').toString().trim(),
+      companyId: (map['companyId'] ?? '').toString().trim(),
+      status: ApplicationStatus.parse(map['status']?.toString()),
+      appliedAt: map['appliedAt'] is Timestamp
+          ? map['appliedAt'] as Timestamp
+          : null,
+    );
   }
 }

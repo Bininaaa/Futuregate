@@ -391,11 +391,15 @@ class ChatProvider extends ChangeNotifier {
     String contextType = '',
     String contextLabel = '',
     String currentUserId = '',
+    required String currentUserRole,
   }) async {
     _error = null;
     final resolvedCurrentUserId = currentUserId.trim().isEmpty
         ? _currentUserId
         : currentUserId.trim();
+    final resolvedCurrentUserRole = currentUserRole.trim().isEmpty
+        ? _currentUserRole
+        : currentUserRole.trim();
     final conversation = await _chatService.getOrCreateConversation(
       studentId: studentId,
       studentName: studentName,
@@ -404,6 +408,7 @@ class ChatProvider extends ChangeNotifier {
       contextType: contextType,
       contextLabel: contextLabel,
       currentUserId: resolvedCurrentUserId,
+      currentUserRole: resolvedCurrentUserRole,
     );
 
     final restoredArchived = _legacyArchivedConversationIds.remove(

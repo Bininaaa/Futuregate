@@ -2383,9 +2383,54 @@ async function handleSearchChatContacts(request, env) {
   const url = new URL(request.url);
   const role = trim(url.searchParams.get("role")).toLowerCase();
   const query = trim(url.searchParams.get("query")).toLowerCase();
+  const authRole = trim(auth.profile?.role).toLowerCase();
 
   if (role !== "student" && role !== "company") {
     return err("A valid role is required.");
+  }
+
+  if (
+    (authRole === "student" && role !== "company") ||
+    (authRole === "company" && role !== "student")
+  ) {
+    return err("You can only search eligible chat contacts.", 403);
+  }
+
+  const applicationDocs =
+    authRole === "student"
+      ? await firestoreQuery(env, "applications", [
+          { field: "studentId", op: "EQUAL", value: auth.user.uid },
+        ])
+      : await firestoreQuery(env, "applications", [
+          { field: "companyId", op: "EQUAL", value: auth.user.uid },
+        ]);
+
+  const eligibleApplicationsByUserId = new Map();
+  for (const applicationDoc of applicationDocs) {
+    const application = applicationDoc.data || {};
+    const status = normalizeApplicationStatus(application.status);
+    const targetUserId =
+      authRole === "student"
+        ? trim(application.companyId)
+        : trim(application.studentId);
+
+    if (!targetUserId || targetUserId === auth.user.uid) {
+      continue;
+    }
+    if (authRole === "student" && status !== "accepted") {
+      continue;
+    }
+    if (!eligibleApplicationsByUserId.has(targetUserId)) {
+      eligibleApplicationsByUserId.set(targetUserId, {
+        id: trim(application.id) || applicationDoc.id,
+        status,
+        opportunityId: trim(application.opportunityId),
+      });
+    }
+  }
+
+  if (eligibleApplicationsByUserId.size === 0) {
+    return json({ users: [] });
   }
 
   const users = await firestoreQuery(env, "users", [
@@ -2395,7 +2440,17 @@ async function handleSearchChatContacts(request, env) {
 
   const filteredUsers = users
     .filter((userDoc) => trim(userDoc.id) !== auth.user.uid)
-    .map((userDoc) => buildPublicUserProfile(userDoc.id, userDoc.data || {}))
+    .filter((userDoc) => eligibleApplicationsByUserId.has(trim(userDoc.id)))
+    .map((userDoc) => {
+      const profile = buildPublicUserProfile(userDoc.id, userDoc.data || {});
+      const application = eligibleApplicationsByUserId.get(trim(userDoc.id));
+      return {
+        ...profile,
+        applicationId: application?.id || "",
+        applicationStatus: application?.status || "",
+        opportunityId: application?.opportunityId || "",
+      };
+    })
     .filter((user) => {
       if (!query) {
         return true;

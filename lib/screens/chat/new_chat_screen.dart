@@ -10,6 +10,7 @@ import '../../providers/chat_provider.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/chat/chat_theme.dart';
 import '../../widgets/profile_avatar.dart';
+import '../../widgets/shared/app_feedback.dart';
 import 'user_profile_preview_screen.dart';
 
 class NewChatScreen extends StatefulWidget {
@@ -76,23 +77,40 @@ class _NewChatScreenState extends State<NewChatScreen> {
     }
 
     final chatProvider = context.read<ChatProvider>();
-    final conversation = auth.role == 'company'
-        ? await chatProvider.getOrCreateConversation(
-            studentId: contact.uid,
-            studentName: contact.fullName,
-            companyId: auth.uid,
-            companyName: auth.companyName ?? auth.fullName,
-            contextType: 'project',
-            currentUserId: auth.uid,
-          )
-        : await chatProvider.getOrCreateConversation(
-            studentId: auth.uid,
-            studentName: auth.fullName,
-            companyId: contact.uid,
-            companyName: contact.companyName ?? contact.fullName,
-            contextType: 'project',
-            currentUserId: auth.uid,
-          );
+    late final ConversationModel conversation;
+    try {
+      conversation = auth.role == 'company'
+          ? await chatProvider.getOrCreateConversation(
+              studentId: contact.uid,
+              studentName: contact.fullName,
+              companyId: auth.uid,
+              companyName: auth.companyName ?? auth.fullName,
+              contextType: 'application',
+              contextLabel: 'Application conversation',
+              currentUserId: auth.uid,
+              currentUserRole: auth.role,
+            )
+          : await chatProvider.getOrCreateConversation(
+              studentId: auth.uid,
+              studentName: auth.fullName,
+              companyId: contact.uid,
+              companyName: contact.companyName ?? contact.fullName,
+              contextType: 'application',
+              contextLabel: 'Application conversation',
+              currentUserId: auth.uid,
+              currentUserRole: auth.role,
+            );
+    } catch (error) {
+      if (!mounted) {
+        return;
+      }
+      context.showAppSnackBar(
+        _readableError(error),
+        title: 'Chat unavailable',
+        type: AppFeedbackType.warning,
+      );
+      return;
+    }
 
     if (!mounted) {
       return;
@@ -176,8 +194,8 @@ class _NewChatScreenState extends State<NewChatScreen> {
                         color: ChatThemePalette.textSecondary,
                       ),
                       hintText: currentUser?.role == 'company'
-                          ? 'Search students'
-                          : 'Search companies',
+                          ? 'Search applicants'
+                          : 'Search approved companies',
                       hintStyle: ChatThemeStyles.body(
                         ChatThemePalette.textSecondary,
                       ),
@@ -207,7 +225,9 @@ class _NewChatScreenState extends State<NewChatScreen> {
                           Text(
                             recentContacts.isNotEmpty
                                 ? 'Suggested'
-                                : 'Contacts',
+                                : currentUser?.role == 'company'
+                                ? 'Applicants'
+                                : 'Approved companies',
                             style: ChatThemeStyles.meta().copyWith(
                               fontWeight: FontWeight.w600,
                             ),
@@ -224,7 +244,9 @@ class _NewChatScreenState extends State<NewChatScreen> {
                                 ),
                               ),
                               child: Text(
-                                'No contacts match your search.',
+                                currentUser?.role == 'company'
+                                    ? 'No applicants match your search.'
+                                    : 'No approved companies match your search.',
                                 style: ChatThemeStyles.body(
                                   ChatThemePalette.textSecondary,
                                 ),
@@ -336,6 +358,10 @@ class _NewChatScreenState extends State<NewChatScreen> {
         onTap: () => _startConversation(contact),
       ),
     );
+  }
+
+  String _readableError(Object error) {
+    return error.toString().trim().replaceFirst(RegExp(r'^Exception:\s*'), '');
   }
 }
 
