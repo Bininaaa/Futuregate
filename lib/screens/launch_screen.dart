@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
+import '../providers/auth_provider.dart';
 import '../widgets/shared/app_logo.dart';
 import 'auth_wrapper.dart';
 
-/// Full-screen launch animation screen.
+/// Full-screen immersive launch animation.
 ///
-/// Plays the branding animation video immersively, then transitions
-/// smoothly into the [AuthWrapper]. Falls back to a static branded
-/// screen if video initialisation fails.
+/// • Hides system UI and plays the branding video cover-scaled to the full screen.
+/// • Starts loading auth state in parallel so there is zero loading spinner
+///   after the animation ends.
+/// • Falls back to an empty white screen (no logo) while the video asset loads
+///   (typically < 100 ms for local assets).
 class LaunchScreen extends StatefulWidget {
   const LaunchScreen({super.key});
 
@@ -19,7 +23,7 @@ class LaunchScreen extends StatefulWidget {
 
 class _LaunchScreenState extends State<LaunchScreen>
     with SingleTickerProviderStateMixin {
-  late final VideoPlayerController _controller;
+  late final VideoPlayerController _videoController;
   late final AnimationController _fadeController;
   bool _hasNavigated = false;
   bool _videoReady = false;
@@ -28,34 +32,44 @@ class _LaunchScreenState extends State<LaunchScreen>
   void initState() {
     super.initState();
 
-    // Immersive full-screen while the animation plays.
+    // Immersive full-screen: hide status bar + nav bar while animation plays.
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
 
     _fadeController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 400),
+      duration: const Duration(milliseconds: 350),
     );
 
-    _controller = VideoPlayerController.asset(AppBrandAssets.animation)
+    // Start preloading auth state in parallel with the animation so that by
+    // the time we navigate there is no loading spinner waiting for the user.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      context.read<AuthProvider>().loadCurrentUser();
+    });
+
+    _initVideo();
+  }
+
+  void _initVideo() {
+    _videoController = VideoPlayerController.asset(AppBrandAssets.animation)
       ..initialize().then((_) {
         if (!mounted) return;
         setState(() => _videoReady = true);
-        _controller.play();
+        _videoController.play();
       }).catchError((_) {
-        // If video fails, just skip to the app after a brief delay.
-        _navigateToApp();
+        // Video failed — navigate after a short fallback delay.
+        Future.delayed(const Duration(seconds: 1), _navigateToApp);
       });
 
-    _controller.addListener(_onVideoUpdate);
+    _videoController.addListener(_onVideoProgress);
   }
 
-  void _onVideoUpdate() {
+  void _onVideoProgress() {
     if (_hasNavigated) return;
-    final value = _controller.value;
-    if (!value.isInitialized) return;
+    final v = _videoController.value;
+    if (!v.isInitialized || v.duration == Duration.zero) return;
 
-    // Navigate when video finishes.
-    if (value.position >= value.duration && value.duration > Duration.zero) {
+    if (v.position >= v.duration) {
       _navigateToApp();
     }
   }
@@ -64,28 +78,35 @@ class _LaunchScreenState extends State<LaunchScreen>
     if (_hasNavigated) return;
     _hasNavigated = true;
 
-    // Restore system UI.
+    // Wait for auth to finish (max 3 s). Auth was started in initState so
+    // it should almost always be done before the animation ends.
+    final authProvider = context.read<AuthProvider>();
+    for (int i = 0; i < 30 && !authProvider.isInitialLoadDone; i++) {
+      await Future.delayed(const Duration(milliseconds: 100));
+      if (!mounted) return;
+    }
+
+    // Restore system UI before entering the app.
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
-    // Fade out, then navigate.
-    await _fadeController.forward();
-
+    // Fade the launch screen out.
+    if (mounted) await _fadeController.forward();
     if (!mounted) return;
+
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
         pageBuilder: (_, _, _) => const AuthWrapper(),
-        transitionDuration: const Duration(milliseconds: 350),
-        transitionsBuilder: (_, animation, _, child) {
-          return FadeTransition(opacity: animation, child: child);
-        },
+        transitionDuration: const Duration(milliseconds: 300),
+        transitionsBuilder: (_, animation, _, child) =>
+            FadeTransition(opacity: animation, child: child),
       ),
     );
   }
 
   @override
   void dispose() {
-    _controller.removeListener(_onVideoUpdate);
-    _controller.dispose();
+    _videoController.removeListener(_onVideoProgress);
+    _videoController.dispose();
     _fadeController.dispose();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     super.dispose();
@@ -94,24 +115,45 @@ class _LaunchScreenState extends State<LaunchScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      // Black background during load so any brief flash before the video
+      // starts matches the video's typical edge colour.
+      backgroundColor: Colors.black,
       body: FadeTransition(
         opacity: ReverseAnimation(_fadeController),
-        child: _videoReady
-            ? SizedBox.expand(
-                child: FittedBox(
-                  fit: BoxFit.cover,
-                  child: SizedBox(
-                    width: _controller.value.size.width,
-                    height: _controller.value.size.height,
-                    child: VideoPlayer(_controller),
-                  ),
-                ),
-              )
-            : const Center(
-                child: AppLogoMark(size: 120, padding: 16),
-              ),
+        child: _buildContent(),
       ),
+    );
+  }
+
+  Widget _buildContent() {
+    // No static logo: while the video asset is loading, show nothing.
+    // Local assets initialize in < 100 ms so users never see the gap.
+    if (!_videoReady || !_videoController.value.isInitialized) {
+      return const SizedBox.expand();
+    }
+
+    final vSize = _videoController.value.size;
+    final hasSize = vSize.width > 0 && vSize.height > 0;
+
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        if (hasSize)
+          // FittedBox with cover scales the video up/down so it fills the
+          // entire screen with no black bars, cropping symmetrically if needed.
+          FittedBox(
+            fit: BoxFit.cover,
+            child: SizedBox(
+              width: vSize.width,
+              height: vSize.height,
+              child: VideoPlayer(_videoController),
+            ),
+          )
+        else
+          // Fallback when the platform hasn't reported the size yet: let the
+          // VideoPlayer widget fill the stack through StackFit.expand.
+          VideoPlayer(_videoController),
+      ],
     );
   }
 }

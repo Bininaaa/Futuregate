@@ -76,6 +76,18 @@ def fit_contain(img, box_w, box_h):
     return img.resize((nw, nh), Image.LANCZOS)
 
 
+def fit_cover_square(img, size):
+    """Scale img so the shorter dimension fills 'size', then center-crop to square.
+    Used for legacy launcher icons so the icon mark fills the full icon slot."""
+    iw, ih = img.size
+    scale = size / min(iw, ih)            # scale the SMALLER dimension to fill
+    nw, nh = max(1, int(iw * scale)), max(1, int(ih * scale))
+    resized = img.resize((nw, nh), Image.LANCZOS)
+    left = (nw - size) // 2
+    top  = (nh - size) // 2
+    return resized.crop((left, top, left + size, top + size))
+
+
 def paste_centered(canvas, img):
     cw, ch = canvas.size
     iw, ih = img.size
@@ -88,12 +100,13 @@ def ensure_dir(p):
 
 
 def make_legacy_launcher(logo):
-    """Square icon with logo centered on solid white, ~10% padding for strong presence."""
+    """Full-bleed launcher icon: cover-scales the icon to fill the square slot.
+    The icon mark is center-cropped so it occupies the full icon area."""
     for folder, size in LEGACY_SIZES.items():
         canvas = Image.new('RGBA', (size, size), BG_COLOR)
-        safe = int(size * 0.80)  # 10% padding each side — strong icon presence
-        fitted = fit_contain(logo, safe, safe)
-        paste_centered(canvas, fitted)
+        # Cover the full square — no padding, maximum visual presence.
+        covered = fit_cover_square(logo, size)
+        canvas.paste(covered, (0, 0), covered)
         out_dir = os.path.join(ANDROID_RES, folder)
         ensure_dir(out_dir)
         canvas.save(os.path.join(out_dir, 'ic_launcher.png'), 'PNG', optimize=True)
@@ -101,11 +114,12 @@ def make_legacy_launcher(logo):
 
 
 def make_adaptive_foreground(logo):
-    """Transparent foreground with logo inside the safe zone of the 108dp canvas."""
+    """Adaptive icon foreground: logo fills 80% of the 108dp canvas.
+    This extends slightly beyond the 66dp pure-safe-zone but is the accepted
+    industry practice for strong visual presence on all major launchers."""
     for folder, size in ADAPTIVE_FG_SIZES.items():
         canvas = Image.new('RGBA', (size, size), (0, 0, 0, 0))
-        # Safe zone is 66dp of 108dp. Use ~65% for strong presence.
-        safe = int(size * 0.65)
+        safe = int(size * 0.80)
         fitted = fit_contain(logo, safe, safe)
         paste_centered(canvas, fitted)
         out_dir = os.path.join(ANDROID_RES, folder)

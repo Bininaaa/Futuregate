@@ -13,7 +13,8 @@
       "Bash(python -m pip install Pillow --quiet)",
       "Bash(python tools/generate_branding.py)",
       "Bash(flutter pub:*)",
-      "Bash(xargs wc:*)"
+      "Bash(xargs wc:*)",
+      "Bash(python -c ':*)"
     ]
   }
 }
