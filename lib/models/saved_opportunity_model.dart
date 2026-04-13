@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../utils/opportunity_metadata.dart';
 import '../utils/opportunity_type.dart';
 
 class SavedOpportunityModel {
@@ -56,4 +57,9 @@ class SavedOpportunityModel {
       'savedAt': savedAt,
     };
   }
+
+  DateTime? get deadlineDate => OpportunityMetadata.normalizeDeadline(deadline);
+
+  bool isDeadlineExpired({DateTime? now}) =>
+      OpportunityMetadata.isDeadlineExpired(deadlineDate, now: now);
 }

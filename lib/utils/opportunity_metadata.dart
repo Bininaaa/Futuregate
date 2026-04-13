@@ -517,7 +517,32 @@ class OpportunityMetadata {
   }
 
   static DateTime normalizeDateToEndOfDay(DateTime value) {
-    return DateTime(value.year, value.month, value.day, 23, 59, 59);
+    return DateTime(value.year, value.month, value.day, 23, 59, 59, 999, 999);
+  }
+
+  static DateTime? normalizeDeadline(Object? value) {
+    final parsed = parseDateTimeLike(value);
+    if (parsed == null) {
+      return null;
+    }
+
+    final isDateOnly =
+        parsed.hour == 0 &&
+        parsed.minute == 0 &&
+        parsed.second == 0 &&
+        parsed.millisecond == 0 &&
+        parsed.microsecond == 0;
+    return isDateOnly ? normalizeDateToEndOfDay(parsed) : parsed;
+  }
+
+  static bool isDeadlineExpired(Object? value, {DateTime? now}) {
+    final deadline = normalizeDeadline(value);
+    if (deadline == null) {
+      return false;
+    }
+
+    final currentTime = now ?? DateTime.now();
+    return !deadline.isAfter(currentTime);
   }
 
   static String formatDateForStorage(DateTime value) {
@@ -733,7 +758,7 @@ class OpportunityMetadata {
   }
 
   static DateTime? extractApplicationDeadline(Map<String, dynamic> data) {
-    return parseDateTimeLike(
+    return normalizeDeadline(
       firstValue(data, [
             'applicationDeadline',
             'deadlineAt',

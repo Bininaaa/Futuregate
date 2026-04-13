@@ -197,6 +197,10 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
     final query = _searchQuery.toLowerCase();
 
     return items.where((opportunity) {
+      if (!opportunity.isVisibleToStudents()) {
+        return false;
+      }
+
       if (!_matchesTypeFilter(opportunity)) {
         return false;
       }
@@ -707,9 +711,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
   }
 
   DateTime? _deadlineFor(OpportunityModel opportunity) {
-    final explicitDeadline =
-        opportunity.applicationDeadline ??
-        _parseDeadlineValue(opportunity.deadlineLabel);
+    final explicitDeadline = opportunity.effectiveDeadline;
     if (explicitDeadline != null) {
       return explicitDeadline;
     }
@@ -726,55 +728,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
       return null;
     }
 
-    final isDateOnly =
-        fallback.hour == 0 &&
-        fallback.minute == 0 &&
-        fallback.second == 0 &&
-        fallback.millisecond == 0 &&
-        fallback.microsecond == 0;
-
-    if (!isDateOnly) {
-      return fallback;
-    }
-
-    return DateTime(fallback.year, fallback.month, fallback.day, 23, 59, 59);
-  }
-
-  DateTime? _parseDeadlineValue(String rawDeadline) {
-    final trimmed = rawDeadline.trim();
-    if (trimmed.isEmpty) {
-      return null;
-    }
-
-    final hasExplicitTime = trimmed.contains(':') || trimmed.contains('T');
-    final direct = DateTime.tryParse(trimmed);
-    if (direct != null) {
-      return hasExplicitTime
-          ? direct
-          : DateTime(direct.year, direct.month, direct.day, 23, 59, 59);
-    }
-
-    final formats = [
-      DateFormat('yyyy-MM-dd'),
-      DateFormat('dd/MM/yyyy'),
-      DateFormat('MM/dd/yyyy'),
-      DateFormat('dd-MM-yyyy'),
-      DateFormat('MMM d, yyyy'),
-      DateFormat('d MMM yyyy'),
-      DateFormat('MMMM d, yyyy'),
-      DateFormat('d MMMM yyyy'),
-    ];
-
-    for (final format in formats) {
-      try {
-        final parsed = format.parseStrict(trimmed);
-        return DateTime(parsed.year, parsed.month, parsed.day, 23, 59, 59);
-      } catch (_) {
-        continue;
-      }
-    }
-
-    return null;
+    return OpportunityMetadata.normalizeDeadline(fallback);
   }
 
   String _formatDeadlineDisplay(OpportunityModel opportunity) {

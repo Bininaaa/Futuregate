@@ -16,7 +16,7 @@ class OpportunityService {
           data['id'] = doc.id;
           return OpportunityModel.fromMap(data);
         })
-        .where((opportunity) => !opportunity.isHidden)
+        .where((opportunity) => opportunity.isVisibleToStudents())
         .toList();
 
     opportunities.sort((a, b) {
@@ -45,7 +45,7 @@ class OpportunityService {
     final data = doc.data()!;
     data['id'] = doc.id;
     final opportunity = OpportunityModel.fromMap(data);
-    return opportunity.isHidden ? null : opportunity;
+    return opportunity.isVisibleToStudents() ? opportunity : null;
   }
 
   Future<List<OpportunityModel>> getFeaturedOpportunities() async {
@@ -61,7 +61,7 @@ class OpportunityService {
           data['id'] = doc.id;
           return OpportunityModel.fromMap(data);
         })
-        .where((opportunity) => !opportunity.isHidden)
+        .where((opportunity) => opportunity.isVisibleToStudents())
         .toList();
 
     opportunities.sort((a, b) {

@@ -68,7 +68,9 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
 
   // ── Filtering logic ──────────────────────────────────────────────────────
   List<ScholarshipModel> _applyFilters(List<ScholarshipModel> items) {
-    var filtered = List<ScholarshipModel>.from(items);
+    var filtered = items
+        .where((scholarship) => scholarship.isVisibleToStudents())
+        .toList();
 
     if (_searchQuery.isNotEmpty) {
       final q = _searchQuery.toLowerCase();

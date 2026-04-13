@@ -41,11 +41,12 @@ class StudentApplicationItemModel {
       OpportunityMetadata.parseDateTimeLike(opportunity?.deadline);
 
   bool get hasOpportunity => opportunity != null;
-  bool get isUnavailable => opportunity == null || opportunity!.isHidden;
-  bool get canOpenDetails => opportunity != null && !opportunity!.isHidden;
+  bool get isUnavailable =>
+      opportunity == null || !opportunity!.isVisibleToStudents();
+  bool get canOpenDetails =>
+      opportunity != null && opportunity!.isVisibleToStudents();
 
   bool get isOpen {
-    final rawStatus = opportunity?.status.trim().toLowerCase() ?? '';
-    return rawStatus == 'open';
+    return opportunity?.effectiveStatus() == 'open';
   }
 }

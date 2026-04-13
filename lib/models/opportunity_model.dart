@@ -196,6 +196,24 @@ class OpportunityModel {
 
   bool get isAdminPosted => createdByRole == 'admin';
 
+  DateTime? get effectiveDeadline =>
+      OpportunityMetadata.normalizeDeadline(applicationDeadline ?? deadline);
+
+  bool isDeadlineExpired({DateTime? now}) =>
+      OpportunityMetadata.isDeadlineExpired(effectiveDeadline, now: now);
+
+  String effectiveStatus({DateTime? now}) {
+    final normalizedStatus = status.trim().toLowerCase();
+    if (normalizedStatus == 'closed' || isDeadlineExpired(now: now)) {
+      return 'closed';
+    }
+
+    return 'open';
+  }
+
+  bool isVisibleToStudents({DateTime? now}) =>
+      !isHidden && effectiveStatus(now: now) == 'open';
+
   String get deadlineLabel {
     if (applicationDeadline != null) {
       return OpportunityMetadata.formatDateForStorage(applicationDeadline!);

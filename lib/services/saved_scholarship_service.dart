@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../models/saved_scholarship_model.dart';
+import '../models/scholarship_model.dart';
 
 class SavedScholarshipService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -80,6 +81,22 @@ class SavedScholarshipService {
       throw Exception('Scholarship already saved');
     }
 
+    final scholarshipDoc = await _firestore
+        .collection('scholarships')
+        .doc(scholarshipId)
+        .get();
+    if (!scholarshipDoc.exists || scholarshipDoc.data() == null) {
+      throw Exception('This scholarship is no longer available');
+    }
+
+    final scholarship = ScholarshipModel.fromMap({
+      ...scholarshipDoc.data()!,
+      'id': scholarshipDoc.id,
+    });
+    if (!scholarship.isVisibleToStudents()) {
+      throw Exception('This scholarship is no longer available');
+    }
+
     final docRef = _firestore.collection('savedScholarships').doc();
     await docRef.set({
       'id': docRef.id,
@@ -127,18 +144,19 @@ class SavedScholarshipService {
 
     final visibleIds = <String>{};
     final docs = await Future.wait(
-      normalizedIds.map(
-        (scholarshipId) =>
-            _firestore.collection('scholarships').doc(scholarshipId).get(),
-      ),
+      normalizedIds.map(_readScholarshipIfAllowed),
     );
 
     for (final doc in docs) {
-      if (!doc.exists || doc.data() == null) {
+      if (doc == null || !doc.exists || doc.data() == null) {
         continue;
       }
 
-      if (doc.data()!['isHidden'] == true) {
+      final scholarship = ScholarshipModel.fromMap({
+        ...doc.data()!,
+        'id': doc.id,
+      });
+      if (!scholarship.isVisibleToStudents()) {
         continue;
       }
 
@@ -146,5 +164,21 @@ class SavedScholarshipService {
     }
 
     return visibleIds;
+  }
+
+  Future<DocumentSnapshot<Map<String, dynamic>>?> _readScholarshipIfAllowed(
+    String scholarshipId,
+  ) async {
+    try {
+      return await _firestore
+          .collection('scholarships')
+          .doc(scholarshipId)
+          .get();
+    } on FirebaseException catch (e) {
+      if (e.code == 'permission-denied' || e.code == 'not-found') {
+        return null;
+      }
+      rethrow;
+    }
   }
 }

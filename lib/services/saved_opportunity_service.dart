@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../models/opportunity_model.dart';
 import '../models/saved_opportunity_model.dart';
 
 class SavedOpportunityService {
@@ -72,6 +73,22 @@ class SavedOpportunityService {
       throw Exception('Opportunity already saved');
     }
 
+    final opportunityDoc = await _firestore
+        .collection('opportunities')
+        .doc(opportunityId)
+        .get();
+    if (!opportunityDoc.exists || opportunityDoc.data() == null) {
+      throw Exception('This opportunity is no longer available');
+    }
+
+    final opportunity = OpportunityModel.fromMap({
+      ...opportunityDoc.data()!,
+      'id': opportunityDoc.id,
+    });
+    if (!opportunity.isVisibleToStudents()) {
+      throw Exception('This opportunity is no longer available');
+    }
+
     final docRef = _firestore.collection('savedOpportunities').doc();
 
     final data = {
@@ -121,18 +138,19 @@ class SavedOpportunityService {
 
     final visibleIds = <String>{};
     final docs = await Future.wait(
-      normalizedIds.map(
-        (opportunityId) =>
-            _firestore.collection('opportunities').doc(opportunityId).get(),
-      ),
+      normalizedIds.map(_readOpportunityIfAllowed),
     );
 
     for (final doc in docs) {
-      if (!doc.exists || doc.data() == null) {
+      if (doc == null || !doc.exists || doc.data() == null) {
         continue;
       }
 
-      if (doc.data()!['isHidden'] == true) {
+      final opportunity = OpportunityModel.fromMap({
+        ...doc.data()!,
+        'id': doc.id,
+      });
+      if (!opportunity.isVisibleToStudents()) {
         continue;
       }
 
@@ -140,5 +158,21 @@ class SavedOpportunityService {
     }
 
     return visibleIds;
+  }
+
+  Future<DocumentSnapshot<Map<String, dynamic>>?> _readOpportunityIfAllowed(
+    String opportunityId,
+  ) async {
+    try {
+      return await _firestore
+          .collection('opportunities')
+          .doc(opportunityId)
+          .get();
+    } on FirebaseException catch (e) {
+      if (e.code == 'permission-denied' || e.code == 'not-found') {
+        return null;
+      }
+      rethrow;
+    }
   }
 }

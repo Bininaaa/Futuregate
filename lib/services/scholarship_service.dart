@@ -10,7 +10,7 @@ class ScholarshipService {
 
     return snapshot.docs
         .map((doc) => ScholarshipModel.fromMap({...doc.data(), 'id': doc.id}))
-        .where((scholarship) => !scholarship.isHidden)
+        .where((scholarship) => scholarship.isVisibleToStudents())
         .toList();
   }
 
@@ -23,6 +23,6 @@ class ScholarshipService {
       ...doc.data()!,
       'id': doc.id,
     });
-    return scholarship.isHidden ? null : scholarship;
+    return scholarship.isVisibleToStudents() ? scholarship : null;
   }
 }

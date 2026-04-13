@@ -14,6 +14,7 @@ Cloudflare Worker backend that replaces the Firebase Functions runtime paths for
 | `POST` | `/api/trainings/import/youtube-video` | admin | Import YouTube video and notify students |
 | `POST` | `/api/trainings/:id/featured` | admin | Toggle training featured status |
 | `DELETE` | `/api/trainings/:id` | admin | Delete training and saved references |
+| `POST` | `/api/deadlines/expire` | company or admin | Close expired opportunities; companies only affect their own posts |
 | `POST` | `/api/notify/opportunity` | company or admin | Notify students about a new sponsoring opportunity |
 | `POST` | `/api/notify/scholarship` | admin | Notify students about a new scholarship |
 | `POST` | `/api/notify/application-submitted` | student | Notify the company after an application is created |

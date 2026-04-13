@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../models/opportunity_model.dart';
 import '../../providers/admin_provider.dart';
 import '../../widgets/shared/app_feedback.dart';
 
@@ -396,6 +397,9 @@ class _ModerateScreenState extends State<ModerateScreen>
         itemCount: opportunities.length,
         itemBuilder: (context, index) {
           final opp = opportunities[index];
+          final effectiveStatus = OpportunityModel.fromMap(
+            Map<String, dynamic>.from(opp),
+          ).effectiveStatus();
           return Container(
             margin: const EdgeInsets.only(bottom: 10),
             decoration: BoxDecoration(
@@ -476,18 +480,18 @@ class _ModerateScreenState extends State<ModerateScreen>
                         ),
                         decoration: BoxDecoration(
                           color:
-                              (opp['status'] == 'open'
+                              (effectiveStatus == 'open'
                                       ? Colors.green
                                       : Colors.grey)
                                   .withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
-                          opp['status'] ?? '',
+                          effectiveStatus,
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
-                            color: opp['status'] == 'open'
+                            color: effectiveStatus == 'open'
                                 ? Colors.green
                                 : Colors.grey,
                           ),

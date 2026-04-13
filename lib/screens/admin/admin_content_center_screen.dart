@@ -993,10 +993,8 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
           ..sort((first, second) {
             final firstModel = OpportunityModel.fromMap(first);
             final secondModel = OpportunityModel.fromMap(second);
-            final firstIsOpen =
-                firstModel.status.trim().toLowerCase() == 'open';
-            final secondIsOpen =
-                secondModel.status.trim().toLowerCase() == 'open';
+            final firstIsOpen = firstModel.effectiveStatus() == 'open';
+            final secondIsOpen = secondModel.effectiveStatus() == 'open';
             if (firstIsOpen != secondIsOpen) {
               return firstIsOpen ? -1 : 1;
             }
@@ -1055,8 +1053,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     final closedCount = allOpportunities
         .where(
           (item) =>
-              OpportunityModel.fromMap(item).status.trim().toLowerCase() ==
-              'closed',
+              OpportunityModel.fromMap(item).effectiveStatus() == 'closed',
         )
         .length;
     final featuredCount = allOpportunities
@@ -1244,11 +1241,12 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               )
               .length;
           final opportunityModel = OpportunityModel.fromMap(opportunity);
+          final effectiveStatus = opportunityModel.effectiveStatus();
           final opportunityType = OpportunityType.parse(
             (opportunity['type'] ?? '').toString(),
           );
           final opportunityTypeColor = OpportunityType.color(opportunityType);
-          final isOpen = opportunityModel.status.trim().toLowerCase() == 'open';
+          final isOpen = effectiveStatus == 'open';
           final compensationLabel =
               opportunityType == OpportunityType.sponsoring
               ? opportunityModel.fundingLabel(preferFundingNote: true)
@@ -2066,6 +2064,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
           query,
         ) ||
         (opportunity['type'] ?? '').toString().toLowerCase().contains(query) ||
+        opportunityModel.effectiveStatus().contains(query) ||
         (opportunity['status'] ?? '').toString().toLowerCase().contains(
           query,
         ) ||
@@ -2096,7 +2095,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
           (a) => ApplicationStatus.parse(a.status) == ApplicationStatus.pending,
         );
       case _opportunityFilterClosed:
-        return opportunityModel.status.trim().toLowerCase() == 'closed';
+        return opportunityModel.effectiveStatus() == 'closed';
       case _opportunityFilterFeatured:
         return opportunityModel.isFeatured;
       case _opportunityFilterHidden:
@@ -2891,19 +2890,23 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       return null;
     }
 
-    DateTime? dateTime;
     String fallback = '';
+    Object? rawValue = value;
     if (value is Timestamp) {
-      dateTime = value.toDate();
+      rawValue = value.toDate();
     } else if (value is DateTime) {
-      dateTime = value;
+      rawValue = value;
     } else {
       fallback = value.toString().trim();
-      dateTime = OpportunityMetadata.parseDateTimeLike(fallback);
+      rawValue = fallback;
     }
 
+    final dateTime = OpportunityMetadata.normalizeDeadline(rawValue);
     if (dateTime != null) {
-      return '$prefix ${DateFormat('MMM d').format(dateTime)}';
+      final resolvedPrefix = OpportunityMetadata.isDeadlineExpired(dateTime)
+          ? 'Expired'
+          : prefix;
+      return '$resolvedPrefix ${DateFormat('MMM d').format(dateTime)}';
     }
 
     if (fallback.isEmpty) {
@@ -4133,7 +4136,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     final paidLabel =
         OpportunityMetadata.formatPaidLabel(opportunityModel.isPaid) ?? '';
     final statusLabel = DisplayText.capitalizeLeadingLabel(
-      opportunityModel.status,
+      opportunityModel.effectiveStatus(),
     );
     final compensationLabel =
         OpportunityType.parse(opportunityModel.type) ==
@@ -4195,7 +4198,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 ),
                 AdminActionChip(
                   label: statusLabel,
-                  icon: _ideaStatusIcon(opportunityModel.status),
+                  icon: _ideaStatusIcon(opportunityModel.effectiveStatus()),
                   color: Colors.white,
                 ),
                 if (workModeLabel.isNotEmpty)

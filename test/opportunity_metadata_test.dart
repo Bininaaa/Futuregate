@@ -1,6 +1,8 @@
 import 'package:avenirdz/models/admin_application_item_model.dart';
 import 'package:avenirdz/models/application_model.dart';
 import 'package:avenirdz/models/opportunity_model.dart';
+import 'package:avenirdz/models/saved_opportunity_model.dart';
+import 'package:avenirdz/models/saved_scholarship_model.dart';
 import 'package:avenirdz/models/scholarship_model.dart';
 import 'package:avenirdz/services/company_service.dart';
 import 'package:avenirdz/utils/opportunity_metadata.dart';
@@ -228,6 +230,120 @@ void main() {
     expect(adminOpportunity.isAdminPosted, isTrue);
     expect(companyOpportunity.isAdminPosted, isFalse);
     expect(legacyOpportunity.isAdminPosted, isFalse);
+  });
+
+  test('Opportunity deadlines drive effective closed status', () {
+    final now = DateTime(2026, 4, 13, 12);
+    final futureOpportunity = OpportunityModel.fromMap({
+      'id': 'opp_future',
+      'companyId': 'company_1',
+      'companyName': 'TechDZ',
+      'companyLogo': '',
+      'title': 'Future Role',
+      'description': 'Still open.',
+      'type': 'job',
+      'location': 'Algiers',
+      'requirements': 'Flutter',
+      'status': 'open',
+      'deadline': '2026-04-14',
+    });
+    final expiredOpportunity = OpportunityModel.fromMap({
+      'id': 'opp_expired',
+      'companyId': 'company_1',
+      'companyName': 'TechDZ',
+      'companyLogo': '',
+      'title': 'Expired Role',
+      'description': 'Past deadline.',
+      'type': 'job',
+      'location': 'Algiers',
+      'requirements': 'Flutter',
+      'status': 'open',
+      'deadline': '2026-04-12',
+    });
+    final manuallyClosedOpportunity = OpportunityModel.fromMap({
+      'id': 'opp_closed',
+      'companyId': 'company_1',
+      'companyName': 'TechDZ',
+      'companyLogo': '',
+      'title': 'Closed Role',
+      'description': 'Closed manually.',
+      'type': 'job',
+      'location': 'Algiers',
+      'requirements': 'Flutter',
+      'status': 'closed',
+      'deadline': '2026-04-30',
+    });
+
+    expect(futureOpportunity.effectiveStatus(now: now), 'open');
+    expect(futureOpportunity.isVisibleToStudents(now: now), isTrue);
+    expect(expiredOpportunity.effectiveStatus(now: now), 'closed');
+    expect(expiredOpportunity.isVisibleToStudents(now: now), isFalse);
+    expect(manuallyClosedOpportunity.effectiveStatus(now: now), 'closed');
+  });
+
+  test('Date-only deadlines remain valid until the end of the day', () {
+    final opportunity = OpportunityModel.fromMap({
+      'id': 'opp_last_day',
+      'companyId': 'company_1',
+      'companyName': 'TechDZ',
+      'companyLogo': '',
+      'title': 'Last Day Role',
+      'description': 'Deadline is today.',
+      'type': 'job',
+      'location': 'Algiers',
+      'requirements': 'Flutter',
+      'status': 'open',
+      'deadline': '2026-04-13',
+    });
+
+    expect(
+      opportunity.isDeadlineExpired(
+        now: DateTime(2026, 4, 13, 23, 59, 59, 999),
+      ),
+      isFalse,
+    );
+    expect(opportunity.isDeadlineExpired(now: DateTime(2026, 4, 14)), isTrue);
+  });
+
+  test('Saved snapshots and scholarships expose deadline expiry', () {
+    final savedOpportunity = SavedOpportunityModel(
+      id: 'saved_1',
+      opportunityId: 'opp_1',
+      studentId: 'student_1',
+      title: 'Saved role',
+      companyName: 'TechDZ',
+      type: 'job',
+      location: 'Algiers',
+      deadline: '2026-04-12',
+    );
+    const savedScholarship = SavedScholarshipModel(
+      id: 'saved_sch_1',
+      scholarshipId: 'sch_1',
+      studentId: 'student_1',
+      title: 'Saved scholarship',
+      provider: 'FutureGate',
+      deadline: '2026-04-12',
+      location: 'Algiers',
+      fundingType: 'Fully funded',
+      level: 'Master',
+    );
+    final scholarship = ScholarshipModel.fromMap({
+      'id': 'sch_expired',
+      'title': 'Expired Scholarship',
+      'description': 'Past deadline.',
+      'provider': 'FutureGate',
+      'eligibility': 'Students',
+      'amount': 1000,
+      'deadline': '2026-04-12',
+      'link': 'https://example.com',
+      'createdBy': 'admin_1',
+      'createdByRole': 'admin',
+    });
+    final now = DateTime(2026, 4, 13);
+
+    expect(savedOpportunity.isDeadlineExpired(now: now), isTrue);
+    expect(savedScholarship.isDeadlineExpired(now: now), isTrue);
+    expect(scholarship.isVisibleToStudents(now: now), isFalse);
   });
 
   test('Admin applications are manageable only for the owning admin post', () {

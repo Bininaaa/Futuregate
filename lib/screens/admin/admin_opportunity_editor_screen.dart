@@ -84,7 +84,7 @@ class _AdminOpportunityEditorScreenState
             fallbackText: opportunity.requirements,
           );
     _type = opportunity.type;
-    _status = opportunity.status == 'closed' ? 'closed' : 'open';
+    _status = opportunity.effectiveStatus() == 'closed' ? 'closed' : 'open';
     final deadline =
         opportunity.applicationDeadline ??
         OpportunityMetadata.parseDateTimeLike(opportunity.deadline);

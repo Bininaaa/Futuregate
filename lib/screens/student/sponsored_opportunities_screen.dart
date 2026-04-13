@@ -350,7 +350,7 @@ class _SponsoredOpportunitiesScreenState
       );
     }
 
-    if (opportunity.isHidden) {
+    if (!opportunity.isVisibleToStudents()) {
       return const _SponsoredActionState(
         label: 'Unavailable',
         color: Color(0xFF94A3B8),
@@ -358,7 +358,7 @@ class _SponsoredOpportunitiesScreenState
       );
     }
 
-    final normalizedStatus = opportunity.status.trim().toLowerCase();
+    final normalizedStatus = opportunity.effectiveStatus();
     if (normalizedStatus.isNotEmpty && normalizedStatus != 'open') {
       return const _SponsoredActionState(
         label: 'Closed',
@@ -394,8 +394,8 @@ class _SponsoredOpportunitiesScreenState
   }
 
   bool _isOpenOpportunity(OpportunityModel opportunity) {
-    final normalized = opportunity.status.trim().toLowerCase();
-    return normalized.isEmpty || normalized == 'open';
+    return opportunity.isVisibleToStudents() &&
+        opportunity.effectiveStatus() == 'open';
   }
 
   int _sortSponsoredCards(_SponsoredCardModel a, _SponsoredCardModel b) {

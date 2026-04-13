@@ -12,6 +12,7 @@ import '../utils/opportunity_metadata.dart';
 import '../utils/opportunity_type.dart';
 import 'company_service.dart';
 import 'notification_worker_service.dart';
+import 'worker_api_service.dart';
 
 class AdminService {
   static const String activitySourceApplications = 'applications';
@@ -23,8 +24,11 @@ class AdminService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final NotificationWorkerService _notificationWorker =
       NotificationWorkerService();
+  final WorkerApiService _workerApi = WorkerApiService();
 
   Future<Map<String, dynamic>> getDashboardStats() async {
+    await _expireDeadlinesBestEffort();
+
     final usersSnapshot = await _firestore.collection('users').get();
     final opportunitiesSnapshot = await _firestore
         .collection('opportunities')
@@ -378,6 +382,8 @@ class AdminService {
   }
 
   Future<List<Map<String, dynamic>>> getRecentOpportunities() async {
+    await _expireDeadlinesBestEffort();
+
     final snapshot = await _firestore
         .collection('opportunities')
         .orderBy('createdAt', descending: true)
@@ -1113,6 +1119,9 @@ class AdminService {
       isCreate: true,
     );
     nextData['id'] = docRef.id;
+    if (CompanyService.shouldForceClosedForExpiredDeadline(nextData)) {
+      nextData['status'] = 'closed';
+    }
     nextData['createdAt'] = FieldValue.serverTimestamp();
     nextData['updatedAt'] = FieldValue.serverTimestamp();
 
@@ -1137,11 +1146,18 @@ class AdminService {
       data,
       isCreate: false,
     );
+    final mergedData = <String, dynamic>{...currentData, ...nextData};
+    if (CompanyService.shouldForceClosedForExpiredDeadline({
+      ...mergedData,
+      'id': id,
+    })) {
+      nextData['status'] = 'closed';
+      mergedData['status'] = 'closed';
+    }
     nextData['updatedAt'] = FieldValue.serverTimestamp();
 
     await docRef.update(nextData);
 
-    final mergedData = <String, dynamic>{...currentData, ...nextData};
     if (CompanyService.shouldNotifyStudentsAboutOpportunity(mergedData)) {
       await _notificationWorker.notifyOpportunityCreated(id);
     }
@@ -1216,12 +1232,22 @@ class AdminService {
   }
 
   Future<List<Map<String, dynamic>>> getAllOpportunities() async {
+    await _expireDeadlinesBestEffort();
+
     final snapshot = await _firestore
         .collection('opportunities')
         .orderBy('createdAt', descending: true)
         .get();
 
     return snapshot.docs.map((doc) => {...doc.data(), 'id': doc.id}).toList();
+  }
+
+  Future<void> _expireDeadlinesBestEffort() async {
+    try {
+      await _workerApi.post('/api/deadlines/expire');
+    } catch (_) {
+      // Admin UI still uses effective status while backend reconciliation catches up.
+    }
   }
 
   Future<List<Map<String, dynamic>>> getAllScholarships() async {

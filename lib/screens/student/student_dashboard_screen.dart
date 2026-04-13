@@ -2747,7 +2747,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
       ...provider.opportunities,
       ...provider.featuredOpportunities,
     ]) {
-      if (item.id == normalizedId && !item.isHidden) {
+      if (item.id == normalizedId && item.isVisibleToStudents()) {
         return item;
       }
     }
@@ -3049,17 +3049,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
   }
 
   bool _isHomeOpportunity(OpportunityModel item) {
-    final status = item.status.trim().toLowerCase();
-    if (item.isHidden || (status.isNotEmpty && status != 'open')) {
-      return false;
-    }
-
-    final deadline = _opportunityDeadline(item);
-    if (deadline != null && _daysUntil(deadline) < 0) {
-      return false;
-    }
-
-    return true;
+    return item.isVisibleToStudents();
   }
 
   int _daysUntil(DateTime value) {
@@ -3490,8 +3480,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
   }
 
   DateTime? _opportunityDeadline(OpportunityModel item) {
-    return item.applicationDeadline ??
-        OpportunityMetadata.parseDateTimeLike(item.deadline);
+    return item.effectiveDeadline;
   }
 
   String _deadlineCountdown(DateTime deadline) {

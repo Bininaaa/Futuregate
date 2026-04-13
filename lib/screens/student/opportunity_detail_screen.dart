@@ -905,7 +905,9 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
               ),
               if (widget.opportunity.status.trim().isNotEmpty)
                 AppBadgeData(
-                  label: _displayStatusLabel(widget.opportunity.status),
+                  label: _displayStatusLabel(
+                    widget.opportunity.effectiveStatus(),
+                  ),
                 ),
               ..._heroTags.map((tag) => AppBadgeData(label: tag)),
             ],

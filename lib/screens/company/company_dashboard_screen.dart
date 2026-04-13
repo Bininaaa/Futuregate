@@ -150,12 +150,11 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
     final today = DateTime(now.year, now.month, now.day);
 
     return opportunities.where((opportunity) {
-      if (opportunity.status != 'open' ||
-          opportunity.applicationDeadline == null) {
+      final deadline = opportunity.effectiveDeadline;
+      if (opportunity.effectiveStatus() != 'open' || deadline == null) {
         return false;
       }
 
-      final deadline = opportunity.applicationDeadline!;
       final normalizedDeadline = DateTime(
         deadline.year,
         deadline.month,
@@ -265,7 +264,9 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
     final activeJobPosts = _intStat(
       stats,
       'openOpportunities',
-      provider.opportunities.where((item) => item.status == 'open').length,
+      provider.opportunities
+          .where((item) => item.effectiveStatus() == 'open')
+          .length,
     );
     final totalApplications = _intStat(
       stats,

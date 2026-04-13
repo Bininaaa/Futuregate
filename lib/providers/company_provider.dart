@@ -68,10 +68,10 @@ class CompanyProvider extends ChangeNotifier {
       'acceptedApplications': approvedCount,
       'rejectedApplications': rejectedCount,
       'openOpportunities': _opportunities
-          .where((o) => o.status == 'open')
+          .where((o) => o.effectiveStatus() == 'open')
           .length,
       'closedOpportunities': _opportunities
-          .where((o) => o.status == 'closed')
+          .where((o) => o.effectiveStatus() == 'closed')
           .length,
     };
   }

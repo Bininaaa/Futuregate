@@ -443,16 +443,19 @@ class _SavedScreenState extends State<SavedScreen> {
     final mediaQuery = MediaQuery.of(context);
     final screenSize = mediaQuery.size;
     final isCompact = screenSize.width < 390 || screenSize.height < 780;
+    final visibleSavedOpportunities =
+        savedOpportunityProvider.savedOpportunities;
+    final visibleSavedScholarships = savedScholarshipProvider.savedScholarships;
 
     final items = _buildItems(
-      opportunities: savedOpportunityProvider.savedOpportunities,
-      scholarships: savedScholarshipProvider.savedScholarships,
+      opportunities: visibleSavedOpportunities,
+      scholarships: visibleSavedScholarships,
       trainings: trainingProvider.savedTrainings,
       ideas: savedIdeasProvider.savedIdeas,
     );
     final totalSaved = _countForFilter(
-      opportunities: savedOpportunityProvider.savedOpportunities,
-      scholarships: savedScholarshipProvider.savedScholarships,
+      opportunities: visibleSavedOpportunities,
+      scholarships: visibleSavedScholarships,
       trainings: trainingProvider.savedTrainings,
       ideas: savedIdeasProvider.savedIdeas,
       filter: _SavedHubFilter.all,
@@ -513,12 +516,8 @@ class _SavedScreenState extends State<SavedScreen> {
                             children: [
                               _SavedCompactSummary(
                                 total: totalSaved,
-                                opportunities: savedOpportunityProvider
-                                    .savedOpportunities
-                                    .length,
-                                scholarships: savedScholarshipProvider
-                                    .savedScholarships
-                                    .length,
+                                opportunities: visibleSavedOpportunities.length,
+                                scholarships: visibleSavedScholarships.length,
                                 trainings:
                                     trainingProvider.savedTrainings.length,
                                 ideas: savedIdeasProvider.savedIdeas.length,
@@ -561,7 +560,7 @@ class _SavedScreenState extends State<SavedScreen> {
                                           ),
                                           child: StudentOpportunityFilterChip(
                                             label:
-                                                '${_filterLabel(filter)} (${_countForFilter(opportunities: savedOpportunityProvider.savedOpportunities, scholarships: savedScholarshipProvider.savedScholarships, trainings: trainingProvider.savedTrainings, ideas: savedIdeasProvider.savedIdeas, filter: filter)})',
+                                                '${_filterLabel(filter)} (${_countForFilter(opportunities: visibleSavedOpportunities, scholarships: visibleSavedScholarships, trainings: trainingProvider.savedTrainings, ideas: savedIdeasProvider.savedIdeas, filter: filter)})',
                                             selected: filter == _selectedFilter,
                                             color: _filterColor(filter),
                                             onTap: () {
@@ -622,7 +621,7 @@ class _SavedScreenState extends State<SavedScreen> {
                                                         ),
                                                     child: StudentOpportunityFilterChip(
                                                       label:
-                                                          'All opps (${_countForOpportunityTypeFilter(savedOpportunityProvider.savedOpportunities, null)})',
+                                                          'All opps (${_countForOpportunityTypeFilter(visibleSavedOpportunities, null)})',
                                                       selected:
                                                           _selectedOpportunityType ==
                                                           null,
@@ -655,7 +654,7 @@ class _SavedScreenState extends State<SavedScreen> {
                                                       ),
                                                       child: StudentOpportunityFilterChip(
                                                         label:
-                                                            '${_opportunityTypeFilterLabel(type)} (${_countForOpportunityTypeFilter(savedOpportunityProvider.savedOpportunities, type)})',
+                                                            '${_opportunityTypeFilterLabel(type)} (${_countForOpportunityTypeFilter(visibleSavedOpportunities, type)})',
                                                         selected:
                                                             _selectedOpportunityType ==
                                                             type,

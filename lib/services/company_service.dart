@@ -21,6 +21,8 @@ class CompanyService {
   Future<List<OpportunityModel>> getCompanyOpportunities(
     String companyId,
   ) async {
+    await _expireDeadlinesBestEffort();
+
     final snapshot = await _firestore
         .collection('opportunities')
         .where('companyId', isEqualTo: companyId)
@@ -48,6 +50,9 @@ class CompanyService {
     final docRef = _firestore.collection('opportunities').doc();
     final docData = normalizeOpportunityPayload(data, isCreate: true);
     docData['id'] = docRef.id;
+    if (shouldForceClosedForExpiredDeadline(docData)) {
+      docData['status'] = 'closed';
+    }
     docData['createdAt'] = FieldValue.serverTimestamp();
     docData['updatedAt'] = FieldValue.serverTimestamp();
     await docRef.set(docData);
@@ -64,11 +69,15 @@ class CompanyService {
     final currentSnapshot = await docRef.get();
     final currentData = currentSnapshot.data() ?? const <String, dynamic>{};
     final nextData = normalizeOpportunityPayload(data, isCreate: false);
+    final mergedData = <String, dynamic>{...currentData, ...nextData};
+    if (shouldForceClosedForExpiredDeadline({...mergedData, 'id': oppId})) {
+      nextData['status'] = 'closed';
+      mergedData['status'] = 'closed';
+    }
     nextData['updatedAt'] = FieldValue.serverTimestamp();
 
     await docRef.update(nextData);
 
-    final mergedData = <String, dynamic>{...currentData, ...nextData};
     if (shouldNotifyStudentsAboutOpportunity(mergedData)) {
       await _notificationWorker.notifyOpportunityCreated(oppId);
     }
@@ -172,8 +181,12 @@ class CompanyService {
       'approvedApplications': approvedCount,
       'acceptedApplications': approvedCount,
       'rejectedApplications': rejectedCount,
-      'openOpportunities': opps.where((o) => o.status == 'open').length,
-      'closedOpportunities': opps.where((o) => o.status == 'closed').length,
+      'openOpportunities': opps
+          .where((o) => o.effectiveStatus() == 'open')
+          .length,
+      'closedOpportunities': opps
+          .where((o) => o.effectiveStatus() == 'closed')
+          .length,
     };
   }
 
@@ -189,6 +202,14 @@ class CompanyService {
     final doc = await _firestore.collection('users').doc(companyId).get();
     if (!doc.exists) return null;
     return doc.data();
+  }
+
+  Future<void> _expireDeadlinesBestEffort() async {
+    try {
+      await _workerApi.post('/api/deadlines/expire');
+    } catch (_) {
+      // The UI still treats expired opportunities as closed immediately.
+    }
   }
 
   Future<String> uploadAndSetCompanyLogo({
@@ -381,6 +402,17 @@ class CompanyService {
   static String normalizeOpportunityStatus(Object? rawStatus) {
     final normalized = (rawStatus ?? '').toString().trim().toLowerCase();
     return normalized == 'closed' ? 'closed' : 'open';
+  }
+
+  static bool shouldForceClosedForExpiredDeadline(
+    Map<String, dynamic> data, {
+    DateTime? now,
+  }) {
+    if (normalizeOpportunityStatus(data['status']) != 'open') {
+      return false;
+    }
+
+    return OpportunityModel.fromMap(data).isDeadlineExpired(now: now);
   }
 
   static Map<String, dynamic> normalizeOpportunityPayload(

@@ -77,7 +77,7 @@ class _AppliedOpportunitiesScreenState
   ) {
     final query = _searchQuery.trim().toLowerCase();
 
-    final items = provider.submittedApplications
+    final items = _visibleApplicationItems(provider)
         .where((item) {
           if (!_matchesFilter(item)) {
             return false;
@@ -108,6 +108,14 @@ class _AppliedOpportunitiesScreenState
     return items;
   }
 
+  List<StudentApplicationItemModel> _visibleApplicationItems(
+    ApplicationProvider provider,
+  ) {
+    return provider.submittedApplications
+        .where((item) => item.canOpenDetails)
+        .toList(growable: false);
+  }
+
   bool _matchesFilter(StudentApplicationItemModel item) {
     final status = ApplicationStatus.parse(item.status);
 
@@ -120,7 +128,7 @@ class _AppliedOpportunitiesScreenState
   }
 
   int _countFor(ApplicationProvider provider, _ApplicationFilter filter) {
-    return provider.submittedApplications.where((item) {
+    return _visibleApplicationItems(provider).where((item) {
       final status = ApplicationStatus.parse(item.status);
       return switch (filter) {
         _ApplicationFilter.all => true,
@@ -182,7 +190,7 @@ class _AppliedOpportunitiesScreenState
     final screenSize = mediaQuery.size;
     final isCompact = screenSize.width < 390 || screenSize.height < 780;
     final items = _filteredItems(provider);
-    final totalCount = provider.submittedApplications.length;
+    final totalCount = _visibleApplicationItems(provider).length;
     final pendingCount = _countFor(provider, _ApplicationFilter.pending);
     final approvedCount = _countFor(provider, _ApplicationFilter.approved);
     final rejectedCount = _countFor(provider, _ApplicationFilter.rejected);

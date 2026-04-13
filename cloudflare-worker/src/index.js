@@ -115,6 +115,60 @@ function normalizeApplicationStatus(value) {
   return "pending";
 }
 
+function normalizeDeadlineDate(value) {
+  if (!value) {
+    return null;
+  }
+
+  if (value instanceof Date) {
+    return Number.isNaN(value.getTime()) ? null : value;
+  }
+
+  if (typeof value === "string") {
+    const rawValue = trim(value);
+    if (!rawValue) {
+      return null;
+    }
+
+    const dateOnlyMatch = rawValue.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (dateOnlyMatch) {
+      const [, year, month, day] = dateOnlyMatch;
+      return new Date(
+        Date.UTC(
+          Number(year),
+          Number(month) - 1,
+          Number(day),
+          23,
+          59,
+          59,
+          999,
+        ),
+      );
+    }
+
+    const parsed = new Date(rawValue);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  }
+
+  return null;
+}
+
+function opportunityDeadlineDate(opportunity) {
+  if (!opportunity || typeof opportunity !== "object") {
+    return null;
+  }
+
+  return (
+    normalizeDeadlineDate(opportunity.applicationDeadline) ||
+    normalizeDeadlineDate(opportunity.deadline)
+  );
+}
+
+function isOpportunityDeadlineExpired(opportunity, now = new Date()) {
+  const deadline = opportunityDeadlineDate(opportunity);
+  return deadline ? deadline.getTime() <= now.getTime() : false;
+}
+
 function normalizeFcmPlatform(value) {
   const platform = trim(value).toLowerCase();
   return ["android", "ios", "web"].includes(platform) ? platform : "";
@@ -1803,6 +1857,72 @@ async function handleCompanyDeleteOpportunity(request, env, opportunityId) {
     deleted: true,
     closedInsteadOfDeleted: false,
     savedReferencesDeleted: savedRefs.length,
+  });
+}
+
+async function expireDeadlineOpportunities(env, { companyId = "" } = {}) {
+  const normalizedCompanyId = trim(companyId);
+
+  const now = new Date();
+  const openOpportunities = await firestoreQuery(env, "opportunities", [
+    { field: "status", op: "EQUAL", value: "open" },
+  ]);
+  const scopedOpportunities = normalizedCompanyId
+    ? openOpportunities.filter(
+        (doc) => trim(doc.data?.companyId) === normalizedCompanyId,
+      )
+    : openOpportunities;
+  const expired = scopedOpportunities.filter((doc) =>
+    isOpportunityDeadlineExpired(doc.data, now),
+  );
+
+  if (expired.length === 0) {
+    return {
+      checked: scopedOpportunities.length,
+      closed: 0,
+      closedIds: [],
+    };
+  }
+
+  const writes = expired.map((doc) => ({
+    update: {
+      path: `opportunities/${doc.id}`,
+      data: {
+        status: "closed",
+        updatedAt: now,
+        closedAt: now,
+        closedReason: "deadline_expired",
+      },
+      mask: ["status", "updatedAt", "closedAt", "closedReason"],
+      currentDocument: { exists: true },
+    },
+  }));
+
+  await firestoreBatchWrite(env, writes);
+
+  return {
+    checked: scopedOpportunities.length,
+    closed: expired.length,
+    closedIds: expired.map((doc) => doc.id),
+  };
+}
+
+async function handleExpireDeadlines(request, env) {
+  const auth = await requireUser(request, env, {
+    roles: ["company", "admin"],
+  });
+  if (auth.error) {
+    return auth.error;
+  }
+
+  const isAdmin = auth.profile.role === "admin";
+  const result = await expireDeadlineOpportunities(env, {
+    companyId: isAdmin ? "" : auth.user.uid,
+  });
+
+  return json({
+    ...result,
+    scope: isAdmin ? "all" : "company",
   });
 }
 
@@ -3569,6 +3689,9 @@ function matchRoute(method, path) {
   if (method === "POST" && path === "/api/notifications/register-token") {
     return { handler: "registerNotificationToken" };
   }
+  if (method === "POST" && path === "/api/deadlines/expire") {
+    return { handler: "expireDeadlines" };
+  }
   if (method === "POST" && path === "/api/notify/opportunity") {
     return { handler: "notifyOpportunity" };
   }
@@ -3734,6 +3857,9 @@ export default {
         case "registerNotificationToken":
           response = await handleRegisterNotificationToken(request, env);
           break;
+        case "expireDeadlines":
+          response = await handleExpireDeadlines(request, env);
+          break;
         case "deleteTraining":
           response = await handleDeleteTraining(request, env, route.id);
           break;
@@ -3825,5 +3951,8 @@ export default {
         env,
       );
     }
+  },
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(expireDeadlineOpportunities(env));
   },
 };

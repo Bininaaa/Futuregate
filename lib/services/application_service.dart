@@ -27,12 +27,7 @@ class ApplicationService {
       return 0;
     }
 
-    final snapshot = await _firestore
-        .collection('applications')
-        .where('studentId', isEqualTo: normalizedStudentId)
-        .get();
-
-    return snapshot.docs.length;
+    return (await getSubmittedApplications(normalizedStudentId)).length;
   }
 
   Future<List<StudentApplicationItemModel>> getSubmittedApplications(
@@ -79,10 +74,18 @@ class ApplicationService {
       }
 
       data['id'] = doc.id;
-      opportunitiesById[doc.id] = OpportunityModel.fromMap(data);
+      final opportunity = OpportunityModel.fromMap(data);
+      if (opportunity.isVisibleToStudents()) {
+        opportunitiesById[doc.id] = opportunity;
+      }
     }
 
     return applications
+        .where((application) {
+          final opportunity =
+              opportunitiesById[application.opportunityId.trim()];
+          return opportunity != null && opportunity.isVisibleToStudents();
+        })
         .map(
           (application) => StudentApplicationItemModel(
             application: application,
@@ -110,14 +113,21 @@ class ApplicationService {
     }
 
     final opportunityData = opportunitySnapshot.data();
-    final status = opportunityData?['status'] as String? ?? '';
-    final isHidden = opportunityData?['isHidden'] == true;
 
-    if (isHidden) {
+    if (opportunityData == null) {
       return ApplicationEligibilityStatus.unavailable;
     }
 
-    if (status != 'open') {
+    final opportunity = OpportunityModel.fromMap({
+      ...opportunityData,
+      'id': opportunitySnapshot.id,
+    });
+
+    if (opportunity.isHidden) {
+      return ApplicationEligibilityStatus.unavailable;
+    }
+
+    if (opportunity.effectiveStatus() != 'open') {
       return ApplicationEligibilityStatus.closed;
     }
 
@@ -187,17 +197,24 @@ class ApplicationService {
     }
 
     final opportunityData = opportunitySnapshot.data();
-    final status = opportunityData?['status'] as String? ?? '';
-    final isHidden = opportunityData?['isHidden'] == true;
     final resolvedCompanyId = (opportunityData?['companyId'] ?? '')
         .toString()
         .trim();
 
-    if (isHidden) {
+    if (opportunityData == null) {
       throw Exception('This opportunity is no longer available');
     }
 
-    if (status != 'open') {
+    final opportunity = OpportunityModel.fromMap({
+      ...opportunityData,
+      'id': opportunitySnapshot.id,
+    });
+
+    if (opportunity.isHidden) {
+      throw Exception('This opportunity is no longer available');
+    }
+
+    if (opportunity.effectiveStatus() != 'open') {
       throw Exception('This opportunity is closed');
     }
 

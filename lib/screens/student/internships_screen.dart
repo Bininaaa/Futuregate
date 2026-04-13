@@ -215,8 +215,9 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
     return opportunities
         .where(
           (opportunity) =>
+              opportunity.isVisibleToStudents() &&
               OpportunityType.parse(opportunity.type) ==
-              OpportunityType.internship,
+                  OpportunityType.internship,
         )
         .map((opportunity) => _mapOpportunityToCardModel(opportunity, savedIds))
         .toList();
@@ -3318,7 +3319,7 @@ _InternshipStatusData? _internshipStatusDataForOpportunity(
     );
   }
 
-  if (opportunity.isHidden) {
+  if (!opportunity.isVisibleToStudents()) {
     return const _InternshipStatusData(
       label: 'Unavailable',
       color: Color(0xFF64748B),
@@ -3326,7 +3327,7 @@ _InternshipStatusData? _internshipStatusDataForOpportunity(
     );
   }
 
-  final normalizedStatus = opportunity.status.trim().toLowerCase();
+  final normalizedStatus = opportunity.effectiveStatus();
   if (normalizedStatus.isNotEmpty && normalizedStatus != 'open') {
     return const _InternshipStatusData(
       label: 'Closed',

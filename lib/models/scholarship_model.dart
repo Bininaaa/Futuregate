@@ -155,6 +155,14 @@ class ScholarshipModel {
     };
   }
 
+  DateTime? get deadlineDate => OpportunityMetadata.normalizeDeadline(deadline);
+
+  bool isDeadlineExpired({DateTime? now}) =>
+      OpportunityMetadata.isDeadlineExpired(deadlineDate, now: now);
+
+  bool isVisibleToStudents({DateTime? now}) =>
+      !isHidden && !isDeadlineExpired(now: now);
+
   static String? _readString(dynamic value) {
     if (value == null) {
       return null;

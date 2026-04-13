@@ -103,10 +103,11 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
   ) {
     final normalizedQuery = _searchQuery.toLowerCase();
     final items = provider.opportunities.where((opportunity) {
+      final effectiveStatus = opportunity.effectiveStatus();
       final matchesStatus = switch (_selectedFilter) {
         _OpportunityFilter.all => true,
-        _OpportunityFilter.open => opportunity.status == 'open',
-        _OpportunityFilter.closed => opportunity.status == 'closed',
+        _OpportunityFilter.open => effectiveStatus == 'open',
+        _OpportunityFilter.closed => effectiveStatus == 'closed',
       };
       final normalizedType = OpportunityType.parse(opportunity.type);
       final matchesType = switch (_selectedTypeFilter) {
@@ -206,7 +207,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
   }
 
   String _timeLeftLabel(OpportunityModel opportunity) {
-    if (opportunity.status == 'closed') {
+    if (opportunity.effectiveStatus() == 'closed') {
       return 'Closed';
     }
 
@@ -268,7 +269,17 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
 
   Future<void> _toggleStatus(OpportunityModel opportunity) async {
     final provider = context.read<CompanyProvider>();
-    final nextStatus = opportunity.status == 'closed' ? 'open' : 'closed';
+    final currentStatus = opportunity.effectiveStatus();
+    if (currentStatus == 'closed' && opportunity.isDeadlineExpired()) {
+      context.showAppSnackBar(
+        'Move the deadline into the future before reopening this opportunity.',
+        title: 'Deadline expired',
+        type: AppFeedbackType.warning,
+      );
+      return;
+    }
+
+    final nextStatus = currentStatus == 'closed' ? 'open' : 'closed';
     final error = await provider.updateOpportunity(opportunity.id, {
       'status': nextStatus,
     });
@@ -378,7 +389,8 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
     int applicantCount,
   ) async {
     final tone = _toneForType(opportunity.type);
-    final statusTone = _toneForStatus(opportunity.status);
+    final effectiveStatus = opportunity.effectiveStatus();
+    final statusTone = _toneForStatus(effectiveStatus);
     final deadline = _deadlineDate(opportunity);
     final metadata = OpportunityMetadata.buildMetadataItems(
       type: opportunity.type,
@@ -497,7 +509,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
                         ),
                         const SizedBox(width: 6),
                         _SoftPill(
-                          label: _statusLabel(opportunity.status),
+                          label: _statusLabel(effectiveStatus),
                           background: statusTone.background,
                           foreground: statusTone.foreground,
                         ),
@@ -566,13 +578,13 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
                         const SizedBox(width: 10),
                         Expanded(
                           child: _GhostActionButton(
-                            label: opportunity.status == 'closed'
+                            label: effectiveStatus == 'closed'
                                 ? 'Reopen'
                                 : 'Close',
-                            icon: opportunity.status == 'closed'
+                            icon: effectiveStatus == 'closed'
                                 ? Icons.play_circle_outline
                                 : Icons.pause_circle_outline,
-                            foreground: opportunity.status == 'closed'
+                            foreground: effectiveStatus == 'closed'
                                 ? _OpportunityPalette.success
                                 : _OpportunityPalette.warning,
                             onTap: () {
@@ -619,7 +631,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
                     const SizedBox(height: 8),
                     _DetailRow(
                       label: 'Status',
-                      value: _statusLabel(opportunity.status),
+                      value: _statusLabel(effectiveStatus),
                     ),
                     _DetailRow(
                       label: 'Posted',
@@ -740,7 +752,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
       (total, count) => total + count,
     );
     final openCount = provider.opportunities
-        .where((item) => item.status == 'open')
+        .where((item) => item.effectiveStatus() == 'open')
         .length;
 
     return AppShellBackground(
@@ -850,15 +862,16 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
                             ),
                         delegate: SliverChildBuilderDelegate((context, index) {
                           final opportunity = opportunities[index];
+                          final effectiveStatus = opportunity.effectiveStatus();
                           final applicantCount =
                               applicationCounts[opportunity.id] ?? 0;
                           return _OpportunityGridCard(
                             opportunity: opportunity,
                             applicantCount: applicantCount,
                             tone: _toneForType(opportunity.type),
-                            statusTone: _toneForStatus(opportunity.status),
+                            statusTone: _toneForStatus(effectiveStatus),
                             timeLeftLabel: _timeLeftLabel(opportunity),
-                            statusLabel: _statusLabel(opportunity.status),
+                            statusLabel: _statusLabel(effectiveStatus),
                             onTap: () => _showOpportunityDetails(
                               opportunity,
                               applicantCount,
@@ -873,6 +886,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
                       sliver: SliverList(
                         delegate: SliverChildBuilderDelegate((context, index) {
                           final opportunity = opportunities[index];
+                          final effectiveStatus = opportunity.effectiveStatus();
                           final applicantCount =
                               applicationCounts[opportunity.id] ?? 0;
                           return Padding(
@@ -881,10 +895,10 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
                               opportunity: opportunity,
                               applicantCount: applicantCount,
                               tone: _toneForType(opportunity.type),
-                              statusTone: _toneForStatus(opportunity.status),
+                              statusTone: _toneForStatus(effectiveStatus),
                               timeLeftLabel: _timeLeftLabel(opportunity),
                               postedLabel: _postedLabel(opportunity),
-                              statusLabel: _statusLabel(opportunity.status),
+                              statusLabel: _statusLabel(effectiveStatus),
                               onTap: () => _showOpportunityDetails(
                                 opportunity,
                                 applicantCount,

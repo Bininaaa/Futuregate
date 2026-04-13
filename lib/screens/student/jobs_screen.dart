@@ -292,7 +292,7 @@ class _JobsScreenState extends State<JobsScreen> {
       );
     }
 
-    if (opportunity.isHidden) {
+    if (!opportunity.isVisibleToStudents()) {
       return const JobStatusData(
         label: 'Unavailable',
         color: Color(0xFF64748B),
@@ -300,7 +300,7 @@ class _JobsScreenState extends State<JobsScreen> {
       );
     }
 
-    final normalizedStatus = opportunity.status.trim().toLowerCase();
+    final normalizedStatus = opportunity.effectiveStatus();
     if (normalizedStatus.isNotEmpty && normalizedStatus != 'open') {
       return const JobStatusData(
         label: 'Closed',
@@ -324,6 +324,7 @@ class _JobsScreenState extends State<JobsScreen> {
     final liveJobs = provider.opportunities
         .where(
           (opportunity) =>
+              opportunity.isVisibleToStudents() &&
               OpportunityType.parse(opportunity.type) == OpportunityType.job,
         )
         .map(

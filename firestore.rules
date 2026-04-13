@@ -42,6 +42,18 @@ service cloud.firestore {
       return /databases/$(database)/documents/opportunities/$(opportunityId);
     }
 
+    function canStudentUseOpportunity(opportunityId) {
+      return exists(opportunityPath(opportunityId)) &&
+          get(opportunityPath(opportunityId)).data.status == 'open' &&
+          get(opportunityPath(opportunityId)).data.get('isHidden', false) != true &&
+          (
+            !get(opportunityPath(opportunityId)).data.keys().hasAny(['applicationDeadline']) ||
+            get(opportunityPath(opportunityId)).data.applicationDeadline == null ||
+            !(get(opportunityPath(opportunityId)).data.applicationDeadline is timestamp) ||
+            get(opportunityPath(opportunityId)).data.applicationDeadline >= request.time
+          );
+    }
+
     function projectIdeaPath(ideaId) {
       return /databases/$(database)/documents/projectIdeas/$(ideaId);
     }
@@ -1059,8 +1071,7 @@ service cloud.firestore {
           request.resource.data.studentId == request.auth.uid &&
           applicationId == request.auth.uid + '_' + request.resource.data.opportunityId &&
           request.resource.data.status == 'pending' &&
-          exists(opportunityPath(request.resource.data.opportunityId)) &&
-          get(opportunityPath(request.resource.data.opportunityId)).data.status == 'open' &&
+          canStudentUseOpportunity(request.resource.data.opportunityId) &&
           get(opportunityPath(request.resource.data.opportunityId)).data.companyId ==
               request.resource.data.companyId &&
           (
@@ -1213,7 +1224,7 @@ service cloud.firestore {
           ]) &&
           request.resource.data.id == savedId &&
           request.resource.data.studentId == request.auth.uid &&
-          exists(opportunityPath(request.resource.data.opportunityId));
+          canStudentUseOpportunity(request.resource.data.opportunityId);
 
       allow update: if false;
 

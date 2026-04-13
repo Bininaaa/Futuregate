@@ -116,7 +116,7 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
               fallbackText: opp.requirements,
             );
       _selectedType = OpportunityType.parse(opp.type);
-      _selectedStatus = opp.status == 'closed' ? 'closed' : 'open';
+      _selectedStatus = opp.effectiveStatus() == 'closed' ? 'closed' : 'open';
 
       final existingDeadline =
           opp.applicationDeadline ??
