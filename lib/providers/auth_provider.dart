@@ -599,10 +599,10 @@ class AuthProvider extends ChangeNotifier {
   Future<void> logout() async {
     _stopUserDocListener();
     _isBlockedOnLogin = false;
+    appNavigatorKey.currentState?.popUntil((route) => route.isFirst);
     await _authService.logout();
     _userModel = null;
     notifyListeners();
-    appNavigatorKey.currentState?.popUntil((route) => route.isFirst);
   }
 
   @override

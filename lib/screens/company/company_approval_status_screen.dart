@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/profile_avatar.dart';
+import '../settings/logout_confirmation_sheet.dart';
 import 'profile_screen.dart';
 
 class CompanyApprovalStatusScreen extends StatelessWidget {
@@ -274,7 +275,8 @@ class CompanyApprovalStatusScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 10),
                           OutlinedButton.icon(
-                            onPressed: auth.logout,
+                            onPressed: () =>
+                                showLogoutConfirmationSheet(context),
                             icon: const Icon(Icons.logout_rounded),
                             label: const Text('Sign out'),
                             style: OutlinedButton.styleFrom(

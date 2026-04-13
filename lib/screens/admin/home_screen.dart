@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
-import '../../providers/auth_provider.dart';
 import '../../providers/notification_provider.dart';
 import '../../utils/admin_palette.dart';
 import '../../widgets/admin/admin_ui.dart';
 import '../notifications_screen.dart';
+import '../settings/logout_confirmation_sheet.dart';
 import 'admin_activity_center_screen.dart';
 import 'admin_content_center_screen.dart';
 import 'admin_dashboard_screen.dart';
@@ -278,28 +278,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _showLogoutDialog() {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('Sign out'),
-        content: const Text('Are you sure you want to sign out?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: AdminPalette.danger),
-            onPressed: () {
-              Navigator.pop(ctx);
-              context.read<AuthProvider>().logout();
-            },
-            child: const Text('Sign out'),
-          ),
-        ],
-      ),
-    );
+    showLogoutConfirmationSheet(context);
   }
 }
 
