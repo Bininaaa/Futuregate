@@ -57,7 +57,9 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     with SingleTickerProviderStateMixin {
   static const Color _primaryColor = AdminPalette.textPrimary;
   static const Color _accentColor = AdminPalette.primary;
-  static const Color _ideaAccentColor = AdminPalette.warning;
+  static const Color _ideaAccentColor = AdminPalette.secondary;
+  static const Color _scholarshipAccentColor = AdminPalette.activity;
+  static const Color _libraryAccentColor = AdminPalette.secondary;
   static const String _ideaFilterAll = 'all';
   static const String _ideaFilterPending = 'pending';
   static const String _ideaFilterApproved = 'approved';
@@ -216,7 +218,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                               if (pendingIdeas > 0)
                                 AdminPill(
                                   label: '$pendingIdeas pending ideas',
-                                  color: AdminPalette.warning,
+                                  color: _ideaAccentColor,
                                   icon: Icons.hourglass_top_rounded,
                                 ),
                               if (pendingApplications > 0)
@@ -234,7 +236,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                               AdminPill(
                                 label:
                                     '${provider.allScholarships.length} scholarships',
-                                color: Colors.pink,
+                                color: _scholarshipAccentColor,
                                 icon: Icons.card_giftcard_rounded,
                               ),
                               AdminPill(
@@ -690,6 +692,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             ],
             metaText: idea.lastUpdatedLabel,
             onTap: () => _showProjectIdeaDetails(idea),
+            accentColor: _ideaAccentColor,
             action: _buildCardActionRow([
               if (canEditIdea)
                 _buildCompactCardAction(
@@ -744,7 +747,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     return AdminSurface(
       radius: 20,
       padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
-      color: const Color(0xFFFFF7E8),
+      color: AdminPalette.secondarySoft,
       border: Border.all(color: _ideaAccentColor.withValues(alpha: 0.22)),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -757,7 +760,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
-              Icons.warning_amber_rounded,
+              Icons.hourglass_top_rounded,
               color: _ideaAccentColor,
               size: 20,
             ),
@@ -807,7 +810,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       height: 40,
       decoration: BoxDecoration(
         color: _ideaAccentColor.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(8),
       ),
       child: Icon(
         Icons.lightbulb_outline_rounded,
@@ -879,12 +882,12 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             expand: false,
             builder: (context, scrollController) => ListView(
               controller: scrollController,
-              padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+              padding: const EdgeInsets.fromLTRB(16, 10, 16, 20),
               children: [
                 _buildSheetHandle(),
-                const SizedBox(height: 16),
+                const SizedBox(height: 12),
                 AdminSurface(
-                  radius: 24,
+                  radius: 20,
                   gradient: AdminPalette.heroGradient(AdminPalette.activity),
                   border: Border.all(
                     color: Colors.white.withValues(alpha: 0.12),
@@ -895,29 +898,29 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                       const Icon(
                         Icons.assignment_outlined,
                         color: Colors.white,
-                        size: 28,
+                        size: 26,
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 10),
                       Text(
                         'Applications for $opportunityTitle',
                         style: const TextStyle(
-                          fontSize: 21,
+                          fontSize: 18,
                           fontWeight: FontWeight.w700,
                           color: Colors.white,
                         ),
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 4),
                       Text(
                         '${liveApplications.length} application${liveApplications.length == 1 ? '' : 's'} linked to this opportunity.',
                         style: const TextStyle(
-                          fontSize: 13,
+                          fontSize: 12.5,
                           color: Colors.white70,
                         ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 14),
+                const SizedBox(height: 10),
                 if (liveApplications.isEmpty)
                   const AdminEmptyState(
                     icon: Icons.assignment_late_outlined,
@@ -962,6 +965,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                             AdminPalette.info,
                           ),
                       ],
+                      accentColor: statusColor,
                       metaText: _formatTimestamp(item.appliedAt),
                       footer: canReview
                           ? _buildResponsiveActionGroup(
@@ -1283,8 +1287,8 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 label: Text('${applications.length} Apps'),
                 style: FilledButton.styleFrom(
                   backgroundColor: pendingAppCount > 0
-                      ? AdminPalette.warning
-                      : AdminPalette.activity,
+                      ? AdminPalette.activity
+                      : AdminPalette.info,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 12),
                 ),
@@ -1351,7 +1355,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               if (workModeLabel.isNotEmpty)
                 _BadgeData(workModeLabel, AdminPalette.info),
               if (deadlineLabel != null)
-                _BadgeData(deadlineLabel, AdminPalette.warning),
+                _BadgeData(deadlineLabel, _deadlineBadgeColor(deadlineLabel)),
               if ((compensationLabel ?? '').trim().isNotEmpty)
                 _BadgeData(compensationLabel!, AdminPalette.success),
             ],
@@ -1475,7 +1479,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
           icon: const Icon(Icons.add_rounded),
           label: const Text('Post Scholarship'),
           style: FilledButton.styleFrom(
-            backgroundColor: Colors.pink,
+            backgroundColor: _scholarshipAccentColor,
             foregroundColor: Colors.white,
           ),
         ),
@@ -1543,7 +1547,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                   icon: const Icon(Icons.add_rounded, size: 18),
                   label: const Text('Post Scholarship'),
                   style: FilledButton.styleFrom(
-                    backgroundColor: Colors.pink,
+                    backgroundColor: _scholarshipAccentColor,
                     foregroundColor: Colors.white,
                   ),
                 ),
@@ -1584,8 +1588,10 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               icon: const Icon(Icons.open_in_new_rounded, size: 16),
               label: const Text('Details'),
               style: OutlinedButton.styleFrom(
-                foregroundColor: Colors.pink,
-                side: BorderSide(color: Colors.pink.withValues(alpha: 0.28)),
+                foregroundColor: _scholarshipAccentColor,
+                side: BorderSide(
+                  color: _scholarshipAccentColor.withValues(alpha: 0.28),
+                ),
                 padding: const EdgeInsets.symmetric(vertical: 12),
               ),
             ),
@@ -1595,7 +1601,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 icon: const Icon(Icons.open_in_new_rounded, size: 16),
                 label: const Text('Apply Link'),
                 style: FilledButton.styleFrom(
-                  backgroundColor: Colors.pink,
+                  backgroundColor: _scholarshipAccentColor,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 12),
                 ),
@@ -1623,7 +1629,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
           return _buildMapListTile(
             id: scholarshipModel.id,
             icon: Icons.card_giftcard_rounded,
-            iconColor: Colors.pink,
+            iconColor: _scholarshipAccentColor,
             title: DisplayText.capitalizeWords(
               scholarshipModel.title.isNotEmpty
                   ? scholarshipModel.title
@@ -1653,7 +1659,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               if (fundingLabel.isNotEmpty && amountText.isEmpty)
                 _BadgeData(
                   DisplayText.capitalizeWords(fundingLabel),
-                  Colors.pink,
+                  _scholarshipAccentColor,
                 ),
               if ((scholarshipModel.level ?? '').trim().isNotEmpty)
                 _BadgeData(
@@ -1661,7 +1667,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                   AdminPalette.info,
                 ),
               if (deadlineBadge != null)
-                _BadgeData(deadlineBadge, AdminPalette.warning),
+                _BadgeData(deadlineBadge, _deadlineBadgeColor(deadlineBadge)),
               if (scholarshipModel.isFeatured)
                 _BadgeData('Featured', _accentColor),
             ],
@@ -1765,7 +1771,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
           icon: const Icon(Icons.auto_awesome_mosaic_rounded),
           label: const Text('Open Library Studio'),
           style: FilledButton.styleFrom(
-            backgroundColor: Colors.cyan,
+            backgroundColor: _libraryAccentColor,
             foregroundColor: Colors.white,
           ),
         ),
@@ -1858,7 +1864,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                   icon: const Icon(Icons.auto_awesome_mosaic_rounded, size: 18),
                   label: const Text('Open Library Studio'),
                   style: FilledButton.styleFrom(
-                    backgroundColor: Colors.cyan,
+                    backgroundColor: _libraryAccentColor,
                     foregroundColor: Colors.white,
                   ),
                 ),
@@ -2366,16 +2372,18 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     required Color color,
     required VoidCallback? onTap,
   }) {
+    final effectiveColor = onTap == null ? AdminPalette.textMuted : color;
+
     return Material(
-      color: color.withValues(alpha: 0.1),
-      borderRadius: BorderRadius.circular(12),
+      color: effectiveColor.withValues(alpha: onTap == null ? 0.06 : 0.1),
+      borderRadius: BorderRadius.circular(8),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(8),
         child: SizedBox(
           width: 34,
           height: 34,
-          child: Icon(icon, size: 18, color: color),
+          child: Icon(icon, size: 18, color: effectiveColor),
         ),
       ),
     );
@@ -2439,133 +2447,146 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     required String subtitle,
     required List<_BadgeData> badges,
     required VoidCallback onTap,
+    Color accentColor = AdminPalette.primary,
     String? description,
     String? metaText,
     Widget? action,
     Widget? footer,
   }) {
     final isTarget = id == widget.initialTargetId;
-    final borderColor = isTarget ? _accentColor : AdminPalette.border;
+    final highlightColor = isTarget ? _accentColor : accentColor;
+    final borderColor = isTarget
+        ? _accentColor.withValues(alpha: 0.52)
+        : AdminPalette.border.withValues(alpha: 0.86);
+    final normalizedDescription = (description ?? '').trim();
+    final normalizedMetaText = (metaText ?? '').trim();
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Material(
-        color: Colors.transparent,
+        color: isTarget
+            ? _accentColor.withValues(alpha: 0.035)
+            : AdminPalette.surface,
+        borderRadius: BorderRadius.circular(8),
+        clipBehavior: Clip.antiAlias,
+        elevation: isTarget ? 2 : 1,
+        shadowColor: AdminPalette.textPrimary.withValues(alpha: 0.08),
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(18),
-          child: AdminSurface(
-            padding: const EdgeInsets.fromLTRB(14, 13, 13, 13),
-            radius: 18,
-            border: Border.all(color: borderColor, width: isTarget ? 1.4 : 1),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          borderRadius: BorderRadius.circular(8),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              border: Border.all(color: borderColor, width: isTarget ? 1.4 : 1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Stack(
               children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    leading,
-                    const SizedBox(width: 11),
-                    Expanded(
-                      child: Column(
+                Positioned.fill(
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Container(
+                      width: 4,
+                      color: highlightColor.withValues(
+                        alpha: isTarget ? 0.82 : 0.58,
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(14, 12, 12, 12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            title,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w700,
-                              fontSize: 14,
-                              color: AdminPalette.textPrimary,
-                              height: 1.3,
+                          leading,
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  title,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: 14.2,
+                                    color: AdminPalette.textPrimary,
+                                    height: 1.25,
+                                  ),
+                                ),
+                                if (subtitle.trim().isNotEmpty) ...[
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    subtitle,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      color: AdminPalette.textMuted,
+                                      height: 1.3,
+                                    ),
+                                  ),
+                                ],
+                              ],
                             ),
                           ),
-                          if (subtitle.trim().isNotEmpty) ...[
-                            const SizedBox(height: 3),
-                            Text(
-                              subtitle,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                                color: AdminPalette.textMuted,
-                                height: 1.3,
+                          const SizedBox(width: 8),
+                          action ??
+                              Icon(
+                                Icons.chevron_right_rounded,
+                                size: 22,
+                                color: highlightColor.withValues(alpha: 0.78),
                               ),
-                            ),
-                          ],
                         ],
                       ),
-                    ),
-                    const SizedBox(width: 6),
-                    action ??
-                        const Icon(
-                          Icons.chevron_right_rounded,
-                          size: 20,
-                          color: AdminPalette.textMuted,
-                        ),
-                  ],
-                ),
-                if ((description ?? '').trim().isNotEmpty) ...[
-                  const SizedBox(height: 8),
-                  Text(
-                    description!,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 12.2,
-                      height: 1.45,
-                      color: AdminPalette.textSecondary,
-                    ),
-                  ),
-                ],
-                if (badges.isNotEmpty) ...[
-                  const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 5,
-                    runSpacing: 5,
-                    children: badges
-                        .map((badge) => _statusBadge(badge.label, badge.color))
-                        .toList(),
-                  ),
-                ],
-                if ((metaText ?? '').trim().isNotEmpty) ...[
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.schedule_rounded,
-                        size: 12,
-                        color: AdminPalette.textMuted.withValues(alpha: 0.7),
-                      ),
-                      const SizedBox(width: 4),
-                      Expanded(
-                        child: Text(
-                          metaText!,
+                      if (normalizedDescription.isNotEmpty) ...[
+                        const SizedBox(height: 9),
+                        Text(
+                          normalizedDescription,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: AdminPalette.textMuted.withValues(
-                              alpha: 0.8,
-                            ),
+                          style: const TextStyle(
+                            fontSize: 12.2,
+                            height: 1.4,
+                            color: AdminPalette.textSecondary,
                           ),
                         ),
-                      ),
+                      ],
+                      if (badges.isNotEmpty ||
+                          normalizedMetaText.isNotEmpty) ...[
+                        const SizedBox(height: 9),
+                        Wrap(
+                          spacing: 6,
+                          runSpacing: 6,
+                          children: [
+                            ...badges.map(
+                              (badge) => _statusBadge(badge.label, badge.color),
+                            ),
+                            if (normalizedMetaText.isNotEmpty)
+                              _cardMetaBadge(
+                                normalizedMetaText,
+                                highlightColor,
+                              ),
+                          ],
+                        ),
+                      ],
+                      if (footer != null) ...[
+                        const SizedBox(height: 11),
+                        Divider(
+                          height: 1,
+                          thickness: 1,
+                          color: highlightColor.withValues(alpha: 0.12),
+                        ),
+                        const SizedBox(height: 10),
+                        footer,
+                      ],
                     ],
                   ),
-                ],
-                if (footer != null) ...[
-                  const SizedBox(height: 10),
-                  Divider(
-                    height: 1,
-                    thickness: 1,
-                    color: AdminPalette.border.withValues(alpha: 0.6),
-                  ),
-                  const SizedBox(height: 10),
-                  footer,
-                ],
+                ),
               ],
             ),
           ),
@@ -2642,7 +2663,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
         height: 40,
         decoration: BoxDecoration(
           color: iconColor.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(8),
         ),
         child: Icon(icon, color: iconColor, size: 20),
       ),
@@ -2651,6 +2672,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       description: description,
       badges: badges,
       onTap: onTap,
+      accentColor: iconColor,
       metaText: metaText,
       action: trailing,
       footer: footer,
@@ -2719,7 +2741,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       ),
       badges: [
         if (training.isHidden) _BadgeData('Hidden', Colors.blueGrey),
-        if (!training.isApproved) _BadgeData('Pending', AdminPalette.warning),
+        if (!training.isApproved) _BadgeData('Pending', _ideaAccentColor),
         _BadgeData(typeLabel, trainingAccentColor),
         if (levelLabel.trim().isNotEmpty)
           _BadgeData(levelLabel, AdminPalette.info),
@@ -2916,6 +2938,12 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     return '$prefix ${DisplayText.capitalizeLeadingLabel(fallback)}';
   }
 
+  Color _deadlineBadgeColor(String label) {
+    return label.trim().toLowerCase().startsWith('expired')
+        ? AdminPalette.danger
+        : AdminPalette.info;
+  }
+
   String _formatScholarshipAmount(num amount, {String? fallback}) {
     if (amount <= 0) {
       return fallback?.trim() ?? '';
@@ -2952,7 +2980,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       case 'course':
         return const Color(0xFF0284C7);
       default:
-        return Colors.cyan;
+        return _libraryAccentColor;
     }
   }
 
@@ -3065,29 +3093,30 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 ],
               ),
             ),
-            const SizedBox(height: 14),
+            const SizedBox(height: 10),
             _buildIdeaHighlightsSection(idea, statusColor: statusColor),
             if (summary.trim().isNotEmpty) ...[
-              const SizedBox(height: 14),
+              const SizedBox(height: 10),
               AdminSurface(
-                radius: 20,
+                radius: 16,
+                padding: const EdgeInsets.all(12),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
                       'Overview',
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 13,
                         fontWeight: FontWeight.w700,
                         color: AdminPalette.textPrimary,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 6),
                     Text(
                       summary,
                       style: const TextStyle(
-                        fontSize: 13.2,
-                        height: 1.6,
+                        fontSize: 12.8,
+                        height: 1.5,
                         color: AdminPalette.textSecondary,
                       ),
                     ),
@@ -3118,22 +3147,24 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             if (problemText.trim().isNotEmpty ||
                 solutionText.trim().isNotEmpty ||
                 benefitsText.trim().isNotEmpty) ...[
-              const SizedBox(height: 14),
-              const AdminSectionHeader(
-                eyebrow: 'Build Story',
-                title: 'Problem, Solution, And Impact',
-                subtitle:
-                    'This section shows what the idea is solving, how it works, and the value it aims to create.',
+              const SizedBox(height: 10),
+              const Text(
+                'Problem, Solution & Impact',
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  color: AdminPalette.textPrimary,
+                ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
               if (problemText.trim().isNotEmpty) ...[
                 _buildIdeaNarrativeCard(
                   title: 'Problem Statement',
                   value: problemText,
                   icon: Icons.report_problem_outlined,
-                  color: Colors.orange,
+                  color: AdminPalette.danger,
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 8),
               ],
               if (solutionText.trim().isNotEmpty) ...[
                 _buildIdeaNarrativeCard(
@@ -3142,7 +3173,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                   icon: Icons.auto_fix_high_outlined,
                   color: _ideaAccentColor,
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 8),
               ],
               if (benefitsText.trim().isNotEmpty)
                 _buildIdeaNarrativeCard(
@@ -3152,13 +3183,16 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                   color: AdminPalette.success,
                 ),
             ],
-            const SizedBox(height: 14),
-            const AdminSectionHeader(
-              eyebrow: 'Positioning',
-              title: 'Audience And Metadata',
-              subtitle: 'Where the idea fits and how ready it is for review.',
+            const SizedBox(height: 10),
+            const Text(
+              'Audience & Metadata',
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: AdminPalette.textPrimary,
+              ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
             _buildIdeaMetadataGrid(<_IdeaDetailItem>[
               _IdeaDetailItem(
                 'Level',
@@ -3193,20 +3227,23 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             if (skills.isNotEmpty ||
                 teamNeeded.isNotEmpty ||
                 tags.isNotEmpty) ...[
-              const SizedBox(height: 14),
+              const SizedBox(height: 10),
               AdminSurface(
-                radius: 20,
+                radius: 16,
+                padding: const EdgeInsets.all(12),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const AdminSectionHeader(
-                      eyebrow: 'Collaboration',
-                      title: 'Team And Skill Signals',
-                      subtitle:
-                          'Use these tags to understand what support the idea needs next.',
+                    const Text(
+                      'Team & Skill Signals',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: AdminPalette.textPrimary,
+                      ),
                     ),
                     if (skills.isNotEmpty) ...[
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 8),
                       _buildTagSection(
                         'Skills Needed',
                         skills,
@@ -3214,7 +3251,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                       ),
                     ],
                     if (teamNeeded.isNotEmpty) ...[
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 8),
                       _buildTagSection(
                         'Team Needed',
                         teamNeeded,
@@ -3222,7 +3259,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                       ),
                     ],
                     if (tags.isNotEmpty) ...[
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 8),
                       _buildTagSection('Tags', tags, AdminPalette.activity),
                     ],
                   ],
@@ -3230,7 +3267,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               ),
             ],
             if (canEditIdea) ...[
-              const SizedBox(height: 14),
+              const SizedBox(height: 10),
               FilledButton.icon(
                 onPressed: () {
                   Navigator.pop(context);
@@ -3883,7 +3920,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                             )
                           : null,
                     ),
-                    const SizedBox(height: 14),
+                    const SizedBox(height: 10),
                     _buildApplicationDocumentCard(
                       title: 'Built CV',
                       subtitle: cv.hasExportedPdf
@@ -4054,7 +4091,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               style: TextStyle(
                 fontSize: 12,
                 height: 1.5,
-                color: Colors.orange.shade800,
+                color: AdminPalette.activity,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -4215,7 +4252,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                   ),
               ],
             ),
-            const SizedBox(height: 14),
+            const SizedBox(height: 10),
             _buildDetailHighlightsGrid([
               _IdeaHighlightItem(
                 icon: Icons.assignment_outlined,
@@ -4249,7 +4286,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               ),
             ]),
             if (description.trim().isNotEmpty) ...[
-              const SizedBox(height: 14),
+              const SizedBox(height: 10),
               _buildIdeaNarrativeCard(
                 title: 'Role Overview',
                 value: description,
@@ -4257,13 +4294,16 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 color: typeColor,
               ),
             ],
-            const SizedBox(height: 14),
-            const AdminSectionHeader(
-              eyebrow: 'Role Setup',
-              title: 'Location And Logistics',
-              subtitle: 'Additional details about the position.',
+            const SizedBox(height: 10),
+            const Text(
+              'Location & Logistics',
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: AdminPalette.textPrimary,
+              ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
             _buildIdeaMetadataGrid([
               _IdeaDetailItem(
                 'Company',
@@ -4300,50 +4340,47 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 ),
             ]),
             if (requirements.isNotEmpty) ...[
-              const SizedBox(height: 14),
+              const SizedBox(height: 10),
               _buildDetailListCard(
                 title: 'Requirements',
-                subtitle:
-                    'These are the main qualifications or expectations shown to applicants.',
                 items: requirements,
                 icon: Icons.checklist_rounded,
                 color: typeColor,
               ),
             ],
             if (benefits.isNotEmpty) ...[
-              const SizedBox(height: 14),
+              const SizedBox(height: 10),
               _buildDetailListCard(
                 title: 'Benefits',
-                subtitle:
-                    'This gives the admin view of what makes the role attractive.',
                 items: benefits,
                 icon: Icons.star_outline_rounded,
                 color: AdminPalette.success,
               ),
             ],
             if (tags.isNotEmpty) ...[
-              const SizedBox(height: 14),
+              const SizedBox(height: 10),
               AdminSurface(
-                radius: 20,
+                radius: 16,
+                padding: const EdgeInsets.all(12),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
                       'Tags',
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 13,
                         fontWeight: FontWeight.w700,
                         color: AdminPalette.textPrimary,
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 8),
                     _buildTagSection('Opportunity Tags', tags, typeColor),
                   ],
                 ),
               ),
             ],
             if (applications.isNotEmpty) ...[
-              const SizedBox(height: 14),
+              const SizedBox(height: 10),
               FilledButton.icon(
                 onPressed: () {
                   Navigator.pop(context);
@@ -4426,7 +4463,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               title: title,
               subtitle: providerName,
               icon: Icons.card_giftcard_rounded,
-              accentColor: Colors.pink,
+              accentColor: _scholarshipAccentColor,
               chips: [
                 if (amountText.isNotEmpty)
                   const AdminActionChip(
@@ -4448,7 +4485,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                   ),
               ],
             ),
-            const SizedBox(height: 14),
+            const SizedBox(height: 10),
             _buildDetailHighlightsGrid([
               if (amountText.isNotEmpty)
                 _IdeaHighlightItem(
@@ -4462,13 +4499,13 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                   icon: Icons.event_outlined,
                   label: 'Deadline',
                   value: deadlineText,
-                  color: Colors.pink,
+                  color: _scholarshipAccentColor,
                 ),
               _IdeaHighlightItem(
                 icon: Icons.business_outlined,
                 label: 'Provider',
                 value: providerName,
-                color: Colors.pink,
+                color: _scholarshipAccentColor,
               ),
               _IdeaHighlightItem(
                 icon: link.isNotEmpty
@@ -4484,31 +4521,33 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               ),
             ]),
             if (description.trim().isNotEmpty) ...[
-              const SizedBox(height: 14),
+              const SizedBox(height: 10),
               _buildIdeaNarrativeCard(
                 title: 'Scholarship Overview',
                 value: description,
                 icon: Icons.description_outlined,
-                color: Colors.pink,
+                color: _scholarshipAccentColor,
               ),
             ],
             if (eligibility.trim().isNotEmpty) ...[
-              const SizedBox(height: 14),
+              const SizedBox(height: 10),
               _buildIdeaNarrativeCard(
                 title: 'Eligibility',
                 value: eligibility,
                 icon: Icons.verified_user_outlined,
-                color: Colors.orange,
+                color: AdminPalette.activity,
               ),
             ],
-            const SizedBox(height: 14),
-            const AdminSectionHeader(
-              eyebrow: 'Scholarship Details',
-              title: 'Positioning And Access',
-              subtitle:
-                  'Where the scholarship fits and how students will reach it.',
+            const SizedBox(height: 10),
+            const Text(
+              'Positioning & Access',
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: AdminPalette.textPrimary,
+              ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
             _buildIdeaMetadataGrid([
               if (categoryText.trim().isNotEmpty)
                 _IdeaDetailItem(
@@ -4545,20 +4584,25 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               ),
             ]),
             if (tags.isNotEmpty) ...[
-              const SizedBox(height: 14),
+              const SizedBox(height: 10),
               AdminSurface(
-                radius: 20,
-                child: _buildTagSection('Scholarship Tags', tags, Colors.pink),
+                radius: 16,
+                padding: const EdgeInsets.all(12),
+                child: _buildTagSection(
+                  'Scholarship Tags',
+                  tags,
+                  _scholarshipAccentColor,
+                ),
               ),
             ],
             if (link.isNotEmpty) ...[
-              const SizedBox(height: 14),
+              const SizedBox(height: 10),
               FilledButton.icon(
                 onPressed: () => _openExternalLink(link),
                 icon: const Icon(Icons.open_in_new_rounded),
                 label: const Text('Open Scholarship Link'),
                 style: FilledButton.styleFrom(
-                  backgroundColor: Colors.pink,
+                  backgroundColor: _scholarshipAccentColor,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 15),
                 ),
@@ -4617,10 +4661,10 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
         expand: false,
         builder: (context, scrollController) => ListView(
           controller: scrollController,
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+          padding: const EdgeInsets.fromLTRB(16, 10, 16, 20),
           children: [
             _buildSheetHandle(),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
             _buildDetailHeroCard(
               title: training.title,
               subtitle: providerName,
@@ -4652,7 +4696,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                   ),
               ],
             ),
-            const SizedBox(height: 14),
+            const SizedBox(height: 10),
             _buildDetailHighlightsGrid([
               if (training.duration.trim().isNotEmpty)
                 _IdeaHighlightItem(
@@ -4687,7 +4731,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               ),
             ]),
             if (description.trim().isNotEmpty) ...[
-              const SizedBox(height: 14),
+              const SizedBox(height: 10),
               _buildIdeaNarrativeCard(
                 title: 'Training Overview',
                 value: description,
@@ -4695,13 +4739,16 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 color: trainingAccentColor,
               ),
             ],
-            const SizedBox(height: 14),
-            const AdminSectionHeader(
-              eyebrow: 'Resource Details',
-              title: 'Delivery And Access',
-              subtitle: 'How the resource is packaged and what students get.',
+            const SizedBox(height: 10),
+            const Text(
+              'Delivery & Access',
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: AdminPalette.textPrimary,
+              ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
             _buildIdeaMetadataGrid([
               if (sourceLabel.isNotEmpty)
                 _IdeaDetailItem(
@@ -4735,9 +4782,10 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 ),
             ]),
             if (authors.isNotEmpty) ...[
-              const SizedBox(height: 14),
+              const SizedBox(height: 10),
               AdminSurface(
-                radius: 20,
+                radius: 16,
+                padding: const EdgeInsets.all(12),
                 child: _buildTagSection(
                   'Authors',
                   authors,
@@ -4746,7 +4794,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               ),
             ],
             if (link.isNotEmpty) ...[
-              const SizedBox(height: 14),
+              const SizedBox(height: 10),
               FilledButton.icon(
                 onPressed: () => _openExternalLink(link),
                 icon: const Icon(Icons.open_in_new_rounded),
@@ -4774,10 +4822,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     Widget? actionFooter,
     Color? accentColor,
     IconData heroIcon = Icons.auto_awesome_mosaic_rounded,
-    String detailsEyebrow = 'Details',
     String detailsTitle = 'Item Metadata',
-    String detailsSubtitle =
-        'Important fields are grouped here in a more readable admin detail layout.',
   }) {
     final visibleDetails = detailLines
         .where((line) => line.value.trim().isNotEmpty)
@@ -4797,33 +4842,33 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
         expand: false,
         builder: (context, scrollController) => ListView(
           controller: scrollController,
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+          padding: const EdgeInsets.fromLTRB(16, 10, 16, 20),
           children: [
             _buildSheetHandle(),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
             AdminSurface(
-              radius: 24,
+              radius: 20,
               gradient: AdminPalette.heroGradient(resolvedAccentColor),
               border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(heroIcon, color: Colors.white, size: 28),
-                  const SizedBox(height: 12),
+                  Icon(heroIcon, color: Colors.white, size: 26),
+                  const SizedBox(height: 10),
                   Text(
                     title,
                     style: const TextStyle(
-                      fontSize: 21,
+                      fontSize: 18,
                       fontWeight: FontWeight.w700,
                       color: Colors.white,
                     ),
                   ),
                   if (subtitle.trim().isNotEmpty) ...[
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 4),
                     Text(
                       subtitle,
                       style: const TextStyle(
-                        fontSize: 13,
+                        fontSize: 12.5,
                         color: Colors.white70,
                         height: 1.45,
                       ),
@@ -4833,25 +4878,26 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               ),
             ),
             if (description.trim().isNotEmpty) ...[
-              const SizedBox(height: 14),
+              const SizedBox(height: 10),
               AdminSurface(
-                radius: 20,
+                radius: 16,
+                padding: const EdgeInsets.all(12),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
                       'Description',
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 13,
                         fontWeight: FontWeight.w700,
                         color: AdminPalette.textPrimary,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 6),
                     Text(
                       description,
                       style: const TextStyle(
-                        fontSize: 13,
+                        fontSize: 12.8,
                         height: 1.5,
                         color: AdminPalette.textSecondary,
                       ),
@@ -4861,16 +4907,19 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               ),
             ],
             if (visibleDetails.isNotEmpty) ...[
-              const SizedBox(height: 14),
-              AdminSectionHeader(
-                eyebrow: detailsEyebrow,
-                title: detailsTitle,
-                subtitle: detailsSubtitle,
+              const SizedBox(height: 10),
+              Text(
+                detailsTitle,
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  color: AdminPalette.textPrimary,
+                ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
               ...visibleDetails.map(
                 (line) => Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
+                  padding: const EdgeInsets.only(bottom: 8),
                   child: _buildDetailLine(line.label, line.value),
                 ),
               ),
@@ -5003,18 +5052,57 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     );
   }
 
+  Widget _cardMetaBadge(String label, Color color) {
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 220),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3.5),
+        decoration: BoxDecoration(
+          color: AdminPalette.surfaceMuted,
+          borderRadius: BorderRadius.circular(6),
+          border: Border.all(color: color.withValues(alpha: 0.14)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.schedule_rounded,
+              size: 11.5,
+              color: color.withValues(alpha: 0.84),
+            ),
+            const SizedBox(width: 4),
+            Flexible(
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 10.8,
+                  fontWeight: FontWeight.w600,
+                  color: AdminPalette.textMuted,
+                  height: 1.2,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _statusBadge(String label, Color color) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3.5),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
+        color: color.withValues(alpha: 0.09),
         borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: color.withValues(alpha: 0.14)),
       ),
       child: Text(
         label,
         style: TextStyle(
-          fontSize: 10.5,
-          fontWeight: FontWeight.w600,
+          fontSize: 10.8,
+          fontWeight: FontWeight.w700,
           color: color,
           height: 1.2,
         ),
@@ -5232,13 +5320,13 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       case 'approved':
       case 'accepted':
       case 'open':
-        return Colors.green;
+        return AdminPalette.success;
       case 'rejected':
-        return Colors.red;
+        return AdminPalette.danger;
       case 'featured':
         return _accentColor;
       default:
-        return Colors.orange;
+        return _ideaAccentColor;
     }
   }
 }

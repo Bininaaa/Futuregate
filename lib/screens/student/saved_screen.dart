@@ -746,7 +746,7 @@ class _SavedScreenState extends State<SavedScreen> {
 
                               return Padding(
                                 padding: EdgeInsets.only(
-                                  bottom: index == items.length - 1 ? 0 : 10,
+                                  bottom: index == items.length - 1 ? 0 : 8,
                                 ),
                                 child: _SavedHubCard(
                                   item: item,
@@ -1239,7 +1239,7 @@ class _SavedTrainingCard extends StatelessWidget {
       accent: accent,
       leadingIcon: Icons.menu_book_rounded,
       typeLabel: typeLabel,
-      savedLabel: _relativeSavedLabel(null),
+      savedLabel: _relativeSavedLabel(item.savedAt?.toDate()),
       title: item.title,
       subtitle: item.provider,
       summary: summary.isEmpty ? null : summary,
@@ -1367,117 +1367,132 @@ class _SavedListCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final normalizedSummary = summary?.trim() ?? '';
+    final normalizedSubtitle = subtitle.trim();
+    final normalizedTypeLabel = typeLabel.trim().isEmpty
+        ? 'Saved item'
+        : typeLabel.trim();
     final isBusy = isOpening || isRemoving;
 
     return _SavedCardFrame(
       accent: accent,
+      highlight: StudentOpportunityHubPalette.primary,
       onTap: isBusy ? null : onOpen,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 42,
-            height: 42,
+            width: 36,
+            height: 36,
             decoration: BoxDecoration(
               color: accent.withValues(alpha: 0.10),
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(leadingIcon, color: accent, size: 20),
+            child: Icon(leadingIcon, color: accent, size: 18),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Wrap(
-                  spacing: 6,
-                  runSpacing: 6,
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Expanded(
+                      child: Text(
+                        title,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: _SavedCardText.title,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
                     _SavedLabelChip(
-                      label: typeLabel,
+                      label: savedLabel,
                       tone: accent,
                       filled: true,
                     ),
-                    _SavedLabelChip(
-                      label: savedLabel,
-                      icon: Icons.bookmark_added_outlined,
-                    ),
                   ],
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  title,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: _SavedCardText.title,
-                ),
                 const SizedBox(height: 3),
-                Text(
-                  subtitle,
+                Text.rich(
+                  TextSpan(
+                    children: [
+                      if (normalizedSubtitle.isNotEmpty)
+                        TextSpan(
+                          text: normalizedSubtitle,
+                          style: _SavedCardText.subtitle,
+                        ),
+                      if (normalizedSubtitle.isNotEmpty)
+                        TextSpan(
+                          text: '  \u2022  ',
+                          style: GoogleFonts.poppins(
+                            fontSize: 11.2,
+                            fontWeight: FontWeight.w600,
+                            color: StudentOpportunityHubPalette.textMuted,
+                          ),
+                        ),
+                      TextSpan(
+                        text: normalizedTypeLabel,
+                        style: GoogleFonts.poppins(
+                          fontSize: 11.2,
+                          fontWeight: FontWeight.w700,
+                          color: accent,
+                        ),
+                      ),
+                    ],
+                  ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: _SavedCardText.subtitle,
                 ),
                 if (normalizedSummary.isNotEmpty) ...[
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 4),
                   Text(
                     normalizedSummary,
-                    maxLines: 2,
+                    maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: GoogleFonts.poppins(
-                      fontSize: 11.6,
-                      height: 1.45,
+                      fontSize: 11.1,
+                      fontWeight: FontWeight.w600,
                       color: StudentOpportunityHubPalette.textSecondary,
                     ),
                   ),
                 ],
-                if (meta.isNotEmpty) ...[
-                  const SizedBox(height: 10),
-                  Wrap(spacing: 6, runSpacing: 6, children: meta),
-                ],
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 6,
+                  children: [
+                    ...meta,
+                    _SavedRemoveMetaChip(
+                      isRemoving: isRemoving,
+                      isDisabled: isBusy,
+                      onTap: onRemove,
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
-          const SizedBox(width: 10),
-          Column(
-            children: [
-              Container(
-                width: 34,
-                height: 34,
-                decoration: BoxDecoration(
-                  color: accent.withValues(alpha: 0.10),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Center(
-                  child: isOpening
-                      ? SizedBox(
-                          width: 15,
-                          height: 15,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: accent,
-                          ),
-                        )
-                      : Icon(
-                          Icons.chevron_right_rounded,
-                          color: accent,
-                          size: 20,
-                        ),
-                ),
-              ),
-              const SizedBox(height: 8),
-              _SavedTrailingButton(
-                icon: isRemoving
-                    ? Icons.hourglass_top_rounded
-                    : Icons.bookmark_remove_outlined,
-                tooltip: 'Remove',
-                background: StudentOpportunityHubPalette.error.withValues(
-                  alpha: 0.08,
-                ),
-                foreground: StudentOpportunityHubPalette.error,
-                onTap: isBusy ? null : onRemove,
-              ),
-            ],
+          const SizedBox(width: 8),
+          Container(
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(
+              color: accent.withValues(alpha: 0.10),
+              borderRadius: BorderRadius.circular(11),
+            ),
+            child: Center(
+              child: isOpening
+                  ? SizedBox(
+                      width: 15,
+                      height: 15,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: accent,
+                      ),
+                    )
+                  : Icon(Icons.chevron_right_rounded, color: accent, size: 18),
+            ),
           ),
         ],
       ),
@@ -1485,13 +1500,70 @@ class _SavedListCard extends StatelessWidget {
   }
 }
 
+class _SavedRemoveMetaChip extends StatelessWidget {
+  final bool isRemoving;
+  final bool isDisabled;
+  final VoidCallback onTap;
+
+  const _SavedRemoveMetaChip({
+    required this.isRemoving,
+    required this.isDisabled,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final tone = StudentOpportunityHubPalette.error;
+
+    return Semantics(
+      button: true,
+      label: isRemoving ? 'Removing saved item' : 'Remove saved item',
+      child: InkWell(
+        onTap: isDisabled ? null : onTap,
+        borderRadius: BorderRadius.circular(999),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
+          decoration: BoxDecoration(
+            color: tone.withValues(alpha: isDisabled ? 0.05 : 0.08),
+            borderRadius: BorderRadius.circular(999),
+            border: Border.all(color: tone.withValues(alpha: 0.14)),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                isRemoving
+                    ? Icons.hourglass_top_rounded
+                    : Icons.bookmark_remove_outlined,
+                size: 13,
+                color: tone.withValues(alpha: isDisabled ? 0.55 : 1),
+              ),
+              const SizedBox(width: 5),
+              Text(
+                isRemoving ? 'Removing' : 'Remove',
+                style: GoogleFonts.poppins(
+                  fontSize: 10.6,
+                  fontWeight: FontWeight.w600,
+                  color: tone.withValues(alpha: isDisabled ? 0.55 : 1),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _SavedCardFrame extends StatelessWidget {
   final Color accent;
+  final Color highlight;
   final Widget child;
   final VoidCallback? onTap;
 
   const _SavedCardFrame({
     required this.accent,
+    required this.highlight,
     required this.child,
     this.onTap,
   });
@@ -1503,13 +1575,36 @@ class _SavedCardFrame extends StatelessWidget {
       child: Ink(
         decoration: BoxDecoration(
           color: Colors.white.withValues(alpha: 0.95),
-          borderRadius: BorderRadius.circular(22),
+          borderRadius: BorderRadius.circular(20),
           border: Border.all(color: accent.withValues(alpha: 0.12)),
         ),
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(22),
-          child: Padding(padding: const EdgeInsets.all(14), child: child),
+          borderRadius: BorderRadius.circular(20),
+          child: Stack(
+            children: [
+              Positioned(
+                left: 8,
+                top: 10,
+                bottom: 10,
+                child: Container(
+                  width: 4,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [accent, highlight],
+                    ),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(18, 12, 12, 12),
+                child: child,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -1518,19 +1613,21 @@ class _SavedCardFrame extends StatelessWidget {
 
 class _SavedLabelChip extends StatelessWidget {
   final String label;
-  final IconData? icon;
   final Color tone;
   final bool filled;
 
   const _SavedLabelChip({
     required this.label,
-    this.icon,
     this.tone = StudentOpportunityHubPalette.textMuted,
     this.filled = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    final maxLabelWidth = (MediaQuery.sizeOf(context).width - 158)
+        .clamp(72.0, 132.0)
+        .toDouble();
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
       decoration: BoxDecoration(
@@ -1547,16 +1644,19 @@ class _SavedLabelChip extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (icon != null) ...[
-            Icon(icon, size: 12, color: tone),
-            const SizedBox(width: 5),
-          ],
-          Text(
-            label,
-            style: GoogleFonts.poppins(
-              fontSize: 10.4,
-              fontWeight: FontWeight.w600,
-              color: filled ? tone : StudentOpportunityHubPalette.textSecondary,
+          ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: maxLabelWidth),
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.poppins(
+                fontSize: 10.4,
+                fontWeight: FontWeight.w600,
+                color: filled
+                    ? tone
+                    : StudentOpportunityHubPalette.textSecondary,
+              ),
             ),
           ),
         ],
@@ -1575,6 +1675,9 @@ class _SavedMetaChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final resolvedTone = tone ?? StudentOpportunityHubPalette.textMuted;
+    final maxLabelWidth = (MediaQuery.sizeOf(context).width - 142)
+        .clamp(76.0, 220.0)
+        .toDouble();
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
@@ -1594,54 +1697,22 @@ class _SavedMetaChip extends StatelessWidget {
         children: [
           Icon(icon, size: 13, color: resolvedTone),
           const SizedBox(width: 5),
-          Text(
-            label,
-            style: GoogleFonts.poppins(
-              fontSize: 10.6,
-              fontWeight: FontWeight.w600,
-              color: tone == null
-                  ? StudentOpportunityHubPalette.textSecondary
-                  : resolvedTone,
+          ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: maxLabelWidth),
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.poppins(
+                fontSize: 10.6,
+                fontWeight: FontWeight.w600,
+                color: tone == null
+                    ? StudentOpportunityHubPalette.textSecondary
+                    : resolvedTone,
+              ),
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _SavedTrailingButton extends StatelessWidget {
-  final IconData icon;
-  final String tooltip;
-  final Color background;
-  final Color foreground;
-  final VoidCallback? onTap;
-
-  const _SavedTrailingButton({
-    required this.icon,
-    required this.tooltip,
-    required this.background,
-    required this.foreground,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 34,
-      height: 34,
-      child: IconButton(
-        tooltip: tooltip,
-        onPressed: onTap,
-        padding: EdgeInsets.zero,
-        style: IconButton.styleFrom(
-          backgroundColor: background,
-          foregroundColor: foreground,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
-        icon: Icon(icon, size: 17),
       ),
     );
   }
@@ -1861,20 +1932,20 @@ String _relativeSavedLabel(DateTime? value) {
   final difference = today.difference(target).inDays;
 
   if (difference <= 0) {
-    return 'Saved today';
+    return 'Today';
   }
   if (difference == 1) {
-    return 'Saved yesterday';
+    return 'Yesterday';
   }
   if (difference < 7) {
-    return 'Saved $difference days ago';
+    return '${difference}d ago';
   }
   if (difference < 30) {
     final weeks = (difference / 7).ceil();
-    return 'Saved $weeks ${weeks == 1 ? 'week' : 'weeks'} ago';
+    return '${weeks}w ago';
   }
 
-  return 'Saved ${DateFormat('MMM d').format(value)}';
+  return DateFormat('MMM d').format(value);
 }
 
 bool _isClosingSoon(DateTime? deadline) {
