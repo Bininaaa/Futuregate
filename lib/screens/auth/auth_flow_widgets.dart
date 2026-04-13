@@ -162,21 +162,7 @@ class AuthFlowScaffold extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(999),
                                 border: Border.all(color: authFlowTheme.border),
                               ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: <Widget>[
-                                  const AppLogo(height: 22),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    'FutureGate',
-                                    style: GoogleFonts.sora(
-                                      fontSize: 12.5,
-                                      fontWeight: FontWeight.w700,
-                                      color: authFlowTheme.textPrimary,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                              child: const AppLogoClear(height: 22),
                             ),
                           ),
                         ),

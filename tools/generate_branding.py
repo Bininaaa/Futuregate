@@ -1,6 +1,10 @@
 """
 Generate Android launcher icons, adaptive icons, splash drawable,
-and an optimized in-app logo copy from assets/images/FutureGate.png.
+web icons, and favicon from the new FutureGate branding assets.
+
+Source assets (in assets/pictures/):
+  ICON.png  — icon-only mark  → launcher icons, splash, web icons, favicon
+  NAME.png  — full wordmark    → in-app Flutter branding (resolution copies)
 
 Re-run with: python tools/generate_branding.py
 """
@@ -9,9 +13,11 @@ import os
 from PIL import Image
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-SRC = os.path.join(ROOT, 'assets', 'images', 'FutureGate.png')
+ICON_SRC = os.path.join(ROOT, 'assets', 'pictures', 'ICON.png')
+NAME_SRC = os.path.join(ROOT, 'assets', 'pictures', 'NAME.png')
 ANDROID_RES = os.path.join(ROOT, 'android', 'app', 'src', 'main', 'res')
 FLUTTER_BRANDING = os.path.join(ROOT, 'assets', 'images', 'branding')
+WEB_DIR = os.path.join(ROOT, 'web')
 
 BG_COLOR = (255, 255, 255, 255)  # clean white background for the launcher / splash
 
@@ -33,7 +39,7 @@ ADAPTIVE_FG_SIZES = {
     'mipmap-xxxhdpi': 432,
 }
 
-# Splash icon sizes for legacy launch_background (48dp icon target)
+# Splash icon sizes for legacy launch_background
 SPLASH_SIZES = {
     'drawable-mdpi':    192,
     'drawable-hdpi':    288,
@@ -42,9 +48,19 @@ SPLASH_SIZES = {
     'drawable-xxxhdpi': 768,
 }
 
+# Web icon sizes
+WEB_ICON_SIZES = {
+    'Icon-192': 192,
+    'Icon-512': 512,
+    'Icon-maskable-192': 192,
+    'Icon-maskable-512': 512,
+}
 
-def load_trimmed_logo():
-    im = Image.open(SRC).convert('RGBA')
+FAVICON_SIZE = 32
+
+
+def load_trimmed(path):
+    im = Image.open(path).convert('RGBA')
     alpha = im.split()[-1]
     bbox = alpha.getbbox()
     if bbox:
@@ -72,10 +88,10 @@ def ensure_dir(p):
 
 
 def make_legacy_launcher(logo):
-    """Square icon with logo centered on solid white, ~14% padding."""
+    """Square icon with logo centered on solid white, ~10% padding for strong presence."""
     for folder, size in LEGACY_SIZES.items():
         canvas = Image.new('RGBA', (size, size), BG_COLOR)
-        safe = int(size * 0.72)  # 14% padding each side
+        safe = int(size * 0.80)  # 10% padding each side — strong icon presence
         fitted = fit_contain(logo, safe, safe)
         paste_centered(canvas, fitted)
         out_dir = os.path.join(ANDROID_RES, folder)
@@ -85,12 +101,11 @@ def make_legacy_launcher(logo):
 
 
 def make_adaptive_foreground(logo):
-    """Transparent foreground with logo inside the 66dp safe zone of the 108dp canvas."""
+    """Transparent foreground with logo inside the safe zone of the 108dp canvas."""
     for folder, size in ADAPTIVE_FG_SIZES.items():
         canvas = Image.new('RGBA', (size, size), (0, 0, 0, 0))
-        # Safe zone diameter is 66dp of 108dp, but to look good with logo aspect
-        # ratio (roughly 3:2), keep it well inside ~60% of canvas.
-        safe = int(size * 0.60)
+        # Safe zone is 66dp of 108dp. Use ~65% for strong presence.
+        safe = int(size * 0.65)
         fitted = fit_contain(logo, safe, safe)
         paste_centered(canvas, fitted)
         out_dir = os.path.join(ANDROID_RES, folder)
@@ -100,7 +115,7 @@ def make_adaptive_foreground(logo):
 
 
 def make_splash_icon(logo):
-    """Splash drawable: logo inside a ~48dp equivalent, transparent bg."""
+    """Splash drawable: icon centered, transparent bg."""
     for folder, size in SPLASH_SIZES.items():
         canvas = Image.new('RGBA', (size, size), (0, 0, 0, 0))
         fitted = fit_contain(logo, size, size)
@@ -114,7 +129,6 @@ def make_splash_icon(logo):
 def make_flutter_branding(logo):
     """Optimized, reasonably sized copy for in-app use (keeps natural aspect)."""
     ensure_dir(FLUTTER_BRANDING)
-    # Base width 900 (1x), 1800 (2x), 2700 (3x)
     for scale, subdir in ((1.0, ''), (2.0, '2.0x'), (3.0, '3.0x')):
         target_w = int(900 * scale)
         iw, ih = logo.size
@@ -127,13 +141,43 @@ def make_flutter_branding(logo):
         print('wrote', os.path.relpath(out, ROOT))
 
 
+def make_web_icons(logo):
+    """Generate web PWA icons and favicon from the icon source."""
+    icons_dir = os.path.join(WEB_DIR, 'icons')
+    ensure_dir(icons_dir)
+
+    for name, size in WEB_ICON_SIZES.items():
+        is_maskable = 'maskable' in name
+        canvas = Image.new('RGBA', (size, size), BG_COLOR)
+        # Maskable icons need more padding (safe area is inner 80%)
+        safe = int(size * 0.70) if is_maskable else int(size * 0.85)
+        fitted = fit_contain(logo, safe, safe)
+        paste_centered(canvas, fitted)
+        out = os.path.join(icons_dir, f'{name}.png')
+        canvas.save(out, 'PNG', optimize=True)
+        print('wrote', os.path.relpath(out, ROOT))
+
+    # Favicon
+    canvas = Image.new('RGBA', (FAVICON_SIZE, FAVICON_SIZE), BG_COLOR)
+    safe = int(FAVICON_SIZE * 0.85)
+    fitted = fit_contain(logo, safe, safe)
+    paste_centered(canvas, fitted)
+    out = os.path.join(WEB_DIR, 'favicon.png')
+    canvas.save(out, 'PNG', optimize=True)
+    print('wrote', os.path.relpath(out, ROOT))
+
+
 def main():
-    logo = load_trimmed_logo()
-    print('source:', logo.size)
-    make_legacy_launcher(logo)
-    make_adaptive_foreground(logo)
-    make_splash_icon(logo)
-    make_flutter_branding(logo)
+    icon_logo = load_trimmed(ICON_SRC)
+    name_logo = load_trimmed(NAME_SRC)
+    print('icon source:', icon_logo.size)
+    print('name source:', name_logo.size)
+
+    make_legacy_launcher(icon_logo)
+    make_adaptive_foreground(icon_logo)
+    make_splash_icon(icon_logo)
+    make_web_icons(icon_logo)
+    make_flutter_branding(name_logo)
     print('done.')
 
 

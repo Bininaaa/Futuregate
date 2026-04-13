@@ -24,15 +24,7 @@ class AboutFutureGateScreen extends StatelessWidget {
               children: [
                 SettingsAdaptiveHeader(
                   leading: Container(
-                    width: 72,
-                    height: 72,
-                    padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: SettingsFlowTheme.radius(22),
-                      border: Border.all(
-                        color: Colors.black.withValues(alpha: 0.06),
-                      ),
                       boxShadow: <BoxShadow>[
                         BoxShadow(
                           color: Colors.black.withValues(alpha: 0.05),
@@ -41,7 +33,11 @@ class AboutFutureGateScreen extends StatelessWidget {
                         ),
                       ],
                     ),
-                    child: const AppLogo(),
+                    child: const AppLogoMark(
+                      size: 72,
+                      padding: 8,
+                      borderRadius: BorderRadius.all(Radius.circular(22)),
+                    ),
                   ),
                   content: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

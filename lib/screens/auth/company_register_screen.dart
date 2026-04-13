@@ -174,7 +174,7 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
             ),
           ),
           const Expanded(
-            child: Center(child: AppLogo(height: 32)),
+            child: Center(child: AppLogoClear(height: 32)),
           ),
           const SizedBox(width: 48),
         ],

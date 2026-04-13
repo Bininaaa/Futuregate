@@ -23,7 +23,7 @@ import 'providers/company_provider.dart';
 import 'providers/chat_provider.dart';
 import 'providers/notification_provider.dart';
 import 'providers/connectivity_provider.dart';
-import 'screens/auth_wrapper.dart';
+import 'screens/launch_screen.dart';
 import 'screens/notifications_screen.dart';
 import 'widgets/shared/app_feedback.dart';
 
@@ -177,7 +177,7 @@ class _PresenceAwareAppState extends State<_PresenceAwareApp>
         ],
         appBarTheme: const AppBarTheme(centerTitle: true, elevation: 0),
       ),
-      home: const AuthWrapper(),
+      home: const LaunchScreen(),
     );
   }
 }
