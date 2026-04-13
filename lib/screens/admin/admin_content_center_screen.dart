@@ -64,6 +64,9 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
   static const String _ideaFilterRejected = 'rejected';
   static const String _ideaFilterHidden = 'hidden';
   static const String _opportunityFilterAll = 'all';
+  static const String _opportunityFilterLatest = 'latest';
+  static const String _opportunityFilterAdmin = 'admin';
+  static const String _opportunityFilterPendingApps = 'pending_apps';
   static const String _opportunityFilterClosed = 'closed';
   static const String _opportunityFilterFeatured = 'featured';
   static const String _opportunityFilterHidden = 'hidden';
@@ -142,6 +145,11 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
           (idea) => _normalizedIdeaStatus(idea.status) == _ideaFilterPending,
         )
         .length;
+    final pendingApplications = provider.allApplications
+        .where(
+          (a) => ApplicationStatus.parse(a.status) == ApplicationStatus.pending,
+        )
+        .length;
 
     if (!provider.moderationLoading &&
         provider.moderationInitialized &&
@@ -205,22 +213,30 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                             spacing: 10,
                             runSpacing: 10,
                             children: [
-                              AdminPill(
-                                label: '$pendingIdeas pending ideas',
-                                color: AdminPalette.warning,
-                                icon: Icons.hourglass_top_rounded,
-                              ),
-                              AdminPill(
-                                label:
-                                    '${provider.allApplications.length} applications',
-                                color: AdminPalette.activity,
-                                icon: Icons.assignment_outlined,
-                              ),
+                              if (pendingIdeas > 0)
+                                AdminPill(
+                                  label: '$pendingIdeas pending ideas',
+                                  color: AdminPalette.warning,
+                                  icon: Icons.hourglass_top_rounded,
+                                ),
+                              if (pendingApplications > 0)
+                                AdminPill(
+                                  label:
+                                      '$pendingApplications pending apps',
+                                  color: AdminPalette.danger,
+                                  icon: Icons.assignment_late_outlined,
+                                ),
                               AdminPill(
                                 label:
                                     '${provider.allOpportunities.length} opportunities',
-                                color: AdminPalette.accent,
+                                color: AdminPalette.primary,
                                 icon: Icons.work_outline_rounded,
+                              ),
+                              AdminPill(
+                                label:
+                                    '${provider.allScholarships.length} scholarships',
+                                color: Colors.pink,
+                                icon: Icons.card_giftcard_rounded,
                               ),
                               AdminPill(
                                 label:
@@ -574,6 +590,85 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               ? idea.submittedByName
               : idea.submittedBy;
 
+          final isPending =
+              _normalizedIdeaStatus(idea.status) == _ideaFilterPending;
+          final ideaFooterButtons = <Widget>[
+            OutlinedButton.icon(
+              onPressed: () => _showProjectIdeaDetails(idea),
+              icon: const Icon(Icons.open_in_new_rounded, size: 16),
+              label: const Text('Details'),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: _ideaAccentColor,
+                side: BorderSide(
+                  color: _ideaAccentColor.withValues(alpha: 0.28),
+                ),
+                padding: const EdgeInsets.symmetric(vertical: 12),
+              ),
+            ),
+            if (isPending)
+              FilledButton.icon(
+                onPressed: isIdeaBusy
+                    ? null
+                    : () async {
+                        final error = await provider.updateProjectIdeaStatus(
+                          idea.id,
+                          'approved',
+                        );
+                        if (error != null && context.mounted) {
+                          context.showAppSnackBar(
+                            error,
+                            title: 'Update unavailable',
+                            type: AppFeedbackType.error,
+                          );
+                        }
+                      },
+                icon: const Icon(Icons.check_rounded, size: 16),
+                label: Text(isIdeaBusy ? 'Working...' : 'Approve'),
+                style: FilledButton.styleFrom(
+                  backgroundColor: AdminPalette.success,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                ),
+              ),
+            if (isPending)
+              FilledButton.icon(
+                onPressed: isIdeaBusy
+                    ? null
+                    : () async {
+                        final error = await provider.updateProjectIdeaStatus(
+                          idea.id,
+                          'rejected',
+                        );
+                        if (error != null && context.mounted) {
+                          context.showAppSnackBar(
+                            error,
+                            title: 'Update unavailable',
+                            type: AppFeedbackType.error,
+                          );
+                        }
+                      },
+                icon: const Icon(Icons.close_rounded, size: 16),
+                label: Text(isIdeaBusy ? 'Working...' : 'Reject'),
+                style: FilledButton.styleFrom(
+                  backgroundColor: AdminPalette.danger,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                ),
+              ),
+            if (idea.isHidden)
+              _buildUnhideFooterButton(
+                onPressed: isIdeaVisibilityBusy
+                    ? null
+                    : () => _toggleItemVisibility(
+                        itemType: 'Idea',
+                        itemTitle: idea.title,
+                        isHidden: idea.isHidden,
+                        onToggle: (nextHidden) =>
+                            provider.setProjectIdeaHidden(idea.id, nextHidden),
+                      ),
+              ),
+          ];
+
           return _buildContentCard(
             id: idea.id,
             leading: _buildIdeaLeading(idea),
@@ -587,10 +682,13 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 _formatIdeaBadgeValue(idea.status),
                 _statusColor(idea.status),
               ),
-              _BadgeData(
-                _formatIdeaBadgeValue(idea.displayCategory),
-                AdminPalette.textSecondary,
-              ),
+              if (idea.displayCategory.trim().isNotEmpty)
+                _BadgeData(
+                  _formatIdeaBadgeValue(idea.displayCategory),
+                  AdminPalette.textSecondary,
+                ),
+              if (canEditIdea)
+                _BadgeData('Your Post', _ideaAccentColor),
             ],
             metaText: idea.lastUpdatedLabel,
             onTap: () => _showProjectIdeaDetails(idea),
@@ -637,51 +735,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 ),
               ),
             ]),
-            footer: _buildIdeaCardFooter(
-              isIdeaBusy: isIdeaBusy,
-              isHidden: idea.isHidden,
-              onToggleVisibility: isIdeaVisibilityBusy
-                  ? null
-                  : () => _toggleItemVisibility(
-                      itemType: 'Idea',
-                      itemTitle: idea.title,
-                      isHidden: idea.isHidden,
-                      onToggle: (nextHidden) =>
-                          provider.setProjectIdeaHidden(idea.id, nextHidden),
-                    ),
-              onViewDetails: () => _showProjectIdeaDetails(idea),
-              onApprove:
-                  _normalizedIdeaStatus(idea.status) == _ideaFilterPending
-                  ? () async {
-                      final error = await provider.updateProjectIdeaStatus(
-                        idea.id,
-                        'approved',
-                      );
-                      if (error != null && context.mounted) {
-                        context.showAppSnackBar(
-                          error,
-                          title: 'Update unavailable',
-                          type: AppFeedbackType.error,
-                        );
-                      }
-                    }
-                  : null,
-              onReject: _normalizedIdeaStatus(idea.status) == _ideaFilterPending
-                  ? () async {
-                      final error = await provider.updateProjectIdeaStatus(
-                        idea.id,
-                        'rejected',
-                      );
-                      if (error != null && context.mounted) {
-                        context.showAppSnackBar(
-                          error,
-                          title: 'Update unavailable',
-                          type: AppFeedbackType.error,
-                        );
-                      }
-                    }
-                  : null,
-            ),
+            footer: _buildResponsiveActionGroup(ideaFooterButtons),
           );
         },
       ),
@@ -750,76 +804,19 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
   }
 
   Widget _buildIdeaLeading(ProjectIdeaModel idea) {
-    final statusColor = _statusColor(idea.status);
-
     return Container(
-      width: 44,
-      height: 44,
+      width: 40,
+      height: 40,
       decoration: BoxDecoration(
         color: _ideaAccentColor.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: statusColor.withValues(alpha: 0.14)),
+        borderRadius: BorderRadius.circular(12),
       ),
-      child: Icon(Icons.lightbulb_outline_rounded, color: _ideaAccentColor),
+      child: Icon(
+        Icons.lightbulb_outline_rounded,
+        color: _ideaAccentColor,
+        size: 20,
+      ),
     );
-  }
-
-  Widget _buildIdeaCardFooter({
-    required bool isIdeaBusy,
-    required bool isHidden,
-    required VoidCallback onViewDetails,
-    VoidCallback? onToggleVisibility,
-    Future<void> Function()? onApprove,
-    Future<void> Function()? onReject,
-  }) {
-    final actions = <Widget>[
-      OutlinedButton.icon(
-        onPressed: onViewDetails,
-        icon: const Icon(Icons.visibility_outlined, size: 18),
-        label: const Text('Details'),
-        style: OutlinedButton.styleFrom(
-          foregroundColor: _ideaAccentColor,
-          side: BorderSide(color: _ideaAccentColor.withValues(alpha: 0.28)),
-          padding: const EdgeInsets.symmetric(vertical: 14),
-        ),
-      ),
-    ];
-
-    if (isHidden) {
-      actions.add(_buildUnhideFooterButton(onPressed: onToggleVisibility));
-    }
-
-    if (onApprove != null) {
-      actions.add(
-        FilledButton.icon(
-          onPressed: isIdeaBusy ? null : () => onApprove(),
-          icon: const Icon(Icons.check, size: 18),
-          label: Text(isIdeaBusy ? 'Working...' : 'Approve'),
-          style: FilledButton.styleFrom(
-            backgroundColor: AdminPalette.success,
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(vertical: 14),
-          ),
-        ),
-      );
-    }
-
-    if (onReject != null) {
-      actions.add(
-        FilledButton.icon(
-          onPressed: isIdeaBusy ? null : () => onReject(),
-          icon: const Icon(Icons.close, size: 18),
-          label: Text(isIdeaBusy ? 'Working...' : 'Reject'),
-          style: FilledButton.styleFrom(
-            backgroundColor: AdminPalette.danger,
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(vertical: 14),
-          ),
-        ),
-      );
-    }
-
-    return _buildResponsiveActionGroup(actions);
   }
 
   Widget _buildUnhideFooterButton({required VoidCallback? onPressed}) {
@@ -1041,6 +1038,22 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 0;
             return secondTime.compareTo(firstTime);
           });
+    final latestCount = allOpportunities.where((item) {
+      final ts = OpportunityModel.fromMap(item).createdAt;
+      if (ts == null) return false;
+      return DateTime.now().difference(ts.toDate()).inDays <= 7;
+    }).length;
+    final adminCount = allOpportunities
+        .where((item) => OpportunityModel.fromMap(item).isAdminPosted)
+        .length;
+    final pendingAppsCount = allOpportunities.where((item) {
+      final m = OpportunityModel.fromMap(item);
+      if (!m.isAdminPosted || adminId.isEmpty) return false;
+      if (m.companyId.trim() != adminId) return false;
+      return _applicationsForOpportunity(provider, m.id).any(
+        (a) => ApplicationStatus.parse(a.status) == ApplicationStatus.pending,
+      );
+    }).length;
     final closedCount = allOpportunities
         .where(
           (item) =>
@@ -1055,7 +1068,14 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
         .where((item) => OpportunityModel.fromMap(item).isHidden)
         .length;
     final opportunities = allOpportunities
-        .where((item) => _matchesOpportunityFilter(item, _opportunityFilter))
+        .where(
+          (item) => _matchesOpportunityFilter(
+            item,
+            _opportunityFilter,
+            provider,
+            adminId,
+          ),
+        )
         .toList();
 
     if (provider.allOpportunities.isEmpty) {
@@ -1087,7 +1107,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 title:
                     '${_opportunityFilterTitle(_opportunityFilter)} (${opportunities.length})',
                 subtitle: searchQuery.isEmpty
-                    ? 'Review jobs, internships, and sponsored posts with faster access to applications and edits.'
+                    ? 'Review jobs, internships, and sponsored posts. Filter by source, status, or pending reviews.'
                     : 'Showing filtered results for "$searchQuery".',
                 primaryFilters: [
                   _CollectionHeaderFilter(
@@ -1099,6 +1119,49 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                       () => _opportunityFilter = _opportunityFilterAll,
                     ),
                   ),
+                  _CollectionHeaderFilter(
+                    label: 'Latest',
+                    selected: _opportunityFilter == _opportunityFilterLatest,
+                    icon: Icons.schedule_rounded,
+                    badgeCount: latestCount,
+                    onTap: () => setState(() {
+                      _opportunityFilter = _toggleFilterValue(
+                        _opportunityFilter,
+                        _opportunityFilterLatest,
+                        allValue: _opportunityFilterAll,
+                      );
+                    }),
+                  ),
+                  _CollectionHeaderFilter(
+                    label: 'Admin Posts',
+                    selected: _opportunityFilter == _opportunityFilterAdmin,
+                    icon: Icons.admin_panel_settings_outlined,
+                    badgeCount: adminCount,
+                    onTap: () => setState(() {
+                      _opportunityFilter = _toggleFilterValue(
+                        _opportunityFilter,
+                        _opportunityFilterAdmin,
+                        allValue: _opportunityFilterAll,
+                      );
+                    }),
+                  ),
+                ],
+                secondaryFilters: [
+                  if (pendingAppsCount > 0)
+                    _CollectionHeaderFilter(
+                      label: 'Pending Apps',
+                      selected:
+                          _opportunityFilter == _opportunityFilterPendingApps,
+                      icon: Icons.hourglass_top_rounded,
+                      badgeCount: pendingAppsCount,
+                      onTap: () => setState(() {
+                        _opportunityFilter = _toggleFilterValue(
+                          _opportunityFilter,
+                          _opportunityFilterPendingApps,
+                          allValue: _opportunityFilterAll,
+                        );
+                      }),
+                    ),
                   _CollectionHeaderFilter(
                     label: 'Featured',
                     selected: _opportunityFilter == _opportunityFilterFeatured,
@@ -1112,8 +1175,6 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                       );
                     }),
                   ),
-                ],
-                secondaryFilters: [
                   _CollectionHeaderFilter(
                     label: 'Closed',
                     selected: _opportunityFilter == _opportunityFilterClosed,
@@ -1177,52 +1238,59 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             provider,
             opportunityId,
           );
+          final pendingAppCount = applications
+              .where(
+                (a) =>
+                    ApplicationStatus.parse(a.status) ==
+                    ApplicationStatus.pending,
+              )
+              .length;
           final opportunityModel = OpportunityModel.fromMap(opportunity);
-          final metadata = OpportunityMetadata.buildMetadataItems(
-            type: opportunityModel.type,
+          final opportunityType = OpportunityType.parse(
+            (opportunity['type'] ?? '').toString(),
+          );
+          final opportunityTypeColor = OpportunityType.color(opportunityType);
+          final isOpen =
+              opportunityModel.status.trim().toLowerCase() == 'open';
+          final compensationLabel = OpportunityMetadata.buildCompensationLabel(
             salaryMin: opportunityModel.salaryMin,
             salaryMax: opportunityModel.salaryMax,
             salaryCurrency: opportunityModel.salaryCurrency,
             salaryPeriod: opportunityModel.salaryPeriod,
             compensationText: opportunityModel.compensationText,
             isPaid: opportunityModel.isPaid,
-            employmentType: opportunityModel.employmentType,
-            workMode: opportunityModel.workMode,
-            duration: opportunityModel.duration,
-            maxItems: 2,
+            preferCompensationText: true,
           );
-          final opportunityType = OpportunityType.parse(
-            (opportunity['type'] ?? '').toString(),
-          );
-          final opportunityTypeColor = OpportunityType.color(opportunityType);
+          final workModeLabel =
+              OpportunityMetadata.formatWorkMode(opportunityModel.workMode) ??
+              '';
           final footerButtons = <Widget>[
             OutlinedButton.icon(
               onPressed: () => _showOpportunityDetails(opportunity),
-              icon: const Icon(Icons.visibility_outlined, size: 18),
+              icon: const Icon(Icons.open_in_new_rounded, size: 16),
               label: const Text('Details'),
               style: OutlinedButton.styleFrom(
                 foregroundColor: opportunityTypeColor,
                 side: BorderSide(
                   color: opportunityTypeColor.withValues(alpha: 0.28),
                 ),
-                padding: const EdgeInsets.symmetric(vertical: 14),
+                padding: const EdgeInsets.symmetric(vertical: 12),
               ),
             ),
-            FilledButton.icon(
-              onPressed: () =>
-                  _showOpportunityApplications(opportunity, applications),
-              icon: const Icon(Icons.assignment_outlined, size: 18),
-              label: Text(
-                applications.isEmpty
-                    ? 'Applications (0)'
-                    : 'Applications (${applications.length})',
+            if (applications.isNotEmpty)
+              FilledButton.icon(
+                onPressed: () =>
+                    _showOpportunityApplications(opportunity, applications),
+                icon: const Icon(Icons.assignment_outlined, size: 16),
+                label: Text('${applications.length} Apps'),
+                style: FilledButton.styleFrom(
+                  backgroundColor: pendingAppCount > 0
+                      ? AdminPalette.warning
+                      : AdminPalette.activity,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                ),
               ),
-              style: FilledButton.styleFrom(
-                backgroundColor: AdminPalette.activity,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 14),
-              ),
-            ),
           ];
           if (opportunityModel.isHidden) {
             footerButtons.add(
@@ -1248,11 +1316,12 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                   ? opportunityModel.companyName
                   : 'Unknown company',
             ),
-            DisplayText.capitalizeLeadingLabel(opportunityModel.location),
+            if (opportunityModel.location.trim().isNotEmpty)
+              DisplayText.capitalizeLeadingLabel(opportunityModel.location),
           ]);
           final deadlineLabel = _formatDateBadgeLabel(
             opportunityModel.applicationDeadline ?? opportunityModel.deadline,
-            prefix: 'Deadline',
+            prefix: 'Due',
           );
           return _buildMapListTile(
             id: opportunityId,
@@ -1267,32 +1336,27 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                   ? opportunityModel.description
                   : opportunityModel.requirements,
               fallback:
-                  'Open this post to review the full role, requirements, and moderation context.',
+                  'Open this post to review the full role and requirements.',
             ),
             badges: [
               if (opportunityModel.isHidden)
                 _BadgeData('Hidden', Colors.blueGrey),
-              if (isOwnedByAdmin)
-                _BadgeData('Admin Post', AdminPalette.primary),
+              _BadgeData(
+                isOpen ? 'Open' : 'Closed',
+                isOpen ? AdminPalette.success : AdminPalette.textMuted,
+              ),
               _BadgeData(
                 OpportunityType.label(opportunityType),
                 opportunityTypeColor,
               ),
-              _BadgeData(
-                '${applications.length} Application${applications.length == 1 ? '' : 's'}',
-                AdminPalette.activity,
-              ),
-              _BadgeData(
-                DisplayText.capitalizeWords(
-                  (opportunity['status'] ?? '').toString(),
-                ),
-                (opportunity['status'] ?? '') == 'open'
-                    ? Colors.green
-                    : Colors.grey,
-              ),
+              if (isOwnedByAdmin)
+                _BadgeData('Admin', AdminPalette.primary),
+              if (workModeLabel.isNotEmpty)
+                _BadgeData(workModeLabel, AdminPalette.info),
               if (deadlineLabel != null)
                 _BadgeData(deadlineLabel, AdminPalette.warning),
-              ...metadata.map((item) => _BadgeData(item, AdminPalette.info)),
+              if ((compensationLabel ?? '').trim().isNotEmpty)
+                _BadgeData(compensationLabel!, AdminPalette.success),
             ],
             onTap: () => _showOpportunityDetails(opportunity),
             metaText: _joinCardSubtitleParts([
@@ -1300,7 +1364,9 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 'Updated',
                 opportunityModel.updatedAt ?? opportunityModel.createdAt,
               ),
-              if (applications.isNotEmpty) '${applications.length} in review',
+              if (applications.isNotEmpty)
+                '${applications.length} app${applications.length == 1 ? '' : 's'}',
+              if (pendingAppCount > 0) '$pendingAppCount pending',
             ]),
             footer: _buildResponsiveActionGroup(footerButtons),
             trailing: _buildCardActionRow([
@@ -1515,34 +1581,29 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                   scholarshipModel.city,
                   scholarshipModel.country,
                 ]);
-          final footerButtons = <Widget>[
+          final scholarshipFooterButtons = <Widget>[
             OutlinedButton.icon(
               onPressed: () => _showScholarshipDetails(scholarship),
-              icon: const Icon(Icons.visibility_outlined, size: 18),
+              icon: const Icon(Icons.open_in_new_rounded, size: 16),
               label: const Text('Details'),
               style: OutlinedButton.styleFrom(
                 foregroundColor: Colors.pink,
                 side: BorderSide(color: Colors.pink.withValues(alpha: 0.28)),
-                padding: const EdgeInsets.symmetric(vertical: 14),
+                padding: const EdgeInsets.symmetric(vertical: 12),
               ),
             ),
-          ];
-          if (scholarshipModel.link.trim().isNotEmpty) {
-            footerButtons.add(
+            if (scholarshipModel.link.trim().isNotEmpty)
               FilledButton.icon(
                 onPressed: () => _openExternalLink(scholarshipModel.link),
-                icon: const Icon(Icons.open_in_new_rounded, size: 18),
-                label: const Text('Open Link'),
+                icon: const Icon(Icons.open_in_new_rounded, size: 16),
+                label: const Text('Apply Link'),
                 style: FilledButton.styleFrom(
                   backgroundColor: Colors.pink,
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
                 ),
               ),
-            );
-          }
-          if (scholarshipModel.isHidden) {
-            footerButtons.add(
+            if (scholarshipModel.isHidden)
               _buildUnhideFooterButton(
                 onPressed: isScholarshipVisibilityBusy
                     ? null
@@ -1556,8 +1617,12 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                         ),
                       ),
               ),
-            );
-          }
+          ];
+          final deadlineBadge = _formatDateBadgeLabel(
+            scholarshipModel.deadline,
+            prefix: 'Due',
+          );
+          final fundingLabel = (scholarshipModel.fundingType ?? '').trim();
           return _buildMapListTile(
             id: scholarshipModel.id,
             icon: Icons.card_giftcard_rounded,
@@ -1573,22 +1638,24 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                     ? scholarshipModel.provider
                     : 'Unknown provider',
               ),
-              DisplayText.capitalizeLeadingLabel(locationText),
+              if (locationText.isNotEmpty)
+                DisplayText.capitalizeLeadingLabel(locationText),
             ]),
             description: _cleanCardDescription(
               scholarshipModel.description.isNotEmpty
                   ? scholarshipModel.description
                   : scholarshipModel.eligibility,
               fallback:
-                  'Open this scholarship to review the provider, eligibility, and access details.',
+                  'Open this scholarship to review eligibility and access details.',
             ),
             badges: [
               if (scholarshipModel.isHidden)
                 _BadgeData('Hidden', Colors.blueGrey),
-              if (amountText.isNotEmpty) _BadgeData(amountText, Colors.green),
-              if ((scholarshipModel.fundingType ?? '').trim().isNotEmpty)
+              if (amountText.isNotEmpty)
+                _BadgeData(amountText, AdminPalette.success),
+              if (fundingLabel.isNotEmpty && amountText.isEmpty)
                 _BadgeData(
-                  DisplayText.capitalizeWords(scholarshipModel.fundingType!),
+                  DisplayText.capitalizeWords(fundingLabel),
                   Colors.pink,
                 ),
               if ((scholarshipModel.level ?? '').trim().isNotEmpty)
@@ -1596,28 +1663,14 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                   DisplayText.capitalizeWords(scholarshipModel.level!),
                   AdminPalette.info,
                 ),
-              if (_formatDateBadgeLabel(
-                    scholarshipModel.deadline,
-                    prefix: 'Due',
-                  ) !=
-                  null)
-                _BadgeData(
-                  _formatDateBadgeLabel(
-                    scholarshipModel.deadline,
-                    prefix: 'Due',
-                  )!,
-                  AdminPalette.warning,
-                ),
+              if (deadlineBadge != null)
+                _BadgeData(deadlineBadge, AdminPalette.warning),
               if (scholarshipModel.isFeatured)
                 _BadgeData('Featured', _accentColor),
             ],
             onTap: () => _showScholarshipDetails(scholarship),
-            metaText: _joinCardSubtitleParts([
-              _buildDateMetaLabel('Added', scholarshipModel.createdAt),
-              if ((scholarshipModel.category ?? '').trim().isNotEmpty)
-                DisplayText.capitalizeWords(scholarshipModel.category!),
-            ]),
-            footer: _buildResponsiveActionGroup(footerButtons),
+            metaText: _buildDateMetaLabel('Added', scholarshipModel.createdAt),
+            footer: _buildResponsiveActionGroup(scholarshipFooterButtons),
             trailing: _buildCardActionRow([
               _buildCompactCardAction(
                 icon: Icons.edit_outlined,
@@ -2020,9 +2073,29 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
   bool _matchesOpportunityFilter(
     Map<String, dynamic> opportunity,
     String filter,
+    AdminProvider provider,
+    String adminId,
   ) {
     final opportunityModel = OpportunityModel.fromMap(opportunity);
     switch (filter) {
+      case _opportunityFilterLatest:
+        final ts = opportunityModel.createdAt;
+        if (ts == null) return false;
+        final age = DateTime.now().difference(ts.toDate());
+        return age.inDays <= 7;
+      case _opportunityFilterAdmin:
+        return opportunityModel.isAdminPosted;
+      case _opportunityFilterPendingApps:
+        if (!opportunityModel.isAdminPosted) return false;
+        if (adminId.isEmpty) return false;
+        if (opportunityModel.companyId.trim() != adminId) return false;
+        final apps = _applicationsForOpportunity(
+          provider,
+          opportunityModel.id,
+        );
+        return apps.any(
+          (a) => ApplicationStatus.parse(a.status) == ApplicationStatus.pending,
+        );
       case _opportunityFilterClosed:
         return opportunityModel.status.trim().toLowerCase() == 'closed';
       case _opportunityFilterFeatured:
@@ -2036,6 +2109,12 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
 
   String _opportunityFilterTitle(String filter) {
     switch (filter) {
+      case _opportunityFilterLatest:
+        return 'Latest Opportunities';
+      case _opportunityFilterAdmin:
+        return 'Admin Opportunities';
+      case _opportunityFilterPendingApps:
+        return 'Pending Applications';
       case _opportunityFilterClosed:
         return 'Closed Opportunities';
       case _opportunityFilterFeatured:
@@ -2049,6 +2128,12 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
 
   String _opportunityEmptyMessage(String filter) {
     switch (filter) {
+      case _opportunityFilterLatest:
+        return 'No opportunities added in the last 7 days';
+      case _opportunityFilterAdmin:
+        return 'No admin-posted opportunities match this search';
+      case _opportunityFilterPendingApps:
+        return 'No opportunities with pending applications right now';
       case _opportunityFilterClosed:
         return 'No closed opportunities match this search';
       case _opportunityFilterFeatured:
@@ -2361,9 +2446,8 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     Widget? action,
     Widget? footer,
   }) {
-    final borderColor = id == widget.initialTargetId
-        ? _accentColor
-        : AdminPalette.border;
+    final isTarget = id == widget.initialTargetId;
+    final borderColor = isTarget ? _accentColor : AdminPalette.border;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
@@ -2371,13 +2455,13 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(18),
           child: AdminSurface(
-            padding: const EdgeInsets.fromLTRB(15, 14, 14, 14),
-            radius: 20,
+            padding: const EdgeInsets.fromLTRB(14, 13, 13, 13),
+            radius: 18,
             border: Border.all(
               color: borderColor,
-              width: id == widget.initialTargetId ? 1.4 : 1,
+              width: isTarget ? 1.4 : 1,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -2386,7 +2470,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     leading,
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 11),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -2397,76 +2481,94 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
                               fontWeight: FontWeight.w700,
-                              fontSize: 14.5,
+                              fontSize: 14,
                               color: AdminPalette.textPrimary,
+                              height: 1.3,
                             ),
                           ),
                           if (subtitle.trim().isNotEmpty) ...[
-                            const SizedBox(height: 4),
+                            const SizedBox(height: 3),
                             Text(
                               subtitle,
-                              maxLines: 2,
+                              maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
-                                fontSize: 11.8,
+                                fontSize: 12,
                                 fontWeight: FontWeight.w500,
                                 color: AdminPalette.textMuted,
-                                height: 1.35,
+                                height: 1.3,
                               ),
                             ),
                           ],
                         ],
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 6),
                     action ??
                         const Icon(
                           Icons.chevron_right_rounded,
+                          size: 20,
                           color: AdminPalette.textMuted,
                         ),
                   ],
                 ),
                 if ((description ?? '').trim().isNotEmpty) ...[
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 8),
                   Text(
                     description!,
-                    maxLines: 3,
+                    maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
-                      fontSize: 12.5,
+                      fontSize: 12.2,
                       height: 1.45,
                       color: AdminPalette.textSecondary,
                     ),
                   ),
                 ],
                 if (badges.isNotEmpty) ...[
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 8),
                   Wrap(
-                    spacing: 6,
-                    runSpacing: 6,
+                    spacing: 5,
+                    runSpacing: 5,
                     children: badges
                         .map((badge) => _statusBadge(badge.label, badge.color))
                         .toList(),
                   ),
                 ],
                 if ((metaText ?? '').trim().isNotEmpty) ...[
-                  const SizedBox(height: 10),
-                  Text(
-                    metaText!,
-                    style: const TextStyle(
-                      fontSize: 11.5,
-                      color: AdminPalette.textMuted,
-                    ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.schedule_rounded,
+                        size: 12,
+                        color: AdminPalette.textMuted.withValues(alpha: 0.7),
+                      ),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: Text(
+                          metaText!,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: AdminPalette.textMuted.withValues(
+                              alpha: 0.8,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
                 if (footer != null) ...[
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 10),
                   Divider(
                     height: 1,
                     thickness: 1,
-                    color: AdminPalette.border.withValues(alpha: 0.8),
+                    color: AdminPalette.border.withValues(alpha: 0.6),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 10),
                   footer,
                 ],
               ],
@@ -2541,14 +2643,13 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     return _buildContentCard(
       id: id,
       leading: Container(
-        width: 42,
-        height: 42,
+        width: 40,
+        height: 40,
         decoration: BoxDecoration(
-          color: iconColor.withValues(alpha: 0.12),
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: iconColor.withValues(alpha: 0.12)),
+          color: iconColor.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(12),
         ),
-        child: Icon(icon, color: iconColor, size: 22),
+        child: Icon(icon, color: iconColor, size: 20),
       ),
       title: title,
       subtitle: subtitle,
@@ -2565,48 +2666,39 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     TrainingModel training,
     AdminProvider provider,
   ) {
-    final statusColor = training.isApproved
-        ? AdminPalette.success
-        : AdminPalette.warning;
     final trainingAccentColor = _trainingAccentColor(training.type);
     final isTrainingVisibilityBusy = provider.busyContentKeys.contains(
       'training:${training.id}',
     );
-    final statusLabel = training.isApproved ? 'Approved' : 'Pending Review';
     final levelLabel = DisplayText.capitalizeWords(training.level);
     final typeLabel = DisplayText.capitalizeWords(training.type);
     final providerLabel = DisplayText.capitalizeLeadingLabel(
       training.provider.isNotEmpty ? training.provider : 'Unknown provider',
     );
     final domainLabel = DisplayText.capitalizeLeadingLabel(training.domain);
-    final footerButtons = <Widget>[
+    final trainingFooterButtons = <Widget>[
       OutlinedButton.icon(
         onPressed: () => _showTrainingDetails(training),
-        icon: const Icon(Icons.visibility_outlined, size: 18),
+        icon: const Icon(Icons.open_in_new_rounded, size: 16),
         label: const Text('Details'),
         style: OutlinedButton.styleFrom(
           foregroundColor: trainingAccentColor,
           side: BorderSide(color: trainingAccentColor.withValues(alpha: 0.28)),
-          padding: const EdgeInsets.symmetric(vertical: 14),
+          padding: const EdgeInsets.symmetric(vertical: 12),
         ),
       ),
-    ];
-    if (training.displayLink.trim().isNotEmpty) {
-      footerButtons.add(
+      if (training.displayLink.trim().isNotEmpty)
         FilledButton.icon(
           onPressed: () => _openExternalLink(training.displayLink),
-          icon: const Icon(Icons.open_in_new_rounded, size: 18),
+          icon: const Icon(Icons.open_in_new_rounded, size: 16),
           label: const Text('Open Resource'),
           style: FilledButton.styleFrom(
             backgroundColor: trainingAccentColor,
             foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(vertical: 14),
+            padding: const EdgeInsets.symmetric(vertical: 12),
           ),
         ),
-      );
-    }
-    if (training.isHidden) {
-      footerButtons.add(
+      if (training.isHidden)
         _buildUnhideFooterButton(
           onPressed: isTrainingVisibilityBusy
               ? null
@@ -2618,8 +2710,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                       provider.setTrainingHidden(training.id, nextHidden),
                 ),
         ),
-      );
-    }
+    ];
     return _buildMapListTile(
       id: training.id,
       icon: _trainingIcon(training.type),
@@ -2629,11 +2720,12 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       description: _cleanCardDescription(
         training.description,
         fallback:
-            'Open this resource to review the learning summary, metadata, and delivery details.',
+            'Open this resource to review its learning summary and details.',
       ),
       badges: [
         if (training.isHidden) _BadgeData('Hidden', Colors.blueGrey),
-        _BadgeData(statusLabel, statusColor),
+        if (!training.isApproved)
+          _BadgeData('Pending', AdminPalette.warning),
         _BadgeData(typeLabel, trainingAccentColor),
         if (levelLabel.trim().isNotEmpty)
           _BadgeData(levelLabel, AdminPalette.info),
@@ -2667,7 +2759,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 ),
         ),
       ]),
-      footer: _buildResponsiveActionGroup(footerButtons),
+      footer: _buildResponsiveActionGroup(trainingFooterButtons),
     );
   }
 
@@ -3067,40 +3159,23 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               eyebrow: 'Positioning',
               title: 'Audience And Metadata',
               subtitle:
-                  'These fields help you judge where the idea fits and how ready it is for review.',
+                  'Where the idea fits and how ready it is for review.',
             ),
             const SizedBox(height: 12),
             _buildIdeaMetadataGrid(<_IdeaDetailItem>[
-              _IdeaDetailItem(
-                'Category',
-                _formatIdeaBadgeValue(idea.displayCategory),
-                icon: Icons.category_outlined,
-                color: AdminPalette.info,
-              ),
-              _IdeaDetailItem(
-                'Stage',
-                _formatIdeaBadgeValue(idea.displayStage),
-                icon: Icons.timeline_outlined,
-                color: AdminPalette.activity,
-              ),
               _IdeaDetailItem(
                 'Level',
                 _formatIdeaBadgeValue(idea.level),
                 icon: Icons.school_outlined,
                 color: AdminPalette.primary,
               ),
-              _IdeaDetailItem(
-                'Status',
-                _formatIdeaBadgeValue(idea.status),
-                icon: _ideaStatusIcon(idea.status),
-                color: statusColor,
-              ),
-              _IdeaDetailItem(
-                'Audience',
-                targetAudience,
-                icon: Icons.groups_2_outlined,
-                color: AdminPalette.secondary,
-              ),
+              if (targetAudience.trim().isNotEmpty)
+                _IdeaDetailItem(
+                  'Audience',
+                  targetAudience,
+                  icon: Icons.groups_2_outlined,
+                  color: AdminPalette.secondary,
+                ),
               _IdeaDetailItem(
                 'Visibility',
                 idea.isPublic ? 'Public Idea' : 'Private Idea',
@@ -3116,12 +3191,6 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 _formatTimestamp(idea.createdAt),
                 icon: Icons.event_outlined,
                 color: AdminPalette.textMuted,
-              ),
-              _IdeaDetailItem(
-                'Last Updated',
-                idea.lastUpdatedLabel,
-                icon: Icons.update_rounded,
-                color: _ideaAccentColor,
               ),
             ]),
             if (skills.isNotEmpty ||
@@ -4192,7 +4261,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               eyebrow: 'Role Setup',
               title: 'Location And Logistics',
               subtitle:
-                  'These details help you evaluate how the opportunity is positioned for applicants.',
+                  'Additional details about the position.',
             ),
             const SizedBox(height: 12),
             _buildIdeaMetadataGrid([
@@ -4208,54 +4277,27 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 icon: Icons.location_on_outlined,
                 color: AdminPalette.info,
               ),
-              _IdeaDetailItem(
-                'Type',
-                typeLabel,
-                icon: Icons.work_outline_rounded,
-                color: typeColor,
-              ),
-              _IdeaDetailItem(
-                'Status',
-                statusLabel,
-                icon: _ideaStatusIcon(opportunityModel.status),
-                color: _statusColor(opportunityModel.status),
-              ),
-              _IdeaDetailItem(
-                'Employment',
-                employmentLabel,
-                icon: Icons.badge_outlined,
-                color: AdminPalette.primary,
-              ),
-              _IdeaDetailItem(
-                'Work Mode',
-                workModeLabel,
-                icon: Icons.lan_outlined,
-                color: AdminPalette.secondary,
-              ),
-              _IdeaDetailItem(
-                'Paid Status',
-                paidLabel,
-                icon: Icons.account_balance_wallet_outlined,
-                color: AdminPalette.success,
-              ),
-              _IdeaDetailItem(
-                'Duration',
-                opportunityModel.duration ?? '',
-                icon: Icons.schedule_outlined,
-                color: AdminPalette.textMuted,
-              ),
-              _IdeaDetailItem(
-                'Deadline',
-                opportunityModel.deadlineLabel,
-                icon: Icons.event_outlined,
-                color: _accentColor,
-              ),
-              _IdeaDetailItem(
-                'Compensation',
-                compensationLabel ?? '',
-                icon: Icons.payments_outlined,
-                color: AdminPalette.success,
-              ),
+              if (employmentLabel.isNotEmpty)
+                _IdeaDetailItem(
+                  'Employment',
+                  employmentLabel,
+                  icon: Icons.badge_outlined,
+                  color: AdminPalette.primary,
+                ),
+              if (paidLabel.isNotEmpty)
+                _IdeaDetailItem(
+                  'Paid Status',
+                  paidLabel,
+                  icon: Icons.account_balance_wallet_outlined,
+                  color: AdminPalette.success,
+                ),
+              if ((opportunityModel.duration ?? '').trim().isNotEmpty)
+                _IdeaDetailItem(
+                  'Duration',
+                  opportunityModel.duration!,
+                  icon: Icons.schedule_outlined,
+                  color: AdminPalette.textMuted,
+                ),
             ]),
             if (requirements.isNotEmpty) ...[
               const SizedBox(height: 14),
@@ -4462,48 +4504,33 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             const SizedBox(height: 14),
             const AdminSectionHeader(
               eyebrow: 'Scholarship Details',
-              title: 'Provider And Access',
+              title: 'Positioning And Access',
               subtitle:
-                  'These details help you review where the scholarship fits and how students will reach it.',
+                  'Where the scholarship fits and how students will reach it.',
             ),
             const SizedBox(height: 12),
             _buildIdeaMetadataGrid([
-              _IdeaDetailItem(
-                'Provider',
-                providerName,
-                icon: Icons.business_outlined,
-                color: Colors.pink,
-              ),
-              _IdeaDetailItem(
-                'Amount',
-                amountText,
-                icon: Icons.payments_outlined,
-                color: AdminPalette.success,
-              ),
-              _IdeaDetailItem(
-                'Deadline',
-                deadlineText,
-                icon: Icons.event_outlined,
-                color: Colors.pink,
-              ),
-              _IdeaDetailItem(
-                'Category',
-                DisplayText.capitalizeWords(categoryText),
-                icon: Icons.category_outlined,
-                color: AdminPalette.info,
-              ),
-              _IdeaDetailItem(
-                'Level',
-                DisplayText.capitalizeWords(levelText),
-                icon: Icons.school_outlined,
-                color: AdminPalette.primary,
-              ),
-              _IdeaDetailItem(
-                'Location',
-                DisplayText.capitalizeLeadingLabel(locationText),
-                icon: Icons.public_rounded,
-                color: AdminPalette.secondary,
-              ),
+              if (categoryText.trim().isNotEmpty)
+                _IdeaDetailItem(
+                  'Category',
+                  DisplayText.capitalizeWords(categoryText),
+                  icon: Icons.category_outlined,
+                  color: AdminPalette.info,
+                ),
+              if (levelText.trim().isNotEmpty)
+                _IdeaDetailItem(
+                  'Level',
+                  DisplayText.capitalizeWords(levelText),
+                  icon: Icons.school_outlined,
+                  color: AdminPalette.primary,
+                ),
+              if (locationText.trim().isNotEmpty)
+                _IdeaDetailItem(
+                  'Location',
+                  DisplayText.capitalizeLeadingLabel(locationText),
+                  icon: Icons.public_rounded,
+                  color: AdminPalette.secondary,
+                ),
               _IdeaDetailItem(
                 'Access',
                 link.isNotEmpty
@@ -4671,62 +4698,42 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             const SizedBox(height: 14),
             const AdminSectionHeader(
               eyebrow: 'Resource Details',
-              title: 'Provider And Delivery Setup',
+              title: 'Delivery And Access',
               subtitle:
-                  'This section helps you review how the training is packaged and presented to users.',
+                  'How the resource is packaged and what students get.',
             ),
             const SizedBox(height: 12),
             _buildIdeaMetadataGrid([
-              _IdeaDetailItem(
-                'Provider',
-                providerName,
-                icon: Icons.business_outlined,
-                color: trainingAccentColor,
-              ),
-              _IdeaDetailItem(
-                'Type',
-                typeLabel,
-                icon: _trainingIcon(training.type),
-                color: trainingAccentColor,
-              ),
-              _IdeaDetailItem(
-                'Source',
-                sourceLabel,
-                icon: Icons.cloud_outlined,
-                color: AdminPalette.secondary,
-              ),
-              _IdeaDetailItem(
-                'Domain',
-                domainLabel,
-                icon: Icons.category_outlined,
-                color: AdminPalette.info,
-              ),
-              _IdeaDetailItem(
-                'Level',
-                levelLabel,
-                icon: Icons.timeline_outlined,
-                color: AdminPalette.primary,
-              ),
-              _IdeaDetailItem(
-                'Language',
-                DisplayText.capitalizeWords(training.language),
-                icon: Icons.translate_rounded,
-                color: AdminPalette.activity,
-              ),
-              _IdeaDetailItem(
-                'Access',
-                accessLabel,
-                icon: Icons.payments_outlined,
-                color: training.isFree == true
-                    ? AdminPalette.success
-                    : _ideaAccentColor,
-              ),
-              _IdeaDetailItem(
-                'Certificate',
-                certificateLabel,
-                icon: Icons.verified_outlined,
-                color: AdminPalette.success,
-              ),
+              if (sourceLabel.isNotEmpty)
+                _IdeaDetailItem(
+                  'Source',
+                  sourceLabel,
+                  icon: Icons.cloud_outlined,
+                  color: AdminPalette.secondary,
+                ),
+              if (training.language.trim().isNotEmpty)
+                _IdeaDetailItem(
+                  'Language',
+                  DisplayText.capitalizeWords(training.language),
+                  icon: Icons.translate_rounded,
+                  color: AdminPalette.activity,
+                ),
+              if (accessLabel.isNotEmpty)
+                _IdeaDetailItem(
+                  'Access',
+                  accessLabel,
+                  icon: Icons.payments_outlined,
+                  color: training.isFree == true
+                      ? AdminPalette.success
+                      : _ideaAccentColor,
+                ),
+              if (certificateLabel.isNotEmpty)
+                _IdeaDetailItem(
+                  'Certificate',
+                  certificateLabel,
+                  icon: Icons.verified_outlined,
+                  color: AdminPalette.success,
+                ),
             ]),
             if (authors.isNotEmpty) ...[
               const SizedBox(height: 14),
@@ -4999,17 +5006,18 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
 
   Widget _statusBadge(String label, Color color) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(8),
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
         label,
         style: TextStyle(
-          fontSize: 11,
+          fontSize: 10.5,
           fontWeight: FontWeight.w600,
           color: color,
+          height: 1.2,
         ),
       ),
     );
