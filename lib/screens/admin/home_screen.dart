@@ -33,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
       subtitle: 'Platform pulse, moderation load, and quick control points.',
       icon: Icons.space_dashboard_rounded,
       navLabel: 'Dashboard',
-      compactNavLabel: 'Dash',
+      compactNavLabel: 'Dashboard',
       navIcon: Icons.space_dashboard_outlined,
       activeNavIcon: Icons.space_dashboard_rounded,
     ),
@@ -62,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
           'Track platform changes and jump straight into the right queue.',
       icon: Icons.timeline_rounded,
       navLabel: 'Activity',
-      compactNavLabel: 'Feed',
+      compactNavLabel: 'Activity',
       navIcon: Icons.timeline_outlined,
       activeNavIcon: Icons.timeline_rounded,
     ),
@@ -82,13 +82,12 @@ class _HomeScreenState extends State<HomeScreen> {
     final unreadCount = context.watch<NotificationProvider>().unreadCount;
     final destination = _destinations[_currentIndex];
     final isCompactHeader = MediaQuery.sizeOf(context).width < 720;
-    final isCompactNavigation = MediaQuery.sizeOf(context).width < 390;
     final keyboardVisible = MediaQuery.viewInsetsOf(context).bottom > 0;
 
-    return Scaffold(
-      backgroundColor: AdminPalette.background,
-      body: AdminShellBackground(
-        child: SafeArea(
+    return AdminShellBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SafeArea(
           child: Column(
             children: [
               Padding(
@@ -197,46 +196,17 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
         ),
-      ),
-      bottomNavigationBar: keyboardVisible
-          ? null
-          : SafeArea(
-              top: false,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 10,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(30),
-                    border: Border.all(color: AdminPalette.border),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.08),
-                        blurRadius: 28,
-                        offset: const Offset(0, 16),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    children: List<Widget>.generate(
-                      _destinations.length,
-                      (index) => Expanded(
-                        child: _AdminBottomNavItem(
-                          destination: _destinations[index],
-                          compact: isCompactNavigation,
-                          selected: _currentIndex == index,
-                          onTap: () => _selectIndex(index),
-                        ),
-                      ),
-                    ),
-                  ),
+        bottomNavigationBar: keyboardVisible
+            ? null
+            : SafeArea(
+                top: false,
+                child: _AdminPillNavigationBar(
+                  destinations: _destinations,
+                  currentIndex: _currentIndex,
+                  onTap: _selectIndex,
                 ),
               ),
-            ),
+      ),
     );
   }
 
@@ -272,6 +242,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _selectIndex(int index) {
     FocusManager.instance.primaryFocus?.unfocus();
+    if (index == _currentIndex) {
+      return;
+    }
+
     setState(() {
       if (index == 2 && _currentIndex != 2) {
         _contentInitialTab = AdminContentCenterScreen.projectIdeasTab;
@@ -349,55 +323,169 @@ class _AdminDestination {
   });
 }
 
-class _AdminBottomNavItem extends StatelessWidget {
-  final _AdminDestination destination;
-  final bool compact;
-  final bool selected;
-  final VoidCallback onTap;
+class _AdminPillNavigationBar extends StatelessWidget {
+  final List<_AdminDestination> destinations;
+  final int currentIndex;
+  final ValueChanged<int> onTap;
 
-  const _AdminBottomNavItem({
-    required this.destination,
-    required this.compact,
-    required this.selected,
+  const _AdminPillNavigationBar({
+    required this.destinations,
+    required this.currentIndex,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(22),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
-        curve: Curves.easeOutCubic,
-        margin: const EdgeInsets.symmetric(horizontal: 2),
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+    final width = MediaQuery.sizeOf(context).width;
+    final compact = width < 370;
+    final selectedFlex = compact ? 13 : 11;
+    const idleFlex = 5;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
         decoration: BoxDecoration(
-          color: selected ? AdminPalette.primarySoft : Colors.transparent,
-          borderRadius: BorderRadius.circular(22),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              selected ? destination.activeNavIcon : destination.navIcon,
-              size: 22,
-              color: selected ? AdminPalette.primary : AdminPalette.textMuted,
+          color: Colors.white.withValues(alpha: 0.96),
+          borderRadius: BorderRadius.circular(28),
+          border: Border.all(
+            color: AdminPalette.border.withValues(alpha: 0.92),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: AdminPalette.primary.withValues(alpha: 0.10),
+              blurRadius: 24,
+              offset: const Offset(0, 12),
             ),
-            const SizedBox(height: 5),
-            Text(
-              compact ? destination.compactNavLabel : destination.navLabel,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
-              style: GoogleFonts.poppins(
-                fontSize: compact ? 9.6 : 10.2,
-                fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
-                color: selected ? AdminPalette.primary : AdminPalette.textMuted,
-                letterSpacing: 0.25,
-              ),
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.06),
+              blurRadius: 16,
+              offset: const Offset(0, 6),
             ),
           ],
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Row(
+          children: List<Widget>.generate(
+            destinations.length,
+            (index) => Flexible(
+              flex: currentIndex == index ? selectedFlex : idleFlex,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                child: _AdminPillNavItem(
+                  destination: destinations[index],
+                  selected: currentIndex == index,
+                  compact: compact,
+                  onTap: () => onTap(index),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _AdminPillNavItem extends StatelessWidget {
+  final _AdminDestination destination;
+  final bool selected;
+  final bool compact;
+  final VoidCallback onTap;
+
+  const _AdminPillNavItem({
+    required this.destination,
+    required this.selected,
+    required this.compact,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final label = compact ? destination.compactNavLabel : destination.navLabel;
+    const selectedGradient = LinearGradient(
+      colors: [
+        AdminPalette.primaryDark,
+        AdminPalette.primary,
+        AdminPalette.activity,
+      ],
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+    );
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(22),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 220),
+          curve: Curves.easeOutCubic,
+          height: 46,
+          padding: EdgeInsets.symmetric(
+            horizontal: selected ? (compact ? 4 : 6) : 0,
+          ),
+          decoration: BoxDecoration(
+            gradient: selected ? selectedGradient : null,
+            color: selected ? null : Colors.transparent,
+            borderRadius: BorderRadius.circular(22),
+            border: Border.all(
+              color: selected
+                  ? Colors.white.withValues(alpha: 0.20)
+                  : Colors.transparent,
+            ),
+            boxShadow: selected
+                ? [
+                    BoxShadow(
+                      color: AdminPalette.primary.withValues(alpha: 0.22),
+                      blurRadius: 16,
+                      offset: const Offset(0, 8),
+                    ),
+                  ]
+                : null,
+          ),
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 200),
+            switchInCurve: Curves.easeOutCubic,
+            switchOutCurve: Curves.easeOutCubic,
+            child: selected
+                ? Row(
+                    key: ValueKey<String>('selected-${destination.navLabel}'),
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        destination.activeNavIcon,
+                        size: compact ? 15 : 17,
+                        color: Colors.white,
+                      ),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            label,
+                            maxLines: 1,
+                            softWrap: false,
+                            style: GoogleFonts.poppins(
+                              fontSize: compact ? 8.6 : 9.8,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                : Center(
+                    key: ValueKey<String>('idle-${destination.navLabel}'),
+                    child: Icon(
+                      destination.navIcon,
+                      size: compact ? 17 : 19,
+                      color: AdminPalette.textMuted.withValues(alpha: 0.92),
+                    ),
+                  ),
+          ),
         ),
       ),
     );
