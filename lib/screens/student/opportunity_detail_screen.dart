@@ -316,6 +316,9 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
           type: _effectiveType,
           location: _locationValue,
           deadline: _deadlineLabel ?? '',
+          fundingLabel: _effectiveType == OpportunityType.sponsoring
+              ? widget.opportunity.fundingLabel() ?? ''
+              : '',
         );
       }
 
@@ -565,17 +568,26 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
     salaryPeriod: widget.opportunity.salaryPeriod,
   );
 
+  String? get _fundingLabel => widget.opportunity.fundingLabel();
+
+  String? get _primaryCompensationValue =>
+      _effectiveType == OpportunityType.sponsoring
+      ? _fundingLabel
+      : _salaryLabel;
+
   String? get _compensationNote {
     final note = OpportunityMetadata.sanitizeText(
-      widget.opportunity.compensationText,
+      _effectiveType == OpportunityType.sponsoring
+          ? widget.opportunity.fundingNote
+          : widget.opportunity.compensationText,
     );
     if (note == null) {
       return null;
     }
 
-    final salary = _salaryLabel;
-    if (salary != null &&
-        note.trim().toLowerCase() == salary.trim().toLowerCase()) {
+    final primaryValue = _primaryCompensationValue;
+    if (primaryValue != null &&
+        note.trim().toLowerCase() == primaryValue.trim().toLowerCase()) {
       return null;
     }
 
@@ -940,9 +952,11 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
               ),
               AppInfoTileData(
                 label: _primaryCompensationLabel,
-                value: _salaryLabel ?? '',
-                icon: Icons.payments_outlined,
-                emphasize: _salaryLabel != null,
+                value: _primaryCompensationValue ?? '',
+                icon: _effectiveType == OpportunityType.sponsoring
+                    ? Icons.savings_outlined
+                    : Icons.payments_outlined,
+                emphasize: _primaryCompensationValue != null,
               ),
               AppInfoTileData(
                 label: 'Location',
@@ -1138,7 +1152,7 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
                 AppMetaRow(
                   theme: _theme,
                   label: _primaryCompensationLabel,
-                  value: _salaryLabel ?? '',
+                  value: _primaryCompensationValue ?? '',
                 ),
                 AppMetaRow(
                   theme: _theme,

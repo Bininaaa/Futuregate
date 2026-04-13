@@ -30,16 +30,21 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _locationController = TextEditingController();
-  final _requirementsController = TextEditingController();
   final _deadlineController = TextEditingController();
   final _salaryMinController = TextEditingController();
   final _salaryMaxController = TextEditingController();
   final _compensationTextController = TextEditingController();
+  final _fundingAmountController = TextEditingController();
+  final _fundingNoteController = TextEditingController();
   final _durationController = TextEditingController();
+  final _requirementsListController = AppEditableListController();
+  List<String> _requirementItems = <String>[];
 
   String _selectedType = OpportunityType.job;
   String _selectedStatus = 'open';
   String? _selectedSalaryCurrency =
+      OpportunityMetadata.supportedCurrencies.first;
+  String? _selectedFundingCurrency =
       OpportunityMetadata.supportedCurrencies.first;
   String? _selectedSalaryPeriod;
   String? _selectedEmploymentType;
@@ -56,6 +61,8 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
       OpportunityMetadata.usesStructuredFields(_selectedType);
   bool get _isInternship =>
       OpportunityType.parse(_selectedType) == OpportunityType.internship;
+  bool get _isSponsoring =>
+      OpportunityType.parse(_selectedType) == OpportunityType.sponsoring;
 
   AppContentTheme get _theme => const AppContentTheme(
     accent: CompanyDashboardPalette.primary,
@@ -102,7 +109,12 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
       _titleController.text = opp.title;
       _descriptionController.text = opp.description;
       _locationController.text = opp.location;
-      _requirementsController.text = opp.requirements;
+      _requirementItems = opp.requirementItems.isNotEmpty
+          ? List<String>.from(opp.requirementItems)
+          : OpportunityMetadata.extractRequirementItems(
+              opp.rawData,
+              fallbackText: opp.requirements,
+            );
       _selectedType = OpportunityType.parse(opp.type);
       _selectedStatus = opp.status == 'closed' ? 'closed' : 'open';
 
@@ -125,6 +137,11 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
       _salaryMinController.text = _formatNumberForInput(opp.salaryMin);
       _salaryMaxController.text = _formatNumberForInput(opp.salaryMax);
       _compensationTextController.text = opp.compensationText ?? '';
+      _fundingAmountController.text = _formatNumberForInput(
+        opp.fundingAmount ?? (_isSponsoring ? opp.salaryMin : null),
+      );
+      _fundingNoteController.text =
+          opp.fundingNote ?? (_isSponsoring ? opp.compensationText ?? '' : '');
       _durationController.text = opp.duration ?? '';
 
       _selectedSalaryCurrency =
@@ -132,6 +149,11 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
           _selectedSalaryCurrency ??
           OpportunityMetadata.supportedCurrencies.first;
       _selectedSalaryPeriod = opp.salaryPeriod;
+      _selectedFundingCurrency =
+          opp.fundingCurrency ??
+          opp.salaryCurrency ??
+          _selectedFundingCurrency ??
+          OpportunityMetadata.supportedCurrencies.first;
       _selectedEmploymentType = opp.employmentType;
       _selectedWorkMode = opp.workMode;
       _isPaid = opp.isPaid;
@@ -151,12 +173,14 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
     _titleController.dispose();
     _descriptionController.dispose();
     _locationController.dispose();
-    _requirementsController.dispose();
     _deadlineController.dispose();
     _salaryMinController.dispose();
     _salaryMaxController.dispose();
     _compensationTextController.dispose();
+    _fundingAmountController.dispose();
+    _fundingNoteController.dispose();
     _durationController.dispose();
+    _requirementsListController.dispose();
     super.dispose();
   }
 
@@ -294,16 +318,25 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                         const SizedBox(height: 12),
                         _buildSectionCard(
                           title: 'Requirements And Eligibility',
-                          child: _buildField(
-                            controller: _requirementsController,
+                          subtitle:
+                              'Add each point separately so students see a clean checklist.',
+                          child: AppEditableListField(
+                            theme: _theme,
                             label: OpportunityType.requirementsLabel(
                               _selectedType,
                             ),
-                            hint: OpportunityType.requirementsHint(
-                              _selectedType,
-                            ),
-                            maxLines: 4,
-                            validator: _validateRequirements,
+                            hint: _isSponsoring
+                                ? 'Type one eligibility rule, then press Enter'
+                                : 'Type one requirement, then press Enter',
+                            values: _requirementItems,
+                            onChanged: (items) =>
+                                setState(() => _requirementItems = items),
+                            listController: _requirementsListController,
+                            validator: _validateRequirementItems,
+                            examples: _requirementExamples(),
+                            emptyText: _isSponsoring
+                                ? 'Add eligibility rules, documents, or selection criteria.'
+                                : 'Add the skills, background, or tools students need.',
                           ),
                         ),
                         const SizedBox(height: 12),
@@ -348,7 +381,7 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
 
   Widget _buildStructuredOpportunityCard() {
     return _buildSectionCard(
-      title: _usesStructuredFields ? 'Logistics' : 'Publish',
+      title: _usesStructuredFields || _isSponsoring ? 'Logistics' : 'Publish',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -361,6 +394,53 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
             readOnly: true,
             suffixIcon: const Icon(Icons.calendar_today),
           ),
+          if (_isSponsoring) ...[
+            const SizedBox(height: 14),
+            _buildSectionLabel('Company funding'),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildField(
+                    controller: _fundingAmountController,
+                    label: 'Funding amount',
+                    hint: 'Funding amount',
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                    validator: _validateFundingAmount,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _buildDropdownField<String>(
+                    value: _selectedFundingCurrency,
+                    label: 'Funding currency',
+                    hint: 'Currency',
+                    items: OpportunityMetadata.supportedCurrencies
+                        .map(
+                          (currency) => DropdownMenuItem<String>(
+                            value: currency,
+                            child: Text(currency),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: (value) {
+                      setState(() => _selectedFundingCurrency = value);
+                    },
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            _buildField(
+              controller: _fundingNoteController,
+              label: 'Funding note',
+              hint: 'Optional support details shown to students',
+              maxLines: 2,
+              validator: _validateFundingNote,
+            ),
+          ],
           if (_usesStructuredFields) ...[
             const SizedBox(height: 14),
             _buildSectionLabel(
@@ -663,12 +743,11 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
     return null;
   }
 
-  String? _validateRequirements(String? value) {
-    final text = value?.trim() ?? '';
-    if (text.isEmpty) {
+  String? _validateRequirementItems(List<String> items) {
+    if (items.where((item) => item.trim().isNotEmpty).isEmpty) {
       return _selectedType == OpportunityType.sponsoring
-          ? 'Eligibility details are required'
-          : 'Requirements are required';
+          ? 'Add at least one eligibility item'
+          : 'Add at least one requirement';
     }
     return null;
   }
@@ -750,6 +829,39 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
     return null;
   }
 
+  String? _validateFundingAmount(String? value) {
+    if (!_isSponsoring) {
+      return null;
+    }
+
+    final text = value?.trim() ?? '';
+    final note = _fundingNoteController.text.trim();
+    final parsed = _parseOptionalNumber(text);
+    if (text.isEmpty && note.isEmpty) {
+      return 'Add a funding amount or note';
+    }
+    if (text.isNotEmpty && parsed == null) {
+      return 'Enter a valid amount';
+    }
+    if (parsed != null && parsed < 0) {
+      return 'Amount cannot be negative';
+    }
+    return null;
+  }
+
+  String? _validateFundingNote(String? value) {
+    if (!_isSponsoring) {
+      return null;
+    }
+
+    final amount = _fundingAmountController.text.trim();
+    final note = value?.trim() ?? '';
+    if (amount.isEmpty && note.isEmpty) {
+      return 'Add a funding note or amount';
+    }
+    return null;
+  }
+
   Future<void> _pickDate() async {
     final now = DateTime.now();
     final initialDate =
@@ -779,6 +891,7 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
 
   Future<void> _submit() async {
     FocusScope.of(context).unfocus();
+    _requirementsListController.commitPendingInput();
 
     if (!_formKey.currentState!.validate()) {
       return;
@@ -806,12 +919,14 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
         _applicationDeadline ??
         OpportunityMetadata.parseDateTimeLike(_deadlineController.text);
     final structuredData = _buildStructuredPayload();
+    final requirementText = _requirementItems.join('\n');
     final data = {
       'title': _titleController.text.trim(),
       'description': _descriptionController.text.trim(),
       'type': _selectedType,
       'location': _locationController.text.trim(),
-      'requirements': _requirementsController.text.trim(),
+      'requirements': requirementText,
+      'requirementItems': _requirementItems,
       'deadline': deadlineDate == null
           ? _deadlineController.text.trim()
           : OpportunityMetadata.formatDateForStorage(deadlineDate),
@@ -861,6 +976,25 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
   }
 
   Map<String, dynamic> _buildStructuredPayload() {
+    if (_isSponsoring) {
+      return {
+        'salaryMin': null,
+        'salaryMax': null,
+        'salaryCurrency': null,
+        'salaryPeriod': null,
+        'compensationText': null,
+        'employmentType': null,
+        'workMode': null,
+        'isPaid': null,
+        'duration': null,
+        'fundingAmount': _parseOptionalNumber(_fundingAmountController.text),
+        'fundingCurrency': _selectedFundingCurrency,
+        'fundingNote': OpportunityMetadata.sanitizeText(
+          _fundingNoteController.text,
+        ),
+      };
+    }
+
     if (!_usesStructuredFields) {
       return const {
         'salaryMin': null,
@@ -872,6 +1006,9 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
         'workMode': null,
         'isPaid': null,
         'duration': null,
+        'fundingAmount': null,
+        'fundingCurrency': null,
+        'fundingNote': null,
       };
     }
 
@@ -889,6 +1026,9 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
       'duration': _isInternship
           ? OpportunityMetadata.normalizeDuration(_durationController.text)
           : null,
+      'fundingAmount': null,
+      'fundingCurrency': null,
+      'fundingNote': null,
     };
   }
 
@@ -897,6 +1037,24 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
   }
 
   void _applyTypeDefaults(String type) {
+    if (OpportunityType.parse(type) == OpportunityType.sponsoring) {
+      _salaryMinController.clear();
+      _salaryMaxController.clear();
+      _compensationTextController.clear();
+      _selectedSalaryPeriod = null;
+      _selectedEmploymentType = null;
+      _selectedWorkMode = null;
+      _isPaid = null;
+      _durationController.clear();
+      _selectedFundingCurrency ??=
+          OpportunityMetadata.supportedCurrencies.first;
+      return;
+    }
+
+    _fundingAmountController.clear();
+    _fundingNoteController.clear();
+    _selectedFundingCurrency = OpportunityMetadata.supportedCurrencies.first;
+
     if (!OpportunityMetadata.usesStructuredFields(type)) {
       return;
     }
@@ -911,6 +1069,30 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
     if (_selectedEmploymentType == 'internship') {
       _selectedEmploymentType = null;
     }
+  }
+
+  List<String> _requirementExamples() {
+    if (_isSponsoring) {
+      return const <String>[
+        'Student team with a working prototype',
+        'Clear project budget',
+        'Available for sponsor check-ins',
+      ];
+    }
+
+    if (_isInternship) {
+      return const <String>[
+        'Basic Flutter knowledge',
+        'Available for 3 months',
+        'Good communication skills',
+      ];
+    }
+
+    return const <String>[
+      'Experience with Flutter',
+      'Strong problem-solving skills',
+      'Comfortable working in a team',
+    ];
   }
 
   String _formatNumberForInput(num? value) {

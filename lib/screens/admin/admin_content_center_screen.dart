@@ -221,8 +221,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                                 ),
                               if (pendingApplications > 0)
                                 AdminPill(
-                                  label:
-                                      '$pendingApplications pending apps',
+                                  label: '$pendingApplications pending apps',
                                   color: AdminPalette.danger,
                                   icon: Icons.assignment_late_outlined,
                                 ),
@@ -687,8 +686,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                   _formatIdeaBadgeValue(idea.displayCategory),
                   AdminPalette.textSecondary,
                 ),
-              if (canEditIdea)
-                _BadgeData('Your Post', _ideaAccentColor),
+              if (canEditIdea) _BadgeData('Your Post', _ideaAccentColor),
             ],
             metaText: idea.lastUpdatedLabel,
             onTap: () => _showProjectIdeaDetails(idea),
@@ -1250,17 +1248,19 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             (opportunity['type'] ?? '').toString(),
           );
           final opportunityTypeColor = OpportunityType.color(opportunityType);
-          final isOpen =
-              opportunityModel.status.trim().toLowerCase() == 'open';
-          final compensationLabel = OpportunityMetadata.buildCompensationLabel(
-            salaryMin: opportunityModel.salaryMin,
-            salaryMax: opportunityModel.salaryMax,
-            salaryCurrency: opportunityModel.salaryCurrency,
-            salaryPeriod: opportunityModel.salaryPeriod,
-            compensationText: opportunityModel.compensationText,
-            isPaid: opportunityModel.isPaid,
-            preferCompensationText: true,
-          );
+          final isOpen = opportunityModel.status.trim().toLowerCase() == 'open';
+          final compensationLabel =
+              opportunityType == OpportunityType.sponsoring
+              ? opportunityModel.fundingLabel(preferFundingNote: true)
+              : OpportunityMetadata.buildCompensationLabel(
+                  salaryMin: opportunityModel.salaryMin,
+                  salaryMax: opportunityModel.salaryMax,
+                  salaryCurrency: opportunityModel.salaryCurrency,
+                  salaryPeriod: opportunityModel.salaryPeriod,
+                  compensationText: opportunityModel.compensationText,
+                  isPaid: opportunityModel.isPaid,
+                  preferCompensationText: true,
+                );
           final workModeLabel =
               OpportunityMetadata.formatWorkMode(opportunityModel.workMode) ??
               '';
@@ -1349,8 +1349,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 OpportunityType.label(opportunityType),
                 opportunityTypeColor,
               ),
-              if (isOwnedByAdmin)
-                _BadgeData('Admin', AdminPalette.primary),
+              if (isOwnedByAdmin) _BadgeData('Admin', AdminPalette.primary),
               if (workModeLabel.isNotEmpty)
                 _BadgeData(workModeLabel, AdminPalette.info),
               if (deadlineLabel != null)
@@ -2047,6 +2046,9 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       salaryCurrency: opportunityModel.salaryCurrency,
       salaryPeriod: opportunityModel.salaryPeriod,
       compensationText: opportunityModel.compensationText,
+      fundingAmount: opportunityModel.fundingAmount,
+      fundingCurrency: opportunityModel.fundingCurrency,
+      fundingNote: opportunityModel.fundingNote,
       isPaid: opportunityModel.isPaid,
       employmentType: opportunityModel.employmentType,
       workMode: opportunityModel.workMode,
@@ -2089,10 +2091,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
         if (!opportunityModel.isAdminPosted) return false;
         if (adminId.isEmpty) return false;
         if (opportunityModel.companyId.trim() != adminId) return false;
-        final apps = _applicationsForOpportunity(
-          provider,
-          opportunityModel.id,
-        );
+        final apps = _applicationsForOpportunity(provider, opportunityModel.id);
         return apps.any(
           (a) => ApplicationStatus.parse(a.status) == ApplicationStatus.pending,
         );
@@ -2459,10 +2458,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
           child: AdminSurface(
             padding: const EdgeInsets.fromLTRB(14, 13, 13, 13),
             radius: 18,
-            border: Border.all(
-              color: borderColor,
-              width: isTarget ? 1.4 : 1,
-            ),
+            border: Border.all(color: borderColor, width: isTarget ? 1.4 : 1),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -2724,8 +2720,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       ),
       badges: [
         if (training.isHidden) _BadgeData('Hidden', Colors.blueGrey),
-        if (!training.isApproved)
-          _BadgeData('Pending', AdminPalette.warning),
+        if (!training.isApproved) _BadgeData('Pending', AdminPalette.warning),
         _BadgeData(typeLabel, trainingAccentColor),
         if (levelLabel.trim().isNotEmpty)
           _BadgeData(levelLabel, AdminPalette.info),
@@ -3158,8 +3153,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             const AdminSectionHeader(
               eyebrow: 'Positioning',
               title: 'Audience And Metadata',
-              subtitle:
-                  'Where the idea fits and how ready it is for review.',
+              subtitle: 'Where the idea fits and how ready it is for review.',
             ),
             const SizedBox(height: 12),
             _buildIdeaMetadataGrid(<_IdeaDetailItem>[
@@ -4141,15 +4135,19 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     final statusLabel = DisplayText.capitalizeLeadingLabel(
       opportunityModel.status,
     );
-    final compensationLabel = OpportunityMetadata.buildCompensationLabel(
-      salaryMin: opportunityModel.salaryMin,
-      salaryMax: opportunityModel.salaryMax,
-      salaryCurrency: opportunityModel.salaryCurrency,
-      salaryPeriod: opportunityModel.salaryPeriod,
-      compensationText: opportunityModel.compensationText,
-      isPaid: opportunityModel.isPaid,
-      preferCompensationText: true,
-    );
+    final compensationLabel =
+        OpportunityType.parse(opportunityModel.type) ==
+            OpportunityType.sponsoring
+        ? opportunityModel.fundingLabel(preferFundingNote: true)
+        : OpportunityMetadata.buildCompensationLabel(
+            salaryMin: opportunityModel.salaryMin,
+            salaryMax: opportunityModel.salaryMax,
+            salaryCurrency: opportunityModel.salaryCurrency,
+            salaryPeriod: opportunityModel.salaryPeriod,
+            compensationText: opportunityModel.compensationText,
+            isPaid: opportunityModel.isPaid,
+            preferCompensationText: true,
+          );
     final requirements =
         (opportunityModel.requirementItems.isNotEmpty
                 ? opportunityModel.requirementItems
@@ -4260,8 +4258,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             const AdminSectionHeader(
               eyebrow: 'Role Setup',
               title: 'Location And Logistics',
-              subtitle:
-                  'Additional details about the position.',
+              subtitle: 'Additional details about the position.',
             ),
             const SizedBox(height: 12),
             _buildIdeaMetadataGrid([
@@ -4699,8 +4696,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             const AdminSectionHeader(
               eyebrow: 'Resource Details',
               title: 'Delivery And Access',
-              subtitle:
-                  'How the resource is packaged and what students get.',
+              subtitle: 'How the resource is packaged and what students get.',
             ),
             const SizedBox(height: 12),
             _buildIdeaMetadataGrid([

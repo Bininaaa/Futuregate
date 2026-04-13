@@ -492,6 +492,365 @@ class AppFormDropdownField<T> extends StatelessWidget {
   }
 }
 
+class AppEditableListController {
+  final TextEditingController _textController = TextEditingController();
+  _AppEditableListFieldState? _state;
+
+  bool commitPendingInput() => _state?._commitPendingInput() ?? false;
+
+  void dispose() {
+    _textController.dispose();
+  }
+}
+
+class AppEditableListField extends StatefulWidget {
+  final AppContentTheme theme;
+  final String label;
+  final String hint;
+  final List<String> values;
+  final ValueChanged<List<String>> onChanged;
+  final AppEditableListController? listController;
+  final String? Function(List<String>)? validator;
+  final List<String> examples;
+  final String emptyText;
+  final IconData addIcon;
+
+  const AppEditableListField({
+    super.key,
+    required this.theme,
+    required this.label,
+    required this.hint,
+    required this.values,
+    required this.onChanged,
+    this.listController,
+    this.validator,
+    this.examples = const <String>[],
+    this.emptyText = 'Add each item one by one.',
+    this.addIcon = Icons.add_circle_outline_rounded,
+  });
+
+  @override
+  State<AppEditableListField> createState() => _AppEditableListFieldState();
+}
+
+class _AppEditableListFieldState extends State<AppEditableListField> {
+  late AppEditableListController _controller;
+  FormFieldState<List<String>>? _fieldState;
+  bool _ownsController = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _attachController(widget.listController);
+  }
+
+  @override
+  void didUpdateWidget(covariant AppEditableListField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.listController != widget.listController) {
+      _detachController();
+      _attachController(widget.listController);
+    }
+  }
+
+  @override
+  void dispose() {
+    _detachController();
+    super.dispose();
+  }
+
+  void _attachController(AppEditableListController? controller) {
+    _controller = controller ?? AppEditableListController();
+    _ownsController = controller == null;
+    _controller._state = this;
+  }
+
+  void _detachController() {
+    if (_controller._state == this) {
+      _controller._state = null;
+    }
+    if (_ownsController) {
+      _controller.dispose();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FormField<List<String>>(
+      initialValue: widget.values,
+      validator: (value) => widget.validator?.call(value ?? widget.values),
+      builder: (field) {
+        _fieldState = field;
+
+        void removeItem(String item) {
+          final current = field.value ?? widget.values;
+          final next = current
+              .where(
+                (value) =>
+                    value.trim().toLowerCase() != item.trim().toLowerCase(),
+              )
+              .toList(growable: false);
+          widget.onChanged(next);
+          field.didChange(next);
+        }
+
+        void addExample(String item) {
+          final next = _mergeUnique(field.value ?? widget.values, <String>[
+            item,
+          ]);
+          widget.onChanged(next);
+          field.didChange(next);
+        }
+
+        final hasError = field.hasError;
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text(widget.label, style: widget.theme.label(size: 12)),
+            const SizedBox(height: AppContentSpacing.xs),
+            if (widget.values.isEmpty)
+              Text(
+                widget.emptyText,
+                style: widget.theme.body(
+                  size: 11.8,
+                  color: widget.theme.textMuted,
+                ),
+              )
+            else
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: widget.values
+                    .map(
+                      (item) => _AppEditableListChip(
+                        theme: widget.theme,
+                        label: item,
+                        onRemove: () => removeItem(item),
+                      ),
+                    )
+                    .toList(growable: false),
+              ),
+            const SizedBox(height: AppContentSpacing.sm),
+            TextFormField(
+              controller: _controller._textController,
+              minLines: 1,
+              maxLines: 3,
+              textInputAction: TextInputAction.done,
+              keyboardType: TextInputType.multiline,
+              onFieldSubmitted: (_) => _commitPendingInput(field),
+              style: widget.theme.body(
+                color: widget.theme.textPrimary,
+                weight: FontWeight.w500,
+              ),
+              decoration: _fieldDecoration(
+                theme: widget.theme,
+                hint: widget.hint,
+                suffixIcon: IconButton(
+                  tooltip: 'Add item',
+                  icon: Icon(widget.addIcon, color: widget.theme.accent),
+                  onPressed: () => _commitPendingInput(field),
+                ),
+              ),
+            ),
+            if (widget.examples.isNotEmpty) ...<Widget>[
+              const SizedBox(height: AppContentSpacing.sm),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: widget.examples
+                    .map(
+                      (example) => _AppExampleChip(
+                        theme: widget.theme,
+                        label: example,
+                        onTap: () => addExample(example),
+                      ),
+                    )
+                    .toList(growable: false),
+              ),
+            ],
+            if (hasError) ...<Widget>[
+              const SizedBox(height: AppContentSpacing.xs),
+              Text(
+                field.errorText ?? '',
+                style: GoogleFonts.poppins(
+                  fontSize: 11.6,
+                  fontWeight: FontWeight.w600,
+                  height: 1.35,
+                  color: widget.theme.error,
+                ),
+              ),
+            ],
+          ],
+        );
+      },
+    );
+  }
+
+  bool _commitPendingInput([FormFieldState<List<String>>? field]) {
+    final fieldState = field ?? _fieldState;
+    final additions = _parseListItems(_controller._textController.text);
+    if (additions.isEmpty) {
+      fieldState?.validate();
+      return false;
+    }
+
+    final next = _mergeUnique(fieldState?.value ?? widget.values, additions);
+    widget.onChanged(next);
+    fieldState?.didChange(next);
+    _controller._textController.clear();
+    return true;
+  }
+
+  List<String> _parseListItems(String rawValue) {
+    final normalized = rawValue
+        .replaceAll('\r', '\n')
+        .replaceAll('\u2022', '\n')
+        .trim();
+    if (normalized.isEmpty) {
+      return const <String>[];
+    }
+
+    return normalized
+        .split(RegExp(r'\n+|;|(?<!\d),(?!\d)'))
+        .map(_cleanListItem)
+        .whereType<String>()
+        .toList(growable: false);
+  }
+
+  List<String> _mergeUnique(List<String> current, List<String> additions) {
+    final seen = <String>{};
+    final next = <String>[];
+
+    for (final item in <String>[...current, ...additions]) {
+      final cleaned = _cleanListItem(item);
+      if (cleaned == null) {
+        continue;
+      }
+
+      if (seen.add(cleaned.toLowerCase())) {
+        next.add(cleaned);
+      }
+    }
+
+    return next;
+  }
+
+  String? _cleanListItem(String value) {
+    final cleaned = value
+        .replaceFirst(RegExp(r'^\s*[-*]+\s*'), '')
+        .replaceFirst(RegExp(r'^\s*\d+[.)]\s*'), '')
+        .replaceAll(RegExp(r'\s+'), ' ')
+        .trim();
+    return cleaned.isEmpty ? null : cleaned;
+  }
+}
+
+class _AppEditableListChip extends StatelessWidget {
+  final AppContentTheme theme;
+  final String label;
+  final VoidCallback onRemove;
+
+  const _AppEditableListChip({
+    required this.theme,
+    required this.label,
+    required this.onRemove,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: theme.accent.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: theme.accent.withValues(alpha: 0.16)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.only(left: 10, right: 4, top: 5, bottom: 5),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: MediaQuery.sizeOf(context).width - 96,
+              ),
+              child: Text(
+                label,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: theme.body(
+                  size: 11.6,
+                  color: theme.accentDark,
+                  weight: FontWeight.w600,
+                  height: 1.35,
+                ),
+              ),
+            ),
+            const SizedBox(width: 4),
+            InkWell(
+              onTap: onRemove,
+              borderRadius: BorderRadius.circular(8),
+              child: Icon(
+                Icons.close_rounded,
+                size: 16,
+                color: theme.accentDark.withValues(alpha: 0.58),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _AppExampleChip extends StatelessWidget {
+  final AppContentTheme theme;
+  final String label;
+  final VoidCallback onTap;
+
+  const _AppExampleChip({
+    required this.theme,
+    required this.label,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
+          decoration: BoxDecoration(
+            color: widgetSurfaceColor,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: theme.border),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Icon(Icons.add_rounded, size: 13, color: theme.textMuted),
+              const SizedBox(width: 5),
+              Text(
+                label,
+                style: theme.body(
+                  size: 10.9,
+                  color: theme.textSecondary,
+                  weight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Color get widgetSurfaceColor => theme.surfaceMuted.withValues(alpha: 0.72);
+}
+
 class AppChoiceCard extends StatelessWidget {
   final AppContentTheme theme;
   final String label;

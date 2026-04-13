@@ -60,6 +60,7 @@ class SavedOpportunityService {
     required String type,
     required String location,
     required String deadline,
+    String fundingLabel = '',
   }) async {
     final existing = await _firestore
         .collection('savedOpportunities')
@@ -82,6 +83,7 @@ class SavedOpportunityService {
       'type': type,
       'location': location,
       'deadline': deadline,
+      'fundingLabel': fundingLabel.trim(),
       'savedAt': FieldValue.serverTimestamp(),
     };
 

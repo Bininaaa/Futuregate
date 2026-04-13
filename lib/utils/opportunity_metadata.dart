@@ -33,6 +33,10 @@ class OpportunityMetadata {
         normalizedType == OpportunityType.internship;
   }
 
+  static bool usesFundingFields(String? type) {
+    return OpportunityType.parse(type) == OpportunityType.sponsoring;
+  }
+
   static dynamic firstValue(Map<String, dynamic> data, List<String> keys) {
     for (final key in keys) {
       if (!data.containsKey(key)) {
@@ -602,6 +606,72 @@ class OpportunityMetadata {
     );
   }
 
+  static num? extractFundingAmount(Map<String, dynamic> data) {
+    final fundingObject = data['funding'];
+    return parseNullableNum(
+      firstValue(data, [
+            'fundingAmount',
+            'funding_amount',
+            'fundAmount',
+            'fund_amount',
+            'sponsorshipAmount',
+            'sponsorship_amount',
+            'companyFundingAmount',
+            'company_funding_amount',
+          ]) ??
+          (fundingObject is Map
+              ? fundingObject['amount'] ??
+                    fundingObject['value'] ??
+                    fundingObject['total']
+              : null),
+    );
+  }
+
+  static String? extractFundingCurrency(Map<String, dynamic> data) {
+    final fundingObject = data['funding'];
+    return normalizeCurrency(
+      stringFromValue(
+        firstValue(data, [
+              'fundingCurrency',
+              'funding_currency',
+              'fundCurrency',
+              'fund_currency',
+              'sponsorshipCurrency',
+              'sponsorship_currency',
+            ]) ??
+            (fundingObject is Map ? fundingObject['currency'] : null),
+      ),
+    );
+  }
+
+  static String? extractFundingNote(Map<String, dynamic> data) {
+    final fundingObject = data['funding'];
+    return sanitizeText(
+      stringFromValue(
+        firstValue(data, [
+              'fundingNote',
+              'funding_note',
+              'fundingText',
+              'funding_text',
+              'fundingDescription',
+              'funding_description',
+              'fundingDetails',
+              'funding_details',
+              'sponsorshipNote',
+              'sponsorship_note',
+              'supportDetails',
+              'support_details',
+            ]) ??
+            (fundingObject is Map
+                ? fundingObject['note'] ??
+                      fundingObject['display'] ??
+                      fundingObject['label'] ??
+                      fundingObject['text']
+                : null),
+      ),
+    );
+  }
+
   static String? extractEmploymentType(Map<String, dynamic> data) {
     return normalizeEmploymentType(
       stringFromValue(
@@ -744,6 +814,94 @@ class OpportunityMetadata {
     return buffer.toString().trim();
   }
 
+  static String? formatFundingAmount({
+    num? fundingAmount,
+    String? fundingCurrency,
+  }) {
+    if (fundingAmount == null) {
+      return null;
+    }
+
+    final buffer = StringBuffer(_formatCompactAmount(fundingAmount));
+    final currencyText = normalizeCurrency(fundingCurrency);
+    if (currencyText != null) {
+      buffer.write(' $currencyText');
+    }
+
+    return buffer.toString().trim();
+  }
+
+  static String? formatFundingRange({
+    num? fundingMin,
+    num? fundingMax,
+    String? fundingCurrency,
+  }) {
+    num? normalizedMin = fundingMin;
+    num? normalizedMax = fundingMax;
+
+    if (normalizedMin == null && normalizedMax == null) {
+      return null;
+    }
+
+    if (normalizedMin != null &&
+        normalizedMax != null &&
+        normalizedMax < normalizedMin) {
+      final swappedMin = normalizedMax;
+      normalizedMax = normalizedMin;
+      normalizedMin = swappedMin;
+    }
+
+    final amountText = normalizedMin != null && normalizedMax != null
+        ? '${_formatCompactAmount(normalizedMin)}-${_formatCompactAmount(normalizedMax)}'
+        : _formatCompactAmount(normalizedMin ?? normalizedMax!);
+    final buffer = StringBuffer(amountText);
+    final currencyText = normalizeCurrency(fundingCurrency);
+    if (currencyText != null) {
+      buffer.write(' $currencyText');
+    }
+
+    return buffer.toString().trim();
+  }
+
+  static String? buildFundingLabel({
+    num? fundingAmount,
+    String? fundingCurrency,
+    String? fundingNote,
+    num? legacySalaryMin,
+    num? legacySalaryMax,
+    String? legacySalaryCurrency,
+    String? legacyCompensationText,
+    bool preferFundingNote = false,
+    bool includePrefix = false,
+  }) {
+    final customText = sanitizeText(fundingNote);
+    final structured = formatFundingAmount(
+      fundingAmount: fundingAmount,
+      fundingCurrency: fundingCurrency,
+    );
+
+    String? label;
+    if (preferFundingNote && customText != null) {
+      label = customText;
+    } else {
+      label =
+          structured ??
+          customText ??
+          formatFundingRange(
+            fundingMin: legacySalaryMin,
+            fundingMax: legacySalaryMax,
+            fundingCurrency: legacySalaryCurrency,
+          ) ??
+          sanitizeText(legacyCompensationText);
+    }
+
+    if (label == null) {
+      return null;
+    }
+
+    return includePrefix ? 'Company funding: $label' : label;
+  }
+
   static String? buildCompensationLabel({
     num? salaryMin,
     num? salaryMax,
@@ -781,6 +939,9 @@ class OpportunityMetadata {
     String? salaryCurrency,
     String? salaryPeriod,
     String? compensationText,
+    num? fundingAmount,
+    String? fundingCurrency,
+    String? fundingNote,
     bool? isPaid,
     String? employmentType,
     String? workMode,
@@ -789,15 +950,27 @@ class OpportunityMetadata {
     bool preferCompensationText = false,
   }) {
     final items = <String>[];
-    final compensationLabel = buildCompensationLabel(
-      salaryMin: salaryMin,
-      salaryMax: salaryMax,
-      salaryCurrency: salaryCurrency,
-      salaryPeriod: salaryPeriod,
-      compensationText: compensationText,
-      isPaid: isPaid,
-      preferCompensationText: preferCompensationText,
-    );
+    final normalizedType = OpportunityType.parse(type);
+    final compensationLabel = normalizedType == OpportunityType.sponsoring
+        ? buildFundingLabel(
+            fundingAmount: fundingAmount,
+            fundingCurrency: fundingCurrency,
+            fundingNote: fundingNote,
+            legacySalaryMin: salaryMin,
+            legacySalaryMax: salaryMax,
+            legacySalaryCurrency: salaryCurrency,
+            legacyCompensationText: compensationText,
+            preferFundingNote: preferCompensationText,
+          )
+        : buildCompensationLabel(
+            salaryMin: salaryMin,
+            salaryMax: salaryMax,
+            salaryCurrency: salaryCurrency,
+            salaryPeriod: salaryPeriod,
+            compensationText: compensationText,
+            isPaid: isPaid,
+            preferCompensationText: preferCompensationText,
+          );
 
     if (compensationLabel != null) {
       items.add(compensationLabel);
@@ -823,7 +996,7 @@ class OpportunityMetadata {
       items.add(paidLabel);
     }
 
-    if (OpportunityType.parse(type) == OpportunityType.internship) {
+    if (normalizedType == OpportunityType.internship) {
       final normalizedDuration = normalizeDuration(duration);
       if (normalizedDuration != null) {
         items.add(normalizedDuration);

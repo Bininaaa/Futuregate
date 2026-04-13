@@ -351,6 +351,9 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
         type: opportunity.type,
         location: opportunity.location,
         deadline: opportunity.deadlineLabel,
+        fundingLabel: OpportunityType.isSponsoring(opportunity.type)
+            ? opportunity.fundingLabel() ?? ''
+            : '',
       );
     }
 
@@ -1246,6 +1249,10 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
   }
 
   String? _compensationText(OpportunityModel opportunity) {
+    if (OpportunityType.isSponsoring(opportunity.type)) {
+      return opportunity.fundingLabel();
+    }
+
     // Opportunity cards should only show structured salary data, not the
     // optional compensation note reserved for the detail screen.
     final structuredLabel = OpportunityMetadata.formatSalaryRange(
@@ -1316,6 +1323,10 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
       salaryMax: opportunity.salaryMax,
       salaryCurrency: opportunity.salaryCurrency,
       salaryPeriod: opportunity.salaryPeriod,
+      compensationText: opportunity.compensationText,
+      fundingAmount: opportunity.fundingAmount,
+      fundingCurrency: opportunity.fundingCurrency,
+      fundingNote: opportunity.fundingNote,
       isPaid: _effectiveIsPaid(opportunity),
       employmentType: opportunity.employmentType,
       workMode: _normalizedWorkMode(opportunity),

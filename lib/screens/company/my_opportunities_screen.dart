@@ -387,6 +387,9 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
       salaryCurrency: opportunity.salaryCurrency,
       salaryPeriod: opportunity.salaryPeriod,
       compensationText: opportunity.compensationText,
+      fundingAmount: opportunity.fundingAmount,
+      fundingCurrency: opportunity.fundingCurrency,
+      fundingNote: opportunity.fundingNote,
       isPaid: opportunity.isPaid,
       employmentType: opportunity.employmentType,
       workMode: opportunity.workMode,
@@ -472,7 +475,8 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
                                           : opportunity.location.trim(),
                                       style: GoogleFonts.poppins(
                                         fontSize: 12,
-                                        color: _OpportunityPalette.textSecondary,
+                                        color:
+                                            _OpportunityPalette.textSecondary,
                                       ),
                                     ),
                                   ),
@@ -905,9 +909,9 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
         _HeaderIconButton(
           icon: Icons.menu_rounded,
           onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const SettingsScreen()),
-            );
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (_) => const SettingsScreen()));
           },
         ),
         const SizedBox(width: 12),
@@ -1357,9 +1361,7 @@ class _SegmentButton extends StatelessWidget {
         duration: const Duration(milliseconds: 180),
         padding: const EdgeInsets.symmetric(vertical: 8),
         decoration: BoxDecoration(
-          color: selected
-              ? _OpportunityPalette.primary
-              : Colors.transparent,
+          color: selected ? _OpportunityPalette.primary : Colors.transparent,
           borderRadius: BorderRadius.circular(9),
         ),
         child: Center(
@@ -1774,10 +1776,7 @@ class _OpportunityGridCard extends StatelessWidget {
                 ],
               ),
               const Spacer(),
-              Container(
-                height: 1,
-                color: _OpportunityPalette.border,
-              ),
+              Container(height: 1, color: _OpportunityPalette.border),
               const SizedBox(height: 10),
               Row(
                 children: [
@@ -2177,11 +2176,7 @@ class _DetailDivider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 1,
-      height: 30,
-      color: _OpportunityPalette.border,
-    );
+    return Container(width: 1, height: 30, color: _OpportunityPalette.border);
   }
 }
 

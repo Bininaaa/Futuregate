@@ -8,6 +8,7 @@ import '../../utils/admin_palette.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/opportunity_type_selector.dart';
+import '../../widgets/shared/app_content_system.dart';
 import '../../widgets/shared/app_feedback.dart';
 import 'admin_editor_widgets.dart';
 
@@ -28,17 +29,21 @@ class _AdminOpportunityEditorScreenState
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _locationController = TextEditingController();
-  final _requirementsController = TextEditingController();
   final _deadlineController = TextEditingController();
   final _salaryMinController = TextEditingController();
   final _salaryMaxController = TextEditingController();
   final _compensationTextController = TextEditingController();
+  final _fundingAmountController = TextEditingController();
+  final _fundingNoteController = TextEditingController();
   final _durationController = TextEditingController();
+  final _requirementsListController = AppEditableListController();
+  List<String> _requirementItems = <String>[];
 
   String _type = OpportunityType.job;
   String _status = 'open';
   String? _salaryCurrency = OpportunityMetadata.supportedCurrencies.first;
   String? _salaryPeriod;
+  String? _fundingCurrency = OpportunityMetadata.supportedCurrencies.first;
   String? _employmentType;
   String? _workMode;
   bool? _isPaid;
@@ -50,6 +55,8 @@ class _AdminOpportunityEditorScreenState
       OpportunityMetadata.usesStructuredFields(_type);
   bool get _isInternship =>
       OpportunityType.parse(_type) == OpportunityType.internship;
+  bool get _isSponsoring =>
+      OpportunityType.parse(_type) == OpportunityType.sponsoring;
 
   @override
   void initState() {
@@ -70,7 +77,12 @@ class _AdminOpportunityEditorScreenState
     _titleController.text = opportunity.title;
     _descriptionController.text = opportunity.description;
     _locationController.text = opportunity.location;
-    _requirementsController.text = opportunity.requirements;
+    _requirementItems = opportunity.requirementItems.isNotEmpty
+        ? List<String>.from(opportunity.requirementItems)
+        : OpportunityMetadata.extractRequirementItems(
+            raw,
+            fallbackText: opportunity.requirements,
+          );
     _type = opportunity.type;
     _status = opportunity.status == 'closed' ? 'closed' : 'open';
     final deadline =
@@ -91,8 +103,19 @@ class _AdminOpportunityEditorScreenState
     _salaryMinController.text = _formatNum(opportunity.salaryMin);
     _salaryMaxController.text = _formatNum(opportunity.salaryMax);
     _compensationTextController.text = opportunity.compensationText ?? '';
+    _fundingAmountController.text = _formatNum(
+      opportunity.fundingAmount ??
+          (_isSponsoring ? opportunity.salaryMin : null),
+    );
+    _fundingNoteController.text =
+        opportunity.fundingNote ??
+        (_isSponsoring ? opportunity.compensationText ?? '' : '');
     _durationController.text = opportunity.duration ?? '';
     _salaryCurrency = opportunity.salaryCurrency ?? _salaryCurrency;
+    _fundingCurrency =
+        opportunity.fundingCurrency ??
+        opportunity.salaryCurrency ??
+        _fundingCurrency;
     _salaryPeriod = opportunity.salaryPeriod;
     _employmentType = opportunity.employmentType;
     _workMode = opportunity.workMode;
@@ -105,12 +128,14 @@ class _AdminOpportunityEditorScreenState
     _titleController.dispose();
     _descriptionController.dispose();
     _locationController.dispose();
-    _requirementsController.dispose();
     _deadlineController.dispose();
     _salaryMinController.dispose();
     _salaryMaxController.dispose();
     _compensationTextController.dispose();
+    _fundingAmountController.dispose();
+    _fundingNoteController.dispose();
     _durationController.dispose();
+    _requirementsListController.dispose();
     super.dispose();
   }
 
@@ -212,20 +237,23 @@ class _AdminOpportunityEditorScreenState
             const SizedBox(height: 12),
             AdminEditorSection(
               title: 'Requirements And Eligibility',
-              child: AdminEditorField(
-                controller: _requirementsController,
+              subtitle:
+                  'Add one clear item at a time so students see a clean checklist.',
+              child: AdminEditorListField(
                 label: _type == OpportunityType.sponsoring
                     ? 'Eligibility'
                     : 'Requirements',
                 hint: _type == OpportunityType.sponsoring
-                    ? 'Share eligibility and supporting details'
-                    : 'Share the background, skills, or experience needed',
-                maxLines: 4,
-                validator: adminRequiredMin(
-                  _type == OpportunityType.sponsoring
-                      ? 'Eligibility'
-                      : 'Requirements',
-                ),
+                    ? 'Type one eligibility rule, then press Enter'
+                    : 'Type one requirement, then press Enter',
+                values: _requirementItems,
+                onChanged: (items) => setState(() => _requirementItems = items),
+                listController: _requirementsListController,
+                validator: _validateRequirementItems,
+                examples: _requirementExamples(),
+                emptyText: _type == OpportunityType.sponsoring
+                    ? 'Add eligibility rules, documents, or selection criteria.'
+                    : 'Add the skills, background, or tools students need.',
               ),
             ),
             const SizedBox(height: 12),
@@ -242,6 +270,49 @@ class _AdminOpportunityEditorScreenState
                     onTap: _pickDeadline,
                     validator: _validateDeadline,
                   ),
+                  if (_isSponsoring) ...[
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: AdminEditorField(
+                            controller: _fundingAmountController,
+                            label: 'Funding amount',
+                            hint: 'e.g. 250000',
+                            keyboardType: const TextInputType.numberWithOptions(
+                              decimal: true,
+                            ),
+                            validator: _validateFundingAmount,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: AdminEditorDropdown<String>(
+                            value: _fundingCurrency,
+                            label: 'Funding currency',
+                            items: OpportunityMetadata.supportedCurrencies
+                                .map(
+                                  (item) => DropdownMenuItem(
+                                    value: item,
+                                    child: Text(item),
+                                  ),
+                                )
+                                .toList(),
+                            onChanged: (value) =>
+                                setState(() => _fundingCurrency = value),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    AdminEditorField(
+                      controller: _fundingNoteController,
+                      label: 'Funding note',
+                      hint: 'Optional support details shown to students',
+                      maxLines: 2,
+                      validator: _validateFundingNote,
+                    ),
+                  ],
                   if (_usesStructuredFields) ...[
                     const SizedBox(height: 12),
                     Row(
@@ -415,6 +486,7 @@ class _AdminOpportunityEditorScreenState
 
   Future<void> _submit() async {
     FocusScope.of(context).unfocus();
+    _requirementsListController.commitPendingInput();
     if (!_formKey.currentState!.validate()) return;
 
     final auth = context.read<AuthProvider>().userModel;
@@ -428,6 +500,7 @@ class _AdminOpportunityEditorScreenState
     final companyLogo = (auth.logo ?? '').trim().isNotEmpty
         ? (auth.logo ?? '').trim()
         : auth.profileImage.trim();
+    final requirementText = _requirementItems.join('\n');
     final payload = <String, dynamic>{
       'companyId': auth.uid,
       'companyName': _publisherController.text.trim(),
@@ -438,7 +511,8 @@ class _AdminOpportunityEditorScreenState
       'description': _descriptionController.text.trim(),
       'type': _type,
       'location': _locationController.text.trim(),
-      'requirements': _requirementsController.text.trim(),
+      'requirements': requirementText,
+      'requirementItems': _requirementItems,
       'status': _status,
       'deadline': deadline == null
           ? _deadlineController.text.trim()
@@ -456,6 +530,13 @@ class _AdminOpportunityEditorScreenState
       'salaryPeriod': _salaryPeriod,
       'compensationText': OpportunityMetadata.sanitizeText(
         _compensationTextController.text,
+      ),
+      'fundingAmount': OpportunityMetadata.parseNullableNum(
+        _fundingAmountController.text,
+      ),
+      'fundingCurrency': _fundingCurrency,
+      'fundingNote': OpportunityMetadata.sanitizeText(
+        _fundingNoteController.text,
       ),
       'employmentType': _employmentType,
       'workMode': _workMode,
@@ -496,6 +577,23 @@ class _AdminOpportunityEditorScreenState
   }
 
   void _applyTypeDefaults() {
+    if (_isSponsoring) {
+      _salaryMinController.clear();
+      _salaryMaxController.clear();
+      _compensationTextController.clear();
+      _salaryPeriod = null;
+      _employmentType = null;
+      _workMode = null;
+      _isPaid = null;
+      _durationController.clear();
+      _fundingCurrency ??= OpportunityMetadata.supportedCurrencies.first;
+      return;
+    }
+
+    _fundingAmountController.clear();
+    _fundingNoteController.clear();
+    _fundingCurrency = OpportunityMetadata.supportedCurrencies.first;
+
     if (!_usesStructuredFields) {
       _salaryMinController.clear();
       _salaryMaxController.clear();
@@ -516,6 +614,39 @@ class _AdminOpportunityEditorScreenState
     if (_employmentType == 'internship') {
       _employmentType = null;
     }
+  }
+
+  List<String> _requirementExamples() {
+    if (_isSponsoring) {
+      return const <String>[
+        'Student team with a working prototype',
+        'Clear project budget',
+        'Available for sponsor check-ins',
+      ];
+    }
+
+    if (_isInternship) {
+      return const <String>[
+        'Basic Flutter knowledge',
+        'Available for 3 months',
+        'Good communication skills',
+      ];
+    }
+
+    return const <String>[
+      'Experience with Flutter',
+      'Strong problem-solving skills',
+      'Comfortable working in a team',
+    ];
+  }
+
+  String? _validateRequirementItems(List<String> items) {
+    if (items.where((item) => item.trim().isNotEmpty).isEmpty) {
+      return _isSponsoring
+          ? 'Add at least one eligibility item'
+          : 'Add at least one requirement';
+    }
+    return null;
   }
 
   String? _validateDeadline(String? value) {
@@ -561,6 +692,39 @@ class _AdminOpportunityEditorScreenState
     }
     if (minValue != null && maxValue != null && maxValue < minValue) {
       return 'Max must be at least min';
+    }
+    return null;
+  }
+
+  String? _validateFundingAmount(String? value) {
+    if (!_isSponsoring) {
+      return null;
+    }
+
+    final text = value?.trim() ?? '';
+    final note = _fundingNoteController.text.trim();
+    final parsed = OpportunityMetadata.parseNullableNum(text);
+    if (text.isEmpty && note.isEmpty) {
+      return 'Add a funding amount or note';
+    }
+    if (text.isNotEmpty && parsed == null) {
+      return 'Enter a valid amount';
+    }
+    if (parsed != null && parsed < 0) {
+      return 'Amount cannot be negative';
+    }
+    return null;
+  }
+
+  String? _validateFundingNote(String? value) {
+    if (!_isSponsoring) {
+      return null;
+    }
+
+    final amount = _fundingAmountController.text.trim();
+    final note = value?.trim() ?? '';
+    if (amount.isEmpty && note.isEmpty) {
+      return 'Add a funding note or amount';
     }
     return null;
   }

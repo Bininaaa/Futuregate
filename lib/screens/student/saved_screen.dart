@@ -1134,6 +1134,13 @@ class _SavedOpportunityCard extends StatelessWidget {
           label: _deadlineLabel(deadline, item.deadline),
           tone: _deadlineTone(deadline),
         ),
+        if (OpportunityType.isSponsoring(item.type) &&
+            item.fundingLabel.trim().isNotEmpty)
+          _SavedMetaChip(
+            icon: Icons.savings_outlined,
+            label: 'Funding: ${item.fundingLabel.trim()}',
+            tone: accent,
+          ),
         if (isClosingSoon && !isExpired)
           const _SavedMetaChip(
             icon: Icons.local_fire_department_outlined,

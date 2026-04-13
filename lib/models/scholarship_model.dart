@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../utils/opportunity_metadata.dart';
+
 class ScholarshipModel {
   final String id;
   final String title;
@@ -22,6 +24,7 @@ class ScholarshipModel {
   final bool isFeatured;
   final bool isHidden;
   final List<String> tags;
+  final List<String> eligibilityItems;
   final Map<String, dynamic> rawData;
 
   ScholarshipModel({
@@ -46,11 +49,16 @@ class ScholarshipModel {
     this.isFeatured = false,
     this.isHidden = false,
     this.tags = const [],
+    this.eligibilityItems = const [],
     this.rawData = const {},
   });
 
   factory ScholarshipModel.fromMap(Map<String, dynamic> map) {
     final rawData = Map<String, dynamic>.from(map);
+    final eligibilityItems = OpportunityMetadata.stringListFromValue(
+      rawData['eligibilityItems'] ?? rawData['eligibility_items'],
+      maxItems: 10,
+    );
 
     return ScholarshipModel(
       id: _readString(rawData['id']) ?? '',
@@ -109,6 +117,12 @@ class ScholarshipModel {
       isFeatured: _readBool(rawData['featured']) ?? false,
       isHidden: _readBool(rawData['isHidden']) ?? false,
       tags: _readStringList(rawData['tags']),
+      eligibilityItems: eligibilityItems.isNotEmpty
+          ? eligibilityItems
+          : OpportunityMetadata.stringListFromValue(
+              rawData['eligibility'],
+              maxItems: 10,
+            ),
       rawData: rawData,
     );
   }
@@ -137,6 +151,7 @@ class ScholarshipModel {
       'featured': isFeatured,
       'isHidden': isHidden,
       'tags': tags,
+      'eligibilityItems': eligibilityItems,
     };
   }
 

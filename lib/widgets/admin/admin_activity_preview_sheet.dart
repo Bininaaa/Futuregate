@@ -234,15 +234,17 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
     final paidLabel =
         OpportunityMetadata.formatPaidLabel(opportunity.isPaid) ?? '';
     final statusLabel = DisplayText.capitalizeLeadingLabel(opportunity.status);
-    final compensationLabel = OpportunityMetadata.buildCompensationLabel(
-      salaryMin: opportunity.salaryMin,
-      salaryMax: opportunity.salaryMax,
-      salaryCurrency: opportunity.salaryCurrency,
-      salaryPeriod: opportunity.salaryPeriod,
-      compensationText: opportunity.compensationText,
-      isPaid: opportunity.isPaid,
-      preferCompensationText: true,
-    );
+    final compensationLabel = opportunityType == OpportunityType.sponsoring
+        ? opportunity.fundingLabel(preferFundingNote: true)
+        : OpportunityMetadata.buildCompensationLabel(
+            salaryMin: opportunity.salaryMin,
+            salaryMax: opportunity.salaryMax,
+            salaryCurrency: opportunity.salaryCurrency,
+            salaryPeriod: opportunity.salaryPeriod,
+            compensationText: opportunity.compensationText,
+            isPaid: opportunity.isPaid,
+            preferCompensationText: true,
+          );
     final applicationsCount = _asInt(
       preview.data['activityApplicationCount'],
       fallback: 0,

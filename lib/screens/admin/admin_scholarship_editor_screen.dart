@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../providers/admin_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../utils/opportunity_metadata.dart';
+import '../../widgets/shared/app_content_system.dart';
 import '../../widgets/shared/app_feedback.dart';
 import 'admin_editor_widgets.dart';
 
@@ -23,7 +24,6 @@ class _AdminScholarshipEditorScreenState
   final _titleController = TextEditingController();
   final _providerController = TextEditingController();
   final _descriptionController = TextEditingController();
-  final _eligibilityController = TextEditingController();
   final _amountController = TextEditingController();
   final _deadlineController = TextEditingController();
   final _linkController = TextEditingController();
@@ -35,6 +35,8 @@ class _AdminScholarshipEditorScreenState
   final _categoryController = TextEditingController();
   final _levelController = TextEditingController();
   final _tagsController = TextEditingController();
+  final _eligibilityListController = AppEditableListController();
+  List<String> _eligibilityItems = <String>[];
 
   DateTime? _deadline;
   bool _featured = false;
@@ -51,7 +53,16 @@ class _AdminScholarshipEditorScreenState
     _titleController.text = scholarship['title']?.toString() ?? '';
     _providerController.text = scholarship['provider']?.toString() ?? '';
     _descriptionController.text = scholarship['description']?.toString() ?? '';
-    _eligibilityController.text = scholarship['eligibility']?.toString() ?? '';
+    _eligibilityItems = OpportunityMetadata.stringListFromValue(
+      scholarship['eligibilityItems'] ?? scholarship['eligibility_items'],
+      maxItems: 12,
+    );
+    if (_eligibilityItems.isEmpty) {
+      _eligibilityItems = OpportunityMetadata.stringListFromValue(
+        scholarship['eligibility'],
+        maxItems: 12,
+      );
+    }
     _amountController.text = scholarship['amount']?.toString() ?? '';
     _deadlineController.text = scholarship['deadline']?.toString() ?? '';
     _linkController.text = scholarship['link']?.toString() ?? '';
@@ -76,7 +87,6 @@ class _AdminScholarshipEditorScreenState
     _titleController.dispose();
     _providerController.dispose();
     _descriptionController.dispose();
-    _eligibilityController.dispose();
     _amountController.dispose();
     _deadlineController.dispose();
     _linkController.dispose();
@@ -88,6 +98,7 @@ class _AdminScholarshipEditorScreenState
     _categoryController.dispose();
     _levelController.dispose();
     _tagsController.dispose();
+    _eligibilityListController.dispose();
     super.dispose();
   }
 
@@ -167,12 +178,21 @@ class _AdminScholarshipEditorScreenState
                   'Make the eligibility criteria explicit before students click out to apply.',
               child: Column(
                 children: [
-                  AdminEditorField(
-                    controller: _eligibilityController,
+                  AdminEditorListField(
                     label: 'Eligibility',
-                    hint: 'Who can apply and what conditions matter most?',
-                    maxLines: 4,
-                    validator: adminRequiredMin('Eligibility', min: 8),
+                    hint: 'Type one eligibility rule, then press Enter',
+                    values: _eligibilityItems,
+                    onChanged: (items) =>
+                        setState(() => _eligibilityItems = items),
+                    listController: _eligibilityListController,
+                    validator: _validateEligibilityItems,
+                    examples: const <String>[
+                      'Open to Master students',
+                      'Minimum GPA required',
+                      'English language certificate',
+                    ],
+                    emptyText:
+                        'Add who can apply, required documents, or academic conditions.',
                   ),
                 ],
               ),
@@ -308,6 +328,7 @@ class _AdminScholarshipEditorScreenState
 
   Future<void> _submit() async {
     FocusScope.of(context).unfocus();
+    _eligibilityListController.commitPendingInput();
     if (!_formKey.currentState!.validate()) return;
 
     final auth = context.read<AuthProvider>().userModel;
@@ -315,11 +336,13 @@ class _AdminScholarshipEditorScreenState
 
     setState(() => _isSubmitting = true);
 
+    final eligibilityText = _eligibilityItems.join('\n');
     final payload = <String, dynamic>{
       'title': _titleController.text.trim(),
       'provider': _providerController.text.trim(),
       'description': _descriptionController.text.trim(),
-      'eligibility': _eligibilityController.text.trim(),
+      'eligibility': eligibilityText,
+      'eligibilityItems': _eligibilityItems,
       'amount': _amountController.text.trim(),
       'deadline': _deadline != null
           ? OpportunityMetadata.formatDateForStorage(_deadline!)
@@ -373,6 +396,13 @@ class _AdminScholarshipEditorScreenState
       (value ?? '').replaceAll(RegExp(r'[^0-9.\-]'), ''),
     );
     if (parsed == null || parsed < 0) return 'Enter a valid amount';
+    return null;
+  }
+
+  String? _validateEligibilityItems(List<String> items) {
+    if (items.where((item) => item.trim().isNotEmpty).isEmpty) {
+      return 'Add at least one eligibility item';
+    }
     return null;
   }
 

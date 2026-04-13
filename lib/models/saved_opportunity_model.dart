@@ -11,6 +11,7 @@ class SavedOpportunityModel {
   final String type;
   final String location;
   final String deadline;
+  final String fundingLabel;
   final Timestamp? savedAt;
 
   SavedOpportunityModel({
@@ -22,6 +23,7 @@ class SavedOpportunityModel {
     required this.type,
     required this.location,
     required this.deadline,
+    this.fundingLabel = '',
     this.savedAt,
   });
 
@@ -35,6 +37,7 @@ class SavedOpportunityModel {
       type: OpportunityType.parse(map['type']),
       location: map['location'] ?? '',
       deadline: map['deadline'] ?? '',
+      fundingLabel: (map['fundingLabel'] ?? '').toString(),
       savedAt: map['savedAt'],
     );
   }
@@ -49,6 +52,7 @@ class SavedOpportunityModel {
       'type': type,
       'location': location,
       'deadline': deadline,
+      'fundingLabel': fundingLabel,
       'savedAt': savedAt,
     };
   }

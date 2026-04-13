@@ -1573,7 +1573,12 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     final deadlineLabel = deadline == null
         ? 'Deadline soon'
         : _deadlineCountdown(deadline);
-    final footerLabel = _closingSoonFooterLabel(normalizedType, dateLabel);
+    final fundingLabel = normalizedType == OpportunityType.sponsoring
+        ? item.fundingLabel()
+        : null;
+    final footerLabel = fundingLabel == null
+        ? _closingSoonFooterLabel(normalizedType, dateLabel)
+        : 'Funding: $fundingLabel';
     final locationLabel = item.location.trim().isNotEmpty
         ? item.location.trim()
         : _closingSoonLocationFallback(normalizedType);
@@ -1727,7 +1732,9 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                 child: Row(
                   children: [
                     Icon(
-                      Icons.schedule_outlined,
+                      fundingLabel == null
+                          ? Icons.schedule_outlined
+                          : Icons.savings_outlined,
                       size: 14,
                       color: urgencyColor,
                     ),
@@ -1925,6 +1932,10 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     final reason = _recommendationReason(item, user);
     final deadlineLabel = _recentFriendlyDeadline(item);
     final normalizedType = OpportunityType.parse(item.type);
+    final fundingLabel = normalizedType == OpportunityType.sponsoring
+        ? item.fundingLabel()
+        : null;
+    final footerMetaLabel = fundingLabel ?? deadlineLabel;
     final locationLabel = item.location.trim().isNotEmpty
         ? item.location.trim()
         : _closingSoonLocationFallback(normalizedType);
@@ -2092,7 +2103,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
               const SizedBox(height: 10),
               Row(
                 children: [
-                  if (deadlineLabel != null)
+                  if (footerMetaLabel != null)
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 8,
@@ -2105,14 +2116,27 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.schedule, size: 11, color: accent),
+                          Icon(
+                            fundingLabel != null
+                                ? Icons.savings_outlined
+                                : Icons.schedule,
+                            size: 11,
+                            color: accent,
+                          ),
                           const SizedBox(width: 3),
-                          Text(
-                            deadlineLabel,
-                            style: GoogleFonts.poppins(
-                              fontSize: 9.2,
-                              fontWeight: FontWeight.w700,
-                              color: accent,
+                          ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 128),
+                            child: Text(
+                              fundingLabel != null
+                                  ? 'Funding: $footerMetaLabel'
+                                  : footerMetaLabel,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.poppins(
+                                fontSize: 9.2,
+                                fontWeight: FontWeight.w700,
+                                color: accent,
+                              ),
                             ),
                           ),
                         ],
@@ -3244,6 +3268,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
       item.workMode ?? '',
       item.duration ?? '',
       item.compensationText ?? '',
+      item.fundingLabel() ?? '',
       item.tags.join(' '),
       item.requirementItems.join(' '),
       item.benefits.join(' '),

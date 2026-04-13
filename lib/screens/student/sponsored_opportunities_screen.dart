@@ -215,6 +215,7 @@ class _SponsoredOpportunitiesScreenState
           type: opportunity.type,
           location: opportunity.location,
           deadline: opportunity.deadlineLabel,
+          fundingLabel: opportunity.fundingLabel() ?? '',
         );
       }
 
@@ -635,15 +636,7 @@ class _SponsoredOpportunitiesScreenState
   }
 
   String? _compensationText(OpportunityModel opportunity) {
-    final structuredLabel = OpportunityMetadata.buildCompensationLabel(
-      salaryMin: opportunity.salaryMin,
-      salaryMax: opportunity.salaryMax,
-      salaryCurrency: opportunity.salaryCurrency,
-      salaryPeriod: opportunity.salaryPeriod,
-      compensationText: opportunity.compensationText,
-      isPaid: opportunity.isPaid,
-      preferCompensationText: true,
-    );
+    final structuredLabel = opportunity.fundingLabel();
     if (structuredLabel != null) {
       return _compactValueText(structuredLabel);
     }
@@ -1610,7 +1603,7 @@ class _FeaturedSponsoredCard extends StatelessWidget {
                             children: [
                               if (item.compensation != null) ...[
                                 Icon(
-                                  Icons.payments_outlined,
+                                  Icons.savings_outlined,
                                   size: 13,
                                   color: _SponsoredPalette.accent,
                                 ),
@@ -1946,7 +1939,7 @@ class _SponsoredGridCard extends StatelessWidget {
                       children: [
                         if (item.compensation != null)
                           _SponsoredMetaChip(
-                            icon: Icons.payments_outlined,
+                            icon: Icons.savings_outlined,
                             label: item.compensation!,
                             foregroundColor: _SponsoredPalette.accentDark,
                             backgroundColor: _SponsoredPalette.accentSurface,

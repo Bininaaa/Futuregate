@@ -92,6 +92,10 @@ service cloud.firestore {
       return value == null || value is timestamp;
     }
 
+    function isNullableList(value) {
+      return value == null || value is list;
+    }
+
     function isEmploymentType(value) {
       return value == 'full_time' ||
           value == 'part_time' ||
@@ -161,6 +165,22 @@ service cloud.firestore {
         (
           !data.keys().hasAny(['applicationDeadline']) ||
           isNullableTimestamp(data.applicationDeadline)
+        ) &&
+        (
+          !data.keys().hasAny(['requirementItems']) ||
+          isNullableList(data.requirementItems)
+        ) &&
+        (
+          !data.keys().hasAny(['fundingAmount']) ||
+          isNullableNumber(data.fundingAmount)
+        ) &&
+        (
+          !data.keys().hasAny(['fundingCurrency']) ||
+          isNullableString(data.fundingCurrency)
+        ) &&
+        (
+          !data.keys().hasAny(['fundingNote']) ||
+          isNullableString(data.fundingNote)
         ) &&
         (
           !data.keys().hasAny(['updatedAt']) ||
@@ -889,6 +909,7 @@ service cloud.firestore {
             'type',
             'location',
             'requirements',
+            'requirementItems',
             'status',
             'deadline',
             'createdBy',
@@ -904,6 +925,9 @@ service cloud.firestore {
             'workMode',
             'isPaid',
             'duration',
+            'fundingAmount',
+            'fundingCurrency',
+            'fundingNote',
             'applicationDeadline'
           ]) &&
           request.resource.data.id == opportunityId &&
@@ -939,6 +963,7 @@ service cloud.firestore {
               'type',
               'location',
               'requirements',
+              'requirementItems',
               'status',
               'deadline',
               'createdBy',
@@ -953,6 +978,9 @@ service cloud.firestore {
               'workMode',
               'isPaid',
               'duration',
+              'fundingAmount',
+              'fundingCurrency',
+              'fundingNote',
               'applicationDeadline'
             ]) &&
             request.resource.data.id == resource.data.id &&
@@ -975,6 +1003,7 @@ service cloud.firestore {
               'type',
               'location',
               'requirements',
+              'requirementItems',
               'status',
               'deadline',
               'createdBy',
@@ -989,6 +1018,9 @@ service cloud.firestore {
               'workMode',
               'isPaid',
               'duration',
+              'fundingAmount',
+              'fundingCurrency',
+              'fundingNote',
               'applicationDeadline'
             ]) &&
             request.resource.data.id == resource.data.id &&
@@ -1176,6 +1208,7 @@ service cloud.firestore {
             'type',
             'location',
             'deadline',
+            'fundingLabel',
             'savedAt'
           ]) &&
           request.resource.data.id == savedId &&

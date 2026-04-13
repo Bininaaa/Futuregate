@@ -1257,6 +1257,9 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
       salaryCurrency: opportunity.salaryCurrency,
       salaryPeriod: opportunity.salaryPeriod,
       compensationText: opportunity.compensationText,
+      fundingAmount: opportunity.fundingAmount,
+      fundingCurrency: opportunity.fundingCurrency,
+      fundingNote: opportunity.fundingNote,
       isPaid: opportunity.isPaid,
       employmentType: opportunity.employmentType,
       workMode: opportunity.workMode,
@@ -1283,6 +1286,10 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
   }
 
   String _compensationLabel(OpportunityModel opportunity) {
+    if (OpportunityType.isSponsoring(opportunity.type)) {
+      return opportunity.fundingLabel() ?? 'Not specified';
+    }
+
     return OpportunityMetadata.buildCompensationLabel(
           salaryMin: opportunity.salaryMin,
           salaryMax: opportunity.salaryMax,

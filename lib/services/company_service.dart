@@ -400,6 +400,7 @@ class CompanyService {
       'createdBy',
       'createdByRole',
       'deadline',
+      'fundingNote',
     ]) {
       if (!nextData.containsKey(field)) {
         continue;
@@ -414,6 +415,19 @@ class CompanyService {
 
     if (nextData.containsKey('status') || isCreate) {
       nextData['status'] = normalizeOpportunityStatus(nextData['status']);
+    }
+
+    if (nextData.containsKey('requirementItems') || isCreate) {
+      final items = OpportunityMetadata.stringListFromValue(
+        nextData['requirementItems'],
+        maxItems: 12,
+      );
+      nextData['requirementItems'] = items.isNotEmpty
+          ? items
+          : OpportunityMetadata.stringListFromValue(
+              nextData['requirements'],
+              maxItems: 12,
+            );
     }
 
     if (nextData.containsKey('salaryMin')) {
@@ -446,6 +460,24 @@ class CompanyService {
       );
     }
 
+    if (nextData.containsKey('fundingAmount')) {
+      nextData['fundingAmount'] = OpportunityMetadata.parseNullableNum(
+        nextData['fundingAmount'],
+      );
+    }
+
+    if (nextData.containsKey('fundingCurrency')) {
+      nextData['fundingCurrency'] = OpportunityMetadata.normalizeCurrency(
+        nextData['fundingCurrency']?.toString(),
+      );
+    }
+
+    if (nextData.containsKey('fundingNote')) {
+      nextData['fundingNote'] = OpportunityMetadata.sanitizeText(
+        nextData['fundingNote']?.toString(),
+      );
+    }
+
     if (nextData.containsKey('employmentType')) {
       nextData['employmentType'] = OpportunityMetadata.normalizeEmploymentType(
         nextData['employmentType']?.toString(),
@@ -468,6 +500,31 @@ class CompanyService {
       nextData['duration'] = OpportunityMetadata.normalizeDuration(
         nextData['duration']?.toString(),
       );
+    }
+
+    final normalizedType = OpportunityType.parse(nextData['type']?.toString());
+    if (normalizedType == OpportunityType.sponsoring) {
+      nextData['salaryMin'] = null;
+      nextData['salaryMax'] = null;
+      nextData['salaryCurrency'] = null;
+      nextData['salaryPeriod'] = null;
+      nextData['compensationText'] = null;
+      nextData['employmentType'] = null;
+      nextData['workMode'] = null;
+      nextData['isPaid'] = null;
+      nextData['duration'] = null;
+      if ((nextData['fundingCurrency'] ?? '').toString().trim().isEmpty &&
+          nextData['fundingAmount'] != null) {
+        nextData['fundingCurrency'] =
+            OpportunityMetadata.supportedCurrencies.first;
+      }
+    } else if (nextData.containsKey('fundingAmount') ||
+        nextData.containsKey('fundingCurrency') ||
+        nextData.containsKey('fundingNote') ||
+        isCreate) {
+      nextData['fundingAmount'] = null;
+      nextData['fundingCurrency'] = null;
+      nextData['fundingNote'] = null;
     }
 
     final shouldNormalizeDeadline =

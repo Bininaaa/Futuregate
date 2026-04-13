@@ -574,7 +574,7 @@ class AdminProvider extends ChangeNotifier {
       return null;
     } catch (e) {
       debugPrint('createAdminOpportunity error: $e');
-      return 'Failed to create opportunity';
+      return _friendlyMutationError(e, 'Failed to create opportunity');
     }
   }
 
@@ -592,7 +592,7 @@ class AdminProvider extends ChangeNotifier {
       return null;
     } catch (e) {
       debugPrint('updateAdminOpportunity error: $e');
-      return 'Failed to update opportunity';
+      return _friendlyMutationError(e, 'Failed to update opportunity');
     }
   }
 
@@ -642,7 +642,7 @@ class AdminProvider extends ChangeNotifier {
       return null;
     } catch (e) {
       debugPrint('createScholarship error: $e');
-      return 'Failed to create scholarship';
+      return _friendlyMutationError(e, 'Failed to create scholarship');
     }
   }
 
@@ -660,7 +660,7 @@ class AdminProvider extends ChangeNotifier {
       return null;
     } catch (e) {
       debugPrint('updateScholarship error: $e');
-      return 'Failed to update scholarship';
+      return _friendlyMutationError(e, 'Failed to update scholarship');
     }
   }
 
@@ -760,6 +760,25 @@ class AdminProvider extends ChangeNotifier {
     _activitySources = _createActivitySourceStates();
     notifyListeners();
   }
+}
+
+String _friendlyMutationError(Object error, String fallback) {
+  if (error is FirebaseException) {
+    final message = error.message?.trim();
+    if (message != null && message.isNotEmpty) {
+      return message;
+    }
+    if (error.code.trim().isNotEmpty) {
+      return '$fallback (${error.code})';
+    }
+  }
+
+  final raw = error.toString().trim();
+  if (raw.isNotEmpty && !raw.startsWith('Exception:')) {
+    return raw;
+  }
+
+  return fallback;
 }
 
 Map<String, _AdminActivitySourceState> _createActivitySourceStates() {

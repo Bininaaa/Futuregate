@@ -24,6 +24,9 @@ class OpportunityModel {
   final String? salaryCurrency;
   final String? salaryPeriod;
   final String? compensationText;
+  final num? fundingAmount;
+  final String? fundingCurrency;
+  final String? fundingNote;
   final String? employmentType;
   final String? workMode;
   final bool? isPaid;
@@ -55,6 +58,9 @@ class OpportunityModel {
     this.salaryCurrency,
     this.salaryPeriod,
     this.compensationText,
+    this.fundingAmount,
+    this.fundingCurrency,
+    this.fundingNote,
     this.employmentType,
     this.workMode,
     this.isPaid,
@@ -90,6 +96,9 @@ class OpportunityModel {
       salaryCurrency: OpportunityMetadata.extractSalaryCurrency(data),
       salaryPeriod: OpportunityMetadata.extractSalaryPeriod(data),
       compensationText: OpportunityMetadata.extractCompensationText(data),
+      fundingAmount: OpportunityMetadata.extractFundingAmount(data),
+      fundingCurrency: OpportunityMetadata.extractFundingCurrency(data),
+      fundingNote: OpportunityMetadata.extractFundingNote(data),
       employmentType: OpportunityMetadata.extractEmploymentType(data),
       workMode: OpportunityMetadata.extractWorkMode(data),
       isPaid: OpportunityMetadata.extractIsPaid(data),
@@ -146,6 +155,9 @@ class OpportunityModel {
       'salaryCurrency': salaryCurrency,
       'salaryPeriod': salaryPeriod,
       'compensationText': compensationText,
+      'fundingAmount': fundingAmount,
+      'fundingCurrency': fundingCurrency,
+      'fundingNote': fundingNote,
       'employmentType': employmentType,
       'workMode': workMode,
       'isPaid': isPaid,
@@ -161,6 +173,23 @@ class OpportunityModel {
 
   bool get usesStructuredMetadata =>
       OpportunityMetadata.usesStructuredFields(type);
+
+  String? fundingLabel({
+    bool includePrefix = false,
+    bool preferFundingNote = false,
+  }) {
+    return OpportunityMetadata.buildFundingLabel(
+      fundingAmount: fundingAmount,
+      fundingCurrency: fundingCurrency,
+      fundingNote: fundingNote,
+      legacySalaryMin: salaryMin,
+      legacySalaryMax: salaryMax,
+      legacySalaryCurrency: salaryCurrency,
+      legacyCompensationText: compensationText,
+      includePrefix: includePrefix,
+      preferFundingNote: preferFundingNote,
+    );
+  }
 
   String get createdByRole =>
       (readString(<String>['createdByRole']) ?? '').trim().toLowerCase();

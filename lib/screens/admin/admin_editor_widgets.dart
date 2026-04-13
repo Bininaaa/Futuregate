@@ -246,6 +246,44 @@ class AdminEditorDropdown<T> extends StatelessWidget {
   }
 }
 
+class AdminEditorListField extends StatelessWidget {
+  final String label;
+  final String hint;
+  final List<String> values;
+  final ValueChanged<List<String>> onChanged;
+  final AppEditableListController? listController;
+  final String? Function(List<String>)? validator;
+  final List<String> examples;
+  final String emptyText;
+
+  const AdminEditorListField({
+    super.key,
+    required this.label,
+    required this.hint,
+    required this.values,
+    required this.onChanged,
+    this.listController,
+    this.validator,
+    this.examples = const <String>[],
+    this.emptyText = 'Add each item one by one.',
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return AppEditableListField(
+      theme: _adminFormTheme,
+      label: label,
+      hint: hint,
+      values: values,
+      onChanged: onChanged,
+      listController: listController,
+      validator: validator,
+      examples: examples,
+      emptyText: emptyText,
+    );
+  }
+}
+
 class AdminEditorChoiceCard extends StatelessWidget {
   final String label;
   final String subtitle;

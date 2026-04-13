@@ -33,6 +33,7 @@ class SavedOpportunityProvider extends ChangeNotifier {
     required String type,
     required String location,
     required String deadline,
+    String fundingLabel = '',
   }) async {
     try {
       await _service.saveOpportunity(
@@ -43,6 +44,7 @@ class SavedOpportunityProvider extends ChangeNotifier {
         type: type,
         location: location,
         deadline: deadline,
+        fundingLabel: fundingLabel,
       );
 
       await fetchSavedOpportunities(studentId);

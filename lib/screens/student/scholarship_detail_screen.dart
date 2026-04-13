@@ -127,6 +127,10 @@ class ScholarshipDetailScreen extends StatelessWidget {
   }
 
   List<String> get _eligibilityItems {
+    if (scholarship.eligibilityItems.isNotEmpty) {
+      return scholarship.eligibilityItems;
+    }
+
     final normalized = scholarship.eligibility.replaceAll('\r', '\n').trim();
     if (normalized.isEmpty) {
       return const <String>[];

@@ -8,6 +8,7 @@ import '../models/training_model.dart';
 import '../models/user_model.dart';
 import '../models/project_idea_model.dart';
 import '../utils/application_status.dart';
+import '../utils/opportunity_metadata.dart';
 import '../utils/opportunity_type.dart';
 import 'company_service.dart';
 import 'notification_worker_service.dart';
@@ -1460,6 +1461,19 @@ class AdminService {
 
     if (nextData.containsKey('tags') || isCreate) {
       nextData['tags'] = _stringList(nextData['tags']);
+    }
+
+    if (nextData.containsKey('eligibilityItems') || isCreate) {
+      final items = OpportunityMetadata.stringListFromValue(
+        nextData['eligibilityItems'],
+        maxItems: 12,
+      );
+      nextData['eligibilityItems'] = items.isNotEmpty
+          ? items
+          : OpportunityMetadata.stringListFromValue(
+              nextData['eligibility'],
+              maxItems: 12,
+            );
     }
 
     if (nextData.containsKey('featured') || isCreate) {
