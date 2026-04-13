@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/shared/app_content_system.dart';
 import '../../widgets/shared/app_feedback.dart';
+import '../settings/logout_confirmation_sheet.dart';
 import 'auth_flow_widgets.dart';
 
 class AcademicLevelSelectionScreen extends StatefulWidget {
@@ -69,7 +70,9 @@ class _AcademicLevelSelectionScreenState
     return AuthFlowScaffold(
       trailing: IconButton(
         tooltip: 'Sign out',
-        onPressed: authProvider.isLoading ? null : authProvider.logout,
+        onPressed: authProvider.isLoading
+            ? null
+            : () => showLogoutConfirmationSheet(context),
         icon: const Icon(Icons.logout_rounded),
       ),
       child: Center(
@@ -134,7 +137,7 @@ class _AcademicLevelSelectionScreenState
                   icon: Icons.logout_rounded,
                   onPressed: authProvider.isLoading
                       ? null
-                      : authProvider.logout,
+                      : () => showLogoutConfirmationSheet(context),
                 ),
               ],
             ),

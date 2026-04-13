@@ -597,12 +597,26 @@ class AuthProvider extends ChangeNotifier {
   String get signInProvider => _authService.getSignInProvider();
 
   Future<void> logout() async {
+    final previousUser = _userModel;
+
     _stopUserDocListener();
     _isBlockedOnLogin = false;
-    appNavigatorKey.currentState?.popUntil((route) => route.isFirst);
-    await _authService.logout();
     _userModel = null;
     notifyListeners();
+
+    await WidgetsBinding.instance.endOfFrame;
+    appNavigatorKey.currentState?.popUntil((route) => route.isFirst);
+
+    try {
+      await _authService.logout();
+    } catch (_) {
+      if (previousUser != null) {
+        _userModel = previousUser;
+        _startUserDocListener(previousUser.uid);
+      }
+      notifyListeners();
+      rethrow;
+    }
   }
 
   @override

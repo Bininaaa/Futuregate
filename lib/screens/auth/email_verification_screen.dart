@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/shared/app_content_system.dart';
 import '../../widgets/shared/app_feedback.dart';
+import '../settings/logout_confirmation_sheet.dart';
 import 'auth_flow_widgets.dart';
 
 class EmailVerificationScreen extends StatefulWidget {
@@ -68,7 +69,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
   }
 
   Future<void> _backToLogin() async {
-    await context.read<AuthProvider>().logout();
+    await showLogoutConfirmationSheet(context);
   }
 
   @override

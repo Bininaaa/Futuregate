@@ -8,106 +8,145 @@ import 'settings_flow_theme.dart';
 import 'settings_flow_widgets.dart';
 
 Future<void> showLogoutConfirmationSheet(BuildContext context) async {
-  final authProvider = context.read<AuthProvider>();
-  final confirmed = await showModalBottomSheet<bool>(
+  await showModalBottomSheet<void>(
     context: context,
     backgroundColor: Colors.transparent,
     isScrollControlled: true,
+    isDismissible: false,
+    enableDrag: false,
     useRootNavigator: true,
     builder: (sheetContext) => const LogoutConfirmationSheet(),
   );
-
-  if (confirmed == true) {
-    await authProvider.logout();
-  }
 }
 
-class LogoutConfirmationSheet extends StatelessWidget {
+class LogoutConfirmationSheet extends StatefulWidget {
   const LogoutConfirmationSheet({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final auth = context.watch<AuthProvider>();
-    final user = auth.userModel;
-    final copy = _LogoutCopy.fromRole(user?.role);
+  State<LogoutConfirmationSheet> createState() =>
+      _LogoutConfirmationSheetState();
+}
 
-    return SafeArea(
-      top: false,
-      child: Align(
-        alignment: Alignment.bottomCenter,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 460),
-          child: Container(
-            margin: const EdgeInsets.all(14),
-            padding: const EdgeInsets.fromLTRB(18, 14, 18, 18),
-            decoration: BoxDecoration(
-              color: SettingsFlowPalette.surface,
-              borderRadius: SettingsFlowTheme.radius(28),
-              border: Border.all(color: SettingsFlowPalette.border),
-              boxShadow: SettingsFlowTheme.softShadow(0.14),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 42,
-                  height: 5,
-                  decoration: BoxDecoration(
-                    color: SettingsFlowPalette.border,
-                    borderRadius: SettingsFlowTheme.radius(999),
+class _LogoutConfirmationSheetState extends State<LogoutConfirmationSheet> {
+  late final UserModel? _user;
+  late final _LogoutCopy _copy;
+  bool _isSigningOut = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _user = context.read<AuthProvider>().userModel;
+    _copy = _LogoutCopy.fromRole(_user?.role);
+  }
+
+  Future<void> _signOut() async {
+    if (_isSigningOut) {
+      return;
+    }
+
+    setState(() => _isSigningOut = true);
+
+    try {
+      await context.read<AuthProvider>().logout();
+    } catch (_) {
+      if (mounted) {
+        setState(() => _isSigningOut = false);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return PopScope(
+      canPop: !_isSigningOut,
+      child: SafeArea(
+        top: false,
+        child: Align(
+          alignment: Alignment.bottomCenter,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 460),
+            child: Container(
+              margin: const EdgeInsets.all(14),
+              padding: const EdgeInsets.fromLTRB(18, 14, 18, 18),
+              decoration: BoxDecoration(
+                color: SettingsFlowPalette.surface,
+                borderRadius: SettingsFlowTheme.radius(28),
+                border: Border.all(color: SettingsFlowPalette.border),
+                boxShadow: SettingsFlowTheme.softShadow(0.14),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 42,
+                    height: 5,
+                    decoration: BoxDecoration(
+                      color: SettingsFlowPalette.border,
+                      borderRadius: SettingsFlowTheme.radius(999),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 18),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: 54,
-                      height: 54,
-                      decoration: BoxDecoration(
-                        color: copy.color.withValues(alpha: 0.10),
-                        borderRadius: SettingsFlowTheme.radius(18),
+                  const SizedBox(height: 18),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 54,
+                        height: 54,
+                        decoration: BoxDecoration(
+                          color: _copy.color.withValues(alpha: 0.10),
+                          borderRadius: SettingsFlowTheme.radius(18),
+                        ),
+                        child: Icon(_copy.icon, color: _copy.color, size: 26),
                       ),
-                      child: Icon(copy.icon, color: copy.color, size: 26),
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            copy.title,
-                            style: SettingsFlowTheme.sectionTitle(),
-                          ),
-                          const SizedBox(height: 6),
-                          Text(
-                            copy.message,
-                            style: SettingsFlowTheme.caption(),
-                          ),
-                        ],
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              _copy.title,
+                              style: SettingsFlowTheme.sectionTitle(),
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              _copy.message,
+                              style: SettingsFlowTheme.caption(),
+                            ),
+                          ],
+                        ),
                       ),
+                    ],
+                  ),
+                  if (_user != null) ...[
+                    const SizedBox(height: 16),
+                    _LogoutAccountPreview(user: _user, copy: _copy),
+                  ],
+                  const SizedBox(height: 18),
+                  SettingsButtonGroup(
+                    children: [
+                      SettingsSecondaryButton(
+                        label: 'Cancel',
+                        onPressed: _isSigningOut
+                            ? null
+                            : () => Navigator.pop(context),
+                      ),
+                      SettingsPrimaryButton(
+                        label: _isSigningOut ? 'Signing out' : 'Sign out',
+                        backgroundColor: SettingsFlowPalette.error,
+                        onPressed: _isSigningOut ? null : _signOut,
+                      ),
+                    ],
+                  ),
+                  if (_isSigningOut) ...[
+                    const SizedBox(height: 12),
+                    const LinearProgressIndicator(
+                      minHeight: 3,
+                      color: SettingsFlowPalette.error,
+                      backgroundColor: SettingsFlowPalette.dangerTint,
                     ),
                   ],
-                ),
-                if (user != null) ...[
-                  const SizedBox(height: 16),
-                  _LogoutAccountPreview(user: user, copy: copy),
                 ],
-                const SizedBox(height: 18),
-                SettingsButtonGroup(
-                  children: [
-                    SettingsSecondaryButton(
-                      label: 'Cancel',
-                      onPressed: () => Navigator.pop(context, false),
-                    ),
-                    SettingsPrimaryButton(
-                      label: 'Sign out',
-                      backgroundColor: SettingsFlowPalette.error,
-                      onPressed: () => Navigator.pop(context, true),
-                    ),
-                  ],
-                ),
-              ],
+              ),
             ),
           ),
         ),
@@ -150,6 +189,15 @@ class _LogoutCopy {
           roleLabel: 'Company',
           icon: Icons.business_center_rounded,
           color: SettingsFlowPalette.secondary,
+        );
+      case 'student':
+        return const _LogoutCopy(
+          title: 'Sign out of student?',
+          message:
+              'You will leave your student workspace on this device. Your profile and saved items stay safe.',
+          roleLabel: 'Student',
+          icon: Icons.school_rounded,
+          color: SettingsFlowPalette.primary,
         );
       default:
         return const _LogoutCopy(
