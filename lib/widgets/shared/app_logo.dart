@@ -17,6 +17,18 @@ class AppBrandAssets {
   /// Launch animation video asset.
   static const String animation = 'assets/pictures/ANIMATION.mp4';
 
+  /// First-open onboarding illustration: portal / journey.
+  static const String getStartedPortal =
+      'assets/pictures/get_started_portal.png';
+
+  /// First-open onboarding illustration: profile / readiness.
+  static const String getStartedProfile =
+      'assets/pictures/get_started_profile.png';
+
+  /// First-open onboarding illustration: opportunities / connection.
+  static const String getStartedConnection =
+      'assets/pictures/get_started_connection.png';
+
   const AppBrandAssets._();
 }
 

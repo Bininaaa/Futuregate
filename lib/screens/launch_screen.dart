@@ -5,7 +5,7 @@ import 'package:video_player/video_player.dart';
 
 import '../providers/auth_provider.dart';
 import '../widgets/shared/app_logo.dart';
-import 'auth_wrapper.dart';
+import 'post_launch_gate_screen.dart';
 
 /// Full-screen immersive launch animation.
 ///
@@ -95,7 +95,7 @@ class _LaunchScreenState extends State<LaunchScreen>
 
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
-        pageBuilder: (_, _, _) => const AuthWrapper(),
+        pageBuilder: (_, _, _) => const PostLaunchGateScreen(),
         transitionDuration: const Duration(milliseconds: 300),
         transitionsBuilder: (_, animation, _, child) =>
             FadeTransition(opacity: animation, child: child),

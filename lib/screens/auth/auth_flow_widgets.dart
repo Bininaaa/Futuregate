@@ -912,6 +912,7 @@ class AuthGoogleButton extends StatelessWidget {
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               Container(
                 width: 28,
@@ -932,12 +933,16 @@ class AuthGoogleButton extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 10),
-              Text(
-                'Continue with Google',
-                style: GoogleFonts.manrope(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  color: authFlowTheme.textPrimary,
+              Flexible(
+                child: Text(
+                  'Continue with Google',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.manrope(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: authFlowTheme.textPrimary,
+                  ),
                 ),
               ),
             ],
