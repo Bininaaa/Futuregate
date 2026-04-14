@@ -15,7 +15,6 @@ import '../../widgets/app_shell_background.dart';
 import '../../widgets/profile_avatar.dart';
 import '../../widgets/shared/app_feedback.dart';
 import '../notifications_screen.dart';
-import '../settings/settings_screen.dart';
 import 'profile_screen.dart';
 import 'publish_opportunity_screen.dart';
 
@@ -165,16 +164,20 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
     return items;
   }
 
+  Color _toneTint(Color color, {double lightAlpha = 0.10}) {
+    return color.withValues(alpha: AppColors.isDark ? 0.18 : lightAlpha);
+  }
+
   _OpportunityTone _toneForType(String rawType) {
     switch (OpportunityType.parse(rawType)) {
       case OpportunityType.internship:
         return _OpportunityTone(
-          background: Color(0xFFECFDF5),
+          background: _toneTint(OpportunityType.internshipColor),
           foreground: OpportunityType.internshipColor,
         );
       case OpportunityType.sponsoring:
         return _OpportunityTone(
-          background: Color(0xFFFFF7ED),
+          background: _toneTint(_OpportunityPalette.accent),
           foreground: _OpportunityPalette.accent,
         );
       case OpportunityType.job:
@@ -189,13 +192,13 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
   _OpportunityTone _toneForStatus(String status) {
     if (status == 'closed') {
       return _OpportunityTone(
-        background: Color(0xFFF1F5F9),
+        background: _OpportunityPalette.surfaceMuted,
         foreground: _OpportunityPalette.textMuted,
       );
     }
 
     return _OpportunityTone(
-      background: Color(0xFFECFDF3),
+      background: _toneTint(_OpportunityPalette.success, lightAlpha: 0.12),
       foreground: _OpportunityPalette.success,
     );
   }
@@ -517,7 +520,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
                         const SizedBox(width: 6),
                         _SoftPill(
                           label: _timeLeftLabel(opportunity),
-                          background: const Color(0xFFF8FAFC),
+                          background: _OpportunityPalette.surfaceMuted,
                           foreground: _OpportunityPalette.textSecondary,
                         ),
                       ],
@@ -529,7 +532,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
                         vertical: 12,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFF8FAFC),
+                        color: _OpportunityPalette.surfaceMuted,
                         borderRadius: BorderRadius.circular(14),
                         border: Border.all(color: _OpportunityPalette.border),
                       ),
@@ -921,14 +924,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
   Widget _buildTopBar(BuildContext context, dynamic user, int unreadCount) {
     return Row(
       children: [
-        _HeaderIconButton(
-          icon: Icons.menu_rounded,
-          onTap: () {
-            Navigator.of(
-              context,
-            ).push(MaterialPageRoute(builder: (_) => const SettingsScreen()));
-          },
-        ),
+        _HeaderIconButton(icon: Icons.work_outline_rounded),
         const SizedBox(width: 12),
         Expanded(
           child: Column(
@@ -1159,6 +1155,7 @@ class _OpportunityPalette {
   static Color get primarySoft => CompanyDashboardPalette.primarySoft;
   static Color get accent => CompanyDashboardPalette.accent;
   static Color get surface => CompanyDashboardPalette.surface;
+  static Color get surfaceMuted => CompanyDashboardPalette.surfaceMuted;
   static Color get border => CompanyDashboardPalette.border;
   static Color get textPrimary => CompanyDashboardPalette.textPrimary;
   static Color get textSecondary => CompanyDashboardPalette.textSecondary;
@@ -1177,9 +1174,9 @@ class _OpportunityTone {
 
 class _HeaderIconButton extends StatelessWidget {
   final IconData icon;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
-  const _HeaderIconButton({required this.icon, required this.onTap});
+  const _HeaderIconButton({required this.icon, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -1228,7 +1225,10 @@ class _NotificationIconButton extends StatelessWidget {
               decoration: BoxDecoration(
                 color: _OpportunityPalette.error,
                 borderRadius: BorderRadius.circular(999),
-                border: Border.all(color: Colors.white, width: 1.5),
+                border: Border.all(
+                  color: _OpportunityPalette.surface,
+                  width: 1.5,
+                ),
               ),
               child: Center(
                 child: Text(
@@ -1642,7 +1642,9 @@ class _InlineBanner extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFFFFF1F2),
+        color: _OpportunityPalette.error.withValues(
+          alpha: AppColors.isDark ? 0.14 : 0.08,
+        ),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: _OpportunityPalette.error.withValues(alpha: 0.18),
@@ -2108,7 +2110,7 @@ class _MetaChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: const Color(0xFFF8FAFC),
+        color: _OpportunityPalette.surfaceMuted,
         borderRadius: BorderRadius.circular(999),
         border: Border.all(color: _OpportunityPalette.border),
       ),

@@ -24,7 +24,6 @@ import '../../widgets/profile_avatar.dart';
 import '../../widgets/shared/app_feedback.dart';
 import '../chat/user_profile_preview_screen.dart';
 import '../notifications_screen.dart';
-import '../settings/settings_screen.dart';
 import 'chat_screen.dart';
 import 'profile_screen.dart';
 
@@ -336,7 +335,9 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                               title: 'Application data is unavailable.',
                               message: provider.applicationsError!,
                               tone: _ApplicationsPalette.error,
-                              background: const Color(0xFFFFF1F2),
+                              background: _ApplicationsPalette.error.withValues(
+                                alpha: AppColors.isDark ? 0.14 : 0.08,
+                              ),
                             ),
                           ],
                           if (isFocusedView) ...[
@@ -507,17 +508,10 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
         _HeaderIconButton(
           icon: widget.showBackButton
               ? Icons.arrow_back_rounded
-              : Icons.menu_rounded,
-          onTap: () {
-            if (widget.showBackButton) {
-              Navigator.of(context).maybePop();
-              return;
-            }
-
-            Navigator.of(
-              context,
-            ).push(MaterialPageRoute(builder: (_) => const SettingsScreen()));
-          },
+              : Icons.groups_outlined,
+          onTap: widget.showBackButton
+              ? () => Navigator.of(context).maybePop()
+              : null,
         ),
         const SizedBox(width: 12),
         Expanded(
@@ -1143,7 +1137,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                       _WideActionButton(
                         label: 'Message',
                         icon: Icons.chat_bubble_outline_rounded,
-                        background: const Color(0xFFE8FFFB),
+                        background: AppColors.current.secondarySoft,
                         foreground: _ApplicationsPalette.secondaryDark,
                         onTap: () {
                           Navigator.pop(sheetContext);
@@ -1153,7 +1147,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                       _WideActionButton(
                         label: 'View CV',
                         icon: Icons.description_outlined,
-                        background: const Color(0xFFFFF6E4),
+                        background: _ApplicationsPalette.accentSoft,
                         foreground: _ApplicationsPalette.accent,
                         onTap: () {
                           Navigator.pop(sheetContext);
@@ -2095,9 +2089,9 @@ class _OpportunityTypeTone {
 
 class _HeaderIconButton extends StatelessWidget {
   final IconData icon;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
-  const _HeaderIconButton({required this.icon, required this.onTap});
+  const _HeaderIconButton({required this.icon, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -2146,7 +2140,10 @@ class _NotificationIconButton extends StatelessWidget {
               decoration: BoxDecoration(
                 color: _ApplicationsPalette.error,
                 borderRadius: BorderRadius.circular(999),
-                border: Border.all(color: Colors.white, width: 1.5),
+                border: Border.all(
+                  color: _ApplicationsPalette.surface,
+                  width: 1.5,
+                ),
               ),
               child: Center(
                 child: Text(

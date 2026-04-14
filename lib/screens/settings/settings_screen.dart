@@ -15,7 +15,9 @@ import 'settings_flow_theme.dart';
 import 'settings_flow_widgets.dart';
 
 class SettingsScreen extends StatelessWidget {
-  const SettingsScreen({super.key});
+  final bool embedded;
+
+  const SettingsScreen({super.key, this.embedded = false});
 
   @override
   Widget build(BuildContext context) {
@@ -28,88 +30,47 @@ class SettingsScreen extends StatelessWidget {
 
     final providerLabel = authProvider.linkedProviderLabel;
     final isCompany = user.role == 'company';
+    final isAdmin = user.role == 'admin';
 
     if (isCompany) {
       return SettingsPageScaffold(
         title: 'More',
+        showAppBar: !embedded,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    SettingsFlowPalette.primaryDark,
-                    SettingsFlowPalette.primary,
-                    SettingsFlowPalette.secondary,
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: SettingsFlowTheme.radius(28),
-                boxShadow: SettingsFlowTheme.softShadow(0.14),
-              ),
-              child: Stack(
+            SettingsPanel(
+              padding: const EdgeInsets.all(18),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Positioned(
-                    top: -28,
-                    right: -20,
-                    child: _HeroOrb(
-                      size: 110,
-                      color: Colors.white.withValues(alpha: 0.16),
-                    ),
+                  Text(
+                    'Company workspace',
+                    style: SettingsFlowTheme.heroTitle(),
                   ),
-                  Positioned(
-                    bottom: -44,
-                    left: -12,
-                    child: _HeroOrb(
-                      size: 92,
-                      color: Colors.white.withValues(alpha: 0.10),
-                    ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Keep your public presence, theme, security, and support paths in one tidy place.',
+                    style: SettingsFlowTheme.caption(),
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  const SizedBox(height: 16),
+                  Wrap(
+                    spacing: 10,
+                    runSpacing: 10,
                     children: [
-                      Text(
-                        'Company workspace',
-                        style: SettingsFlowTheme.micro(
-                          Colors.white.withValues(alpha: 0.86),
-                        ),
+                      SettingsStatusPill(
+                        label: providerLabel,
+                        color: SettingsFlowPalette.primary,
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Profile, security, and support all in one polished hub.',
-                        style: SettingsFlowTheme.heroTitle(Colors.white),
+                      SettingsStatusPill(
+                        label: 'Version ${AppMetadata.version}',
+                        color: SettingsFlowPalette.secondary,
                       ),
-                      const SizedBox(height: 10),
-                      Text(
-                        'Use this area to keep your brand presence sharp, stay on top of notifications, and manage the parts of the workspace you need most.',
-                        style: SettingsFlowTheme.caption(
-                          Colors.white.withValues(alpha: 0.84),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Wrap(
-                        spacing: 10,
-                        runSpacing: 10,
-                        children: [
-                          SettingsStatusPill(
-                            label: providerLabel,
-                            color: Colors.white,
-                          ),
-                          SettingsStatusPill(
-                            label: 'Version ${AppMetadata.version}',
-                            color: Colors.white,
-                          ),
-                          SettingsStatusPill(
-                            label: (user.companyName ?? '').trim().isNotEmpty
-                                ? (user.companyName ?? '').trim()
-                                : 'Company account',
-                            color: Colors.white,
-                          ),
-                        ],
+                      SettingsStatusPill(
+                        label: (user.companyName ?? '').trim().isNotEmpty
+                            ? (user.companyName ?? '').trim()
+                            : 'Company account',
+                        color: SettingsFlowPalette.accent,
                       ),
                     ],
                   ),
@@ -132,25 +93,12 @@ class SettingsScreen extends StatelessWidget {
                     icon: Icons.apartment_rounded,
                     iconColor: SettingsFlowPalette.primary,
                     title: 'Company Profile',
-                    subtitle: 'Preview your public-facing company presence',
+                    subtitle:
+                        'Preview your public profile and make edits there',
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (_) => const CompanyProfileScreen(),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  SettingsListRow(
-                    icon: Icons.edit_outlined,
-                    iconColor: SettingsFlowPalette.accent,
-                    title: 'Edit Company Profile',
-                    subtitle:
-                        'Refresh your description, contact info, and logo',
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const EditCompanyProfileScreen(),
                       ),
                     ),
                   ),
@@ -252,8 +200,163 @@ class SettingsScreen extends StatelessWidget {
       );
     }
 
+    if (isAdmin) {
+      final adminLevel = (user.adminLevel ?? '').trim();
+      final displayName = user.fullName.trim().isNotEmpty
+          ? user.fullName.trim()
+          : 'Admin account';
+
+      return SettingsPageScaffold(
+        title: 'Admin Settings',
+        showAppBar: !embedded,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SettingsPanel(
+              padding: const EdgeInsets.all(18),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(displayName, style: SettingsFlowTheme.heroTitle()),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Control your workspace preferences without changing the admin profile record.',
+                    style: SettingsFlowTheme.caption(),
+                  ),
+                  const SizedBox(height: 16),
+                  Wrap(
+                    spacing: 10,
+                    runSpacing: 10,
+                    children: [
+                      SettingsStatusPill(
+                        label: providerLabel,
+                        color: SettingsFlowPalette.primary,
+                      ),
+                      SettingsStatusPill(
+                        label: adminLevel.isEmpty ? 'Admin' : adminLevel,
+                        color: SettingsFlowPalette.secondary,
+                      ),
+                      SettingsStatusPill(
+                        label: 'Version ${AppMetadata.version}',
+                        color: SettingsFlowPalette.accent,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 18),
+            const _ThemeSettingsSection(),
+            const SizedBox(height: 18),
+            const SettingsSectionHeading(
+              title: 'Workspace',
+              subtitle:
+                  'Keep platform operations close without exposing profile editing.',
+            ),
+            const SizedBox(height: 10),
+            SettingsPanel(
+              child: Column(
+                children: [
+                  SettingsListRow(
+                    icon: Icons.notifications_active_outlined,
+                    iconColor: SettingsFlowPalette.secondary,
+                    title: 'Notifications',
+                    subtitle: 'Open your notifications center',
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const NotificationsScreen(),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  SettingsListRow(
+                    icon: Icons.lock_outline_rounded,
+                    iconColor: SettingsFlowPalette.warning,
+                    title: 'Security & Privacy',
+                    subtitle:
+                        'Passwords, email updates, privacy, and legal info',
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const SecurityPrivacyScreen(),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 18),
+            const SettingsSectionHeading(
+              title: 'Support',
+              subtitle: 'App information and help for platform admins.',
+            ),
+            const SizedBox(height: 10),
+            SettingsPanel(
+              child: Column(
+                children: [
+                  SettingsListRow(
+                    icon: Icons.help_outline_rounded,
+                    iconColor: SettingsFlowPalette.secondary,
+                    title: 'Help Center',
+                    subtitle: 'Browse FAQs and contact support',
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const HelpCenterScreen(),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  SettingsListRow(
+                    icon: Icons.info_outline_rounded,
+                    iconColor: SettingsFlowPalette.primaryDark,
+                    title: 'About FutureGate',
+                    subtitle: 'Mission, version, and platform details',
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const AboutFutureGateScreen(),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  SettingsListRow(
+                    icon: Icons.verified_outlined,
+                    iconColor: SettingsFlowPalette.success,
+                    title: 'App Version',
+                    subtitle: AppMetadata.version,
+                    trailing: SettingsStatusPill(
+                      label: 'Current',
+                      color: SettingsFlowPalette.success,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 18),
+            SettingsPanel(
+              color: SettingsFlowPalette.dangerTint,
+              border: Border.all(
+                color: SettingsFlowPalette.error.withValues(alpha: 0.16),
+              ),
+              child: SettingsListRow(
+                icon: Icons.logout_rounded,
+                iconColor: SettingsFlowPalette.error,
+                title: 'Sign out',
+                subtitle: 'End this admin session on the current device',
+                destructive: true,
+                onTap: () => showLogoutConfirmationSheet(context),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     return SettingsPageScaffold(
       title: 'Settings',
+      showAppBar: !embedded,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -446,22 +549,6 @@ class SettingsScreen extends StatelessWidget {
           ),
         );
       },
-    );
-  }
-}
-
-class _HeroOrb extends StatelessWidget {
-  final double size;
-  final Color color;
-
-  const _HeroOrb({required this.size, required this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
     );
   }
 }

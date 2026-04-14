@@ -9,6 +9,7 @@ import '../../models/user_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/company_provider.dart';
 import '../../services/document_access_service.dart';
+import '../../theme/app_colors.dart';
 import '../../utils/company_dashboard_palette.dart';
 import '../../utils/document_upload_validator.dart';
 import '../../widgets/app_shell_background.dart';
@@ -236,158 +237,182 @@ class CompanyProfileScreen extends StatelessWidget {
       'rejected' => Icons.gpp_bad_outlined,
       _ => Icons.verified_rounded,
     };
-    final approvalBackgroundColor = switch (user.normalizedApprovalStatus) {
-      'pending' => const Color(0xFFFFF7ED),
-      'rejected' => const Color(0xFFFEF2F2),
-      _ => const Color(0xFFF0FDF4),
-    };
     final approvalForegroundColor = switch (user.normalizedApprovalStatus) {
       'pending' => CompanyDashboardPalette.accent,
       'rejected' => CompanyDashboardPalette.error,
       _ => CompanyDashboardPalette.success,
     };
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(22),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            CompanyDashboardPalette.primaryDark,
-            CompanyDashboardPalette.primary,
-            CompanyDashboardPalette.secondary,
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: SettingsFlowTheme.radius(32),
-        boxShadow: [
-          BoxShadow(
-            color: CompanyDashboardPalette.primary.withValues(alpha: 0.22),
-            blurRadius: 28,
-            offset: const Offset(0, 18),
+    final approvalBackgroundColor = approvalForegroundColor.withValues(
+      alpha: AppColors.isDark ? 0.18 : 0.12,
+    );
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxWidth < 390;
+
+        return Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                CompanyDashboardPalette.primaryDark,
+                CompanyDashboardPalette.primary,
+                CompanyDashboardPalette.secondary,
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: SettingsFlowTheme.radius(24),
+            boxShadow: [
+              BoxShadow(
+                color: CompanyDashboardPalette.primary.withValues(
+                  alpha: AppColors.isDark ? 0.32 : 0.18,
+                ),
+                blurRadius: 24,
+                offset: const Offset(0, 14),
+              ),
+            ],
           ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.16),
-                  shape: BoxShape.circle,
-                ),
-                child: ProfileAvatar(user: user, radius: 42),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(3),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.14),
+                      shape: BoxShape.circle,
+                    ),
+                    child: ProfileAvatar(user: user, radius: compact ? 28 : 32),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          companyName,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.poppins(
+                            fontSize: compact ? 19 : 21,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
+                            height: 1.08,
+                          ),
+                        ),
+                        if ((user.sector ?? '').trim().isNotEmpty) ...[
+                          const SizedBox(height: 5),
+                          Text(
+                            (user.sector ?? '').trim(),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.poppins(
+                              fontSize: 12.5,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white.withValues(alpha: 0.82),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  if (!compact) ...[
+                    const SizedBox(width: 10),
+                    _StatusBadge(
+                      label: approvalLabel,
+                      icon: approvalIcon,
+                      backgroundColor: approvalBackgroundColor,
+                      foregroundColor: approvalForegroundColor,
+                    ),
+                  ],
+                ],
               ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      companyName,
-                      style: GoogleFonts.poppins(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                        height: 1.08,
+              if (compact) ...[
+                const SizedBox(height: 12),
+                _StatusBadge(
+                  label: approvalLabel,
+                  icon: approvalIcon,
+                  backgroundColor: approvalBackgroundColor,
+                  foregroundColor: approvalForegroundColor,
+                ),
+              ],
+              const SizedBox(height: 14),
+              Text(
+                description,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+                style: GoogleFonts.poppins(
+                  fontSize: 12.6,
+                  height: 1.55,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.white.withValues(alpha: 0.88),
+                ),
+              ),
+              const SizedBox(height: 14),
+              SettingsButtonGroup(
+                spacing: 8,
+                breakpoint: 380,
+                children: [
+                  _HeroActionButton(
+                    label: 'Edit profile',
+                    icon: Icons.edit_outlined,
+                    filled: true,
+                    onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const EditCompanyProfileScreen(),
                       ),
                     ),
-                    if ((user.sector ?? '').trim().isNotEmpty) ...[
-                      const SizedBox(height: 6),
-                      Text(
-                        (user.sector ?? '').trim(),
-                        style: GoogleFonts.poppins(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white.withValues(alpha: 0.82),
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-              _StatusBadge(
-                label: approvalLabel,
-                icon: approvalIcon,
-                backgroundColor: approvalBackgroundColor,
-                foregroundColor: approvalForegroundColor,
-              ),
-            ],
-          ),
-          const SizedBox(height: 18),
-          Text(
-            description,
-            maxLines: 4,
-            overflow: TextOverflow.ellipsis,
-            style: GoogleFonts.poppins(
-              fontSize: 13.5,
-              height: 1.7,
-              fontWeight: FontWeight.w500,
-              color: Colors.white.withValues(alpha: 0.88),
-            ),
-          ),
-          const SizedBox(height: 18),
-          SettingsButtonGroup(
-            children: [
-              _HeroActionButton(
-                label: 'Edit profile',
-                icon: Icons.edit_outlined,
-                filled: true,
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const EditCompanyProfileScreen(),
                   ),
-                ),
+                  _HeroActionButton(
+                    label: websiteUri == null ? 'More' : 'Website',
+                    icon: websiteUri == null
+                        ? Icons.widgets_outlined
+                        : Icons.open_in_new_rounded,
+                    onPressed: () {
+                      if (websiteUri != null) {
+                        _launchUri(
+                          context,
+                          websiteUri,
+                          failureMessage: 'Could not open the website.',
+                        );
+                        return;
+                      }
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const SettingsScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                ],
               ),
-              _HeroActionButton(
-                label: websiteUri == null ? 'Open More' : 'Visit website',
-                icon: websiteUri == null
-                    ? Icons.widgets_outlined
-                    : Icons.open_in_new_rounded,
-                onPressed: () {
-                  if (websiteUri != null) {
-                    _launchUri(
-                      context,
-                      websiteUri,
-                      failureMessage: 'Could not open the website.',
-                    );
-                    return;
-                  }
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const SettingsScreen()),
-                  );
-                },
+              const SizedBox(height: 14),
+              Row(
+                children: [
+                  Expanded(
+                    child: _heroMetric(
+                      '${_profileCompletion(user)}%',
+                      'Complete',
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _heroMetric('${_contactCount(user)}/4', 'Contact'),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(child: _heroMetric(approvalLabel, 'Approval')),
+                ],
               ),
             ],
           ),
-          const SizedBox(height: 18),
-          Row(
-            children: [
-              Expanded(
-                child: _heroMetric(
-                  '${_profileCompletion(user)}%',
-                  'Profile complete',
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: _heroMetric(
-                  '${_contactCount(user)}/4',
-                  'Contact channels',
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(child: _heroMetric(approvalLabel, 'Approval')),
-            ],
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -403,8 +428,10 @@ class CompanyProfileScreen extends StatelessWidget {
         children: [
           Text(
             value,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: GoogleFonts.poppins(
-              fontSize: 18,
+              fontSize: 15.5,
               fontWeight: FontWeight.w700,
               color: Colors.white,
             ),
@@ -412,8 +439,10 @@ class CompanyProfileScreen extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: GoogleFonts.poppins(
-              fontSize: 10.5,
+              fontSize: 10,
               fontWeight: FontWeight.w600,
               color: Colors.white.withValues(alpha: 0.8),
             ),
@@ -887,7 +916,7 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
           child: Container(
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: SettingsFlowPalette.surface,
               border: Border(
                 top: BorderSide(color: SettingsFlowPalette.border),
               ),
@@ -1163,7 +1192,7 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
               color: CompanyDashboardPalette.primary.withValues(alpha: 0.82),
             ),
             filled: true,
-            fillColor: Colors.white,
+            fillColor: SettingsFlowPalette.surface,
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
               vertical: 16,
@@ -1734,7 +1763,7 @@ class _HeroActionButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           minimumSize: const Size.fromHeight(50),
           elevation: 0,
-          backgroundColor: Colors.white,
+          backgroundColor: SettingsFlowPalette.surface,
           foregroundColor: CompanyDashboardPalette.primaryDark,
           shape: RoundedRectangleBorder(
             borderRadius: SettingsFlowTheme.radius(18),
@@ -1782,7 +1811,7 @@ class _DetailTile extends StatelessWidget {
       child: Ink(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: SettingsFlowPalette.surface,
           borderRadius: SettingsFlowTheme.radius(24),
           border: Border.all(color: SettingsFlowPalette.border),
           boxShadow: SettingsFlowTheme.softShadow(0.05),

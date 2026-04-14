@@ -561,7 +561,7 @@ class AdminIconActionButton extends StatelessWidget {
     return Tooltip(
       message: tooltip,
       child: Material(
-        color: Colors.white.withValues(alpha: 0.94),
+        color: AdminPalette.surface.withValues(alpha: 0.94),
         borderRadius: BorderRadius.circular(18),
         child: InkWell(
           onTap: onTap,
@@ -585,6 +585,10 @@ class AdminIconActionButton extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: AdminPalette.accent,
                         borderRadius: BorderRadius.circular(999),
+                        border: Border.all(
+                          color: AdminPalette.surface.withValues(alpha: 0.94),
+                          width: 1.5,
+                        ),
                       ),
                       child: Text(
                         badgeCount > 9 ? '9+' : '$badgeCount',

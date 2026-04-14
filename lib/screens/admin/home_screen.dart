@@ -3,10 +3,12 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/notification_provider.dart';
+import '../../theme/app_colors.dart';
 import '../../utils/admin_palette.dart';
 import '../../widgets/admin/admin_ui.dart';
 import '../notifications_screen.dart';
 import '../settings/logout_confirmation_sheet.dart';
+import '../settings/settings_screen.dart';
 import 'admin_activity_center_screen.dart';
 import 'admin_content_center_screen.dart';
 import 'admin_dashboard_screen.dart';
@@ -74,6 +76,15 @@ class _HomeScreenState extends State<HomeScreen> {
       compactNavLabel: 'Library',
       navIcon: Icons.library_books_outlined,
       activeNavIcon: Icons.library_books_rounded,
+    ),
+    const _AdminDestination(
+      title: 'Settings',
+      subtitle: 'Theme, security, support, and account controls.',
+      icon: Icons.settings_rounded,
+      navLabel: 'Settings',
+      compactNavLabel: 'Settings',
+      navIcon: Icons.settings_outlined,
+      activeNavIcon: Icons.settings_rounded,
     ),
   ];
 
@@ -235,8 +246,10 @@ class _HomeScreenState extends State<HomeScreen> {
           embedded: true,
           onOpenContent: _openContentTab,
         );
-      default:
+      case 4:
         return const AdminLibraryScreen();
+      default:
+        return const SettingsScreen(embedded: true);
     }
   }
 
@@ -325,19 +338,25 @@ class _AdminPillNavigationBar extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.96),
+          color: AppColors.isDark
+              ? AdminPalette.surface.withValues(alpha: 0.96)
+              : AdminPalette.surface.withValues(alpha: 0.96),
           borderRadius: BorderRadius.circular(28),
           border: Border.all(
             color: AdminPalette.border.withValues(alpha: 0.92),
           ),
           boxShadow: [
             BoxShadow(
-              color: AdminPalette.primary.withValues(alpha: 0.10),
+              color: AdminPalette.primary.withValues(
+                alpha: AppColors.isDark ? 0.16 : 0.10,
+              ),
               blurRadius: 24,
               offset: const Offset(0, 12),
             ),
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.06),
+              color: AppColors.current.shadow.withValues(
+                alpha: AppColors.isDark ? 0.24 : 0.06,
+              ),
               blurRadius: 16,
               offset: const Offset(0, 6),
             ),

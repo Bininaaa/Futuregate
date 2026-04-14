@@ -12,6 +12,7 @@ class SettingsPageScaffold extends StatelessWidget {
   final Color? backgroundColor;
   final bool centerTitle;
   final EdgeInsetsGeometry bodyPadding;
+  final bool showAppBar;
 
   const SettingsPageScaffold({
     super.key,
@@ -22,6 +23,7 @@ class SettingsPageScaffold extends StatelessWidget {
     this.backgroundColor,
     this.centerTitle = false,
     this.bodyPadding = const EdgeInsets.fromLTRB(16, 12, 16, 28),
+    this.showAppBar = true,
   });
 
   @override
@@ -31,29 +33,31 @@ class SettingsPageScaffold extends StatelessWidget {
     return AppShellBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          centerTitle: centerTitle,
-          backgroundColor: Colors.transparent,
-          surfaceTintColor: Colors.transparent,
-          elevation: 0,
-          scrolledUnderElevation: 0,
-          leading:
-              leading ??
-              (canPop
-                  ? IconButton(
-                      onPressed: () => Navigator.maybePop(context),
-                      icon: Icon(
-                        Icons.arrow_back_ios_new_rounded,
-                        color: SettingsFlowPalette.textPrimary,
-                      ),
-                    )
-                  : null),
-          title: Text(title, style: SettingsFlowTheme.appBarTitle()),
-          actions: actions,
-        ),
+        appBar: showAppBar
+            ? AppBar(
+                automaticallyImplyLeading: false,
+                centerTitle: centerTitle,
+                backgroundColor: Colors.transparent,
+                surfaceTintColor: Colors.transparent,
+                elevation: 0,
+                scrolledUnderElevation: 0,
+                leading:
+                    leading ??
+                    (canPop
+                        ? IconButton(
+                            onPressed: () => Navigator.maybePop(context),
+                            icon: Icon(
+                              Icons.arrow_back_ios_new_rounded,
+                              color: SettingsFlowPalette.textPrimary,
+                            ),
+                          )
+                        : null),
+                title: Text(title, style: SettingsFlowTheme.appBarTitle()),
+                actions: actions,
+              )
+            : null,
         body: SafeArea(
-          top: false,
+          top: !showAppBar,
           child: SingleChildScrollView(padding: bodyPadding, child: child),
         ),
       ),

@@ -12,6 +12,7 @@ import '../../models/user_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/company_provider.dart';
 import '../../providers/notification_provider.dart';
+import '../../theme/app_colors.dart';
 import '../../utils/application_status.dart';
 import '../../utils/company_dashboard_palette.dart';
 import '../../widgets/app_shell_background.dart';
@@ -478,152 +479,163 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
 
   Widget _buildTopBar(BuildContext context, UserModel? user, int unreadCount) {
     final companyName = _companyDisplayName(user);
+    final surfaceColor = AppColors.isDark
+        ? CompanyDashboardPalette.surfaceElevated.withValues(alpha: 0.94)
+        : CompanyDashboardPalette.surface.withValues(alpha: 0.96);
 
-    return Row(
-      children: [
-        Container(
-          width: 52,
-          height: 52,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                CompanyDashboardPalette.primary,
-                CompanyDashboardPalette.primaryDark,
+    return Container(
+      padding: const EdgeInsets.fromLTRB(14, 12, 12, 12),
+      decoration: BoxDecoration(
+        color: surfaceColor,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: CompanyDashboardPalette.border.withValues(
+            alpha: AppColors.isDark ? 0.94 : 0.84,
+          ),
+        ),
+        boxShadow: AppColors.current.softShadow(0.07),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 46,
+            height: 46,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  CompanyDashboardPalette.primaryDark,
+                  CompanyDashboardPalette.primary,
+                  CompanyDashboardPalette.secondary,
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(18),
+              boxShadow: [
+                BoxShadow(
+                  color: CompanyDashboardPalette.primary.withValues(
+                    alpha: AppColors.isDark ? 0.30 : 0.20,
+                  ),
+                  blurRadius: 18,
+                  offset: const Offset(0, 10),
+                ),
               ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
             ),
-            borderRadius: BorderRadius.circular(18),
-            boxShadow: [
-              BoxShadow(
-                color: CompanyDashboardPalette.primary.withValues(alpha: 0.24),
-                blurRadius: 18,
-                offset: const Offset(0, 10),
-              ),
-            ],
+            child: const Icon(
+              Icons.business_center_rounded,
+              color: Colors.white,
+              size: 24,
+            ),
           ),
-          child: const Icon(
-            Icons.business_center_rounded,
-            color: Colors.white,
-            size: 26,
-          ),
-        ),
-        const SizedBox(width: 14),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                companyName,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: GoogleFonts.poppins(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  color: CompanyDashboardPalette.textPrimary,
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  companyName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.poppins(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w700,
+                    color: CompanyDashboardPalette.textPrimary,
+                    height: 1.1,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                '${AppMetadata.appName} company workspace',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: GoogleFonts.poppins(
-                  fontSize: 12,
-                  color: CompanyDashboardPalette.textMuted,
+                const SizedBox(height: 2),
+                Text(
+                  '${AppMetadata.appName} company workspace',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.poppins(
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w500,
+                    color: CompanyDashboardPalette.textMuted,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-        _buildNotificationButton(context, unreadCount),
-        const SizedBox(width: 10),
-        Container(
-          padding: const EdgeInsets.all(2),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: Colors.white, width: 1.5),
-            boxShadow: [
-              BoxShadow(
-                color: CompanyDashboardPalette.textPrimary.withValues(
-                  alpha: 0.06,
-                ),
-                blurRadius: 18,
-                offset: const Offset(0, 10),
-              ),
-            ],
+          const SizedBox(width: 10),
+          _buildNotificationButton(context, unreadCount),
+          const SizedBox(width: 8),
+          Container(
+            padding: const EdgeInsets.all(2),
+            decoration: BoxDecoration(
+              color: CompanyDashboardPalette.surfaceMuted,
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: CompanyDashboardPalette.border),
+            ),
+            child: ProfileAvatar(user: user, radius: 20),
           ),
-          child: ProfileAvatar(user: user, radius: 21),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
   Widget _buildNotificationButton(BuildContext context, int unreadCount) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(18),
-      onTap: () {
-        Navigator.of(
-          context,
-        ).push(MaterialPageRoute(builder: (_) => const NotificationsScreen()));
-      },
-      child: Container(
-        width: 48,
-        height: 48,
-        decoration: BoxDecoration(
-          color: Colors.white,
+    return Tooltip(
+      message: 'Notifications',
+      child: Material(
+        color: CompanyDashboardPalette.surfaceMuted,
+        borderRadius: BorderRadius.circular(18),
+        child: InkWell(
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: CompanyDashboardPalette.border),
-          boxShadow: [
-            BoxShadow(
-              color: CompanyDashboardPalette.textPrimary.withValues(
-                alpha: 0.05,
-              ),
-              blurRadius: 18,
-              offset: const Offset(0, 10),
-            ),
-          ],
-        ),
-        child: Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Center(
-              child: Icon(
-                Icons.notifications_none_rounded,
-                color: CompanyDashboardPalette.textPrimary,
-                size: 23,
-              ),
-            ),
-            if (unreadCount > 0)
-              Positioned(
-                top: 8,
-                right: 8,
-                child: Container(
-                  constraints: const BoxConstraints(
-                    minWidth: 18,
-                    minHeight: 18,
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 4,
-                    vertical: 2,
-                  ),
-                  decoration: BoxDecoration(
-                    color: CompanyDashboardPalette.accent,
-                    borderRadius: BorderRadius.circular(999),
-                  ),
-                  child: Text(
-                    unreadCount > 9 ? '9+' : '$unreadCount',
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.poppins(
-                      fontSize: 9,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                    ),
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const NotificationsScreen()),
+            );
+          },
+          child: SizedBox(
+            width: 46,
+            height: 46,
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Center(
+                  child: Icon(
+                    Icons.notifications_none_rounded,
+                    color: CompanyDashboardPalette.textPrimary,
+                    size: 22,
                   ),
                 ),
-              ),
-          ],
+                if (unreadCount > 0)
+                  Positioned(
+                    top: 7,
+                    right: 7,
+                    child: Container(
+                      constraints: const BoxConstraints(
+                        minWidth: 18,
+                        minHeight: 18,
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 4,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: CompanyDashboardPalette.accent,
+                        borderRadius: BorderRadius.circular(999),
+                        border: Border.all(
+                          color: CompanyDashboardPalette.surfaceMuted,
+                          width: 1.5,
+                        ),
+                      ),
+                      child: Text(
+                        unreadCount > 9 ? '9+' : '$unreadCount',
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.poppins(
+                          fontSize: 9,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -726,7 +738,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
                     child: _buildHeroAction(
                       label: 'Post\nOpportunity',
                       icon: Icons.add_rounded,
-                      background: Colors.white,
+                      background: CompanyDashboardPalette.surface,
                       foreground: CompanyDashboardPalette.primaryDark,
                       onTap: () => _openPublishOpportunity(context),
                     ),
@@ -736,7 +748,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
                     child: _buildHeroAction(
                       label: 'Review\nApplications',
                       icon: Icons.assignment_rounded,
-                      background: Colors.white,
+                      background: CompanyDashboardPalette.surface,
                       foreground: CompanyDashboardPalette.primaryDark,
                       onTap: () => _openApplications(context),
                     ),
@@ -844,7 +856,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: CompanyDashboardPalette.surface,
         borderRadius: BorderRadius.circular(28),
         border: Border.all(color: CompanyDashboardPalette.border),
         boxShadow: [
@@ -916,7 +928,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: CompanyDashboardPalette.surface,
         borderRadius: BorderRadius.circular(26),
         border: Border.all(color: CompanyDashboardPalette.border),
         boxShadow: [
@@ -988,7 +1000,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
     return Container(
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: CompanyDashboardPalette.surface,
         borderRadius: BorderRadius.circular(30),
         border: Border.all(color: CompanyDashboardPalette.border),
         boxShadow: [
@@ -1208,7 +1220,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
                   radius: 4,
                   color: CompanyDashboardPalette.primary,
                   strokeWidth: 2,
-                  strokeColor: Colors.white,
+                  strokeColor: CompanyDashboardPalette.surface,
                 );
               },
             ),
@@ -1306,7 +1318,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       child: Material(
-        color: Colors.white,
+        color: CompanyDashboardPalette.surface,
         borderRadius: BorderRadius.circular(26),
         child: InkWell(
           borderRadius: BorderRadius.circular(26),
@@ -1452,12 +1464,21 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(30),
-        gradient: const LinearGradient(
-          colors: [Color(0xFFFFFBEB), Colors.white],
+        gradient: LinearGradient(
+          colors: AppColors.isDark
+              ? [
+                  CompanyDashboardPalette.surfaceElevated,
+                  CompanyDashboardPalette.surface,
+                ]
+              : [Color(0xFFFFFBEB), CompanyDashboardPalette.surface],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        border: Border.all(color: const Color(0xFFFDE68A)),
+        border: Border.all(
+          color: AppColors.isDark
+              ? CompanyDashboardPalette.accent.withValues(alpha: 0.24)
+              : const Color(0xFFFDE68A),
+        ),
         boxShadow: [
           BoxShadow(
             color: CompanyDashboardPalette.accent.withValues(alpha: 0.10),
@@ -1570,7 +1591,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 28),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: CompanyDashboardPalette.surface,
         borderRadius: BorderRadius.circular(28),
         border: Border.all(color: CompanyDashboardPalette.border),
         boxShadow: [

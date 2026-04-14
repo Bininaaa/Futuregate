@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../models/user_model.dart';
+import '../../theme/app_colors.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
 import '../profile_avatar.dart';
 
@@ -53,14 +54,18 @@ class StudentWorkspaceTopBar extends StatelessWidget {
       padding: margin,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.94),
+          color: OpportunityDashboardPalette.surface.withValues(
+            alpha: AppColors.isDark ? 0.96 : 0.94,
+          ),
           borderRadius: BorderRadius.circular(radius),
           border: Border.all(
             color: OpportunityDashboardPalette.border.withValues(alpha: 0.92),
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.08),
+              color: AppColors.current.shadow.withValues(
+                alpha: AppColors.isDark ? 0.24 : 0.08,
+              ),
               blurRadius: 28,
               offset: const Offset(0, 14),
             ),
@@ -538,7 +543,9 @@ class StudentPillNavigationBar extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.96),
+          color: OpportunityDashboardPalette.surface.withValues(
+            alpha: AppColors.isDark ? 0.96 : 0.96,
+          ),
           borderRadius: BorderRadius.circular(28),
           border: Border.all(
             color: OpportunityDashboardPalette.border.withValues(alpha: 0.92),
@@ -552,7 +559,9 @@ class StudentPillNavigationBar extends StatelessWidget {
               offset: const Offset(0, 12),
             ),
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.06),
+              color: AppColors.current.shadow.withValues(
+                alpha: AppColors.isDark ? 0.24 : 0.06,
+              ),
               blurRadius: 16,
               offset: const Offset(0, 6),
             ),
