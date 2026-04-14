@@ -139,7 +139,7 @@ class _CvTemplateSelectorScreenState extends State<CvTemplateSelectorScreen> {
                               ),
                             ),
                             if (isSelected)
-                              const Icon(
+                              Icon(
                                 Icons.check_circle,
                                 size: 18,
                                 color: SettingsFlowPalette.primary,

@@ -53,9 +53,7 @@ class _AdminActivityCenterScreenState extends State<AdminActivityCenterScreen> {
         .toList();
 
     final content = provider.activityLoading && provider.recentActivity.isEmpty
-        ? const Center(
-            child: CircularProgressIndicator(color: AdminPalette.primary),
-          )
+        ? Center(child: CircularProgressIndicator(color: AdminPalette.primary))
         : provider.activityError != null && provider.recentActivity.isEmpty
         ? AdminEmptyState(
             icon: Icons.error_outline_rounded,
@@ -139,7 +137,7 @@ class _AdminActivityCenterScreenState extends State<AdminActivityCenterScreen> {
                               color: AdminPalette.primarySoft,
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            child: const Icon(
+                            child: Icon(
                               Icons.timeline_rounded,
                               size: 16,
                               color: AdminPalette.primary,
@@ -150,14 +148,14 @@ class _AdminActivityCenterScreenState extends State<AdminActivityCenterScreen> {
                             query.isEmpty
                                 ? '${activities.length} recent activities'
                                 : '${activities.length} matching activities',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 12.5,
                               fontWeight: FontWeight.w700,
                               color: AdminPalette.textPrimary,
                             ),
                           ),
                           const Spacer(),
-                          const Text(
+                          Text(
                             'Newest first',
                             style: TextStyle(
                               fontSize: 11.5,
@@ -341,7 +339,7 @@ class _ActivityTile extends StatelessWidget {
                             title,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontWeight: FontWeight.w700,
                               fontSize: 14.3,
                               color: AdminPalette.textPrimary,
@@ -354,7 +352,7 @@ class _ActivityTile extends StatelessWidget {
                               description,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 12.5,
                                 color: AdminPalette.textSecondary,
                                 height: 1.35,
@@ -500,7 +498,7 @@ class _ActivityInlineInfo extends StatelessWidget {
           label,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 11.4,
             fontWeight: FontWeight.w600,
             color: AdminPalette.textMuted,
@@ -554,7 +552,7 @@ class _ActivityHeaderLine extends StatelessWidget {
               actorName,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 11.3,
                 fontWeight: FontWeight.w600,
                 color: AdminPalette.textMuted,
@@ -630,7 +628,7 @@ class _ActivityFeedFooter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (!provider.activityHasMore && provider.activityError == null) {
-      return const Padding(
+      return Padding(
         padding: EdgeInsets.only(top: 6, bottom: 6),
         child: Center(
           child: Text(
@@ -692,7 +690,7 @@ class _ActivityFeedFooter extends StatelessWidget {
               isRetryState
                   ? 'Older activity could not be loaded'
                   : 'Need more activity?',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
                 color: AdminPalette.textPrimary,

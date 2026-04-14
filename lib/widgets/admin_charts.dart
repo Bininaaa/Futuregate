@@ -43,7 +43,7 @@ class UsersByLevelBarChart extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Row(
+              Row(
                 children: [
                   Icon(Icons.bar_chart, color: AdminPalette.accent, size: 20),
                   SizedBox(width: 8),
@@ -202,7 +202,7 @@ class UsersRolePieChart extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Row(
+              Row(
                 children: [
                   Icon(Icons.pie_chart, color: AdminPalette.activity, size: 20),
                   SizedBox(width: 8),
@@ -329,7 +329,7 @@ class MonthlyRegistrationsLineChart extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Row(
+              Row(
                 children: [
                   Icon(Icons.show_chart, color: AdminPalette.success, size: 20),
                   SizedBox(width: 8),

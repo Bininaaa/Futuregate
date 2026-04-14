@@ -428,7 +428,7 @@ class _AppliedCompactSummary extends StatelessWidget {
                   ),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.assignment_turned_in_outlined,
                   color: StudentOpportunityHubPalette.primary,
                   size: 18,
@@ -819,27 +819,29 @@ class _AppliedCardFrame extends StatelessWidget {
 
 class _AppliedLabelChip extends StatelessWidget {
   final String label;
-  final Color tone;
+  final Color? tone;
   final bool filled;
 
   const _AppliedLabelChip({
     required this.label,
-    this.tone = StudentOpportunityHubPalette.textMuted,
+    this.tone,
     this.filled = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    final resolvedTone = tone ?? StudentOpportunityHubPalette.textMuted;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
       decoration: BoxDecoration(
         color: filled
-            ? tone.withValues(alpha: 0.10)
-            : Colors.white.withValues(alpha: 0.82),
+            ? resolvedTone.withValues(alpha: 0.10)
+            : StudentOpportunityHubPalette.surface.withValues(alpha: 0.82),
         borderRadius: BorderRadius.circular(999),
         border: Border.all(
           color: filled
-              ? tone.withValues(alpha: 0.18)
+              ? resolvedTone.withValues(alpha: 0.18)
               : StudentOpportunityHubPalette.border.withValues(alpha: 0.92),
         ),
       ),
@@ -851,7 +853,9 @@ class _AppliedLabelChip extends StatelessWidget {
             style: GoogleFonts.poppins(
               fontSize: 10.4,
               fontWeight: FontWeight.w600,
-              color: filled ? tone : StudentOpportunityHubPalette.textSecondary,
+              color: filled
+                  ? resolvedTone
+                  : StudentOpportunityHubPalette.textSecondary,
             ),
           ),
         ],
@@ -974,14 +978,14 @@ class _InlineBanner extends StatelessWidget {
 }
 
 abstract final class _AppliedCardText {
-  static final TextStyle title = GoogleFonts.poppins(
+  static TextStyle get title => GoogleFonts.poppins(
     fontSize: 14.6,
     height: 1.18,
     fontWeight: FontWeight.w700,
     color: StudentOpportunityHubPalette.textPrimary,
   );
 
-  static final TextStyle subtitle = GoogleFonts.poppins(
+  static TextStyle get subtitle => GoogleFonts.poppins(
     fontSize: 11.4,
     fontWeight: FontWeight.w600,
     color: StudentOpportunityHubPalette.textSecondary,

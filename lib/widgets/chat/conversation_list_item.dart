@@ -227,7 +227,7 @@ class _ConversationListItemState extends State<ConversationListItem> {
                                   label: 'Muted',
                                 ),
                               if (widget.isArchived)
-                                const _MetaPill(
+                                _MetaPill(
                                   icon: Icons.archive_outlined,
                                   label: 'Archived',
                                   foregroundColor: ChatThemePalette.secondary,
@@ -340,35 +340,40 @@ class _ConversationAvatar extends StatelessWidget {
 class _MetaPill extends StatelessWidget {
   final IconData icon;
   final String label;
-  final Color foregroundColor;
-  final Color backgroundColor;
+  final Color? foregroundColor;
+  final Color? backgroundColor;
 
   const _MetaPill({
     required this.icon,
     required this.label,
-    this.foregroundColor = ChatThemePalette.textSecondary,
-    this.backgroundColor = const Color(0xFFF3F6FD),
+    this.foregroundColor,
+    this.backgroundColor,
   });
 
   @override
   Widget build(BuildContext context) {
+    final resolvedForegroundColor =
+        foregroundColor ?? ChatThemePalette.textSecondary;
+    final resolvedBackgroundColor =
+        backgroundColor ?? ChatThemePalette.surfaceMuted;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: backgroundColor,
+        color: resolvedBackgroundColor,
         borderRadius: BorderRadius.circular(999),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 11, color: foregroundColor),
+          Icon(icon, size: 11, color: resolvedForegroundColor),
           const SizedBox(width: 4),
           ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 120),
             child: Text(
               label,
               style: ChatThemeStyles.meta(
-                foregroundColor,
+                resolvedForegroundColor,
               ).copyWith(fontSize: 10),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,

@@ -318,8 +318,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
 
     addCandidates(
       items.where(
-        (training) =>
-            _matchesRecommendationProfile(training, profileKeywords),
+        (training) => _matchesRecommendationProfile(training, profileKeywords),
       ),
     );
     addCandidates(items.where((training) => training.isFeatured));
@@ -365,7 +364,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
   }
 
   _TrainingAccent _accentFor(TrainingModel training) {
-    const accents = [
+    final accents = [
       _TrainingAccent(
         primary: OpportunityDashboardPalette.primary,
         secondary: OpportunityDashboardPalette.primaryDark,
@@ -443,7 +442,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
 
     if (training.isFree == true) {
       badges.add(
-        const TrainingCourseBadgeData(
+        TrainingCourseBadgeData(
           label: 'FREE',
           backgroundColor: Color(0xFFDCFCE7),
           foregroundColor: OpportunityDashboardPalette.success,
@@ -453,7 +452,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
 
     if (_looksCertified(training)) {
       badges.add(
-        const TrainingCourseBadgeData(
+        TrainingCourseBadgeData(
           label: 'CERTIFIED',
           backgroundColor: Color(0xFFDBEAFE),
           foregroundColor: OpportunityDashboardPalette.primaryDark,
@@ -463,7 +462,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
 
     if (badges.isEmpty && training.isFeatured) {
       badges.add(
-        const TrainingCourseBadgeData(
+        TrainingCourseBadgeData(
           label: 'FEATURED',
           backgroundColor: Color(0xFFFFEDD5),
           foregroundColor: OpportunityDashboardPalette.accent,
@@ -476,7 +475,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
       switch (type) {
         case 'course':
           badges.add(
-            const TrainingCourseBadgeData(
+            TrainingCourseBadgeData(
               label: 'COURSE',
               backgroundColor: Color(0xFFDBEAFE),
               foregroundColor: OpportunityDashboardPalette.primaryDark,
@@ -485,7 +484,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
           break;
         case 'video':
           badges.add(
-            const TrainingCourseBadgeData(
+            TrainingCourseBadgeData(
               label: 'VIDEO',
               backgroundColor: Color(0xFFFEF3C7),
               foregroundColor: OpportunityDashboardPalette.warning,
@@ -503,7 +502,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
           break;
         case 'file':
           badges.add(
-            const TrainingCourseBadgeData(
+            TrainingCourseBadgeData(
               label: 'GUIDE',
               backgroundColor: Color(0xFFEDE9FE),
               foregroundColor: OpportunityDashboardPalette.primary,
@@ -512,7 +511,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
           break;
         default:
           badges.add(
-            const TrainingCourseBadgeData(
+            TrainingCourseBadgeData(
               label: 'PROGRAM',
               backgroundColor: Color(0xFFEDE9FE),
               foregroundColor: OpportunityDashboardPalette.primary,

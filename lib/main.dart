@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import 'config/app_navigation.dart';
@@ -25,7 +25,9 @@ import 'providers/notification_provider.dart';
 import 'providers/connectivity_provider.dart';
 import 'screens/launch_screen.dart';
 import 'screens/notifications_screen.dart';
-import 'widgets/shared/app_feedback.dart';
+import 'theme/app_colors.dart';
+import 'theme/app_theme.dart';
+import 'theme/theme_controller.dart';
 
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -47,7 +49,10 @@ void main() async {
   // user can see the full notification and tap through to the target.
   NotificationService.onNotificationTap = _handleNotificationTap;
 
-  runApp(const FutureGateApp());
+  final themeController = ThemeController();
+  await themeController.load();
+
+  runApp(FutureGateApp(themeController: themeController));
 }
 
 void _handleNotificationTap(Map<String, dynamic> data) {
@@ -61,12 +66,15 @@ void _handleNotificationTap(Map<String, dynamic> data) {
 }
 
 class FutureGateApp extends StatelessWidget {
-  const FutureGateApp({super.key});
+  final ThemeController themeController;
+
+  const FutureGateApp({super.key, required this.themeController});
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider.value(value: themeController),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => OpportunityProvider()),
         ChangeNotifierProvider(create: (_) => ApplicationProvider()),
@@ -139,12 +147,7 @@ class _PresenceAwareAppState extends State<_PresenceAwareApp>
 
   @override
   Widget build(BuildContext context) {
-    const colorScheme = ColorScheme.light(
-      primary: Color(0xFF3B22F6),
-      secondary: Color(0xFF14B8A6),
-      surface: Colors.white,
-      error: Color(0xFFEF4444),
-    );
+    final themeController = context.watch<ThemeController>();
 
     context.select<AuthProvider, String?>(
       (provider) => provider.userModel?.uid,
@@ -155,28 +158,26 @@ class _PresenceAwareAppState extends State<_PresenceAwareApp>
       navigatorKey: appNavigatorKey,
       debugShowCheckedModeBanner: false,
       title: 'FutureGate',
-      theme: ThemeData(
-        scaffoldBackgroundColor: const Color(0xFFF8FAFC),
-        colorScheme: colorScheme,
-        snackBarTheme: const SnackBarThemeData(
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-        ),
-        inputDecorationTheme: InputDecorationTheme(
-          errorStyle: GoogleFonts.poppins(
-            fontSize: 11.6,
-            fontWeight: FontWeight.w600,
-            height: 1.35,
-            color: colorScheme.error,
+      theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
+      themeMode: themeController.themeMode,
+      themeAnimationDuration: const Duration(milliseconds: 220),
+      themeAnimationCurve: Curves.easeOutCubic,
+      builder: (context, child) {
+        final colors = AppColors.of(context);
+        final overlayStyle = colors.isDarkMode
+            ? SystemUiOverlayStyle.light
+            : SystemUiOverlayStyle.dark;
+
+        return AnnotatedRegion<SystemUiOverlayStyle>(
+          value: overlayStyle.copyWith(
+            statusBarColor: Colors.transparent,
+            systemNavigationBarColor: colors.background,
+            systemNavigationBarDividerColor: Colors.transparent,
           ),
-          errorMaxLines: 3,
-        ),
-        extensions: <ThemeExtension<dynamic>>[
-          AppFeedbackTheme.fallback(colorScheme),
-        ],
-        appBarTheme: const AppBarTheme(centerTitle: true, elevation: 0),
-      ),
+          child: child ?? const SizedBox.shrink(),
+        );
+      },
       home: const LaunchScreen(),
     );
   }

@@ -78,7 +78,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          const AuthCompactHeader(
+          AuthCompactHeader(
             icon: Icons.lock_reset_rounded,
             title: 'Reset password',
             subtitle: 'Enter your email to get a reset link.',
@@ -145,7 +145,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        const AuthCompactHeader(
+        AuthCompactHeader(
           icon: Icons.mark_email_read_outlined,
           title: 'Check your email',
           subtitle: 'The reset link is on its way.',

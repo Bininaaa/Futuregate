@@ -324,7 +324,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
         provider.stats.isEmpty;
 
     if (isInitialLoading) {
-      return const AppShellBackground(
+      return AppShellBackground(
         child: Scaffold(
           backgroundColor: Colors.transparent,
           body: SafeArea(
@@ -352,7 +352,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.error_outline_rounded,
                       size: 48,
                       color: CompanyDashboardPalette.error,
@@ -485,7 +485,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
           width: 52,
           height: 52,
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
+            gradient: LinearGradient(
               colors: [
                 CompanyDashboardPalette.primary,
                 CompanyDashboardPalette.primaryDark,
@@ -588,7 +588,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
         child: Stack(
           clipBehavior: Clip.none,
           children: [
-            const Center(
+            Center(
               child: Icon(
                 Icons.notifications_none_rounded,
                 color: CompanyDashboardPalette.textPrimary,
@@ -639,7 +639,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
       padding: const EdgeInsets.fromLTRB(22, 20, 22, 22),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(30),
-        gradient: const LinearGradient(
+        gradient: LinearGradient(
           colors: [
             CompanyDashboardPalette.primaryDark,
             CompanyDashboardPalette.primary,
@@ -1385,7 +1385,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
                         const SizedBox(height: 8),
                         Row(
                           children: [
-                            const Icon(
+                            Icon(
                               Icons.schedule_rounded,
                               size: 15,
                               color: CompanyDashboardPalette.textMuted,
@@ -1415,7 +1415,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
                       color: CompanyDashboardPalette.primarySoft,
                       borderRadius: BorderRadius.circular(14),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.arrow_forward_ios_rounded,
                       size: 15,
                       color: CompanyDashboardPalette.primary,
@@ -1478,7 +1478,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
                   color: CompanyDashboardPalette.accent.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.insights_rounded,
                   color: CompanyDashboardPalette.accent,
                   size: 23,
@@ -1590,7 +1590,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
               color: CompanyDashboardPalette.primarySoft,
               borderRadius: BorderRadius.circular(20),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.inbox_rounded,
               color: CompanyDashboardPalette.primary,
               size: 28,
@@ -1633,7 +1633,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(
+          Icon(
             Icons.info_outline_rounded,
             size: 20,
             color: CompanyDashboardPalette.error,

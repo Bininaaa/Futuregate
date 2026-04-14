@@ -83,7 +83,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         elevation: 0,
         leading: IconButton(
           onPressed: () => Navigator.maybePop(context),
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back_ios_new_rounded,
             color: SettingsFlowPalette.textPrimary,
           ),
@@ -103,7 +103,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         ],
       ),
       body: provider.isLoading
-          ? const Center(
+          ? Center(
               child: CircularProgressIndicator(
                 color: SettingsFlowPalette.primary,
               ),
@@ -168,7 +168,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                               backgroundColor: SettingsFlowPalette.surface,
                               shape: RoundedRectangleBorder(
                                 borderRadius: SettingsFlowTheme.radius(999),
-                                side: const BorderSide(
+                                side: BorderSide(
                                   color: SettingsFlowPalette.border,
                                 ),
                               ),
@@ -225,7 +225,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                                         shape: RoundedRectangleBorder(
                                           borderRadius:
                                               SettingsFlowTheme.radius(999),
-                                          side: const BorderSide(
+                                          side: BorderSide(
                                             color: SettingsFlowPalette.border,
                                           ),
                                         ),
@@ -293,7 +293,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                                         shape: RoundedRectangleBorder(
                                           borderRadius:
                                               SettingsFlowTheme.radius(999),
-                                          side: const BorderSide(
+                                          side: BorderSide(
                                             color: SettingsFlowPalette.border,
                                           ),
                                         ),
@@ -1186,7 +1186,7 @@ class _NotificationCard extends StatelessWidget {
                           Container(
                             width: 8,
                             height: 8,
-                            decoration: const BoxDecoration(
+                            decoration: BoxDecoration(
                               color: SettingsFlowPalette.error,
                               shape: BoxShape.circle,
                             ),

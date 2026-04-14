@@ -139,7 +139,7 @@ class _LogoutConfirmationSheetState extends State<LogoutConfirmationSheet> {
                   ),
                   if (_isSigningOut) ...[
                     const SizedBox(height: 12),
-                    const LinearProgressIndicator(
+                    LinearProgressIndicator(
                       minHeight: 3,
                       color: SettingsFlowPalette.error,
                       backgroundColor: SettingsFlowPalette.dangerTint,
@@ -173,7 +173,7 @@ class _LogoutCopy {
   factory _LogoutCopy.fromRole(String? role) {
     switch ((role ?? '').trim().toLowerCase()) {
       case 'admin':
-        return const _LogoutCopy(
+        return _LogoutCopy(
           title: 'Sign out of admin?',
           message:
               'You will leave the admin workspace on this device. Saved changes stay safe.',
@@ -182,7 +182,7 @@ class _LogoutCopy {
           color: SettingsFlowPalette.primary,
         );
       case 'company':
-        return const _LogoutCopy(
+        return _LogoutCopy(
           title: 'Sign out of company?',
           message:
               'You will leave the company workspace on this device. Your profile and opportunities stay saved.',
@@ -191,7 +191,7 @@ class _LogoutCopy {
           color: SettingsFlowPalette.secondary,
         );
       case 'student':
-        return const _LogoutCopy(
+        return _LogoutCopy(
           title: 'Sign out of student?',
           message:
               'You will leave your student workspace on this device. Your profile and saved items stay safe.',
@@ -200,7 +200,7 @@ class _LogoutCopy {
           color: SettingsFlowPalette.primary,
         );
       default:
-        return const _LogoutCopy(
+        return _LogoutCopy(
           title: 'Sign out of FutureGate?',
           message: 'You can sign back in anytime with the same account.',
           roleLabel: 'Account',

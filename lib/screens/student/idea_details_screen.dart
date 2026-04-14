@@ -29,21 +29,11 @@ class IdeaDetailsScreen extends StatelessWidget {
     this.showModerationStatus = false,
   });
 
-  AppContentTheme get _theme => const AppContentTheme(
+  AppContentTheme get _theme => AppContentTheme.futureGate(
     accent: InnovationHubPalette.primary,
     accentDark: InnovationHubPalette.primaryDark,
     accentSoft: InnovationHubPalette.cardTint,
     secondary: InnovationHubPalette.secondary,
-    background: InnovationHubPalette.background,
-    surface: InnovationHubPalette.surface,
-    surfaceMuted: InnovationHubPalette.cardTint,
-    border: InnovationHubPalette.border,
-    textPrimary: InnovationHubPalette.textPrimary,
-    textSecondary: InnovationHubPalette.textSecondary,
-    textMuted: InnovationHubPalette.textSecondary,
-    success: InnovationHubPalette.success,
-    warning: InnovationHubPalette.warning,
-    error: InnovationHubPalette.error,
     heroGradient: InnovationHubPalette.primaryGradient,
     typography: AppContentTypography.innovation,
   );
@@ -598,7 +588,7 @@ class IdeaDetailsScreen extends StatelessWidget {
       isScrollControlled: true,
       builder: (_) => Container(
         padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: InnovationHubPalette.surface,
           borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
         ),

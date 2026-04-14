@@ -13,6 +13,7 @@ import '../../providers/chat_provider.dart';
 import '../../providers/company_provider.dart';
 import '../../providers/notification_provider.dart';
 import '../../services/document_access_service.dart';
+import '../../theme/app_colors.dart';
 import '../../utils/application_status.dart';
 import '../../utils/company_dashboard_palette.dart';
 import '../../utils/opportunity_metadata.dart';
@@ -873,7 +874,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
 
   _OpportunityTypeTone _toneForOpportunity(OpportunityModel? opportunity) {
     if (opportunity == null) {
-      return const _OpportunityTypeTone(
+      return _OpportunityTypeTone(
         background: _ApplicationsPalette.surfaceAlt,
         foreground: _ApplicationsPalette.textSecondary,
       );
@@ -1038,7 +1039,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                                 fontSize: 10,
                               ),
                               const SizedBox(height: 8),
-                              const Icon(
+                              Icon(
                                 Icons.chevron_right_rounded,
                                 size: 18,
                                 color: _ApplicationsPalette.textMuted,
@@ -1596,7 +1597,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
           future: provider.getApplicationCv(application.id),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const SizedBox(
+              return SizedBox(
                 height: 220,
                 child: Center(
                   child: CircularProgressIndicator(
@@ -1634,7 +1635,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
               builder: (_, scrollController) {
                 if (cv == null) {
                   return Container(
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       color: _ApplicationsPalette.surface,
                       borderRadius: BorderRadius.vertical(
                         top: Radius.circular(30),
@@ -1653,7 +1654,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                           ),
                         ),
                         const SizedBox(height: 28),
-                        const Icon(
+                        Icon(
                           Icons.description_outlined,
                           size: 48,
                           color: _ApplicationsPalette.primary,
@@ -1671,7 +1672,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                 }
 
                 return Container(
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     color: _ApplicationsPalette.surface,
                     borderRadius: BorderRadius.vertical(
                       top: Radius.circular(30),
@@ -1815,7 +1816,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                               .map(
                                 (skill) => _TypePill(
                                   label: skill,
-                                  tone: const _OpportunityTypeTone(
+                                  tone: _OpportunityTypeTone(
                                     background:
                                         _ApplicationsPalette.primarySoft,
                                     foreground: _ApplicationsPalette.primary,
@@ -2056,20 +2057,20 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
 }
 
 class _ApplicationsPalette {
-  static const Color primary = CompanyDashboardPalette.primary;
-  static const Color primarySoft = CompanyDashboardPalette.primarySoft;
-  static const Color secondaryDark = CompanyDashboardPalette.secondaryDark;
-  static const Color accent = CompanyDashboardPalette.accent;
-  static const Color accentSoft = Color(0xFFFFF7E6);
-  static const Color surface = CompanyDashboardPalette.surface;
-  static const Color surfaceAlt = Color(0xFFF8FAFC);
-  static const Color border = Color(0xFFE5E7EB);
-  static const Color textPrimary = CompanyDashboardPalette.textPrimary;
-  static const Color textSecondary = CompanyDashboardPalette.textSecondary;
-  static const Color textMuted = Color(0xFF94A3B8);
-  static const Color success = CompanyDashboardPalette.success;
-  static const Color warning = CompanyDashboardPalette.warning;
-  static const Color error = CompanyDashboardPalette.error;
+  static Color get primary => CompanyDashboardPalette.primary;
+  static Color get primarySoft => CompanyDashboardPalette.primarySoft;
+  static Color get secondaryDark => CompanyDashboardPalette.secondaryDark;
+  static Color get accent => CompanyDashboardPalette.accent;
+  static Color get accentSoft => AppColors.current.accentSoft;
+  static Color get surface => CompanyDashboardPalette.surface;
+  static Color get surfaceAlt => AppColors.current.surfaceMuted;
+  static Color get border => CompanyDashboardPalette.border;
+  static Color get textPrimary => CompanyDashboardPalette.textPrimary;
+  static Color get textSecondary => CompanyDashboardPalette.textSecondary;
+  static Color get textMuted => AppColors.current.textMuted;
+  static Color get success => CompanyDashboardPalette.success;
+  static Color get warning => CompanyDashboardPalette.warning;
+  static Color get error => CompanyDashboardPalette.error;
 }
 
 class _ApplicationListItem {
@@ -2257,7 +2258,7 @@ class _SearchField extends StatelessWidget {
             horizontal: 14,
             vertical: 13,
           ),
-          prefixIcon: const Padding(
+          prefixIcon: Padding(
             padding: EdgeInsets.only(left: 10, right: 6),
             child: Icon(
               Icons.search_rounded,
@@ -2273,7 +2274,7 @@ class _SearchField extends StatelessWidget {
               ? null
               : IconButton(
                   onPressed: controller.clear,
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.close_rounded,
                     size: 16,
                     color: _ApplicationsPalette.textMuted,
@@ -2679,7 +2680,7 @@ class _LoadingState extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const SizedBox(
+          SizedBox(
             width: 28,
             height: 28,
             child: CircularProgressIndicator(
@@ -2745,7 +2746,7 @@ class _EmptyApplicationsState extends StatelessWidget {
                   color: _ApplicationsPalette.primarySoft,
                   borderRadius: BorderRadius.circular(18),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.inbox_outlined,
                   size: 30,
                   color: _ApplicationsPalette.primary,
@@ -2899,7 +2900,7 @@ class _SheetHeaderBar extends StatelessWidget {
                     child: InkWell(
                       onTap: onClose,
                       borderRadius: BorderRadius.circular(12),
-                      child: const SizedBox(
+                      child: SizedBox(
                         width: 34,
                         height: 34,
                         child: Icon(
@@ -3105,7 +3106,7 @@ class _OpportunityDetailsHero extends StatelessWidget {
                     const SizedBox(height: 6),
                     Row(
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.place_outlined,
                           size: 14,
                           color: _ApplicationsPalette.textSecondary,
@@ -3250,7 +3251,7 @@ class _DetailBulletList extends StatelessWidget {
                     width: 6,
                     height: 6,
                     margin: const EdgeInsets.only(top: 7),
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       color: _ApplicationsPalette.primary,
                       shape: BoxShape.circle,
                     ),
@@ -3278,7 +3279,7 @@ class _DetailRows extends StatelessWidget {
         for (var index = 0; index < rows.length; index++) ...[
           _DetailInfoRow(item: rows[index]),
           if (index != rows.length - 1)
-            const Divider(height: 16, color: _ApplicationsPalette.border),
+            Divider(height: 16, color: _ApplicationsPalette.border),
         ],
       ],
     );

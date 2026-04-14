@@ -153,7 +153,7 @@ class TrainingSearchBar extends StatelessWidget {
           fontWeight: FontWeight.w500,
           color: OpportunityDashboardPalette.textSecondary,
         ),
-        prefixIcon: const Icon(
+        prefixIcon: Icon(
           Icons.search_rounded,
           color: OpportunityDashboardPalette.textSecondary,
           size: 20,
@@ -163,7 +163,7 @@ class TrainingSearchBar extends StatelessWidget {
             : IconButton(
                 tooltip: 'Clear search',
                 onPressed: onClear,
-                icon: const Icon(
+                icon: Icon(
                   Icons.close_rounded,
                   color: OpportunityDashboardPalette.textSecondary,
                   size: 18,
@@ -404,7 +404,7 @@ class TrainingCourseCard extends StatelessWidget {
                                   Expanded(
                                     child: Row(
                                       children: [
-                                        const Icon(
+                                        Icon(
                                           Icons.star_rounded,
                                           size: 14,
                                           color: OpportunityDashboardPalette
@@ -577,7 +577,7 @@ class TrainingCourseListCard extends StatelessWidget {
                           Expanded(
                             child: Row(
                               children: [
-                                const Icon(
+                                Icon(
                                   Icons.star_rounded,
                                   size: 14,
                                   color: OpportunityDashboardPalette.warning,

@@ -92,22 +92,19 @@ class _CvEditScreenState extends State<CvEditScreen> {
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: const BorderSide(color: SettingsFlowPalette.border),
+        borderSide: BorderSide(color: SettingsFlowPalette.border),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: const BorderSide(color: SettingsFlowPalette.border),
+        borderSide: BorderSide(color: SettingsFlowPalette.border),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: const BorderSide(
-          color: SettingsFlowPalette.primary,
-          width: 1.5,
-        ),
+        borderSide: BorderSide(color: SettingsFlowPalette.primary, width: 1.5),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: const BorderSide(color: SettingsFlowPalette.error),
+        borderSide: BorderSide(color: SettingsFlowPalette.error),
       ),
     );
   }
@@ -586,7 +583,7 @@ class _CvEditScreenState extends State<CvEditScreen> {
                       hint: 'Type and press Enter',
                       prefixIcon: Icons.auto_awesome_outlined,
                       suffixIcon: IconButton(
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.add_circle_outline,
                           color: SettingsFlowPalette.primary,
                         ),
@@ -629,7 +626,7 @@ class _CvEditScreenState extends State<CvEditScreen> {
                       hint: 'Type and press Enter',
                       prefixIcon: Icons.translate_outlined,
                       suffixIcon: IconButton(
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.add_circle_outline,
                           color: SettingsFlowPalette.primary,
                         ),
@@ -646,7 +643,7 @@ class _CvEditScreenState extends State<CvEditScreen> {
 
             // ── Save ──
             cvProvider.isLoading
-                ? const Center(
+                ? Center(
                     child: Padding(
                       padding: EdgeInsets.symmetric(vertical: 10),
                       child: CircularProgressIndicator(
@@ -681,7 +678,7 @@ class _CvEditScreenState extends State<CvEditScreen> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
+            Icon(
               Icons.add_rounded,
               size: 16,
               color: SettingsFlowPalette.primary,
@@ -758,7 +755,7 @@ class _CvEditScreenState extends State<CvEditScreen> {
             ),
             GestureDetector(
               onTap: onEdit,
-              child: const Padding(
+              child: Padding(
                 padding: EdgeInsets.all(6),
                 child: Icon(
                   Icons.edit_outlined,

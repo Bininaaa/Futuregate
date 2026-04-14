@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../theme/app_colors.dart';
+
 /// Centralized definitions for opportunity types used across the app.
 ///
 /// Backward compatibility: older Firestore documents without a `type` field
@@ -16,9 +18,9 @@ class OpportunityType {
   static const List<String> values = [job, internship, sponsoring];
 
   // Colors
-  static const Color jobColor = Color(0xFF6C63FF);
-  static const Color internshipColor = Color(0xFF10B981);
-  static const Color sponsoringColor = Color(0xFFFF9F43);
+  static Color get jobColor => AppColors.current.primary;
+  static Color get internshipColor => AppColors.current.secondary;
+  static Color get sponsoringColor => AppColors.current.accent;
 
   static Color color(String type) {
     switch (parse(type)) {
@@ -35,12 +37,12 @@ class OpportunityType {
   static Color softBackground(String type) {
     switch (parse(type)) {
       case internship:
-        return const Color(0xFFEAFBF7);
+        return AppColors.current.secondarySoft;
       case sponsoring:
-        return const Color(0xFFFFF4E8);
+        return AppColors.current.accentSoft;
       case job:
       default:
-        return const Color(0xFFF2EEFF);
+        return AppColors.current.primarySoft;
     }
   }
 

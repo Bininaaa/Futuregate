@@ -382,7 +382,7 @@ class _AdminPillNavItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final label = compact ? destination.compactNavLabel : destination.navLabel;
-    const selectedGradient = LinearGradient(
+    final selectedGradient = LinearGradient(
       colors: [
         AdminPalette.primaryDark,
         AdminPalette.primary,

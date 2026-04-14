@@ -239,7 +239,7 @@ class _ProjectIdeasScreenState extends State<ProjectIdeasScreen> {
             color: InnovationHubPalette.textSecondary.withValues(alpha: 0.82),
             size: 13.5,
           ),
-          prefixIcon: const Icon(
+          prefixIcon: Icon(
             Icons.search_rounded,
             color: InnovationHubPalette.primary,
             size: 20,
@@ -524,7 +524,7 @@ class _ProjectIdeasScreenState extends State<ProjectIdeasScreen> {
       backgroundColor: Colors.transparent,
       builder: (_) => Container(
         padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: InnovationHubPalette.surface,
           borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
         ),

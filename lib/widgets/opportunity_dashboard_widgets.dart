@@ -170,7 +170,7 @@ class TrendingOpportunitySectionHeader extends StatelessWidget {
                   ),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.local_fire_department_rounded,
                   color: OpportunityDashboardPalette.primary,
                   size: 18,
@@ -269,7 +269,7 @@ class OpportunityHeroCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(28),
         child: Ink(
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
+            gradient: LinearGradient(
               colors: [
                 OpportunityDashboardPalette.primary,
                 OpportunityDashboardPalette.primaryDark,
@@ -558,7 +558,7 @@ class TrainingProgramsCard extends StatelessWidget {
                   ),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.cast_for_education_outlined,
                   color: OpportunityDashboardPalette.secondary,
                   size: 21,
@@ -613,7 +613,7 @@ class TrainingProgramsCard extends StatelessWidget {
                 ),
               ],
               const SizedBox(width: 8),
-              const Icon(
+              Icon(
                 Icons.arrow_forward_ios_rounded,
                 size: 14,
                 color: OpportunityDashboardPalette.textSecondary,

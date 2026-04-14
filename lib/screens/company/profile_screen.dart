@@ -50,9 +50,7 @@ class CompanyProfileScreen extends StatelessWidget {
           surfaceTintColor: Colors.transparent,
           scrolledUnderElevation: 0,
           elevation: 0,
-          iconTheme: const IconThemeData(
-            color: CompanyDashboardPalette.textPrimary,
-          ),
+          iconTheme: IconThemeData(color: CompanyDashboardPalette.textPrimary),
           title: Text(
             'Company Profile',
             style: SettingsFlowTheme.appBarTitle(
@@ -134,7 +132,7 @@ class CompanyProfileScreen extends StatelessWidget {
                           ),
                           if ((user.description ?? '').trim().isEmpty) ...[
                             const SizedBox(height: 14),
-                            const SettingsInfoBanner(
+                            SettingsInfoBanner(
                               icon: Icons.edit_note_rounded,
                               title: 'Story still missing',
                               message:
@@ -252,7 +250,7 @@ class CompanyProfileScreen extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
+        gradient: LinearGradient(
           colors: [
             CompanyDashboardPalette.primaryDark,
             CompanyDashboardPalette.primary,
@@ -653,7 +651,7 @@ class CompanyProfileScreen extends StatelessWidget {
               ],
             ),
           ] else ...[
-            const SettingsInfoBanner(
+            SettingsInfoBanner(
               icon: Icons.info_outline_rounded,
               title: 'Document missing',
               message:
@@ -876,9 +874,7 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
           surfaceTintColor: Colors.transparent,
           scrolledUnderElevation: 0,
           elevation: 0,
-          iconTheme: const IconThemeData(
-            color: CompanyDashboardPalette.textPrimary,
-          ),
+          iconTheme: IconThemeData(color: CompanyDashboardPalette.textPrimary),
           title: Text(
             'Edit Company Profile',
             style: SettingsFlowTheme.appBarTitle(
@@ -1174,15 +1170,15 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
             ),
             border: OutlineInputBorder(
               borderRadius: SettingsFlowTheme.radius(18),
-              borderSide: const BorderSide(color: SettingsFlowPalette.border),
+              borderSide: BorderSide(color: SettingsFlowPalette.border),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: SettingsFlowTheme.radius(18),
-              borderSide: const BorderSide(color: SettingsFlowPalette.border),
+              borderSide: BorderSide(color: SettingsFlowPalette.border),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: SettingsFlowTheme.radius(18),
-              borderSide: const BorderSide(
+              borderSide: BorderSide(
                 color: CompanyDashboardPalette.primary,
                 width: 1.4,
               ),
@@ -1251,9 +1247,7 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
                   style: OutlinedButton.styleFrom(
                     minimumSize: const Size.fromHeight(50),
                     foregroundColor: CompanyDashboardPalette.primary,
-                    side: const BorderSide(
-                      color: CompanyDashboardPalette.primary,
-                    ),
+                    side: BorderSide(color: CompanyDashboardPalette.primary),
                     shape: RoundedRectangleBorder(
                       borderRadius: SettingsFlowTheme.radius(18),
                     ),
@@ -1273,7 +1267,7 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
                     style: OutlinedButton.styleFrom(
                       minimumSize: const Size.fromHeight(50),
                       foregroundColor: SettingsFlowPalette.error,
-                      side: const BorderSide(color: SettingsFlowPalette.error),
+                      side: BorderSide(color: SettingsFlowPalette.error),
                       shape: RoundedRectangleBorder(
                         borderRadius: SettingsFlowTheme.radius(18),
                       ),
@@ -1323,7 +1317,7 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
                   _openCommercialRegister(companyId: user.uid),
             )
           else ...[
-            const SettingsInfoBanner(
+            SettingsInfoBanner(
               icon: Icons.upload_file_outlined,
               title: 'No verification document uploaded yet',
               message:
@@ -1376,7 +1370,7 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SettingsIconBox(
+              SettingsIconBox(
                 icon: Icons.insert_drive_file_outlined,
                 color: CompanyDashboardPalette.primary,
               ),
@@ -1676,17 +1670,19 @@ class _HeaderIconButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
   final bool filled;
-  final Color color;
+  final Color? color;
 
   const _HeaderIconButton({
     required this.icon,
     required this.onTap,
     this.filled = false,
-    this.color = CompanyDashboardPalette.primary,
+    this.color,
   });
 
   @override
   Widget build(BuildContext context) {
+    final resolvedColor = color ?? CompanyDashboardPalette.primary;
+
     return InkWell(
       onTap: onTap,
       borderRadius: SettingsFlowTheme.radius(16),
@@ -1694,14 +1690,18 @@ class _HeaderIconButton extends StatelessWidget {
         width: 42,
         height: 42,
         decoration: BoxDecoration(
-          color: filled ? color : Colors.white,
+          color: filled ? resolvedColor : SettingsFlowPalette.surface,
           borderRadius: SettingsFlowTheme.radius(16),
           border: Border.all(
-            color: filled ? color : SettingsFlowPalette.border,
+            color: filled ? resolvedColor : SettingsFlowPalette.border,
           ),
           boxShadow: SettingsFlowTheme.softShadow(0.06),
         ),
-        child: Icon(icon, size: 20, color: filled ? Colors.white : color),
+        child: Icon(
+          icon,
+          size: 20,
+          color: filled ? Colors.white : resolvedColor,
+        ),
       ),
     );
   }

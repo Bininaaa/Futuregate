@@ -91,7 +91,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                const AuthCompactHeader(
+                AuthCompactHeader(
                   icon: Icons.mark_email_unread_outlined,
                   title: 'Verify email',
                   subtitle: 'Open your inbox and confirm your account.',

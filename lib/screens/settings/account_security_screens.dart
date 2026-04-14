@@ -471,15 +471,15 @@ class _TextField extends StatelessWidget {
         ),
         border: OutlineInputBorder(
           borderRadius: SettingsFlowTheme.radius(18),
-          borderSide: const BorderSide(color: SettingsFlowPalette.border),
+          borderSide: BorderSide(color: SettingsFlowPalette.border),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: SettingsFlowTheme.radius(18),
-          borderSide: const BorderSide(color: SettingsFlowPalette.border),
+          borderSide: BorderSide(color: SettingsFlowPalette.border),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: SettingsFlowTheme.radius(18),
-          borderSide: const BorderSide(color: SettingsFlowPalette.primary),
+          borderSide: BorderSide(color: SettingsFlowPalette.primary),
         ),
       ),
     );
@@ -511,7 +511,7 @@ class _PasswordField extends StatelessWidget {
       decoration: InputDecoration(
         labelText: label,
         labelStyle: SettingsFlowTheme.caption(),
-        prefixIcon: const Icon(
+        prefixIcon: Icon(
           Icons.lock_outline_rounded,
           color: SettingsFlowPalette.textSecondary,
         ),
@@ -532,15 +532,15 @@ class _PasswordField extends StatelessWidget {
         ),
         border: OutlineInputBorder(
           borderRadius: SettingsFlowTheme.radius(18),
-          borderSide: const BorderSide(color: SettingsFlowPalette.border),
+          borderSide: BorderSide(color: SettingsFlowPalette.border),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: SettingsFlowTheme.radius(18),
-          borderSide: const BorderSide(color: SettingsFlowPalette.border),
+          borderSide: BorderSide(color: SettingsFlowPalette.border),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: SettingsFlowTheme.radius(18),
-          borderSide: const BorderSide(color: SettingsFlowPalette.primary),
+          borderSide: BorderSide(color: SettingsFlowPalette.primary),
         ),
       ),
     );

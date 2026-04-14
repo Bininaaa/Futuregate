@@ -146,7 +146,7 @@ class ChatMessageBubble extends StatelessWidget {
 
     return BoxDecoration(
       gradient: isMe
-          ? const LinearGradient(
+          ? LinearGradient(
               colors: [
                 ChatThemePalette.primaryDark,
                 ChatThemePalette.primary,
@@ -344,7 +344,7 @@ class _ImageAttachmentBubbleState extends State<_ImageAttachmentBubble> {
               borderRadius: BorderRadius.circular(16),
             ),
             child: snapshot.hasError
-                ? const Icon(
+                ? Icon(
                     Icons.broken_image_outlined,
                     color: ChatThemePalette.textSecondary,
                   )
@@ -389,7 +389,7 @@ class _ImageAttachmentBubbleState extends State<_ImageAttachmentBubble> {
                 errorWidget: (context, url, error) => Container(
                   color: ChatThemePalette.background,
                   alignment: Alignment.center,
-                  child: const Icon(
+                  child: Icon(
                     Icons.broken_image_outlined,
                     color: ChatThemePalette.textSecondary,
                   ),

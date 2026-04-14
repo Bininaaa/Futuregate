@@ -23,8 +23,8 @@ class PublishOpportunityScreen extends StatefulWidget {
 }
 
 class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
-  static const Color primary = CompanyDashboardPalette.primary;
-  static const Color primaryDark = CompanyDashboardPalette.primaryDark;
+  static Color get primary => CompanyDashboardPalette.primary;
+  static Color get primaryDark => CompanyDashboardPalette.primaryDark;
 
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
@@ -64,21 +64,11 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
   bool get _isSponsoring =>
       OpportunityType.parse(_selectedType) == OpportunityType.sponsoring;
 
-  AppContentTheme get _theme => const AppContentTheme(
+  AppContentTheme get _theme => AppContentTheme.futureGate(
     accent: CompanyDashboardPalette.primary,
     accentDark: CompanyDashboardPalette.primaryDark,
     accentSoft: CompanyDashboardPalette.primarySoft,
     secondary: CompanyDashboardPalette.secondary,
-    background: CompanyDashboardPalette.background,
-    surface: CompanyDashboardPalette.surface,
-    surfaceMuted: Color(0xFFF8FAFC),
-    border: CompanyDashboardPalette.border,
-    textPrimary: CompanyDashboardPalette.textPrimary,
-    textSecondary: CompanyDashboardPalette.textSecondary,
-    textMuted: CompanyDashboardPalette.textMuted,
-    success: CompanyDashboardPalette.success,
-    warning: CompanyDashboardPalette.warning,
-    error: CompanyDashboardPalette.error,
     heroGradient: LinearGradient(
       colors: <Color>[
         CompanyDashboardPalette.primaryDark,
@@ -201,7 +191,7 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
           surfaceTintColor: Colors.transparent,
           scrolledUnderElevation: 0,
           elevation: 0,
-          iconTheme: const IconThemeData(color: primaryDark),
+          iconTheme: IconThemeData(color: primaryDark),
         ),
         bottomNavigationBar: _isLoading
             ? null
@@ -230,7 +220,7 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                 ),
               ),
         body: _isLoading
-            ? const Center(child: CircularProgressIndicator(color: primary))
+            ? Center(child: CircularProgressIndicator(color: primary))
             : SafeArea(
                 child: Form(
                   key: _formKey,

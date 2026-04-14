@@ -873,7 +873,7 @@ class _HeroGradientFallback extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [_P.primary, _P.primaryDark],
           begin: Alignment.topLeft,
@@ -1168,11 +1168,7 @@ class _EligibilityItem extends StatelessWidget {
               color: _P.secondary.withValues(alpha: 0.14),
               shape: BoxShape.circle,
             ),
-            child: const Icon(
-              Icons.check_rounded,
-              size: 16,
-              color: _P.secondary,
-            ),
+            child: Icon(Icons.check_rounded, size: 16, color: _P.secondary),
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -1419,7 +1415,7 @@ class _PrimaryActionButton extends StatelessWidget {
           decoration: BoxDecoration(
             color: isEnabled ? null : _P.border,
             gradient: isEnabled
-                ? const LinearGradient(
+                ? LinearGradient(
                     colors: [_P.primary, _P.primaryDark],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,

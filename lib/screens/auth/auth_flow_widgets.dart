@@ -1,36 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../theme/app_colors.dart';
 import '../../widgets/shared/app_content_system.dart';
 import '../../widgets/shared/app_logo.dart';
 
-const AppContentTheme authFlowTheme = AppContentTheme(
-  accent: Color(0xFF3B22F6),
-  accentDark: Color(0xFF1E40AF),
-  accentSoft: Color(0xFFE9EEFF),
-  secondary: Color(0xFF14B8A6),
-  background: Color(0xFFF4F7FB),
-  surface: Colors.white,
-  surfaceMuted: Color(0xFFF8FAFF),
-  border: Color(0xFFDCE3F1),
-  textPrimary: Color(0xFF0F172A),
-  textSecondary: Color(0xFF475569),
-  textMuted: Color(0xFF64748B),
-  success: Color(0xFF179D6C),
-  warning: Color(0xFFD97706),
-  error: Color(0xFFEF4444),
-  heroGradient: LinearGradient(
-    colors: <Color>[Color(0xFF1E40AF), Color(0xFF3B22F6), Color(0xFF14B8A6)],
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-  ),
-  typography: AppContentTypography.innovation,
-);
+AppContentTheme get authFlowTheme {
+  final colors = AppColors.current;
+
+  return AppContentTheme(
+    accent: colors.primary,
+    accentDark: colors.primaryDeep,
+    accentSoft: colors.primarySoft,
+    secondary: colors.secondary,
+    background: colors.background,
+    surface: colors.surface,
+    surfaceMuted: colors.surfaceMuted,
+    border: colors.border,
+    textPrimary: colors.textPrimary,
+    textSecondary: colors.textSecondary,
+    textMuted: colors.textMuted,
+    success: colors.success,
+    warning: colors.warning,
+    error: colors.danger,
+    heroGradient: colors.heroGradient(colors.secondary),
+    typography: AppContentTypography.innovation,
+  );
+}
 
 class AuthFlowPalette {
-  static const Color orange = Color(0xFFF97316);
-  static const Color orangeSoft = Color(0xFFFFEDD5);
-  static const Color tealSoft = Color(0xFFE8FFFB);
+  static Color get orange => AppColors.current.accent;
+  static Color get orangeSoft => AppColors.current.accentSoft;
+  static Color get tealSoft => AppColors.current.secondarySoft;
 
   const AuthFlowPalette._();
 }
@@ -108,33 +109,32 @@ class AuthFlowScaffold extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: DecoratedBox(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: <Color>[
-              Color(0xFFF6F9FF),
-              Color(0xFFF4F7FB),
-              Color(0xFFEDF5FF),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-        ),
+        decoration: BoxDecoration(gradient: AppColors.current.shellGradient),
         child: Stack(
           children: <Widget>[
-            const Positioned(
+            Positioned(
               top: -90,
               right: -50,
-              child: _AuthGlowOrb(size: 250, color: Color(0x223B22F6)),
+              child: _AuthGlowOrb(
+                size: 250,
+                color: authFlowTheme.accent.withValues(alpha: 0.12),
+              ),
             ),
-            const Positioned(
+            Positioned(
               left: -70,
               bottom: -90,
-              child: _AuthGlowOrb(size: 230, color: Color(0x2214B8A6)),
+              child: _AuthGlowOrb(
+                size: 230,
+                color: authFlowTheme.secondary.withValues(alpha: 0.11),
+              ),
             ),
-            const Positioned(
+            Positioned(
               left: 60,
               top: 110,
-              child: _AuthGlowOrb(size: 108, color: Color(0x18F97316)),
+              child: _AuthGlowOrb(
+                size: 108,
+                color: authFlowTheme.warning.withValues(alpha: 0.10),
+              ),
             ),
             SafeArea(
               child: Column(
@@ -158,7 +158,9 @@ class AuthFlowScaffold extends StatelessWidget {
                                 vertical: 8,
                               ),
                               decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.84),
+                                color: authFlowTheme.surface.withValues(
+                                  alpha: 0.84,
+                                ),
                                 borderRadius: BorderRadius.circular(999),
                                 border: Border.all(color: authFlowTheme.border),
                               ),
@@ -750,7 +752,7 @@ class _AuthStickerBubble extends StatelessWidget {
       width: 34,
       height: 34,
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.96),
+        color: authFlowTheme.surface.withValues(alpha: 0.96),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: authFlowTheme.border),
         boxShadow: <BoxShadow>[
@@ -885,7 +887,7 @@ class AuthGoogleButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.9),
+        color: authFlowTheme.surface.withValues(alpha: 0.9),
         borderRadius: BorderRadius.circular(18),
         boxShadow: <BoxShadow>[
           BoxShadow(
@@ -902,7 +904,7 @@ class AuthGoogleButton extends StatelessWidget {
           onPressed: onPressed,
           style: OutlinedButton.styleFrom(
             foregroundColor: authFlowTheme.textPrimary,
-            backgroundColor: Colors.white,
+            backgroundColor: authFlowTheme.surface,
             side: BorderSide(
               color: authFlowTheme.border.withValues(alpha: 0.9),
             ),
@@ -918,7 +920,7 @@ class AuthGoogleButton extends StatelessWidget {
                 width: 28,
                 height: 28,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF8FAFF),
+                  color: authFlowTheme.surfaceMuted,
                   borderRadius: BorderRadius.circular(9),
                 ),
                 child: Center(
@@ -987,7 +989,7 @@ class AuthSelectionCard extends StatelessWidget {
   final IconData icon;
   final VoidCallback? onTap;
   final bool selected;
-  final Color color;
+  final Color? color;
   final bool showArrow;
 
   const AuthSelectionCard({
@@ -997,12 +999,14 @@ class AuthSelectionCard extends StatelessWidget {
     required this.icon,
     required this.onTap,
     this.selected = false,
-    this.color = AuthFlowPalette.orange,
+    this.color,
     this.showArrow = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    final resolvedColor = color ?? AuthFlowPalette.orange;
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -1012,16 +1016,18 @@ class AuthSelectionCard extends StatelessWidget {
           duration: const Duration(milliseconds: 180),
           padding: const EdgeInsets.all(18),
           decoration: BoxDecoration(
-            color: selected ? color.withValues(alpha: 0.08) : Colors.white,
+            color: selected
+                ? resolvedColor.withValues(alpha: 0.08)
+                : authFlowTheme.surface,
             borderRadius: BorderRadius.circular(24),
             border: Border.all(
-              color: selected ? color : authFlowTheme.border,
+              color: selected ? resolvedColor : authFlowTheme.border,
               width: selected ? 1.5 : 1,
             ),
             boxShadow: selected
                 ? <BoxShadow>[
                     BoxShadow(
-                      color: color.withValues(alpha: 0.14),
+                      color: resolvedColor.withValues(alpha: 0.14),
                       blurRadius: 26,
                       offset: const Offset(0, 14),
                     ),
@@ -1035,13 +1041,13 @@ class AuthSelectionCard extends StatelessWidget {
                 height: 52,
                 decoration: BoxDecoration(
                   color: selected
-                      ? color.withValues(alpha: 0.15)
+                      ? resolvedColor.withValues(alpha: 0.15)
                       : authFlowTheme.surfaceMuted,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Icon(
                   icon,
-                  color: selected ? color : authFlowTheme.textMuted,
+                  color: selected ? resolvedColor : authFlowTheme.textMuted,
                   size: 24,
                 ),
               ),
@@ -1070,13 +1076,13 @@ class AuthSelectionCard extends StatelessWidget {
                 ),
               ),
               if (showArrow)
-                Icon(Icons.arrow_forward_rounded, color: color)
+                Icon(Icons.arrow_forward_rounded, color: resolvedColor)
               else
                 Icon(
                   selected
                       ? Icons.check_circle_rounded
                       : Icons.radio_button_unchecked_rounded,
-                  color: selected ? color : authFlowTheme.textMuted,
+                  color: selected ? resolvedColor : authFlowTheme.textMuted,
                 ),
             ],
           ),
@@ -1239,7 +1245,7 @@ class _AuthTopButton extends StatelessWidget {
           width: 48,
           height: 48,
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.92),
+            color: authFlowTheme.surface.withValues(alpha: 0.92),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: authFlowTheme.border),
           ),

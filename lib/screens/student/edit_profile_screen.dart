@@ -286,7 +286,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ),
                       child: Center(
                         child: _uploadingPhoto
-                            ? const SizedBox(
+                            ? SizedBox(
                                 width: 30,
                                 height: 30,
                                 child: CircularProgressIndicator(
@@ -597,15 +597,15 @@ class _ProfileField extends StatelessWidget {
         ),
         border: OutlineInputBorder(
           borderRadius: SettingsFlowTheme.radius(20),
-          borderSide: const BorderSide(color: SettingsFlowPalette.border),
+          borderSide: BorderSide(color: SettingsFlowPalette.border),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: SettingsFlowTheme.radius(20),
-          borderSide: const BorderSide(color: SettingsFlowPalette.border),
+          borderSide: BorderSide(color: SettingsFlowPalette.border),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: SettingsFlowTheme.radius(20),
-          borderSide: const BorderSide(color: SettingsFlowPalette.primary),
+          borderSide: BorderSide(color: SettingsFlowPalette.primary),
         ),
       ),
     );

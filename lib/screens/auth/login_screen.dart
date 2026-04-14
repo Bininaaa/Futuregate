@@ -87,7 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
-                  const AuthCompactHeader(
+                  AuthCompactHeader(
                     icon: Icons.lock_person_rounded,
                     title: 'Welcome back',
                     subtitle: 'Login to continue.',

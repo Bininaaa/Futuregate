@@ -173,9 +173,7 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
               onPressed: () => Navigator.pop(context),
             ),
           ),
-          const Expanded(
-            child: Center(child: AppLogoClear(height: 32)),
-          ),
+          const Expanded(child: Center(child: AppLogoClear(height: 32))),
           const SizedBox(width: 48),
         ],
       ),

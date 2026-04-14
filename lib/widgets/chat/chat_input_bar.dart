@@ -148,7 +148,7 @@ class ChatInputBar extends StatelessWidget {
                         value: 'image',
                         child: Row(
                           children: [
-                            const Icon(
+                            Icon(
                               Icons.image_outlined,
                               color: ChatThemePalette.primary,
                               size: 20,
@@ -162,7 +162,7 @@ class ChatInputBar extends StatelessWidget {
                         value: 'file',
                         child: Row(
                           children: [
-                            const Icon(
+                            Icon(
                               Icons.attach_file_rounded,
                               color: ChatThemePalette.secondary,
                               size: 20,
@@ -180,7 +180,7 @@ class ChatInputBar extends StatelessWidget {
                         color: ChatThemePalette.primary.withValues(alpha: 0.08),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.add_rounded,
                         color: ChatThemePalette.primary,
                         size: 22,
@@ -227,7 +227,7 @@ class ChatInputBar extends StatelessWidget {
                           ),
                           GestureDetector(
                             onTap: onEmojiTap,
-                            child: const Padding(
+                            child: Padding(
                               padding: EdgeInsets.only(left: 4),
                               child: Icon(
                                 Icons.sentiment_satisfied_alt_outlined,
@@ -320,7 +320,7 @@ class _StatusBanner extends StatelessWidget {
           InkWell(
             onTap: onClear,
             borderRadius: BorderRadius.circular(99),
-            child: const Padding(
+            child: Padding(
               padding: EdgeInsets.all(2),
               child: Icon(
                 Icons.close_rounded,
@@ -398,7 +398,7 @@ class _AttachmentPreview extends StatelessWidget {
           InkWell(
             onTap: onRemove,
             borderRadius: BorderRadius.circular(99),
-            child: const Padding(
+            child: Padding(
               padding: EdgeInsets.all(2),
               child: Icon(
                 Icons.close_rounded,

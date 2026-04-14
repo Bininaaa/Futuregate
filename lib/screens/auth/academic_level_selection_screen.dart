@@ -83,7 +83,7 @@ class _AcademicLevelSelectionScreenState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                const AuthCompactHeader(
+                AuthCompactHeader(
                   icon: Icons.school_rounded,
                   title: 'Choose level',
                   subtitle: 'Select your academic level.',

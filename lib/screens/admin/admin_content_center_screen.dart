@@ -55,11 +55,11 @@ class AdminContentCenterScreen extends StatefulWidget {
 
 class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     with SingleTickerProviderStateMixin {
-  static const Color _primaryColor = AdminPalette.textPrimary;
-  static const Color _accentColor = AdminPalette.primary;
-  static const Color _ideaAccentColor = AdminPalette.secondary;
-  static const Color _scholarshipAccentColor = AdminPalette.activity;
-  static const Color _libraryAccentColor = AdminPalette.secondary;
+  static Color get _primaryColor => AdminPalette.textPrimary;
+  static Color get _accentColor => AdminPalette.primary;
+  static Color get _ideaAccentColor => AdminPalette.secondary;
+  static Color get _scholarshipAccentColor => AdminPalette.activity;
+  static Color get _libraryAccentColor => AdminPalette.secondary;
   static const String _ideaFilterAll = 'all';
   static const String _ideaFilterPending = 'pending';
   static const String _ideaFilterApproved = 'approved';
@@ -166,7 +166,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
 
     final content =
         provider.moderationLoading || waitingForInitialModerationLoad
-        ? const Center(child: CircularProgressIndicator(color: _accentColor))
+        ? Center(child: CircularProgressIndicator(color: _accentColor))
         : provider.moderationError != null &&
               provider.allProjectIdeas.isEmpty &&
               provider.allApplications.isEmpty &&
@@ -179,7 +179,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               children: [
                 const Icon(Icons.error_outline, size: 48, color: Colors.red),
                 const SizedBox(height: 12),
-                const Text(
+                Text(
                   'Failed to load admin content',
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
@@ -770,7 +770,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Pending ideas need review',
                   style: TextStyle(
                     fontSize: 14,
@@ -781,7 +781,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 const SizedBox(height: 4),
                 Text(
                   '$pendingCount idea${pendingCount == 1 ? '' : 's'} still waiting for approval or rejection.',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12.5,
                     height: 1.45,
                     color: AdminPalette.textSecondary,
@@ -2447,14 +2447,15 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     required String subtitle,
     required List<_BadgeData> badges,
     required VoidCallback onTap,
-    Color accentColor = AdminPalette.primary,
+    Color? accentColor,
     String? description,
     String? metaText,
     Widget? action,
     Widget? footer,
   }) {
     final isTarget = id == widget.initialTargetId;
-    final highlightColor = isTarget ? _accentColor : accentColor;
+    final resolvedAccentColor = accentColor ?? AdminPalette.primary;
+    final highlightColor = isTarget ? _accentColor : resolvedAccentColor;
     final borderColor = isTarget
         ? _accentColor.withValues(alpha: 0.52)
         : AdminPalette.border.withValues(alpha: 0.86);
@@ -2510,7 +2511,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                                   title,
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontWeight: FontWeight.w800,
                                     fontSize: 14.2,
                                     color: AdminPalette.textPrimary,
@@ -2523,7 +2524,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                                     subtitle,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w600,
                                       color: AdminPalette.textMuted,
@@ -2549,7 +2550,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                           normalizedDescription,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 12.2,
                             height: 1.4,
                             color: AdminPalette.textSecondary,
@@ -3103,7 +3104,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Overview',
                       style: TextStyle(
                         fontSize: 13,
@@ -3114,7 +3115,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                     const SizedBox(height: 6),
                     Text(
                       summary,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12.8,
                         height: 1.5,
                         color: AdminPalette.textSecondary,
@@ -3148,7 +3149,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 solutionText.trim().isNotEmpty ||
                 benefitsText.trim().isNotEmpty) ...[
               const SizedBox(height: 10),
-              const Text(
+              Text(
                 'Problem, Solution & Impact',
                 style: TextStyle(
                   fontSize: 15,
@@ -3184,7 +3185,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 ),
             ],
             const SizedBox(height: 10),
-            const Text(
+            Text(
               'Audience & Metadata',
               style: TextStyle(
                 fontSize: 15,
@@ -3234,7 +3235,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Team & Skill Signals',
                       style: TextStyle(
                         fontSize: 15,
@@ -3368,7 +3369,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
           const SizedBox(height: 10),
           Text(
             item.label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 11.5,
               fontWeight: FontWeight.w700,
               color: AdminPalette.textMuted,
@@ -3382,7 +3383,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 item.value,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14.5,
                   fontWeight: FontWeight.w700,
                   color: AdminPalette.textPrimary,
@@ -3421,7 +3422,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               Expanded(
                 child: Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
                     color: AdminPalette.textPrimary,
@@ -3433,7 +3434,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
           const SizedBox(height: 12),
           Text(
             value,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 13.2,
               height: 1.6,
               color: AdminPalette.textSecondary,
@@ -3482,7 +3483,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
                         color: AdminPalette.textPrimary,
@@ -3492,7 +3493,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                       const SizedBox(height: 2),
                       Text(
                         subtitle!,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
                           color: AdminPalette.textMuted,
                           height: 1.45,
@@ -3529,7 +3530,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                   Expanded(
                     child: Text(
                       item,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 13.2,
                         height: 1.55,
                         color: AdminPalette.textSecondary,
@@ -3623,7 +3624,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       radius: 18,
       color: AdminPalette.surfaceMuted,
       boxShadow: const [],
-      border: Border.all(color: item.color.withValues(alpha: 0.12)),
+      border: Border.all(color: item.resolvedColor.withValues(alpha: 0.12)),
       padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -3634,10 +3635,10 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 width: 28,
                 height: 28,
                 decoration: BoxDecoration(
-                  color: item.color.withValues(alpha: 0.1),
+                  color: item.resolvedColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(9),
                 ),
-                child: Icon(item.icon, color: item.color, size: 16),
+                child: Icon(item.icon, color: item.resolvedColor, size: 16),
               ),
               const SizedBox(width: 8),
               Expanded(
@@ -3645,7 +3646,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                   item.label,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 11.5,
                     fontWeight: FontWeight.w700,
                     color: AdminPalette.textMuted,
@@ -3662,7 +3663,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 item.value,
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 13.4,
                   height: 1.45,
                   color: AdminPalette.textPrimary,
@@ -3823,7 +3824,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
           future: _companyService.getApplicationCv(applicationId),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const SizedBox(
+              return SizedBox(
                 height: 220,
                 child: Center(
                   child: CircularProgressIndicator(color: _accentColor),
@@ -3870,7 +3871,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                   children: [
                     Text(
                       cv.fullName.isNotEmpty ? cv.fullName : 'Applicant',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.w700,
                         color: _primaryColor,
@@ -4069,7 +4070,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
         children: [
           Text(
             title,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w700,
               color: _primaryColor,
@@ -4295,7 +4296,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               ),
             ],
             const SizedBox(height: 10),
-            const Text(
+            Text(
               'Location & Logistics',
               style: TextStyle(
                 fontSize: 15,
@@ -4365,7 +4366,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Tags',
                       style: TextStyle(
                         fontSize: 13,
@@ -4539,7 +4540,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               ),
             ],
             const SizedBox(height: 10),
-            const Text(
+            Text(
               'Positioning & Access',
               style: TextStyle(
                 fontSize: 15,
@@ -4740,7 +4741,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               ),
             ],
             const SizedBox(height: 10),
-            const Text(
+            Text(
               'Delivery & Access',
               style: TextStyle(
                 fontSize: 15,
@@ -4885,7 +4886,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Description',
                       style: TextStyle(
                         fontSize: 13,
@@ -4896,7 +4897,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                     const SizedBox(height: 6),
                     Text(
                       description,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12.8,
                         height: 1.5,
                         color: AdminPalette.textSecondary,
@@ -4910,7 +4911,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               const SizedBox(height: 10),
               Text(
                 detailsTitle,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
                   color: AdminPalette.textPrimary,
@@ -4961,7 +4962,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       children: [
         Text(
           title,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w600,
             color: _primaryColor,
@@ -4987,7 +4988,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       children: [
         Text(
           title,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w600,
             color: _primaryColor,
@@ -5032,7 +5033,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
         children: [
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 11.5,
               fontWeight: FontWeight.w700,
               color: AdminPalette.textMuted,
@@ -5041,7 +5042,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
           const SizedBox(height: 6),
           Text(
             value.trim().isEmpty ? 'Not available' : value,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 13.5,
               height: 1.45,
               color: AdminPalette.textPrimary,
@@ -5076,7 +5077,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 label,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 10.8,
                   fontWeight: FontWeight.w600,
                   color: AdminPalette.textMuted,
@@ -5222,7 +5223,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                   color: AdminPalette.danger.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(14),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.delete_outline_rounded,
                   color: AdminPalette.danger,
                   size: 21,
@@ -5236,7 +5237,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.w700,
                         color: AdminPalette.textPrimary,
@@ -5245,7 +5246,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                     const SizedBox(height: 10),
                     Text(
                       content,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 13.2,
                         height: 1.5,
                         color: AdminPalette.textSecondary,
@@ -5372,14 +5373,16 @@ class _IdeaDetailItem {
   final String label;
   final String value;
   final IconData icon;
-  final Color color;
+  final Color? color;
 
   const _IdeaDetailItem(
     this.label,
     this.value, {
     this.icon = Icons.info_outline_rounded,
-    this.color = AdminPalette.textMuted,
+    this.color,
   });
+
+  Color get resolvedColor => color ?? AdminPalette.textMuted;
 }
 
 class _SheetDetailLine {

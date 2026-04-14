@@ -64,21 +64,11 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
       widget.isEditMode &&
       (widget.idea?.status.toLowerCase() ?? '') != 'pending';
 
-  AppContentTheme get _theme => const AppContentTheme(
+  AppContentTheme get _theme => AppContentTheme.futureGate(
     accent: InnovationHubPalette.primary,
     accentDark: InnovationHubPalette.primaryDark,
     accentSoft: InnovationHubPalette.cardTint,
     secondary: InnovationHubPalette.secondary,
-    background: InnovationHubPalette.background,
-    surface: InnovationHubPalette.surface,
-    surfaceMuted: InnovationHubPalette.cardTint,
-    border: InnovationHubPalette.border,
-    textPrimary: InnovationHubPalette.textPrimary,
-    textSecondary: InnovationHubPalette.textSecondary,
-    textMuted: InnovationHubPalette.textSecondary,
-    success: InnovationHubPalette.success,
-    warning: InnovationHubPalette.warning,
-    error: InnovationHubPalette.error,
     heroGradient: InnovationHubPalette.primaryGradient,
     typography: AppContentTypography.product,
   );
@@ -448,7 +438,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                                   ),
                                 ),
                                 if (isSelected)
-                                  const Icon(
+                                  Icon(
                                     Icons.check_circle_rounded,
                                     size: 18,
                                     color: SettingsFlowPalette.primary,
@@ -493,29 +483,23 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: const BorderSide(color: SettingsFlowPalette.border),
+        borderSide: BorderSide(color: SettingsFlowPalette.border),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: const BorderSide(color: SettingsFlowPalette.border),
+        borderSide: BorderSide(color: SettingsFlowPalette.border),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: const BorderSide(
-          color: SettingsFlowPalette.primary,
-          width: 1.5,
-        ),
+        borderSide: BorderSide(color: SettingsFlowPalette.primary, width: 1.5),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: const BorderSide(color: SettingsFlowPalette.error),
+        borderSide: BorderSide(color: SettingsFlowPalette.error),
       ),
       focusedErrorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: const BorderSide(
-          color: SettingsFlowPalette.error,
-          width: 1.5,
-        ),
+        borderSide: BorderSide(color: SettingsFlowPalette.error, width: 1.5),
       ),
     );
   }
@@ -954,7 +938,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
+        gradient: LinearGradient(
           colors: [
             InnovationHubPalette.cardTint,
             InnovationHubPalette.searchTint,
@@ -1025,7 +1009,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                   height: 170,
                   alignment: Alignment.center,
                   color: Colors.white,
-                  child: const Icon(
+                  child: Icon(
                     Icons.image_not_supported_outlined,
                     color: InnovationHubPalette.textSecondary,
                   ),
@@ -1043,7 +1027,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
               ),
               child: Row(
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.check_circle_rounded,
                     size: 18,
                     color: InnovationHubPalette.success,
@@ -1085,7 +1069,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                       ),
                       borderRadius: BorderRadius.circular(14),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.auto_awesome_rounded,
                       color: InnovationHubPalette.secondary,
                     ),
@@ -1331,7 +1315,7 @@ class _CvSingleSelectField extends StatelessWidget {
               hint: hint,
               prefixIcon: prefixIcon,
               suffixIcon: IconButton(
-                icon: const Icon(
+                icon: Icon(
                   Icons.add_circle_outline,
                   color: SettingsFlowPalette.primary,
                 ),
@@ -1402,7 +1386,7 @@ class _SelectionWrap extends StatelessWidget {
                   hint: hint,
                   prefixIcon: prefixIcon,
                   suffixIcon: IconButton(
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.add_circle_outline,
                       color: SettingsFlowPalette.primary,
                     ),

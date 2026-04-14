@@ -138,7 +138,7 @@ class _StudentOnboardingInfoScreenState
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
-                  const AuthCompactHeader(
+                  AuthCompactHeader(
                     icon: Icons.badge_rounded,
                     title: 'Finish profile',
                     subtitle: 'Add your student details.',

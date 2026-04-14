@@ -43,7 +43,7 @@ class SettingsPageScaffold extends StatelessWidget {
               (canPop
                   ? IconButton(
                       onPressed: () => Navigator.maybePop(context),
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.arrow_back_ios_new_rounded,
                         color: SettingsFlowPalette.textPrimary,
                       ),
@@ -475,14 +475,14 @@ class SettingsInfoBanner extends StatelessWidget {
   final IconData icon;
   final String title;
   final String message;
-  final Color color;
+  final Color? color;
 
   const SettingsInfoBanner({
     super.key,
     required this.icon,
     required this.title,
     required this.message,
-    this.color = SettingsFlowPalette.primary,
+    this.color,
   });
 
   @override
@@ -492,7 +492,7 @@ class SettingsInfoBanner extends StatelessWidget {
       title: title,
       message: message,
       icon: icon,
-      accentColor: color,
+      accentColor: color ?? SettingsFlowPalette.primary,
     );
   }
 }

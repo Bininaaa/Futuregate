@@ -34,14 +34,14 @@ enum _InternshipsViewMode { grid, list }
 class _InternshipVisualPalette {
   const _InternshipVisualPalette._();
 
-  static const Color surface = OpportunityDashboardPalette.surface;
-  static const Color mint = OpportunityDashboardPalette.secondary;
-  static const Color deepTeal = Color(0xFF0F766E);
-  static const Color oceanTeal = Color(0xFF0D9488);
-  static const Color glowMint = Color(0xFF8DE7DA);
-  static const Color border = OpportunityDashboardPalette.border;
-  static const Color textPrimary = OpportunityDashboardPalette.textPrimary;
-  static const Color textSecondary = OpportunityDashboardPalette.textSecondary;
+  static Color get surface => OpportunityDashboardPalette.surface;
+  static Color get mint => OpportunityDashboardPalette.secondary;
+  static Color get deepTeal => OpportunityDashboardPalette.secondary;
+  static Color get oceanTeal => OpportunityDashboardPalette.secondary;
+  static Color get glowMint => OpportunityDashboardPalette.secondary;
+  static Color get border => OpportunityDashboardPalette.border;
+  static Color get textPrimary => OpportunityDashboardPalette.textPrimary;
+  static Color get textSecondary => OpportunityDashboardPalette.textSecondary;
 }
 
 class _InternshipsScreenState extends State<InternshipsScreen> {
@@ -707,7 +707,7 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
               accentColor: _InternshipVisualPalette.oceanTeal,
             ),
             if (opportunityProvider.isLoading && liveInternships.isNotEmpty)
-              const LinearProgressIndicator(
+              LinearProgressIndicator(
                 minHeight: 2,
                 color: _InternshipVisualPalette.mint,
               ),
@@ -993,7 +993,7 @@ class _InternshipSearchBar extends StatelessWidget {
           fontSize: 13,
           color: OpportunityDashboardPalette.textSecondary,
         ),
-        prefixIcon: const Icon(
+        prefixIcon: Icon(
           Icons.search_rounded,
           color: _InternshipVisualPalette.deepTeal,
         ),
@@ -1001,7 +1001,7 @@ class _InternshipSearchBar extends StatelessWidget {
             ? null
             : IconButton(
                 onPressed: onClear,
-                icon: const Icon(
+                icon: Icon(
                   Icons.close_rounded,
                   color: _InternshipVisualPalette.deepTeal,
                 ),
@@ -1022,9 +1022,7 @@ class _InternshipSearchBar extends StatelessWidget {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(22),
-          borderSide: const BorderSide(
-            color: _InternshipVisualPalette.deepTeal,
-          ),
+          borderSide: BorderSide(color: _InternshipVisualPalette.deepTeal),
         ),
       ),
     );
@@ -1186,7 +1184,7 @@ class _InternshipSectionHeader extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 6),
-                    const Icon(
+                    Icon(
                       Icons.arrow_outward_rounded,
                       size: 14,
                       color: OpportunityDashboardPalette.primary,
@@ -1241,7 +1239,7 @@ class _InternshipFeaturedVariantStyle {
 }
 
 _InternshipFeaturedVariantStyle _featuredInternshipStyleFor(int index) {
-  const styles = <_InternshipFeaturedVariantStyle>[
+  final styles = <_InternshipFeaturedVariantStyle>[
     _InternshipFeaturedVariantStyle(
       decorationVariant: _InternshipFeaturedDecorationVariant.auroraBloom,
       gradientColors: [Color(0xFF33D0BF), Color(0xFF14B8A6), Color(0xFF0F766E)],
@@ -2033,7 +2031,7 @@ class _AvailableInternshipPalette {
 }
 
 _AvailableInternshipPalette _availableInternshipPaletteFor(String uniqueKey) {
-  const palettes = <_AvailableInternshipPalette>[
+  final palettes = <_AvailableInternshipPalette>[
     _AvailableInternshipPalette(
       gradientColors: [Color(0xFFF3FCF9), Color(0xFFEAF8F4), Color(0xFFDEF4EE)],
       gradientBegin: Alignment.topLeft,
@@ -3033,12 +3031,12 @@ class _BookmarkIconButton extends StatelessWidget {
   final double size;
   final double iconSize;
   final double borderRadius;
-  final Color activeColor;
-  final Color activeBackgroundColor;
-  final Color activeBorderColor;
-  final Color inactiveColor;
-  final Color inactiveBackgroundColor;
-  final Color inactiveBorderColor;
+  final Color? activeColor;
+  final Color? activeBackgroundColor;
+  final Color? activeBorderColor;
+  final Color? inactiveColor;
+  final Color? inactiveBackgroundColor;
+  final Color? inactiveBorderColor;
 
   const _BookmarkIconButton({
     required this.isSaved,
@@ -3047,16 +3045,30 @@ class _BookmarkIconButton extends StatelessWidget {
     this.size = 34,
     this.iconSize = 18,
     this.borderRadius = 14,
-    this.activeColor = _InternshipVisualPalette.deepTeal,
-    this.activeBackgroundColor = const Color(0xFFE8FBF6),
-    this.activeBorderColor = _InternshipVisualPalette.border,
-    this.inactiveColor = _InternshipVisualPalette.textSecondary,
-    this.inactiveBackgroundColor = Colors.white,
-    this.inactiveBorderColor = _InternshipVisualPalette.border,
+    this.activeColor,
+    this.activeBackgroundColor,
+    this.activeBorderColor,
+    this.inactiveColor,
+    this.inactiveBackgroundColor,
+    this.inactiveBorderColor,
   });
 
   @override
   Widget build(BuildContext context) {
+    final resolvedActiveColor =
+        activeColor ?? _InternshipVisualPalette.deepTeal;
+    final resolvedInactiveColor =
+        inactiveColor ?? _InternshipVisualPalette.textSecondary;
+    final resolvedActiveBackgroundColor =
+        activeBackgroundColor ??
+        _InternshipVisualPalette.deepTeal.withValues(alpha: 0.12);
+    final resolvedInactiveBackgroundColor =
+        inactiveBackgroundColor ?? _InternshipVisualPalette.surface;
+    final resolvedActiveBorderColor =
+        activeBorderColor ?? _InternshipVisualPalette.border;
+    final resolvedInactiveBorderColor =
+        inactiveBorderColor ?? _InternshipVisualPalette.border;
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -3066,16 +3078,20 @@ class _BookmarkIconButton extends StatelessWidget {
           width: size,
           height: size,
           decoration: BoxDecoration(
-            color: isSaved ? activeBackgroundColor : inactiveBackgroundColor,
+            color: isSaved
+                ? resolvedActiveBackgroundColor
+                : resolvedInactiveBackgroundColor,
             borderRadius: BorderRadius.circular(borderRadius),
             border: Border.all(
-              color: isSaved ? activeBorderColor : inactiveBorderColor,
+              color: isSaved
+                  ? resolvedActiveBorderColor
+                  : resolvedInactiveBorderColor,
             ),
           ),
           child: Icon(
             isSaved ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
             size: iconSize,
-            color: isSaved ? activeColor : inactiveColor,
+            color: isSaved ? resolvedActiveColor : resolvedInactiveColor,
           ),
         ),
       ),
@@ -3166,7 +3182,7 @@ class _InternshipsEmptyState extends StatelessWidget {
                 color: _InternshipVisualPalette.mint.withValues(alpha: 0.14),
               ),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.school_outlined,
               color: _InternshipVisualPalette.deepTeal,
               size: 22,

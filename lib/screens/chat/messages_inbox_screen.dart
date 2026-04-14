@@ -169,7 +169,7 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
                           color: ChatThemePalette.surfaceMuted,
                           borderRadius: BorderRadius.circular(14),
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.more_horiz_rounded,
                           size: 20,
                           color: ChatThemePalette.textSecondary,
@@ -210,7 +210,7 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
                     ),
                     child: Row(
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.search_rounded,
                           color: ChatThemePalette.textSecondary,
                           size: 20,
@@ -244,7 +244,7 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
                               _searchController.clear();
                               setState(() => _searchQuery = '');
                             },
-                            child: const Icon(
+                            child: Icon(
                               Icons.close_rounded,
                               color: ChatThemePalette.textSecondary,
                               size: 18,

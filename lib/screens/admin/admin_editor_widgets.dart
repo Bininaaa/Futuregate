@@ -5,21 +5,11 @@ import '../../utils/admin_palette.dart';
 import '../../widgets/admin/admin_ui.dart';
 import '../../widgets/shared/app_content_system.dart';
 
-const AppContentTheme _adminFormTheme = AppContentTheme(
+AppContentTheme get _adminFormTheme => AppContentTheme.futureGate(
   accent: AdminPalette.primary,
   accentDark: AdminPalette.primaryDark,
   accentSoft: AdminPalette.primarySoft,
   secondary: AdminPalette.secondary,
-  background: AdminPalette.background,
-  surface: AdminPalette.surface,
-  surfaceMuted: AdminPalette.surfaceMuted,
-  border: AdminPalette.border,
-  textPrimary: AdminPalette.textPrimary,
-  textSecondary: AdminPalette.textSecondary,
-  textMuted: AdminPalette.textMuted,
-  success: AdminPalette.success,
-  warning: AdminPalette.warning,
-  error: AdminPalette.danger,
   heroGradient: LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,

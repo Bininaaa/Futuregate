@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../theme/app_colors.dart';
+
 /// Centralized application status helpers.
 ///
 /// Storage stays backward compatible with the existing Firestore values:
@@ -55,12 +57,12 @@ class ApplicationStatus {
   static Color color(String? raw) {
     switch (parse(raw)) {
       case accepted:
-        return Colors.green;
+        return AppColors.current.success;
       case rejected:
-        return Colors.red;
+        return AppColors.current.danger;
       case pending:
       default:
-        return Colors.orange;
+        return AppColors.current.warning;
     }
   }
 

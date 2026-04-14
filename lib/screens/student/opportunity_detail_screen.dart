@@ -13,6 +13,7 @@ import '../../providers/chat_provider.dart';
 import '../../providers/cv_provider.dart';
 import '../../providers/saved_opportunity_provider.dart';
 import '../../services/application_service.dart';
+import '../../theme/app_colors.dart';
 import '../../utils/application_status.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
@@ -72,68 +73,47 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
   AppContentTheme get _theme {
     switch (_effectiveType) {
       case OpportunityType.internship:
-        return const AppContentTheme(
-          accent: Color(0xFF14B8A6),
-          accentDark: Color(0xFF4338CA),
-          accentSoft: Color(0xFFDDF8F6),
-          secondary: Color(0xFF4F46E5),
-          background: Color(0xFFF3FBFC),
-          surface: Colors.white,
-          surfaceMuted: Color(0xFFF5FFFE),
-          border: Color(0xFFE2E8F0),
-          textPrimary: Color(0xFF0F172A),
-          textSecondary: Color(0xFF475569),
-          textMuted: Color(0xFF64748B),
-          success: Color(0xFF22C55E),
-          warning: Color(0xFFF59E0B),
-          error: Color(0xFFEF4444),
+        return AppContentTheme.futureGate(
+          accent: AppColors.current.secondary,
+          accentDark: AppColors.current.primaryDeep,
+          accentSoft: AppColors.current.secondarySoft,
+          secondary: AppColors.current.primary,
           heroGradient: LinearGradient(
-            colors: <Color>[Color(0xFF14B8A6), Color(0xFF4F46E5)],
+            colors: <Color>[
+              AppColors.current.secondary,
+              AppColors.current.primary,
+            ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
         );
       case OpportunityType.sponsoring:
-        return const AppContentTheme(
-          accent: Color(0xFFF97316),
-          accentDark: Color(0xFF1E40AF),
-          accentSoft: Color(0xFFFFEDD5),
-          secondary: Color(0xFF1E40AF),
-          background: Color(0xFFFFFBF5),
-          surface: Colors.white,
-          surfaceMuted: Color(0xFFFFF7ED),
-          border: Color(0xFFF1E2CC),
-          textPrimary: Color(0xFF111827),
-          textSecondary: Color(0xFF4B5563),
-          textMuted: Color(0xFF6B7280),
-          success: Color(0xFF22C55E),
-          warning: Color(0xFFF59E0B),
-          error: Color(0xFFEF4444),
+        return AppContentTheme.futureGate(
+          accent: AppColors.current.accent,
+          accentDark: AppColors.current.primaryDeep,
+          accentSoft: AppColors.current.accentSoft,
+          secondary: AppColors.current.primary,
           heroGradient: LinearGradient(
-            colors: <Color>[Color(0xFF1E40AF), Color(0xFFF97316)],
+            colors: <Color>[
+              AppColors.current.primaryDeep,
+              AppColors.current.accent,
+            ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
         );
       case OpportunityType.job:
       default:
-        return const AppContentTheme(
-          accent: Color(0xFF3B22F6),
-          accentDark: Color(0xFF1E40AF),
-          accentSoft: Color(0xFFE8E9FF),
-          secondary: Color(0xFF14B8A6),
-          background: Color(0xFFF5F7FF),
-          surface: Colors.white,
-          surfaceMuted: Color(0xFFF7F8FF),
-          border: Color(0xFFE2E8F0),
-          textPrimary: Color(0xFF111827),
-          textSecondary: Color(0xFF475569),
-          textMuted: Color(0xFF64748B),
-          success: Color(0xFF22C55E),
-          warning: Color(0xFFF59E0B),
-          error: Color(0xFFEF4444),
+        return AppContentTheme.futureGate(
+          accent: AppColors.current.primary,
+          accentDark: AppColors.current.primaryDeep,
+          accentSoft: AppColors.current.primarySoft,
+          secondary: AppColors.current.secondary,
           heroGradient: LinearGradient(
-            colors: <Color>[Color(0xFF3B22F6), Color(0xFF1E40AF)],
+            colors: <Color>[
+              AppColors.current.primary,
+              AppColors.current.primaryDeep,
+            ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),

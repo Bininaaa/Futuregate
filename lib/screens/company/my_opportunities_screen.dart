@@ -7,6 +7,7 @@ import '../../models/opportunity_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/company_provider.dart';
 import '../../providers/notification_provider.dart';
+import '../../theme/app_colors.dart';
 import '../../utils/company_dashboard_palette.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
@@ -167,18 +168,18 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
   _OpportunityTone _toneForType(String rawType) {
     switch (OpportunityType.parse(rawType)) {
       case OpportunityType.internship:
-        return const _OpportunityTone(
+        return _OpportunityTone(
           background: Color(0xFFECFDF5),
           foreground: OpportunityType.internshipColor,
         );
       case OpportunityType.sponsoring:
-        return const _OpportunityTone(
+        return _OpportunityTone(
           background: Color(0xFFFFF7ED),
           foreground: _OpportunityPalette.accent,
         );
       case OpportunityType.job:
       default:
-        return const _OpportunityTone(
+        return _OpportunityTone(
           background: _OpportunityPalette.primarySoft,
           foreground: _OpportunityPalette.primary,
         );
@@ -187,13 +188,13 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
 
   _OpportunityTone _toneForStatus(String status) {
     if (status == 'closed') {
-      return const _OpportunityTone(
+      return _OpportunityTone(
         background: Color(0xFFF1F5F9),
         foreground: _OpportunityPalette.textMuted,
       );
     }
 
-    return const _OpportunityTone(
+    return _OpportunityTone(
       background: Color(0xFFECFDF3),
       foreground: _OpportunityPalette.success,
     );
@@ -422,7 +423,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
             expand: false,
             builder: (context, scrollController) {
               return Container(
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   color: _OpportunityPalette.surface,
                   borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                 ),
@@ -474,7 +475,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
                               const SizedBox(height: 4),
                               Row(
                                 children: [
-                                  const Icon(
+                                  Icon(
                                     Icons.place_rounded,
                                     size: 13,
                                     color: _OpportunityPalette.textMuted,
@@ -1054,7 +1055,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
             horizontal: 14,
             vertical: 13,
           ),
-          prefixIcon: const Padding(
+          prefixIcon: Padding(
             padding: EdgeInsets.only(left: 10, right: 6),
             child: Icon(
               Icons.search_rounded,
@@ -1070,7 +1071,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
               ? null
               : GestureDetector(
                   onTap: _searchController.clear,
-                  child: const Icon(
+                  child: Icon(
                     Icons.close_rounded,
                     size: 16,
                     color: _OpportunityPalette.textMuted,
@@ -1154,17 +1155,17 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
 }
 
 class _OpportunityPalette {
-  static const Color primary = CompanyDashboardPalette.primary;
-  static const Color primarySoft = CompanyDashboardPalette.primarySoft;
-  static const Color accent = Color(0xFFF59E0B);
-  static const Color surface = CompanyDashboardPalette.surface;
-  static const Color border = Color(0xFFE5E7EB);
-  static const Color textPrimary = CompanyDashboardPalette.textPrimary;
-  static const Color textSecondary = CompanyDashboardPalette.textSecondary;
-  static const Color textMuted = Color(0xFF94A3B8);
-  static const Color success = CompanyDashboardPalette.success;
-  static const Color warning = CompanyDashboardPalette.warning;
-  static const Color error = CompanyDashboardPalette.error;
+  static Color get primary => CompanyDashboardPalette.primary;
+  static Color get primarySoft => CompanyDashboardPalette.primarySoft;
+  static Color get accent => CompanyDashboardPalette.accent;
+  static Color get surface => CompanyDashboardPalette.surface;
+  static Color get border => CompanyDashboardPalette.border;
+  static Color get textPrimary => CompanyDashboardPalette.textPrimary;
+  static Color get textSecondary => CompanyDashboardPalette.textSecondary;
+  static Color get textMuted => AppColors.current.textMuted;
+  static Color get success => CompanyDashboardPalette.success;
+  static Color get warning => CompanyDashboardPalette.warning;
+  static Color get error => CompanyDashboardPalette.error;
 }
 
 class _OpportunityTone {
@@ -1768,7 +1769,7 @@ class _OpportunityGridCard extends StatelessWidget {
               const SizedBox(height: 5),
               Row(
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.place_rounded,
                     size: 12,
                     color: _OpportunityPalette.textMuted,
@@ -1794,7 +1795,7 @@ class _OpportunityGridCard extends StatelessWidget {
               const SizedBox(height: 10),
               Row(
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.groups_rounded,
                     size: 13,
                     color: _OpportunityPalette.primary,
@@ -1809,7 +1810,7 @@ class _OpportunityGridCard extends StatelessWidget {
                     ),
                   ),
                   const Spacer(),
-                  const Icon(
+                  Icon(
                     Icons.schedule_rounded,
                     size: 11,
                     color: _OpportunityPalette.textMuted,
@@ -1924,7 +1925,7 @@ class _OpportunityListRow extends StatelessWidget {
                           ),
                         ),
                         _InlineDot(),
-                        const Icon(
+                        Icon(
                           Icons.place_rounded,
                           size: 11,
                           color: _OpportunityPalette.textMuted,
@@ -1948,7 +1949,7 @@ class _OpportunityListRow extends StatelessWidget {
                     const SizedBox(height: 6),
                     Row(
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.groups_rounded,
                           size: 12,
                           color: _OpportunityPalette.primary,
@@ -1963,7 +1964,7 @@ class _OpportunityListRow extends StatelessWidget {
                           ),
                         ),
                         _InlineDot(),
-                        const Icon(
+                        Icon(
                           Icons.schedule_rounded,
                           size: 11,
                           color: _OpportunityPalette.textMuted,
@@ -1998,7 +1999,7 @@ class _OpportunityListRow extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 6),
-              const Icon(
+              Icon(
                 Icons.chevron_right_rounded,
                 size: 18,
                 color: _OpportunityPalette.textMuted,
@@ -2058,7 +2059,7 @@ class _InlineDot extends StatelessWidget {
       width: 2,
       height: 2,
       margin: const EdgeInsets.symmetric(horizontal: 6),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: _OpportunityPalette.textMuted,
         shape: BoxShape.circle,
       ),
@@ -2320,7 +2321,7 @@ class _LoadingState extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const SizedBox(
+          SizedBox(
             width: 28,
             height: 28,
             child: CircularProgressIndicator(
@@ -2369,7 +2370,7 @@ class _EmptyState extends StatelessWidget {
                 color: _OpportunityPalette.primarySoft,
                 borderRadius: BorderRadius.circular(16),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.work_outline_rounded,
                 size: 26,
                 color: _OpportunityPalette.primary,
@@ -2405,7 +2406,7 @@ class _EmptyState extends StatelessWidget {
                 onPressed: onClear,
                 style: OutlinedButton.styleFrom(
                   foregroundColor: _OpportunityPalette.primary,
-                  side: const BorderSide(color: _OpportunityPalette.border),
+                  side: BorderSide(color: _OpportunityPalette.border),
                   padding: const EdgeInsets.symmetric(
                     horizontal: 18,
                     vertical: 10,

@@ -518,7 +518,7 @@ class _AdminGoogleBooksImportScreenState
 
   Widget _buildSearchResults() {
     if (_isSearching && _results.isEmpty) {
-      return const SliverFillRemaining(
+      return SliverFillRemaining(
         hasScrollBody: false,
         child: Center(
           child: CircularProgressIndicator(color: AdminPalette.primary),
@@ -590,7 +590,7 @@ class _AdminGoogleBooksImportScreenState
         .toList();
 
     if (provider.isLoading && books.isEmpty) {
-      return const Center(
+      return Center(
         child: CircularProgressIndicator(color: AdminPalette.primary),
       );
     }
@@ -703,7 +703,7 @@ class _AdminGoogleBooksImportScreenState
               children: [
                 Text(
                   book.title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
                     color: AdminPalette.textPrimary,
@@ -729,7 +729,7 @@ class _AdminGoogleBooksImportScreenState
                   spacing: 8,
                   runSpacing: 8,
                   children: [
-                    const AdminPill(label: 'BOOK', color: AdminPalette.info),
+                    AdminPill(label: 'BOOK', color: AdminPalette.info),
                     if (book.language.trim().isNotEmpty)
                       AdminPill(
                         label: book.language.toUpperCase(),
@@ -885,7 +885,7 @@ class _AdminGoogleBooksImportScreenState
           title: const Text('Import Google Books'),
           backgroundColor: Colors.white,
           foregroundColor: AdminPalette.textPrimary,
-          bottom: const TabBar(
+          bottom: TabBar(
             labelColor: AdminPalette.primary,
             indicatorColor: AdminPalette.primary,
             tabs: [

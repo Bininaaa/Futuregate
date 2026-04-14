@@ -104,7 +104,7 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const CircularProgressIndicator(
+                          CircularProgressIndicator(
                             color: SettingsFlowPalette.primary,
                           ),
                           const SizedBox(height: 12),
@@ -159,7 +159,7 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
                 ],
               ),
               child: cvProvider.isExporting
-                  ? const Center(
+                  ? Center(
                       child: Padding(
                         padding: EdgeInsets.symmetric(vertical: 8),
                         child: CircularProgressIndicator(

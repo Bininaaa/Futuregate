@@ -1,40 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../theme/app_colors.dart';
+
 class InnovationHubPalette {
-  static const Color primary = Color(0xFF3B22F6);
-  static const Color primaryDark = Color(0xFF1E40AF);
-  static const Color secondary = Color(0xFF14B8A6);
-  static const Color accent = Color(0xFFF97316);
-  static const Color background = Color(0xFFF8FAFC);
-  static const Color surface = Color(0xFFFFFFFF);
-  static const Color textPrimary = Color(0xFF111627);
-  static const Color textSecondary = Color(0xFF64748B);
-  static const Color border = Color(0xFFE2E8F0);
-  static const Color success = Color(0xFF22C55E);
-  static const Color warning = Color(0xFFF59E0B);
-  static const Color error = Color(0xFFEF4444);
-  static const Color searchTint = Color(0xFFF2EFFF);
-  static const Color chipTint = Color(0xFFEEF2FF);
-  static const Color cardTint = Color(0xFFF8F7FF);
+  static Color get primary => AppColors.current.primary;
+  static Color get primaryDark => AppColors.current.primaryDeep;
+  static Color get secondary => AppColors.current.secondary;
+  static Color get accent => AppColors.current.accent;
+  static Color get background => AppColors.current.background;
+  static Color get surface => AppColors.current.surface;
+  static Color get textPrimary => AppColors.current.textPrimary;
+  static Color get textSecondary => AppColors.current.textSecondary;
+  static Color get border => AppColors.current.border;
+  static Color get success => AppColors.current.success;
+  static Color get warning => AppColors.current.warning;
+  static Color get error => AppColors.current.danger;
+  static Color get searchTint => AppColors.isDark
+      ? AppColors.current.surfaceSoft
+      : const Color(0xFFF2EFFF);
+  static Color get chipTint => AppColors.current.primarySoft;
+  static Color get cardTint => AppColors.isDark
+      ? AppColors.current.surfaceElevated
+      : const Color(0xFFF8F7FF);
 
-  static const LinearGradient primaryGradient = LinearGradient(
-    colors: [primary, primaryDark],
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-  );
+  static LinearGradient get primaryGradient =>
+      AppColors.current.primaryGradient;
 
-  static const LinearGradient featuredGradient = LinearGradient(
-    colors: [primary, primaryDark],
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-  );
+  static LinearGradient get featuredGradient =>
+      AppColors.current.primaryGradient;
 
   static List<BoxShadow> softShadow([double opacity = 0.08]) {
     return [
       BoxShadow(
-        color: Colors.black.withValues(alpha: opacity),
-        blurRadius: 20,
+        color: AppColors.current.shadow.withValues(
+          alpha: AppColors.isDark ? opacity * 2.6 : opacity,
+        ),
+        blurRadius: AppColors.isDark ? 28 : 20,
         offset: const Offset(0, 8),
       ),
     ];
@@ -42,32 +44,26 @@ class InnovationHubPalette {
 }
 
 class InnovationHubTypography {
-  static TextStyle title({
-    Color color = InnovationHubPalette.textPrimary,
-    double size = 30,
-  }) {
+  static TextStyle title({Color? color, double size = 30}) {
     return GoogleFonts.sora(
       fontSize: size,
       fontWeight: FontWeight.w700,
       height: 1.08,
-      color: color,
+      color: color ?? InnovationHubPalette.textPrimary,
     );
   }
 
-  static TextStyle section({
-    Color color = InnovationHubPalette.textPrimary,
-    double size = 18,
-  }) {
+  static TextStyle section({Color? color, double size = 18}) {
     return GoogleFonts.sora(
       fontSize: size,
       fontWeight: FontWeight.w700,
       height: 1.12,
-      color: color,
+      color: color ?? InnovationHubPalette.textPrimary,
     );
   }
 
   static TextStyle body({
-    Color color = InnovationHubPalette.textSecondary,
+    Color? color,
     double size = 14,
     FontWeight weight = FontWeight.w500,
     double height = 1.45,
@@ -76,19 +72,19 @@ class InnovationHubTypography {
       fontSize: size,
       fontWeight: weight,
       height: height,
-      color: color,
+      color: color ?? InnovationHubPalette.textSecondary,
     );
   }
 
   static TextStyle label({
-    Color color = InnovationHubPalette.textSecondary,
+    Color? color,
     double size = 12,
     FontWeight weight = FontWeight.w700,
   }) {
     return GoogleFonts.manrope(
       fontSize: size,
       fontWeight: weight,
-      color: color,
+      color: color ?? InnovationHubPalette.textSecondary,
       letterSpacing: 0.1,
     );
   }

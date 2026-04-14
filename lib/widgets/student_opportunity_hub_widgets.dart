@@ -1,28 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../theme/app_colors.dart';
 import '../utils/opportunity_dashboard_palette.dart';
 import 'shared/app_feedback.dart';
 
 class StudentOpportunityHubPalette {
   StudentOpportunityHubPalette._();
 
-  static const Color primary = OpportunityDashboardPalette.primary;
-  static const Color primaryDark = OpportunityDashboardPalette.primaryDark;
-  static const Color secondary = OpportunityDashboardPalette.secondary;
-  static const Color accent = OpportunityDashboardPalette.accent;
-  static const Color surface = OpportunityDashboardPalette.surface;
-  static const Color surfaceAlt = Color(0xFFF8FAFC);
-  static const Color textPrimary = OpportunityDashboardPalette.textPrimary;
-  static const Color textSecondary = OpportunityDashboardPalette.textSecondary;
-  static const Color textMuted = Color(0xFF94A3B8);
-  static const Color border = OpportunityDashboardPalette.border;
-  static const Color success = OpportunityDashboardPalette.success;
-  static const Color warning = OpportunityDashboardPalette.warning;
-  static const Color error = OpportunityDashboardPalette.error;
-  static const Color primarySoft = Color(0xFFF1EEFF);
-  static const Color secondarySoft = Color(0xFFE9FBF8);
-  static const Color accentSoft = Color(0xFFFFF3E8);
+  static Color get primary => OpportunityDashboardPalette.primary;
+  static Color get primaryDark => OpportunityDashboardPalette.primaryDark;
+  static Color get secondary => OpportunityDashboardPalette.secondary;
+  static Color get accent => OpportunityDashboardPalette.accent;
+  static Color get surface => OpportunityDashboardPalette.surface;
+  static Color get surfaceAlt => OpportunityDashboardPalette.background;
+  static Color get textPrimary => OpportunityDashboardPalette.textPrimary;
+  static Color get textSecondary => OpportunityDashboardPalette.textSecondary;
+  static Color get textMuted => AppColors.current.textMuted;
+  static Color get border => OpportunityDashboardPalette.border;
+  static Color get success => OpportunityDashboardPalette.success;
+  static Color get warning => OpportunityDashboardPalette.warning;
+  static Color get error => OpportunityDashboardPalette.error;
+  static Color get primarySoft => AppColors.current.primarySoft;
+  static Color get secondarySoft => AppColors.current.secondarySoft;
+  static Color get accentSoft => AppColors.current.accentSoft;
 }
 
 class StudentOpportunityHeroStat {
@@ -61,7 +62,7 @@ class StudentOpportunityHubHero extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
+        gradient: LinearGradient(
           colors: [
             StudentOpportunityHubPalette.primaryDark,
             StudentOpportunityHubPalette.primary,
@@ -266,7 +267,7 @@ class StudentOpportunitySearchField extends StatelessWidget {
           fontSize: 13,
           color: StudentOpportunityHubPalette.textMuted,
         ),
-        prefixIcon: const Icon(
+        prefixIcon: Icon(
           Icons.search_rounded,
           color: StudentOpportunityHubPalette.textMuted,
           size: 20,
@@ -278,7 +279,7 @@ class StudentOpportunitySearchField extends StatelessWidget {
                   controller.clear();
                   onChanged?.call('');
                 },
-                icon: const Icon(
+                icon: Icon(
                   Icons.close_rounded,
                   color: StudentOpportunityHubPalette.textMuted,
                   size: 18,
@@ -292,9 +293,7 @@ class StudentOpportunitySearchField extends StatelessWidget {
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(20),
-          borderSide: const BorderSide(
-            color: StudentOpportunityHubPalette.border,
-          ),
+          borderSide: BorderSide(color: StudentOpportunityHubPalette.border),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(20),
@@ -304,9 +303,7 @@ class StudentOpportunitySearchField extends StatelessWidget {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(20),
-          borderSide: const BorderSide(
-            color: StudentOpportunityHubPalette.primary,
-          ),
+          borderSide: BorderSide(color: StudentOpportunityHubPalette.primary),
         ),
       ),
     );
@@ -426,7 +423,7 @@ class StudentOpportunityLoadingState extends StatelessWidget {
               width: 64,
               height: 64,
               decoration: BoxDecoration(
-                gradient: const LinearGradient(
+                gradient: LinearGradient(
                   colors: [
                     StudentOpportunityHubPalette.primaryDark,
                     StudentOpportunityHubPalette.primary,

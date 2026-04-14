@@ -45,7 +45,7 @@ class RoleChooserScreen extends StatelessWidget {
                 children: <Widget>[
                   const Center(child: AppLogo(height: 44)),
                   const SizedBox(height: 18),
-                  const AuthCompactHeader(
+                  AuthCompactHeader(
                     icon: Icons.person_add_rounded,
                     title: 'Join FutureGate',
                     subtitle: 'Choose your account type.',
@@ -70,7 +70,9 @@ class RoleChooserScreen extends StatelessWidget {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => const RegisterScreen()),
+                        MaterialPageRoute(
+                          builder: (_) => const RegisterScreen(),
+                        ),
                       );
                     },
                   ),

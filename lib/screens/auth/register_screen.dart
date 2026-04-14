@@ -127,7 +127,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
-                  const AuthCompactHeader(
+                  AuthCompactHeader(
                     icon: Icons.person_add_alt_1_rounded,
                     title: 'Create account',
                     subtitle: 'Start your student profile.',

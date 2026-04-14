@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 
 import '../../providers/auth_provider.dart';
 import '../../services/app_intro_preferences_service.dart';
+import '../../theme/app_colors.dart';
 import '../../widgets/shared/app_logo.dart';
 import '../auth/login_screen.dart';
 import '../auth/role_chooser_screen.dart';
@@ -23,9 +24,6 @@ class GetStartedScreen extends StatefulWidget {
 }
 
 class _GetStartedScreenState extends State<GetStartedScreen> {
-  static const Color _muted = Color(0xFF6D7891);
-  static const Color _shell = Color(0xFFF7F8FE);
-
   static const List<_SlideSpec> _slides = <_SlideSpec>[
     _SlideSpec(
       layout: _HeroLayout.connect,
@@ -123,7 +121,10 @@ class _GetStartedScreenState extends State<GetStartedScreen> {
 
   Future<void> _goToPage(int index) async {
     final reduceMotion =
-        WidgetsBinding.instance.platformDispatcher.accessibilityFeatures
+        WidgetsBinding
+            .instance
+            .platformDispatcher
+            .accessibilityFeatures
             .disableAnimations ||
         (MediaQuery.maybeOf(context)?.accessibleNavigation ?? false);
 
@@ -199,9 +200,10 @@ class _GetStartedScreenState extends State<GetStartedScreen> {
   @override
   Widget build(BuildContext context) {
     final isSignedIn = context.watch<AuthProvider>().userModel != null;
+    final colors = AppColors.of(context);
 
     return Scaffold(
-      backgroundColor: _shell,
+      backgroundColor: colors.background,
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -228,7 +230,9 @@ class _GetStartedScreenState extends State<GetStartedScreen> {
                             pageController: _pageController,
                             onPrimaryAction: _goNext,
                             onForward: index == _slides.length - 1
-                                ? (isSignedIn ? _continueToApp : _openCreateAccount)
+                                ? (isSignedIn
+                                      ? _continueToApp
+                                      : _openCreateAccount)
                                 : _goNext,
                             onBack: _goBack,
                             onLogin: _openLogin,
@@ -243,7 +247,7 @@ class _GetStartedScreenState extends State<GetStartedScreen> {
                         key: const ValueKey<String>('onboarding_skip_button'),
                         onPressed: _skip,
                         style: TextButton.styleFrom(
-                          foregroundColor: _muted,
+                          foregroundColor: colors.textMuted,
                           padding: const EdgeInsets.symmetric(
                             horizontal: 8,
                             vertical: 6,
@@ -254,7 +258,7 @@ class _GetStartedScreenState extends State<GetStartedScreen> {
                           style: GoogleFonts.manrope(
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
-                            color: _muted,
+                            color: colors.textMuted,
                           ),
                         ),
                       ),
@@ -301,13 +305,19 @@ class _SlideView extends StatelessWidget {
       builder: (context, constraints) {
         final preferredHeight =
             spec.heroHeight + spec.sheetHeight - spec.sheetOffset;
-        final heroScale = math.min(constraints.maxHeight / preferredHeight, 1.0);
+        final heroScale = math.min(
+          constraints.maxHeight / preferredHeight,
+          1.0,
+        );
         final scaledHeroHeight = spec.heroHeight * heroScale;
         final scaledSheetTop = (spec.heroHeight - spec.sheetOffset) * heroScale;
         final scaledSheetHeight = constraints.maxHeight - scaledSheetTop;
         final scaledWidth = constraints.maxWidth / heroScale;
         final reduceMotion =
-            WidgetsBinding.instance.platformDispatcher.accessibilityFeatures
+            WidgetsBinding
+                .instance
+                .platformDispatcher
+                .accessibilityFeatures
                 .disableAnimations ||
             (MediaQuery.maybeOf(context)?.accessibleNavigation ?? false);
 
@@ -321,12 +331,18 @@ class _SlideView extends StatelessWidget {
             final activeProgress = 1 - pageDelta.abs();
             final heroTranslate = reduceMotion ? 0.0 : pageDelta * -28;
             final sheetTranslate = reduceMotion ? 0.0 : pageDelta * -14;
-            final heroVisualScale =
-                reduceMotion ? 1.0 : 0.96 + (activeProgress * 0.04);
-            final sheetVisualScale =
-                reduceMotion ? 1.0 : 0.985 + (activeProgress * 0.015);
-            final heroOpacity = reduceMotion ? 1.0 : 0.78 + (activeProgress * 0.22);
-            final sheetOpacity = reduceMotion ? 1.0 : 0.9 + (activeProgress * 0.1);
+            final heroVisualScale = reduceMotion
+                ? 1.0
+                : 0.96 + (activeProgress * 0.04);
+            final sheetVisualScale = reduceMotion
+                ? 1.0
+                : 0.985 + (activeProgress * 0.015);
+            final heroOpacity = reduceMotion
+                ? 1.0
+                : 0.78 + (activeProgress * 0.22);
+            final sheetOpacity = reduceMotion
+                ? 1.0
+                : 0.9 + (activeProgress * 0.1);
 
             return SizedBox(
               height: constraints.maxHeight,
@@ -939,7 +955,10 @@ class _HeroStage extends StatelessWidget {
             child: Opacity(
               opacity: 0.8,
               child: _GlassCard(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
                 borderRadius: 28,
                 child: SizedBox(
                   width: 204,
@@ -997,7 +1016,10 @@ class _HeroStage extends StatelessWidget {
             child: Opacity(
               opacity: 0.8,
               child: _GlassCard(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
                 borderRadius: 28,
                 child: SizedBox(
                   width: 194,
@@ -1115,10 +1137,6 @@ class _HeroStage extends StatelessWidget {
 }
 
 class _BottomSheetStage extends StatelessWidget {
-  static const Color _primary = Color(0xFF3424F5);
-  static const Color _ink = Color(0xFF0F1D3A);
-  static const Color _muted = Color(0xFF6D7891);
-
   final _SlideSpec spec;
   final int index;
   final int totalSlides;
@@ -1143,6 +1161,8 @@ class _BottomSheetStage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppColors.of(context);
+
     return LayoutBuilder(
       builder: (context, constraints) {
         final contentScale = math.min(
@@ -1161,13 +1181,13 @@ class _BottomSheetStage extends StatelessWidget {
         final primaryLabel = index == 0
             ? 'Get Started'
             : isLastSlide
-                ? (isSignedIn ? 'Continue' : 'Create account')
-                : 'Next';
+            ? (isSignedIn ? 'Continue' : 'Create account')
+            : 'Next';
         final primaryKey = index == 0
             ? const ValueKey<String>('onboarding_primary_button')
             : isLastSlide
-                ? const ValueKey<String>('onboarding_final_primary_button')
-                : null;
+            ? const ValueKey<String>('onboarding_final_primary_button')
+            : null;
         final helperTitle = isLastSlide && !isSignedIn
             ? 'Returning to FutureGate?'
             : null;
@@ -1177,8 +1197,8 @@ class _BottomSheetStage extends StatelessWidget {
         final navigationLayout = index == 0
             ? _NavigationLayout.primaryOnly
             : isLastSlide
-                ? _NavigationLayout.backAndPrimary
-                : _NavigationLayout.arrowsOnly;
+            ? _NavigationLayout.backAndPrimary
+            : _NavigationLayout.arrowsOnly;
         final titleFontSize = isLastSlide
             ? scaled(25.2, min: 18.2)
             : scaled(27, min: 19);
@@ -1194,13 +1214,15 @@ class _BottomSheetStage extends StatelessWidget {
           height: constraints.maxHeight,
           clipBehavior: Clip.antiAlias,
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: colors.surface,
             borderRadius: BorderRadius.vertical(
               top: Radius.circular(scaled(38, min: 28)),
             ),
             boxShadow: <BoxShadow>[
               BoxShadow(
-                color: const Color(0xFF111D3E).withValues(alpha: 0.08),
+                color: colors.shadow.withValues(
+                  alpha: colors.isDarkMode ? 0.34 : 0.08,
+                ),
                 blurRadius: scaled(22, min: 14),
                 offset: Offset(0, -scaled(6, min: 4)),
               ),
@@ -1226,10 +1248,12 @@ class _BottomSheetStage extends StatelessWidget {
                             ? 0
                             : scaled(10, min: 6),
                       ),
-                      width: isActive ? scaled(48, min: 34) : scaled(22, min: 16),
+                      width: isActive
+                          ? scaled(48, min: 34)
+                          : scaled(22, min: 16),
                       height: scaled(10, min: 7),
                       decoration: BoxDecoration(
-                        color: isActive ? _primary : const Color(0xFFD6E4FA),
+                        color: isActive ? colors.primary : colors.border,
                         borderRadius: BorderRadius.circular(999),
                       ),
                     );
@@ -1248,7 +1272,9 @@ class _BottomSheetStage extends StatelessWidget {
                               fontSize: titleFontSize,
                               height: 1.18,
                               fontWeight: FontWeight.w700,
-                              color: part.highlight ? _primary : _ink,
+                              color: part.highlight
+                                  ? colors.primary
+                                  : colors.textPrimary,
                             ),
                           ),
                         )
@@ -1263,7 +1289,7 @@ class _BottomSheetStage extends StatelessWidget {
                     fontSize: descriptionFontSize,
                     height: descriptionHeight,
                     fontWeight: FontWeight.w600,
-                    color: _muted,
+                    color: colors.textSecondary,
                   ),
                 ),
                 const Spacer(),
@@ -1282,14 +1308,14 @@ class _BottomSheetStage extends StatelessWidget {
                           style: GoogleFonts.manrope(
                             fontSize: scaled(12.4, min: 10.4),
                             fontWeight: FontWeight.w800,
-                            color: _primary.withValues(alpha: 0.8),
+                            color: colors.primary.withValues(alpha: 0.84),
                           ),
                         ),
                         TextButton(
                           key: const ValueKey<String>('onboarding_login_link'),
                           onPressed: onLogin,
                           style: TextButton.styleFrom(
-                            foregroundColor: _primary,
+                            foregroundColor: colors.primary,
                             padding: EdgeInsets.symmetric(
                               horizontal: scaled(6, min: 4),
                               vertical: 0,
@@ -1302,7 +1328,7 @@ class _BottomSheetStage extends StatelessWidget {
                             style: GoogleFonts.manrope(
                               fontSize: scaled(12.8, min: 10.6),
                               fontWeight: FontWeight.w800,
-                              color: _primary,
+                              color: colors.primary,
                             ),
                           ),
                         ),
@@ -1316,7 +1342,9 @@ class _BottomSheetStage extends StatelessWidget {
                   primaryKey: primaryKey,
                   onPrimary: index == 0 ? onPrimaryAction : onForward,
                   backKey: const ValueKey<String>('onboarding_back_button'),
-                  forwardKey: const ValueKey<String>('onboarding_forward_button'),
+                  forwardKey: const ValueKey<String>(
+                    'onboarding_forward_button',
+                  ),
                   onBack: onBack,
                   onForward: onForward,
                 ),
@@ -1430,8 +1458,6 @@ class _NavigationPanel extends StatelessWidget {
 enum _NavigationLayout { primaryOnly, arrowsOnly, backAndPrimary }
 
 class _CircularActionButton extends StatelessWidget {
-  static const Color _primary = Color(0xFF3424F5);
-
   final IconData icon;
   final double size;
   final bool filled;
@@ -1447,9 +1473,10 @@ class _CircularActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppColors.of(context);
     final background = filled
-        ? const LinearGradient(
-            colors: <Color>[Color(0xFF6152FF), _primary],
+        ? LinearGradient(
+            colors: <Color>[colors.primary, colors.primaryDeep],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           )
@@ -1467,18 +1494,15 @@ class _CircularActionButton extends StatelessWidget {
             height: size,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: filled ? null : const Color(0xFFF3F6FD),
+              color: filled ? null : colors.surfaceMuted,
               gradient: background,
               border: filled
                   ? null
-                  : Border.all(
-                      color: const Color(0xFFDDE4F3),
-                      width: 1.1,
-                    ),
+                  : Border.all(color: colors.border, width: 1.1),
             ),
             child: Icon(
               icon,
-              color: filled ? Colors.white : const Color(0xFFA6B5CD),
+              color: filled ? Colors.white : colors.textMuted,
               size: size * 0.42,
             ),
           ),
@@ -1502,6 +1526,8 @@ class _PrimaryPillButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppColors.of(context);
+
     double scaled(double value, {double? min}) {
       final scaledValue = value * scale;
       if (min == null) {
@@ -1515,14 +1541,14 @@ class _PrimaryPillButton extends StatelessWidget {
       child: DecoratedBox(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(scaled(28, min: 22)),
-          gradient: const LinearGradient(
-            colors: <Color>[Color(0xFF260EDC), Color(0xFF4A36FF)],
+          gradient: LinearGradient(
+            colors: <Color>[colors.primaryDeep, colors.primary],
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
           ),
           boxShadow: <BoxShadow>[
             BoxShadow(
-              color: const Color(0xFF3424F5).withValues(alpha: 0.22),
+              color: colors.primary.withValues(alpha: 0.22),
               blurRadius: scaled(16, min: 10),
               offset: Offset(0, scaled(8, min: 5)),
             ),

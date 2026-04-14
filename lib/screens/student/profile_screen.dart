@@ -1755,7 +1755,7 @@ class _LinksCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const _SectionChip(
+          _SectionChip(
             icon: Icons.dashboard_customize_outlined,
             label: 'Student toolkit',
             color: SettingsFlowPalette.primaryDark,
@@ -2143,7 +2143,7 @@ class _Card extends StatelessWidget {
             child: Container(
               height: 4,
               decoration: BoxDecoration(
-                gradient: const LinearGradient(
+                gradient: LinearGradient(
                   colors: [
                     SettingsFlowPalette.primary,
                     SettingsFlowPalette.secondary,

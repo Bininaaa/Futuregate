@@ -28,6 +28,7 @@ import '../../providers/saved_scholarship_provider.dart';
 import '../../providers/scholarship_provider.dart';
 import '../../providers/student_provider.dart';
 import '../../providers/training_provider.dart';
+import '../../theme/app_colors.dart';
 import '../../utils/application_status.dart';
 import '../../utils/student_profile_completion.dart';
 import '../../widgets/app_shell_background.dart';
@@ -68,17 +69,17 @@ class StudentDashboardScreen extends StatefulWidget {
 
 class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
   // ── Premium purple theme palette ──
-  static const Color primaryPurple = OpportunityDashboardPalette.primary;
-  static const Color deepPurple = OpportunityDashboardPalette.primaryDark;
-  static const Color lightPurple = Color(0xFFEFF4FF);
-  static const Color softLavender = Color(0xFFF4F7FB);
-  static const Color accentTeal = OpportunityDashboardPalette.secondary;
-  static const Color accentGold = OpportunityDashboardPalette.accent;
-  static const Color cardWhite = OpportunityDashboardPalette.surface;
-  static const Color textDark = OpportunityDashboardPalette.textPrimary;
-  static const Color textMedium = OpportunityDashboardPalette.textSecondary;
-  static const Color textLight = Color(0xFF94A3B8);
-  static const Color cardBorder = OpportunityDashboardPalette.border;
+  static Color get primaryPurple => OpportunityDashboardPalette.primary;
+  static Color get deepPurple => OpportunityDashboardPalette.primaryDark;
+  static Color get lightPurple => OpportunityDashboardPalette.primary;
+  static Color get softLavender => OpportunityDashboardPalette.background;
+  static Color get accentTeal => OpportunityDashboardPalette.secondary;
+  static Color get accentGold => OpportunityDashboardPalette.accent;
+  static Color get cardWhite => OpportunityDashboardPalette.surface;
+  static Color get textDark => OpportunityDashboardPalette.textPrimary;
+  static Color get textMedium => OpportunityDashboardPalette.textSecondary;
+  static Color get textLight => AppColors.current.textMuted;
+  static Color get cardBorder => OpportunityDashboardPalette.border;
 
   bool _didLoadBaseData = false;
   String? _loadedStudentId;
@@ -330,7 +331,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 14, 20, 18),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
+        gradient: LinearGradient(
           colors: [deepPurple, primaryPurple, Color(0xFF6D5EF9)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -1521,7 +1522,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     final items = snapshot.closingSoonItems;
 
     if (provider.isLoading && items.isEmpty) {
-      return const SizedBox(
+      return SizedBox(
         height: 124,
         child: Center(child: CircularProgressIndicator(color: primaryPurple)),
       );
@@ -1885,7 +1886,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
         items.isEmpty && (provider.isFeaturedLoading || provider.isLoading);
 
     if (isLoading) {
-      return const SizedBox(
+      return SizedBox(
         height: 210,
         child: Center(child: CircularProgressIndicator(color: primaryPurple)),
       );
@@ -2279,7 +2280,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     if (isLoading) {
       return SliverList(
         delegate: SliverChildListDelegate([
-          const SizedBox(
+          SizedBox(
             height: 120,
             child: Center(
               child: CircularProgressIndicator(color: primaryPurple),

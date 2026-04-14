@@ -53,7 +53,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     final provider = context.watch<AdminProvider>();
 
     if (provider.isLoading) {
-      return const Center(
+      return Center(
         child: CircularProgressIndicator(color: AdminPalette.primary),
       );
     }
@@ -553,7 +553,7 @@ class _InsightTile extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 13,
                         color: AdminPalette.textMuted,
                         fontWeight: FontWeight.w500,
@@ -612,7 +612,7 @@ class _RankedListCard extends StatelessWidget {
                   title,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
                     color: AdminPalette.textPrimary,
@@ -623,7 +623,7 @@ class _RankedListCard extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           if (items.isEmpty)
-            const Text(
+            Text(
               'No highlights available yet',
               style: TextStyle(color: AdminPalette.textMuted),
             ),
@@ -694,7 +694,7 @@ class _RankedListCard extends StatelessWidget {
                               normalizedTitle,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
                                 color: AdminPalette.textPrimary,
@@ -878,7 +878,7 @@ class _QuickAccessGrid extends StatelessWidget {
                                       item.badgeCount > 9
                                           ? '9+'
                                           : '${item.badgeCount}',
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 10,
                                         fontWeight: FontWeight.w700,
                                         color: AdminPalette.accent,
@@ -957,7 +957,7 @@ class _RecentActivityCard extends StatelessWidget {
     return AdminSurface(
       radius: 22,
       child: activities.isEmpty
-          ? const Text(
+          ? Text(
               'No recent activity yet',
               style: TextStyle(color: AdminPalette.textMuted),
             )
@@ -1023,7 +1023,7 @@ class _RecentActivityCard extends StatelessWidget {
                                     title,
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 13.6,
                                       fontWeight: FontWeight.w700,
                                       color: AdminPalette.textPrimary,
@@ -1035,7 +1035,7 @@ class _RecentActivityCard extends StatelessWidget {
                                     description,
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 12,
                                       color: AdminPalette.textSecondary,
                                       height: 1.35,
@@ -1063,7 +1063,7 @@ class _RecentActivityCard extends StatelessWidget {
                                         ),
                                       Text(
                                         dateLabel,
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontSize: 11.2,
                                           fontWeight: FontWeight.w500,
                                           color: AdminPalette.textMuted,
@@ -1163,7 +1163,7 @@ class _RecentUsersCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
               Icon(Icons.person_add_alt_1_rounded, color: AdminPalette.primary),
               SizedBox(width: 8),
@@ -1179,7 +1179,7 @@ class _RecentUsersCard extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           if (users.isEmpty)
-            const Text(
+            Text(
               'No recent users yet',
               style: TextStyle(color: AdminPalette.textMuted),
             ),
@@ -1242,7 +1242,7 @@ class _RecentUsersCard extends StatelessWidget {
                                           user.fullName,
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
-                                          style: const TextStyle(
+                                          style: TextStyle(
                                             fontSize: 14.2,
                                             fontWeight: FontWeight.w700,
                                             color: AdminPalette.textPrimary,
@@ -1263,7 +1263,7 @@ class _RecentUsersCard extends StatelessWidget {
                                   email,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 11.8,
                                     color: AdminPalette.textMuted,
                                   ),
@@ -1297,7 +1297,7 @@ class _RecentOpportunitiesCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
               Icon(Icons.work_outline_rounded, color: AdminPalette.accent),
               SizedBox(width: 8),
@@ -1313,7 +1313,7 @@ class _RecentOpportunitiesCard extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           if (opportunities.isEmpty)
-            const Text(
+            Text(
               'No opportunities published yet',
               style: TextStyle(color: AdminPalette.textMuted),
             ),
@@ -1375,7 +1375,7 @@ class _RecentOpportunitiesCard extends StatelessWidget {
                                           : 'Untitled opportunity',
                                       maxLines: 2,
                                       overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 14.2,
                                         fontWeight: FontWeight.w700,
                                         color: AdminPalette.textPrimary,
@@ -1398,7 +1398,7 @@ class _RecentOpportunitiesCard extends StatelessWidget {
                                   : 'Company name not added',
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 11.8,
                                 color: AdminPalette.textMuted,
                               ),

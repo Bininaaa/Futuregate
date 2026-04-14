@@ -308,7 +308,7 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
         top: false,
         bottom: false,
         child: provider.isLoading
-            ? const Center(child: CircularProgressIndicator(color: _P.primary))
+            ? Center(child: CircularProgressIndicator(color: _P.primary))
             : CustomScrollView(
                 physics: const BouncingScrollPhysics(),
                 slivers: [
@@ -676,7 +676,7 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
               fontSize: 12,
               color: _P.textSecondary.withValues(alpha: 0.6),
             ),
-            prefixIcon: const Icon(
+            prefixIcon: Icon(
               Icons.search_rounded,
               color: _P.textSecondary,
               size: 18,
@@ -796,7 +796,7 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
                     ),
                   ),
                   const SizedBox(width: 3),
-                  const Icon(
+                  Icon(
                     Icons.arrow_forward_rounded,
                     size: 13,
                     color: _P.primary,

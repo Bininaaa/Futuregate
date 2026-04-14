@@ -189,7 +189,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
                     onChanged: _onSearchChanged,
                     style: ChatThemeStyles.body(),
                     decoration: InputDecoration(
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.search_rounded,
                         color: ChatThemePalette.textSecondary,
                       ),

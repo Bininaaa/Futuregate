@@ -978,7 +978,7 @@ class _ConversationHeader extends StatelessWidget {
                   color: ChatThemePalette.surfaceMuted,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.more_vert_rounded,
                   size: 18,
                   color: ChatThemePalette.textSecondary,
@@ -1044,7 +1044,7 @@ class _EmptyConversationState extends StatelessWidget {
                 color: ChatThemePalette.primary.withValues(alpha: 0.08),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.chat_bubble_outline_rounded,
                 color: ChatThemePalette.primary,
                 size: 26,

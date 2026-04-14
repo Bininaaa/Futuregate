@@ -104,7 +104,7 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
                   decoration: InputDecoration(
                     hintText: 'Search help topics',
                     hintStyle: SettingsFlowTheme.caption(),
-                    prefixIcon: const Icon(
+                    prefixIcon: Icon(
                       Icons.search_rounded,
                       color: SettingsFlowPalette.textSecondary,
                     ),
@@ -116,19 +116,15 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
                     ),
                     border: OutlineInputBorder(
                       borderRadius: SettingsFlowTheme.radius(20),
-                      borderSide: const BorderSide(
-                        color: SettingsFlowPalette.border,
-                      ),
+                      borderSide: BorderSide(color: SettingsFlowPalette.border),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: SettingsFlowTheme.radius(20),
-                      borderSide: const BorderSide(
-                        color: SettingsFlowPalette.border,
-                      ),
+                      borderSide: BorderSide(color: SettingsFlowPalette.border),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: SettingsFlowTheme.radius(20),
-                      borderSide: const BorderSide(
+                      borderSide: BorderSide(
                         color: SettingsFlowPalette.primary,
                       ),
                     ),

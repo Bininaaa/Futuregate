@@ -178,7 +178,7 @@ class _CompanyPillNavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const selectedGradient = LinearGradient(
+    final selectedGradient = LinearGradient(
       colors: [
         CompanyDashboardPalette.primaryDark,
         CompanyDashboardPalette.primary,

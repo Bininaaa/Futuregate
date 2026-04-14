@@ -598,7 +598,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                               style: OutlinedButton.styleFrom(
                                 foregroundColor:
                                     OpportunityDashboardPalette.textSecondary,
-                                side: const BorderSide(
+                                side: BorderSide(
                                   color: OpportunityDashboardPalette.border,
                                 ),
                               ),
@@ -1356,7 +1356,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                 fontSize: 12,
                 color: OpportunityDashboardPalette.textSecondary,
               ),
-              prefixIcon: const Icon(
+              prefixIcon: Icon(
                 Icons.search_rounded,
                 color: OpportunityDashboardPalette.textSecondary,
               ),
@@ -1372,13 +1372,13 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
               contentPadding: const EdgeInsets.symmetric(vertical: 13),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(20),
-                borderSide: const BorderSide(
+                borderSide: BorderSide(
                   color: OpportunityDashboardPalette.border,
                 ),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(20),
-                borderSide: const BorderSide(
+                borderSide: BorderSide(
                   color: OpportunityDashboardPalette.primary,
                   width: 1.5,
                 ),
@@ -1798,7 +1798,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                   SliverPadding(
                     padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
                     sliver: SliverToBoxAdapter(
-                      child: const OpportunitySectionHeader(
+                      child: OpportunitySectionHeader(
                         title: 'Closing Soon',
                         subtitle:
                             'Urgent applications that need attention before they expire',

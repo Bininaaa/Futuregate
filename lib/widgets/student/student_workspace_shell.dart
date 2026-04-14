@@ -39,7 +39,7 @@ class StudentWorkspaceTopBar extends StatelessWidget {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             )
-          : const LinearGradient(
+          : LinearGradient(
               colors: [
                 OpportunityDashboardPalette.primary,
                 OpportunityDashboardPalette.secondary,
@@ -166,7 +166,7 @@ class StudentWorkspaceActionButton extends StatelessWidget {
   final String tooltip;
   final VoidCallback? onTap;
   final int badgeCount;
-  final Color color;
+  final Color? color;
 
   const StudentWorkspaceActionButton({
     super.key,
@@ -174,7 +174,7 @@ class StudentWorkspaceActionButton extends StatelessWidget {
     required this.tooltip,
     this.onTap,
     this.badgeCount = 0,
-    this.color = OpportunityDashboardPalette.textPrimary,
+    this.color,
   });
 
   @override
@@ -184,7 +184,7 @@ class StudentWorkspaceActionButton extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.only(left: 8),
         child: Material(
-          color: const Color(0xFFF8FAFF),
+          color: OpportunityDashboardPalette.surface,
           borderRadius: BorderRadius.circular(18),
           child: InkWell(
             onTap: onTap,
@@ -195,7 +195,11 @@ class StudentWorkspaceActionButton extends StatelessWidget {
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  Icon(icon, color: color, size: 22),
+                  Icon(
+                    icon,
+                    color: color ?? OpportunityDashboardPalette.textPrimary,
+                    size: 22,
+                  ),
                   if (badgeCount > 0)
                     Positioned(
                       top: 8,
@@ -631,7 +635,7 @@ class _StudentPillNavItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final label = compact ? destination.compactLabel : destination.label;
-    const selectedGradient = LinearGradient(
+    final selectedGradient = LinearGradient(
       colors: [
         OpportunityDashboardPalette.primary,
         OpportunityDashboardPalette.primaryDark,

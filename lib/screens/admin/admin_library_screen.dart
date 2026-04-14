@@ -81,9 +81,9 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen> {
               accentColor: AdminPalette.info,
               stats: [
                 _LibraryStat(label: 'Imported', value: '$googleBooksCount'),
-                const _LibraryStat(label: 'Source', value: 'Google Books'),
+                _LibraryStat(label: 'Source', value: 'Google Books'),
               ],
-              chips: const [
+              chips: [
                 AdminPill(
                   label: 'Books',
                   color: AdminPalette.info,
@@ -111,9 +111,9 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen> {
               accentColor: AdminPalette.danger,
               stats: [
                 _LibraryStat(label: 'Imported', value: '$youtubeCount'),
-                const _LibraryStat(label: 'Source', value: 'YouTube'),
+                _LibraryStat(label: 'Source', value: 'YouTube'),
               ],
-              chips: const [
+              chips: [
                 AdminPill(
                   label: 'Video Lessons',
                   color: AdminPalette.danger,
@@ -250,7 +250,7 @@ class _LibraryCard extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.w700,
                         color: AdminPalette.textPrimary,
@@ -259,7 +259,7 @@ class _LibraryCard extends StatelessWidget {
                     const SizedBox(height: 6),
                     Text(
                       subtitle,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12.5,
                         height: 1.5,
                         color: AdminPalette.textMuted,
@@ -302,7 +302,7 @@ class _LibraryCard extends StatelessWidget {
                         const SizedBox(height: 3),
                         Text(
                           stat.label,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 11.5,
                             fontWeight: FontWeight.w500,
                             color: AdminPalette.textMuted,

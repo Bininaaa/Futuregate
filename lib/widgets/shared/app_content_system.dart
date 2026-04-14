@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../theme/app_colors.dart';
 import 'app_feedback.dart';
 
 enum AppContentTypography { product, innovation }
@@ -41,6 +42,37 @@ class AppContentTheme {
     required this.heroGradient,
     this.typography = AppContentTypography.product,
   });
+
+  factory AppContentTheme.futureGate({
+    Color? accent,
+    Color? accentDark,
+    Color? accentSoft,
+    Color? secondary,
+    Gradient? heroGradient,
+    AppContentTypography typography = AppContentTypography.product,
+  }) {
+    final colors = AppColors.current;
+
+    return AppContentTheme(
+      accent: accent ?? colors.primary,
+      accentDark: accentDark ?? colors.primaryDeep,
+      accentSoft: accentSoft ?? colors.primarySoft,
+      secondary: secondary ?? colors.secondary,
+      background: colors.background,
+      surface: colors.surface,
+      surfaceMuted: colors.surfaceMuted,
+      border: colors.border,
+      textPrimary: colors.textPrimary,
+      textSecondary: colors.textSecondary,
+      textMuted: colors.textMuted,
+      success: colors.success,
+      warning: colors.warning,
+      error: colors.danger,
+      heroGradient:
+          heroGradient ?? colors.heroGradient(accent ?? colors.secondary),
+      typography: typography,
+    );
+  }
 
   TextStyle headline({
     double size = 26,

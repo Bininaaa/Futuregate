@@ -287,14 +287,14 @@ class _CvScreenState extends State<CvScreen> {
       actions: [
         IconButton(
           onPressed: _reload,
-          icon: const Icon(
+          icon: Icon(
             Icons.refresh_rounded,
             color: SettingsFlowPalette.textPrimary,
           ),
         ),
       ],
       child: cvProvider.isLoading
-          ? const Padding(
+          ? Padding(
               padding: EdgeInsets.only(top: 120),
               child: Center(
                 child: CircularProgressIndicator(
@@ -323,7 +323,7 @@ class _CvScreenState extends State<CvScreen> {
                               value: progress,
                               strokeWidth: 6,
                               backgroundColor: SettingsFlowPalette.border,
-                              valueColor: const AlwaysStoppedAnimation(
+                              valueColor: AlwaysStoppedAnimation(
                                 SettingsFlowPalette.primary,
                               ),
                               strokeCap: StrokeCap.round,
@@ -488,9 +488,7 @@ class _CvScreenState extends State<CvScreen> {
                 // ── Divider ──
                 Row(
                   children: [
-                    const Expanded(
-                      child: Divider(color: SettingsFlowPalette.border),
-                    ),
+                    Expanded(child: Divider(color: SettingsFlowPalette.border)),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
@@ -498,9 +496,7 @@ class _CvScreenState extends State<CvScreen> {
                         style: SettingsFlowTheme.caption(),
                       ),
                     ),
-                    const Expanded(
-                      child: Divider(color: SettingsFlowPalette.border),
-                    ),
+                    Expanded(child: Divider(color: SettingsFlowPalette.border)),
                   ],
                 ),
 
@@ -556,7 +552,7 @@ class _CvScreenState extends State<CvScreen> {
                             ),
                           ),
                         if (cv.hasUploadedCv && cv.hasExportedPdf)
-                          const Divider(
+                          Divider(
                             color: SettingsFlowPalette.border,
                             height: 24,
                           ),
@@ -628,7 +624,7 @@ class _FileRow extends StatelessWidget {
         const SizedBox(width: 10),
         Expanded(child: Text(label, style: SettingsFlowTheme.body())),
         if (isActive)
-          const Padding(
+          Padding(
             padding: EdgeInsets.only(right: 8),
             child: SettingsStatusPill(
               label: 'Active',
@@ -638,7 +634,7 @@ class _FileRow extends StatelessWidget {
         if (onView != null)
           GestureDetector(
             onTap: onView,
-            child: const Padding(
+            child: Padding(
               padding: EdgeInsets.all(6),
               child: Icon(
                 Icons.visibility_outlined,
@@ -650,7 +646,7 @@ class _FileRow extends StatelessWidget {
         if (onDownload != null)
           GestureDetector(
             onTap: onDownload,
-            child: const Padding(
+            child: Padding(
               padding: EdgeInsets.all(6),
               child: Icon(
                 Icons.download_outlined,

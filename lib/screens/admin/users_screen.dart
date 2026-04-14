@@ -90,7 +90,7 @@ class _UsersScreenState extends State<UsersScreen> {
     final isLevelFilterActive = provider.userLevelFilter != 'all';
 
     if (provider.usersLoading) {
-      return const Center(
+      return Center(
         child: CircularProgressIndicator(color: AdminPalette.primary),
       );
     }
@@ -207,7 +207,7 @@ class _UsersScreenState extends State<UsersScreen> {
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: [
-                      const AdminPill(
+                      AdminPill(
                         label: 'Level filters',
                         color: AdminPalette.info,
                         icon: Icons.school_outlined,
@@ -245,7 +245,7 @@ class _UsersScreenState extends State<UsersScreen> {
                       ),
                       const SizedBox(width: 4),
                       if (isLevelFilterActive) ...[
-                        const AdminPill(
+                        AdminPill(
                           label: 'Disabled while level filter is active',
                           color: AdminPalette.textMuted,
                           icon: Icons.info_outline_rounded,
@@ -410,7 +410,7 @@ class _UsersScreenState extends State<UsersScreen> {
                                         user.fullName,
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontWeight: FontWeight.w700,
                                           fontSize: 14.2,
                                           color: AdminPalette.textPrimary,
@@ -450,7 +450,7 @@ class _UsersScreenState extends State<UsersScreen> {
                                   user.email,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 11.5,
                                     color: AdminPalette.textMuted,
                                     fontWeight: FontWeight.w500,
@@ -1089,7 +1089,7 @@ class _UsersScreenState extends State<UsersScreen> {
                       ),
                       child: Text(
                         eyebrow,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w700,
                           color: AdminPalette.textMuted,
@@ -1101,7 +1101,7 @@ class _UsersScreenState extends State<UsersScreen> {
                 const SizedBox(height: 16),
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w700,
                     color: AdminPalette.textPrimary,
@@ -1110,7 +1110,7 @@ class _UsersScreenState extends State<UsersScreen> {
                 const SizedBox(height: 8),
                 Text(
                   message,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13,
                     height: 1.5,
                     color: AdminPalette.textSecondary,
@@ -1145,7 +1145,7 @@ class _UsersScreenState extends State<UsersScreen> {
                           children: [
                             Text(
                               targetHint,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w600,
                                 color: AdminPalette.textMuted,
@@ -1156,7 +1156,7 @@ class _UsersScreenState extends State<UsersScreen> {
                               targetLabel,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 13.5,
                                 fontWeight: FontWeight.w700,
                                 color: AdminPalette.textPrimary,
@@ -1237,7 +1237,7 @@ class _UsersScreenState extends State<UsersScreen> {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
                         color: AdminPalette.textPrimary,
@@ -1246,7 +1246,7 @@ class _UsersScreenState extends State<UsersScreen> {
                     const SizedBox(height: 4),
                     Text(
                       subtitle,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
                         color: AdminPalette.textMuted,
                         height: 1.45,
@@ -1529,7 +1529,7 @@ class _UsersScreenState extends State<UsersScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Moderation Actions',
             style: TextStyle(
               fontSize: 13.5,
@@ -1538,7 +1538,7 @@ class _UsersScreenState extends State<UsersScreen> {
             ),
           ),
           const SizedBox(height: 4),
-          const Text(
+          Text(
             'Update the company approval state from here without leaving the profile.',
             style: TextStyle(
               fontSize: 12,
@@ -1591,7 +1591,7 @@ class _UsersScreenState extends State<UsersScreen> {
       children: [
         Text(
           title,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w700,
             color: AdminPalette.textPrimary,
@@ -1600,7 +1600,7 @@ class _UsersScreenState extends State<UsersScreen> {
         const SizedBox(height: 8),
         Text(
           value,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 12.5,
             height: 1.5,
             color: AdminPalette.textSecondary,
@@ -1673,7 +1673,7 @@ class _UsersScreenState extends State<UsersScreen> {
             ]),
             if (!cv.isUploadedCvPdf) ...[
               const SizedBox(height: 10),
-              const Text(
+              Text(
                 'The uploaded file is not a valid PDF.',
                 style: TextStyle(
                   fontSize: 12,
@@ -1945,7 +1945,7 @@ class _UsersScreenState extends State<UsersScreen> {
               children: [
                 Text(
                   label,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 11.5,
                     color: AdminPalette.textMuted,
                     fontWeight: FontWeight.w600,

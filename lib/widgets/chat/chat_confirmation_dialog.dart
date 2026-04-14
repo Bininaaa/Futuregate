@@ -24,13 +24,13 @@ Future<bool?> showChatConfirmationDialog(
         child: Container(
           padding: const EdgeInsets.fromLTRB(24, 24, 24, 20),
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [Color(0xFFFFFFFF), Color(0xFFF8FAFF)],
+            gradient: LinearGradient(
+              colors: [ChatThemePalette.surface, ChatThemePalette.surfaceMuted],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             borderRadius: BorderRadius.circular(30),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.92)),
+            border: Border.all(color: ChatThemePalette.border),
             boxShadow: ChatThemeStyles.softShadow(0.12),
           ),
           child: Column(
@@ -103,17 +103,19 @@ class _DialogButton extends StatelessWidget {
   final String label;
   final VoidCallback onTap;
   final bool filled;
-  final Color accentColor;
+  final Color? accentColor;
 
   const _DialogButton({
     required this.label,
     required this.onTap,
     this.filled = false,
-    this.accentColor = ChatThemePalette.primary,
+    this.accentColor,
   });
 
   @override
   Widget build(BuildContext context) {
+    final resolvedAccentColor = accentColor ?? ChatThemePalette.primary;
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -122,10 +124,10 @@ class _DialogButton extends StatelessWidget {
         child: Ink(
           height: 52,
           decoration: BoxDecoration(
-            color: filled ? accentColor : Colors.white,
+            color: filled ? resolvedAccentColor : ChatThemePalette.surface,
             borderRadius: BorderRadius.circular(18),
             border: Border.all(
-              color: filled ? accentColor : ChatThemePalette.border,
+              color: filled ? resolvedAccentColor : ChatThemePalette.border,
             ),
             boxShadow: filled ? ChatThemeStyles.softShadow(0.06) : null,
           ),

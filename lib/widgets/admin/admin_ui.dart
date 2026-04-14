@@ -13,7 +13,7 @@ class AdminShellBackground extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DecoratedBox(
-      decoration: const BoxDecoration(gradient: AdminPalette.shellGradient),
+      decoration: BoxDecoration(gradient: AdminPalette.shellGradient),
       child: Stack(
         children: [
           Positioned(
@@ -151,7 +151,7 @@ class AdminHeroCard extends StatelessWidget {
   final String title;
   final String subtitle;
   final IconData icon;
-  final Color accentColor;
+  final Color? accentColor;
   final List<AdminHeroStat> stats;
   final List<Widget> actions;
 
@@ -160,7 +160,7 @@ class AdminHeroCard extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.icon,
-    this.accentColor = AdminPalette.secondary,
+    this.accentColor,
     this.stats = const [],
     this.actions = const [],
   });
@@ -169,7 +169,9 @@ class AdminHeroCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return AdminSurface(
       padding: const EdgeInsets.all(18),
-      gradient: AdminPalette.heroGradient(accentColor),
+      gradient: AdminPalette.heroGradient(
+        accentColor ?? AdminPalette.secondary,
+      ),
       border: Border.all(color: Colors.white.withValues(alpha: 0.14)),
       child: LayoutBuilder(
         builder: (context, constraints) {
@@ -364,7 +366,7 @@ class AdminSearchField extends StatelessWidget {
               ? null
               : IconButton(
                   onPressed: onClear,
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.close_rounded,
                     color: AdminPalette.textMuted,
                   ),
@@ -543,7 +545,7 @@ class AdminIconActionButton extends StatelessWidget {
   final String tooltip;
   final VoidCallback? onTap;
   final int badgeCount;
-  final Color color;
+  final Color? color;
 
   const AdminIconActionButton({
     super.key,
@@ -551,7 +553,7 @@ class AdminIconActionButton extends StatelessWidget {
     required this.tooltip,
     this.onTap,
     this.badgeCount = 0,
-    this.color = AdminPalette.textPrimary,
+    this.color,
   });
 
   @override
@@ -570,7 +572,7 @@ class AdminIconActionButton extends StatelessWidget {
             child: Stack(
               alignment: Alignment.center,
               children: [
-                Icon(icon, color: color, size: 22),
+                Icon(icon, color: color ?? AdminPalette.textPrimary, size: 22),
                 if (badgeCount > 0)
                   Positioned(
                     top: 8,

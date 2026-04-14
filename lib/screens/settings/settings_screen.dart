@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../config/app_metadata.dart';
 import '../../providers/auth_provider.dart';
+import '../../theme/theme_controller.dart';
 import '../company/profile_screen.dart';
 import '../notifications_screen.dart';
 import '../student/edit_profile_screen.dart';
@@ -38,7 +39,7 @@ class SettingsScreen extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                gradient: const LinearGradient(
+                gradient: LinearGradient(
                   colors: [
                     SettingsFlowPalette.primaryDark,
                     SettingsFlowPalette.primary,
@@ -115,6 +116,8 @@ class SettingsScreen extends StatelessWidget {
                 ],
               ),
             ),
+            const SizedBox(height: 18),
+            const _ThemeSettingsSection(),
             const SizedBox(height: 18),
             const SettingsSectionHeading(
               title: 'Workspace',
@@ -285,27 +288,22 @@ class SettingsScreen extends StatelessWidget {
           ),
           const SizedBox(height: 18),
           const SettingsSectionHeading(
+            title: 'Theme',
+            subtitle:
+                'Choose the visual mode that feels best for your workspace.',
+          ),
+          const SizedBox(height: 10),
+          const _ThemeSettingsPanel(),
+          const SizedBox(height: 18),
+          const SettingsSectionHeading(
             title: 'Experience',
             subtitle:
-                'Keep the page grounded in the current app behavior instead of introducing unsupported settings.',
+                'Keep notifications and language preferences close to your account.',
           ),
           const SizedBox(height: 10),
           SettingsPanel(
             child: Column(
               children: [
-                SettingsListRow(
-                  icon: Icons.palette_outlined,
-                  iconColor: SettingsFlowPalette.primary,
-                  title: 'Appearance / Theme',
-                  subtitle: 'Light visual system',
-                  onTap: () => _showInfoSheet(
-                    context,
-                    title: 'Appearance / Theme',
-                    message:
-                        'This build currently uses a light visual system across the app. A global theme switch has not been wired yet.',
-                  ),
-                ),
-                const SizedBox(height: 10),
                 SettingsListRow(
                   icon: Icons.language_rounded,
                   iconColor: SettingsFlowPalette.secondary,
@@ -464,6 +462,141 @@ class _HeroOrb extends StatelessWidget {
       width: size,
       height: size,
       decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+    );
+  }
+}
+
+class _ThemeSettingsSection extends StatelessWidget {
+  const _ThemeSettingsSection();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SettingsSectionHeading(
+          title: 'Theme',
+          subtitle:
+              'Match your device, keep things light, or switch into FutureGate dark mode.',
+        ),
+        SizedBox(height: 10),
+        _ThemeSettingsPanel(),
+      ],
+    );
+  }
+}
+
+class _ThemeSettingsPanel extends StatelessWidget {
+  const _ThemeSettingsPanel();
+
+  @override
+  Widget build(BuildContext context) {
+    final controller = context.watch<ThemeController>();
+
+    return SettingsPanel(
+      padding: const EdgeInsets.all(10),
+      child: Column(
+        children: [
+          for (final option in AppThemePreference.values) ...[
+            _ThemeOptionTile(
+              option: option,
+              selected: controller.preference == option,
+              onTap: () {
+                controller.setPreference(option);
+              },
+            ),
+            if (option != AppThemePreference.values.last)
+              const SizedBox(height: 8),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _ThemeOptionTile extends StatelessWidget {
+  final AppThemePreference option;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _ThemeOptionTile({
+    required this.option,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = switch (option) {
+      AppThemePreference.system => SettingsFlowPalette.secondary,
+      AppThemePreference.light => SettingsFlowPalette.accent,
+      AppThemePreference.dark => SettingsFlowPalette.primary,
+    };
+    final icon = switch (option) {
+      AppThemePreference.system => Icons.brightness_auto_rounded,
+      AppThemePreference.light => Icons.light_mode_outlined,
+      AppThemePreference.dark => Icons.dark_mode_outlined,
+    };
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: SettingsFlowTheme.radius(18),
+      child: Ink(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
+        decoration: BoxDecoration(
+          color: selected
+              ? accent.withValues(alpha: 0.13)
+              : SettingsFlowPalette.surface,
+          borderRadius: SettingsFlowTheme.radius(18),
+          border: Border.all(
+            color: selected
+                ? accent.withValues(alpha: 0.30)
+                : SettingsFlowPalette.border,
+          ),
+        ),
+        child: Row(
+          children: [
+            SettingsIconBox(icon: icon, color: accent),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    option.title,
+                    style: SettingsFlowTheme.cardTitle(
+                      selected ? accent : SettingsFlowPalette.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(option.subtitle, style: SettingsFlowTheme.caption()),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 180),
+              width: 24,
+              height: 24,
+              decoration: BoxDecoration(
+                color: selected ? accent : Colors.transparent,
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: selected ? accent : SettingsFlowPalette.border,
+                  width: 1.6,
+                ),
+              ),
+              child: selected
+                  ? const Icon(
+                      Icons.check_rounded,
+                      color: Colors.white,
+                      size: 16,
+                    )
+                  : null,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

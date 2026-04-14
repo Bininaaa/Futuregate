@@ -10,6 +10,7 @@ import '../../providers/cv_provider.dart';
 import '../../providers/opportunity_provider.dart';
 import '../../providers/saved_opportunity_provider.dart';
 import '../../services/application_service.dart';
+import '../../theme/app_colors.dart';
 import '../../utils/application_status.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
 import '../../utils/opportunity_metadata.dart';
@@ -44,17 +45,17 @@ enum _SponsoredViewMode { grid, list }
 class _SponsoredPalette {
   const _SponsoredPalette._();
 
-  static const Color accent = OpportunityDashboardPalette.accent;
-  static const Color accentDark = Color(0xFFEA580C);
-  static const Color accentSurface = Color(0xFFFFF7ED);
-  static const Color accentBorder = Color(0xFFFED7AA);
-  static const Color heroMid = Color(0xFFEA580C);
-  static const Color heroEnd = Color(0xFFF59E0B);
-  static const Color surface = OpportunityDashboardPalette.surface;
-  static const Color surfaceMuted = Color(0xFFFFFBF7);
-  static const Color border = OpportunityDashboardPalette.border;
-  static const Color textPrimary = OpportunityDashboardPalette.textPrimary;
-  static const Color textSecondary = OpportunityDashboardPalette.textSecondary;
+  static Color get accent => OpportunityDashboardPalette.accent;
+  static Color get accentDark => AppColors.current.warning;
+  static Color get accentSurface => AppColors.current.warningSoft;
+  static Color get accentBorder => AppColors.current.warning;
+  static Color get heroMid => AppColors.current.warning;
+  static Color get heroEnd => OpportunityDashboardPalette.accent;
+  static Color get surface => OpportunityDashboardPalette.surface;
+  static Color get surfaceMuted => AppColors.current.surfaceMuted;
+  static Color get border => OpportunityDashboardPalette.border;
+  static Color get textPrimary => OpportunityDashboardPalette.textPrimary;
+  static Color get textSecondary => OpportunityDashboardPalette.textSecondary;
 }
 
 class _SponsoredOpportunitiesScreenState
@@ -781,35 +782,35 @@ class _SponsoredOpportunitiesScreenState
 
   _SponsoredVisualTheme _themeFor(Set<_SponsoredFilter> filters) {
     if (filters.contains(_SponsoredFilter.startup)) {
-      return const _SponsoredVisualTheme(
+      return _SponsoredVisualTheme(
         icon: Icons.rocket_launch_rounded,
         backgroundColor: Color(0xFFEDE9FE),
         foregroundColor: OpportunityDashboardPalette.primary,
       );
     }
     if (filters.contains(_SponsoredFilter.competition)) {
-      return const _SponsoredVisualTheme(
+      return _SponsoredVisualTheme(
         icon: Icons.emoji_events_rounded,
         backgroundColor: Color(0xFFFFEDD5),
         foregroundColor: _SponsoredPalette.accent,
       );
     }
     if (filters.contains(_SponsoredFilter.grants)) {
-      return const _SponsoredVisualTheme(
+      return _SponsoredVisualTheme(
         icon: Icons.workspace_premium_rounded,
         backgroundColor: Color(0xFFFEF3C7),
         foregroundColor: OpportunityDashboardPalette.warning,
       );
     }
     if (filters.contains(_SponsoredFilter.internships)) {
-      return const _SponsoredVisualTheme(
+      return _SponsoredVisualTheme(
         icon: Icons.school_rounded,
         backgroundColor: Color(0xFFDBEAFE),
         foregroundColor: OpportunityDashboardPalette.primaryDark,
       );
     }
 
-    return const _SponsoredVisualTheme(
+    return _SponsoredVisualTheme(
       icon: Icons.volunteer_activism_rounded,
       backgroundColor: Color(0xFFCCFBF1),
       foregroundColor: OpportunityDashboardPalette.secondary,
@@ -891,7 +892,7 @@ class _SponsoredOpportunitiesScreenState
               accentColor: _SponsoredPalette.accent,
             ),
             if (opportunityProvider.isLoading && allOpportunities.isNotEmpty)
-              const LinearProgressIndicator(
+              LinearProgressIndicator(
                 minHeight: 2,
                 color: _SponsoredPalette.accent,
               ),
@@ -905,7 +906,7 @@ class _SponsoredOpportunitiesScreenState
                         physics: const BouncingScrollPhysics(
                           parent: AlwaysScrollableScrollPhysics(),
                         ),
-                        children: const [
+                        children: [
                           SizedBox(
                             height: 420,
                             child: Center(
@@ -1309,7 +1310,7 @@ class _SponsoredFilterChip extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 9),
           decoration: BoxDecoration(
             gradient: isActive
-                ? const LinearGradient(
+                ? LinearGradient(
                     colors: [
                       _SponsoredPalette.heroMid,
                       _SponsoredPalette.heroEnd,
@@ -1451,7 +1452,7 @@ class _ToggleIcon extends StatelessWidget {
         height: 30,
         decoration: BoxDecoration(
           gradient: isActive
-              ? const LinearGradient(
+              ? LinearGradient(
                   colors: [
                     _SponsoredPalette.heroMid,
                     _SponsoredPalette.heroEnd,
@@ -1534,7 +1535,7 @@ class _FeaturedSponsoredCard extends StatelessWidget {
               Container(
                 height: 6,
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
+                  gradient: LinearGradient(
                     colors: [_SponsoredPalette.accent, Color(0xFFFBBF24)],
                   ),
                   borderRadius: BorderRadius.vertical(
@@ -1742,10 +1743,13 @@ class _SponsoredGridCard extends StatelessWidget {
         borderRadius: radius,
         child: Ink(
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
+            gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [Colors.white, _SponsoredPalette.surfaceMuted],
+              colors: [
+                _SponsoredPalette.surface,
+                _SponsoredPalette.surfaceMuted,
+              ],
             ),
             borderRadius: radius,
             border: Border.all(color: item.badgeColor.withValues(alpha: 0.18)),
@@ -2432,7 +2436,7 @@ class _BookmarkButton extends StatelessWidget {
                     height: 14,
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
-                      valueColor: const AlwaysStoppedAnimation<Color>(
+                      valueColor: AlwaysStoppedAnimation<Color>(
                         _SponsoredPalette.accent,
                       ),
                     ),
@@ -2478,7 +2482,7 @@ class _SponsoredEmptyState extends StatelessWidget {
               color: _SponsoredPalette.accentSurface,
               borderRadius: BorderRadius.circular(16),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.campaign_outlined,
               color: _SponsoredPalette.accent,
               size: 26,

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
 import '../providers/auth_provider.dart';
+import '../theme/app_colors.dart';
 import '../widgets/shared/app_logo.dart';
 import 'post_launch_gate_screen.dart';
 
@@ -52,14 +53,16 @@ class _LaunchScreenState extends State<LaunchScreen>
 
   void _initVideo() {
     _videoController = VideoPlayerController.asset(AppBrandAssets.animation)
-      ..initialize().then((_) {
-        if (!mounted) return;
-        setState(() => _videoReady = true);
-        _videoController.play();
-      }).catchError((_) {
-        // Video failed — navigate after a short fallback delay.
-        Future.delayed(const Duration(seconds: 1), _navigateToApp);
-      });
+      ..initialize()
+          .then((_) {
+            if (!mounted) return;
+            setState(() => _videoReady = true);
+            _videoController.play();
+          })
+          .catchError((_) {
+            // Video failed — navigate after a short fallback delay.
+            Future.delayed(const Duration(seconds: 1), _navigateToApp);
+          });
 
     _videoController.addListener(_onVideoProgress);
   }
@@ -115,9 +118,8 @@ class _LaunchScreenState extends State<LaunchScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Black background during load so any brief flash before the video
-      // starts matches the video's typical edge colour.
-      backgroundColor: Colors.black,
+      // Use the brand launch color during the brief gap before the video starts.
+      backgroundColor: AppColors.of(context).splashBackground,
       body: FadeTransition(
         opacity: ReverseAnimation(_fadeController),
         child: _buildContent(),

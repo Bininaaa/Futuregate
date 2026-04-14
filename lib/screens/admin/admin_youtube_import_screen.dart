@@ -488,7 +488,7 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
 
   Widget _buildSearchResults() {
     if (_isSearching && _results.isEmpty) {
-      return const SliverFillRemaining(
+      return SliverFillRemaining(
         hasScrollBody: false,
         child: Center(
           child: CircularProgressIndicator(color: AdminPalette.primary),
@@ -560,7 +560,7 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
         .toList();
 
     if (provider.isLoading && videos.isEmpty) {
-      return const Center(
+      return Center(
         child: CircularProgressIndicator(color: AdminPalette.primary),
       );
     }
@@ -673,7 +673,7 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
               children: [
                 Text(
                   video.title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
                     color: AdminPalette.textPrimary,
@@ -697,8 +697,8 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
                   spacing: 8,
                   runSpacing: 8,
                   children: [
-                    const AdminPill(label: 'VIDEO', color: AdminPalette.danger),
-                    const AdminPill(
+                    AdminPill(label: 'VIDEO', color: AdminPalette.danger),
+                    AdminPill(
                       label: 'YouTube',
                       color: AdminPalette.textPrimary,
                     ),
@@ -852,7 +852,7 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
           title: const Text('Import YouTube Videos'),
           backgroundColor: Colors.white,
           foregroundColor: AdminPalette.textPrimary,
-          bottom: const TabBar(
+          bottom: TabBar(
             labelColor: AdminPalette.primary,
             indicatorColor: AdminPalette.primary,
             tabs: [

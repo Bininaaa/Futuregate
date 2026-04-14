@@ -866,7 +866,7 @@ class _SavedCompactSummary extends StatelessWidget {
                   ),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.bookmarks_outlined,
                   color: StudentOpportunityHubPalette.primary,
                   size: 18,
@@ -1141,7 +1141,7 @@ class _SavedOpportunityCard extends StatelessWidget {
             tone: accent,
           ),
         if (isClosingSoon && !isExpired)
-          const _SavedMetaChip(
+          _SavedMetaChip(
             icon: Icons.local_fire_department_outlined,
             label: 'Closing soon',
             tone: StudentOpportunityHubPalette.accent,
@@ -1613,31 +1613,28 @@ class _SavedCardFrame extends StatelessWidget {
 
 class _SavedLabelChip extends StatelessWidget {
   final String label;
-  final Color tone;
+  final Color? tone;
   final bool filled;
 
-  const _SavedLabelChip({
-    required this.label,
-    this.tone = StudentOpportunityHubPalette.textMuted,
-    this.filled = false,
-  });
+  const _SavedLabelChip({required this.label, this.tone, this.filled = false});
 
   @override
   Widget build(BuildContext context) {
     final maxLabelWidth = (MediaQuery.sizeOf(context).width - 158)
         .clamp(72.0, 132.0)
         .toDouble();
+    final resolvedTone = tone ?? StudentOpportunityHubPalette.textMuted;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
       decoration: BoxDecoration(
         color: filled
-            ? tone.withValues(alpha: 0.10)
-            : Colors.white.withValues(alpha: 0.82),
+            ? resolvedTone.withValues(alpha: 0.10)
+            : StudentOpportunityHubPalette.surface.withValues(alpha: 0.82),
         borderRadius: BorderRadius.circular(999),
         border: Border.all(
           color: filled
-              ? tone.withValues(alpha: 0.18)
+              ? resolvedTone.withValues(alpha: 0.18)
               : StudentOpportunityHubPalette.border.withValues(alpha: 0.92),
         ),
       ),
@@ -1654,7 +1651,7 @@ class _SavedLabelChip extends StatelessWidget {
                 fontSize: 10.4,
                 fontWeight: FontWeight.w600,
                 color: filled
-                    ? tone
+                    ? resolvedTone
                     : StudentOpportunityHubPalette.textSecondary,
               ),
             ),
@@ -1787,14 +1784,14 @@ class _InlineBanner extends StatelessWidget {
 }
 
 abstract final class _SavedCardText {
-  static final TextStyle title = GoogleFonts.poppins(
+  static TextStyle get title => GoogleFonts.poppins(
     fontSize: 16,
     height: 1.18,
     fontWeight: FontWeight.w700,
     color: StudentOpportunityHubPalette.textPrimary,
   );
 
-  static final TextStyle subtitle = GoogleFonts.poppins(
+  static TextStyle get subtitle => GoogleFonts.poppins(
     fontSize: 12.4,
     fontWeight: FontWeight.w600,
     color: StudentOpportunityHubPalette.textSecondary,

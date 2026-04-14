@@ -8,6 +8,7 @@ import '../../providers/application_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/opportunity_provider.dart';
 import '../../providers/saved_opportunity_provider.dart';
+import '../../theme/app_colors.dart';
 import '../../utils/application_status.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
 import '../../utils/opportunity_metadata.dart';
@@ -30,13 +31,13 @@ class JobsScreen extends StatefulWidget {
 enum _JobsViewMode { grid, list }
 
 class _JobsScreenState extends State<JobsScreen> {
-  static const List<JobCategoryData> _categories = [
+  List<JobCategoryData> get _categories => [
     JobCategoryData(
       key: 'tech',
       label: 'Tech',
       icon: Icons.code_rounded,
       accentColor: OpportunityDashboardPalette.primary,
-      surfaceTint: Color(0xFFEDE9FE),
+      surfaceTint: AppColors.current.primarySoft,
       keywords: [
         'tech',
         'software',
@@ -71,7 +72,7 @@ class _JobsScreenState extends State<JobsScreen> {
       label: 'Design',
       icon: Icons.brush_rounded,
       accentColor: OpportunityDashboardPalette.primaryDark,
-      surfaceTint: Color(0xFFDBEAFE),
+      surfaceTint: AppColors.current.infoSoft,
       keywords: [
         'design',
         'designer',
@@ -91,7 +92,7 @@ class _JobsScreenState extends State<JobsScreen> {
       label: 'Business',
       icon: Icons.business_center_rounded,
       accentColor: OpportunityDashboardPalette.secondary,
-      surfaceTint: Color(0xFFCCFBF1),
+      surfaceTint: AppColors.current.secondarySoft,
       keywords: [
         'business',
         'operations',
@@ -112,7 +113,7 @@ class _JobsScreenState extends State<JobsScreen> {
       label: 'Marketing',
       icon: Icons.campaign_rounded,
       accentColor: OpportunityDashboardPalette.accent,
-      surfaceTint: Color(0xFFFFEDD5),
+      surfaceTint: AppColors.current.accentSoft,
       keywords: [
         'marketing',
         'growth',
@@ -131,7 +132,7 @@ class _JobsScreenState extends State<JobsScreen> {
       label: 'Legal',
       icon: Icons.gavel_rounded,
       accentColor: OpportunityDashboardPalette.warning,
-      surfaceTint: Color(0xFFFEF3C7),
+      surfaceTint: AppColors.current.warningSoft,
       keywords: [
         'legal',
         'law',
@@ -1667,7 +1668,7 @@ class _AvailableRoleListMetaItem extends StatelessWidget {
 }
 
 FeaturedJobVariantStyle featuredStyleFor(int index) {
-  const styles = <FeaturedJobVariantStyle>[
+  final styles = <FeaturedJobVariantStyle>[
     FeaturedJobVariantStyle(
       decorationVariant: FeaturedDecorationVariant.heroBloom,
       gradientColors: [
@@ -2905,7 +2906,7 @@ class _AvailableRolePalette {
 }
 
 _AvailableRolePalette _availableRolePaletteFor(String uniqueKey) {
-  const palettes = <_AvailableRolePalette>[
+  final palettes = <_AvailableRolePalette>[
     _AvailableRolePalette(
       gradientColors: [Color(0xFFF8F4FF), Color(0xFFF1ECFF), Color(0xFFE9E2FF)],
       gradientBegin: Alignment.topLeft,
