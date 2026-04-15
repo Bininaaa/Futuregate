@@ -52,10 +52,13 @@ class _SponsoredPalette {
   static Color get heroMid => AppColors.current.warning;
   static Color get heroEnd => OpportunityDashboardPalette.accent;
   static Color get surface => OpportunityDashboardPalette.surface;
+  static Color get surfaceElevated => AppColors.current.surfaceElevated;
   static Color get surfaceMuted => AppColors.current.surfaceMuted;
   static Color get border => OpportunityDashboardPalette.border;
   static Color get textPrimary => OpportunityDashboardPalette.textPrimary;
   static Color get textSecondary => OpportunityDashboardPalette.textSecondary;
+  static Color get shadow => AppColors.current.shadow;
+  static bool get isDark => AppColors.isDark;
 }
 
 class _SponsoredOpportunitiesScreenState
@@ -711,11 +714,11 @@ class _SponsoredOpportunitiesScreenState
       case 'Closing soon':
         return OpportunityDashboardPalette.error;
       case 'Fully funded':
-        return const Color(0xFFC2410C);
+        return OpportunityDashboardPalette.warning;
       case 'Limited':
         return _SponsoredPalette.accent;
       default:
-        return const Color(0xFF0F766E);
+        return OpportunityDashboardPalette.secondary;
     }
   }
 
@@ -759,7 +762,7 @@ class _SponsoredOpportunitiesScreenState
     }
 
     if (daysUntilDeadline <= 7) {
-      return const Color(0xFFEA580C);
+      return OpportunityDashboardPalette.warning;
     }
 
     return _SponsoredPalette.accent;
@@ -784,35 +787,35 @@ class _SponsoredOpportunitiesScreenState
     if (filters.contains(_SponsoredFilter.startup)) {
       return _SponsoredVisualTheme(
         icon: Icons.rocket_launch_rounded,
-        backgroundColor: Color(0xFFEDE9FE),
+        backgroundColor: AppColors.current.primarySoft,
         foregroundColor: OpportunityDashboardPalette.primary,
       );
     }
     if (filters.contains(_SponsoredFilter.competition)) {
       return _SponsoredVisualTheme(
         icon: Icons.emoji_events_rounded,
-        backgroundColor: Color(0xFFFFEDD5),
+        backgroundColor: _SponsoredPalette.accentSurface,
         foregroundColor: _SponsoredPalette.accent,
       );
     }
     if (filters.contains(_SponsoredFilter.grants)) {
       return _SponsoredVisualTheme(
         icon: Icons.workspace_premium_rounded,
-        backgroundColor: Color(0xFFFEF3C7),
+        backgroundColor: _SponsoredPalette.accentSurface,
         foregroundColor: OpportunityDashboardPalette.warning,
       );
     }
     if (filters.contains(_SponsoredFilter.internships)) {
       return _SponsoredVisualTheme(
         icon: Icons.school_rounded,
-        backgroundColor: Color(0xFFDBEAFE),
+        backgroundColor: AppColors.current.infoSoft,
         foregroundColor: OpportunityDashboardPalette.primaryDark,
       );
     }
 
     return _SponsoredVisualTheme(
       icon: Icons.volunteer_activism_rounded,
-      backgroundColor: Color(0xFFCCFBF1),
+      backgroundColor: AppColors.current.secondarySoft,
       foregroundColor: OpportunityDashboardPalette.secondary,
     );
   }
@@ -1267,7 +1270,7 @@ class _SponsoredSearchBar extends StatelessWidget {
                 color: OpportunityDashboardPalette.textSecondary,
               ),
         filled: true,
-        fillColor: const Color(0xFFEEF2FF),
+        fillColor: _SponsoredPalette.surfaceMuted,
         contentPadding: EdgeInsets.symmetric(
           horizontal: compact ? 14 : 18,
           vertical: compact ? 12 : 18,
@@ -1317,7 +1320,11 @@ class _SponsoredFilterChip extends StatelessWidget {
                     ],
                   )
                 : null,
-            color: isActive ? null : Colors.white.withValues(alpha: 0.86),
+            color: isActive
+                ? null
+                : _SponsoredPalette.surface.withValues(
+                    alpha: _SponsoredPalette.isDark ? 0.96 : 0.86,
+                  ),
             borderRadius: BorderRadius.circular(999),
             border: Border.all(
               color: isActive ? Colors.transparent : _SponsoredPalette.border,
@@ -1406,7 +1413,9 @@ class _SponsoredViewToggle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.88),
+        color: _SponsoredPalette.surface.withValues(
+          alpha: _SponsoredPalette.isDark ? 0.96 : 0.88,
+        ),
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: _SponsoredPalette.accentBorder),
       ),
@@ -1523,7 +1532,9 @@ class _FeaturedSponsoredCard extends StatelessWidget {
             border: Border.all(color: _SponsoredPalette.border),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.04),
+                color: _SponsoredPalette.shadow.withValues(
+                  alpha: _SponsoredPalette.isDark ? 0.26 : 0.04,
+                ),
                 blurRadius: 12,
                 offset: const Offset(0, 4),
               ),
@@ -1954,7 +1965,7 @@ class _SponsoredGridCard extends StatelessWidget {
                             icon: Icons.timelapse_rounded,
                             label: item.duration!,
                             foregroundColor: _SponsoredPalette.textPrimary,
-                            backgroundColor: Colors.white,
+                            backgroundColor: _SponsoredPalette.surfaceElevated,
                             borderColor: _SponsoredPalette.border,
                           ),
                         if (item.locationLabel != null)
@@ -1962,7 +1973,7 @@ class _SponsoredGridCard extends StatelessWidget {
                             icon: Icons.place_outlined,
                             label: item.locationLabel!,
                             foregroundColor: _SponsoredPalette.textPrimary,
-                            backgroundColor: Colors.white,
+                            backgroundColor: _SponsoredPalette.surfaceElevated,
                             borderColor: _SponsoredPalette.border,
                           ),
                         if (item.urgencyText != null)
@@ -2056,7 +2067,9 @@ class _SponsoredListTile extends StatelessWidget {
             border: Border.all(color: _SponsoredPalette.border),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.04),
+                color: _SponsoredPalette.shadow.withValues(
+                  alpha: _SponsoredPalette.isDark ? 0.26 : 0.04,
+                ),
                 blurRadius: 14,
                 offset: const Offset(0, 6),
               ),
@@ -2421,7 +2434,7 @@ class _BookmarkButton extends StatelessWidget {
           decoration: BoxDecoration(
             color: isSaved
                 ? _SponsoredPalette.accentSurface
-                : const Color(0xFFF1F5F9),
+                : _SponsoredPalette.surfaceMuted,
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
               color: isSaved

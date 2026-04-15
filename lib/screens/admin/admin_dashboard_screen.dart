@@ -383,7 +383,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           backgroundColor: AdminPalette.background,
           appBar: AppBar(
             title: const Text('Resource Library'),
-            backgroundColor: Colors.white,
+            backgroundColor: AdminPalette.surface,
             foregroundColor: AdminPalette.textPrimary,
           ),
           body: const SafeArea(child: AdminLibraryScreen()),
@@ -405,7 +405,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           backgroundColor: AdminPalette.background,
           appBar: AppBar(
             title: const Text('User Management'),
-            backgroundColor: Colors.white,
+            backgroundColor: AdminPalette.surface,
             foregroundColor: AdminPalette.textPrimary,
           ),
           body: const SafeArea(child: UsersScreen()),

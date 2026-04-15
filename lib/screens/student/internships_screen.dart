@@ -8,6 +8,7 @@ import '../../providers/application_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/opportunity_provider.dart';
 import '../../providers/saved_opportunity_provider.dart';
+import '../../theme/app_colors.dart';
 import '../../utils/application_status.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
 import '../../utils/opportunity_metadata.dart';
@@ -1007,7 +1008,7 @@ class _InternshipSearchBar extends StatelessWidget {
                 ),
               ),
         filled: true,
-        fillColor: const Color(0xFFEAF8F4),
+        fillColor: AppColors.current.secondarySoft,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
           vertical: 14,
@@ -1061,7 +1062,7 @@ class _InternshipFilterChipRow extends StatelessWidget {
               decoration: BoxDecoration(
                 color: isActive
                     ? _InternshipVisualPalette.mint
-                    : const Color(0xFFF1F5F9),
+                    : OpportunityDashboardPalette.surface,
                 borderRadius: BorderRadius.circular(999),
                 border: Border.all(
                   color: isActive
@@ -1130,7 +1131,7 @@ class _InternshipSectionHeader extends StatelessWidget {
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF1F5F9),
+                    color: OpportunityDashboardPalette.surface,
                     borderRadius: BorderRadius.circular(999),
                     border: Border.all(
                       color: OpportunityDashboardPalette.border,
@@ -1312,7 +1313,26 @@ _InternshipFeaturedVariantStyle _featuredInternshipStyleFor(int index) {
     ),
   ];
 
-  return styles[index % styles.length];
+  final style = styles[index % styles.length];
+  if (!AppColors.isDark) {
+    return style;
+  }
+
+  final colors = AppColors.current;
+  return _InternshipFeaturedVariantStyle(
+    decorationVariant: style.decorationVariant,
+    gradientColors: style.gradientColors,
+    gradientBegin: style.gradientBegin,
+    gradientEnd: style.gradientEnd,
+    accentColor: style.accentColor,
+    glowColor: style.glowColor,
+    logoSurface: colors.surfaceElevated,
+    logoForeground: style.logoForeground,
+    badgeBackground: style.badgeBackground,
+    badgeBorderColor: style.badgeBorderColor,
+    buttonGradientColors: [colors.surfaceElevated, colors.secondarySoft],
+    buttonTextColor: colors.secondary,
+  );
 }
 
 class _ApplyThisWeekSection extends StatelessWidget {
@@ -1934,7 +1954,10 @@ class _InternshipFeaturedCtaButton extends StatelessWidget {
     final resolvedTextColor = accentColor ?? textColor;
     final resolvedBackgroundColors = accentColor == null
         ? backgroundColors
-        : [Colors.white, Colors.white];
+        : [
+            AppColors.isDark ? AppColors.current.surfaceElevated : Colors.white,
+            AppColors.isDark ? AppColors.current.surfaceElevated : Colors.white,
+          ];
     final resolvedBorderColor =
         accentColor?.withValues(alpha: 0.52) ??
         Colors.white.withValues(alpha: 0.58);
@@ -2031,6 +2054,98 @@ class _AvailableInternshipPalette {
 }
 
 _AvailableInternshipPalette _availableInternshipPaletteFor(String uniqueKey) {
+  final colors = AppColors.current;
+
+  if (colors.isDarkMode) {
+    final darkPalettes = <_AvailableInternshipPalette>[
+      _AvailableInternshipPalette(
+        gradientColors: [
+          Color.alphaBlend(
+            _InternshipVisualPalette.deepTeal.withValues(alpha: 0.10),
+            colors.surfaceElevated,
+          ),
+          Color.alphaBlend(
+            _InternshipVisualPalette.mint.withValues(alpha: 0.08),
+            colors.surfaceMuted,
+          ),
+          colors.surface,
+        ],
+        gradientBegin: Alignment.topLeft,
+        gradientEnd: Alignment.bottomRight,
+        accentColor: _InternshipVisualPalette.deepTeal,
+        borderColor: colors.border,
+        surfaceTint: Color.alphaBlend(
+          _InternshipVisualPalette.mint.withValues(alpha: 0.14),
+          colors.surfaceMuted,
+        ),
+        glowColor: _InternshipVisualPalette.glowMint,
+        decorationStyle: _AvailableInternshipDecorationStyle.cornerBloom,
+      ),
+      _AvailableInternshipPalette(
+        gradientColors: [
+          Color.alphaBlend(
+            _InternshipVisualPalette.oceanTeal.withValues(alpha: 0.12),
+            colors.surfaceElevated,
+          ),
+          colors.surfaceMuted,
+          colors.surface,
+        ],
+        gradientBegin: Alignment.topCenter,
+        gradientEnd: Alignment.bottomRight,
+        accentColor: _InternshipVisualPalette.oceanTeal,
+        borderColor: colors.border,
+        surfaceTint: Color.alphaBlend(
+          _InternshipVisualPalette.oceanTeal.withValues(alpha: 0.14),
+          colors.surfaceMuted,
+        ),
+        glowColor: _InternshipVisualPalette.oceanTeal,
+        decorationStyle: _AvailableInternshipDecorationStyle.topMist,
+      ),
+      _AvailableInternshipPalette(
+        gradientColors: [
+          colors.surfaceElevated,
+          Color.alphaBlend(
+            _InternshipVisualPalette.deepTeal.withValues(alpha: 0.10),
+            colors.surfaceMuted,
+          ),
+          colors.surface,
+        ],
+        gradientBegin: Alignment.topLeft,
+        gradientEnd: Alignment.bottomCenter,
+        accentColor: _InternshipVisualPalette.deepTeal,
+        borderColor: colors.border,
+        surfaceTint: Color.alphaBlend(
+          _InternshipVisualPalette.deepTeal.withValues(alpha: 0.12),
+          colors.surfaceMuted,
+        ),
+        glowColor: _InternshipVisualPalette.glowMint,
+        decorationStyle: _AvailableInternshipDecorationStyle.dotMatrix,
+      ),
+      _AvailableInternshipPalette(
+        gradientColors: [
+          colors.surfaceMuted,
+          Color.alphaBlend(
+            _InternshipVisualPalette.mint.withValues(alpha: 0.09),
+            colors.surfaceElevated,
+          ),
+          colors.surface,
+        ],
+        gradientBegin: Alignment.topRight,
+        gradientEnd: Alignment.bottomLeft,
+        accentColor: _InternshipVisualPalette.deepTeal,
+        borderColor: colors.border,
+        surfaceTint: Color.alphaBlend(
+          _InternshipVisualPalette.mint.withValues(alpha: 0.12),
+          colors.surfaceMuted,
+        ),
+        glowColor: _InternshipVisualPalette.glowMint,
+        decorationStyle: _AvailableInternshipDecorationStyle.ribbonLoop,
+      ),
+    ];
+
+    return darkPalettes[uniqueKey.hashCode.abs() % darkPalettes.length];
+  }
+
   final palettes = <_AvailableInternshipPalette>[
     _AvailableInternshipPalette(
       gradientColors: [Color(0xFFF3FCF9), Color(0xFFEAF8F4), Color(0xFFDEF4EE)],
@@ -2282,7 +2397,11 @@ class _AvailableInternshipCard extends StatelessWidget {
                                 decoration: BoxDecoration(
                                   gradient: LinearGradient(
                                     colors: [
-                                      Colors.white.withValues(alpha: 0.94),
+                                      AppColors.isDark
+                                          ? AppColors.current.surfaceElevated
+                                          : Colors.white.withValues(
+                                              alpha: 0.94,
+                                            ),
                                       palette.surfaceTint,
                                     ],
                                     begin: Alignment.topLeft,
@@ -2355,8 +2474,9 @@ class _AvailableInternshipCard extends StatelessWidget {
                                 activeBackgroundColor: palette.accentColor,
                                 activeBorderColor: palette.accentColor,
                                 inactiveColor: palette.accentColor,
-                                inactiveBackgroundColor: Colors.white
-                                    .withValues(alpha: 0.82),
+                                inactiveBackgroundColor: AppColors.isDark
+                                    ? AppColors.current.surfaceMuted
+                                    : Colors.white.withValues(alpha: 0.82),
                                 inactiveBorderColor: palette.accentColor
                                     .withValues(alpha: 0.10),
                               ),
@@ -2551,15 +2671,17 @@ class _AvailableInternshipListTile extends StatelessWidget {
             (item.duration?.trim().toUpperCase() ?? '');
     final topSurface = Color.alphaBlend(
       palette.surfaceTint.withValues(alpha: 0.24),
-      const Color(0xFFFCFFFE),
+      AppColors.isDark
+          ? AppColors.current.surfaceElevated
+          : const Color(0xFFFCFFFE),
     );
     final bottomSurface = Color.alphaBlend(
       palette.surfaceTint.withValues(alpha: 0.34),
-      const Color(0xFFF1FBF8),
+      AppColors.isDark ? AppColors.current.surface : const Color(0xFFF1FBF8),
     );
     final iconSurface = Color.alphaBlend(
       palette.surfaceTint.withValues(alpha: 0.48),
-      Colors.white,
+      AppColors.isDark ? AppColors.current.surfaceElevated : Colors.white,
     );
     final metadataItems = <Widget>[
       if (compensationLabel?.trim().isNotEmpty ?? false)
@@ -2761,9 +2883,9 @@ class _AvailableInternshipListTile extends StatelessWidget {
                             activeBackgroundColor: palette.accentColor,
                             activeBorderColor: palette.accentColor,
                             inactiveColor: palette.accentColor,
-                            inactiveBackgroundColor: Colors.white.withValues(
-                              alpha: 0.82,
-                            ),
+                            inactiveBackgroundColor: AppColors.isDark
+                                ? AppColors.current.surfaceMuted
+                                : Colors.white.withValues(alpha: 0.82),
                             inactiveBorderColor: palette.accentColor.withValues(
                               alpha: 0.10,
                             ),
@@ -2854,7 +2976,7 @@ class _InternshipViewToggle extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: const Color(0xFFF8FAFC),
+        color: OpportunityDashboardPalette.surface,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: OpportunityDashboardPalette.border),
       ),
@@ -2902,8 +3024,11 @@ class _InternshipToggleIconButton extends StatelessWidget {
           height: 34,
           decoration: BoxDecoration(
             gradient: isActive
-                ? const LinearGradient(
-                    colors: [Color(0xFFF7FCFB), Color(0xFFEAF5F2)],
+                ? LinearGradient(
+                    colors: [
+                      AppColors.current.surfaceElevated,
+                      AppColors.current.secondarySoft,
+                    ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   )
@@ -3176,7 +3301,7 @@ class _InternshipsEmptyState extends StatelessWidget {
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-              color: const Color(0xFFEAF8F4),
+              color: AppColors.current.secondarySoft,
               borderRadius: BorderRadius.circular(14),
               border: Border.all(
                 color: _InternshipVisualPalette.mint.withValues(alpha: 0.14),

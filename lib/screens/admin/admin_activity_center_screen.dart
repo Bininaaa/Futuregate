@@ -209,7 +209,7 @@ class _AdminActivityCenterScreenState extends State<AdminActivityCenterScreen> {
       backgroundColor: AdminPalette.background,
       appBar: AppBar(
         title: const Text('Recent Activity'),
-        backgroundColor: Colors.white,
+        backgroundColor: AdminPalette.surface,
         foregroundColor: AdminPalette.textPrimary,
       ),
       body: AdminShellBackground(child: SafeArea(top: false, child: content)),

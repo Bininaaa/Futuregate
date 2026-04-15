@@ -4,19 +4,19 @@ import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
 import '../providers/auth_provider.dart';
+import '../services/app_intro_preferences_service.dart';
 import '../theme/app_colors.dart';
 import '../widgets/shared/app_logo.dart';
 import 'post_launch_gate_screen.dart';
 
 /// Full-screen immersive launch animation.
 ///
-/// • Hides system UI and plays the branding video cover-scaled to the full screen.
-/// • Starts loading auth state in parallel so there is zero loading spinner
-///   after the animation ends.
-/// • Falls back to an empty white screen (no logo) while the video asset loads
-///   (typically < 100 ms for local assets).
+/// Hides system UI and plays the branding video cover-scaled to the full
+/// screen. The animation can be skipped from Settings for faster launches.
 class LaunchScreen extends StatefulWidget {
-  const LaunchScreen({super.key});
+  final AppIntroPreferencesService? introPreferencesService;
+
+  const LaunchScreen({super.key, this.introPreferencesService});
 
   @override
   State<LaunchScreen> createState() => _LaunchScreenState();
@@ -24,82 +24,104 @@ class LaunchScreen extends StatefulWidget {
 
 class _LaunchScreenState extends State<LaunchScreen>
     with SingleTickerProviderStateMixin {
-  late final VideoPlayerController _videoController;
+  late final AppIntroPreferencesService _introPreferencesService;
   late final AnimationController _fadeController;
+  VideoPlayerController? _videoController;
   bool _hasNavigated = false;
   bool _videoReady = false;
 
   @override
   void initState() {
     super.initState();
-
-    // Immersive full-screen: hide status bar + nav bar while animation plays.
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+    _introPreferencesService =
+        widget.introPreferencesService ?? AppIntroPreferencesService();
 
     _fadeController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 350),
     );
 
-    // Start preloading auth state in parallel with the animation so that by
-    // the time we navigate there is no loading spinner waiting for the user.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       context.read<AuthProvider>().loadCurrentUser();
     });
 
+    _startLaunchFlow();
+  }
+
+  Future<void> _startLaunchFlow() async {
+    final skipAnimation = await _introPreferencesService
+        .shouldSkipLaunchAnimation();
+    if (!mounted) return;
+
+    if (skipAnimation) {
+      await _navigateToApp(skipFade: true, waitForAuth: false);
+      return;
+    }
+
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     _initVideo();
   }
 
   void _initVideo() {
-    _videoController = VideoPlayerController.asset(AppBrandAssets.animation)
-      ..initialize()
-          .then((_) {
-            if (!mounted) return;
-            setState(() => _videoReady = true);
-            _videoController.play();
-          })
-          .catchError((_) {
-            // Video failed — navigate after a short fallback delay.
-            Future.delayed(const Duration(seconds: 1), _navigateToApp);
-          });
+    final controller = VideoPlayerController.asset(AppBrandAssets.animation);
+    _videoController = controller;
 
-    _videoController.addListener(_onVideoProgress);
+    controller
+        .initialize()
+        .then((_) {
+          if (!mounted) return;
+          setState(() => _videoReady = true);
+          controller.play();
+        })
+        .catchError((_) {
+          Future.delayed(const Duration(seconds: 1), () => _navigateToApp());
+        });
+
+    controller.addListener(_onVideoProgress);
   }
 
   void _onVideoProgress() {
     if (_hasNavigated) return;
-    final v = _videoController.value;
-    if (!v.isInitialized || v.duration == Duration.zero) return;
+    final controller = _videoController;
+    if (controller == null) return;
 
-    if (v.position >= v.duration) {
+    final value = controller.value;
+    if (!value.isInitialized || value.duration == Duration.zero) return;
+
+    if (value.position >= value.duration) {
       _navigateToApp();
     }
   }
 
-  Future<void> _navigateToApp() async {
-    if (_hasNavigated) return;
+  Future<void> _navigateToApp({
+    bool skipFade = false,
+    bool waitForAuth = true,
+  }) async {
+    if (!mounted || _hasNavigated) return;
     _hasNavigated = true;
 
-    // Wait for auth to finish (max 3 s). Auth was started in initState so
-    // it should almost always be done before the animation ends.
-    final authProvider = context.read<AuthProvider>();
-    for (int i = 0; i < 30 && !authProvider.isInitialLoadDone; i++) {
-      await Future.delayed(const Duration(milliseconds: 100));
-      if (!mounted) return;
+    if (waitForAuth) {
+      final authProvider = context.read<AuthProvider>();
+      for (int i = 0; i < 30 && !authProvider.isInitialLoadDone; i++) {
+        await Future.delayed(const Duration(milliseconds: 100));
+        if (!mounted) return;
+      }
     }
 
-    // Restore system UI before entering the app.
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
-    // Fade the launch screen out.
-    if (mounted) await _fadeController.forward();
+    if (!skipFade) {
+      await _fadeController.forward();
+    }
     if (!mounted) return;
 
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
         pageBuilder: (_, _, _) => const PostLaunchGateScreen(),
-        transitionDuration: const Duration(milliseconds: 300),
+        transitionDuration: skipFade
+            ? Duration.zero
+            : const Duration(milliseconds: 300),
         transitionsBuilder: (_, animation, _, child) =>
             FadeTransition(opacity: animation, child: child),
       ),
@@ -108,8 +130,11 @@ class _LaunchScreenState extends State<LaunchScreen>
 
   @override
   void dispose() {
-    _videoController.removeListener(_onVideoProgress);
-    _videoController.dispose();
+    final controller = _videoController;
+    if (controller != null) {
+      controller.removeListener(_onVideoProgress);
+      controller.dispose();
+    }
     _fadeController.dispose();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     super.dispose();
@@ -118,7 +143,6 @@ class _LaunchScreenState extends State<LaunchScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Use the brand launch color during the brief gap before the video starts.
       backgroundColor: AppColors.of(context).splashBackground,
       body: FadeTransition(
         opacity: ReverseAnimation(_fadeController),
@@ -128,34 +152,81 @@ class _LaunchScreenState extends State<LaunchScreen>
   }
 
   Widget _buildContent() {
-    // No static logo: while the video asset is loading, show nothing.
-    // Local assets initialize in < 100 ms so users never see the gap.
-    if (!_videoReady || !_videoController.value.isInitialized) {
+    final controller = _videoController;
+    if (!_videoReady || controller == null || !controller.value.isInitialized) {
       return const SizedBox.expand();
     }
 
-    final vSize = _videoController.value.size;
-    final hasSize = vSize.width > 0 && vSize.height > 0;
+    final videoSize = controller.value.size;
+    final hasSize = videoSize.width > 0 && videoSize.height > 0;
 
     return Stack(
       fit: StackFit.expand,
       children: [
         if (hasSize)
-          // FittedBox with cover scales the video up/down so it fills the
-          // entire screen with no black bars, cropping symmetrically if needed.
           FittedBox(
             fit: BoxFit.cover,
             child: SizedBox(
-              width: vSize.width,
-              height: vSize.height,
-              child: VideoPlayer(_videoController),
+              width: videoSize.width,
+              height: videoSize.height,
+              child: VideoPlayer(controller),
             ),
           )
         else
-          // Fallback when the platform hasn't reported the size yet: let the
-          // VideoPlayer widget fill the stack through StackFit.expand.
-          VideoPlayer(_videoController),
+          VideoPlayer(controller),
+        const SafeArea(
+          minimum: EdgeInsets.fromLTRB(18, 0, 18, 22),
+          child: Align(
+            alignment: Alignment.bottomCenter,
+            child: _LaunchAnimationHint(),
+          ),
+        ),
       ],
+    );
+  }
+}
+
+class _LaunchAnimationHint extends StatelessWidget {
+  const _LaunchAnimationHint();
+
+  @override
+  Widget build(BuildContext context) {
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 360),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: Colors.black.withValues(alpha: 0.38),
+          borderRadius: BorderRadius.circular(999),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.info_outline_rounded,
+                color: Colors.white.withValues(alpha: 0.9),
+                size: 16,
+              ),
+              const SizedBox(width: 8),
+              Flexible(
+                child: Text(
+                  'Prefer a faster start? Turn this off in Settings.',
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.92),
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w600,
+                    height: 1.25,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

@@ -16,6 +16,7 @@ import '../providers/saved_scholarship_provider.dart';
 import '../providers/student_provider.dart';
 import '../providers/training_provider.dart';
 import '../services/notification_service.dart';
+import '../theme/app_colors.dart';
 import '../widgets/no_internet_screen.dart';
 import 'auth/login_screen.dart';
 import 'auth/academic_level_selection_screen.dart';
@@ -170,8 +171,10 @@ class _BlockedScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppColors.of(context);
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: colors.background,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -182,13 +185,13 @@ class _BlockedScreen extends StatelessWidget {
                 width: 120,
                 height: 120,
                 decoration: BoxDecoration(
-                  color: Colors.red.withValues(alpha: 0.1),
+                  color: colors.danger.withValues(alpha: 0.12),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.block_rounded,
                   size: 56,
-                  color: Colors.red,
+                  color: colors.danger,
                 ),
               ),
               const SizedBox(height: 32),
@@ -197,7 +200,7 @@ class _BlockedScreen extends StatelessWidget {
                 style: GoogleFonts.poppins(
                   fontSize: 22,
                   fontWeight: FontWeight.w700,
-                  color: const Color(0xFF004E98),
+                  color: colors.textPrimary,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -208,7 +211,7 @@ class _BlockedScreen extends StatelessWidget {
                 'If you believe this is a mistake, please contact support.',
                 style: GoogleFonts.poppins(
                   fontSize: 14,
-                  color: Colors.grey[600],
+                  color: colors.textSecondary,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -227,7 +230,7 @@ class _BlockedScreen extends StatelessWidget {
                     ),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
+                    backgroundColor: colors.danger,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),

@@ -848,7 +848,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               backgroundColor: SettingsFlowPalette.background,
               appBar: AppBar(
                 title: const Text('Company Reviews'),
-                backgroundColor: Colors.white,
+                backgroundColor: SettingsFlowPalette.surface,
                 foregroundColor: SettingsFlowPalette.textPrimary,
               ),
               body: SafeArea(

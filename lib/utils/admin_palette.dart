@@ -15,6 +15,7 @@ class AdminPalette {
   static Color get background => AppColors.current.background;
   static Color get backgroundAlt => AppColors.current.backgroundAlt;
   static Color get surface => AppColors.current.surface;
+  static Color get surfaceElevated => AppColors.current.surfaceElevated;
   static Color get surfaceMuted => AppColors.current.surfaceMuted;
   static Color get border => AppColors.current.border;
   static Color get textPrimary => AppColors.current.textPrimary;
@@ -25,6 +26,7 @@ class AdminPalette {
   static Color get danger => AppColors.current.danger;
   static Color get info => AppColors.current.info;
   static Color get activity => AppColors.current.activity;
+  static bool get isDark => AppColors.isDark;
 
   static List<BoxShadow> get softShadow => [
     BoxShadow(

@@ -55,7 +55,7 @@ class AdminEditorScaffold extends StatelessWidget {
             color: AdminPalette.textPrimary,
           ),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: AdminPalette.surface,
         foregroundColor: AdminPalette.textPrimary,
       ),
       body: AdminShellBackground(
@@ -123,14 +123,21 @@ class AdminEditorScaffold extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AdminPalette.surface,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.06),
+                color: AdminPalette.isDark
+                    ? AdminPalette.primary.withValues(alpha: 0.12)
+                    : Colors.black.withValues(alpha: 0.06),
                 blurRadius: 24,
                 offset: const Offset(0, -12),
               ),
             ],
+            border: Border(
+              top: BorderSide(
+                color: AdminPalette.border.withValues(alpha: 0.8),
+              ),
+            ),
           ),
           child: AppPrimaryButton(
             theme: _adminFormTheme.copyWithAccent(accentColor),

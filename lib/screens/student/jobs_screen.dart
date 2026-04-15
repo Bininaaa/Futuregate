@@ -1377,15 +1377,17 @@ class _PurpleAvailableRoleListCard extends StatelessWidget {
         job.typeBadge?.trim().toUpperCase() == 'FULL-TIME';
     final topSurface = Color.alphaBlend(
       palette.surfaceTint.withValues(alpha: 0.24),
-      const Color(0xFFFEFBFF),
+      AppColors.isDark
+          ? AppColors.current.surfaceElevated
+          : const Color(0xFFFEFBFF),
     );
     final bottomSurface = Color.alphaBlend(
       palette.surfaceTint.withValues(alpha: 0.34),
-      const Color(0xFFF6F2FF),
+      AppColors.isDark ? AppColors.current.surface : const Color(0xFFF6F2FF),
     );
     final iconSurface = Color.alphaBlend(
       palette.surfaceTint.withValues(alpha: 0.46),
-      Colors.white,
+      AppColors.isDark ? AppColors.current.surfaceElevated : Colors.white,
     );
     final metadataItems = <Widget>[
       if (job.salary?.trim().isNotEmpty ?? false)
@@ -1584,9 +1586,9 @@ class _PurpleAvailableRoleListCard extends StatelessWidget {
                             inactiveColor: palette.chipTextColor.withValues(
                               alpha: 0.78,
                             ),
-                            backgroundColor: Colors.white.withValues(
-                              alpha: 0.70,
-                            ),
+                            backgroundColor: AppColors.isDark
+                                ? AppColors.current.surfaceMuted
+                                : Colors.white.withValues(alpha: 0.70),
                             borderColor: palette.chipTextColor.withValues(
                               alpha: 0.12,
                             ),
@@ -1749,7 +1751,26 @@ FeaturedJobVariantStyle featuredStyleFor(int index) {
     ),
   ];
 
-  return styles[index % styles.length];
+  final style = styles[index % styles.length];
+  if (!AppColors.isDark) {
+    return style;
+  }
+
+  final colors = AppColors.current;
+  return FeaturedJobVariantStyle(
+    decorationVariant: style.decorationVariant,
+    gradientColors: style.gradientColors,
+    gradientBegin: style.gradientBegin,
+    gradientEnd: style.gradientEnd,
+    logoSurface: colors.surfaceElevated,
+    logoForeground: style.logoForeground,
+    badgeBackground: style.badgeBackground,
+    badgeBorderColor: style.badgeBorderColor,
+    buttonGradientColors: [colors.surfaceElevated, colors.primarySoft],
+    buttonTextColor: colors.primary,
+    accentColor: style.accentColor,
+    glowColor: style.glowColor,
+  );
 }
 
 class _JobsSearchBar extends StatelessWidget {
@@ -1797,7 +1818,7 @@ class _JobsSearchBar extends StatelessWidget {
                 color: OpportunityDashboardPalette.textSecondary,
               ),
         filled: true,
-        fillColor: const Color(0xFFEEF2FF),
+        fillColor: AppColors.current.surfaceMuted,
         contentPadding: EdgeInsets.symmetric(
           horizontal: compact ? 14 : 18,
           vertical: compact ? 12 : 18,
@@ -1862,7 +1883,7 @@ class _SectionHeader extends StatelessWidget {
                     vertical: compact ? 4 : 5,
                   ),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF1F5F9),
+                    color: OpportunityDashboardPalette.surface,
                     borderRadius: BorderRadius.circular(compact ? 12 : 14),
                     border: Border.all(
                       color: OpportunityDashboardPalette.border.withValues(
@@ -2641,7 +2662,10 @@ class _ApplyNowButton extends StatelessWidget {
     final resolvedTextColor = accentColor ?? textColor;
     final resolvedBackgroundColors = accentColor == null
         ? backgroundColors
-        : [Colors.white, Colors.white];
+        : [
+            AppColors.isDark ? AppColors.current.surfaceElevated : Colors.white,
+            AppColors.isDark ? AppColors.current.surfaceElevated : Colors.white,
+          ];
     final resolvedBorderColor =
         accentColor?.withValues(alpha: 0.52) ??
         Colors.white.withValues(alpha: 0.60);
@@ -2906,6 +2930,83 @@ class _AvailableRolePalette {
 }
 
 _AvailableRolePalette _availableRolePaletteFor(String uniqueKey) {
+  final colors = AppColors.current;
+
+  if (colors.isDarkMode) {
+    final darkPalettes = <_AvailableRolePalette>[
+      _AvailableRolePalette(
+        gradientColors: [
+          Color.alphaBlend(
+            colors.primary.withValues(alpha: 0.12),
+            colors.surfaceElevated,
+          ),
+          colors.surfaceMuted,
+          colors.surface,
+        ],
+        gradientBegin: Alignment.topLeft,
+        gradientEnd: Alignment.bottomRight,
+        glowCenter: const Alignment(0.90, -0.16),
+        glowColor: colors.primary,
+        chipTextColor: colors.primary,
+        surfaceTint: colors.primarySoft,
+        decorationStyle: _AvailableRoleDecorationStyle.cornerBloom,
+      ),
+      _AvailableRolePalette(
+        gradientColors: [
+          colors.surfaceElevated,
+          Color.alphaBlend(
+            colors.info.withValues(alpha: 0.10),
+            colors.surfaceMuted,
+          ),
+          colors.surface,
+        ],
+        gradientBegin: Alignment.topLeft,
+        gradientEnd: Alignment.bottomCenter,
+        glowCenter: const Alignment(-0.76, 0.82),
+        glowColor: colors.info,
+        chipTextColor: colors.info,
+        surfaceTint: colors.infoSoft,
+        decorationStyle: _AvailableRoleDecorationStyle.topMist,
+      ),
+      _AvailableRolePalette(
+        gradientColors: [
+          colors.surfaceElevated,
+          Color.alphaBlend(
+            colors.secondary.withValues(alpha: 0.10),
+            colors.surfaceMuted,
+          ),
+          colors.surface,
+        ],
+        gradientBegin: Alignment.topCenter,
+        gradientEnd: Alignment.bottomRight,
+        glowCenter: const Alignment(0.84, 0.74),
+        glowColor: colors.secondary,
+        chipTextColor: colors.secondary,
+        surfaceTint: colors.secondarySoft,
+        decorationStyle: _AvailableRoleDecorationStyle.sideGlow,
+      ),
+      _AvailableRolePalette(
+        gradientColors: [
+          colors.surfaceMuted,
+          Color.alphaBlend(
+            colors.accent.withValues(alpha: 0.09),
+            colors.surfaceElevated,
+          ),
+          colors.surface,
+        ],
+        gradientBegin: Alignment.topRight,
+        gradientEnd: Alignment.bottomLeft,
+        glowCenter: const Alignment(0.86, -0.10),
+        glowColor: colors.accent,
+        chipTextColor: colors.accent,
+        surfaceTint: colors.accentSoft,
+        decorationStyle: _AvailableRoleDecorationStyle.auroraLift,
+      ),
+    ];
+
+    return darkPalettes[uniqueKey.hashCode.abs() % darkPalettes.length];
+  }
+
   final palettes = <_AvailableRolePalette>[
     _AvailableRolePalette(
       gradientColors: [Color(0xFFF8F4FF), Color(0xFFF1ECFF), Color(0xFFE9E2FF)],
@@ -3206,7 +3307,11 @@ class _AvailableRoleCard extends StatelessWidget {
                                 decoration: BoxDecoration(
                                   gradient: LinearGradient(
                                     colors: [
-                                      Colors.white.withValues(alpha: 0.94),
+                                      AppColors.isDark
+                                          ? AppColors.current.surfaceElevated
+                                          : Colors.white.withValues(
+                                              alpha: 0.94,
+                                            ),
                                       palette.surfaceTint.withValues(
                                         alpha: 0.88,
                                       ),
@@ -3277,9 +3382,9 @@ class _AvailableRoleCard extends StatelessWidget {
                                 inactiveColor: palette.chipTextColor.withValues(
                                   alpha: 0.78,
                                 ),
-                                backgroundColor: Colors.white.withValues(
-                                  alpha: 0.74,
-                                ),
+                                backgroundColor: AppColors.isDark
+                                    ? AppColors.current.surfaceMuted
+                                    : Colors.white.withValues(alpha: 0.74),
                                 borderColor: palette.chipTextColor.withValues(
                                   alpha: 0.12,
                                 ),
@@ -3591,7 +3696,7 @@ class _RolesViewToggle extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(compact ? 3 : 4),
       decoration: BoxDecoration(
-        color: const Color(0xFFF1F5F9),
+        color: OpportunityDashboardPalette.surface,
         borderRadius: BorderRadius.circular(compact ? 16 : 18),
         border: Border.all(
           color: OpportunityDashboardPalette.border.withValues(alpha: 0.92),

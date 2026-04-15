@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../theme/app_colors.dart';
 import '../../utils/admin_palette.dart';
 import '../../utils/display_text.dart';
 import '../shared/app_feedback.dart';
@@ -12,6 +13,8 @@ class AdminShellBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.of(context);
+
     return DecoratedBox(
       decoration: BoxDecoration(gradient: AdminPalette.shellGradient),
       child: Stack(
@@ -278,9 +281,20 @@ class AdminActionChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final background = filled
-        ? Colors.white
+        ? AdminPalette.isDark
+              ? AdminPalette.surfaceElevated.withValues(alpha: 0.96)
+              : Colors.white
         : Colors.white.withValues(alpha: 0.1);
-    final foreground = filled ? AdminPalette.primaryDark : color;
+    final foreground = filled
+        ? AdminPalette.isDark
+              ? AdminPalette.textPrimary
+              : AdminPalette.primaryDark
+        : color;
+    final borderColor = filled
+        ? AdminPalette.isDark
+              ? AdminPalette.border.withValues(alpha: 0.82)
+              : Colors.white.withValues(alpha: 0.25)
+        : Colors.white.withValues(alpha: 0.14);
 
     return InkWell(
       onTap: onTap,
@@ -290,11 +304,7 @@ class AdminActionChip extends StatelessWidget {
         decoration: BoxDecoration(
           color: background,
           borderRadius: BorderRadius.circular(999),
-          border: Border.all(
-            color: filled
-                ? Colors.white.withValues(alpha: 0.25)
-                : Colors.white.withValues(alpha: 0.14),
-          ),
+          border: Border.all(color: borderColor),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,

@@ -22,6 +22,7 @@ import '../../screens/settings/logout_confirmation_sheet.dart';
 import '../../screens/settings/security_privacy_screen.dart';
 import '../../screens/settings/settings_flow_theme.dart';
 import '../../screens/settings/settings_screen.dart';
+import '../../theme/app_colors.dart';
 import '../../utils/student_profile_completion.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/profile_avatar.dart';
@@ -74,6 +75,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.of(context);
+
     final authProvider = context.watch<AuthProvider>();
     final studentProvider = context.watch<StudentProvider>();
     final applicationsProvider = context.watch<ApplicationProvider>();
@@ -131,8 +134,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final scaffold = Scaffold(
       backgroundColor: Colors.transparent,
       body: RefreshIndicator(
-        color: Colors.white,
-        backgroundColor: const Color(0xFF1B1464),
+        color: AppColors.current.onPrimary,
+        backgroundColor: AppColors.current.primaryDeep,
         onRefresh: _loadProfileData,
         child: ListView(
           padding: EdgeInsets.zero,
@@ -994,11 +997,20 @@ class _HeroStatusCard extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [
-            const Color(0xFFF9FBFF),
-            SettingsFlowPalette.surfaceTint,
-            SettingsFlowPalette.mintTint,
-          ],
+          colors: AppColors.isDark
+              ? [
+                  AppColors.current.surfaceElevated,
+                  AppColors.current.surfaceMuted,
+                  Color.alphaBlend(
+                    SettingsFlowPalette.secondary.withValues(alpha: 0.10),
+                    AppColors.current.surface,
+                  ),
+                ]
+              : [
+                  const Color(0xFFF9FBFF),
+                  SettingsFlowPalette.surfaceTint,
+                  SettingsFlowPalette.mintTint,
+                ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -1168,7 +1180,9 @@ class _HeroMetricTile extends StatelessWidget {
         child: Ink(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.92),
+            color: AppColors.current.surfaceElevated.withValues(
+              alpha: AppColors.isDark ? 0.96 : 0.92,
+            ),
             borderRadius: BorderRadius.circular(18),
             border: Border.all(
               color: SettingsFlowPalette.border.withValues(alpha: 0.8),
@@ -1584,7 +1598,9 @@ class _DetailsCard extends StatelessWidget {
                       width: 32,
                       height: 32,
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.88),
+                        color: AppColors.current.surfaceElevated.withValues(
+                          alpha: AppColors.isDark ? 0.96 : 0.88,
+                        ),
                         borderRadius: BorderRadius.circular(11),
                       ),
                       child: Icon(
@@ -1677,7 +1693,9 @@ class _FactRow extends StatelessWidget {
             width: 34,
             height: 34,
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.94),
+              color: AppColors.current.surfaceElevated.withValues(
+                alpha: AppColors.isDark ? 0.96 : 0.94,
+              ),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(data.icon, size: 17, color: data.color),
@@ -1924,7 +1942,9 @@ class _FeaturedActionCard extends StatelessWidget {
                 width: 42,
                 height: 42,
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.95),
+                  color: AppColors.current.surfaceElevated.withValues(
+                    alpha: AppColors.isDark ? 0.96 : 0.95,
+                  ),
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: Icon(icon, size: 21, color: color),
@@ -2099,7 +2119,9 @@ class _Card extends StatelessWidget {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.97),
+        color: AppColors.current.surface.withValues(
+          alpha: AppColors.isDark ? 0.98 : 0.97,
+        ),
         borderRadius: BorderRadius.circular(26),
         border: Border.all(
           color: SettingsFlowPalette.border.withValues(alpha: 0.92),
@@ -2111,7 +2133,9 @@ class _Card extends StatelessWidget {
             offset: const Offset(0, 16),
           ),
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: AppColors.current.shadow.withValues(
+              alpha: AppColors.isDark ? 0.18 : 0.04,
+            ),
             blurRadius: 16,
             offset: const Offset(0, 8),
           ),
@@ -2211,7 +2235,7 @@ class _MissingChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.current.surfaceElevated,
         borderRadius: BorderRadius.circular(999),
         border: Border.all(color: SettingsFlowPalette.border),
       ),
@@ -2253,7 +2277,9 @@ class _SurfaceActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final backgroundColor = filled ? SettingsFlowPalette.primary : Colors.white;
+    final backgroundColor = filled
+        ? SettingsFlowPalette.primary
+        : AppColors.current.surfaceElevated;
     final foregroundColor = filled ? Colors.white : SettingsFlowPalette.primary;
 
     return Material(

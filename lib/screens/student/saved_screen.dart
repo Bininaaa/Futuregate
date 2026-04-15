@@ -532,7 +532,9 @@ class _SavedScreenState extends State<SavedScreen> {
                                       'Some saved ideas could not load right now.',
                                   message: savedIdeasProvider.savedIdeasError!,
                                   tone: StudentOpportunityHubPalette.error,
-                                  background: const Color(0xFFFFF1F2),
+                                  background: StudentOpportunityHubPalette
+                                      .errorSoft
+                                      .withValues(alpha: 0.92),
                                 ),
                               if ((savedIdeasProvider.savedIdeasError ?? '')
                                   .trim()
@@ -846,7 +848,9 @@ class _SavedCompactSummary extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.92),
+        color: StudentOpportunityHubPalette.surface.withValues(
+          alpha: StudentOpportunityHubPalette.isDark ? 0.96 : 0.92,
+        ),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: StudentOpportunityHubPalette.border.withValues(alpha: 0.95),
@@ -988,7 +992,12 @@ class _SavedMiniStat extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Colors.white, color.withValues(alpha: 0.08)],
+          colors: [
+            StudentOpportunityHubPalette.surface,
+            color.withValues(
+              alpha: StudentOpportunityHubPalette.isDark ? 0.14 : 0.08,
+            ),
+          ],
         ),
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: color.withValues(alpha: 0.16)),
@@ -1574,7 +1583,9 @@ class _SavedCardFrame extends StatelessWidget {
       color: Colors.transparent,
       child: Ink(
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.95),
+          color: StudentOpportunityHubPalette.surface.withValues(
+            alpha: StudentOpportunityHubPalette.isDark ? 0.97 : 0.95,
+          ),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(color: accent.withValues(alpha: 0.12)),
         ),
@@ -1680,7 +1691,9 @@ class _SavedMetaChip extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
       decoration: BoxDecoration(
         color: tone == null
-            ? Colors.white.withValues(alpha: 0.86)
+            ? StudentOpportunityHubPalette.surface.withValues(
+                alpha: StudentOpportunityHubPalette.isDark ? 0.92 : 0.86,
+              )
             : resolvedTone.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(999),
         border: Border.all(

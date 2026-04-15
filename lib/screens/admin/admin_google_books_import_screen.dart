@@ -314,10 +314,10 @@ class _AdminGoogleBooksImportScreenState
         width: width,
         height: height,
         decoration: BoxDecoration(
-          color: Colors.grey.shade200,
+          color: AdminPalette.surfaceMuted,
           borderRadius: BorderRadius.circular(12),
         ),
-        child: const Icon(Icons.menu_book_rounded),
+        child: Icon(Icons.menu_book_rounded, color: AdminPalette.textMuted),
       );
     }
 
@@ -331,14 +331,17 @@ class _AdminGoogleBooksImportScreenState
         placeholder: (context, url) => Container(
           width: width,
           height: height,
-          color: Colors.grey.shade200,
+          color: AdminPalette.surfaceMuted,
           child: const Center(child: CircularProgressIndicator()),
         ),
         errorWidget: (context, url, error) => Container(
           width: width,
           height: height,
-          color: Colors.grey.shade200,
-          child: const Icon(Icons.broken_image_outlined),
+          color: AdminPalette.surfaceMuted,
+          child: Icon(
+            Icons.broken_image_outlined,
+            color: AdminPalette.textMuted,
+          ),
         ),
       ),
     );
@@ -357,10 +360,10 @@ class _AdminGoogleBooksImportScreenState
         width: width,
         height: height,
         decoration: BoxDecoration(
-          color: Colors.grey.shade200,
+          color: AdminPalette.surfaceMuted,
           borderRadius: BorderRadius.circular(12),
         ),
-        child: Icon(placeholderIcon),
+        child: Icon(placeholderIcon, color: AdminPalette.textMuted),
       );
     }
 
@@ -374,14 +377,17 @@ class _AdminGoogleBooksImportScreenState
         placeholder: (context, url) => Container(
           width: width,
           height: height,
-          color: Colors.grey.shade200,
+          color: AdminPalette.surfaceMuted,
           child: const Center(child: CircularProgressIndicator()),
         ),
         errorWidget: (context, url, error) => Container(
           width: width,
           height: height,
-          color: Colors.grey.shade200,
-          child: const Icon(Icons.broken_image_outlined),
+          color: AdminPalette.surfaceMuted,
+          child: Icon(
+            Icons.broken_image_outlined,
+            color: AdminPalette.textMuted,
+          ),
         ),
       ),
     );
@@ -714,7 +720,10 @@ class _AdminGoogleBooksImportScreenState
                   book.authors.isNotEmpty
                       ? book.authors.join(', ')
                       : book.provider,
-                  style: TextStyle(color: Colors.grey.shade700, fontSize: 13),
+                  style: TextStyle(
+                    color: AdminPalette.textSecondary,
+                    fontSize: 13,
+                  ),
                 ),
                 const SizedBox(height: 6),
                 if (book.description.trim().isNotEmpty)
@@ -722,7 +731,10 @@ class _AdminGoogleBooksImportScreenState
                     book.description,
                     maxLines: 3,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(color: Colors.grey.shade800, fontSize: 13),
+                    style: TextStyle(
+                      color: AdminPalette.textSecondary,
+                      fontSize: 13,
+                    ),
                   ),
                 const SizedBox(height: 8),
                 Wrap(
@@ -799,7 +811,10 @@ class _AdminGoogleBooksImportScreenState
                   training.authors.isNotEmpty
                       ? training.authors.join(', ')
                       : training.provider,
-                  style: TextStyle(color: Colors.grey.shade700, fontSize: 13),
+                  style: TextStyle(
+                    color: AdminPalette.textSecondary,
+                    fontSize: 13,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Wrap(
@@ -883,7 +898,7 @@ class _AdminGoogleBooksImportScreenState
         backgroundColor: AdminPalette.background,
         appBar: AppBar(
           title: const Text('Import Google Books'),
-          backgroundColor: Colors.white,
+          backgroundColor: AdminPalette.surface,
           foregroundColor: AdminPalette.textPrimary,
           bottom: TabBar(
             labelColor: AdminPalette.primary,

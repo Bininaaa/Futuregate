@@ -376,7 +376,10 @@ class _UsersScreenState extends State<UsersScreen> {
                       child: DecoratedBox(
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 2),
+                          border: Border.all(
+                            color: AdminPalette.surface,
+                            width: 2,
+                          ),
                         ),
                         child: Container(
                           width: 11,
@@ -817,8 +820,14 @@ class _UsersScreenState extends State<UsersScreen> {
     return DecoratedBox(
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: Colors.white.withValues(alpha: 0.96),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
+        color: AdminPalette.isDark
+            ? AdminPalette.surfaceElevated.withValues(alpha: 0.96)
+            : Colors.white.withValues(alpha: 0.96),
+        border: Border.all(
+          color: AdminPalette.isDark
+              ? AdminPalette.border.withValues(alpha: 0.82)
+              : Colors.white.withValues(alpha: 0.18),
+        ),
         boxShadow: [
           BoxShadow(
             color: const Color(0xFF0F172A).withValues(alpha: 0.12),
@@ -1725,21 +1734,19 @@ class _UsersScreenState extends State<UsersScreen> {
       margin: const EdgeInsets.only(bottom: 14),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AdminPalette.surface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: const Color(0xFFFF8C00).withValues(alpha: 0.14),
-        ),
+        border: Border.all(color: AdminPalette.accent.withValues(alpha: 0.14)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'سجل تجاري',
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w700,
-              color: Color(0xFF2D1B4E),
+              color: AdminPalette.textPrimary,
             ),
           ),
           const SizedBox(height: 8),
@@ -1748,12 +1755,12 @@ class _UsersScreenState extends State<UsersScreen> {
               user.commercialRegisterFileName.isNotEmpty
                   ? user.commercialRegisterFileName
                   : 'Commercial Register uploaded',
-              style: TextStyle(fontSize: 12, color: Colors.grey[700]),
+              style: TextStyle(fontSize: 12, color: AdminPalette.textSecondary),
             ),
             const SizedBox(height: 4),
             Text(
               'Uploaded: $uploadedAtLabel',
-              style: TextStyle(fontSize: 12, color: Colors.grey[700]),
+              style: TextStyle(fontSize: 12, color: AdminPalette.textSecondary),
             ),
             const SizedBox(height: 12),
             Row(
@@ -1764,7 +1771,7 @@ class _UsersScreenState extends State<UsersScreen> {
                     icon: const Icon(Icons.visibility_outlined, size: 18),
                     label: const Text('View سجل تجاري'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFFF8C00),
+                      backgroundColor: AdminPalette.accent,
                       foregroundColor: Colors.white,
                     ),
                   ),
@@ -1777,9 +1784,9 @@ class _UsersScreenState extends State<UsersScreen> {
                     icon: const Icon(Icons.download_outlined, size: 18),
                     label: const Text('Download سجل تجاري'),
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: const Color(0xFFFF8C00),
+                      foregroundColor: AdminPalette.accent,
                       side: BorderSide(
-                        color: const Color(0xFFFF8C00).withValues(alpha: 0.24),
+                        color: AdminPalette.accent.withValues(alpha: 0.24),
                       ),
                     ),
                   ),
@@ -1791,7 +1798,7 @@ class _UsersScreenState extends State<UsersScreen> {
               'Missing commercial register document.',
               style: TextStyle(
                 fontSize: 12,
-                color: Colors.red.shade600,
+                color: AdminPalette.danger,
                 fontWeight: FontWeight.w600,
               ),
             ),

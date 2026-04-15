@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../models/opportunity_model.dart';
 import '../../providers/admin_provider.dart';
+import '../../utils/admin_palette.dart';
 import '../../widgets/shared/app_feedback.dart';
 
 class ModerateScreen extends StatefulWidget {
@@ -41,19 +42,20 @@ class _ModerateScreenState extends State<ModerateScreen>
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.92),
+            color: AdminPalette.surface.withValues(alpha: 0.96),
             borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: AdminPalette.border),
           ),
           child: TabBar(
             controller: _tabController,
             labelColor: Colors.white,
-            unselectedLabelColor: const Color(0xFF2D1B4E),
+            unselectedLabelColor: AdminPalette.textPrimary,
             indicatorSize: TabBarIndicatorSize.tab,
             dividerColor: Colors.transparent,
             isScrollable: false,
             labelPadding: EdgeInsets.zero,
             indicator: BoxDecoration(
-              color: const Color(0xFFFF8C00),
+              color: AdminPalette.accent,
               borderRadius: BorderRadius.circular(14),
             ),
             tabs: [
@@ -118,9 +120,7 @@ class _ModerateScreenState extends State<ModerateScreen>
         ),
         Expanded(
           child: provider.moderationLoading
-              ? const Center(
-                  child: CircularProgressIndicator(color: Color(0xFFFF8C00)),
-                )
+              ? const Center(child: CircularProgressIndicator())
               : TabBarView(
                   controller: _tabController,
                   children: [
@@ -150,7 +150,7 @@ class _ModerateScreenState extends State<ModerateScreen>
     }
 
     return RefreshIndicator(
-      color: const Color(0xFFFF8C00),
+      color: AdminPalette.accent,
       onRefresh: provider.loadModerationData,
       child: ListView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -166,9 +166,9 @@ class _ModerateScreenState extends State<ModerateScreen>
                     _showPendingOnly
                         ? 'Pending Ideas (${ideas.length})'
                         : 'All Ideas (${ideas.length})',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFF2D1B4E),
+                      color: AdminPalette.textPrimary,
                     ),
                   ),
                   GestureDetector(
@@ -181,15 +181,15 @@ class _ModerateScreenState extends State<ModerateScreen>
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF2D1B4E).withValues(alpha: 0.1),
+                        color: AdminPalette.primary.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
                         _showPendingOnly ? 'Show All' : 'Pending Only',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
-                          color: Color(0xFF2D1B4E),
+                          color: AdminPalette.primary,
                         ),
                       ),
                     ),
@@ -210,30 +210,25 @@ class _ModerateScreenState extends State<ModerateScreen>
           IconData statusIcon;
           switch (idea.status) {
             case 'approved':
-              statusColor = Colors.green;
+              statusColor = AdminPalette.success;
               statusIcon = Icons.check_circle;
               break;
             case 'rejected':
-              statusColor = Colors.red;
+              statusColor = AdminPalette.danger;
               statusIcon = Icons.cancel;
               break;
             default:
-              statusColor = Colors.orange;
+              statusColor = AdminPalette.warning;
               statusIcon = Icons.pending;
           }
 
           return Container(
             margin: const EdgeInsets.only(bottom: 10),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.92),
+              color: AdminPalette.surface,
               borderRadius: BorderRadius.circular(14),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 6,
-                  offset: const Offset(0, 2),
-                ),
-              ],
+              border: Border.all(color: AdminPalette.border),
+              boxShadow: AdminPalette.softShadow,
             ),
             child: Padding(
               padding: const EdgeInsets.all(14),
@@ -245,10 +240,10 @@ class _ModerateScreenState extends State<ModerateScreen>
                       Expanded(
                         child: Text(
                           idea.title,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF2D1B4E),
+                            color: AdminPalette.textPrimary,
                           ),
                         ),
                       ),
@@ -282,7 +277,10 @@ class _ModerateScreenState extends State<ModerateScreen>
                   const SizedBox(height: 8),
                   Text(
                     idea.description,
-                    style: TextStyle(fontSize: 13, color: Colors.grey[700]),
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: AdminPalette.textSecondary,
+                    ),
                     maxLines: 3,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -300,7 +298,10 @@ class _ModerateScreenState extends State<ModerateScreen>
                   const SizedBox(height: 10),
                   Text(
                     'Submitted by: ${idea.submittedBy}',
-                    style: TextStyle(fontSize: 11, color: Colors.grey[500]),
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: AdminPalette.textMuted,
+                    ),
                   ),
                   if (idea.status == 'pending') ...[
                     const SizedBox(height: 12),
@@ -390,7 +391,7 @@ class _ModerateScreenState extends State<ModerateScreen>
     }
 
     return RefreshIndicator(
-      color: const Color(0xFFFF8C00),
+      color: AdminPalette.accent,
       onRefresh: provider.loadModerationData,
       child: ListView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -403,15 +404,10 @@ class _ModerateScreenState extends State<ModerateScreen>
           return Container(
             margin: const EdgeInsets.only(bottom: 10),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.92),
+              color: AdminPalette.surface,
               borderRadius: BorderRadius.circular(14),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 6,
-                  offset: const Offset(0, 2),
-                ),
-              ],
+              border: Border.all(color: AdminPalette.border),
+              boxShadow: AdminPalette.softShadow,
             ),
             child: ListTile(
               contentPadding: const EdgeInsets.symmetric(
@@ -421,21 +417,17 @@ class _ModerateScreenState extends State<ModerateScreen>
               leading: Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFF8C00).withValues(alpha: 0.12),
+                  color: AdminPalette.accent.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Icon(
-                  Icons.work,
-                  color: Color(0xFFFF8C00),
-                  size: 22,
-                ),
+                child: Icon(Icons.work, color: AdminPalette.accent, size: 22),
               ),
               title: Text(
                 opp['title'] ?? 'Untitled opportunity',
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 15,
-                  color: Color(0xFF2D1B4E),
+                  color: AdminPalette.textPrimary,
                 ),
               ),
               subtitle: Column(
@@ -443,7 +435,10 @@ class _ModerateScreenState extends State<ModerateScreen>
                 children: [
                   Text(
                     opp['companyName'] ?? 'Unknown company',
-                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: AdminPalette.textMuted,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Row(
@@ -481,8 +476,8 @@ class _ModerateScreenState extends State<ModerateScreen>
                         decoration: BoxDecoration(
                           color:
                               (effectiveStatus == 'open'
-                                      ? Colors.green
-                                      : Colors.grey)
+                                      ? AdminPalette.success
+                                      : AdminPalette.textMuted)
                                   .withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -492,8 +487,8 @@ class _ModerateScreenState extends State<ModerateScreen>
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
                             color: effectiveStatus == 'open'
-                                ? Colors.green
-                                : Colors.grey,
+                                ? AdminPalette.success
+                                : AdminPalette.textMuted,
                           ),
                         ),
                       ),
@@ -540,7 +535,7 @@ class _ModerateScreenState extends State<ModerateScreen>
     }
 
     return RefreshIndicator(
-      color: const Color(0xFFFF8C00),
+      color: AdminPalette.accent,
       onRefresh: provider.loadModerationData,
       child: ListView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -550,15 +545,10 @@ class _ModerateScreenState extends State<ModerateScreen>
           return Container(
             margin: const EdgeInsets.only(bottom: 10),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.92),
+              color: AdminPalette.surface,
               borderRadius: BorderRadius.circular(14),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 6,
-                  offset: const Offset(0, 2),
-                ),
-              ],
+              border: Border.all(color: AdminPalette.border),
+              boxShadow: AdminPalette.softShadow,
             ),
             child: ListTile(
               contentPadding: const EdgeInsets.symmetric(
@@ -579,10 +569,10 @@ class _ModerateScreenState extends State<ModerateScreen>
               ),
               title: Text(
                 sch['title'] ?? 'Untitled scholarship',
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 15,
-                  color: Color(0xFF2D1B4E),
+                  color: AdminPalette.textPrimary,
                 ),
               ),
               subtitle: Column(
@@ -590,7 +580,10 @@ class _ModerateScreenState extends State<ModerateScreen>
                 children: [
                   Text(
                     sch['provider'] ?? 'Unknown provider',
-                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: AdminPalette.textMuted,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Wrap(
@@ -690,11 +683,11 @@ class _ModerateScreenState extends State<ModerateScreen>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 64, color: Colors.grey[400]),
+          Icon(icon, size: 64, color: AdminPalette.textMuted),
           const SizedBox(height: 12),
           Text(
             message,
-            style: TextStyle(fontSize: 16, color: Colors.grey[500]),
+            style: TextStyle(fontSize: 16, color: AdminPalette.textMuted),
           ),
         ],
       ),

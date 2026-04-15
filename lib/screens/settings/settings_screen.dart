@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../config/app_metadata.dart';
 import '../../providers/auth_provider.dart';
+import '../../services/app_intro_preferences_service.dart';
 import '../../theme/theme_controller.dart';
 import '../company/profile_screen.dart';
 import '../notifications_screen.dart';
@@ -79,7 +80,9 @@ class SettingsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 18),
             const _ThemeSettingsSection(),
-            const SizedBox(height: 18),
+            const SizedBox(height: 12),
+            const _LaunchAnimationSettingsSection(),
+            const SizedBox(height: 16),
             const SettingsSectionHeading(
               title: 'Workspace',
               subtitle:
@@ -247,7 +250,9 @@ class SettingsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 18),
             const _ThemeSettingsSection(),
-            const SizedBox(height: 18),
+            const SizedBox(height: 12),
+            const _LaunchAnimationSettingsSection(),
+            const SizedBox(height: 16),
             const SettingsSectionHeading(
               title: 'Workspace',
               subtitle:
@@ -390,14 +395,10 @@ class SettingsScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 18),
-          const SettingsSectionHeading(
-            title: 'Theme',
-            subtitle:
-                'Choose the visual mode that feels best for your workspace.',
-          ),
-          const SizedBox(height: 10),
-          const _ThemeSettingsPanel(),
-          const SizedBox(height: 18),
+          const _ThemeSettingsSection(),
+          const SizedBox(height: 12),
+          const _LaunchAnimationSettingsSection(),
+          const SizedBox(height: 16),
           const SettingsSectionHeading(
             title: 'Experience',
             subtitle:
@@ -561,13 +562,195 @@ class _ThemeSettingsSection extends StatelessWidget {
     return const Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SettingsSectionHeading(
-          title: 'Theme',
-          subtitle:
-              'Match your device, keep things light, or switch into FutureGate dark mode.',
-        ),
-        SizedBox(height: 10),
+        SettingsSectionHeading(title: 'Theme'),
+        SizedBox(height: 8),
         _ThemeSettingsPanel(),
+      ],
+    );
+  }
+}
+
+class _CompactPreferenceRow extends StatelessWidget {
+  final IconData icon;
+  final Color iconColor;
+  final String title;
+  final String subtitle;
+  final Widget trailing;
+  final VoidCallback? onTap;
+
+  const _CompactPreferenceRow({
+    required this.icon,
+    required this.iconColor,
+    required this.title,
+    required this.subtitle,
+    required this.trailing,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: SettingsFlowTheme.radius(16),
+      child: Ink(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+        decoration: BoxDecoration(
+          color: SettingsFlowPalette.surface,
+          borderRadius: SettingsFlowTheme.radius(16),
+          border: Border.all(color: SettingsFlowPalette.border),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 34,
+              height: 34,
+              decoration: BoxDecoration(
+                color: iconColor.withValues(alpha: 0.12),
+                borderRadius: SettingsFlowTheme.radius(12),
+              ),
+              child: Icon(icon, color: iconColor, size: 17),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: SettingsFlowTheme.cardTitle(),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: SettingsFlowTheme.caption(),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            trailing,
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _LaunchAnimationSettingsSection extends StatefulWidget {
+  const _LaunchAnimationSettingsSection();
+
+  @override
+  State<_LaunchAnimationSettingsSection> createState() =>
+      _LaunchAnimationSettingsSectionState();
+}
+
+class _LaunchAnimationSettingsSectionState
+    extends State<_LaunchAnimationSettingsSection> {
+  final AppIntroPreferencesService _introPreferencesService =
+      AppIntroPreferencesService();
+
+  bool _isLoading = true;
+  bool _isSaving = false;
+  bool _showStartupAnimation = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPreference();
+  }
+
+  Future<void> _loadPreference() async {
+    final skipAnimation = await _introPreferencesService
+        .shouldSkipLaunchAnimation();
+    if (!mounted) return;
+
+    setState(() {
+      _showStartupAnimation = !skipAnimation;
+      _isLoading = false;
+    });
+  }
+
+  Future<void> _setShowStartupAnimation(bool showAnimation) async {
+    if (_isLoading || _isSaving || showAnimation == _showStartupAnimation) {
+      return;
+    }
+
+    final previousValue = _showStartupAnimation;
+    setState(() {
+      _showStartupAnimation = showAnimation;
+      _isSaving = true;
+    });
+
+    try {
+      await _introPreferencesService.setSkipLaunchAnimation(!showAnimation);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _showStartupAnimation = previousValue;
+        _isSaving = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Could not update the startup animation setting.'),
+        ),
+      );
+      return;
+    }
+
+    if (!mounted) return;
+    setState(() => _isSaving = false);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final disabled = _isLoading || _isSaving;
+    final subtitle = _isLoading
+        ? 'Checking your launch preference...'
+        : _showStartupAnimation
+        ? 'The launch video will play when FutureGate opens.'
+        : 'FutureGate will open directly next time.';
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SettingsSectionHeading(title: 'Start'),
+        const SizedBox(height: 8),
+        SettingsPanel(
+          padding: const EdgeInsets.all(8),
+          child: _CompactPreferenceRow(
+            icon: _showStartupAnimation
+                ? Icons.movie_filter_outlined
+                : Icons.motion_photos_off_outlined,
+            iconColor: _showStartupAnimation
+                ? SettingsFlowPalette.accent
+                : SettingsFlowPalette.textSecondary,
+            title: 'Show startup animation',
+            subtitle: subtitle,
+            onTap: disabled
+                ? null
+                : () => _setShowStartupAnimation(!_showStartupAnimation),
+            trailing: SizedBox(
+              width: 44,
+              height: 28,
+              child: FittedBox(
+                fit: BoxFit.contain,
+                child: Switch.adaptive(
+                  key: const ValueKey<String>('startup_animation_switch'),
+                  value: _showStartupAnimation,
+                  activeThumbColor: SettingsFlowPalette.primary,
+                  activeTrackColor: SettingsFlowPalette.primary.withValues(
+                    alpha: 0.34,
+                  ),
+                  onChanged: disabled ? null : _setShowStartupAnimation,
+                ),
+              ),
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -579,111 +762,120 @@ class _ThemeSettingsPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = context.watch<ThemeController>();
+    final selected = controller.preference;
+    final accent = _themeAccent(selected);
 
     return SettingsPanel(
-      padding: const EdgeInsets.all(10),
-      child: Column(
-        children: [
-          for (final option in AppThemePreference.values) ...[
-            _ThemeOptionTile(
-              option: option,
-              selected: controller.preference == option,
-              onTap: () {
-                controller.setPreference(option);
-              },
-            ),
-            if (option != AppThemePreference.values.last)
-              const SizedBox(height: 8),
-          ],
-        ],
+      padding: const EdgeInsets.all(8),
+      child: _CompactPreferenceRow(
+        icon: _themeIcon(selected),
+        iconColor: accent,
+        title: 'App theme',
+        subtitle: selected.subtitle,
+        trailing: _ThemeInlineSelect(
+          selected: selected,
+          onChanged: (option) => controller.setPreference(option),
+        ),
       ),
     );
   }
 }
 
-class _ThemeOptionTile extends StatelessWidget {
-  final AppThemePreference option;
-  final bool selected;
-  final VoidCallback onTap;
+class _ThemeInlineSelect extends StatelessWidget {
+  final AppThemePreference selected;
+  final ValueChanged<AppThemePreference> onChanged;
 
-  const _ThemeOptionTile({
-    required this.option,
-    required this.selected,
-    required this.onTap,
-  });
+  const _ThemeInlineSelect({required this.selected, required this.onChanged});
 
   @override
   Widget build(BuildContext context) {
-    final accent = switch (option) {
-      AppThemePreference.system => SettingsFlowPalette.secondary,
-      AppThemePreference.light => SettingsFlowPalette.accent,
-      AppThemePreference.dark => SettingsFlowPalette.primary,
-    };
-    final icon = switch (option) {
-      AppThemePreference.system => Icons.brightness_auto_rounded,
-      AppThemePreference.light => Icons.light_mode_outlined,
-      AppThemePreference.dark => Icons.dark_mode_outlined,
-    };
+    final accent = _themeAccent(selected);
 
-    return InkWell(
-      onTap: onTap,
-      borderRadius: SettingsFlowTheme.radius(18),
-      child: Ink(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
-        decoration: BoxDecoration(
-          color: selected
-              ? accent.withValues(alpha: 0.13)
-              : SettingsFlowPalette.surface,
-          borderRadius: SettingsFlowTheme.radius(18),
-          border: Border.all(
-            color: selected
-                ? accent.withValues(alpha: 0.30)
-                : SettingsFlowPalette.border,
+    return Container(
+      constraints: const BoxConstraints(minWidth: 104, maxWidth: 132),
+      padding: const EdgeInsetsDirectional.only(start: 10, end: 4),
+      decoration: BoxDecoration(
+        color: accent.withValues(alpha: 0.12),
+        borderRadius: SettingsFlowTheme.radius(999),
+        border: Border.all(color: accent.withValues(alpha: 0.24)),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<AppThemePreference>(
+          value: selected,
+          isDense: true,
+          borderRadius: SettingsFlowTheme.radius(14),
+          dropdownColor: SettingsFlowPalette.surface,
+          icon: Icon(
+            Icons.keyboard_arrow_down_rounded,
+            color: accent,
+            size: 18,
           ),
-        ),
-        child: Row(
-          children: [
-            SettingsIconBox(icon: icon, color: accent),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    option.title,
-                    style: SettingsFlowTheme.cardTitle(
-                      selected ? accent : SettingsFlowPalette.textPrimary,
-                    ),
+          selectedItemBuilder: (context) => AppThemePreference.values
+              .map(
+                (option) => Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    _themeSelectLabel(option),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: SettingsFlowTheme.micro(accent),
                   ),
-                  const SizedBox(height: 3),
-                  Text(option.subtitle, style: SettingsFlowTheme.caption()),
-                ],
-              ),
-            ),
-            const SizedBox(width: 8),
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 180),
-              width: 24,
-              height: 24,
-              decoration: BoxDecoration(
-                color: selected ? accent : Colors.transparent,
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: selected ? accent : SettingsFlowPalette.border,
-                  width: 1.6,
                 ),
-              ),
-              child: selected
-                  ? const Icon(
-                      Icons.check_rounded,
-                      color: Colors.white,
-                      size: 16,
-                    )
-                  : null,
-            ),
-          ],
+              )
+              .toList(growable: false),
+          items: AppThemePreference.values
+              .map(
+                (option) => DropdownMenuItem<AppThemePreference>(
+                  value: option,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        _themeIcon(option),
+                        color: _themeAccent(option),
+                        size: 16,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        _themeSelectLabel(option),
+                        style: SettingsFlowTheme.body(),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+              .toList(growable: false),
+          onChanged: (option) {
+            if (option != null) {
+              onChanged(option);
+            }
+          },
         ),
       ),
     );
   }
+}
+
+Color _themeAccent(AppThemePreference option) {
+  return switch (option) {
+    AppThemePreference.system => SettingsFlowPalette.secondary,
+    AppThemePreference.light => SettingsFlowPalette.accent,
+    AppThemePreference.dark => SettingsFlowPalette.primary,
+  };
+}
+
+IconData _themeIcon(AppThemePreference option) {
+  return switch (option) {
+    AppThemePreference.system => Icons.brightness_auto_rounded,
+    AppThemePreference.light => Icons.light_mode_outlined,
+    AppThemePreference.dark => Icons.dark_mode_outlined,
+  };
+}
+
+String _themeSelectLabel(AppThemePreference option) {
+  return switch (option) {
+    AppThemePreference.system => 'System',
+    AppThemePreference.light => 'Light',
+    AppThemePreference.dark => 'Dark',
+  };
 }

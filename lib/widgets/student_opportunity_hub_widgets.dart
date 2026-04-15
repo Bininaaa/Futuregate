@@ -13,6 +13,8 @@ class StudentOpportunityHubPalette {
   static Color get secondary => OpportunityDashboardPalette.secondary;
   static Color get accent => OpportunityDashboardPalette.accent;
   static Color get surface => OpportunityDashboardPalette.surface;
+  static Color get surfaceElevated => AppColors.current.surfaceElevated;
+  static Color get surfaceMuted => AppColors.current.surfaceMuted;
   static Color get surfaceAlt => OpportunityDashboardPalette.background;
   static Color get textPrimary => OpportunityDashboardPalette.textPrimary;
   static Color get textSecondary => OpportunityDashboardPalette.textSecondary;
@@ -24,6 +26,8 @@ class StudentOpportunityHubPalette {
   static Color get primarySoft => AppColors.current.primarySoft;
   static Color get secondarySoft => AppColors.current.secondarySoft;
   static Color get accentSoft => AppColors.current.accentSoft;
+  static Color get errorSoft => AppColors.current.dangerSoft;
+  static bool get isDark => AppColors.isDark;
 }
 
 class StudentOpportunityHeroStat {
@@ -286,7 +290,9 @@ class StudentOpportunitySearchField extends StatelessWidget {
                 ),
               ),
         filled: true,
-        fillColor: Colors.white.withValues(alpha: 0.88),
+        fillColor: StudentOpportunityHubPalette.surface.withValues(
+          alpha: StudentOpportunityHubPalette.isDark ? 0.96 : 0.88,
+        ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
           vertical: 14,
@@ -332,7 +338,11 @@ class StudentOpportunityFilterChip extends StatelessWidget {
         duration: const Duration(milliseconds: 180),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
         decoration: BoxDecoration(
-          color: selected ? color.withValues(alpha: 0.14) : Colors.white,
+          color: selected
+              ? color.withValues(alpha: 0.14)
+              : StudentOpportunityHubPalette.surface.withValues(
+                  alpha: StudentOpportunityHubPalette.isDark ? 0.96 : 1,
+                ),
           borderRadius: BorderRadius.circular(999),
           border: Border.all(
             color: selected
@@ -374,7 +384,9 @@ class StudentOpportunityMetaPill extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.86),
+        color: StudentOpportunityHubPalette.surface.withValues(
+          alpha: StudentOpportunityHubPalette.isDark ? 0.92 : 0.86,
+        ),
         borderRadius: BorderRadius.circular(999),
         border: Border.all(
           color: StudentOpportunityHubPalette.border.withValues(alpha: 0.92),

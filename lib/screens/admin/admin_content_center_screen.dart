@@ -284,7 +284,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                     ),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.96),
+                        color: AdminPalette.surface.withValues(alpha: 0.96),
                         borderRadius: BorderRadius.circular(22),
                         border: Border.all(color: AdminPalette.border),
                       ),
@@ -344,7 +344,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       backgroundColor: AdminPalette.background,
       appBar: AppBar(
         title: const Text('Admin Content Center'),
-        backgroundColor: Colors.white,
+        backgroundColor: AdminPalette.surface,
         foregroundColor: _primaryColor,
       ),
       body: AdminShellBackground(child: SafeArea(top: false, child: content)),
@@ -3881,18 +3881,18 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                     if (cv.email.isNotEmpty)
                       Text(
                         cv.email,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 13,
-                          color: Colors.grey,
+                          color: AdminPalette.textMuted,
                         ),
                       ),
                     if (cv.phone.isNotEmpty) ...[
                       const SizedBox(height: 2),
                       Text(
                         cv.phone,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 13,
-                          color: Colors.grey,
+                          color: AdminPalette.textMuted,
                         ),
                       ),
                     ],
@@ -4082,7 +4082,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             style: TextStyle(
               fontSize: 12,
               height: 1.5,
-              color: Colors.grey[700],
+              color: AdminPalette.textSecondary,
             ),
           ),
           if (warningText != null) ...[
@@ -4974,7 +4974,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             padding: const EdgeInsets.only(bottom: 4),
             child: Text(
               item,
-              style: TextStyle(fontSize: 13, color: Colors.grey[700]),
+              style: TextStyle(fontSize: 13, color: AdminPalette.textSecondary),
             ),
           ),
         ),

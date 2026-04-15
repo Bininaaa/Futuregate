@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/app_colors.dart';
 import '../utils/validators.dart';
 
 class PasswordStrengthIndicator extends StatelessWidget {
@@ -10,6 +11,7 @@ class PasswordStrengthIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     if (password.isEmpty) return const SizedBox.shrink();
 
+    final colors = AppColors.of(context);
     final rules = [
       _Rule('At least 8 characters', Validators.hasMinLength(password)),
       _Rule('One uppercase letter', Validators.hasUppercase(password)),
@@ -22,13 +24,13 @@ class PasswordStrengthIndicator extends StatelessWidget {
 
     Color barColor;
     if (strength <= 0.25) {
-      barColor = Colors.red;
+      barColor = colors.danger;
     } else if (strength <= 0.5) {
-      barColor = Colors.orange;
+      barColor = colors.warning;
     } else if (strength <= 0.75) {
-      barColor = Colors.amber;
+      barColor = colors.accent;
     } else {
-      barColor = Colors.green;
+      barColor = colors.success;
     }
 
     return Column(
@@ -40,7 +42,7 @@ class PasswordStrengthIndicator extends StatelessWidget {
           child: LinearProgressIndicator(
             value: strength,
             minHeight: 4,
-            backgroundColor: Colors.grey.shade200,
+            backgroundColor: colors.surfaceMuted,
             valueColor: AlwaysStoppedAnimation<Color>(barColor),
           ),
         ),
@@ -53,16 +55,14 @@ class PasswordStrengthIndicator extends StatelessWidget {
                 Icon(
                   rule.met ? Icons.check_circle : Icons.cancel,
                   size: 16,
-                  color: rule.met ? Colors.green : Colors.grey.shade400,
+                  color: rule.met ? colors.success : colors.textMuted,
                 ),
                 const SizedBox(width: 6),
                 Text(
                   rule.label,
                   style: TextStyle(
                     fontSize: 12,
-                    color: rule.met
-                        ? Colors.green.shade700
-                        : Colors.grey.shade500,
+                    color: rule.met ? colors.success : colors.textMuted,
                     fontWeight: rule.met ? FontWeight.w500 : FontWeight.normal,
                   ),
                 ),
