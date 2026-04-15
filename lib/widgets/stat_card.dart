@@ -53,7 +53,9 @@ class StatCard extends StatelessWidget {
                 offset: const Offset(0, 12),
               ),
               BoxShadow(
-                color: const Color(0xFF0F172A).withValues(alpha: 0.05),
+                color: AdminPalette.isDark
+                    ? AdminPalette.background.withValues(alpha: 0.24)
+                    : const Color(0xFF0F172A).withValues(alpha: 0.05),
                 blurRadius: 16,
                 offset: const Offset(0, 8),
               ),
@@ -90,7 +92,11 @@ class StatCard extends StatelessWidget {
                       Container(
                         padding: EdgeInsets.all(iconPadding),
                         decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.72),
+                          color: AdminPalette.isDark
+                              ? AdminPalette.surfaceElevated.withValues(
+                                  alpha: 0.92,
+                                )
+                              : Colors.white.withValues(alpha: 0.72),
                           borderRadius: BorderRadius.circular(14),
                           border: Border.all(
                             color: tone.withValues(alpha: 0.14),

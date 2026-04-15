@@ -829,7 +829,7 @@ class _ConversationHeader extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: ChatThemePalette.surface,
         border: Border(
           bottom: BorderSide(
             color: ChatThemePalette.border.withValues(alpha: 0.5),
@@ -870,7 +870,10 @@ class _ConversationHeader extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: ChatThemePalette.success,
                           shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 2),
+                          border: Border.all(
+                            color: ChatThemePalette.surface,
+                            width: 2,
+                          ),
                         ),
                       ),
                     ),

@@ -77,7 +77,7 @@ class _ModerateScreenState extends State<ModerateScreen>
                           vertical: 1,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.red,
+                          color: AdminPalette.danger,
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Text(
@@ -289,10 +289,10 @@ class _ModerateScreenState extends State<ModerateScreen>
                     spacing: 6,
                     runSpacing: 4,
                     children: [
-                      _buildChip(idea.domain, Colors.blue),
-                      _buildChip(idea.level, Colors.purple),
+                      _buildChip(idea.domain, AdminPalette.info),
+                      _buildChip(idea.level, AdminPalette.activity),
                       if (idea.tools.isNotEmpty)
-                        _buildChip(idea.tools, Colors.teal),
+                        _buildChip(idea.tools, AdminPalette.secondary),
                     ],
                   ),
                   const SizedBox(height: 10),
@@ -328,7 +328,7 @@ class _ModerateScreenState extends State<ModerateScreen>
                             icon: const Icon(Icons.check, size: 18),
                             label: Text(isIdeaBusy ? 'Working...' : 'Approve'),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green,
+                              backgroundColor: AdminPalette.success,
                               foregroundColor: Colors.white,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
@@ -359,7 +359,7 @@ class _ModerateScreenState extends State<ModerateScreen>
                             icon: const Icon(Icons.close, size: 18),
                             label: Text(isIdeaBusy ? 'Working...' : 'Reject'),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red,
+                              backgroundColor: AdminPalette.danger,
                               foregroundColor: Colors.white,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
@@ -451,8 +451,8 @@ class _ModerateScreenState extends State<ModerateScreen>
                         decoration: BoxDecoration(
                           color:
                               (opp['type'] == 'job'
-                                      ? Colors.blue
-                                      : Colors.green)
+                                      ? AdminPalette.info
+                                      : AdminPalette.secondary)
                                   .withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -462,8 +462,8 @@ class _ModerateScreenState extends State<ModerateScreen>
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
                             color: opp['type'] == 'job'
-                                ? Colors.blue
-                                : Colors.green,
+                                ? AdminPalette.info
+                                : AdminPalette.secondary,
                           ),
                         ),
                       ),
@@ -497,9 +497,9 @@ class _ModerateScreenState extends State<ModerateScreen>
                 ],
               ),
               trailing: IconButton(
-                icon: const Icon(
+                icon: Icon(
                   Icons.delete_outline,
-                  color: Colors.red,
+                  color: AdminPalette.danger,
                   size: 22,
                 ),
                 onPressed: () => _showDeleteDialog(
@@ -558,12 +558,12 @@ class _ModerateScreenState extends State<ModerateScreen>
               leading: Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: Colors.pink.withValues(alpha: 0.12),
+                  color: AdminPalette.danger.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.card_giftcard,
-                  color: Colors.pink,
+                  color: AdminPalette.danger,
                   size: 22,
                 ),
               ),
@@ -597,15 +597,15 @@ class _ModerateScreenState extends State<ModerateScreen>
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.green.withValues(alpha: 0.12),
+                            color: AdminPalette.success.withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
                             '${sch['amount']} DA',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.w600,
-                              color: Colors.green,
+                              color: AdminPalette.success,
                             ),
                           ),
                         ),
@@ -616,15 +616,15 @@ class _ModerateScreenState extends State<ModerateScreen>
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.orange.withValues(alpha: 0.12),
+                            color: AdminPalette.warning.withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
                             'Due: ${sch['deadline']}',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.w600,
-                              color: Colors.orange,
+                              color: AdminPalette.warning,
                             ),
                           ),
                         ),
@@ -633,9 +633,9 @@ class _ModerateScreenState extends State<ModerateScreen>
                 ],
               ),
               trailing: IconButton(
-                icon: const Icon(
+                icon: Icon(
                   Icons.delete_outline,
-                  color: Colors.red,
+                  color: AdminPalette.danger,
                   size: 22,
                 ),
                 onPressed: () => _showDeleteDialog(
@@ -698,9 +698,14 @@ class _ModerateScreenState extends State<ModerateScreen>
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
+        backgroundColor: AdminPalette.surface,
+        surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-        title: Text(title),
-        content: Text(content),
+        title: Text(title, style: TextStyle(color: AdminPalette.textPrimary)),
+        content: Text(
+          content,
+          style: TextStyle(color: AdminPalette.textSecondary),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
@@ -711,9 +716,10 @@ class _ModerateScreenState extends State<ModerateScreen>
               Navigator.pop(ctx);
               onConfirm();
             },
+            style: TextButton.styleFrom(foregroundColor: AdminPalette.danger),
             child: const Text(
               'Delete',
-              style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+              style: TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
         ],

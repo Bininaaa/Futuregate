@@ -96,9 +96,9 @@ class _ConversationListItemState extends State<ConversationListItem> {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(
-                      0xFF0F172A,
-                    ).withValues(alpha: hasUnread ? 0.06 : 0.03),
+                    color: ChatThemePalette.primary.withValues(
+                      alpha: hasUnread ? 0.06 : 0.03,
+                    ),
                     blurRadius: 16,
                     offset: const Offset(0, 4),
                   ),
@@ -318,7 +318,7 @@ class _ConversationAvatar extends StatelessWidget {
               decoration: BoxDecoration(
                 color: ChatThemePalette.success,
                 shape: BoxShape.circle,
-                border: Border.all(color: Colors.white, width: 2),
+                border: Border.all(color: ChatThemePalette.surface, width: 2),
               ),
             ),
           ),

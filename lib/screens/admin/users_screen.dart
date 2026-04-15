@@ -1066,7 +1066,7 @@ class _UsersScreenState extends State<UsersScreen> {
           child: Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AdminPalette.surface,
               borderRadius: BorderRadius.circular(28),
               border: Border.all(color: accentColor.withValues(alpha: 0.16)),
               boxShadow: AdminPalette.softShadow,

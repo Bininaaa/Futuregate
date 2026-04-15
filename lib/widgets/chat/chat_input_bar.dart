@@ -65,7 +65,7 @@ class ChatInputBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: ChatThemePalette.surface,
         border: Border(
           top: BorderSide(
             color: ChatThemePalette.border.withValues(alpha: 0.5),

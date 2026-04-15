@@ -177,13 +177,13 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                   title: 'Licence',
                   value: '${stats['licence'] ?? 0}',
                   icon: Icons.import_contacts_outlined,
-                  color: Colors.indigo,
+                  color: AdminPalette.primary,
                 ),
                 _DashboardMetric(
                   title: 'Master',
                   value: '${stats['master'] ?? 0}',
                   icon: Icons.workspace_premium_outlined,
-                  color: Colors.deepPurple,
+                  color: AdminPalette.activity,
                 ),
                 _DashboardMetric(
                   title: 'Doctorat',
@@ -234,7 +234,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                   title: 'Scholarships',
                   value: '${stats['scholarships'] ?? 0}',
                   icon: Icons.card_giftcard_outlined,
-                  color: Colors.pink,
+                  color: AdminPalette.danger,
                 ),
                 _DashboardMetric(
                   title: 'Trainings',
@@ -246,7 +246,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                   title: 'Project Ideas',
                   value: '${stats['projectIdeas'] ?? 0}',
                   icon: Icons.lightbulb_outline_rounded,
-                  color: Colors.amber.shade700,
+                  color: AdminPalette.warning,
                 ),
                 _DashboardMetric(
                   title: 'Conversations',
@@ -755,7 +755,7 @@ class _QuickAccessGrid extends StatelessWidget {
         title: 'Scholarships',
         subtitle: 'Review funding queue',
         icon: Icons.card_giftcard_outlined,
-        color: Colors.pink,
+        color: AdminPalette.danger,
         onTap: () => onOpenContent(AdminContentCenterScreen.scholarshipsTab),
       ),
       _QuickAccessItem(
@@ -769,7 +769,7 @@ class _QuickAccessGrid extends StatelessWidget {
         title: 'Project Ideas',
         subtitle: 'Moderate idea queue',
         icon: Icons.lightbulb_outline_rounded,
-        color: Colors.amber.shade700,
+        color: AdminPalette.warning,
         onTap: () => onOpenContent(AdminContentCenterScreen.projectIdeasTab),
       ),
       _QuickAccessItem(
@@ -1453,11 +1453,11 @@ Color _activityColor(String type) {
     case 'opportunity':
       return AdminPalette.accent;
     case 'scholarship':
-      return Colors.pink;
+      return AdminPalette.danger;
     case 'training':
       return AdminPalette.secondary;
     default:
-      return Colors.amber.shade700;
+      return AdminPalette.warning;
   }
 }
 

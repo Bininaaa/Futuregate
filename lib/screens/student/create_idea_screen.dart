@@ -7,6 +7,7 @@ import '../../providers/admin_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/project_idea_provider.dart';
 import '../../services/file_storage_service.dart';
+import '../../theme/app_colors.dart';
 import '../settings/settings_flow_theme.dart';
 import '../settings/settings_flow_widgets.dart';
 import '../../widgets/app_shell_background.dart';
@@ -369,8 +370,8 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
       builder: (context) {
         return SafeArea(
           child: Container(
-            decoration: const BoxDecoration(
-              color: Colors.white,
+            decoration: BoxDecoration(
+              color: AppColors.current.surface,
               borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
             ),
             child: Padding(
@@ -1008,7 +1009,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                 errorBuilder: (_, _, _) => Container(
                   height: 170,
                   alignment: Alignment.center,
-                  color: Colors.white,
+                  color: AppColors.current.surfaceMuted,
                   child: Icon(
                     Icons.image_not_supported_outlined,
                     color: InnovationHubPalette.textSecondary,
@@ -1021,7 +1022,9 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.82),
+                color: AppColors.current.surfaceElevated.withValues(
+                  alpha: AppColors.isDark ? 0.96 : 0.82,
+                ),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: InnovationHubPalette.border),
               ),
@@ -1054,7 +1057,9 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.74),
+                color: AppColors.current.surfaceElevated.withValues(
+                  alpha: AppColors.isDark ? 0.96 : 0.74,
+                ),
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(color: InnovationHubPalette.border),
               ),

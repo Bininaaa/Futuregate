@@ -320,7 +320,10 @@ class _NewChatScreenState extends State<NewChatScreen> {
                     decoration: BoxDecoration(
                       color: ChatThemePalette.success,
                       shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 2),
+                      border: Border.all(
+                        color: ChatThemePalette.surface,
+                        width: 2,
+                      ),
                     ),
                   ),
                 ),

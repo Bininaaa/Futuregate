@@ -99,7 +99,7 @@ class _AdminProjectIdeaEditorScreenState
       title: _isEditing ? 'Edit Admin Idea' : 'Publish Admin Idea',
       submitLabel: _isEditing ? 'Save Idea Changes' : 'Publish Idea',
       icon: Icons.lightbulb_outline_rounded,
-      accentColor: Colors.amber.shade700,
+      accentColor: AdminPalette.warning,
       subtitle:
           'Add a platform-curated idea with a strong story, clear metadata, and the same polished structure users already recognize in the innovation feed.',
       isSubmitting: _isSubmitting,

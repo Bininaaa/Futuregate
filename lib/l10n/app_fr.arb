@@ -1,0 +1,2505 @@
+{
+  "@@locale": "fr",
+  "@stepProgressLabel": {
+    "placeholders": {
+      "step": {},
+      "total": {}
+    }
+  },
+  "@versionLabel": {
+    "placeholders": {
+      "version": {}
+    }
+  },
+  "@publishContentType": {
+    "placeholders": {
+      "contentType": {}
+    }
+  },
+  "@companyFundingPrefix": {
+    "placeholders": {
+      "label": {}
+    }
+  },
+  "appTitle": "Porte du futur",
+  "languageEnglish": "Anglais",
+  "languageFrench": "Français",
+  "languageArabic": "arabe",
+  "unknownLanguage": "Inconnu",
+  "currentLabel": "Actuel",
+  "closeLabel": "Fermer",
+  "cancelLabel": "Annuler",
+  "saveLabel": "Sauvegarder",
+  "saveChangesLabel": "Enregistrer les modifications",
+  "publishLabel": "Publier",
+  "retryLabel": "Réessayer",
+  "removeLabel": "Retirer",
+  "changeLabel": "Changement",
+  "continueLabel": "Continuer",
+  "uploadLabel": "Télécharger",
+  "changeImageLabel": "Changer l'image",
+  "uploadImageLabel": "Télécharger une image",
+  "removeImageLabel": "Supprimer l'image",
+  "selectLabel": "Sélectionner",
+  "languageTitle": "Langue",
+  "languagePickerTitle": "Choisir la langue de l'application",
+  "languagePickerSubtitle": "Appliquez instantanément l'anglais, le français ou l'arabe dans l'application.",
+  "languageUpdatedTitle": "Langue mise à jour",
+  "languageUpdatedMessage": "La langue de l'application a été mise à jour avec succès.",
+  "originalLanguageLabel": "Langue originale",
+  "translatedFromLabel": "Traduit de",
+  "viewingTranslatedVersionLabel": "Affichage de la version traduite",
+  "viewingOriginalVersionLabel": "Affichage de la version originale",
+  "translatedContentFallbackLabel": "Traduction indisponible, affichant le contenu original.",
+  "unknownOriginalLanguage": "Langue originale inconnue",
+  "notLoggedIn": "Non connecté",
+  "accountBlockedTitle": "Compte bloqué",
+  "accountBlockedMessage": "Votre compte a été bloqué par un administrateur. Vous ne pouvez plus accéder à la plateforme. Si vous pensez qu'il s'agit d'une erreur, veuillez contacter l'assistance.",
+  "backToSignInLabel": "Retour pour vous connecter",
+  "settingsTitle": "Paramètres",
+  "moreTitle": "Plus",
+  "preferencesTitle": "Préférences",
+  "preferencesSubtitle": "Optimisez l'expérience de l'application, examinez les détails du compte et accédez aux paramètres les plus importants.",
+  "experienceTitle": "Expérience",
+  "experienceSubtitle": "Gardez l’expérience soignée, cohérente et facile à naviguer.",
+  "accountTitle": "Compte",
+  "accountSubtitle": "Utilisez le profil connecté et les flux de sécurité déjà connectés à votre compte.",
+  "workspaceTitle": "Espace de travail",
+  "workspaceSubtitle": "Accédez directement aux domaines clés qui façonnent la présence de votre entreprise.",
+  "supportTitle": "Soutien",
+  "supportSubtitle": "Destinations utiles au-delà de la gestion des profils.",
+  "companyWorkspaceTitle": "Espace de travail de l'entreprise",
+  "companyWorkspaceSubtitle": "Profil, sécurité et assistance dans un seul hub raffiné.",
+  "companyWorkspaceBody": "Utilisez cette zone pour maintenir la présence de votre marque, rester au courant des notifications et gérer les parties de l'espace de travail dont vous avez le plus besoin.",
+  "companyProfileTitle": "Profil de l'entreprise",
+  "companyProfileSubtitle": "Prévisualisez la présence de votre entreprise auprès du public",
+  "editCompanyProfileTitle": "Modifier le profil de l'entreprise",
+  "editCompanyProfileSubtitle": "Actualisez votre description, vos coordonnées et votre logo",
+  "notificationsTitle": "Notifications",
+  "notificationsSubtitle": "Ouvrez votre centre de notifications",
+  "securityPrivacyTitle": "Sécurité et confidentialité",
+  "securityPrivacySubtitle": "Mots de passe, mises à jour par e-mail, confidentialité et informations juridiques",
+  "helpCenterTitle": "Centre d'aide",
+  "helpCenterSubtitle": "Parcourez la FAQ et contactez l'assistance",
+  "aboutFutureGateTitle": "À propos de FutureGate",
+  "aboutFutureGateSubtitle": "Détails de la mission, de la version et de la plateforme",
+  "appVersionTitle": "Version de l'application",
+  "appVersionCurrentLabel": "Actuel",
+  "signOutTitle": "se déconnecter",
+  "signOutSubtitle": "Terminer cette session sur l'appareil actuel",
+  "notificationPreferencesTitle": "Préférences de notification",
+  "notificationPreferencesSubtitle": "Ouvrez votre centre de notifications",
+  "accountPreferencesTitle": "Préférences de compte",
+  "accountPreferencesSubtitle": "Mettez à jour les détails de votre profil",
+  "appearanceThemeTitle": "Apparence / thème",
+  "appearanceThemeSubtitle": "Système visuel lumineux",
+  "appearanceThemeSheetMessage": "Cette version utilise actuellement un système visuel léger dans l'application. Un changement de thème global n’a pas encore été câblé.",
+  "languageSheetMessage": "Choisissez l'anglais, le français ou l'arabe et appliquez-le immédiatement dans l'application.",
+  "lightVisualSystemLabel": "Système visuel lumineux",
+  "openNotificationsCenterLabel": "Ouvrez votre centre de notifications",
+  "companyAccountLabel": "Compte entreprise",
+  "publishingSectionTitle": "Édition",
+  "basicInformationTitle": "Informations de base",
+  "descriptionSectionTitle": "Description",
+  "requirementsAndEligibilityTitle": "Exigences et éligibilité",
+  "logisticsTitle": "Logistique",
+  "additionalInformationTitle": "Informations Complémentaires",
+  "publishingStatusLabel": "Statut de publication",
+  "opportunityTypeLabel": "Type d'opportunité",
+  "opportunityTitleLabel": "Titre de l'opportunité",
+  "scholarshipTitleLabel": "Titre de la bourse",
+  "providerLabel": "Fournisseur",
+  "titleLabel": "Titre",
+  "descriptionLabel": "Description",
+  "locationLabel": "Emplacement",
+  "applicationDeadlineLabel": "Date limite de candidature",
+  "deadlineLabel": "Date limite",
+  "amountLabel": "Montant",
+  "linkLabel": "Lien de candidature",
+  "countryLabel": "Pays",
+  "cityLabel": "Ville",
+  "levelLabel": "Niveau",
+  "categoryLabel": "Catégorie",
+  "tagsLabel": "Balises",
+  "imageUrlLabel": "URL de l'image",
+  "fundingTypeLabel": "Type de financement",
+  "fundingAmountLabel": "Montant du financement",
+  "fundingCurrencyLabel": "Devise de financement",
+  "fundingNoteLabel": "Note de financement",
+  "salaryMinimumLabel": "Salaire minimum",
+  "salaryMaximumLabel": "Salaire maximum",
+  "salaryPeriodLabel": "Période de salaire",
+  "employmentTypeLabel": "Type d'emploi",
+  "workModeLabel": "Mode de travail",
+  "paidStatusLabel": "Statut payant",
+  "compensationNoteLabel": "Note d'indemnisation",
+  "durationLabel": "Durée",
+  "originalLanguageFieldLabel": "Langue originale",
+  "originalLanguageFieldHint": "Sélectionnez la langue source de ce contenu",
+  "openStatusLabel": "Ouvrir",
+  "openStatusSubtitle": "Visible par les étudiants",
+  "closedStatusLabel": "Fermé",
+  "closedStatusSubtitle": "Enregistré en privé",
+  "savedHiddenLabel": "Enregistré mais caché",
+  "selectClosingDateHint": "Sélectionnez une date de clôture",
+  "optionalDirectLinkHint": "Lien direct en option",
+  "optionalCoverImageUrlHint": "URL de l’image de couverture facultative",
+  "commaSeparatedTagsHint": "Balises séparées par des virgules",
+  "scholarshipProviderHint": "Qui offre cette bourse ?",
+  "scholarshipDescriptionHint": "Expliquer la bourse et ce qu'elle soutient",
+  "scholarshipTitleHint": "par ex. Bourse mondiale des futurs constructeurs",
+  "opportunityTitleHintJob": "par ex. Développeur Flutter Junior",
+  "opportunityTitleHintInternship": "par ex. Stage Flutter - Équipe mobile",
+  "opportunityTitleHintSponsoring": "par ex. Programme de parrainage de l'innovation étudiante",
+  "opportunityLocationHintDefault": "par ex. Alger, Algérie",
+  "opportunityLocationHintSponsoring": "par ex. Dans toute l'Algérie ou Alger",
+  "eligibilityLabel": "Admissibilité",
+  "requirementsLabel": "Exigences",
+  "programDescriptionLabel": "Descriptif du programme",
+  "roleDescriptionLabel": "Description du rôle",
+  "typeOneEligibilityHint": "Saisissez une règle d'éligibilité, puis appuyez sur Entrée",
+  "typeOneRequirementHint": "Tapez une exigence, puis appuyez sur Entrée",
+  "addEligibilityEmptyHint": "Ajoutez qui peut postuler, les documents requis ou les conditions académiques.",
+  "addRequirementEmptyHint": "Ajoutez les compétences, les connaissances ou les outils dont les étudiants ont besoin.",
+  "featureScholarshipTitle": "Présentez cette bourse",
+  "featureScholarshipSubtitle": "Utilisez-le pour les opportunités de bourses hautement prioritaires ou particulièrement intéressantes.",
+  "scholarshipEditorSubtitle": "Organisez les bourses dans la même application où les étudiants les découvrent, avec suffisamment de structure pour des cartes plus riches et un filtrage plus utile.",
+  "scholarshipPublishingSubtitle": "Les bourses en vedette bénéficient d’une présence plus forte dans le flux de découverte des étudiants.",
+  "scholarshipBasicInfoSubtitle": "Commencez par l’identité principale de la bourse afin que l’opportunité se lise clairement sur les cartes et les détails.",
+  "scholarshipDescriptionSubtitle": "Expliquez ce que la bourse soutient et pourquoi elle se démarque.",
+  "scholarshipRequirementsSubtitle": "Rendre les critères d'éligibilité explicites avant que les étudiants cliquent pour postuler.",
+  "scholarshipLogisticsSubtitle": "Conservez le montant, la date limite et les détails de la destination dans une seule section prévisible.",
+  "scholarshipAdditionalInfoSubtitle": "Utilisez ces champs facultatifs pour améliorer la découverte, le filtrage et la clarté des applications sortantes.",
+  "publishScholarshipTitle": "Publier une bourse",
+  "editScholarshipTitle": "Modifier la bourse",
+  "saveScholarshipChangesLabel": "Enregistrer les modifications apportées aux bourses",
+  "publishOpportunityTitle": "Créer une opportunité",
+  "editOpportunityTitle": "Modifier l'opportunité",
+  "saveOpportunityChangesLabel": "Enregistrer les modifications d'opportunité",
+  "publishAdminOpportunityTitle": "Publier une opportunité d'administration",
+  "editAdminOpportunityTitle": "Modifier l'opportunité d'administration",
+  "futureGateAdminLabel": "Administrateur FutureGate",
+  "publishIdeaTitle": "Publier une idée",
+  "refineIdeaTitle": "Affinez votre idée",
+  "launchBreakthroughTitle": "Lancez votre prochaine avancée",
+  "editLockedTitle": "Modification verrouillée",
+  "editLockedMessage": "Seules les idées en attente peuvent être modifiées. Cette idée a déjà dépassé le stade de l'examen, le formulaire est donc affiché en mode verrouillé.",
+  "uploadInProgressTitle": "Téléchargement en cours",
+  "pleaseWaitForCoverUpload": "Veuillez attendre la fin du téléchargement de l'image de couverture.",
+  "ideaPublishedTitle": "Idée publiée",
+  "ideaPublishedMessage": "Idée publiée avec succès.",
+  "ideaSubmittedTitle": "Idée soumise",
+  "ideaSubmittedMessage": "Idée soumise avec succès.",
+  "ideaUpdatedTitle": "Idée mise à jour",
+  "ideaUpdatedMessage": "Idée mise à jour avec succès.",
+  "submissionUnavailableTitle": "Soumission indisponible",
+  "readyForPublicDiscoveryTitle": "Prêt pour la découverte publique",
+  "readyForPublicDiscoverySubtitle": "Les idées approuvées apparaissent dans Discover. Les idées en attente restent visibles dans Mes idées.",
+  "coverImageReadyTitle": "Image de couverture prête",
+  "uploadCoverImageTitle": "Téléchargez une image de couverture",
+  "coverImageReadySubtitle": "Votre idée dispose désormais d'un en-tête visuel qui s'affichera dans Découvrir, Mes idées et dans la vue Détails.",
+  "uploadCoverImageSubtitle": "Choisissez une image JPG, PNG ou WebP pour que l'idée soit peaufinée dès le premier coup d'œil.",
+  "coverImageUploadedLabel": "Image de couverture téléchargée",
+  "strongVisualHint": "Un visuel fort rend les cartes présentées et le héros des détails beaucoup plus vivants.",
+  "bestResultsImageHint": "Meilleurs résultats : couverture 16:9, moins de 5 Mo.",
+  "deckDemoLinkLabel": "Lien deck/démo",
+  "deckDemoLinkHint": "Figma, Notion, pitch deck, page de destination...",
+  "chooseOneOptionLabel": "Choisissez une option",
+  "selectCategoryTitle": "Sélectionnez la catégorie",
+  "selectStageTitle": "Sélectionnez l'étape",
+  "loginRequiredTitle": "Connexion requise",
+  "signInContinuePublishingMessage": "Connectez-vous pour continuer à publier des opportunités.",
+  "loginRequiredUploadMessage": "Veuillez vous reconnecter pour télécharger des images.",
+  "updateUnavailableTitle": "Mise à jour indisponible",
+  "publishUnavailableTitle": "Publication indisponible",
+  "uploadUnavailableTitle": "Téléchargement indisponible",
+  "opportunityUpdatedMessage": "Les détails de votre opportunité ont été mis à jour.",
+  "opportunityPublishedMessage": "Opportunité publiée avec succès.",
+  "scholarshipUpdatedMessage": "Bourse mise à jour avec succès.",
+  "scholarshipPublishedMessage": "Bourse publiée avec succès.",
+  "ideaUploadSizeMessage": "Choisissez une image inférieure à 5 Mo.",
+  "validationTitleRequired": "Le titre est requis",
+  "validationDescriptionRequired": "Une description est requise",
+  "validationLocationRequired": "L'emplacement est requis",
+  "validationEligibilityItemRequired": "Ajouter au moins un élément d'éligibilité",
+  "validationRequirementItemRequired": "Ajouter au moins une exigence",
+  "validationUseAtLeastFourCharacters": "Utilisez au moins 4 caractères",
+  "validationAddMoreDetail": "Veuillez ajouter un peu plus de détails",
+  "validationValidDate": "Utilisez une date valide",
+  "validationDeadlineRequired": "La date limite de candidature est requise",
+  "validationDeadlinePast": "La date limite ne peut pas être passée",
+  "validationValidAmount": "Entrez un montant valide",
+  "validationAmountNonNegative": "Le montant ne peut pas être négatif",
+  "validationFundingAmountOrNote": "Ajouter un montant de financement ou une note",
+  "validationFundingNoteOrAmount": "Ajouter une note ou un montant de financement",
+  "validationAddClearerDuration": "Ajouter une durée plus claire",
+  "validationEnterValidNumber": "Entrez un numéro valide",
+  "validationMinCannotExceedMax": "Le minimum ne peut pas dépasser le maximum",
+  "validationMaxAtLeastMin": "Max doit être au moins min",
+  "validationOriginalLanguageRequired": "La langue originale est requise",
+  "validationProjectIdeaTitleRequired": "Ce champ est obligatoire.",
+  "validationFieldRequired": "Ce champ est obligatoire.",
+  "continueWithGoogleLabel": "Continuer avec Google",
+  "orDividerLabel": "OU",
+  "stepProgressLabel": "Étape {step} de {total}",
+  "versionLabel": "Version {version}",
+  "publishContentType": "Publier {contentType}",
+  "companyFundingPrefix": "Financement de l’entreprise : {label}",
+  "academicLevelBachelor": "Célibataire",
+  "academicLevelBachelorDescription": "Parcours universitaire fondamental",
+  "academicLevelLicence": "Licence",
+  "academicLevelLicenceDescription": "Programme de licence",
+  "academicLevelMaster": "Maître",
+  "academicLevelMasterDescription": "Spécialisation académique avancée",
+  "academicLevelDoctorat": "Doctorat",
+  "academicLevelDoctoratDescription": "Recherches doctorales et travaux de thèse",
+  "jobLabel": "Emploi",
+  "internshipLabel": "Stage",
+  "sponsoredLabel": "Sponsorisé",
+  "jobLowercaseLabel": "emploi",
+  "internshipLowercaseLabel": "stage",
+  "sponsoredLowercaseLabel": "sponsorisé",
+  "opportunityHeadlineJob": "Embaucher pour un vrai rôle",
+  "opportunityHeadlineInternship": "Faites venir les futurs talents",
+  "opportunityHeadlineSponsoring": "Soutenez les étudiants avec un programme sponsorisé premium",
+  "opportunitySubtitleJob": "Travail à temps plein et à temps partiel",
+  "opportunitySubtitleInternship": "Apprentissage et expérience professionnelle",
+  "opportunitySubtitleSponsoring": "Programmes financés par Premium et partenaires",
+  "opportunityDescriptionHintJob": "Décrivez le rôle, l'équipe et les responsabilités...",
+  "opportunityDescriptionHintInternship": "Décrivez la portée du stage, les objectifs d'apprentissage et les responsabilités...",
+  "opportunityDescriptionHintSponsoring": "Décrivez le programme de parrainage, le soutien offert et à qui il s'adresse...",
+  "opportunityRequirementsHintJob": "Partagez les compétences et les qualifications nécessaires...",
+  "opportunityRequirementsHintInternship": "Partagez vos compétences préférées, votre parcours académique ou vos outils...",
+  "opportunityRequirementsHintSponsoring": "Partagez des critères d'éligibilité, des documents ou des attentes...",
+  "employmentTypeFullTime": "À temps plein",
+  "employmentTypePartTime": "À temps partiel",
+  "employmentTypeInternship": "Stage",
+  "employmentTypeContract": "Contracter",
+  "employmentTypeTemporary": "Temporaire",
+  "employmentTypeFreelance": "Free-lance",
+  "workModeOnsite": "Sur place",
+  "workModeRemote": "Télécommande",
+  "workModeHybrid": "Hybride",
+  "paidLabel": "Payé",
+  "unpaidLabel": "Non rémunéré",
+  "benefitFundingIncluded": "Financement inclus",
+  "benefitPaidOpportunity": "Opportunité payante",
+  "benefitRemoteFriendly": "Configuration conviviale à distance",
+  "benefitHybridFormat": "Format de travail hybride",
+  "benefitFeaturedSponsored": "Placement sponsorisé en vedette",
+  "ui12Matches": "12 matchs",
+  "ui70Completed": "70 % terminé",
+  "uiABriefSummaryOfYourProfile": "Un bref résumé de votre profil",
+  "uiACleanerBreakdownOfTheProviderDestinationAndTrack": "Une répartition plus claire du fournisseur, de la destination et du suivi.",
+  "uiAClearerPathFromStudentAmbitionToRealWorldOpportunity": "Un chemin plus clair entre l’ambition des étudiants et les opportunités du monde réel.",
+  "uiACurrentCommercialRegisterReinforcesTrustAndHelpsKeepThe": "Un registre du commerce à jour renforce la confiance et permet de maintenir le profil de l'entreprise prêt à être révisé.",
+  "uiAFocusedOverviewSoTheOpportunityFeelsEasyToScan": "Un aperçu ciblé pour que l'opportunité soit facile à analyser.",
+  "uiAPublicWebsiteAndSocialChannelsAreNotLinkedInside": "Un site Web public et des canaux sociaux ne sont pas encore liés dans cette version. Les demandes d'assistance peuvent toujours être envoyées directement par e-mail.",
+  "uiAQuickCountOfTheContentTypesHandledInsideThe": "Un décompte rapide des types de contenu gérés dans l’espace de travail d’administration.",
+  "uiAQuickHighlightPickedFromTheScholarships": "Un petit moment choisi parmi les bourses",
+  "uiAQuickPulseOnImportedResourcesSoAdminsCanCurate": "Une impulsion rapide sur les ressources importées afin que les administrateurs puissent organiser au lieu de deviner.",
+  "uiAReadyCvMakesJobsInternshipsAndScholarshipsMuchQuicker": "Un CV prêt permet de postuler beaucoup plus rapidement aux emplois, stages et bourses.",
+  "uiASharperCompanyStoryMakesTheProfileFeelMoreConfident": "Une histoire d’entreprise plus précise rend le profil plus confiant et digne de confiance.",
+  "uiAStrongLogoOrCompanyPhotoMakesTheProfileFeel": "Un logo fort ou une photo d’entreprise rend le profil plus raffiné et reconnaissable.",
+  "uiAVerificationLinkWillBeSentToTheNewAddress": "Un lien de vérification sera envoyé à la nouvelle adresse avant que le changement ne devienne actif.",
+  "uiAbout": "À propos",
+  "uiAboutThisScholarship": "À propos de cette bourse",
+  "uiAboutYou": "Au propos de vous",
+  "uiAcademicBreakdown": "Répartition académique",
+  "uiAcademicLevel": "Niveau académique",
+  "uiAcademicLevel80Cc": "Niveau académique",
+  "uiAcademicProfile": "Profil académique",
+  "uiAcceptedFormatsJpgPngOrWebpMaximumSize5Mb": "Formats acceptés : JPG, PNG ou WebP. Taille maximale : 5 Mo.",
+  "uiAccess": "Accéder",
+  "uiAccountAccess": "Accès au compte",
+  "uiAccountCreationUnavailable": "Création de compte indisponible",
+  "uiAccountHelp": "Aide sur le compte",
+  "uiAccountPreferences": "Préférences de compte",
+  "uiAccountSecurity": "Sécurité du compte",
+  "uiActBeforeDeadlinesClose": "Agissez avant la clôture des délais.",
+  "uiActionUser": "Utilisateur {action}",
+  "@uiActionUser": {
+    "placeholders": {
+      "action": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiActions": "Actes",
+  "uiActive": "Actif",
+  "uiActiveJobPosts": "Offres d'emploi actives",
+  "uiActiveJobs": "EMPLOIS ACTIFS",
+  "uiActiveUsers": "Utilisateurs actifs",
+  "uiActivity": "Activité",
+  "uiActivityFeedUnavailable": "Flux d'activité indisponible",
+  "uiAdd": "Ajouter",
+  "uiAddAFewLinesAboutWhatYourCompanyBuildsAnd": "Ajoutez quelques lignes sur ce que votre entreprise construit et sur ce que les étudiants peuvent attendre de votre équipe.",
+  "uiAddALanguage": "Ajouter une langue",
+  "uiAddAPlatformCuratedIdeaWithAStrongStoryClear": "Ajoutez une idée organisée par la plateforme avec une histoire forte, des métadonnées claires et la même structure raffinée que les utilisateurs reconnaissent déjà dans le fil d'innovation.",
+  "uiAddASkill": "Ajouter une compétence",
+  "uiAddEachPointSeparatelySoStudentsSeeACleanChecklist": "Ajoutez chaque point séparément afin que les élèves voient une liste de contrôle claire.",
+  "uiAddEmailAndPasswordSignIn": "Ajouter une connexion par e-mail et par mot de passe",
+  "uiAddItem": "Ajouter un article",
+  "uiAddOneClearItemAtATimeSoStudentsSee": "Ajoutez un élément clair à la fois pour que les élèves voient une liste de contrôle claire.",
+  "uiAddPassword": "Ajouter un mot de passe",
+  "uiAddTheSupportingMaterialsVisibilitySettingsAndAttachmentsThatMake": "Ajoutez les documents de support, les paramètres de visibilité et les pièces jointes qui donnent l’impression que la publication est complète.",
+  "uiAddYourStudentDetails": "Ajoutez les détails de votre étudiant.",
+  "uiAdditionalInformation": "Informations Complémentaires",
+  "uiAddress": "Adresse",
+  "uiAdminContentCenter": "Centre de contenu d'administration",
+  "uiAdminControlRoom": "Salle de contrôle administrative",
+  "uiAdminPosts": "Messages d'administrateur",
+  "uiAiActionUnavailable": "Action IA indisponible",
+  "uiAiIsProcessing": "L'IA traite...",
+  "uiAiTrainer": "Formateur IA",
+  "uiAlerts": "Alertes",
+  "uiAlexFromTechcorp": "Alex de TechCorp",
+  "uiAll": "Tous",
+  "uiAllIdeas": "Toutes les idées",
+  "uiAllOppsValue1": "Toutes les opportunités ({value1})",
+  "@uiAllOppsValue1": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiAllRoles": "Tous les rôles",
+  "uiAllSponsoredPrograms": "Tous les programmes sponsorisés",
+  "uiAnswersGuidanceAndSupport": "Réponses, conseils et soutien.",
+  "uiAny": "N'importe lequel",
+  "uiAppearanceTheme": "Apparence / Thème",
+  "uiApplicantcount": "{applicantCount}",
+  "@uiApplicantcount": {
+    "placeholders": {
+      "applicantCount": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiApplicantcountApplicants": "{applicantCount} candidats",
+  "@uiApplicantcountApplicants": {
+    "placeholders": {
+      "applicantCount": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiApplicants": "Candidats",
+  "uiApplicationActivity": "Activité des applications",
+  "uiApplicationApproved": "Demande\nApprouvé",
+  "uiApplicationApprovedB0Cb": "Demande approuvée",
+  "uiApplicationBlocked": "Application bloquée",
+  "uiApplicationDataIsUnavailable": "Les données de candidature ne sont pas disponibles.",
+  "uiApplicationDataIsUnavailableRightNow": "Les données d'application ne sont pas disponibles pour le moment.",
+  "uiApplicationDetails": "Détails de la candidature",
+  "uiApplicationHelp": "Aide sur les applications",
+  "uiApplicationLink": "Lien d'application",
+  "uiApplicationPipeline": "Pipeline d'applications",
+  "uiApplicationProcess": "Processus de candidature",
+  "uiApplicationRate": "Taux d'application",
+  "uiApplicationStatus": "Statut de la demande",
+  "uiApplicationUnavailable": "Application indisponible",
+  "uiApplicationUpdated": "Application mise à jour",
+  "uiApplications": "Applications",
+  "uiApplicationsForOpportunitytitle": "Applications pour {opportunityTitle}",
+  "@uiApplicationsForOpportunitytitle": {
+    "placeholders": {
+      "opportunityTitle": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiApplicationsReceived": "Candidatures reçues",
+  "uiApplied": "Appliqué",
+  "uiAppliedAppliedtext": "{appliedText} appliqué",
+  "@uiAppliedAppliedtext": {
+    "placeholders": {
+      "appliedText": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiAppliedOpportunities": "Opportunités appliquées",
+  "uiAppliedRelativeappliedlabel": "Appliqué {relativeAppliedLabel}",
+  "@uiAppliedRelativeappliedlabel": {
+    "placeholders": {
+      "relativeAppliedLabel": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiApply": "Appliquer",
+  "uiApplyLink": "Appliquer le lien",
+  "uiApplyNow": "Postulez maintenant",
+  "uiApplyTemplate": "Appliquer le modèle",
+  "uiApprove": "Approuver",
+  "uiApproveCompany": "Approuver l'entreprise",
+  "uiApproved": "Approuvé",
+  "uiApprovedValue1Approved": "{approved} {value1} approuvé.",
+  "@uiApprovedValue1Approved": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      },
+      "approved": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiArchiveConversation": "Archiver la conversation ?",
+  "uiArchived": "Archivé",
+  "uiAreYouSureYouWantToArchiveThisConversation": "Êtes-vous sûr de vouloir archiver cette conversation ?",
+  "uiAreYouSureYouWantToDeleteThisConversationThis": "Êtes-vous sûr de vouloir supprimer cette conversation ? Cette action ne peut pas être annulée.",
+  "uiAtAGlance": "EN UN COUP D'OEIL",
+  "uiAttach": "Attacher",
+  "uiAttachment": "Pièce jointe",
+  "uiAttachmentUnavailable": "Pièce jointe indisponible",
+  "uiAttachments": "Pièces jointes",
+  "uiAudienceAndImpact": "Public et impact",
+  "uiAudienceAndMetadata": "Audience et métadonnées",
+  "uiAudienceMetadata": "Audience et métadonnées",
+  "uiAvailableInternships": "Stages disponibles",
+  "uiAvailableJobs": "Emplois disponibles",
+  "uiAvailableNow": "DISPONIBLE MAINTENANT",
+  "uiAvailableScholarships": "Disponible\nBourses",
+  "uiAvatarUnavailable": "Avatar indisponible",
+  "uiAvenirCloudSupport": "Avenir Cloud • Assistance",
+  "uiBac": "Bac",
+  "uiBack": "Dos",
+  "uiBackToLogin": "Retour à la connexion",
+  "uiBackToLoginB5Cd": "Retour à la connexion",
+  "uiBackendSupport": "Prise en charge du back-end",
+  "uiBadgecount": "{badgeCount}",
+  "@uiBadgecount": {
+    "placeholders": {
+      "badgeCount": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiBasicDetails": "Détails de base",
+  "uiBasicIdentity": "Identité de base",
+  "uiBasicInformation": "Informations de base",
+  "uiBenefits": "Avantages",
+  "uiBenefitsAndImpact": "Avantages et impact",
+  "uiBenefitsImpact": "Avantages / Impact",
+  "uiBenefitsOrImpact": "Avantages ou impact",
+  "uiBestSuitedFor": "Idéal pour",
+  "uiBio": "Biographie",
+  "uiBookImportWorkspace": "Espace de travail d’importation de livres",
+  "uiBookLibraryUnavailable": "Bibliothèque de livres indisponible",
+  "uiBooks": "Livres",
+  "uiBrandStory": "Histoire de la marque",
+  "uiBrightStudioGrowth": "Bright Studio · Croissance",
+  "uiBrowseCategories": "Parcourir les catégories",
+  "uiBrowseJobsInternshipsSponsoredTracksAndTrainingPicksDesignedFor": "Parcourez les emplois, les stages, les pistes sponsorisées et les choix de formation conçus pour les étudiants.",
+  "uiBrowseLearningHub": "Parcourir le centre d'apprentissage",
+  "uiBuildSaveAndGrowYourNextProjectIdeaWithConfidence": "Créez, enregistrez et développez votre prochaine idée de projet en toute confiance.",
+  "uiBuildSkillsAndGrowYourCareerWithCuratedLearningPaths": "Développez vos compétences et développez votre carrière grâce à des parcours d'apprentissage sélectionnés.",
+  "uiBuildStory": "Construire une histoire",
+  "uiBuildUploadAndExportYourCv": "Créez, téléchargez et exportez votre CV.",
+  "uiBuildYourCvFirst": "Construisez d’abord votre CV.",
+  "uiBuildYourNextSkill": "Développez votre prochaine compétence",
+  "uiBuiltCv": "CV construit",
+  "uiBusiness": "Entreprise",
+  "uiBusinessEmail": "Courriel professionnel",
+  "uiByValue1": "Par {value1}",
+  "@uiByValue1": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiCatalogue": "Catalogue",
+  "uiCategories": "Catégories",
+  "uiCertificate": "Certificat",
+  "uiChangeEmail": "Changer l'e-mail",
+  "uiChangePassword": "Changer le mot de passe",
+  "uiChat": "Chat",
+  "uiChatUnavailable": "Chat indisponible",
+  "uiCheckBackSoonForFreshCuratedOpportunities": "Revenez bientôt pour de nouvelles opportunités organisées.",
+  "uiCheckTheCoreEligibilitySignalsBeforeMovingForward": "Vérifiez les principaux signaux d’éligibilité avant d’aller de l’avant.",
+  "uiCheckYourEmail": "Vérifiez votre courrier électronique",
+  "uiChoose": "Choisir",
+  "uiChooseATemplate": "Choisir un modèle ?",
+  "uiChooseAnAvatar": "Choisissez un avatar",
+  "uiChooseAvatar": "Choisissez un avatar",
+  "uiChooseLevel": "Choisir le niveau",
+  "uiChooseTemplate": "Choisir un modèle",
+  "uiChooseTheNextModerationStepOrOpenTheFullProfile": "Choisissez l’étape de modération suivante ou ouvrez le profil complet.",
+  "uiChooseWhetherTheIdeaIsVisibleInDiscoveryAndWhether": "Choisissez si l'idée est visible dans la découverte et si elle se lit comme une opportunité de collaboration publique.",
+  "uiChooseYourAccountType": "Choisissez votre type de compte.",
+  "uiChooseYourDomain": "Choisissez votre domaine",
+  "uiClear": "Clair",
+  "uiClearFilters": "Effacer les filtres",
+  "uiClearSearch": "Effacer la recherche",
+  "uiClosingSoon": "Bientôt fermé",
+  "uiClosingSoonC287": "Fermeture prochaine",
+  "uiCloudSupportEngineer": "Ingénieur support cloud",
+  "uiCollaboration": "Collaboration",
+  "uiCollaborationNeeds": "Besoins de collaboration",
+  "uiCommercialRegister": "Registre du commerce",
+  "uiCompanies": "Entreprises",
+  "uiCompany": "Entreprise",
+  "uiCompanyDescriptionOptional": "Description de l'entreprise (facultatif)",
+  "uiCompanyModeration": "Modération de l'entreprise",
+  "uiCompanyName": "Nom de l'entreprise",
+  "uiCompanyOverview": "Présentation de l'entreprise",
+  "uiCompanyProfile": "Profil de l'entreprise",
+  "uiCompanyRegistration": "Enregistrement de l'entreprise",
+  "uiCompanyReview": "Examen de l'entreprise",
+  "uiCompanyReviews": "Avis sur les entreprises",
+  "uiCompensation": "Compensation",
+  "uiCompetition": "Concours",
+  "uiCompleteYourProfile": "Complétez votre profil",
+  "uiCompleteYourProfile9A4B": "Complétez votre profil.",
+  "uiCompletedOfTotalSectionsComplete": "{completed} des sections {total} terminées",
+  "@uiCompletedOfTotalSectionsComplete": {
+    "placeholders": {
+      "completed": {
+        "type": "Object"
+      },
+      "total": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiCompletion": "{completion}%",
+  "@uiCompletion": {
+    "placeholders": {
+      "completion": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiCompletionReadyForBetterStudentMatching": "{completion}% prêt pour un meilleur jumelage des étudiants",
+  "@uiCompletionReadyForBetterStudentMatching": {
+    "placeholders": {
+      "completion": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiConfirmPassword": "Confirmez le mot de passe",
+  "uiContact": "Contact",
+  "uiContactPresence": "Contact & Présence",
+  "uiContactSupport": "Contacter l'assistance",
+  "uiContent": "Contenu",
+  "uiContentNeeded": "Contenu nécessaire",
+  "uiContentWorkspace": "Espace de travail de contenu",
+  "uiContinueWithConfidenceOnTheOfficialDestination": "Continuez en toute confiance sur la destination officielle.",
+  "uiControl": "Contrôle",
+  "uiConversationContext": "Contexte de la conversation",
+  "uiConversationDeleted": "Conversation supprimée",
+  "uiConversations": "Conversations",
+  "uiCoreStory": "Histoire principale",
+  "uiCorrect": "Correct",
+  "uiCouldNotOpenTheScholarshipLink": "Impossible d'ouvrir le lien de la bourse",
+  "uiCouldNotRefreshOpportunities": "Impossible d'actualiser les opportunités",
+  "uiCount": "{count}",
+  "@uiCount": {
+    "placeholders": {
+      "count": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiCoursesBooksAndCertificationsThatSharpenYourJourney": "Des cours, des livres et des certifications qui aiguisent votre parcours.",
+  "uiCreateAccount": "Créer un compte",
+  "uiCreateAccountEff4": "Créer un compte",
+  "uiCreateTheFirstProjectIdeaToStartShapingTheInnovation": "Créez la première idée de projet pour commencer à façonner le flux d’innovation.",
+  "uiCreateYourFirstIdeaOrAdjustTheFilters": "Créez votre première idée ou ajustez les filtres.",
+  "uiCreator": "Créateur",
+  "uiCurateImportedBooksAndVideoResourcesFromOnePlace": "Organisez les livres et les ressources vidéo importés à partir d’un seul endroit.",
+  "uiCurateResourceHub": "Organiser un centre de ressources",
+  "uiCuratedFundingPathsDeadlinesAndGlobalStudyOptions": "Voies de financement, délais et options d'études mondiales organisées.",
+  "uiCurrency": "Devise",
+  "uiCurrentEmail": "Courriel actuel",
+  "uiCurrentPassword": "Mot de passe actuel",
+  "uiCvBuilder": "Générateur de CV",
+  "uiCvCompletionRate": "Taux de complétion des CV",
+  "uiCvDetailsAreNotAvailableForThisApplication": "Les détails du CV ne sont pas disponibles pour cette candidature",
+  "uiCvPreview": "Aperçu du CV",
+  "uiCvRequired": "CV obligatoire",
+  "uiCvSaved": "CV enregistré",
+  "uiCvStudio": "Studio de CV",
+  "uiDashboard": "Tableau de bord",
+  "uiDashboardUnavailable": "Tableau de bord indisponible",
+  "uiDataAnalyst": "Analyste de données",
+  "uiDataPermissions": "Autorisations de données",
+  "uiDataSciencePro": "Professionnel de la science des données",
+  "uiDeadlineExpired": "Délai expiré",
+  "uiDeadlineSet": "Date limite fixée",
+  "uiDeckDemoLink": "Lien Deck / Démo",
+  "uiDegree": "Degré",
+  "uiDelete": "Supprimer",
+  "uiDeleteChat": "Supprimer le chat",
+  "uiDeleteConversation": "Supprimer la conversation ?",
+  "uiDeleteForEveryone": "Supprimer pour tout le monde",
+  "uiDeleteMessage": "Supprimer le message ?",
+  "uiDeleteOpportunity": "Supprimer l'opportunité",
+  "uiDeleteResource": "Supprimer la ressource",
+  "uiDeleteUnavailable": "Supprimer indisponible",
+  "uiDeleteValue1FromFirestoreThisActionCannotBeUndone": "Supprimer « {value1} » de Firestore ? Cette action ne peut pas être annulée.",
+  "@uiDeleteValue1FromFirestoreThisActionCannotBeUndone": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiDeleteValue1IfItAlreadyHasApplicationsItWillBe": "Supprimer \"{value1}\" ? S'il contient déjà des applications, il sera fermé afin de préserver l'historique.",
+  "@uiDeleteValue1IfItAlreadyHasApplicationsItWillBe": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiDeliveryAccess": "Livraison et accès",
+  "uiDesign": "Conception",
+  "uiDestination": "Destination",
+  "uiDetails": "Détails",
+  "uiDetailsUnavailable": "Détails indisponibles",
+  "uiDisabledWhileLevelFilterIsActive": "Désactivé lorsque le filtre de niveau est actif",
+  "uiDiscover": "Découvrir",
+  "uiDiscoverPremiumOpenRolesFromTrustedEmployersAndRemoteReady": "Découvrez des postes vacants premium proposés par des employeurs de confiance et des équipes prêtes à travailler à distance.",
+  "uiDoctorate": "Doctorat",
+  "uiDocumentMissing": "Document manquant",
+  "uiDocumentUnavailable": "Document indisponible",
+  "uiDocuments": "Documents",
+  "uiDomain": "Domaine",
+  "uiDownload": "Télécharger Ø³Ø¬Ù ØªØ¬Ø§Ø±Ù",
+  "uiDownloadA479": "Télécharger",
+  "uiDownloadBuiltCv": "Télécharger le CV construit",
+  "uiDownloadCv": "Télécharger CV",
+  "uiEachSourceKeepsItsOwnSearchWorkflowAndManagementTools": "Chaque source conserve son propre flux de travail de recherche et ses propres outils de gestion, mais ils résident désormais sous une seule destination de bibliothèque.",
+  "uiEdit": "Modifier",
+  "uiEditCompanyProfile": "Modifier le profil de l'entreprise",
+  "uiEditCv": "Modifier le CV",
+  "uiEditIdea": "Modifier l'idée",
+  "uiEditMessage": "Modifier le message",
+  "uiEditProfile": "Modifier le profil",
+  "uiEditProfileCd28": "Modifier le profil",
+  "uiEditingMessage": "Modification du message",
+  "uiEmail": "E-mail",
+  "uiEmailSignUp": "Inscription par e-mail",
+  "uiEmailUnavailable": "E-mail indisponible",
+  "uiEmailUpdateUnavailable": "Mise à jour par e-mail indisponible",
+  "uiEmployment": "Emploi",
+  "uiEndThisSessionOnTheCurrentDevice": "Terminez cette session sur l'appareil actuel.",
+  "uiEngagementAnalytics": "Analyse de l'engagement",
+  "uiEnterYourEmailToGetAResetLink": "Entrez votre e-mail pour obtenir un lien de réinitialisation.",
+  "uiEverythingAroundYourProfileDocumentsNotificationsAndAccountSettings": "Tout ce qui concerne votre profil, vos documents, vos notifications et les paramètres de votre compte.",
+  "uiEverythingImportantIsSurfacedHereBeforeYouOpenTheFull": "Tout ce qui est important est exposé ici avant que vous n'ouvriez l'appel de candidature complet.",
+  "uiExternalApplication": "Application externe",
+  "uiExternalLink": "Lien externe",
+  "uiExternalLink6630": "Lien externe",
+  "uiFailedToLoadAdminContent": "Échec du chargement du contenu administrateur",
+  "uiFaqs": "FAQ",
+  "uiFeatured": "En vedette",
+  "uiFeaturedDestination": "Destination en vedette",
+  "uiFeaturedFreshAndHighSignalPicksFromLiveData": "Sélections en vedette, récentes et à signal élevé à partir de données en direct",
+  "uiFeaturedInternships": "Stages en vedette",
+  "uiFeaturedJobs": "Emplois en vedette",
+  "uiFeaturedListUpdated": "Liste en vedette mise à jour",
+  "uiFeaturedScholarship": "En vedette\nBourse",
+  "uiFeaturedcountFeaturedResources": "{featuredCount} ressources en vedette",
+  "@uiFeaturedcountFeaturedResources": {
+    "placeholders": {
+      "featuredCount": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiFeed": "Alimentation",
+  "uiFieldOfStudy": "Domaine d'études",
+  "uiFieldOfStudy81E2": "Domaine d'études",
+  "uiFile": "Déposer",
+  "uiFilterOpportunities": "Filtrer les opportunités",
+  "uiFindBooksByDomainLevelAndLanguageThenImportThem": "Recherchez des livres par domaine, niveau et langue, puis importez-les dans la bibliothèque de formation avec les métadonnées d'administration.",
+  "uiFindYourNextBestOpportunity": "Trouvez votre prochaine meilleure opportunité.",
+  "uiFindYourNextMove": "Trouvez votre prochain mouvement.",
+  "uiFinish": "Finition",
+  "uiFinishProfile": "Profil de finition",
+  "uiFocus": "Se concentrer",
+  "uiFocusSearch": "Recherche ciblée",
+  "uiFocusedApplicationView": "Vue ciblée des applications",
+  "uiForgotPassword": "Mot de passe oublié ?",
+  "uiFormalize": "Formaliser",
+  "uiFree": "Gratuit",
+  "uiFreshRecommendationsAreHighlightedAsNewListingsGoLive": "De nouvelles recommandations sont mises en évidence au fur et à mesure que de nouvelles annonces sont mises en ligne.",
+  "uiFullDescription": "Descriptif complet",
+  "uiFullDescriptionB43E": "Description complète",
+  "uiFullName": "Nom et prénom",
+  "uiFullTuitionCoverage": "Couverture complète des frais de scolarité",
+  "uiFunding": "Financement",
+  "uiFundingOpportunitiesDeadlinesAndGlobalStudyPaths": "Opportunités de financement, délais et parcours d’études mondiaux.",
+  "uiFundingValue1": "Financement : {value1}",
+  "@uiFundingValue1": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiFuturegateExpectsAccurateProfilesRespectfulCommunicationAndResponsibleUseOf": "FutureGate attend des profils précis, une communication respectueuse et une utilisation responsable de l'application et des outils de contenu disponibles dans l'application.",
+  "uiFuturegateIsDesignedAsABridgeBetweenStudentsTheirGrowing": "FutureGate est conçu comme un pont entre les étudiants, leurs compétences croissantes et les opportunités réelles qui peuvent façonner leur prochaine étape.",
+  "uiFuturegateStoresTheProfileDetailsCvContentSavedItemsAnd": "FutureGate stocke les détails du profil, le contenu du CV, les éléments enregistrés et l'activité de candidature nécessaires pour mettre en relation les étudiants avec des opportunités et prendre en charge l'examen des candidatures.",
+  "uiGenerateAPolishedPdfFromYourCv": "Générez un PDF soigné à partir de votre CV.",
+  "uiGeneratingPdf": "Génération de PDF...",
+  "uiGlobalScholarship": "Bourse mondiale",
+  "uiGoogle": "Google",
+  "uiGoogleBooks": "Google Livres",
+  "uiGoogleBooksImport": "Importation de livres Google",
+  "uiGoogleSignInUnavailable": "Connexion Google indisponible",
+  "uiGrants": "Subventions",
+  "uiGrowthMarketingLead": "Responsable marketing de croissance",
+  "uiGrowthRate": "TAUX DE CROISSANCE",
+  "uiHandsOnStudentPlacements": "Stages pratiques pour étudiants",
+  "uiHealth": "Santé",
+  "uiHelpCenter": "Centre d'aide",
+  "uiHidden": "Caché",
+  "uiHighlights": "Points forts",
+  "uiHiringInsights": "Informations sur l'embauche",
+  "uiHome": "Maison",
+  "uiHowCanWeHelp": "Comment pouvons-nous vous aider ?",
+  "uiIMACompany": "Je suis une entreprise",
+  "uiIMAStudent": "Je suis étudiant",
+  "uiIVerified": "J'ai vérifié",
+  "uiIdeaBasics": "Bases de l'idée",
+  "uiIdeaDescription": "Description de l'idée",
+  "uiIdeaOverview": "Présentation de l'idée",
+  "uiIdeaTitle": "Titre de l'idée",
+  "uiIdeaTitleAd83": "Titre de l'idée",
+  "uiIdeas": "Idées",
+  "uiIfThisAccountNormallySignsInWithGoogleReturnAnd": "Si ce compte se connecte normalement avec Google, revenez et utilisez Google maintenant, puis ajoutez un mot de passe ultérieurement à partir des paramètres si nécessaire.",
+  "uiIfYouCreatedThisAccountWithGoogleUseGoogleTo": "Si vous avez créé ce compte avec Google, utilisez Google pour vous connecter maintenant. Après cela, vous pouvez ajouter un mot de passe à partir des paramètres si vous souhaitez également accéder à la messagerie électronique/au mot de passe.",
+  "uiIllustratorIntern": "Stagiaire illustrateur",
+  "uiImportAFewGoogleBooksResultsFirstThenManageFeaturing": "Importez d'abord quelques résultats Google Livres, puis gérez la présentation, l'ouverture et la suppression à partir d'ici.",
+  "uiImportAFewYoutubeResultsFirstThenManageFeaturingOpening": "Importez d’abord quelques résultats YouTube, puis gérez la mise en avant, l’ouverture et la suppression à partir d’ici.",
+  "uiImportBooks": "Importer des livres",
+  "uiImportComplete": "Importation terminée",
+  "uiImportGoogleBooks": "Importer des livres Google",
+  "uiImportPipelines": "Importer des pipelines",
+  "uiImportTheFirstLearningResourceToStartBuildingTheTraining": "Importez la première ressource d’apprentissage pour commencer à créer la bibliothèque de formation.",
+  "uiImportTrustedLearningResourcesKeepFeaturedContentFreshAndTurn": "Importez des ressources d'apprentissage fiables, conservez le contenu présenté à jour et transformez les sources externes en une bibliothèque propre et gérée par l'administrateur.",
+  "uiImportUnavailable": "Importation indisponible",
+  "uiImportVideos": "Importer des vidéos",
+  "uiImportYoutubeVideos": "Importer des vidéos YouTube",
+  "uiImportantFieldsAreGroupedHereInAMoreReadableAdmin": "Les champs importants sont regroupés ici dans une présentation détaillée d’administration plus lisible.",
+  "uiImported": "Importé",
+  "uiIndustrySectorOptional": "Industrie / Secteur (facultatif)",
+  "uiInnovationHub": "Centre d'innovation",
+  "uiInstitution": "Institution",
+  "uiInterestSnapshot": "Aperçu des intérêts",
+  "uiInterested": "Intéressé",
+  "uiInterestedcountInterested": "{interestedCount} Intéressé",
+  "@uiInterestedcountInterested": {
+    "placeholders": {
+      "interestedCount": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiInternships": "Stages",
+  "uiItemMetadata": "Métadonnées de l'élément",
+  "uiJobs": "Emplois",
+  "uiJobsInternshipsAndSponsoredTracksMatchedToYourNextMove": "Des emplois, des stages et des pistes sponsorisées adaptés à votre prochain mouvement.",
+  "uiJobsInternshipsSponsoredTracksAndTrainingInOneStream": "Emplois, stages, parcours sponsorisés et formations réunis en un seul volet.",
+  "uiJoinFuturegate": "Rejoignez FutureGate",
+  "uiJumpBackIntoEverythingYouBookmarked": "Revenez à tout ce que vous avez mis en signet.",
+  "uiJumpStraightIntoTheAdminAreasYouOpenMostOften": "Accédez directement aux zones d'administration que vous ouvrez le plus souvent.",
+  "uiJuniorFrontendDeveloper": "Développeur Frontend Junior",
+  "uiKeepACurrentVerificationDocumentAttachedToMaintainATrustworthy": "Conservez un document de vérification à jour en pièce jointe pour maintenir un profil d'entreprise digne de confiance.",
+  "uiKeepAFewStrongOptionsMovingWhileYouWaitFor": "Gardez quelques options fortes en mouvement pendant que vous attendez les réponses.",
+  "uiKeepApplyingWhileTeamsAreAlreadyEngagingWithYourProfile": "Continuez à postuler pendant que les équipes interagissent déjà avec votre profil.",
+  "uiKeepGoogleSignInAndAddEmailPasswordToo": "Gardez la connexion Google et ajoutez également une adresse e-mail/un mot de passe",
+  "uiKeepItOutOfDiscovery": "Gardez-le hors de la découverte",
+  "uiKeepOutOfDiscovery": "Rester à l'écart de la découverte",
+  "uiKeepTheCompanyOutOfTheWorkspaceUntilTheProfile": "Gardez l'entreprise en dehors de l'espace de travail jusqu'à ce que le profil soit corrigé.",
+  "uiKeepTheExistingDataSourceButTailorWhatYouSee": "Conservez la source de données existante, mais adaptez ce que vous voyez.",
+  "uiKeepTheHeadlineAndOverviewCrispSoTheIdeaReads": "Gardez le titre et la présentation clairs afin que l'idée soit clairement lisible dans les cartes et les vues détaillées complètes.",
+  "uiKeepThePageGroundedInTheCurrentAppBehaviorInstead": "Gardez la page ancrée dans le comportement actuel de l'application au lieu d'introduire des paramètres non pris en charge.",
+  "uiKeepTheProfileCrispTrustworthyAndReadyForStudentsTo": "Gardez le profil clair, digne de confiance et prêt à être exploré par les étudiants.",
+  "uiKeepVisibilityDecisionsInTheSameStructuredPublishingAreaUsed": "Conservez les décisions de visibilité dans la même zone de publication structurée que celle utilisée dans tous les flux de contenu.",
+  "uiKeepYourCompanyPresenceTrustedWithAnUpToDate": "Maintenez la confiance de la présence de votre entreprise grâce à un registre du commerce à jour.",
+  "uiKeepYourStudentContextCurrentSoOpportunityMatchingStaysUseful": "Gardez le contexte de vos étudiants à jour afin que la correspondance des opportunités reste utile.",
+  "uiKeySkills": "Compétences clés",
+  "uiLabelValue": "{label} : {value}",
+  "@uiLabelValue": {
+    "placeholders": {
+      "label": {
+        "type": "Object"
+      },
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiLaboratory": "Laboratoire",
+  "uiLanguageFilters": "Filtres de langue",
+  "uiLanguages": "Langues",
+  "uiLastUpdated": "Dernière mise à jour",
+  "uiLater": "Plus tard",
+  "uiLatest": "Dernier",
+  "uiLatestOpportunities": "Dernières opportunités",
+  "uiLearnMoreAboutThePlatform": "En savoir plus sur la plateforme.",
+  "uiLearners": "Apprenants",
+  "uiLegal": "Légal",
+  "uiLevelFilters": "Filtres de niveau",
+  "uiLibrary": "Bibliothèque",
+  "uiLibraryOverview": "Présentation de la bibliothèque",
+  "uiLink": "Lien",
+  "uiLinkUnavailable": "Lien indisponible",
+  "uiLive": "En direct",
+  "uiLiveFeed": "Flux en direct",
+  "uiLiveProfileDetailsCouldNotBeRefreshedSoYouAre": "Les détails du profil en direct n'ont pas pu être actualisés. Vous voyez donc des informations de secours sécurisées.",
+  "uiLoadingLiveInternships": "Chargement des stages en direct...",
+  "uiLoadingOpportunities": "Chargement des opportunités...",
+  "uiLoadingYourApplications": "Chargement de vos candidatures...",
+  "uiLoadingYourSavedItems": "Chargement de vos éléments enregistrés...",
+  "uiLocationAndLogistics": "Localisation et logistique",
+  "uiLocationLogistics": "Localisation et logistique",
+  "uiLogin": "Se connecter",
+  "uiLoginToContinue": "Connectez-vous pour continuer.",
+  "uiLoginUnavailable": "Connexion indisponible",
+  "uiLogoVisualIdentity": "Logo & Identité Visuelle",
+  "uiLoomStudioDesign": "Loom Studio™ Conception",
+  "uiMakeItEasyForStudentsToUnderstandWhereYourCompany": "Aidez les étudiants à comprendre facilement où se trouve votre entreprise et comment l'atteindre.",
+  "uiManageImportedBooks": "Gérer les livres importés",
+  "uiManageImportedVideos": "Gérer les vidéos importées",
+  "uiManageLiveOffers": "Gérer les offres en direct",
+  "uiManageSessionsDevices": "Gérer les sessions et les appareils",
+  "uiManageTeam": "Gérer l'équipe",
+  "uiManageYourListings": "Gérez vos annonces",
+  "uiManagedInventory": "Inventaire géré",
+  "uiMarkPendingReview": "Marquer en attente de révision",
+  "uiMarketing": "Commercialisation",
+  "uiMarketingAnalyst": "Analyste marketing",
+  "uiMessage": "Message",
+  "uiMessageRequired": "Message requis",
+  "uiMessageUnavailable": "Message indisponible",
+  "uiMessages": "Messages",
+  "uiMessagesUnavailable": "Messages indisponibles",
+  "uiMetadataAndCollaboration": "Métadonnées et collaboration",
+  "uiMissingCommercialRegisterDocument": "Document du registre du commerce manquant.",
+  "uiMissingcountValue1StillMissingForBetterMatching": "{missingCount} {value1} est toujours manquant pour une meilleure correspondance.",
+  "@uiMissingcountValue1StillMissingForBetterMatching": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      },
+      "missingCount": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiModerateIdeaQueue": "File d'attente d'idées modérée",
+  "uiModerateIdeasApplicationsListingsScholarshipsAndTraining": "Modérez les idées, les candidatures, les annonces, les bourses et les formations.",
+  "uiModeration": "Modération",
+  "uiModerationActions": "Actions de modération",
+  "uiMonthlyRegistrations": "Inscriptions mensuelles",
+  "uiMoreInformation": "Plus d'informations",
+  "uiMostAppliedOpportunities": "Opportunités les plus appliquées",
+  "uiMostRecentStudentApplicationsFromYourRealData": "Candidatures étudiantes les plus récentes à partir de vos données réelles.",
+  "uiMostSavedOpportunities": "Opportunités les plus sauvegardées",
+  "uiMoveTheCompanyBackIntoTheReviewQueueForAnother": "Remettez l'entreprise dans la file d'attente d'examen pour une autre vérification.",
+  "uiMuted": "En sourdine",
+  "uiMyCv": "Mon CV",
+  "uiMyIdeas": "Mes idées",
+  "uiNameExampleCom": "nom@exemple.com",
+  "uiNeedToReviewYourProfile": "Besoin de revoir votre profil ?",
+  "uiNew": "Nouveau",
+  "uiNewChat": "Nouvelle discussion",
+  "uiNewEmail": "Nouvel e-mail",
+  "uiNewPassword": "Nouveau mot de passe",
+  "uiNewestFirst": "Le plus récent en premier",
+  "uiNoActivityMatchesThisSearch": "Aucune activité ne correspond à cette recherche",
+  "uiNoApplicationsToReviewYet": "Aucune candidature à examiner pour l'instant",
+  "uiNoApplicationsYet": "Aucune candidature pour l'instant",
+  "uiNoBooksImportedYet": "Aucun livre importé pour l'instant",
+  "uiNoBooksMatchThisSearch": "Aucun livre ne correspond à cette recherche",
+  "uiNoCvAvailableForValue1": "Aucun CV disponible pour {value1}",
+  "@uiNoCvAvailableForValue1": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiNoHelpTopicsMatchYourSearch": "Aucune rubrique d'aide ne correspond à votre recherche",
+  "uiNoHighlightsAvailableYet": "Aucun temps fort disponible pour l'instant",
+  "uiNoIdeasMatchThisView": "Aucune idée ne correspond à ce point de vue",
+  "uiNoIdeasYet": "Pas encore d'idées",
+  "uiNoInternetConnection": "Pas de connexion Internet",
+  "uiNoLearningResourcesYet": "Aucune ressource d'apprentissage pour l'instant",
+  "uiNoOpportunitiesMatchThisView": "Aucune opportunité ne correspond à cette vue",
+  "uiNoOpportunitiesPublishedYet": "Aucune opportunité publiée pour le moment",
+  "uiNoProjectIdeasToReviewYet": "Aucune idée de projet à examiner pour l'instant",
+  "uiNoRecentActivityYet": "Aucune activité récente pour le moment",
+  "uiNoRecentUsersYet": "Aucun utilisateur récent pour l'instant",
+  "uiNoRecommendationsRightNow": "Aucune recommandation pour le moment",
+  "uiNoRequirementsProvided": "Aucune exigence fournie.",
+  "uiNoResultsInThisView": "Aucun résultat dans cette vue",
+  "uiNoScholarshipLinkIsAvailableForThisItemYet": "Aucun lien de bourse n'est encore disponible pour cet article",
+  "uiNoScholarshipsMatchYourSearch": "Aucune bourse ne correspond à votre recherche",
+  "uiNoScholarshipsPublishedYet": "Aucune bourse publiée pour le moment",
+  "uiNoTrainingProgramsAvailableInThisTopic": "Aucun programme de formation disponible dans ce sujet",
+  "uiNoTrainingProgramsAvailableRightNow": "Aucun programme de formation disponible pour le moment",
+  "uiNoTrendingOpportunitiesRightNow": "Aucune opportunité de tendance pour le moment",
+  "uiNoUrgentDeadlinesRightNow": "Pas de délais urgents pour le moment",
+  "uiNoUsersMatchThisSearch": "Aucun utilisateur ne correspond à cette recherche",
+  "uiNoVerificationDocumentUploadedYet": "Aucun document de vérification n'a encore été téléchargé",
+  "uiNoVideosImportedYet": "Aucune vidéo importée pour le moment",
+  "uiNoVideosMatchThisSearch": "Aucune vidéo ne correspond à cette recherche",
+  "uiNorthMetricsAnalytics": "North Metrics · Analyses",
+  "uiNotSignedIn": "Non connecté",
+  "uiNotificationCenter": "Centre de notifications",
+  "uiNovaLabsProductDesign": "Nova Labs â¢ Conception de produits",
+  "uiOffers": "Offres",
+  "uiOneQuickStep": "Un pas rapide",
+  "uiOpenActivity": "Activité ouverte",
+  "uiOpenActivityF327": "Activité ouverte",
+  "uiOpenAttachment": "Ouvrir la pièce jointe",
+  "uiOpenCandidateProfileForStudentname": "Profil de candidat ouvert pour {studentName}",
+  "@uiOpenCandidateProfileForStudentname": {
+    "placeholders": {
+      "studentName": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiOpenCvStudio": "Ouvrir CV Studio",
+  "uiOpenDetails": "Ouvrir les détails",
+  "uiOpenLibraryStudio": "Studio de bibliothèque ouverte",
+  "uiOpenLink": "Ouvrir le lien",
+  "uiOpenResource": "Ressource ouverte",
+  "uiOpenRoles": "Rôles ouverts",
+  "uiOpenScholarshipLink": "Lien de bourse ouvert",
+  "uiOpenStudio": "Studio ouvert",
+  "uiOpenTheFullAdminProfileSheetForThisUser": "Ouvrez la feuille de profil d'administrateur complète pour cet utilisateur.",
+  "uiOpenUnavailable": "Ouvert indisponible",
+  "uiOpenYourCompanyWorkspaceHub": "Ouvrez le hub de votre espace de travail d'entreprise",
+  "uiOpenYourInboxAndConfirmYourAccount": "Ouvrez votre boîte de réception et confirmez votre compte.",
+  "uiOpenYourInboxAndFollowTheResetLink": "Ouvrez votre boîte de réception et suivez le lien de réinitialisation.",
+  "uiOpportunities": "Opportunités",
+  "uiOpportunitiesNearingTheirDeadlinesAreHighlightedHere": "Les opportunités proches de leur échéance sont mises en évidence ici.",
+  "uiOpportunitiesScholarshipsTraining": "Opportunités, bourses, formation",
+  "uiOpportunity": "Opportunité",
+  "uiOpportunityDetails": "Détails de l'opportunité",
+  "uiOpportunityPostingHelp": "Aide pour la publication d'opportunités",
+  "uiOpportunityUnavailable": "Opportunité indisponible",
+  "uiOpps": "Opportunités",
+  "uiOptional": "Facultatif",
+  "uiOptionalExtras": "Extras optionnels",
+  "uiOrUploadYourOwn": "ou téléchargez le vôtre",
+  "uiOrbitAiAiOps": "Orbit AI – Opérations IA",
+  "uiOverview": "Aperçu",
+  "uiPaidOnly": "Payé uniquement",
+  "uiPartnerBackedSupport": "Support soutenu par les partenaires",
+  "uiPassword": "Mot de passe",
+  "uiPasswordAdded": "Mot de passe ajouté",
+  "uiPasswordAndAccountProtection": "Protection par mot de passe et compte.",
+  "uiPasswordSetupUnavailable": "Configuration du mot de passe indisponible",
+  "uiPasswordUpdateUnavailable": "Mise à jour du mot de passe indisponible",
+  "uiPasswordUpdated": "Mot de passe mis à jour",
+  "uiPct": "{pct}%",
+  "@uiPct": {
+    "placeholders": {
+      "pct": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiPending": "En attente",
+  "uiPendingApprovedAndRejectedCountsFromYourLiveApplications": "Comptes en attente, approuvés et rejetés de vos candidatures en direct.",
+  "uiPendingApps": "Applications en attente",
+  "uiPendingIdeasNeedReview": "Les idées en attente doivent être examinées",
+  "uiPendingOpportunitiesNeedAttention": "Les opportunités en attente nécessitent une attention particulière",
+  "uiPendingProjectIdeas": "Idées de projets en attente",
+  "uiPendingReviews": "Examens en attente",
+  "uiPendingValue1InReview": "{pending} {value1} en revue.",
+  "@uiPendingValue1InReview": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      },
+      "pending": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiPendingapplicationsPendingApps": "{pendingApplications} applications en attente",
+  "@uiPendingapplicationsPendingApps": {
+    "placeholders": {
+      "pendingApplications": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiPendingideasPendingIdeas": "{pendingIdeas} idées en attente",
+  "@uiPendingideasPendingIdeas": {
+    "placeholders": {
+      "pendingIdeas": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiPercent": "{percent}%",
+  "@uiPercent": {
+    "placeholders": {
+      "percent": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiPerformance": "Performance",
+  "uiPersonalInformation": "Informations personnelles",
+  "uiPhone": "Téléphone",
+  "uiPhoneNumber": "Numéro de téléphone",
+  "uiPhoto": "Photo",
+  "uiPhotoUnavailable": "Photo indisponible",
+  "uiPickABuiltInLookOrKeepUsingYourUploaded": "Choisissez un look intégré ou continuez à utiliser votre photo téléchargée.",
+  "uiPickTheResumeStyleThatBestFitsTheRoleYou": "Choisissez le style de CV qui correspond le mieux au rôle que vous souhaitez.",
+  "uiPixelFoundryEngineering": "Pixel Foundry · Ingénierie",
+  "uiPlatformMissionAndVersionDetails": "Détails de la mission et de la version de la plateforme",
+  "uiPlatformOverview": "Présentation de la plateforme",
+  "uiPlatformPulseModerationLoadAndQuickControlPoints": "Impulsion de la plate-forme, charge de modération et points de contrôle rapides.",
+  "uiPlatformStory": "Histoire de la plateforme",
+  "uiPleaseCheckYourConnectionAndTryAgain": "Veuillez vérifier votre connexion et réessayer.",
+  "uiPolishYourPublicCompanyPresence": "Améliorez la présence de votre entreprise publique",
+  "uiPosition": "Position",
+  "uiPositioning": "Positionnement",
+  "uiPositioningAccess": "Positionnement et accès",
+  "uiPostAdminIdea": "Idée d'administration de publication",
+  "uiPostOpportunity": "Publier une opportunité",
+  "uiPostOpportunity2F1A": "Publier\nOpportunité",
+  "uiPostScholarship": "Post-bourse",
+  "uiPosted": "Publié",
+  "uiPreferencesDisplayAndAppChoices": "Préférences, affichage et choix d'applications.",
+  "uiPreview": "Aperçu",
+  "uiPreviewExport": "Aperçu et exportation",
+  "uiPreviewUnavailable": "Aperçu indisponible",
+  "uiPrimaryCvPdf": "CV primaire PDF",
+  "uiPrivacyControls": "Contrôles de confidentialité",
+  "uiPrivacyPolicy": "politique de confidentialité",
+  "uiProblemSolutionAndImpact": "Problème, solution et impact",
+  "uiProblemSolutionImpact": "Problème, solution et impact",
+  "uiProblemStatement": "Énoncé du problème",
+  "uiProblemStatement1Ebe": "Énoncé du problème",
+  "uiProductDesign": "Conception de produits",
+  "uiProfessionalSummary": "Résumé professionnel",
+  "uiProfile": "Profil",
+  "uiProfileCompletion": "Complétion du profil",
+  "uiProfileCvAndApplicationDataAreUsedToPowerOpportunities": "Les données de profil, de CV et de candidature sont utilisées pour alimenter les opportunités et les flux d'évaluation des recruteurs.",
+  "uiProfileCvNotificationAndApplicationDataAreUsedOnlyTo": "Les données de profil, de CV, de notification et de candidature sont utilisées uniquement pour fournir les fonctionnalités de correspondance, d'évaluation et de communication qui alimentent l'expérience FutureGate.",
+  "uiProfileNext": "Profil suivant",
+  "uiProfileOverview": "Aperçu du profil",
+  "uiProfileSetupUnavailable": "Configuration du profil indisponible",
+  "uiProfileStrength": "Force du profil",
+  "uiProfileStrength491D": "Force du profil",
+  "uiProfileSync": "Synchronisation du profil",
+  "uiProfileUpdated": "Profil mis à jour",
+  "uiProjectIdea": "Idée de projet",
+  "uiProjectIdeas": "Idées de projets",
+  "uiProposedSolution": "Solution proposée",
+  "uiProviderAndAccess": "Fournisseur et accès",
+  "uiProviderAndDeliverySetup": "Configuration du fournisseur et de la livraison",
+  "uiPublicCollaborationAllowed": "Collaboration publique autorisée",
+  "uiPublicLinksAreAddedHereAsTheyGoLive": "Les liens publics sont ajoutés ici au fur et à mesure de leur mise en ligne",
+  "uiPublicSpeaking": "Art oratoire",
+  "uiPublishOpportunities": "Publier des opportunités",
+  "uiPublishTheFirstOpportunityToStartPopulatingTheStudentDiscovery": "Publiez la première opportunité de commencer à enrichir l’expérience de découverte des étudiants.",
+  "uiPublishTheFirstScholarshipToStartShapingTheStudentDiscovery": "Publiez la première bourse pour commencer à façonner le catalogue de découverte des étudiants.",
+  "uiPublisherName": "Nom de l'éditeur",
+  "uiPullingTogetherYourSavedOpportunitiesScholarshipsTrainingsAndIdeas": "Rassembler vos opportunités, bourses, formations et idées enregistrées.",
+  "uiPullingTogetherYourSubmittedOpportunitiesAndTheirLatestStatuses": "Rassembler vos opportunités soumises et leurs derniers statuts.",
+  "uiQuickAccess": "Accès rapide",
+  "uiQuickAccessToRolesFundingLearningAndIdeasWorthRevisiting": "Accès rapide aux rôles, au financement, à l'apprentissage et aux idées qui méritent d'être revisitées.",
+  "uiQuickActions": "Actions rapides",
+  "uiQuickCuration": "Conservation rapide",
+  "uiQuickFilters": "Filtres rapides",
+  "uiQuickSnapshot": "Instantané rapide",
+  "uiQuickSupport": "Assistance rapide",
+  "uiRating": "Notation",
+  "uiReachOutWithContextSoTheTeamCanHelpFaster": "Contactez-le avec le contexte afin que l'équipe puisse vous aider plus rapidement.",
+  "uiReadAll": "Lire tout",
+  "uiReadHowPersonalInformationIsHandled": "Découvrez comment les informations personnelles sont traitées",
+  "uiReadThePlatformUsageSummary": "Lire le résumé d'utilisation de la plateforme",
+  "uiReadyToApply": "Prêt à postuler",
+  "uiRealApplicationsSubmittedOverTheLast7Days": "Candidatures réelles soumises au cours des 7 derniers jours.",
+  "uiRecentActivity": "Activité récente",
+  "uiRecentApplications": "Applications récentes",
+  "uiRecentContacts": "Contacts récents",
+  "uiRecentOffers": "Offres récentes",
+  "uiRecentOpportunities": "Opportunités récentes",
+  "uiRecentPlatformActivity": "Activité récente de la plateforme",
+  "uiRecentUsers": "Utilisateurs récents",
+  "uiReferencesAndLinks": "Références et liens",
+  "uiRefreshActivityFeed": "Actualiser le flux d'activité",
+  "uiRefreshApplications": "Actualiser les applications",
+  "uiRefreshSavedItems": "Actualiser les éléments enregistrés",
+  "uiRefreshYourDetailsSwitchAvatarsOrUploadANewPhoto": "Actualisez vos informations, changez d'avatar ou téléchargez une nouvelle photo sans affecter la logique de votre compte existant.",
+  "uiRefreshYourStoryContactDetailsAndAssets": "Actualisez votre histoire, vos coordonnées et vos ressources",
+  "uiRegister": "Registre",
+  "uiRegisterCompany": "Enregistrer la société",
+  "uiRegisterYourOrganizationToPostOpportunitiesAndConnectWithTalent": "Enregistrez votre organisation pour publier\nopportunités et entrer en contact avec des talents.",
+  "uiRegistrationUnavailable": "Inscription indisponible",
+  "uiReject": "Rejeter",
+  "uiRejectCompany": "Rejeter l'entreprise",
+  "uiRejected": "Rejeté",
+  "uiRemoteSessionManagementIsNotAvailableInThisBuildYet": "La gestion des sessions à distance n'est pas encore disponible dans cette version. Votre session active sur cet appareil reste protégée par l'authentification Firebase.",
+  "uiRemoveLogo": "Supprimer le logo",
+  "uiRemovePhoto": "Supprimer la photo",
+  "uiRemoveUnavailable": "Supprimer indisponible",
+  "uiReplace": "Remplacer",
+  "uiReplyNow": "Répondre maintenant",
+  "uiReportAProblem": "Signaler un problème",
+  "uiRequiredForCompanyAccountCreationAcceptedFormatsPdfJpgPng": "Requis pour la création d’un compte d’entreprise. Formats acceptés : PDF, JPG, PNG. Taille maximale : 10 Mo.",
+  "uiRequirementsAndEligibility": "Conditions et éligibilité",
+  "uiResearch": "Recherche",
+  "uiResearchDetails": "Détails de la recherche",
+  "uiResearchDomain": "Domaine de recherche",
+  "uiResearchTopic": "Sujet de recherche",
+  "uiResendEmail": "Renvoyer l'e-mail",
+  "uiResetPassword": "Réinitialiser le mot de passe",
+  "uiResetUnavailable": "Réinitialisation indisponible",
+  "uiResourceDeleted": "Ressource supprimée",
+  "uiResourceDetails": "Détails des ressources",
+  "uiResourceLibrary": "Bibliothèque de ressources",
+  "uiResourceStudioForAdminCuration": "Resource Studio pour la curation administrative",
+  "uiResources": "Ressources",
+  "uiResourcesNeeded": "Ressources nécessaires",
+  "uiResourcesNeeds": "Ressources / Besoins",
+  "uiResourcesOrNeeds": "Ressources ou besoins",
+  "uiResumePdf": "CV.pdf",
+  "uiRetrySync": "Réessayez la synchronisation",
+  "uiReviewApplications": "Examen\nApplications",
+  "uiReviewCompanies": "Examiner les entreprises",
+  "uiReviewCompaniesContentAndPlatformActivityFromOneFocusedWorkspace": "Examinez les entreprises, le contenu et l’activité de la plateforme à partir d’un espace de travail ciblé.",
+  "uiReviewContactInfoAccountStatusAndRoleSpecificDetailsIn": "Consultez les informations de contact, l’état du compte et les détails spécifiques au rôle dans une vue de profil claire.",
+  "uiReviewContent": "Vérifier le contenu",
+  "uiReviewExpectedPlatformUsage": "Examiner l'utilisation prévue de la plateforme",
+  "uiReviewFundingQueue": "Examiner la file d'attente de financement",
+  "uiReviewIdentityStatusAndSubmittedInformationInOnePlace": "Vérifiez l’identité, le statut et les informations soumises en un seul endroit.",
+  "uiReviewOfferSubmissions": "Examiner les soumissions d'offres",
+  "uiReviewSubmissionsMonitorQueuesAndMoveBetweenContentTypesWithout": "Examinez les soumissions, surveillez les files d'attente et passez d'un type de contenu à l'autre sans perdre le contexte.",
+  "uiReviewTheFinalLayoutBeforeYouExportOrShareIt": "Vérifiez la mise en page finale avant de l’exporter ou de la partager.",
+  "uiReviewTheLatestModerationUpdatesPublishingChangesAndSubmissionsFrom": "Consultez les dernières mises à jour de modération, les modifications de publication et les soumissions à partir d’une file d’attente propre.",
+  "uiReviewTheUploadedCvAndTheBuiltCvExportWithout": "Consultez le CV téléchargé et l'exportation du CV créé sans quitter le profil utilisateur.",
+  "uiReviewWhereYourAccountIsBeingUsed": "Vérifiez où votre compte est utilisé",
+  "uiReviewed": "Révisé",
+  "uiRevisitSavedPicksBeforeTheStrongestDeadlinesSlipBy": "Revisitez les choix enregistrés avant que les délais les plus serrés ne passent.",
+  "uiRole": "Rôle",
+  "uiRoleDetails": "Détails du rôle",
+  "uiRoleOverview": "Présentation du rôle",
+  "uiRoleSetup": "Configuration du rôle",
+  "uiRoles": "Rôles",
+  "uiSaveCv": "Enregistrer le CV",
+  "uiSaveUnavailable": "Enregistrer indisponible",
+  "uiSaved": "Enregistré",
+  "uiSavedCollection": "Collection enregistrée",
+  "uiSavedIdeas": "Idées enregistrées",
+  "uiSavedItems": "Éléments enregistrés",
+  "uiSavedItems1D9C": "Éléments enregistrés",
+  "uiSavedResources": "Ressources économisées",
+  "uiSavedScholarships": "Bourses sauvegardées",
+  "uiSavedShortlist": "Liste restreinte enregistrée",
+  "uiSavedTraining": "Formation enregistrée",
+  "uiSayHelloToOthername": "Dites bonjour à {otherName}",
+  "@uiSayHelloToOthername": {
+    "placeholders": {
+      "otherName": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiSearchAndCurateYoutubeLessonsInOneContinuousFlowInstead": "Recherchez et organisez des leçons YouTube en un seul flux continu au lieu de travailler dans des fenêtres fixes distinctes.",
+  "uiSearchAndImportBooksInOneContinuousFlowInsteadOf": "Recherchez et importez des livres en un seul flux continu au lieu de travailler dans des fenêtres fixes distinctes.",
+  "uiSearchBooksForExampleAlgorithms": "Rechercher des livres, par exemple : algorithmes",
+  "uiSearchByCandidateOpportunityLocationOrType": "Recherchez par candidat, opportunité, lieu ou type...",
+  "uiSearchByNameOrEmail": "Rechercher par nom ou par email...",
+  "uiSearchByRoleCompanyLocationOrStatus": "Rechercher par rôle, entreprise, emplacement ou statut",
+  "uiSearchByTitleCompanyProviderOrCategory": "Rechercher par titre, entreprise, fournisseur ou catégorie",
+  "uiSearchByTopicDomainLevelAndLanguageBeforePublishingA": "Recherchez par sujet, domaine, niveau et langue avant de publier une ressource organisée dans la bibliothèque.",
+  "uiSearchByTypeTitleActorOrStatus": "Recherchez par type, titre, acteur ou statut...",
+  "uiSearchCommonTopicsContactSupportOrReportSomethingThatNeeds": "Recherchez des sujets courants, contactez l'assistance ou signalez quelque chose qui nécessite votre attention.",
+  "uiSearchConversations": "Rechercher des conversations...",
+  "uiSearchEducationalVideosReviewMetadataAndPublishCuratedTrainingContent": "Recherchez des vidéos éducatives, examinez les métadonnées et publiez du contenu de formation sélectionné sur YouTube dans la bibliothèque d'administration.",
+  "uiSearchEducationalVideosReviewTheMetadataAndPublishCuratedContent": "Recherchez des vidéos éducatives, examinez les métadonnées et publiez du contenu sélectionné dans la bibliothèque d'administration.",
+  "uiSearchFailed": "La recherche a échoué",
+  "uiSearchForCourses": "Rechercher des cours...",
+  "uiSearchHelpTopics": "Rechercher des rubriques d'aide",
+  "uiSearchIdeas": "Rechercher des idées...",
+  "uiSearchInternships": "Rechercher des stages...",
+  "uiSearchJobsInternshipsOrSponsoredRoles": "Rechercher des emplois, des stages ou des postes sponsorisés",
+  "uiSearchProgramsPartners": "Rechercher des programmes, des partenaires...",
+  "uiSearchQuicklyFilterByRoleOrLevelAndReviewAccount": "Recherchez rapidement, filtrez par rôle ou par niveau et examinez l'état du compte sans avoir à parcourir la zone d'administration.",
+  "uiSearchRequired": "Recherche requise",
+  "uiSearchRolesCompanies": "Rechercher des postes, des entreprises...",
+  "uiSearchSearchquery": "Rechercher : {searchQuery}",
+  "@uiSearchSearchquery": {
+    "placeholders": {
+      "searchQuery": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiSearchTitleLocationOrKeyword": "Rechercher un titre, un emplacement ou un mot-clé",
+  "uiSearchUnavailable": "Recherche indisponible",
+  "uiSearchUniversityOrCountry": "Rechercher une université ou un pays...",
+  "uiSearchUsersReviewProfilesAndManageAccountStatus": "Recherchez des utilisateurs, examinez les profils et gérez le statut du compte.",
+  "uiSearchVideosForExampleAlgorithms": "Rechercher des vidéos, par exemple : algorithmes",
+  "uiSector": "Secteur",
+  "uiSecureYourAccount": "Sécurisez votre compte",
+  "uiSecurityAnalyst": "Analyste de sécurité",
+  "uiSecurityPrivacy": "Sécurité et confidentialité",
+  "uiSeeHowDataSupportsTheExperience": "Découvrez comment les données soutiennent l'expérience",
+  "uiSeeHowTheStudentPopulationIsDistributedByLevelBefore": "Découvrez comment la population étudiante est répartie par niveau avant de plonger dans les graphiques.",
+  "uiSelectYourAcademicLevel": "Sélectionnez votre niveau académique.",
+  "uiSendAgain": "Envoyer à nouveau",
+  "uiSendLink": "Envoyer le lien",
+  "uiSendYourFirstMessageToStartTheConversation": "Envoyez votre premier message pour démarrer la conversation.",
+  "uiSeniorProductDesigner": "Concepteur de produits senior",
+  "uiSentTo": "Envoyé à",
+  "uiSessionsDevices": "Sessions et appareils",
+  "uiSetTheCoreHeadlineCategoryAndStageSoTheIdea": "Définissez le titre principal, la catégorie et la scène afin que l'idée soit claire dès le début.",
+  "uiShapeTheFirstImpressionStudentsGetFromYourCompany": "Façonnez la première impression que les étudiants ont de votre entreprise.",
+  "uiShare": "Partager",
+  "uiShareIdea": "Partager une idée",
+  "uiShareOpportunity": "Partager l'opportunité",
+  "uiSharePdf": "Partager le PDF",
+  "uiShareScreenshotsStepsOrAccountIssues": "Partager des captures d'écran, des étapes ou des problèmes de compte",
+  "uiShieldOpsSecurity": "Shield Ops â¢ Sécurité",
+  "uiShortDescription": "Brève description",
+  "uiShortIntro": "Courte introduction",
+  "uiShortTagline": "Slogan court",
+  "uiShowArchived": "Afficher archivé",
+  "uiShowInDiscovery": "Spectacle en découverte",
+  "uiShowInbox": "Afficher la boîte de réception",
+  "uiShowTheRolesSkillsAndResourcesThatWillHelpThis": "Montrez les rôles, les compétences et les ressources qui aideront cette idée à avancer.",
+  "uiShowThisIdeaToUsers": "Montrer cette idée aux utilisateurs",
+  "uiShowingResultscountOfTotalapplicationsApplications": "Affichage de {resultsCount} sur {totalApplications} applications",
+  "@uiShowingResultscountOfTotalapplicationsApplications": {
+    "placeholders": {
+      "resultsCount": {
+        "type": "Object"
+      },
+      "totalApplications": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiShownOfTotal": "{shown} de {total}",
+  "@uiShownOfTotal": {
+    "placeholders": {
+      "shown": {
+        "type": "Object"
+      },
+      "total": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiSignIn": "Se connecter",
+  "uiSignInToSeeYourMessages": "Connectez-vous pour voir vos messages",
+  "uiSignInToViewYourConversationsAndRecentUpdates": "Connectez-vous pour afficher vos conversations et les mises à jour récentes.",
+  "uiSignOut": "Se déconnecter",
+  "uiSignOutOfAdmin": "Se déconnecter de l'administrateur ?",
+  "uiSignOutOfCompany": "Se déconnecter de l'entreprise ?",
+  "uiSignOutOfFuturegate": "Vous déconnecter de FutureGate ?",
+  "uiSignOutOfStudent": "Se déconnecter de l'étudiant ?",
+  "uiSignOutOfTheCompanyWorkspace": "Se déconnecter de l'espace de travail de l'entreprise",
+  "uiSignalGrowthMarketing": "Signal Croissance · Marketing",
+  "uiSketchroomIllustration": "Sketchroom · Illustration",
+  "uiSkills": "Compétences",
+  "uiSkillsNeeded": "Compétences nécessaires",
+  "uiSkillsNeeded7988": "Compétences requises",
+  "uiSkip": "Sauter",
+  "uiSnapshot": "Instantané",
+  "uiSocialMediaManager": "Gestionnaire des médias sociaux",
+  "uiSolution": "Solution",
+  "uiSomeSavedIdeasCouldNotLoadRightNow": "Certaines idées enregistrées n'ont pas pu être chargées pour le moment.",
+  "uiSource": "Source",
+  "uiSources": "Sources",
+  "uiSparks": "Des étincelles",
+  "uiStackHarborPlatform": "Stack Harbor ™ Plateforme",
+  "uiStage": "Scène",
+  "uiStart": "Commencer",
+  "uiStartDate": "Date de début",
+  "uiStartNewChat": "Démarrer une nouvelle discussion",
+  "uiStartWithAGoogleBooksSearch": "Commencez par une recherche Google Livres",
+  "uiStartWithAYoutubeSearch": "Commencez par une recherche YouTube",
+  "uiStartYourStudentProfile": "Démarrez votre profil étudiant.",
+  "uiStartup": "Démarrer",
+  "uiStatus": "Statut",
+  "uiStayCloseToConversationsFollowUpsAndCollaboration": "Restez proche des conversations, des suivis et de la collaboration.",
+  "uiStep1Of2": "Étape 1 sur 2",
+  "uiStep2Of2": "Étape 2 sur 2",
+  "uiStoryStillMissing": "L'histoire manque toujours",
+  "uiStrategicDashboard": "TABLEAU DE BORD STRATÉGIQUE",
+  "uiStrategicThinking": "Pensée stratégique",
+  "uiStudentApplicationsAreAddedHereAsTheyComeIn": "Les candidatures des étudiants sont ajoutées ici au fur et à mesure de leur arrivée.",
+  "uiStudentCv": "CV étudiant",
+  "uiStudentSnapshot": "Aperçu de l'élève",
+  "uiStudentSpace": "ESPACE ÉTUDIANT",
+  "uiStudentToolkit": "Boîte à outils pour étudiants",
+  "uiStudents": "Étudiants",
+  "uiStudentsByLevel": "Étudiants par niveau",
+  "uiStudio": "Studio",
+  "uiSubmittedByValue1": "Soumis par: {value1}",
+  "@uiSubmittedByValue1": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiSummer": "Été",
+  "uiSupervisor": "Superviseur",
+  "uiSupportFaqsAndContactOptions": "Assistance, FAQ et options de contact",
+  "uiSupportType": "Type de prise en charge",
+  "uiTagline": "Slogan",
+  "uiTapCardForDetails": "Appuyez sur la carte pour plus de détails",
+  "uiTargetAudience": "Public cible",
+  "uiTargetAudience5Cc6": "Public cible",
+  "uiTeam": "Équipe",
+  "uiTeamAndSkillSignals": "Signaux d'équipe et de compétence",
+  "uiTeamNeeded": "Équipe recherchée",
+  "uiTeamNeeded3437": "Équipe nécessaire",
+  "uiTeamRolesNeeded": "Rôles d'équipe nécessaires",
+  "uiTeamSkillSignals": "Signaux d'équipe et de compétence",
+  "uiTech": "Technologie",
+  "uiTechnovaGlobalInc": "TechNova Global Inc.",
+  "uiTemplate": "Modèle",
+  "uiTerms": "Termes",
+  "uiTermsOfUse": "Conditions d'utilisation",
+  "uiTheAppBringsTogetherProfilesCvToolsOpportunitiesScholarshipsProject": "L'application rassemble des profils, des outils de CV, des opportunités, des bourses, des idées de projets et des communications afin que les étudiants puissent passer de la découverte à l'action en un seul endroit.",
+  "uiTheCompanyWillContactYouByEmailSoon": "L'entreprise vous contactera prochainement par email.",
+  "uiTheEssentialsRecruitersAndProgramsOftenScanFirst": "Les recruteurs et les programmes essentiels analysent souvent en premier.",
+  "uiTheEssentialsStudentsAndApplicantsUsuallyLookForFirst": "Les éléments essentiels que les étudiants et les candidats recherchent généralement en premier.",
+  "uiTheHighLevelUserAndAccountPictureAdminsUsuallyNeed": "Les administrateurs d’utilisateurs et d’images de compte de haut niveau ont généralement besoin en premier.",
+  "uiTheLatestitemslimitNewestRolesInternshipsAndSponsoredTracks": "Les {_latestItemsLimit} nouveaux rôles, stages et pistes sponsorisées",
+  "@uiTheLatestitemslimitNewestRolesInternshipsAndSponsoredTracks": {
+    "placeholders": {
+      "_latestItemsLimit": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiTheProfileAlreadyLooksPolishedAQuickRefreshFromTime": "Le profil a déjà l’air soigné. Un rafraîchissement rapide de temps en temps suffit.",
+  "uiTheResetLinkIsOnItsWay": "Le lien de réinitialisation est en route.",
+  "uiTheRoleThisCandidateAppliedFor": "Le rôle pour lequel ce candidat a postulé.",
+  "uiTheUploadedFileIsNotAValidPdf": "Le fichier téléchargé n'est pas un PDF valide.",
+  "uiThereAreNoSubmittedApplicationsForThisOpportunityRightNow": "Aucune candidature n'a été soumise pour cette opportunité pour le moment.",
+  "uiTheseAreTheMainQualificationsOrExpectationsShownToApplicants": "Ce sont les principales qualifications ou attentes présentées aux candidats.",
+  "uiTheseDetailsHelpYouEvaluateHowTheOpportunityIsPositioned": "Ces détails vous aident à évaluer comment l'opportunité est positionnée pour les candidats.",
+  "uiTheseDetailsHelpYouReviewWhereTheScholarshipFitsAnd": "Ces détails vous aident à déterminer où se situe la bourse et comment les étudiants y parviendront.",
+  "uiTheseFieldsHelpYouJudgeWhereTheIdeaFitsAnd": "Ces champs vous aident à déterminer où se situe l'idée et dans quelle mesure elle est prête à être examinée.",
+  "uiTheseFieldsShapeTheFiltersBadgesAndCollaborationFramingUsed": "Ces champs façonnent les filtres, les badges et le cadre de collaboration utilisés dans l'application.",
+  "uiTheseRatiosHelpAdminsSeeWhetherUsersAreEngagingDeeply": "Ces ratios aident les administrateurs à voir si les utilisateurs s'engagent profondément ou naviguent uniquement.",
+  "uiThisGivesTheAdminViewOfWhatMakesTheRole": "Cela donne à l’administrateur une vision de ce qui rend le rôle attrayant.",
+  "uiThisIdeaIsNoLongerAvailable": "Cette idée n'est plus disponible.",
+  "uiThisMessageWasDeleted": "Ce message a été supprimé",
+  "uiThisSectionHelpsYouReviewHowTheTrainingIsPackaged": "Cette section vous aide à examiner la manière dont la formation est emballée et présentée aux utilisateurs.",
+  "uiThisSectionShowsWhatTheIdeaIsSolvingHowIt": "Cette section montre ce que l'idée résout, comment elle fonctionne et la valeur qu'elle vise à créer.",
+  "uiThisWeek": "Cette semaine",
+  "uiThisWorkspaceIsDedicatedToGoogleBooksImportsSoBook": "Cet espace de travail est dédié aux importations Google Livres, la conservation des livres reste donc ciblée.",
+  "uiThisWorkspaceIsDedicatedToYoutubeImportsSoVideoCuration": "Cet espace de travail est dédié aux importations YouTube, la curation vidéo reste donc ciblée.",
+  "uiTimelineAndLocation": "Chronologie et lieu",
+  "uiToolsAndStack": "Outils et pile",
+  "uiToolsOrStack": "Outils ou pile",
+  "uiTop": "Haut",
+  "uiTotal": "Total",
+  "uiTotalUsers": "Nombre total d'utilisateurs",
+  "uiTotalthisweek": "{totalThisWeek}",
+  "@uiTotalthisweek": {
+    "placeholders": {
+      "totalThisWeek": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiTrackEachSubmissionAndSeeWhatDeservesYourNextMove": "Suivez chaque soumission et voyez ce qui mérite votre prochaine action.",
+  "uiTrackLatestEvents": "Suivre les derniers événements",
+  "uiTrackPlatformChangesAndJumpStraightIntoTheRightQueue": "Suivez les changements de plate-forme et passez directement dans la bonne file d’attente.",
+  "uiTrackTheRolesYouNeedAndTheInterestBuildingAround": "Suivez les rôles dont vous avez besoin et l’intérêt suscité par cette idée.",
+  "uiTraining": "Entraînement",
+  "uiTrainingMenu": "Menu de formation",
+  "uiTrainingOverview": "Aperçu de la formation",
+  "uiTrainingPrograms": "Programmes de formation",
+  "uiTrainingUnavailable": "Formation indisponible",
+  "uiTrainings": "Formations",
+  "uiTranslate": "Traduire",
+  "uiTranslateTo": "Traduire en",
+  "uiTrendingOpportunities": "Opportunités tendances",
+  "uiTryABroaderQueryOrChangeTheLanguageAndDomain": "Essayez une requête plus large ou modifiez les filtres de langue et de domaine avant de lancer une nouvelle recherche.",
+  "uiTryABroaderQueryOrRefreshToLoadTheLatest": "Essayez une requête plus large ou actualisez pour charger les derniers événements.",
+  "uiTryABroaderQueryOrSwitchTheDomainAndLevel": "Essayez une requête plus large ou changez de contexte de domaine et de niveau avant de lancer une nouvelle recherche.",
+  "uiTryABroaderSearchTermOrContactSupportIfYou": "Essayez un terme de recherche plus large ou contactez l'assistance si vous avez besoin d'une aide pratique.",
+  "uiTryADifferentFilterOrStartANewIdea": "Essayez un autre filtre ou lancez une nouvelle idée.",
+  "uiTryAdjustingYourSearchOrFiltersToExploreMoreScholarships": "Essayez d'ajuster votre recherche ou vos filtres\npour explorer plus de bourses.",
+  "uiTryAdjustingYourSearchOrFiltersToUncoverMoreMatches": "Essayez d'ajuster votre recherche ou vos filtres pour découvrir plus de correspondances.",
+  "uiTryAnotherSearchOrRelaxTheCurrentRoleAndLevel": "Essayez une autre recherche ou assouplissez les filtres de rôle et de niveau actuels.",
+  "uiTwoStepVerification": "Vérification en deux étapes",
+  "uiType": "Taper",
+  "uiUiDesignIntern": "Stagiaire en conception d'interface utilisateur",
+  "uiUnavailable": "Indisponible",
+  "uiUnderstandWhatInformationIsStoredAndHowItIsUsed": "Comprenez quelles informations sont stockées et comment elles sont utilisées au sein de la plateforme.",
+  "uiUniversity": "Université",
+  "uiUnlockTheCompanyWorkspaceAndMoveItIntoTheApproved": "Déverrouillez l'espace de travail de l'entreprise et placez-le dans l'état approuvé.",
+  "uiUpcomingDeadlinesAreHighlightedHereAsNewOpportunitiesGoLive": "Les échéances à venir sont mises en évidence ici à mesure que de nouvelles opportunités sont mises en ligne.",
+  "uiUpdateCredentialsReviewPrivacyTouchpointsAndKeepAccessToYour": "Mettez à jour vos informations d'identification, examinez les points de contact en matière de confidentialité et sécurisez l'accès à votre profil FutureGate.",
+  "uiUpdateProfile": "Mettre à jour le profil",
+  "uiUpdateTheCompanyApprovalStateFromHereWithoutLeavingThe": "Mettez à jour l’état d’approbation de l’entreprise à partir d’ici sans quitter le profil.",
+  "uiUpdateYourProfile": "Mettez à jour votre profil",
+  "uiUpdateYourSignInPassword": "Mettez à jour votre mot de passe de connexion",
+  "uiUploadAPdfJpgOrPngDocumentUpTo10": "Téléchargez un document PDF, JPG ou PNG jusqu'à 10 Mo pour compléter cette partie du profil.",
+  "uiUploadCommercialRegister": "Télécharger le registre du commerce",
+  "uiUploadComplete": "Téléchargement terminé",
+  "uiUploadDocument": "Télécharger un document",
+  "uiUploadPhoto": "Télécharger une photo",
+  "uiUploadedCv": "CV téléchargé",
+  "uiUploadedUploadedatlabel": "Téléchargé: {uploadedAtLabel}",
+  "@uiUploadedUploadedatlabel": {
+    "placeholders": {
+      "uploadedAtLabel": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiUrgentApplicationsThatNeedAttentionBeforeTheyExpire": "Applications urgentes qui nécessitent une attention avant leur expiration",
+  "uiUseAStrongPasswordWithAMixOfLettersNumbers": "Utilisez un mot de passe fort avec un mélange de lettres, de chiffres et de symboles pour protéger votre compte.",
+  "uiUseATopicDomainOrLanguageFilterToBringIn": "Utilisez un filtre de sujet, de domaine ou de langue pour proposer des livres sélectionnés à des fins de révision.",
+  "uiUseATopicSearchToBringBackImportReadyVideos": "Utilisez une recherche par sujet pour ramener des vidéos prêtes à être importées pour examen.",
+  "uiUseFuturegateResponsiblyKeepAccountInformationAccurateAndAvoidSubmitting": "Utilisez FutureGate de manière responsable, veillez à ce que les informations de compte soient exactes et évitez de soumettre des applications trompeuses ou du contenu qui enfreint les règles de la plateforme.",
+  "uiUseGracefulFallbacksWhereDataIsMissingAndKeepEmail": "Utilisez des solutions de secours gracieuses là où les données sont manquantes et conservez les modifications des e-mails sur le flux d'authentification sécurisé.",
+  "uiUseTheExistingAccountToolsSafelyWithoutAffectingYourCurrent": "Utilisez les outils de compte existants en toute sécurité sans affecter votre flux de connexion actuel.",
+  "uiUseTheExistingProfileAndSecurityFlowsAlreadyConnectedTo": "Utilisez le profil existant et les flux de sécurité déjà connectés à votre compte.",
+  "uiUseTheLiveFeedToJumpDirectlyIntoTheRight": "Utilisez le flux en direct pour accéder directement à la bonne cible de modération.",
+  "uiUseTheseTagsToUnderstandWhatSupportTheIdeaNeeds": "Utilisez ces balises pour comprendre de quel support l’idée a ensuite besoin.",
+  "uiUseUploaded": "Utiliser téléchargé",
+  "uiUsefulReferencesAndContactPointsForThePlatform": "Références utiles et points de contact pour la plateforme.",
+  "uiUserActions": "Actions de l'utilisateur",
+  "uiUserDetails": "Détails de l'utilisateur",
+  "uiUserManagement": "Gestion des utilisateurs",
+  "uiUsers": "Utilisateurs",
+  "uiUsersCouldNotBeLoaded": "Les utilisateurs n'ont pas pu être chargés",
+  "uiUsersDistribution": "Répartition des utilisateurs",
+  "uiUsingGoogleSignIn": "Vous utilisez la connexion Google ?",
+  "uiUxDesignAtTech": "Conception UX chez Tech",
+  "uiUxResearchInternship": "Stage de recherche UX",
+  "uiValue1": "{value1}%",
+  "@uiValue1": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiValue1Active": "{value1} actif",
+  "@uiValue1Active": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiValue1Admins": "Administrateurs de {value1}",
+  "@uiValue1Admins": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiValue1Apps": "Applications {value1}",
+  "@uiValue1Apps": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiValue1Blocked": "{value1} bloqué",
+  "@uiValue1Blocked": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiValue1CompanyReviews": "Avis sur la société {value1}",
+  "@uiValue1CompanyReviews": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiValue1CompanyWorkspace": "Espace de travail de l'entreprise {value1}",
+  "@uiValue1CompanyWorkspace": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiValue1De35": "{value1}",
+  "@uiValue1De35": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiValue1Featured": "{value1} en vedette",
+  "@uiValue1Featured": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiValue1ImportedBooks": "{value1} livres importés",
+  "@uiValue1ImportedBooks": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiValue1ImportedVideos": "{value1} vidéos importées",
+  "@uiValue1ImportedVideos": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiValue1Interested": "{value1} intéressé",
+  "@uiValue1Interested": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiValue1Mb": "{value1} Mo",
+  "@uiValue1Mb": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiValue1MbSelected": "{value1} Mo sélectionné",
+  "@uiValue1MbSelected": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiValue1Opportunities": "{value1} opportunités",
+  "@uiValue1Opportunities": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiValue1OpportunitiesCloseWithinTheNextTwoWeeks": "Les opportunités {value1} se clôturent dans les deux prochaines semaines.",
+  "@uiValue1OpportunitiesCloseWithinTheNextTwoWeeks": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiValue1Results": "Résultats {value1}",
+  "@uiValue1Results": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiValue1Scholarships": "Bourses {value1}",
+  "@uiValue1Scholarships": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiValue1Trainings": "Formations {value1}",
+  "@uiValue1Trainings": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiValue1Users": "Utilisateurs {value1}",
+  "@uiValue1Users": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiValue1Value2": "{value1} ({value2})",
+  "@uiValue1Value2": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      },
+      "value2": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiValue1Value2Dca3": "{value1} - {value2}",
+  "@uiValue1Value2Dca3": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      },
+      "value2": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiVerification": "Vérification",
+  "uiVerificationSent": "Vérification envoyée",
+  "uiVerifyEmail": "Vérifier l'e-mail",
+  "uiVersionValue1": "Version {value1}",
+  "@uiVersionValue1": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiVideoImportWorkspace": "Espace de travail d'importation vidéo",
+  "uiVideoLessons": "Leçons vidéo",
+  "uiVideoLibraryUnavailable": "Vidéothèque indisponible",
+  "uiVideos": "Vidéos",
+  "uiView": "Voir Ø³Ø¬Ù ØªØ¬Ø§Ø±Ù",
+  "uiView69Bd": "Voir",
+  "uiViewAll": "Voir tout",
+  "uiViewAllScholarships": "Voir toutes les bourses",
+  "uiViewApplicationsValue1": "Afficher les candidatures ({value1})",
+  "@uiViewApplicationsValue1": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiViewBuiltCv": "Voir le CV construit",
+  "uiViewCv": "Voir CV",
+  "uiViewProfile": "Voir le profil",
+  "uiViewProfileB987": "Voir le profil",
+  "uiViews": "Vues",
+  "uiVisibility": "Visibilité",
+  "uiVisible": "Visible",
+  "uiWaveHouseSocial": "Wave House â¢ Social",
+  "uiWeCouldNotLoadAdminAnalyticsRightNow": "Nous n'avons pas pu charger les analyses d'administration pour le moment.",
+  "uiWeCouldnTGenerateThisPdfPreviewRightNowValue1": "Nous n'avons pas pu générer cet aperçu PDF pour le moment. {value1}",
+  "@uiWeCouldnTGenerateThisPdfPreviewRightNowValue1": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiWeDLoveToChatAbout": "\"Nous serions ravis de discuter de...\"",
+  "uiWebsite": "Site web",
+  "uiWebsiteSocial": "Site Web et réseaux sociaux",
+  "uiWelcomeBack": "Content de te revoir",
+  "uiWhenEnabledTheIdeaReadsLikeAPublicCommunityOpportunity": "Lorsqu'elle est activée, l'idée se lit comme une opportunité communautaire publique au lieu d'une note interne cachée.",
+  "uiWhoCanApply": "Qui peut postuler",
+  "uiWorkSetup": "Configuration du travail",
+  "uiYear": "Année",
+  "uiYouCanNowMessageCompanylabel": "Vous pouvez maintenant envoyer un message à {companyLabel}.",
+  "@uiYouCanNowMessageCompanylabel": {
+    "placeholders": {
+      "companyLabel": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiYouCanOpenTheCompanyProfileRightNowToImprove": "Vous pouvez ouvrir le profil de l'entreprise dès maintenant pour améliorer l'histoire de l'entreprise, le site Web, le numéro de téléphone, le logo ou le registre du commerce pendant que le compte est en attente d'examen.",
+  "uiYouCanSignBackInAnytimeWithTheSameAccount": "Vous pouvez vous reconnecter à tout moment avec le même compte.",
+  "uiYouHaveReachedTheEndOfTheRecentActivityFeed": "Vous avez atteint la fin du flux d'activités récentes.",
+  "uiYouWillLeaveTheAdminWorkspaceOnThisDeviceSaved": "Vous quitterez l’espace de travail d’administrateur sur cet appareil. Les modifications enregistrées restent en sécurité.",
+  "uiYouWillLeaveTheCompanyWorkspaceOnThisDeviceYour": "Vous quitterez l’espace de travail de l’entreprise sur cet appareil. Votre profil et vos opportunités restent enregistrés.",
+  "uiYouWillLeaveYourStudentWorkspaceOnThisDeviceYour": "Vous quitterez votre espace de travail étudiant sur cet appareil. Votre profil et les éléments enregistrés restent en sécurité.",
+  "uiYourAccountDataIsUsedToProvideSignInProfile": "Les données de votre compte sont utilisées pour fournir la connexion, la gestion du profil, les opportunités enregistrées, les notifications, l'accès aux CV et les candidatures. L'accès sensible est limité aux fonctionnalités de la plateforme qui le nécessitent.",
+  "uiYourAccountProtectionHub": "Votre hub de protection de compte",
+  "uiYourCvIsSavedPickATemplateToPreviewAnd": "Votre CV est enregistré. Choisissez un modèle à prévisualiser et à exporter au format PDF.",
+  "uiYourDailyStudentPulseShortcutsAndFreshMomentum": "Votre pouls étudiant quotidien, vos raccourcis et votre nouvel élan.",
+  "uiYourFiles": "Vos fichiers",
+  "uiYourLatestApplicationsSavesAndCvUpdatesAreReflectedHere": "Vos dernières candidatures, sauvegardes et mises à jour de CV sont reflétées ici.",
+  "uiYourShortlist": "Votre liste restreinte",
+  "uiYourShortlistIsReady": "Votre liste restreinte est prête.",
+  "uiYourSignInEmailWillRemainManagedByGoogleThis": "Votre e-mail de connexion restera géré par Google. Cela ajoute seulement un moyen supplémentaire de vous connecter.",
+  "uiYoutube": "YouTube",
+  "uiYoutubeImport": "Importation YouTube",
+  "uiBookLabel": "Livre",
+  "uiVideoLabel": "Vid?o",
+  "uiCourseLabel": "Cours",
+  "uiGuideLabel": "Guide",
+  "uiProgramLabel": "Programme",
+  "uiTrainLabel": "Formation",
+  "uiLoading": "Chargement...",
+  "uiNoTrainingResourcesAvailableRightNow": "Aucune ressource de formation disponible pour le moment",
+  "uiFeature": "Mettre en avant",
+  "uiUnfeature": "Retirer de la s?lection",
+  "uiValuede3545": "{value1}%",
+  "@uiValuede3545": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiView69bd4e": "Voir Ø³Ø¬Ù ØªØ¬Ø§Ø±Ù",
+  "uiSavedItems1d9c1a": "Éléments enregistrés",
+  "uiValueOpportunities": "{value1} opportunités",
+  "@uiValueOpportunities": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiValueScholarships": "Bourses {value1}",
+  "@uiValueScholarships": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiValueTrainings": "Formations {value1}",
+  "@uiValueTrainings": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiValue": "{value1}%",
+  "@uiValue": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiValueValue": "{value1} ({value2})",
+  "@uiValueValue": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      },
+      "value2": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiByValue": "Par {value1}",
+  "@uiByValue": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiValueApps": "Applications {value1}",
+  "@uiValueApps": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiViewApplicationsValue": "Afficher les candidatures ({value1})",
+  "@uiViewApplicationsValue": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiOpenActivityf327dd": "Activité ouverte",
+  "uiDeleteValueFromFirestoreThisActionCannotBeUndone": "Supprimer « {value1} » de Firestore ? Cette action ne peut pas être annulée.",
+  "@uiDeleteValueFromFirestoreThisActionCannotBeUndone": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiValueImportedBooks": "{value1} livres importés",
+  "@uiValueImportedBooks": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiValueFeatured": "{value1} en vedette",
+  "@uiValueFeatured": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiValueResults": "Résultats {value1}",
+  "@uiValueResults": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiProblemStatement1ebe49": "Énoncé du problème",
+  "uiValueImportedVideos": "{value1} vidéos importées",
+  "@uiValueImportedVideos": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiSubmittedByValue": "Soumis par: {value1}",
+  "@uiSubmittedByValue": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiValueUsers": "Utilisateurs {value1}",
+  "@uiValueUsers": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiValueActive": "{value1} actif",
+  "@uiValueActive": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiValueBlocked": "{value1} bloqué",
+  "@uiValueBlocked": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiValueAdmins": "Administrateurs de {value1}",
+  "@uiValueAdmins": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiValueCompanyReviews": "Avis sur la société {value1}",
+  "@uiValueCompanyReviews": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiValueUser": "Utilisateurs {value1}",
+  "@uiValueUser": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiValueMb": "{value1} Mo",
+  "@uiValueMb": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiBackToLoginb5cd32": "Retour à la connexion",
+  "uiCreateAccounteff4fd": "Créer un compte",
+  "uiAcademicLevel80ccd3": "Niveau académique",
+  "uiFieldOfStudy81e26d": "Domaine d'études",
+  "uiStatus716883": "Statut",
+  "uiType6e9816": "Taper",
+  "uiRolesdd8b65": "Rôles",
+  "uiNew66aabd": "Nouveau",
+  "uiNoCvAvailableForValue": "Aucun CV disponible pour {value1}",
+  "@uiNoCvAvailableForValue": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiValueValuedca30a": "{value1} {value2}",
+  "uiValue45e7ea": "{value1}%",
+  "@uiValue45e7ea": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiAppliedValue051b93": "Applied {value1}",
+  "uiValueCompanyWorkspace": "Espace de travail de l'entreprise {value1}",
+  "@uiValueCompanyWorkspace": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiPostOpportunity2f1ac8": "Publier une opportunité",
+  "uiValue391ff6": "{value1}%",
+  "@uiValue391ff6": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiDeleteValueIfItAlreadyHasApplicationsItWillBe": "Supprimer \"{value1}\" ? S'il contient déjà des applications, il sera fermé afin de préserver l'historique.",
+  "@uiDeleteValueIfItAlreadyHasApplicationsItWillBe": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiValueb1531b": "{value1}%",
+  "@uiValueb1531b": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiDownloada479c9": "Télécharger Ø³Ø¬Ù ØªØ¬Ø§Ø±Ù",
+  "uiValueMbSelected": "{value1} Mo sélectionné",
+  "@uiValueMbSelected": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiInternship": "Stages",
+  "uiVersionValue": "Version {value1}",
+  "@uiVersionValue": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiIdeaTitlead8343": "Titre de l'idée",
+  "uiTargetAudience5cc631": "Public cible",
+  "uiSkillsNeeded7988fd": "Compétences nécessaires",
+  "uiValuea6a59e": "{value1}%",
+  "@uiValuea6a59e": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiEditProfilecd280a": "Modifier le profil",
+  "uiFullDescriptionb43e9e": "Descriptif complet",
+  "uiTeamNeeded343772": "Équipe recherchée",
+  "uiClosingSoonc287b7": "Bientôt fermé",
+  "uiApplicationApprovedb0cb9c": "Demande\nApprouvé",
+  "uiExternalLink663054": "Lien externe",
+  "uiProfileStrength491db6": "Force du profil",
+  "uiValuee5544c": "{value1}%",
+  "@uiValuee5544c": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiValuee95f65": "{value1}%",
+  "@uiValuee95f65": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiThisOpportunityIsNoLongerAvailable": "This Opportunity Is No Longer Available To Open",
+  "uiAllOppsValue": "Toutes les opportunités ({value1})",
+  "@uiAllOppsValue": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiFundingValue": "Financement : {value1}",
+  "@uiFundingValue": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiValueInterested": "{value1} intéressé",
+  "@uiValueInterested": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiFeaturedc00531": "En vedette",
+  "uiBrowse": "Parcourir les catégories",
+  "uiScholarship": "Scholarship Unavailable",
+  "uiTexte21a07": "Text",
+  "uiCompleteYourProfile9a4b2b": "Complétez votre profil",
+  "uiValueOpportunitiesCloseWithinTheNextTwoWeeks": "Les opportunités {value1} se clôturent dans les deux prochaines semaines.",
+  "@uiValueOpportunitiesCloseWithinTheNextTwoWeeks": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiValue6497ea": "{value1}%",
+  "@uiValue6497ea": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiViewProfileb98795": "Voir le profil",
+  "uiThisOpportunityIsCurrentlyHidden": "Cette opportunité est actuellement masquée",
+  "uiThisScholarshipIsCurrentlyHidden": "Cette bourse est actuellement cachée",
+  "uiScholarshipUnavailable": "Bourse indisponible",
+  "uiThisTrainingResourceIsCurrentlyHidden": "Cette ressource de formation est actuellement masquée",
+  "uiThisTrainingDoesNotHaveALinkYet": "Cette formation n'a pas encore de lien",
+  "uiThisTrainingLinkIsNotValid": "Ce lien de formation n'est pas valide",
+  "uiWeCouldnTOpenThisTrainingLinkRightNow": "Nous ne pouvons pas ouvrir ce lien de formation pour le moment",
+  "uiValueValue468dde": "{value1} {value2}",
+  "@uiValueValue468dde": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      },
+      "value2": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiEdited": "Édité",
+  "uiScholarshipOverview": "Aperçu de la bourse",
+  "uiScholarshipDetails": "Détails de la bourse",
+  "uiExpectedBenefits": "Bénéfices attendus",
+  "uiWeCouldntLoadLinkedActivity": "Nous n'avons pas pu charger l??l?ment {value1} li?.",
+  "@uiWeCouldntLoadLinkedActivity": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiWeCouldnTOpenThisAttachment": "Nous n'avons pas pu ouvrir cette pièce jointe",
+  "uiValueInterested27bcc0": "{value1} Intéressé",
+  "@uiValueInterested27bcc0": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiValuePendingIdeas": "{value1} Idées en attente",
+  "@uiValuePendingIdeas": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiValuePendingApps": "{value1} Applications en attente",
+  "@uiValuePendingApps": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiScholarships": "Bourses",
+  "uiSearchValue": "Rechercher {value1}",
+  "@uiSearchValue": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiPendingIdeasStillWaiting": "Les idées en attente attendent toujours {value1}",
+  "@uiPendingIdeasStillWaiting": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiApplicationsForValue": "Candidatures pour {value1}",
+  "@uiApplicationsForValue": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiApplicationsLinkedToOpportunity": "Candidatures liées à l'opportunité {value1}",
+  "@uiApplicationsLinkedToOpportunity": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiUntitledScholarship": "Bourse sans titre",
+  "uiYouCanOnlyUpdateApplicationsForOpportunitiesYouPostedAs": "Vous pouvez uniquement mettre à jour les candidatures pour les opportunités que vous avez publiées sous",
+  "uiThisDocumentIsNotAValidPdfFile": "Ce document n'est pas un fichier PDF valide",
+  "uiWeCouldnTOpenTheDocumentRightNow": "Nous ne pouvions pas ouvrir le document pour le moment",
+  "uiUntitledOpportunity": "Opportunité sans titre",
+  "uiEnterASearchQueryToContinue": "Entrez une requête de recherche pour continuer",
+  "uiAdminUserNotFound": "Utilisateur administrateur introuvable",
+  "uiThisResultDoesNotIncludeAnExternalLink": "Ce résultat n'inclut pas de lien externe",
+  "uiThisLinkIsNotValid": "Ce lien n'est pas valide",
+  "uiWeCouldnTOpenThisLinkRightNow": "Nous ne pouvons pas ouvrir ce lien pour le moment",
+  "uiValueFeaturedResources": "{value1} Ressources en vedette",
+  "@uiValueFeaturedResources": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiInternalItems": "{value1} ?l?ments internes",
+  "@uiInternalItems": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiLocationLabel": "Étiquette d'emplacement",
+  "uiDueValue": "À payer {value1}",
+  "@uiDueValue": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiText": "Texte",
+  "uiUploadedValue": "{value1} téléchargé",
+  "@uiUploadedValue": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiWriteAMessageBeforeUsingAiTools": "Écrivez un message avant d'utiliser les outils d'IA",
+  "uiWriteAMessageBeforeChoosingATranslation": "Écrivez un message avant de choisir une traduction",
+  "uiDeleteThisMessageForEveryone": "Supprimer ce message pour tout le monde",
+  "uiTheConversationHasBeenDeleted": "La conversation a été supprimée",
+  "uiSayHelloToValue": "Dites bonjour à {value1}",
+  "@uiSayHelloToValue": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiFilters": "Filtres",
+  "uiShowingValueOfValueApplications": "Affichage de {value1} sur {value2} candidatures",
+  "@uiShowingValueOfValueApplications": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      },
+      "value2": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiAppliedValue": "Appliqué {value1}",
+  "@uiAppliedValue": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiTheLinkedOpportunityIsNoLongerAvailable": "L'opportunité liée n'est plus disponible",
+  "uiTheRequestedFileIsNotAValidPdf": "Le fichier demandé n'est pas un PDF valide",
+  "uiOpenCandidateProfileForValue": "Profil de candidat ouvert pour {value1}",
+  "@uiOpenCandidateProfileForValue": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiMoveTheDeadlineIntoTheFutureBeforeReopeningThisOpportunity": "Repoussez la date limite dans le futur avant de rouvrir cette opportunité",
+  "uiValueOfValue": "{value1} de {value2}",
+  "@uiValueOfValue": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      },
+      "value2": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiValueApplicants": "{value1} Candidats",
+  "@uiValueApplicants": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiText85": "Texte85",
+  "uiNoEmailAppIsAvailableRightNow": "Aucune application de messagerie n'est disponible pour le moment",
+  "uiPasswordAddedSuccessfullyYouCanNowSignInWithGoogle": "Mot de passe ajouté avec succès, vous pouvez maintenant vous connecter avec Google",
+  "uiYourPasswordHasBeenUpdatedSuccessfully": "Votre mot de passe a été mis à jour avec succès",
+  "uiVerificationEmailSentConfirmYourNewAddressToCompleteThe": "E-mail de vérification envoyé Confirmez votre nouvelle adresse pour compléter le",
+  "uiNoEmailAppIsAvailableOnThisDevice": "Aucune application de messagerie n'est disponible sur cet appareil",
+  "uiThisOpportunityIsNoLongerAvailableToOpen": "Cette opportunité n'est plus disponible pour ouvrir",
+  "uiCoverImageUploadedSuccessfully": "Image de couverture téléchargée avec succès",
+  "uiExplainTheConceptTheProblemBehindItAndTheSolution": "Expliquez le concept, le problème derrière et la solution",
+  "uiYourCvChangesHaveBeenSaved": "Les modifications de votre CV ont été enregistrées",
+  "uiEducation": "Éducation",
+  "uiYourCvPdfHasBeenExportedAndSaved": "Votre CV PDF a été exporté et enregistré",
+  "uiExportComplete": "Exportation terminée",
+  "uiExportUnavailable": "Exportation indisponible",
+  "uiExportSaveCv": "Exporter Enregistrer le CV",
+  "uiAddYourCvDetailsBeforeGeneratingAPdf": "Ajoutez les détails de votre CV avant de générer un PDF",
+  "uiThisFileIsNotAValidPdfYet": "Ce fichier n'est pas encore un PDF valide",
+  "uiValueOfValueSectionsComplete": "{value1} sur {value2} sections terminées",
+  "@uiValueOfValueSectionsComplete": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      },
+      "value2": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiYourProfileHasBeenUpdatedSuccessfully": "Votre profil a été mis à jour avec succès",
+  "uiCouldNotOpenThatLink": "Impossible d'ouvrir ce lien",
+  "uiSignInToSaveInternshipsForLater": "Connectez-vous pour enregistrer des stages pour plus tard",
+  "uiSignInToSaveOpportunitiesForLater": "Connectez-vous pour enregistrer des opportunités pour plus tard",
+  "uiFullTime": "À temps plein",
+  "uiTheValueNewestRolesInternshipsAndSponsoredTracks": "Les {value1} Nouveaux rôles, stages et pistes sponsorisées",
+  "@uiTheValueNewestRolesInternshipsAndSponsoredTracks": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiSignInToContinueWithYourApplication": "Connectez-vous pour continuer votre candidature",
+  "uiCreateYourCvBeforeApplyingToThisOpportunity": "Créez votre CV avant de postuler à cette opportunité",
+  "uiSignInToChatWithTheCompany": "Connectez-vous pour discuter avec l'entreprise",
+  "uiCompanyDetailsAreMissingForThisOpportunity": "Les détails de l'entreprise manquent pour cette opportunité",
+  "uiExperienceLevel": "Niveau d'expérience",
+  "uiYouCanNowMessageValue": "Vous pouvez maintenant envoyer un message à {value1}",
+  "@uiYouCanNowMessageValue": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiThisScholarshipIsNoLongerAvailable": "Cette bourse n'est plus disponible",
+  "uiExploreScholarship": "Explorer la bourse",
+  "uiScholarshipProfile": "Profil de bourse",
+  "uiValueValueStillMissingForBetterMatching": "{value1} {value2} toujours manquant pour une meilleure correspondance",
+  "@uiValueValueStillMissingForBetterMatching": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      },
+      "value2": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiValueValueApproved": "{value1} {value2} Approuvé",
+  "@uiValueValueApproved": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      },
+      "value2": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiValueValueInReview": "{value1} {value2} En revue",
+  "@uiValueValueInReview": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      },
+      "value2": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiExploreOpenRolesInternshipsFundingAndLearningPicksDesignedFor": "Explorez les postes ouverts, les stages, les choix de financement et d'apprentissage conçus pour",
+  "uiValueReadyForBetterStudentMatching": "{value1} Prêt pour un meilleur jumelage des étudiants",
+  "@uiValueReadyForBetterStudentMatching": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiThisSavedResourceLinkIsNotAvailable": "Ce lien de ressource enregistré n'est pas disponible",
+  "uiWeCouldnTOpenThisSavedResourceRightNow": "Nous n'avons pas pu ouvrir cette ressource enregistrée pour le moment",
+  "uiSignInToSaveTrainingResourcesForLater": "Connectez-vous pour enregistrer les ressources de formation pour plus tard",
+  "uiWeCouldnTGenerateThisPdfPreviewRightNowValue": "Nous n'avons pas pu générer cet aperçu PDF pour le moment. {value1}",
+  "@uiWeCouldnTGenerateThisPdfPreviewRightNowValue": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiAlreadyHaveAccountPrompt": "Vous avez d?j? un compte ? ",
+  "uiLogIn": "Se connecter",
+  "uiByRegisteringAgreePrefix": "En vous inscrivant, vous acceptez nos ",
+  "uiBySigningUpAgreePrefix": "En cr?ant un compte, vous acceptez nos ",
+  "uiAndOur": " et notre ",
+  "uiCertified": "Certifi?",
+  "authGoogleMissingToken": "La connexion Google n?a pas pu r?cup?rer le jeton de compte requis.",
+  "authGoogleSignInFailedShort": "La connexion Google a ?chou?.",
+  "authInvalidEmailMessage": "L?adresse e-mail n?est pas valide.",
+  "authGoogleOnlyPasswordResetMessage": "Ce compte utilise la connexion Google. Connectez-vous avec Google, puis ajoutez un mot de passe depuis les param?tres si vous voulez recevoir des e-mails de r?initialisation plus tard.",
+  "authTooManyAttemptsMessage": "Trop de tentatives. Veuillez r?essayer plus tard.",
+  "authPasswordResetFailedMessage": "Impossible d?envoyer l?e-mail de r?initialisation.",
+  "authPasswordProviderNotLinkedMessage": "Ce compte n?utilise pas l?e-mail et le mot de passe pour les changements sensibles.",
+  "authPasswordAlreadyAvailableMessage": "La connexion par e-mail et mot de passe est d?j? activ?e pour ce compte.",
+  "authMissingEmailForPasswordMessage": "Ce compte ne dispose pas d?adresse e-mail pour la connexion par mot de passe.",
+  "authPasswordChangeNotSupportedMessage": "Le changement de mot de passe est disponible uniquement pour les comptes avec connexion e-mail et mot de passe.",
+  "workerNotAuthenticatedMessage": "Non authentifi?",
+  "uiSearchFailedValue": "La recherche a ?chou? : {value1}",
+  "@uiSearchFailedValue": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiValueImportedSuccessfully": "? {value1} ? a ?t? import? avec succ?s.",
+  "@uiValueImportedSuccessfully": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiImportFailedValue": "L?importation a ?chou? : {value1}",
+  "@uiImportFailedValue": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiValueDeleted": "? {value1} ? a ?t? supprim?.",
+  "@uiValueDeleted": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiCouldNotOpenChatValue": "Impossible d?ouvrir la discussion : {value1}",
+  "@uiCouldNotOpenChatValue": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiApplicationStatusValue": "Candidature {value1}.",
+  "@uiApplicationStatusValue": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiWeCouldnTOpenThisAttachmentValue": "Nous n?avons pas pu ouvrir cette pi?ce jointe. {value1}",
+  "@uiWeCouldnTOpenThisAttachmentValue": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "uiSearchBooksFailedMessage": "Une erreur est survenue pendant la recherche de livres. Veuillez r?essayer.",
+  "validationFullNameRequired": "Le nom complet est requis",
+  "validationNameMinLength": "Le nom doit contenir au moins 2 caract?res",
+  "validationEmailRequired": "L?e-mail est requis",
+  "validationValidEmailAddress": "Saisissez une adresse e-mail valide",
+  "validationPasswordRequired": "Le mot de passe est requis",
+  "validationPasswordMinLength": "Le mot de passe doit contenir au moins 8 caract?res",
+  "validationPasswordUppercase": "Le mot de passe doit contenir une lettre majuscule",
+  "validationPasswordLowercase": "Le mot de passe doit contenir une lettre minuscule",
+  "validationPasswordNumber": "Le mot de passe doit contenir un chiffre",
+  "validationConfirmPasswordRequired": "Veuillez confirmer votre mot de passe",
+  "validationPasswordsDoNotMatch": "Les mots de passe ne correspondent pas",
+  "documentSelectPrimaryCv": "S?lectionnez un fichier CV au format PDF.",
+  "documentPrimaryCvEmpty": "Le fichier CV s?lectionn? est vide.",
+  "documentPrimaryCvTooLarge": "Le CV principal doit ?tre inf?rieur ? 10 Mo.",
+  "documentPrimaryCvMustBePdf": "Le CV principal doit ?tre import? en fichier PDF.",
+  "documentCommercialRegisterRequired": "Le registre du commerce est requis.",
+  "documentCommercialRegisterEmpty": "Le fichier du registre du commerce s?lectionn? est vide.",
+  "documentCommercialRegisterTooLarge": "Le registre du commerce doit ?tre inf?rieur ? 10 Mo.",
+  "documentCommercialRegisterInvalidType": "Le registre du commerce doit ?tre un fichier PDF, JPG ou PNG.",
+  "applicationStatusApprovedSentence": "approuv?e",
+  "applicationStatusRejectedSentence": "rejet?e",
+  "applicationStatusPendingSentence": "en attente"
+}

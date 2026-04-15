@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../providers/auth_provider.dart';
 import '../../providers/company_provider.dart';
+import '../../theme/app_colors.dart';
 import '../../utils/company_dashboard_palette.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
@@ -200,10 +201,12 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                 child: Container(
                   padding: const EdgeInsets.fromLTRB(20, 14, 20, 18),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: CompanyDashboardPalette.surface,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.05),
+                        color: AppColors.current.shadow.withValues(
+                          alpha: AppColors.isDark ? 0.24 : 0.05,
+                        ),
                         blurRadius: 20,
                         offset: const Offset(0, -6),
                       ),

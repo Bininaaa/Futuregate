@@ -156,18 +156,18 @@ class ChatMessageBubble extends StatelessWidget {
               end: Alignment.bottomRight,
             )
           : null,
-      color: isMe ? null : const Color(0xFFFFFFFF),
+      color: isMe ? null : ChatThemePalette.surfaceElevated,
       borderRadius: _bubbleRadius(),
       border: Border.all(
         color: isMe
             ? Colors.white.withValues(alpha: 0.06)
-            : const Color(0xFFE8EDF5),
+            : ChatThemePalette.border.withValues(alpha: 0.92),
       ),
       boxShadow: [
         BoxShadow(
           color: isMe
               ? ChatThemePalette.primary.withValues(alpha: 0.12)
-              : const Color(0xFF0F172A).withValues(alpha: 0.04),
+              : ChatThemePalette.primary.withValues(alpha: 0.04),
           blurRadius: isMe ? 18 : 12,
           offset: const Offset(0, 6),
         ),

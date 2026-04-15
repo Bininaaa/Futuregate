@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../theme/app_colors.dart';
 import '../utils/opportunity_type.dart';
 
 /// Safe card-based selector for choosing an opportunity type.
@@ -19,6 +20,8 @@ class OpportunityTypeSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppColors.of(context);
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: OpportunityType.values.map((type) {
@@ -41,10 +44,10 @@ class OpportunityTypeSelector extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: isSelected
                         ? typeColor.withValues(alpha: 0.10)
-                        : Colors.white,
+                        : colors.surfaceElevated,
                     borderRadius: BorderRadius.circular(18),
                     border: Border.all(
-                      color: isSelected ? typeColor : Colors.grey.shade300,
+                      color: isSelected ? typeColor : colors.border,
                       width: isSelected ? 1.6 : 1,
                     ),
                     boxShadow: isSelected
@@ -68,14 +71,12 @@ class OpportunityTypeSelector extends StatelessWidget {
                             decoration: BoxDecoration(
                               color: isSelected
                                   ? typeColor.withValues(alpha: 0.16)
-                                  : Colors.grey.shade100,
+                                  : colors.surfaceMuted,
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Icon(
                               OpportunityType.icon(type),
-                              color: isSelected
-                                  ? typeColor
-                                  : Colors.grey.shade500,
+                              color: isSelected ? typeColor : colors.textMuted,
                               size: 20,
                             ),
                           ),
@@ -102,7 +103,7 @@ class OpportunityTypeSelector extends StatelessWidget {
                         style: GoogleFonts.poppins(
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
-                          color: isSelected ? typeColor : Colors.grey.shade700,
+                          color: isSelected ? typeColor : colors.textSecondary,
                         ),
                         textAlign: TextAlign.center,
                       ),
@@ -114,7 +115,7 @@ class OpportunityTypeSelector extends StatelessWidget {
                           height: 1.35,
                           color: isSelected
                               ? typeColor.withValues(alpha: 0.82)
-                              : Colors.grey.shade500,
+                              : colors.textMuted,
                         ),
                         textAlign: TextAlign.center,
                         maxLines: 2,

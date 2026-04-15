@@ -183,7 +183,9 @@ class AppContentTheme {
         offset: const Offset(0, 12),
       ),
       BoxShadow(
-        color: Colors.black.withValues(alpha: opacity * 0.65),
+        color: AppColors.current.shadow.withValues(
+          alpha: AppColors.isDark ? opacity * 2.2 : opacity * 0.65,
+        ),
         blurRadius: 14,
         offset: const Offset(0, 4),
       ),
