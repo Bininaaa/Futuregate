@@ -274,6 +274,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               SliverPersistentHeader(
                 pinned: true,
                 delegate: _AdminTabBarHeaderDelegate(
+                  extent: 68,
                   child: Container(
                     color: AdminPalette.background,
                     padding: EdgeInsets.fromLTRB(
@@ -438,7 +439,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       color: _accentColor,
       onRefresh: provider.loadModerationData,
       child: ListView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
         itemCount: ideas.isEmpty ? 2 : ideas.length + 1,
         itemBuilder: (context, index) {
           if (index == 0) {
@@ -598,13 +599,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               onPressed: () => _showProjectIdeaDetails(idea),
               icon: const Icon(Icons.open_in_new_rounded, size: 16),
               label: const Text('Details'),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: _ideaAccentColor,
-                side: BorderSide(
-                  color: _ideaAccentColor.withValues(alpha: 0.28),
-                ),
-                padding: const EdgeInsets.symmetric(vertical: 12),
-              ),
+              style: _compactOutlinedFooterStyle(_ideaAccentColor),
             ),
             if (isPending)
               FilledButton.icon(
@@ -625,11 +620,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                       },
                 icon: const Icon(Icons.check_rounded, size: 16),
                 label: Text(isIdeaBusy ? 'Working...' : 'Approve'),
-                style: FilledButton.styleFrom(
-                  backgroundColor: AdminPalette.success,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                ),
+                style: _compactFilledFooterStyle(AdminPalette.success),
               ),
             if (isPending)
               FilledButton.icon(
@@ -650,11 +641,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                       },
                 icon: const Icon(Icons.close_rounded, size: 16),
                 label: Text(isIdeaBusy ? 'Working...' : 'Reject'),
-                style: FilledButton.styleFrom(
-                  backgroundColor: AdminPalette.danger,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                ),
+                style: _compactFilledFooterStyle(AdminPalette.danger),
               ),
             if (idea.isHidden)
               _buildUnhideFooterButton(
@@ -782,15 +769,15 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 Text(
                   '$pendingCount idea${pendingCount == 1 ? '' : 's'} still waiting for approval or rejection.',
                   style: TextStyle(
-                    fontSize: 12.5,
-                    height: 1.45,
+                    fontSize: 12.2,
+                    height: 1.4,
                     color: AdminPalette.textSecondary,
                   ),
                 ),
               ],
             ),
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: 8),
           TextButton(
             onPressed: _ideaStatusFilter == _ideaFilterPending
                 ? null
@@ -806,16 +793,16 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
 
   Widget _buildIdeaLeading(ProjectIdeaModel idea) {
     return Container(
-      width: 40,
-      height: 40,
+      width: 38,
+      height: 38,
       decoration: BoxDecoration(
         color: _ideaAccentColor.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(10),
       ),
       child: Icon(
         Icons.lightbulb_outline_rounded,
         color: _ideaAccentColor,
-        size: 20,
+        size: 19,
       ),
     );
   }
@@ -823,13 +810,9 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
   Widget _buildUnhideFooterButton({required VoidCallback? onPressed}) {
     return FilledButton.icon(
       onPressed: onPressed,
-      icon: const Icon(Icons.visibility_rounded, size: 18),
+      icon: const Icon(Icons.visibility_rounded, size: 16),
       label: Text(onPressed == null ? 'Working...' : 'Unhide'),
-      style: FilledButton.styleFrom(
-        backgroundColor: AdminPalette.success,
-        foregroundColor: Colors.white,
-        padding: const EdgeInsets.symmetric(vertical: 14),
-      ),
+      style: _compactFilledFooterStyle(AdminPalette.success),
     );
   }
 
@@ -1095,12 +1078,12 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       color: _accentColor,
       onRefresh: provider.loadModerationData,
       child: ListView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
         itemCount: opportunities.isEmpty ? 2 : opportunities.length + 1,
         itemBuilder: (context, index) {
           if (index == 0) {
             return Padding(
-              padding: const EdgeInsets.only(bottom: 14),
+              padding: const EdgeInsets.only(bottom: 16),
               child: _buildCollectionWorkspaceHeader(
                 eyebrow: 'Opportunities',
                 title:
@@ -1271,13 +1254,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               onPressed: () => _showOpportunityDetails(opportunity),
               icon: const Icon(Icons.open_in_new_rounded, size: 16),
               label: const Text('Details'),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: opportunityTypeColor,
-                side: BorderSide(
-                  color: opportunityTypeColor.withValues(alpha: 0.28),
-                ),
-                padding: const EdgeInsets.symmetric(vertical: 12),
-              ),
+              style: _compactOutlinedFooterStyle(opportunityTypeColor),
             ),
             if (applications.isNotEmpty)
               FilledButton.icon(
@@ -1290,7 +1267,12 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                       ? AdminPalette.activity
                       : AdminPalette.info,
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 10,
+                  ),
+                  visualDensity: VisualDensity.compact,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
               ),
           ];
@@ -1490,12 +1472,12 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       color: _accentColor,
       onRefresh: provider.loadModerationData,
       child: ListView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
         itemCount: scholarships.isEmpty ? 2 : scholarships.length + 1,
         itemBuilder: (context, index) {
           if (index == 0) {
             return Padding(
-              padding: const EdgeInsets.only(bottom: 14),
+              padding: const EdgeInsets.only(bottom: 16),
               child: _buildCollectionWorkspaceHeader(
                 eyebrow: 'Scholarships',
                 title:
@@ -1587,24 +1569,14 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               onPressed: () => _showScholarshipDetails(scholarship),
               icon: const Icon(Icons.open_in_new_rounded, size: 16),
               label: const Text('Details'),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: _scholarshipAccentColor,
-                side: BorderSide(
-                  color: _scholarshipAccentColor.withValues(alpha: 0.28),
-                ),
-                padding: const EdgeInsets.symmetric(vertical: 12),
-              ),
+              style: _compactOutlinedFooterStyle(_scholarshipAccentColor),
             ),
             if (scholarshipModel.link.trim().isNotEmpty)
               FilledButton.icon(
                 onPressed: () => _openExternalLink(scholarshipModel.link),
                 icon: const Icon(Icons.open_in_new_rounded, size: 16),
                 label: const Text('Apply Link'),
-                style: FilledButton.styleFrom(
-                  backgroundColor: _scholarshipAccentColor,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                ),
+                style: _compactFilledFooterStyle(_scholarshipAccentColor),
               ),
             if (scholarshipModel.isHidden)
               _buildUnhideFooterButton(
@@ -1782,12 +1754,12 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       color: _accentColor,
       onRefresh: provider.loadModerationData,
       child: ListView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
         itemCount: trainings.isEmpty ? 2 : trainings.length + 1,
         itemBuilder: (context, index) {
           if (index == 0) {
             return Padding(
-              padding: const EdgeInsets.only(bottom: 14),
+              padding: const EdgeInsets.only(bottom: 16),
               child: _buildCollectionWorkspaceHeader(
                 eyebrow: 'Trainings',
                 title:
@@ -2361,7 +2333,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       children: [
         for (var index = 0; index < actions.length; index++) ...[
           actions[index],
-          if (index < actions.length - 1) const SizedBox(width: 8),
+          if (index < actions.length - 1) const SizedBox(width: 6),
         ],
       ],
     );
@@ -2375,15 +2347,15 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     final effectiveColor = onTap == null ? AdminPalette.textMuted : color;
 
     return Material(
-      color: effectiveColor.withValues(alpha: onTap == null ? 0.06 : 0.1),
+      color: effectiveColor.withValues(alpha: onTap == null ? 0.05 : 0.1),
       borderRadius: BorderRadius.circular(8),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(8),
         child: SizedBox(
-          width: 34,
-          height: 34,
-          child: Icon(icon, size: 18, color: effectiveColor),
+          width: 32,
+          height: 32,
+          child: Icon(icon, size: 16.5, color: effectiveColor),
         ),
       ),
     );
@@ -2457,138 +2429,72 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     final resolvedAccentColor = accentColor ?? AdminPalette.primary;
     final highlightColor = isTarget ? _accentColor : resolvedAccentColor;
     final borderColor = isTarget
-        ? _accentColor.withValues(alpha: 0.52)
-        : AdminPalette.border.withValues(alpha: 0.86);
-    final normalizedDescription = (description ?? '').trim();
+        ? _accentColor.withValues(alpha: 0.42)
+        : AdminPalette.border.withValues(alpha: 0.88);
     final normalizedMetaText = (metaText ?? '').trim();
+    final resolvedAction =
+        action ??
+        Icon(
+          Icons.chevron_right_rounded,
+          size: 18,
+          color: highlightColor.withValues(alpha: 0.78),
+        );
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.only(bottom: 8),
       child: Material(
         color: isTarget
-            ? _accentColor.withValues(alpha: 0.035)
+            ? highlightColor.withValues(alpha: 0.035)
             : AdminPalette.surface,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(12),
         clipBehavior: Clip.antiAlias,
-        elevation: isTarget ? 2 : 1,
-        shadowColor: AdminPalette.textPrimary.withValues(alpha: 0.08),
+        elevation: 0,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(12),
           child: DecoratedBox(
             decoration: BoxDecoration(
-              border: Border.all(color: borderColor, width: isTarget ? 1.4 : 1),
-              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: borderColor, width: isTarget ? 1.2 : 1),
+              borderRadius: BorderRadius.circular(12),
             ),
-            child: Stack(
-              children: [
-                Positioned.fill(
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Container(
-                      width: 4,
-                      color: highlightColor.withValues(
-                        alpha: isTarget ? 0.82 : 0.58,
-                      ),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(14, 12, 12, 12),
-                  child: Column(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(12, 10, 10, 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          leading,
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  title,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w800,
-                                    fontSize: 14.2,
-                                    color: AdminPalette.textPrimary,
-                                    height: 1.25,
-                                  ),
-                                ),
-                                if (subtitle.trim().isNotEmpty) ...[
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    subtitle,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600,
-                                      color: AdminPalette.textMuted,
-                                      height: 1.3,
-                                    ),
-                                  ),
-                                ],
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          action ??
-                              Icon(
-                                Icons.chevron_right_rounded,
-                                size: 22,
-                                color: highlightColor.withValues(alpha: 0.78),
-                              ),
-                        ],
+                      leading,
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: _buildCardTitleBlock(
+                          title: title,
+                          subtitle: subtitle,
+                        ),
                       ),
-                      if (normalizedDescription.isNotEmpty) ...[
-                        const SizedBox(height: 9),
-                        Text(
-                          normalizedDescription,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 12.2,
-                            height: 1.4,
-                            color: AdminPalette.textSecondary,
-                          ),
-                        ),
-                      ],
-                      if (badges.isNotEmpty ||
-                          normalizedMetaText.isNotEmpty) ...[
-                        const SizedBox(height: 9),
-                        Wrap(
-                          spacing: 6,
-                          runSpacing: 6,
-                          children: [
-                            ...badges.map(
-                              (badge) => _statusBadge(badge.label, badge.color),
-                            ),
-                            if (normalizedMetaText.isNotEmpty)
-                              _cardMetaBadge(
-                                normalizedMetaText,
-                                highlightColor,
-                              ),
-                          ],
-                        ),
-                      ],
-                      if (footer != null) ...[
-                        const SizedBox(height: 11),
-                        Divider(
-                          height: 1,
-                          thickness: 1,
-                          color: highlightColor.withValues(alpha: 0.12),
-                        ),
-                        const SizedBox(height: 10),
-                        footer,
-                      ],
+                      const SizedBox(width: 8),
+                      resolvedAction,
                     ],
                   ),
-                ),
-              ],
+                  if (badges.isNotEmpty || normalizedMetaText.isNotEmpty) ...[
+                    const SizedBox(height: 7),
+                    Wrap(
+                      spacing: 6,
+                      runSpacing: 6,
+                      children: [
+                        if (isTarget) _statusBadge('Focused', highlightColor),
+                        ...badges.map(
+                          (badge) => _statusBadge(badge.label, badge.color),
+                        ),
+                        if (normalizedMetaText.isNotEmpty)
+                          _cardMetaBadge(normalizedMetaText, highlightColor),
+                      ],
+                    ),
+                  ],
+                  if (footer != null) ...[const SizedBox(height: 8), footer],
+                ],
+              ),
             ),
           ),
         ),
@@ -2596,38 +2502,87 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     );
   }
 
+  Widget _buildCardTitleBlock({
+    required String title,
+    required String subtitle,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            fontWeight: FontWeight.w800,
+            fontSize: 13.6,
+            color: AdminPalette.textPrimary,
+            height: 1.2,
+          ),
+        ),
+        if (subtitle.trim().isNotEmpty) ...[
+          const SizedBox(height: 3),
+          Text(
+            subtitle,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: 11.4,
+              fontWeight: FontWeight.w600,
+              color: AdminPalette.textMuted,
+              height: 1.25,
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
   Widget _buildResponsiveActionGroup(List<Widget> buttons) {
+    if (buttons.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    if (buttons.length == 1) {
+      return Align(alignment: Alignment.centerLeft, child: buttons.first);
+    }
+
     return LayoutBuilder(
       builder: (context, constraints) {
-        if (buttons.isEmpty) {
-          return const SizedBox.shrink();
-        }
-
-        if (buttons.length == 1) {
-          return SizedBox(width: double.infinity, child: buttons.first);
-        }
-
-        if (constraints.maxWidth < 440) {
+        if (constraints.maxWidth < 360) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               for (var index = 0; index < buttons.length; index++) ...[
                 buttons[index],
-                if (index < buttons.length - 1) const SizedBox(height: 10),
+                if (index < buttons.length - 1) const SizedBox(height: 8),
               ],
             ],
           );
         }
 
-        return Row(
-          children: [
-            for (var index = 0; index < buttons.length; index++) ...[
-              Expanded(child: buttons[index]),
-              if (index < buttons.length - 1) const SizedBox(width: 10),
-            ],
-          ],
-        );
+        return Wrap(spacing: 8, runSpacing: 8, children: buttons);
       },
+    );
+  }
+
+  ButtonStyle _compactOutlinedFooterStyle(Color color) {
+    return OutlinedButton.styleFrom(
+      foregroundColor: color,
+      side: BorderSide(color: color.withValues(alpha: 0.28)),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      visualDensity: VisualDensity.compact,
+      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+    );
+  }
+
+  ButtonStyle _compactFilledFooterStyle(Color color) {
+    return FilledButton.styleFrom(
+      backgroundColor: color,
+      foregroundColor: Colors.white,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      visualDensity: VisualDensity.compact,
+      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
     );
   }
 
@@ -2660,13 +2615,13 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     return _buildContentCard(
       id: id,
       leading: Container(
-        width: 40,
-        height: 40,
+        width: 38,
+        height: 38,
         decoration: BoxDecoration(
           color: iconColor.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(10),
         ),
-        child: Icon(icon, color: iconColor, size: 20),
+        child: Icon(icon, color: iconColor, size: 19),
       ),
       title: title,
       subtitle: subtitle,
@@ -2699,22 +2654,14 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
         onPressed: () => _showTrainingDetails(training),
         icon: const Icon(Icons.open_in_new_rounded, size: 16),
         label: const Text('Details'),
-        style: OutlinedButton.styleFrom(
-          foregroundColor: trainingAccentColor,
-          side: BorderSide(color: trainingAccentColor.withValues(alpha: 0.28)),
-          padding: const EdgeInsets.symmetric(vertical: 12),
-        ),
+        style: _compactOutlinedFooterStyle(trainingAccentColor),
       ),
       if (training.displayLink.trim().isNotEmpty)
         FilledButton.icon(
           onPressed: () => _openExternalLink(training.displayLink),
           icon: const Icon(Icons.open_in_new_rounded, size: 16),
           label: const Text('Open Resource'),
-          style: FilledButton.styleFrom(
-            backgroundColor: trainingAccentColor,
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(vertical: 12),
-          ),
+          style: _compactFilledFooterStyle(trainingAccentColor),
         ),
       if (training.isHidden)
         _buildUnhideFooterButton(
@@ -2872,7 +2819,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
         .map((part) => part?.trim() ?? '')
         .where((part) => part.isNotEmpty)
         .toList(growable: false);
-    return visibleParts.join(' • ');
+    return visibleParts.join(' | ');
   }
 
   String _cleanCardDescription(String text, {required String fallback}) {
@@ -5055,12 +5002,15 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
 
   Widget _cardMetaBadge(String label, Color color) {
     return ConstrainedBox(
-      constraints: const BoxConstraints(maxWidth: 220),
+      constraints: const BoxConstraints(maxWidth: 200),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3.5),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
-          color: AdminPalette.surfaceMuted,
-          borderRadius: BorderRadius.circular(6),
+          color: Color.alphaBlend(
+            color.withValues(alpha: 0.05),
+            AdminPalette.surfaceMuted,
+          ),
+          borderRadius: BorderRadius.circular(999),
           border: Border.all(color: color.withValues(alpha: 0.14)),
         ),
         child: Row(
@@ -5078,7 +5028,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  fontSize: 10.8,
+                  fontSize: 10.2,
                   fontWeight: FontWeight.w600,
                   color: AdminPalette.textMuted,
                   height: 1.2,
@@ -5093,16 +5043,16 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
 
   Widget _statusBadge(String label, Color color) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3.5),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.09),
-        borderRadius: BorderRadius.circular(6),
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(999),
         border: Border.all(color: color.withValues(alpha: 0.14)),
       ),
       child: Text(
         label,
         style: TextStyle(
-          fontSize: 10.8,
+          fontSize: 10.2,
           fontWeight: FontWeight.w700,
           color: color,
           height: 1.2,
@@ -5394,14 +5344,15 @@ class _SheetDetailLine {
 
 class _AdminTabBarHeaderDelegate extends SliverPersistentHeaderDelegate {
   final Widget child;
+  final double extent;
 
-  const _AdminTabBarHeaderDelegate({required this.child});
-
-  @override
-  double get minExtent => 68;
+  const _AdminTabBarHeaderDelegate({required this.child, required this.extent});
 
   @override
-  double get maxExtent => 68;
+  double get minExtent => extent;
+
+  @override
+  double get maxExtent => extent;
 
   @override
   Widget build(
@@ -5414,6 +5365,6 @@ class _AdminTabBarHeaderDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   bool shouldRebuild(covariant _AdminTabBarHeaderDelegate oldDelegate) {
-    return child != oldDelegate.child;
+    return child != oldDelegate.child || extent != oldDelegate.extent;
   }
 }
