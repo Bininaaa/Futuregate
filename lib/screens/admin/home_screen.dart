@@ -12,7 +12,6 @@ import '../settings/settings_screen.dart';
 import 'admin_activity_center_screen.dart';
 import 'admin_content_center_screen.dart';
 import 'admin_dashboard_screen.dart';
-import 'admin_library_screen.dart';
 import 'users_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -51,7 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
     const _AdminDestination(
       title: 'Content',
       subtitle:
-          'Moderate ideas, applications, listings, scholarships, and training.',
+          'Moderate ideas, applications, listings, scholarships, training, and library imports.',
       icon: Icons.auto_awesome_mosaic_rounded,
       navLabel: 'Content',
       compactNavLabel: 'Content',
@@ -67,15 +66,6 @@ class _HomeScreenState extends State<HomeScreen> {
       compactNavLabel: 'Activity',
       navIcon: Icons.timeline_outlined,
       activeNavIcon: Icons.timeline_rounded,
-    ),
-    const _AdminDestination(
-      title: 'Library',
-      subtitle: 'Curate imported books and video resources from one place.',
-      icon: Icons.menu_book_rounded,
-      navLabel: 'Library',
-      compactNavLabel: 'Library',
-      navIcon: Icons.library_books_outlined,
-      activeNavIcon: Icons.library_books_rounded,
     ),
     const _AdminDestination(
       title: 'Settings',
@@ -114,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         height: 44,
                         decoration: BoxDecoration(
                           gradient: AdminPalette.heroGradient(
-                            destination.title == 'Library'
+                            destination.title == 'Content'
                                 ? AdminPalette.secondary
                                 : AdminPalette.accent,
                           ),
@@ -239,15 +229,12 @@ class _HomeScreenState extends State<HomeScreen> {
           initialTab: _contentInitialTab,
           initialTargetId: _contentInitialTargetId,
           resetToken: _contentSessionId,
-          onOpenLibrary: _openLibraryTab,
         );
       case 3:
         return AdminActivityCenterScreen(
           embedded: true,
           onOpenContent: _openContentTab,
         );
-      case 4:
-        return const AdminLibraryScreen();
       default:
         return const SettingsScreen(embedded: true);
     }
@@ -274,14 +261,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _openActivityTab() => _selectIndex(3);
 
-  void _openLibraryTab() => _selectIndex(4);
+  void _openLibraryTab() =>
+      _openContentTab(AdminContentCenterScreen.libraryTab);
 
   void _openContentTab(int tab, {String targetId = ''}) {
     FocusManager.instance.primaryFocus?.unfocus();
     setState(() {
       _contentInitialTab = tab.clamp(
         AdminContentCenterScreen.projectIdeasTab,
-        AdminContentCenterScreen.trainingsTab,
+        AdminContentCenterScreen.libraryTab,
       );
       _contentInitialTargetId = targetId;
       _contentSessionId++;

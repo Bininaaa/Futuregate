@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../config/app_metadata.dart';
+import '../../l10n/generated/app_localizations.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/app_intro_preferences_service.dart';
 import '../../theme/theme_controller.dart';
-import '../company/profile_screen.dart';
+import '../../widgets/shared/app_restart_scope.dart';
 import '../notifications_screen.dart';
 import '../student/edit_profile_screen.dart';
 import 'about_futuregate_screen.dart';
@@ -22,6 +23,7 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final authProvider = context.watch<AuthProvider>();
     final user = authProvider.userModel;
 
@@ -35,7 +37,8 @@ class SettingsScreen extends StatelessWidget {
 
     if (isCompany) {
       return SettingsPageScaffold(
-        title: 'More',
+        title: l10n.uiWorkspace,
+        embedded: embedded,
         showAppBar: !embedded,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -46,12 +49,12 @@ class SettingsScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Company workspace',
+                    l10n.companyWorkspaceTitle,
                     style: SettingsFlowTheme.heroTitle(),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Keep your public presence, theme, security, and support paths in one tidy place.',
+                    l10n.companyWorkspaceBody,
                     style: SettingsFlowTheme.caption(),
                   ),
                   const SizedBox(height: 16),
@@ -84,41 +87,14 @@ class SettingsScreen extends StatelessWidget {
             const _LaunchAnimationSettingsSection(),
             const SizedBox(height: 16),
             const SettingsSectionHeading(
-              title: 'Workspace',
+              title: 'Security',
               subtitle:
-                  'Jump straight into the core areas that shape your company presence.',
+                  'Keep passwords, privacy controls, and account protections close at hand.',
             ),
             const SizedBox(height: 10),
             SettingsPanel(
               child: Column(
                 children: [
-                  SettingsListRow(
-                    icon: Icons.apartment_rounded,
-                    iconColor: SettingsFlowPalette.primary,
-                    title: 'Company Profile',
-                    subtitle:
-                        'Preview your public profile and make edits there',
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const CompanyProfileScreen(),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  SettingsListRow(
-                    icon: Icons.notifications_active_outlined,
-                    iconColor: SettingsFlowPalette.secondary,
-                    title: 'Notifications',
-                    subtitle: 'Open your notifications center',
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const NotificationsScreen(),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
                   SettingsListRow(
                     icon: Icons.lock_outline_rounded,
                     iconColor: SettingsFlowPalette.warning,
@@ -144,6 +120,19 @@ class SettingsScreen extends StatelessWidget {
             SettingsPanel(
               child: Column(
                 children: [
+                  SettingsListRow(
+                    icon: Icons.notifications_active_outlined,
+                    iconColor: SettingsFlowPalette.secondary,
+                    title: 'Notifications',
+                    subtitle: 'Open your notifications center',
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const NotificationsScreen(),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
                   SettingsListRow(
                     icon: Icons.help_outline_rounded,
                     iconColor: SettingsFlowPalette.secondary,
@@ -211,6 +200,7 @@ class SettingsScreen extends StatelessWidget {
 
       return SettingsPageScaffold(
         title: 'Admin Settings',
+        embedded: embedded,
         showAppBar: !embedded,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -361,6 +351,7 @@ class SettingsScreen extends StatelessWidget {
 
     return SettingsPageScaffold(
       title: 'Settings',
+      embedded: embedded,
       showAppBar: !embedded,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -774,7 +765,17 @@ class _ThemeSettingsPanel extends StatelessWidget {
         subtitle: selected.subtitle,
         trailing: _ThemeInlineSelect(
           selected: selected,
-          onChanged: (option) => controller.setPreference(option),
+          onChanged: (option) async {
+            final wasDark = _isEffectiveDarkTheme(selected);
+            final willBeDark = _isEffectiveDarkTheme(option);
+
+            await controller.setPreference(option);
+            if (!context.mounted || wasDark || !willBeDark) {
+              return;
+            }
+
+            AppRestartScope.restart(context);
+          },
         ),
       ),
     );
@@ -783,7 +784,7 @@ class _ThemeSettingsPanel extends StatelessWidget {
 
 class _ThemeInlineSelect extends StatelessWidget {
   final AppThemePreference selected;
-  final ValueChanged<AppThemePreference> onChanged;
+  final Future<void> Function(AppThemePreference option) onChanged;
 
   const _ThemeInlineSelect({required this.selected, required this.onChanged});
 
@@ -845,9 +846,9 @@ class _ThemeInlineSelect extends StatelessWidget {
                 ),
               )
               .toList(growable: false),
-          onChanged: (option) {
+          onChanged: (option) async {
             if (option != null) {
-              onChanged(option);
+              await onChanged(option);
             }
           },
         ),
@@ -877,5 +878,15 @@ String _themeSelectLabel(AppThemePreference option) {
     AppThemePreference.system => 'System',
     AppThemePreference.light => 'Light',
     AppThemePreference.dark => 'Dark',
+  };
+}
+
+bool _isEffectiveDarkTheme(AppThemePreference option) {
+  return switch (option) {
+    AppThemePreference.system =>
+      WidgetsBinding.instance.platformDispatcher.platformBrightness ==
+          Brightness.dark,
+    AppThemePreference.light => false,
+    AppThemePreference.dark => true,
   };
 }

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
+import '../l10n/generated/app_localizations.dart';
 import '../providers/auth_provider.dart';
 import '../services/app_intro_preferences_service.dart';
 import '../theme/app_colors.dart';
@@ -212,7 +213,7 @@ class _LaunchAnimationHint extends StatelessWidget {
               const SizedBox(width: 8),
               Flexible(
                 child: Text(
-                  'Prefer a faster start? Turn this off in Settings.',
+                  AppLocalizations.of(context)!.launchAnimationHint,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(

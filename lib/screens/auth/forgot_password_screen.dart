@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../l10n/generated/app_localizations.dart';
 import '../../providers/auth_provider.dart';
 import '../../utils/validators.dart';
 import '../../widgets/shared/app_content_system.dart';
@@ -73,6 +74,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   }
 
   Widget _buildFormState() {
+    final l10n = AppLocalizations.of(context)!;
+
     return Form(
       key: _formKey,
       child: Column(
@@ -80,8 +83,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         children: <Widget>[
           AuthCompactHeader(
             icon: Icons.lock_reset_rounded,
-            title: 'Reset password',
-            subtitle: 'Enter your email to get a reset link.',
+            title: l10n.uiResetPassword,
+            subtitle: l10n.uiEnterYourEmailToGetAResetLink,
             stickers: <AuthStickerSpec>[
               AuthStickerSpec(
                 icon: Icons.mail_outline_rounded,
@@ -100,16 +103,15 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           const SizedBox(height: 22),
           AppInlineMessage(
             type: AppFeedbackType.warning,
-            title: 'Using Google sign-in?',
-            message:
-                'If you created this account with Google, use Google to sign in now. After that, you can add a password from Settings if you want email/password access too.',
+            title: l10n.uiUsingGoogleSignIn,
+            message: l10n.uiIfYouCreatedThisAccountWithGoogleUseGoogleTo,
             compact: true,
           ),
           if ((_errorMessage ?? '').trim().isNotEmpty) ...<Widget>[
             const SizedBox(height: 22),
             AppInlineMessage(
               type: AppFeedbackType.error,
-              title: 'Reset unavailable',
+              title: l10n.uiResetUnavailable,
               message: _errorMessage!,
               compact: true,
             ),
@@ -117,11 +119,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           const SizedBox(height: 24),
           AuthTextField(
             controller: _emailController,
-            label: 'Email',
-            hint: 'email@example.com',
+            label: l10n.uiEmail,
+            hint: l10n.uiEmailHint,
             icon: Icons.email_outlined,
             keyboardType: TextInputType.emailAddress,
-            validator: Validators.validateEmail,
+            validator: Validators.email(l10n),
             textInputAction: TextInputAction.done,
             autofillHints: const <String>[AutofillHints.email],
             onFieldSubmitted: (_) => _sendResetEmail(),
@@ -129,7 +131,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           const SizedBox(height: 22),
           AppPrimaryButton(
             theme: authFlowTheme,
-            label: 'Send Link',
+            label: l10n.uiSendLink,
             icon: Icons.send_rounded,
             isBusy: _loading,
             onPressed: _loading ? null : _sendResetEmail,
@@ -140,6 +142,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   }
 
   Widget _buildSuccessState() {
+    final l10n = AppLocalizations.of(context)!;
     final email = _emailController.text.trim();
 
     return Column(
@@ -147,8 +150,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       children: <Widget>[
         AuthCompactHeader(
           icon: Icons.mark_email_read_outlined,
-          title: 'Check your email',
-          subtitle: 'The reset link is on its way.',
+          title: l10n.uiCheckYourEmail,
+          subtitle: l10n.uiTheResetLinkIsOnItsWay,
           stickers: <AuthStickerSpec>[
             AuthStickerSpec(
               icon: Icons.check_circle_rounded,
@@ -163,7 +166,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         if (email.isNotEmpty) ...<Widget>[
           const SizedBox(height: 22),
           AuthReadOnlyTile(
-            label: 'Sent to',
+            label: l10n.uiSentTo,
             value: email,
             icon: Icons.alternate_email_rounded,
           ),
@@ -171,28 +174,27 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         const SizedBox(height: 18),
         AppInlineMessage(
           type: AppFeedbackType.success,
-          message: 'Open your inbox and follow the reset link.',
+          message: l10n.uiOpenYourInboxAndFollowTheResetLink,
           compact: true,
           accentColor: const Color(0xFF179D6C),
         ),
         const SizedBox(height: 14),
         AppInlineMessage(
           type: AppFeedbackType.warning,
-          message:
-              'If this account normally signs in with Google, return and use Google now, then add a password later from Settings if needed.',
+          message: l10n.uiIfThisAccountNormallySignsInWithGoogleReturnAnd,
           compact: true,
         ),
         const SizedBox(height: 22),
         AppPrimaryButton(
           theme: authFlowTheme,
-          label: 'Back to Login',
+          label: l10n.uiBackToLogin,
           icon: Icons.arrow_back_rounded,
           onPressed: () => Navigator.of(context).pop(),
         ),
         const SizedBox(height: 10),
         AppSecondaryButton(
           theme: authFlowTheme,
-          label: 'Send Again',
+          label: l10n.uiSendAgain,
           icon: Icons.refresh_rounded,
           onPressed: () {
             setState(() {

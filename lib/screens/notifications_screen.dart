@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../l10n/generated/app_localizations.dart';
 import '../models/notification_model.dart';
 import '../models/opportunity_model.dart';
 import '../models/project_idea_model.dart';
@@ -23,6 +24,7 @@ import 'student/idea_details_screen.dart';
 import 'student/opportunity_detail_screen.dart';
 import 'student/scholarship_detail_screen.dart';
 import '../widgets/shared/app_feedback.dart';
+import '../widgets/shared/app_loading.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
@@ -103,11 +105,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         ],
       ),
       body: provider.isLoading
-          ? Center(
-              child: CircularProgressIndicator(
-                color: SettingsFlowPalette.primary,
-              ),
-            )
+          ? const AppLoadingView(density: AppLoadingDensity.compact)
           : Column(
               children: [
                 Padding(
@@ -1212,6 +1210,7 @@ class _NotificationCard extends StatelessWidget {
                             children: [
                               SettingsStatusPill(
                                 label: _labelForType(
+                                  context,
                                   notification.type,
                                   opportunityType,
                                 ),
@@ -1235,6 +1234,7 @@ class _NotificationCard extends StatelessWidget {
                           children: [
                             SettingsStatusPill(
                               label: _labelForType(
+                                context,
                                 notification.type,
                                 opportunityType,
                               ),
@@ -1308,7 +1308,13 @@ class _NotificationCard extends StatelessWidget {
     }
   }
 
-  String _labelForType(String type, [String opportunityType = '']) {
+  String _labelForType(
+    BuildContext context,
+    String type, [
+    String opportunityType = '',
+  ]) {
+    final l10n = AppLocalizations.of(context)!;
+
     switch (type) {
       case 'chat':
         return 'Message';
@@ -1316,7 +1322,7 @@ class _NotificationCard extends StatelessWidget {
         return 'Application';
       case 'opportunity':
         return opportunityType.trim().isNotEmpty
-            ? OpportunityType.label(opportunityType)
+            ? OpportunityType.label(opportunityType, l10n)
             : 'Opportunity';
       case 'scholarship':
         return 'Scholarship';

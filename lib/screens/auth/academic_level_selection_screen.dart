@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../l10n/generated/app_localizations.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/shared/app_content_system.dart';
 import '../../widgets/shared/app_feedback.dart';
@@ -51,9 +52,10 @@ class _AcademicLevelSelectionScreenState
       return;
     }
 
+    final l10n = AppLocalizations.of(context)!;
     context.showAppSnackBar(
       error,
-      title: 'Update unavailable',
+      title: l10n.updateUnavailableTitle,
       type: AppFeedbackType.error,
     );
   }
@@ -61,15 +63,16 @@ class _AcademicLevelSelectionScreenState
   @override
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
+    final l10n = AppLocalizations.of(context)!;
     final needsProfileStep =
         authProvider.userModel?.needsStudentOnboarding ?? false;
     final selectedLabel = _selectedLevel == null
         ? null
-        : authAcademicLevelLabel(_selectedLevel!);
+        : authAcademicLevelLabel(_selectedLevel!, l10n);
 
     return AuthFlowScaffold(
       trailing: IconButton(
-        tooltip: 'Sign out',
+        tooltip: l10n.uiSignOutTooltip,
         onPressed: authProvider.isLoading
             ? null
             : () => showLogoutConfirmationSheet(context),
@@ -85,8 +88,8 @@ class _AcademicLevelSelectionScreenState
               children: <Widget>[
                 AuthCompactHeader(
                   icon: Icons.school_rounded,
-                  title: 'Choose level',
-                  subtitle: 'Select your academic level.',
+                  title: l10n.uiChooseLevel,
+                  subtitle: l10n.uiSelectYourAcademicLevel,
                   stickers: <AuthStickerSpec>[
                     AuthStickerSpec(
                       icon: Icons.menu_book_rounded,
@@ -108,9 +111,9 @@ class _AcademicLevelSelectionScreenState
                   spacing: 8,
                   runSpacing: 8,
                   children: <Widget>[
-                    _SetupBadge(label: 'Step 1 of 2'),
+                    _SetupBadge(label: l10n.uiStep1Of2),
                     if (needsProfileStep)
-                      const _SetupBadge(label: 'Profile next'),
+                      _SetupBadge(label: l10n.uiProfileNext),
                     if (selectedLabel != null)
                       _SetupBadge(label: selectedLabel),
                   ],
@@ -123,7 +126,7 @@ class _AcademicLevelSelectionScreenState
                 const SizedBox(height: 22),
                 AppPrimaryButton(
                   theme: authFlowTheme,
-                  label: 'Continue',
+                  label: l10n.uiContinue,
                   icon: Icons.arrow_forward_rounded,
                   isBusy: authProvider.isLoading,
                   onPressed: _selectedLevel == null || authProvider.isLoading
@@ -133,7 +136,7 @@ class _AcademicLevelSelectionScreenState
                 const SizedBox(height: 10),
                 AppSecondaryButton(
                   theme: authFlowTheme,
-                  label: 'Sign Out',
+                  label: l10n.uiSignOut,
                   icon: Icons.logout_rounded,
                   onPressed: authProvider.isLoading
                       ? null
@@ -181,6 +184,7 @@ class _LevelPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -195,7 +199,7 @@ class _LevelPicker extends StatelessWidget {
           return GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: authAcademicLevels.length,
+            itemCount: authAcademicLevels(l10n).length,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: isWide ? 2 : 1,
               mainAxisSpacing: 10,
@@ -203,7 +207,7 @@ class _LevelPicker extends StatelessWidget {
               childAspectRatio: isWide ? 2.15 : 3.1,
             ),
             itemBuilder: (context, index) {
-              final option = authAcademicLevels[index];
+              final option = authAcademicLevels(l10n)[index];
               final isSelected = selectedLevel == option.value;
               final accent = _levelAccent(option.value);
 

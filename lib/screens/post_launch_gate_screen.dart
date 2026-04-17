@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../services/app_intro_preferences_service.dart';
+import '../theme/app_colors.dart';
+import '../widgets/shared/app_loading.dart';
 import 'auth_wrapper.dart';
 import 'onboarding/get_started_screen.dart';
 
@@ -52,9 +54,14 @@ class _PostLaunchLoadingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      backgroundColor: Color(0xFFF4F7FB),
-      body: Center(child: CircularProgressIndicator()),
+    final colors = AppColors.of(context);
+
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: DecoratedBox(
+        decoration: BoxDecoration(gradient: colors.shellGradient),
+        child: const SafeArea(child: AppLoadingView(showBottomBar: true)),
+      ),
     );
   }
 }

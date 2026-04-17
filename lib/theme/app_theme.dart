@@ -11,15 +11,53 @@ class AppTheme {
 
   static ThemeData get dark => _build(AppColors.dark);
 
-  static ThemeData _build(AppColors colors) {
+  /// Locale-aware builders. When [languageCode] is `'ar'`, Cairo is used as
+  /// the primary font for premium Arabic readability; Poppins otherwise.
+  static ThemeData lightFor(String? languageCode) =>
+      _build(AppColors.light, languageCode: languageCode);
+
+  static ThemeData darkFor(String? languageCode) =>
+      _build(AppColors.dark, languageCode: languageCode);
+
+  static ThemeData _build(AppColors colors, {String? languageCode}) {
     final scheme = colors.toColorScheme();
     final isDark = colors.brightness == Brightness.dark;
+    final isArabic = languageCode == 'ar';
     final base = isDark
         ? ThemeData.dark(useMaterial3: true)
         : ThemeData.light(useMaterial3: true);
-    final textTheme = GoogleFonts.poppinsTextTheme(
-      base.textTheme,
-    ).apply(bodyColor: colors.textPrimary, displayColor: colors.textPrimary);
+
+    // Use Cairo for Arabic; Poppins for every other locale.
+    final textTheme = isArabic
+        ? GoogleFonts.cairoTextTheme(base.textTheme).apply(
+            bodyColor: colors.textPrimary,
+            displayColor: colors.textPrimary,
+          )
+        : GoogleFonts.poppinsTextTheme(base.textTheme).apply(
+            bodyColor: colors.textPrimary,
+            displayColor: colors.textPrimary,
+          );
+
+    // Inline font helper — picks Cairo or Poppins based on locale.
+    TextStyle f({
+      double? fontSize,
+      FontWeight? fontWeight,
+      Color? color,
+      double? height,
+    }) =>
+        isArabic
+            ? GoogleFonts.cairo(
+                fontSize: fontSize,
+                fontWeight: fontWeight,
+                color: color,
+                height: height,
+              )
+            : GoogleFonts.poppins(
+                fontSize: fontSize,
+                fontWeight: fontWeight,
+                color: color,
+                height: height,
+              );
 
     return ThemeData(
       useMaterial3: true,
@@ -54,7 +92,7 @@ class AppTheme {
         surfaceTintColor: Colors.transparent,
         iconTheme: IconThemeData(color: colors.textPrimary),
         actionsIconTheme: IconThemeData(color: colors.textPrimary),
-        titleTextStyle: GoogleFonts.poppins(
+        titleTextStyle: f(
           fontSize: 18,
           fontWeight: FontWeight.w700,
           color: colors.textPrimary,
@@ -82,12 +120,12 @@ class AppTheme {
       listTileTheme: ListTileThemeData(
         iconColor: colors.textSecondary,
         textColor: colors.textPrimary,
-        titleTextStyle: GoogleFonts.poppins(
+        titleTextStyle: f(
           fontSize: 14,
           fontWeight: FontWeight.w600,
           color: colors.textPrimary,
         ),
-        subtitleTextStyle: GoogleFonts.poppins(
+        subtitleTextStyle: f(
           fontSize: 12,
           fontWeight: FontWeight.w500,
           color: colors.textSecondary,
@@ -100,12 +138,12 @@ class AppTheme {
         elevation: isDark ? 0 : 8,
         shadowColor: colors.shadow.withValues(alpha: isDark ? 0.45 : 0.14),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        titleTextStyle: GoogleFonts.poppins(
+        titleTextStyle: f(
           fontSize: 19,
           fontWeight: FontWeight.w700,
           color: colors.textPrimary,
         ),
-        contentTextStyle: GoogleFonts.poppins(
+        contentTextStyle: f(
           fontSize: 13,
           height: 1.45,
           fontWeight: FontWeight.w500,
@@ -134,7 +172,7 @@ class AppTheme {
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
         backgroundColor: colors.surfaceElevated,
-        contentTextStyle: GoogleFonts.poppins(
+        contentTextStyle: f(
           fontSize: 13,
           fontWeight: FontWeight.w600,
           color: colors.textPrimary,
@@ -153,7 +191,7 @@ class AppTheme {
         elevation: isDark ? 0 : 8,
         shadowColor: colors.shadow.withValues(alpha: isDark ? 0.40 : 0.12),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        textStyle: GoogleFonts.poppins(
+        textStyle: f(
           fontSize: 13,
           fontWeight: FontWeight.w500,
           color: colors.textPrimary,
@@ -175,7 +213,7 @@ class AppTheme {
           ),
         ),
       ),
-      inputDecorationTheme: _inputTheme(colors),
+      inputDecorationTheme: _inputTheme(colors, isArabic: isArabic),
       filledButtonTheme: FilledButtonThemeData(
         style: ButtonStyle(
           minimumSize: const WidgetStatePropertyAll<Size>(Size(64, 48)),
@@ -193,7 +231,7 @@ class AppTheme {
             Colors.white.withValues(alpha: 0.10),
           ),
           textStyle: WidgetStatePropertyAll<TextStyle>(
-            GoogleFonts.poppins(fontSize: 13.2, fontWeight: FontWeight.w700),
+            f(fontSize: 13.2, fontWeight: FontWeight.w700),
           ),
           shape: WidgetStatePropertyAll<OutlinedBorder>(
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -221,7 +259,7 @@ class AppTheme {
             Colors.transparent,
           ),
           textStyle: WidgetStatePropertyAll<TextStyle>(
-            GoogleFonts.poppins(fontSize: 13.2, fontWeight: FontWeight.w700),
+            f(fontSize: 13.2, fontWeight: FontWeight.w700),
           ),
           shape: WidgetStatePropertyAll<OutlinedBorder>(
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -249,7 +287,7 @@ class AppTheme {
             return BorderSide(color: colors.border.withValues(alpha: opacity));
           }),
           textStyle: WidgetStatePropertyAll<TextStyle>(
-            GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w600),
+            f(fontSize: 13, fontWeight: FontWeight.w600),
           ),
           shape: WidgetStatePropertyAll<OutlinedBorder>(
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -265,7 +303,7 @@ class AppTheme {
             return colors.primary;
           }),
           textStyle: WidgetStatePropertyAll<TextStyle>(
-            GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w700),
+            f(fontSize: 13, fontWeight: FontWeight.w700),
           ),
           shape: WidgetStatePropertyAll<OutlinedBorder>(
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
@@ -278,12 +316,12 @@ class AppTheme {
         disabledColor: colors.surfaceMuted.withValues(alpha: 0.5),
         deleteIconColor: colors.textSecondary,
         secondarySelectedColor: colors.secondarySoft,
-        labelStyle: GoogleFonts.poppins(
+        labelStyle: f(
           fontSize: 12,
           fontWeight: FontWeight.w600,
           color: colors.textSecondary,
         ),
-        secondaryLabelStyle: GoogleFonts.poppins(
+        secondaryLabelStyle: f(
           fontSize: 12,
           fontWeight: FontWeight.w700,
           color: colors.textPrimary,
@@ -301,7 +339,7 @@ class AppTheme {
         shadowColor: Colors.transparent,
         labelTextStyle: WidgetStateProperty.resolveWith<TextStyle?>((states) {
           final selected = states.contains(WidgetState.selected);
-          return GoogleFonts.poppins(
+          return f(
             fontSize: 11,
             fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
             color: selected ? colors.primary : colors.textMuted,
@@ -319,14 +357,8 @@ class AppTheme {
         backgroundColor: colors.surface,
         selectedItemColor: colors.primary,
         unselectedItemColor: colors.textMuted,
-        selectedLabelStyle: GoogleFonts.poppins(
-          fontSize: 11,
-          fontWeight: FontWeight.w700,
-        ),
-        unselectedLabelStyle: GoogleFonts.poppins(
-          fontSize: 11,
-          fontWeight: FontWeight.w600,
-        ),
+        selectedLabelStyle: f(fontSize: 11, fontWeight: FontWeight.w700),
+        unselectedLabelStyle: f(fontSize: 11, fontWeight: FontWeight.w600),
         elevation: 0,
         type: BottomNavigationBarType.fixed,
       ),
@@ -338,14 +370,8 @@ class AppTheme {
         overlayColor: WidgetStatePropertyAll<Color>(
           colors.primary.withValues(alpha: isDark ? 0.12 : 0.08),
         ),
-        labelStyle: GoogleFonts.poppins(
-          fontSize: 12.5,
-          fontWeight: FontWeight.w700,
-        ),
-        unselectedLabelStyle: GoogleFonts.poppins(
-          fontSize: 12.5,
-          fontWeight: FontWeight.w600,
-        ),
+        labelStyle: f(fontSize: 12.5, fontWeight: FontWeight.w700),
+        unselectedLabelStyle: f(fontSize: 12.5, fontWeight: FontWeight.w600),
       ),
       switchTheme: SwitchThemeData(
         thumbColor: WidgetStateProperty.resolveWith<Color?>((states) {
@@ -387,9 +413,32 @@ class AppTheme {
     );
   }
 
-  static InputDecorationTheme _inputTheme(AppColors colors) {
+  static InputDecorationTheme _inputTheme(
+    AppColors colors, {
+    bool isArabic = false,
+  }) {
     final isDark = colors.isDarkMode;
     final fillColor = isDark ? colors.surfaceMuted : colors.surface;
+
+    TextStyle inputFont({
+      double? fontSize,
+      FontWeight? fontWeight,
+      Color? color,
+      double? height,
+    }) =>
+        isArabic
+            ? GoogleFonts.cairo(
+                fontSize: fontSize,
+                fontWeight: fontWeight,
+                color: color,
+                height: height,
+              )
+            : GoogleFonts.poppins(
+                fontSize: fontSize,
+                fontWeight: fontWeight,
+                color: color,
+                height: height,
+              );
 
     OutlineInputBorder border(Color color, [double width = 1]) {
       return OutlineInputBorder(
@@ -402,27 +451,27 @@ class AppTheme {
       filled: true,
       fillColor: fillColor,
       hoverColor: colors.primary.withValues(alpha: isDark ? 0.10 : 0.05),
-      hintStyle: GoogleFonts.poppins(
+      hintStyle: inputFont(
         fontSize: 12.8,
         fontWeight: FontWeight.w500,
         color: colors.textMuted,
       ),
-      labelStyle: GoogleFonts.poppins(
+      labelStyle: inputFont(
         fontSize: 12.4,
         fontWeight: FontWeight.w600,
         color: colors.textSecondary,
       ),
-      floatingLabelStyle: GoogleFonts.poppins(
+      floatingLabelStyle: inputFont(
         fontSize: 12.4,
         fontWeight: FontWeight.w700,
         color: colors.primary,
       ),
-      helperStyle: GoogleFonts.poppins(
+      helperStyle: inputFont(
         fontSize: 11.4,
         fontWeight: FontWeight.w500,
         color: colors.textMuted,
       ),
-      errorStyle: GoogleFonts.poppins(
+      errorStyle: inputFont(
         fontSize: 11.6,
         fontWeight: FontWeight.w600,
         height: 1.35,

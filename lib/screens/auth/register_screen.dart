@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../l10n/generated/app_localizations.dart';
 import '../../providers/auth_provider.dart';
 import '../../utils/validators.dart';
 import '../../widgets/password_strength_indicator.dart';
@@ -80,9 +81,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
 
     if (error != null) {
+      final l10n = AppLocalizations.of(context)!;
       context.showAppSnackBar(
         error,
-        title: 'Account creation unavailable',
+        title: l10n.uiAccountCreationUnavailableTitle,
         type: AppFeedbackType.error,
       );
       return;
@@ -100,9 +102,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
 
     if (error != null) {
+      final l10n = AppLocalizations.of(context)!;
       context.showAppSnackBar(
         error,
-        title: 'Google sign-in unavailable',
+        title: l10n.uiGoogleSignInUnavailable,
         type: AppFeedbackType.error,
       );
       return;
@@ -114,6 +117,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
+    final l10n = AppLocalizations.of(context)!;
 
     return AuthFlowScaffold(
       showBackButton: true,
@@ -129,8 +133,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 children: <Widget>[
                   AuthCompactHeader(
                     icon: Icons.person_add_alt_1_rounded,
-                    title: 'Create account',
-                    subtitle: 'Start your student profile.',
+                    title: l10n.uiCreateAccount,
+                    subtitle: l10n.uiStartYourStudentProfileSubtitle,
                     stickers: <AuthStickerSpec>[
                       AuthStickerSpec(
                         icon: Icons.school_rounded,
@@ -206,7 +210,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   const SizedBox(height: 24),
                   AppPrimaryButton(
                     theme: authFlowTheme,
-                    label: 'Create Account',
+                    label: l10n.uiCreateAccountEff4,
                     icon: Icons.arrow_forward_rounded,
                     isBusy: authProvider.isLoading,
                     onPressed: authProvider.isLoading ? null : _register,
@@ -225,37 +229,40 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Widget _buildFullNameField() {
+    final l10n = AppLocalizations.of(context)!;
     return AuthTextField(
       controller: _fullNameController,
-      label: 'Full Name',
-      hint: 'How your name should appear',
+      label: l10n.uiFullName,
+      hint: l10n.uiHowYourNameShouldAppear,
       icon: Icons.person_outline_rounded,
-      validator: Validators.validateFullName,
+      validator: Validators.fullName(l10n),
       textInputAction: TextInputAction.next,
     );
   }
 
   Widget _buildEmailField() {
+    final l10n = AppLocalizations.of(context)!;
     return AuthTextField(
       controller: _emailController,
-      label: 'Email',
-      hint: 'email@example.com',
+      label: l10n.uiEmail,
+      hint: l10n.uiEmailHint,
       icon: Icons.email_outlined,
       keyboardType: TextInputType.emailAddress,
-      validator: Validators.validateEmail,
+      validator: Validators.email(l10n),
       textInputAction: TextInputAction.next,
       autofillHints: const <String>[AutofillHints.email],
     );
   }
 
   Widget _buildPasswordField() {
+    final l10n = AppLocalizations.of(context)!;
     return AuthTextField(
       controller: _passwordController,
-      label: 'Password',
-      hint: 'Create a strong password',
+      label: l10n.uiPassword,
+      hint: l10n.uiCreateAStrongPassword,
       icon: Icons.lock_outline_rounded,
       obscureText: _obscurePassword,
-      validator: Validators.validatePassword,
+      validator: Validators.password(l10n),
       textInputAction: TextInputAction.next,
       autofillHints: const <String>[AutofillHints.newPassword],
       suffixIcon: IconButton(
@@ -271,14 +278,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Widget _buildConfirmPasswordField() {
+    final l10n = AppLocalizations.of(context)!;
     return AuthTextField(
       controller: _confirmPasswordController,
-      label: 'Confirm Password',
-      hint: 'Repeat your password',
+      label: l10n.uiConfirmPassword,
+      hint: l10n.uiRepeatYourPassword,
       icon: Icons.lock_outline_rounded,
       obscureText: _obscureConfirm,
-      validator: (value) =>
-          Validators.validateConfirmPassword(value, _passwordController.text),
+      validator: Validators.confirmPassword(l10n, _passwordController.text),
       textInputAction: TextInputAction.done,
       autofillHints: const <String>[AutofillHints.newPassword],
       suffixIcon: IconButton(
@@ -294,6 +301,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Widget _buildProfileSelection() {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -305,7 +313,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
-            'Academic Level',
+            l10n.uiAcademicLevel,
             style: authFlowTheme.section(
               size: 14.4,
               weight: FontWeight.w700,
@@ -316,7 +324,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: authAcademicLevels.length,
+            itemCount: authAcademicLevels(l10n).length,
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
               mainAxisSpacing: 10,
@@ -324,7 +332,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               childAspectRatio: 2.15,
             ),
             itemBuilder: (context, index) {
-              final option = authAcademicLevels[index];
+              final option = authAcademicLevels(l10n)[index];
               final isSelected = _selectedRole == option.value;
 
               return Material(
@@ -412,6 +420,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Widget _buildDoctoratFields() {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -427,7 +436,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           Row(
             children: <Widget>[
               Text(
-                'Research details',
+                l10n.uiResearchDetails,
                 style: authFlowTheme.section(
                   size: 14.3,
                   color: authFlowTheme.textPrimary,
@@ -442,7 +451,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
-                  'Optional',
+                  l10n.uiOptional,
                   style: authFlowTheme.label(
                     size: 10.7,
                     color: AuthFlowPalette.orange,
@@ -455,29 +464,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
           const SizedBox(height: 12),
           AuthTextField(
             controller: _researchTopicController,
-            label: 'Research Topic',
-            hint: 'Machine learning in healthcare',
+            label: l10n.uiResearchTopic,
+            hint: l10n.uiResearchTopicHint,
             icon: Icons.topic_outlined,
           ),
           const SizedBox(height: 12),
           AuthTextField(
             controller: _laboratoryController,
-            label: 'Laboratory',
-            hint: 'Research laboratory',
+            label: l10n.uiLaboratory,
+            hint: l10n.uiLaboratoryHint,
             icon: Icons.biotech_outlined,
           ),
           const SizedBox(height: 12),
           AuthTextField(
             controller: _supervisorController,
-            label: 'Supervisor',
-            hint: 'Supervisor name',
+            label: l10n.uiSupervisor,
+            hint: l10n.uiSupervisorHint,
             icon: Icons.person_outline_rounded,
           ),
           const SizedBox(height: 12),
           AuthTextField(
             controller: _researchDomainController,
-            label: 'Research Domain',
-            hint: 'Artificial intelligence',
+            label: l10n.uiResearchDomain,
+            hint: l10n.uiResearchDomainHint,
             icon: Icons.category_outlined,
           ),
         ],
@@ -486,10 +495,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Widget _buildLoginLink() {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: RichText(
         text: TextSpan(
-          text: 'Already have an account? ',
+          text: l10n.uiAlreadyHaveAccountPrompt,
           style: authFlowTheme.body(
             size: 13.2,
             color: authFlowTheme.textSecondary,
@@ -497,7 +507,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
           children: <InlineSpan>[
             TextSpan(
-              text: 'Log in',
+              text: l10n.uiLogIn,
               style: authFlowTheme.label(
                 size: 13.2,
                 color: AuthFlowPalette.orange,
@@ -514,6 +524,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Widget _buildTermsText() {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: RichText(
         textAlign: TextAlign.center,
@@ -525,9 +536,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
             weight: FontWeight.w600,
           ),
           children: <InlineSpan>[
-            const TextSpan(text: 'By signing up, you agree to our '),
+            TextSpan(text: l10n.uiBySigningUpAgreePrefix),
             TextSpan(
-              text: 'Terms of Use',
+              text: l10n.uiTermsOfUse,
               style: authFlowTheme
                   .label(
                     size: 11.2,
@@ -536,9 +547,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   )
                   .copyWith(decoration: TextDecoration.underline),
             ),
-            const TextSpan(text: ' and our '),
+            TextSpan(text: l10n.uiAndOur),
             TextSpan(
-              text: 'Privacy Policy',
+              text: l10n.uiPrivacyPolicy,
               style: authFlowTheme
                   .label(
                     size: 11.2,
@@ -547,7 +558,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   )
                   .copyWith(decoration: TextDecoration.underline),
             ),
-            const TextSpan(text: '.'),
+            TextSpan(text: l10n.uiBySigningUpAgreeSuffix),
           ],
         ),
       ),

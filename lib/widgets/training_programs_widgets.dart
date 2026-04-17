@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../utils/opportunity_dashboard_palette.dart';
 import 'shared/app_feedback.dart';
+import 'shared/app_loading.dart';
 
 class TrainingCourseBadgeData {
   final String label;
@@ -756,29 +757,31 @@ class TrainingProgramsLoadingView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.fromLTRB(18, 14, 18, 24),
-      children: const [
-        SizedBox(height: 8),
-        _HeaderSkeleton(),
-        SizedBox(height: 22),
-        _SkeletonLine(widthFactor: 0.62, height: 24),
-        SizedBox(height: 8),
-        _SkeletonLine(widthFactor: 0.88, height: 14),
-        SizedBox(height: 6),
-        _SkeletonLine(widthFactor: 0.7, height: 14),
-        SizedBox(height: 18),
-        _SkeletonBlock(height: 48, radius: 20),
-        SizedBox(height: 22),
-        _SkeletonLine(widthFactor: 0.46, height: 18),
-        SizedBox(height: 14),
-        _TrainingCardSkeleton(),
-        SizedBox(height: 14),
-        _TrainingCardSkeleton(),
-        SizedBox(height: 18),
-        _SkeletonBlock(height: 242, radius: 26),
-      ],
+    return AppShimmer(
+      child: ListView(
+        physics: AlwaysScrollableScrollPhysics(),
+        padding: EdgeInsets.fromLTRB(18, 14, 18, 24),
+        children: [
+          SizedBox(height: 8),
+          _HeaderSkeleton(),
+          SizedBox(height: 22),
+          AppSkeletonLine(widthFactor: 0.62, height: 24),
+          SizedBox(height: 8),
+          AppSkeletonLine(widthFactor: 0.88, height: 14),
+          SizedBox(height: 6),
+          AppSkeletonLine(widthFactor: 0.7, height: 14),
+          SizedBox(height: 18),
+          AppSkeletonBlock(height: 48, radius: 20),
+          SizedBox(height: 22),
+          AppSkeletonLine(widthFactor: 0.46, height: 18),
+          SizedBox(height: 14),
+          _TrainingCardSkeleton(),
+          SizedBox(height: 14),
+          _TrainingCardSkeleton(),
+          SizedBox(height: 18),
+          AppSkeletonBlock(height: 242, radius: 26),
+        ],
+      ),
     );
   }
 }
@@ -1754,11 +1757,11 @@ class _HeaderSkeleton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: const [
-        _SkeletonBlock(width: 42, height: 42, radius: 16),
+        AppSkeletonBlock(width: 42, height: 42, radius: 16),
         SizedBox(width: 12),
-        Expanded(child: _SkeletonLine(widthFactor: 1, height: 20)),
+        Expanded(child: AppSkeletonLine(widthFactor: 1, height: 20)),
         SizedBox(width: 12),
-        _SkeletonBlock(width: 42, height: 42, radius: 16),
+        AppSkeletonBlock(width: 42, height: 42, radius: 16),
       ],
     );
   }
@@ -1769,47 +1772,7 @@ class _TrainingCardSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _SkeletonBlock(height: 314, radius: 24);
-  }
-}
-
-class _SkeletonLine extends StatelessWidget {
-  final double widthFactor;
-  final double height;
-
-  const _SkeletonLine({required this.widthFactor, required this.height});
-
-  @override
-  Widget build(BuildContext context) {
-    return FractionallySizedBox(
-      widthFactor: widthFactor,
-      child: _SkeletonBlock(height: height, radius: height / 2),
-    );
-  }
-}
-
-class _SkeletonBlock extends StatelessWidget {
-  final double? width;
-  final double height;
-  final double radius;
-
-  const _SkeletonBlock({
-    this.width,
-    required this.height,
-    required this.radius,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: width,
-      height: height,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(radius),
-        border: Border.all(color: OpportunityDashboardPalette.border),
-      ),
-    );
+    return const AppSkeletonBlock(height: 314, radius: 24);
   }
 }
 

@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import 'config/app_navigation.dart';
 import 'firebase_options.dart';
+import 'l10n/generated/app_localizations.dart';
 import 'services/notification_service.dart';
 import 'services/presence_service.dart';
 import 'providers/auth_provider.dart';
@@ -27,7 +28,9 @@ import 'screens/launch_screen.dart';
 import 'screens/notifications_screen.dart';
 import 'theme/app_colors.dart';
 import 'theme/app_theme.dart';
+import 'theme/locale_controller.dart';
 import 'theme/theme_controller.dart';
+import 'widgets/shared/app_restart_scope.dart';
 
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -45,20 +48,27 @@ void main() async {
   await NotificationService.initializeLocalNotifications();
   await NotificationService.setupInteractiveHandlers();
 
-  // Handle notification taps — navigate to the notifications screen so the
-  // user can see the full notification and tap through to the target.
   NotificationService.onNotificationTap = _handleNotificationTap;
 
   final themeController = ThemeController();
   await themeController.load();
 
-  runApp(FutureGateApp(themeController: themeController));
+  final localeController = LocaleController();
+  await localeController.load();
+
+  runApp(
+    AppRestartScope(
+      child: FutureGateApp(
+        themeController: themeController,
+        localeController: localeController,
+      ),
+    ),
+  );
 }
 
 void _handleNotificationTap(Map<String, dynamic> data) {
   final state = appNavigatorKey.currentState;
   if (state == null) {
-    // App not ready yet — store for later consumption in auth_wrapper.
     NotificationService.pendingNotificationData = data;
     return;
   }
@@ -67,14 +77,20 @@ void _handleNotificationTap(Map<String, dynamic> data) {
 
 class FutureGateApp extends StatelessWidget {
   final ThemeController themeController;
+  final LocaleController localeController;
 
-  const FutureGateApp({super.key, required this.themeController});
+  const FutureGateApp({
+    super.key,
+    required this.themeController,
+    required this.localeController,
+  });
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider.value(value: themeController),
+        ChangeNotifierProvider.value(value: localeController),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => OpportunityProvider()),
         ChangeNotifierProvider(create: (_) => ApplicationProvider()),
@@ -128,9 +144,7 @@ class _PresenceAwareAppState extends State<_PresenceAwareApp>
 
   Future<void> _syncPresence() async {
     final auth = context.read<AuthProvider>().userModel;
-    if (auth == null) {
-      return;
-    }
+    if (auth == null) return;
 
     final isOnline =
         _lastLifecycleState == null ||
@@ -141,13 +155,16 @@ class _PresenceAwareAppState extends State<_PresenceAwareApp>
         isOnline: isOnline,
       );
     } catch (_) {
-      // Presence is best-effort and should never block the app shell.
+      // Presence is best-effort.
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final themeController = context.watch<ThemeController>();
+    final localeController = context.watch<LocaleController>();
+
+    final languageCode = localeController.locale?.languageCode;
 
     context.select<AuthProvider, String?>(
       (provider) => provider.userModel?.uid,
@@ -158,18 +175,38 @@ class _PresenceAwareAppState extends State<_PresenceAwareApp>
       navigatorKey: appNavigatorKey,
       debugShowCheckedModeBanner: false,
       title: 'FutureGate',
-      theme: AppTheme.light,
-      darkTheme: AppTheme.dark,
+
+      // ── Localization ──────────────────────────────────────────────────────
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      locale: localeController.locale,
+      localeResolutionCallback: (deviceLocale, supportedLocales) {
+        // If the user has chosen a locale, use it.
+        if (localeController.locale != null) return localeController.locale;
+        // Otherwise try to match device locale.
+        for (final supported in supportedLocales) {
+          if (deviceLocale?.languageCode == supported.languageCode) {
+            return supported;
+          }
+        }
+        return const Locale('en');
+      },
+
+      // ── Theme (locale-aware for Arabic font) ──────────────────────────────
+      theme: AppTheme.lightFor(languageCode),
+      darkTheme: AppTheme.darkFor(languageCode),
       themeMode: themeController.themeMode,
       themeAnimationDuration: const Duration(milliseconds: 220),
       themeAnimationCurve: Curves.easeOutCubic,
+
       builder: (context, child) {
         final colors = AppColors.of(context);
+        final isArabic = languageCode == 'ar';
         final overlayStyle = colors.isDarkMode
             ? SystemUiOverlayStyle.light
             : SystemUiOverlayStyle.dark;
 
-        return AnnotatedRegion<SystemUiOverlayStyle>(
+        Widget content = AnnotatedRegion<SystemUiOverlayStyle>(
           value: overlayStyle.copyWith(
             statusBarColor: Colors.transparent,
             systemNavigationBarColor: colors.background,
@@ -177,6 +214,17 @@ class _PresenceAwareAppState extends State<_PresenceAwareApp>
           ),
           child: child ?? const SizedBox.shrink(),
         );
+
+        // Wrap with explicit Directionality so RTL is enforced for Arabic
+        // even in widgets that don't inherit it automatically.
+        if (isArabic) {
+          content = Directionality(
+            textDirection: TextDirection.rtl,
+            child: content,
+          );
+        }
+
+        return content;
       },
       home: const LaunchScreen(),
     );

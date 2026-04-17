@@ -2,11 +2,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../l10n/generated/app_localizations.dart';
 import '../models/opportunity_model.dart';
 import '../utils/application_status.dart';
 import '../utils/opportunity_dashboard_palette.dart';
 import '../utils/opportunity_type.dart';
 import 'shared/app_feedback.dart';
+import 'shared/app_loading.dart';
 
 IconData _applicationStatusIcon(String status) {
   switch (ApplicationStatus.parse(status)) {
@@ -728,6 +730,7 @@ class TrendingOpportunityCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final tone = _toneForOpportunityType(opportunity.type);
     final textScale = MediaQuery.textScalerOf(context).scale(1);
     final isCompactLayout =
@@ -908,7 +911,7 @@ class TrendingOpportunityCard extends StatelessWidget {
               if (applicationStatus != null) ...[
                 const SizedBox(height: 8),
                 _OpportunityAccentChip(
-                  label: ApplicationStatus.label(applicationStatus),
+                  label: ApplicationStatus.label(applicationStatus, l10n),
                   foreground: ApplicationStatus.color(applicationStatus),
                   background: ApplicationStatus.color(
                     applicationStatus,
@@ -958,6 +961,7 @@ class OpportunityListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final tone = _toneForOpportunityType(opportunity.type);
     final effectiveBadgeColor =
         badgeColor ?? OpportunityDashboardPalette.primary;
@@ -1014,7 +1018,7 @@ class OpportunityListTile extends StatelessWidget {
                     if (applicationStatus != null) ...[
                       const SizedBox(width: 6),
                       _OpportunityAccentChip(
-                        label: ApplicationStatus.label(applicationStatus),
+                        label: ApplicationStatus.label(applicationStatus, l10n),
                         foreground: ApplicationStatus.color(applicationStatus),
                         background: ApplicationStatus.color(
                           applicationStatus,
@@ -1239,56 +1243,58 @@ class OpportunityDashboardLoadingSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
-      children: const [
-        _SkeletonLine(widthFactor: 0.44, height: 28),
-        SizedBox(height: 8),
-        _SkeletonLine(widthFactor: 0.86, height: 14),
-        SizedBox(height: 6),
-        _SkeletonLine(widthFactor: 0.7, height: 14),
-        SizedBox(height: 20),
-        _SkeletonBlock(height: 56, radius: 22),
-        SizedBox(height: 12),
-        _SkeletonLine(widthFactor: 0.78, height: 14),
-        SizedBox(height: 20),
-        _SkeletonBlock(height: 228, radius: 30),
-        SizedBox(height: 14),
-        SizedBox(
-          height: 152,
-          child: Row(
-            children: [
-              Expanded(child: _SkeletonBlock(height: 152, radius: 24)),
-              SizedBox(width: 12),
-              Expanded(child: _SkeletonBlock(height: 152, radius: 24)),
-            ],
+    return AppShimmer(
+      child: ListView(
+        physics: AlwaysScrollableScrollPhysics(),
+        padding: EdgeInsets.fromLTRB(20, 18, 20, 24),
+        children: [
+          AppSkeletonLine(widthFactor: 0.44, height: 28),
+          SizedBox(height: 8),
+          AppSkeletonLine(widthFactor: 0.86, height: 14),
+          SizedBox(height: 6),
+          AppSkeletonLine(widthFactor: 0.7, height: 14),
+          SizedBox(height: 20),
+          AppSkeletonBlock(height: 56, radius: 22),
+          SizedBox(height: 12),
+          AppSkeletonLine(widthFactor: 0.78, height: 14),
+          SizedBox(height: 20),
+          AppSkeletonBlock(height: 228, radius: 30),
+          SizedBox(height: 14),
+          SizedBox(
+            height: 152,
+            child: Row(
+              children: [
+                Expanded(child: AppSkeletonBlock(height: 152, radius: 24)),
+                SizedBox(width: 12),
+                Expanded(child: AppSkeletonBlock(height: 152, radius: 24)),
+              ],
+            ),
           ),
-        ),
-        SizedBox(height: 14),
-        _SkeletonBlock(height: 82, radius: 24),
-        SizedBox(height: 28),
-        _SkeletonLine(widthFactor: 0.54, height: 18),
-        SizedBox(height: 6),
-        _SkeletonLine(widthFactor: 0.62, height: 14),
-        SizedBox(height: 14),
-        SizedBox(
-          height: 194,
-          child: Row(
-            children: [
-              Expanded(child: _SkeletonBlock(height: 194, radius: 22)),
-              SizedBox(width: 12),
-              Expanded(child: _SkeletonBlock(height: 194, radius: 22)),
-            ],
+          SizedBox(height: 14),
+          AppSkeletonBlock(height: 82, radius: 24),
+          SizedBox(height: 28),
+          AppSkeletonLine(widthFactor: 0.54, height: 18),
+          SizedBox(height: 6),
+          AppSkeletonLine(widthFactor: 0.62, height: 14),
+          SizedBox(height: 14),
+          SizedBox(
+            height: 194,
+            child: Row(
+              children: [
+                Expanded(child: AppSkeletonBlock(height: 194, radius: 22)),
+                SizedBox(width: 12),
+                Expanded(child: AppSkeletonBlock(height: 194, radius: 22)),
+              ],
+            ),
           ),
-        ),
-        SizedBox(height: 28),
-        _SkeletonLine(widthFactor: 0.48, height: 18),
-        SizedBox(height: 14),
-        _SkeletonBlock(height: 108, radius: 20),
-        SizedBox(height: 12),
-        _SkeletonBlock(height: 108, radius: 20),
-      ],
+          SizedBox(height: 28),
+          AppSkeletonLine(widthFactor: 0.48, height: 18),
+          SizedBox(height: 14),
+          AppSkeletonBlock(height: 108, radius: 20),
+          SizedBox(height: 12),
+          AppSkeletonBlock(height: 108, radius: 20),
+        ],
+      ),
     );
   }
 }
@@ -1457,42 +1463,6 @@ class _OpportunityAccentChip extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _SkeletonLine extends StatelessWidget {
-  final double widthFactor;
-  final double height;
-
-  const _SkeletonLine({required this.widthFactor, required this.height});
-
-  @override
-  Widget build(BuildContext context) {
-    return FractionallySizedBox(
-      widthFactor: widthFactor,
-      child: _SkeletonBlock(height: height, radius: height / 2),
-    );
-  }
-}
-
-class _SkeletonBlock extends StatelessWidget {
-  final double height;
-  final double radius;
-
-  const _SkeletonBlock({required this.height, required this.radius});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: height,
-      decoration: BoxDecoration(
-        color: OpportunityDashboardPalette.surface,
-        borderRadius: BorderRadius.circular(radius),
-        border: Border.all(
-          color: OpportunityDashboardPalette.border.withValues(alpha: 0.8),
-        ),
       ),
     );
   }

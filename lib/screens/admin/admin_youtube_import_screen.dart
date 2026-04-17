@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../l10n/generated/app_localizations.dart';
 import '../../models/training_model.dart';
+import '../../providers/admin_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/training_provider.dart';
 import '../../services/training_service.dart';
@@ -11,9 +13,17 @@ import '../../services/youtube_service.dart';
 import '../../utils/admin_palette.dart';
 import '../../widgets/admin/admin_ui.dart';
 import '../../widgets/shared/app_feedback.dart';
+import '../../widgets/shared/app_loading.dart';
 
 class AdminYoutubeImportScreen extends StatefulWidget {
-  const AdminYoutubeImportScreen({super.key});
+  final bool embedded;
+  final int initialTabIndex;
+
+  const AdminYoutubeImportScreen({
+    super.key,
+    this.embedded = false,
+    this.initialTabIndex = 0,
+  });
 
   @override
   State<AdminYoutubeImportScreen> createState() =>
@@ -68,6 +78,13 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
 
       await context.read<TrainingProvider>().fetchTrainings();
     });
+  }
+
+  Future<void> _syncLibraryState() async {
+    await Future.wait([
+      context.read<TrainingProvider>().fetchTrainings(),
+      context.read<AdminProvider>().loadModerationData(),
+    ]);
   }
 
   Future<void> _searchVideos() async {
@@ -156,7 +173,7 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
         return;
       }
 
-      await context.read<TrainingProvider>().fetchTrainings();
+      await _syncLibraryState();
 
       if (!mounted) {
         return;
@@ -199,6 +216,10 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
     }
 
     if (error == null) {
+      await _syncLibraryState();
+      if (!mounted) {
+        return;
+      }
       context.showAppSnackBar(
         training.isFeatured
             ? 'This resource was removed from featured.'
@@ -255,6 +276,10 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
     }
 
     if (error == null) {
+      await _syncLibraryState();
+      if (!mounted) {
+        return;
+      }
       context.showAppSnackBar(
         '"${training.title}" deleted.',
         title: 'Resource deleted',
@@ -498,10 +523,11 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
 
   Widget _buildSearchResults() {
     if (_isSearching && _results.isEmpty) {
-      return SliverFillRemaining(
+      return const SliverFillRemaining(
         hasScrollBody: false,
-        child: Center(
-          child: CircularProgressIndicator(color: AdminPalette.primary),
+        child: AppLoadingBody(
+          density: AppLoadingDensity.compact,
+          padding: EdgeInsets.fromLTRB(16, 16, 16, 24),
         ),
       );
     }
@@ -570,8 +596,9 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
         .toList();
 
     if (provider.isLoading && videos.isEmpty) {
-      return Center(
-        child: CircularProgressIndicator(color: AdminPalette.primary),
+      return const AppLoadingView(
+        density: AppLoadingDensity.compact,
+        padding: EdgeInsets.fromLTRB(16, 16, 16, 24),
       );
     }
 
@@ -861,77 +888,103 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final provider = context.watch<TrainingProvider>();
+    final tabBar = TabBar(
+      labelColor: AdminPalette.primary,
+      indicatorColor: AdminPalette.primary,
+      dividerColor: Colors.transparent,
+      tabs: [
+        Tab(text: l10n.uiSearch),
+        Tab(text: l10n.uiManage),
+      ],
+    );
+    final tabBarView = TabBarView(
+      children: [
+        CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                child: AdminSurface(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const AdminSectionHeader(
+                        eyebrow: 'Studio',
+                        title: 'Video Import Workspace',
+                        subtitle:
+                            'Search and curate YouTube lessons in one continuous flow instead of working inside separate fixed windows.',
+                      ),
+                      const SizedBox(height: 14),
+                      Wrap(
+                        spacing: 10,
+                        runSpacing: 10,
+                        children: [
+                          AdminPill(
+                            label: '${_results.length} results',
+                            color: AdminPalette.danger,
+                            icon: Icons.ondemand_video_rounded,
+                          ),
+                          AdminPill(
+                            label: _selectedDomain,
+                            color: AdminPalette.activity,
+                          ),
+                          AdminPill(
+                            label: _selectedLevel,
+                            color: AdminPalette.warning,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            SliverToBoxAdapter(child: _buildSearchForm()),
+            _buildSearchResults(),
+          ],
+        ),
+        _buildManageTab(provider),
+      ],
+    );
 
     return DefaultTabController(
       length: 2,
-      child: Scaffold(
-        backgroundColor: AdminPalette.background,
-        appBar: AppBar(
-          title: const Text('Import YouTube Videos'),
-          backgroundColor: AdminPalette.surface,
-          foregroundColor: AdminPalette.textPrimary,
-          bottom: TabBar(
-            labelColor: AdminPalette.primary,
-            indicatorColor: AdminPalette.primary,
-            tabs: [
-              Tab(text: 'Search'),
-              Tab(text: 'Manage'),
-            ],
-          ),
-        ),
-        body: AdminShellBackground(
-          child: TabBarView(
-            children: [
-              CustomScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                slivers: [
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                      child: AdminSurface(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const AdminSectionHeader(
-                              eyebrow: 'Studio',
-                              title: 'Video Import Workspace',
-                              subtitle:
-                                  'Search and curate YouTube lessons in one continuous flow instead of working inside separate fixed windows.',
-                            ),
-                            const SizedBox(height: 14),
-                            Wrap(
-                              spacing: 10,
-                              runSpacing: 10,
-                              children: [
-                                AdminPill(
-                                  label: '${_results.length} results',
-                                  color: AdminPalette.danger,
-                                  icon: Icons.ondemand_video_rounded,
-                                ),
-                                AdminPill(
-                                  label: _selectedDomain,
-                                  color: AdminPalette.activity,
-                                ),
-                                AdminPill(
-                                  label: _selectedLevel,
-                                  color: AdminPalette.warning,
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
+      initialIndex: widget.initialTabIndex.clamp(0, 1),
+      child: Builder(
+        builder: (context) {
+          if (widget.embedded) {
+            return Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: AdminPalette.surface,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: AdminPalette.border),
                     ),
+                    child: tabBar,
                   ),
-                  SliverToBoxAdapter(child: _buildSearchForm()),
-                  _buildSearchResults(),
-                ],
-              ),
-              _buildManageTab(provider),
-            ],
-          ),
-        ),
+                ),
+                Expanded(child: tabBarView),
+              ],
+            );
+          }
+
+          return Scaffold(
+            backgroundColor: AdminPalette.background,
+            appBar: AppBar(
+              title: const Text('Import YouTube Videos'),
+              backgroundColor: AdminPalette.surface,
+              foregroundColor: AdminPalette.textPrimary,
+              bottom: tabBar,
+            ),
+            body: AdminShellBackground(child: tabBarView),
+          );
+        },
       ),
     );
   }

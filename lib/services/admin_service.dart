@@ -907,6 +907,24 @@ class AdminService {
     return snapshot.docs.map((doc) => UserModel.fromMap(doc.data())).toList();
   }
 
+  Future<UserModel?> getUserById(String uid) async {
+    final normalizedUid = uid.trim();
+    if (normalizedUid.isEmpty) {
+      return null;
+    }
+
+    final doc = await _firestore.collection('users').doc(normalizedUid).get();
+    final data = doc.data();
+    if (!doc.exists || data == null) {
+      return null;
+    }
+
+    return UserModel.fromMap({
+      ...data,
+      'uid': (data['uid'] ?? doc.id).toString(),
+    });
+  }
+
   Future<void> toggleUserActive(String uid, bool isActive) async {
     await _firestore.collection('users').doc(uid).update({
       'isActive': isActive,

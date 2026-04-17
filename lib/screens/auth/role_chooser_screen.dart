@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../l10n/generated/app_localizations.dart';
 import '../../widgets/shared/app_content_system.dart';
 import '../../widgets/shared/app_logo.dart';
 import 'auth_flow_widgets.dart';
@@ -24,6 +25,8 @@ class RoleChooserScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
@@ -47,8 +50,8 @@ class RoleChooserScreen extends StatelessWidget {
                   const SizedBox(height: 18),
                   AuthCompactHeader(
                     icon: Icons.person_add_rounded,
-                    title: 'Join FutureGate',
-                    subtitle: 'Choose your account type.',
+                    title: l10n.uiJoinFutureGate,
+                    subtitle: l10n.uiChooseYourAccountType,
                     stickers: <AuthStickerSpec>[
                       AuthStickerSpec(
                         icon: Icons.school_rounded,
@@ -62,8 +65,8 @@ class RoleChooserScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 24),
                   AuthSelectionCard(
-                    title: 'I\'m a Student',
-                    subtitle: 'Opportunities, scholarships, training',
+                    title: l10n.uiImAStudent,
+                    subtitle: l10n.uiOpportunitiesScholarshipsTraining,
                     icon: Icons.school_rounded,
                     color: AuthFlowPalette.orange,
                     showArrow: true,
@@ -78,8 +81,8 @@ class RoleChooserScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 14),
                   AuthSelectionCard(
-                    title: 'I\'m a Company',
-                    subtitle: 'Publish opportunities',
+                    title: l10n.uiImACompany,
+                    subtitle: l10n.uiPublishOpportunities,
                     icon: Icons.business_center_rounded,
                     color: authFlowTheme.secondary,
                     showArrow: true,
@@ -95,7 +98,7 @@ class RoleChooserScreen extends StatelessWidget {
                   const SizedBox(height: 18),
                   AppSecondaryButton(
                     theme: authFlowTheme,
-                    label: 'Back to Login',
+                    label: l10n.uiBackToLogin,
                     icon: Icons.login_rounded,
                     onPressed: () => _handleBack(context),
                   ),

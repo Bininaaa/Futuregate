@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
+import '../../l10n/generated/app_localizations.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/company_provider.dart';
 import '../../theme/app_colors.dart';
@@ -12,6 +13,7 @@ import '../../widgets/app_shell_background.dart';
 import '../../widgets/opportunity_type_selector.dart';
 import '../../widgets/shared/app_content_system.dart';
 import '../../widgets/shared/app_feedback.dart';
+import '../../widgets/shared/app_loading.dart';
 
 class PublishOpportunityScreen extends StatefulWidget {
   final String? opportunityId;
@@ -24,7 +26,6 @@ class PublishOpportunityScreen extends StatefulWidget {
 }
 
 class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
-  static Color get primary => CompanyDashboardPalette.primary;
   static Color get primaryDark => CompanyDashboardPalette.primaryDark;
 
   final _formKey = GlobalKey<FormState>();
@@ -177,6 +178,8 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return AppShellBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
@@ -216,14 +219,14 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                     theme: _theme,
                     label: _isEditMode
                         ? 'Save Changes'
-                        : 'Publish ${OpportunityType.label(_selectedType)}',
+                        : 'Publish ${OpportunityType.label(_selectedType, l10n)}',
                     onPressed: _isSubmitting ? null : _submit,
                     isBusy: _isSubmitting,
                   ),
                 ),
               ),
         body: _isLoading
-            ? Center(child: CircularProgressIndicator(color: primary))
+            ? const AppLoadingView(density: AppLoadingDensity.compact)
             : SafeArea(
                 child: Form(
                   key: _formKey,
@@ -300,9 +303,11 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                             controller: _descriptionController,
                             label: OpportunityType.descriptionLabel(
                               _selectedType,
+                              l10n,
                             ),
                             hint: OpportunityType.descriptionHint(
                               _selectedType,
+                              l10n,
                             ),
                             maxLines: 6,
                             validator: _validateDescription,
@@ -317,6 +322,7 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                             theme: _theme,
                             label: OpportunityType.requirementsLabel(
                               _selectedType,
+                              l10n,
                             ),
                             hint: _isSponsoring
                                 ? 'Type one eligibility rule, then press Enter'
@@ -344,6 +350,7 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
   }
 
   Widget _buildHeroCard() {
+    final l10n = AppLocalizations.of(context)!;
     final statusColor = _selectedStatus == 'open'
         ? CompanyDashboardPalette.success
         : CompanyDashboardPalette.textSecondary;
@@ -351,13 +358,13 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
     return AppFormHeaderCard(
       theme: _theme,
       icon: OpportunityType.icon(_selectedType),
-      title: OpportunityType.headline(_selectedType),
+      title: OpportunityType.headline(_selectedType, l10n),
       subtitle: _isEditMode
           ? 'Update the fields below and save.'
           : 'Fill in the fields below, then publish.',
       badges: <AppBadgeData>[
         AppBadgeData(
-          label: OpportunityType.label(_selectedType),
+          label: OpportunityType.label(_selectedType, l10n),
           icon: OpportunityType.icon(_selectedType),
           color: _typeColor,
         ),
@@ -958,10 +965,11 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
       return;
     }
 
+    final l10n = AppLocalizations.of(context)!;
     context.showAppSnackBar(
       _isEditMode
           ? 'Your opportunity details have been updated.'
-          : '${OpportunityType.label(_selectedType)} published successfully.',
+          : '${OpportunityType.label(_selectedType, l10n)} published successfully.',
       title: _isEditMode ? 'Opportunity updated' : 'Opportunity published',
       type: AppFeedbackType.success,
     );

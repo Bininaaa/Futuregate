@@ -11,6 +11,7 @@ import '../../widgets/app_shell_background.dart';
 import '../../widgets/chat/chat_theme.dart';
 import '../../widgets/profile_avatar.dart';
 import '../../widgets/shared/app_feedback.dart';
+import '../../widgets/shared/app_loading.dart';
 import 'user_profile_preview_screen.dart';
 
 class NewChatScreen extends StatefulWidget {
@@ -207,7 +208,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
               const SizedBox(height: 18),
               Expanded(
                 child: _isLoading
-                    ? const Center(child: CircularProgressIndicator())
+                    ? const AppLoadingView(density: AppLoadingDensity.compact)
                     : ListView(
                         padding: const EdgeInsets.fromLTRB(20, 0, 20, 28),
                         children: [

@@ -20,7 +20,6 @@ import '../settings/help_center_screen.dart';
 import '../settings/logout_confirmation_sheet.dart';
 import '../settings/settings_flow_theme.dart';
 import '../settings/settings_flow_widgets.dart';
-import '../settings/settings_screen.dart';
 
 class CompanyProfileScreen extends StatelessWidget {
   const CompanyProfileScreen({super.key});
@@ -59,16 +58,6 @@ class CompanyProfileScreen extends StatelessWidget {
             ),
           ),
           actions: [
-            Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: _HeaderIconButton(
-                icon: Icons.widgets_outlined,
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const SettingsScreen()),
-                ),
-              ),
-            ),
             Padding(
               padding: const EdgeInsets.only(right: 16),
               child: _HeaderIconButton(
@@ -368,28 +357,16 @@ class CompanyProfileScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  _HeroActionButton(
-                    label: websiteUri == null ? 'More' : 'Website',
-                    icon: websiteUri == null
-                        ? Icons.widgets_outlined
-                        : Icons.open_in_new_rounded,
-                    onPressed: () {
-                      if (websiteUri != null) {
-                        _launchUri(
-                          context,
-                          websiteUri,
-                          failureMessage: 'Could not open the website.',
-                        );
-                        return;
-                      }
-                      Navigator.push(
+                  if (websiteUri != null)
+                    _HeroActionButton(
+                      label: 'Website',
+                      icon: Icons.open_in_new_rounded,
+                      onPressed: () => _launchUri(
                         context,
-                        MaterialPageRoute(
-                          builder: (_) => const SettingsScreen(),
-                        ),
-                      );
-                    },
-                  ),
+                        websiteUri,
+                        failureMessage: 'Could not open the website.',
+                      ),
+                    ),
                 ],
               ),
               const SizedBox(height: 14),
@@ -718,17 +695,6 @@ class CompanyProfileScreen extends StatelessWidget {
               MaterialPageRoute(
                 builder: (_) => const EditCompanyProfileScreen(),
               ),
-            ),
-          ),
-          const SizedBox(height: 10),
-          SettingsListRow(
-            icon: Icons.widgets_outlined,
-            iconColor: CompanyDashboardPalette.secondary,
-            title: 'More',
-            subtitle: 'Open your company workspace hub',
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const SettingsScreen()),
             ),
           ),
           const SizedBox(height: 10),

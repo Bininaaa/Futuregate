@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../l10n/generated/app_localizations.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/shared/app_content_system.dart';
 import '../../widgets/shared/app_feedback.dart';
@@ -37,8 +38,9 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
     if (verified) {
       await authProvider.loadCurrentUser();
     } else {
+      final l10n = AppLocalizations.of(context)!;
       setState(() {
-        _message = 'Email not verified yet.';
+        _message = l10n.uiEmailNotVerifiedYet;
         _isError = true;
       });
     }
@@ -61,9 +63,10 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
       return;
     }
 
+    final l10n = AppLocalizations.of(context)!;
     setState(() {
       _resending = false;
-      _message = error ?? 'Verification email sent.';
+      _message = error ?? l10n.uiVerificationEmailSent;
       _isError = error != null;
     });
   }
@@ -75,11 +78,12 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
   @override
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
+    final l10n = AppLocalizations.of(context)!;
     final email = (authProvider.userModel?.email ?? '').trim();
 
     return AuthFlowScaffold(
       trailing: IconButton(
-        tooltip: 'Sign out',
+        tooltip: l10n.uiSignOutTooltip,
         onPressed: _checking || _resending ? null : _backToLogin,
         icon: const Icon(Icons.logout_rounded),
       ),
@@ -93,8 +97,8 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
               children: <Widget>[
                 AuthCompactHeader(
                   icon: Icons.mark_email_unread_outlined,
-                  title: 'Verify email',
-                  subtitle: 'Open your inbox and confirm your account.',
+                  title: l10n.uiVerifyEmail,
+                  subtitle: l10n.uiOpenYourInboxAndConfirmYourAccount,
                   stickers: <AuthStickerSpec>[
                     AuthStickerSpec(
                       icon: Icons.forward_to_inbox_rounded,
@@ -115,15 +119,15 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                   alignment: WrapAlignment.center,
                   spacing: 8,
                   runSpacing: 8,
-                  children: const <Widget>[
-                    _VerificationBadge(label: 'Email sign-up'),
-                    _VerificationBadge(label: 'One quick step'),
+                  children: <Widget>[
+                    _VerificationBadge(label: l10n.uiEmailSignUp),
+                    _VerificationBadge(label: l10n.uiOneQuickStep),
                   ],
                 ),
                 if (email.isNotEmpty) ...<Widget>[
                   const SizedBox(height: 18),
                   AuthReadOnlyTile(
-                    label: 'Email',
+                    label: l10n.uiEmail,
                     value: email,
                     icon: Icons.alternate_email_rounded,
                   ),
@@ -142,7 +146,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                 const SizedBox(height: 22),
                 AppPrimaryButton(
                   theme: authFlowTheme,
-                  label: 'I Verified',
+                  label: l10n.uiIVerified,
                   icon: Icons.check_circle_outline_rounded,
                   isBusy: _checking,
                   onPressed: _checking ? null : _checkVerification,
@@ -150,7 +154,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                 const SizedBox(height: 10),
                 AppSecondaryButton(
                   theme: authFlowTheme,
-                  label: 'Resend Email',
+                  label: l10n.uiResendEmail,
                   icon: Icons.refresh_rounded,
                   onPressed: _resending ? null : _resendEmail,
                 ),
@@ -159,7 +163,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                   child: TextButton(
                     onPressed: _checking || _resending ? null : _backToLogin,
                     child: Text(
-                      'Back to login',
+                      l10n.uiBackToLoginLower,
                       style: authFlowTheme.label(
                         size: 12.8,
                         color: authFlowTheme.textSecondary,

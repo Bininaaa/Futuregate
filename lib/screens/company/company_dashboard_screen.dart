@@ -18,12 +18,15 @@ import '../../utils/company_dashboard_palette.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/application_status_badge.dart';
 import '../../widgets/profile_avatar.dart';
+import '../../widgets/shared/app_loading.dart';
 import '../notifications_screen.dart';
 import 'applications_screen.dart';
 import 'publish_opportunity_screen.dart';
 
 class CompanyDashboardScreen extends StatefulWidget {
-  const CompanyDashboardScreen({super.key});
+  final bool embedded;
+
+  const CompanyDashboardScreen({super.key, this.embedded = false});
 
   @override
   State<CompanyDashboardScreen> createState() => _CompanyDashboardScreenState();
@@ -262,6 +265,17 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
     final provider = context.watch<CompanyProvider>();
     final stats = provider.stats;
 
+    Widget wrapScaffold(Widget child) {
+      final scaffold = Scaffold(
+        backgroundColor: Colors.transparent,
+        body: widget.embedded ? child : SafeArea(child: child),
+      );
+      if (widget.embedded) {
+        return scaffold;
+      }
+      return AppShellBackground(child: scaffold);
+    }
+
     final activeJobPosts = _intStat(
       stats,
       'openOpportunities',
@@ -325,17 +339,8 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
         provider.stats.isEmpty;
 
     if (isInitialLoading) {
-      return AppShellBackground(
-        child: Scaffold(
-          backgroundColor: Colors.transparent,
-          body: SafeArea(
-            child: Center(
-              child: CircularProgressIndicator(
-                color: CompanyDashboardPalette.primary,
-              ),
-            ),
-          ),
-        ),
+      return wrapScaffold(
+        const AppLoadingView(density: AppLoadingDensity.compact),
       );
     }
 
@@ -343,135 +348,127 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
         provider.applications.isEmpty &&
         provider.opportunities.isEmpty &&
         provider.stats.isEmpty) {
-      return AppShellBackground(
-        child: Scaffold(
-          backgroundColor: Colors.transparent,
-          body: SafeArea(
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.error_outline_rounded,
-                      size: 48,
-                      color: CompanyDashboardPalette.error,
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      'Dashboard unavailable',
-                      style: GoogleFonts.poppins(
-                        color: CompanyDashboardPalette.textPrimary,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      _cleanError(provider.dashboardError!),
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(
-                        color: CompanyDashboardPalette.textMuted,
-                        fontSize: 12,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    TextButton(
-                      onPressed: _loadDashboard,
-                      child: Text(
-                        'Retry',
-                        style: GoogleFonts.poppins(
-                          color: CompanyDashboardPalette.primary,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
+      return wrapScaffold(
+        Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.error_outline_rounded,
+                  size: 48,
+                  color: CompanyDashboardPalette.error,
                 ),
-              ),
+                const SizedBox(height: 12),
+                Text(
+                  'Dashboard unavailable',
+                  style: GoogleFonts.poppins(
+                    color: CompanyDashboardPalette.textPrimary,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  _cleanError(provider.dashboardError!),
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.poppins(
+                    color: CompanyDashboardPalette.textMuted,
+                    fontSize: 12,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextButton(
+                  onPressed: _loadDashboard,
+                  child: Text(
+                    'Retry',
+                    style: GoogleFonts.poppins(
+                      color: CompanyDashboardPalette.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
       );
     }
 
-    return AppShellBackground(
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: SafeArea(
-          child: RefreshIndicator(
-            color: CompanyDashboardPalette.primary,
-            onRefresh: _loadDashboard,
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(20, 14, 20, 32),
-              physics: const BouncingScrollPhysics(
-                parent: AlwaysScrollableScrollPhysics(),
-              ),
-              children: [
-                _buildTopBar(context, user, unreadCount),
-                const SizedBox(height: 22),
-                _buildHero(
-                  context,
-                  activeJobPosts: activeJobPosts,
-                  growthRateLabel: growthRateLabel,
-                ),
-                if (provider.dashboardError != null) ...[
-                  const SizedBox(height: 14),
-                  _buildInlineError(provider.dashboardError!),
-                ],
-                const SizedBox(height: 18),
-                _buildStatCard(
-                  label: 'Active Job Posts',
-                  value: '$activeJobPosts',
-                  icon: Icons.work_outline_rounded,
-                  tone: CompanyDashboardPalette.primary,
-                ),
-                const SizedBox(height: 12),
-                _buildStatCard(
-                  label: 'Applications Received',
-                  value: '$totalApplications',
-                  icon: Icons.inbox_rounded,
-                  tone: CompanyDashboardPalette.secondary,
-                ),
-                const SizedBox(height: 12),
-                _buildApplicationStatusSummaryCard(
-                  pendingApplications: pendingApplications,
-                  approvedApplications: approvedApplications,
-                  rejectedApplications: rejectedApplications,
-                ),
-                const SizedBox(height: 18),
-                _buildChartCard(chartPoints: chartPoints, labels: chartLabels),
-                const SizedBox(height: 22),
-                _buildSectionHeader(context),
-                const SizedBox(height: 12),
-                if (recentApplications.isEmpty)
-                  _buildEmptyApplicationsCard()
-                else
-                  ...recentApplications.map((application) {
-                    OpportunityModel? opportunity;
-                    for (final item in provider.opportunities) {
-                      if (item.id == application.opportunityId) {
-                        opportunity = item;
-                        break;
-                      }
-                    }
-                    return _buildApplicantItem(
-                      context,
-                      application,
-                      opportunity: opportunity,
-                    );
-                  }),
-                const SizedBox(height: 6),
-                _buildInsightsCard(
-                  pendingApplications: pendingApplications,
-                  approvedApplications: approvedApplications,
-                  rejectedApplications: rejectedApplications,
-                  expiringSoonCount: expiringSoonCount,
-                  totalApplications: totalApplications,
-                ),
-              ],
-            ),
+    return wrapScaffold(
+      RefreshIndicator(
+        color: CompanyDashboardPalette.primary,
+        onRefresh: _loadDashboard,
+        child: ListView(
+          padding: EdgeInsets.fromLTRB(20, widget.embedded ? 8 : 14, 20, 32),
+          physics: const BouncingScrollPhysics(
+            parent: AlwaysScrollableScrollPhysics(),
           ),
+          children: [
+            if (!widget.embedded) ...[
+              _buildTopBar(context, user, unreadCount),
+              const SizedBox(height: 22),
+            ],
+            _buildHero(
+              context,
+              activeJobPosts: activeJobPosts,
+              growthRateLabel: growthRateLabel,
+            ),
+            if (provider.dashboardError != null) ...[
+              const SizedBox(height: 14),
+              _buildInlineError(provider.dashboardError!),
+            ],
+            const SizedBox(height: 18),
+            _buildStatCard(
+              label: 'Active Job Posts',
+              value: '$activeJobPosts',
+              icon: Icons.work_outline_rounded,
+              tone: CompanyDashboardPalette.primary,
+            ),
+            const SizedBox(height: 12),
+            _buildStatCard(
+              label: 'Applications Received',
+              value: '$totalApplications',
+              icon: Icons.inbox_rounded,
+              tone: CompanyDashboardPalette.secondary,
+            ),
+            const SizedBox(height: 12),
+            _buildApplicationStatusSummaryCard(
+              pendingApplications: pendingApplications,
+              approvedApplications: approvedApplications,
+              rejectedApplications: rejectedApplications,
+            ),
+            const SizedBox(height: 18),
+            _buildChartCard(chartPoints: chartPoints, labels: chartLabels),
+            const SizedBox(height: 22),
+            _buildSectionHeader(context),
+            const SizedBox(height: 12),
+            if (recentApplications.isEmpty)
+              _buildEmptyApplicationsCard()
+            else
+              ...recentApplications.map((application) {
+                OpportunityModel? opportunity;
+                for (final item in provider.opportunities) {
+                  if (item.id == application.opportunityId) {
+                    opportunity = item;
+                    break;
+                  }
+                }
+                return _buildApplicantItem(
+                  context,
+                  application,
+                  opportunity: opportunity,
+                );
+              }),
+            const SizedBox(height: 6),
+            _buildInsightsCard(
+              pendingApplications: pendingApplications,
+              approvedApplications: approvedApplications,
+              rejectedApplications: rejectedApplications,
+              expiringSoonCount: expiringSoonCount,
+              totalApplications: totalApplications,
+            ),
+          ],
         ),
       ),
     );

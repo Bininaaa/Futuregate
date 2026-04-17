@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../l10n/generated/app_localizations.dart';
 import '../../theme/app_colors.dart';
 import '../../widgets/shared/app_content_system.dart';
 import '../../widgets/shared/app_logo.dart';
@@ -50,45 +51,48 @@ class AuthAcademicLevelOption {
   });
 }
 
-const List<AuthAcademicLevelOption> authAcademicLevels =
-    <AuthAcademicLevelOption>[
-      AuthAcademicLevelOption(
-        value: 'bac',
-        label: 'Bachelor',
-        description: 'Foundational university track',
-        icon: Icons.school_outlined,
-      ),
-      AuthAcademicLevelOption(
-        value: 'licence',
-        label: 'Licence',
-        description: 'Licence degree program',
-        icon: Icons.menu_book_outlined,
-      ),
-      AuthAcademicLevelOption(
-        value: 'master',
-        label: 'Master',
-        description: 'Advanced academic specialization',
-        icon: Icons.workspace_premium_outlined,
-      ),
-      AuthAcademicLevelOption(
-        value: 'doctorat',
-        label: 'Doctorat',
-        description: 'Doctoral research and thesis work',
-        icon: Icons.science_outlined,
-      ),
-    ];
+List<AuthAcademicLevelOption> authAcademicLevels(AppLocalizations l10n) {
+  return <AuthAcademicLevelOption>[
+    AuthAcademicLevelOption(
+      value: 'bac',
+      label: l10n.authAcademicBacLabel,
+      description: l10n.authAcademicBacDescription,
+      icon: Icons.school_outlined,
+    ),
+    AuthAcademicLevelOption(
+      value: 'licence',
+      label: l10n.authAcademicLicenceLabel,
+      description: l10n.authAcademicLicenceDescription,
+      icon: Icons.menu_book_outlined,
+    ),
+    AuthAcademicLevelOption(
+      value: 'master',
+      label: l10n.authAcademicMasterLabel,
+      description: l10n.authAcademicMasterDescription,
+      icon: Icons.workspace_premium_outlined,
+    ),
+    AuthAcademicLevelOption(
+      value: 'doctorat',
+      label: l10n.authAcademicDoctoratLabel,
+      description: l10n.authAcademicDoctoratDescription,
+      icon: Icons.science_outlined,
+    ),
+  ];
+}
 
-AuthAcademicLevelOption authLevelOption(String value) {
-  for (final option in authAcademicLevels) {
+AuthAcademicLevelOption authLevelOption(String value, AppLocalizations l10n) {
+  final levels = authAcademicLevels(l10n);
+  for (final option in levels) {
     if (option.value == value) {
       return option;
     }
   }
 
-  return authAcademicLevels.first;
+  return levels.first;
 }
 
-String authAcademicLevelLabel(String value) => authLevelOption(value).label;
+String authAcademicLevelLabel(String value, AppLocalizations l10n) =>
+    authLevelOption(value, l10n).label;
 
 class AuthFlowScaffold extends StatelessWidget {
   final Widget child;
@@ -937,7 +941,7 @@ class AuthGoogleButton extends StatelessWidget {
               const SizedBox(width: 10),
               Flexible(
                 child: Text(
-                  'Continue with Google',
+                  AppLocalizations.of(context)!.uiContinueWithGoogle,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.manrope(
@@ -956,19 +960,20 @@ class AuthGoogleButton extends StatelessWidget {
 }
 
 class AuthDivider extends StatelessWidget {
-  final String label;
+  final String? label;
 
-  const AuthDivider({super.key, this.label = 'OR'});
+  const AuthDivider({super.key, this.label});
 
   @override
   Widget build(BuildContext context) {
+    final resolvedLabel = label ?? AppLocalizations.of(context)!.uiOr;
     return Row(
       children: <Widget>[
         Expanded(child: Divider(color: authFlowTheme.border)),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Text(
-            label,
+            resolvedLabel,
             style: GoogleFonts.manrope(
               fontSize: 11.5,
               fontWeight: FontWeight.w700,
@@ -1125,7 +1130,7 @@ class AuthProgressStrip extends StatelessWidget {
               borderRadius: BorderRadius.circular(999),
             ),
             child: Text(
-              'Step $step of $total',
+              AppLocalizations.of(context)!.stepProgressLabel(step, total),
               style: authFlowTheme.label(
                 size: 11.2,
                 color: authFlowTheme.accent,

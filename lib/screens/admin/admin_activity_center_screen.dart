@@ -9,6 +9,7 @@ import '../../utils/admin_palette.dart';
 import '../../utils/display_text.dart';
 import '../../widgets/admin/admin_activity_preview_sheet.dart';
 import '../../widgets/admin/admin_ui.dart';
+import '../../widgets/shared/app_loading.dart';
 import 'admin_content_center_screen.dart';
 
 class AdminActivityCenterScreen extends StatefulWidget {
@@ -53,7 +54,7 @@ class _AdminActivityCenterScreenState extends State<AdminActivityCenterScreen> {
         .toList();
 
     final content = provider.activityLoading && provider.recentActivity.isEmpty
-        ? Center(child: CircularProgressIndicator(color: AdminPalette.primary))
+        ? const AppLoadingView(density: AppLoadingDensity.compact)
         : provider.activityError != null && provider.recentActivity.isEmpty
         ? AdminEmptyState(
             icon: Icons.error_outline_rounded,

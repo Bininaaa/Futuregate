@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../l10n/generated/app_localizations.dart';
 import '../../models/application_model.dart';
 import '../../models/cv_model.dart';
 import '../../models/opportunity_model.dart';
@@ -30,11 +31,13 @@ import 'profile_screen.dart';
 class ApplicationsScreen extends StatefulWidget {
   final String? initialApplicationId;
   final bool showBackButton;
+  final bool embedded;
 
   const ApplicationsScreen({
     super.key,
     this.initialApplicationId,
     this.showBackButton = false,
+    this.embedded = false,
   });
 
   @override
@@ -57,6 +60,8 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
   String _selectedTypeFilter = _allTypeFilter;
   String _searchQuery = '';
   bool _openedFocusedDetails = false;
+
+  AppLocalizations get _l10n => AppLocalizations.of(context)!;
 
   @override
   void initState() {
@@ -187,8 +192,8 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
       item.application.studentName,
       opportunity?.title ?? '',
       opportunity?.location ?? '',
-      OpportunityType.label(opportunity?.type ?? ''),
-      ApplicationStatus.label(item.application.status),
+      OpportunityType.label(opportunity?.type ?? '', _l10n),
+      ApplicationStatus.label(item.application.status, _l10n),
     ].join(' ').toLowerCase();
 
     return searchText.contains(query);
@@ -253,14 +258,21 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
     final user = context.watch<AuthProvider>().userModel;
     final provider = context.watch<CompanyProvider>();
     final unreadCount = context.watch<NotificationProvider>().unreadCount;
+    final showLocalTopBar = !widget.embedded || widget.showBackButton;
+
+    Widget wrapScaffold(Widget body) {
+      final scaffold = Scaffold(
+        backgroundColor: Colors.transparent,
+        body: widget.embedded ? body : SafeArea(bottom: false, child: body),
+      );
+      if (widget.embedded) {
+        return scaffold;
+      }
+      return AppShellBackground(child: scaffold);
+    }
 
     if (user == null) {
-      return AppShellBackground(
-        child: const Scaffold(
-          backgroundColor: Colors.transparent,
-          body: Center(child: Text('Not logged in')),
-        ),
-      );
+      return wrapScaffold(const Center(child: Text('Not logged in')));
     }
 
     final items = _filteredItems(provider);
@@ -277,121 +289,117 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
 
     _maybeOpenFocusedDetails(items, provider);
 
-    return AppShellBackground(
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: GestureDetector(
-          onTap: () => FocusScope.of(context).unfocus(),
-          child: SafeArea(
-            bottom: false,
-            child: RefreshIndicator(
-              color: _ApplicationsPalette.primary,
-              onRefresh: _loadApplicationsData,
-              child: CustomScrollView(
-                controller: _scrollController,
-                physics: const BouncingScrollPhysics(
-                  parent: AlwaysScrollableScrollPhysics(),
-                ),
-                slivers: [
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 18),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildApplicationsHero(
-                            user: user,
-                            unreadCount: unreadCount,
-                            isFocusedView: isFocusedView,
-                            totalApplications: totalApplications,
-                            pendingCount: pendingCount,
-                            reviewedCount: reviewedCount,
-                          ),
-                          if (pendingOpportunityCount > 0 &&
-                              !isFocusedView) ...[
-                            const SizedBox(height: 12),
-                            _InlineBanner(
-                              icon: Icons.warning_amber_rounded,
-                              title: 'Pending opportunities need attention',
-                              message: pendingCount == 1
-                                  ? '1 application is still waiting for review.'
-                                  : '$pendingCount applications across $pendingOpportunityCount ${pendingOpportunityCount == 1 ? 'opportunity' : 'opportunities'} are still waiting for a decision.',
-                              tone: _ApplicationsPalette.accent,
-                              background: _ApplicationsPalette.accentSoft,
-                              actionLabel: isFocusedView
-                                  ? null
-                                  : 'Show pending',
-                              onAction: isFocusedView
-                                  ? null
-                                  : _showPendingApplications,
-                            ),
-                          ],
-                          if ((provider.applicationsError ?? '')
-                              .trim()
-                              .isNotEmpty) ...[
-                            const SizedBox(height: 12),
-                            _InlineBanner(
-                              icon: Icons.info_outline_rounded,
-                              title: 'Application data is unavailable.',
-                              message: provider.applicationsError!,
-                              tone: _ApplicationsPalette.error,
-                              background: _ApplicationsPalette.error.withValues(
-                                alpha: AppColors.isDark ? 0.14 : 0.08,
-                              ),
-                            ),
-                          ],
-                          if (isFocusedView) ...[
-                            const SizedBox(height: 12),
-                            _FocusedApplicationBanner(count: resultsCount),
-                          ] else ...[
-                            const SizedBox(height: 14),
-                            _buildFiltersPanel(
-                              provider,
-                              resultsCount: resultsCount,
-                              totalApplications: totalApplications,
-                              opportunityCounts: opportunityCounts,
-                            ),
-                          ],
-                          const SizedBox(height: 16),
-                          Container(
-                            key: _candidateQueueKey,
-                            child: _buildQueueHeader(
-                              resultsCount: resultsCount,
-                              totalApplications: totalApplications,
-                              isFocusedView: isFocusedView,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  if (provider.applicationsLoading &&
-                      provider.applications.isEmpty)
-                    const SliverFillRemaining(
-                      hasScrollBody: false,
-                      child: _LoadingState(),
-                    )
-                  else if (items.isEmpty)
-                    SliverFillRemaining(
-                      hasScrollBody: false,
-                      child: _EmptyApplicationsState(
-                        hasFilters: _hasActiveFilters,
-                        isFocusedView: isFocusedView,
-                      ),
-                    )
-                  else
-                    SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 120),
-                      sliver: SliverList(
-                        delegate: SliverChildBuilderDelegate((context, index) {
-                          final item = items[index];
-                          return _buildApplicationCard(item, provider);
-                        }, childCount: items.length),
-                      ),
-                    ),
-                ],
-              ),
+    return wrapScaffold(
+      GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: RefreshIndicator(
+          color: _ApplicationsPalette.primary,
+          onRefresh: _loadApplicationsData,
+          child: CustomScrollView(
+            controller: _scrollController,
+            physics: const BouncingScrollPhysics(
+              parent: AlwaysScrollableScrollPhysics(),
             ),
+            slivers: [
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(
+                    16,
+                    widget.embedded ? 8 : 12,
+                    16,
+                    18,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildApplicationsHero(
+                        user: user,
+                        unreadCount: unreadCount,
+                        isFocusedView: isFocusedView,
+                        totalApplications: totalApplications,
+                        pendingCount: pendingCount,
+                        reviewedCount: reviewedCount,
+                        showTopBar: showLocalTopBar,
+                      ),
+                      if (pendingOpportunityCount > 0 && !isFocusedView) ...[
+                        const SizedBox(height: 12),
+                        _InlineBanner(
+                          icon: Icons.warning_amber_rounded,
+                          title: 'Pending opportunities need attention',
+                          message: pendingCount == 1
+                              ? '1 application is still waiting for review.'
+                              : '$pendingCount applications across $pendingOpportunityCount ${pendingOpportunityCount == 1 ? 'opportunity' : 'opportunities'} are still waiting for a decision.',
+                          tone: _ApplicationsPalette.accent,
+                          background: _ApplicationsPalette.accentSoft,
+                          actionLabel: isFocusedView ? null : 'Show pending',
+                          onAction: isFocusedView
+                              ? null
+                              : _showPendingApplications,
+                        ),
+                      ],
+                      if ((provider.applicationsError ?? '')
+                          .trim()
+                          .isNotEmpty) ...[
+                        const SizedBox(height: 12),
+                        _InlineBanner(
+                          icon: Icons.info_outline_rounded,
+                          title: 'Application data is unavailable.',
+                          message: provider.applicationsError!,
+                          tone: _ApplicationsPalette.error,
+                          background: _ApplicationsPalette.error.withValues(
+                            alpha: AppColors.isDark ? 0.14 : 0.08,
+                          ),
+                        ),
+                      ],
+                      if (isFocusedView) ...[
+                        const SizedBox(height: 12),
+                        _FocusedApplicationBanner(count: resultsCount),
+                      ] else ...[
+                        const SizedBox(height: 14),
+                        _buildFiltersPanel(
+                          provider,
+                          resultsCount: resultsCount,
+                          totalApplications: totalApplications,
+                          opportunityCounts: opportunityCounts,
+                        ),
+                      ],
+                      const SizedBox(height: 16),
+                      Container(
+                        key: _candidateQueueKey,
+                        child: _buildQueueHeader(
+                          resultsCount: resultsCount,
+                          totalApplications: totalApplications,
+                          isFocusedView: isFocusedView,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              if (provider.applicationsLoading && provider.applications.isEmpty)
+                const SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: _LoadingState(),
+                )
+              else if (items.isEmpty)
+                SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: _EmptyApplicationsState(
+                    hasFilters: _hasActiveFilters,
+                    isFocusedView: isFocusedView,
+                  ),
+                )
+              else
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 120),
+                  sliver: SliverList(
+                    delegate: SliverChildBuilderDelegate((context, index) {
+                      final item = items[index];
+                      return _buildApplicationCard(item, provider);
+                    }, childCount: items.length),
+                  ),
+                ),
+            ],
           ),
         ),
       ),
@@ -580,16 +588,19 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
     required int totalApplications,
     required int pendingCount,
     required int reviewedCount,
+    required bool showTopBar,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildTopBar(
-          user: user,
-          unreadCount: unreadCount,
-          isFocusedView: isFocusedView,
-        ),
-        const SizedBox(height: 16),
+        if (showTopBar) ...[
+          _buildTopBar(
+            user: user,
+            unreadCount: unreadCount,
+            isFocusedView: isFocusedView,
+          ),
+          const SizedBox(height: 16),
+        ],
         Container(
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 12),
@@ -878,7 +889,10 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
   }
 
   String _typeLabel(String? rawType) {
-    return OpportunityType.label(OpportunityType.parse(rawType)).toUpperCase();
+    return OpportunityType.label(
+      OpportunityType.parse(rawType),
+      _l10n,
+    ).toUpperCase();
   }
 
   String? _appliedDateLabel(Timestamp? value) {
@@ -1401,13 +1415,19 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                   ],
                   const SizedBox(height: 14),
                   _DetailSectionCard(
-                    title: OpportunityType.descriptionLabel(opportunity.type),
+                    title: OpportunityType.descriptionLabel(
+                      opportunity.type,
+                      _l10n,
+                    ),
                     icon: Icons.notes_outlined,
                     child: _DetailBodyText(description),
                   ),
                   const SizedBox(height: 14),
                   _DetailSectionCard(
-                    title: OpportunityType.requirementsLabel(opportunity.type),
+                    title: OpportunityType.requirementsLabel(
+                      opportunity.type,
+                      _l10n,
+                    ),
                     icon: Icons.checklist_rounded,
                     child: requirements.isEmpty
                         ? const _DetailBodyText('No requirements provided.')
@@ -1571,7 +1591,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
     }
 
     context.showAppSnackBar(
-      'Application ${ApplicationStatus.sentenceLabel(status)}.',
+      'Application ${ApplicationStatus.sentenceLabel(status, _l10n)}.',
       title: 'Application updated',
       type: AppFeedbackType.success,
     );
@@ -3133,7 +3153,10 @@ class _OpportunityDetailsHero extends StatelessWidget {
             runSpacing: 8,
             children: [
               _TypePill(
-                label: OpportunityType.label(opportunity.type).toUpperCase(),
+                label: OpportunityType.label(
+                  opportunity.type,
+                  AppLocalizations.of(context)!,
+                ).toUpperCase(),
                 tone: tone,
               ),
               _MetaPill(

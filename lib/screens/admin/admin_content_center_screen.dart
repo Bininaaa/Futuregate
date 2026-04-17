@@ -4,14 +4,17 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../l10n/generated/app_localizations.dart';
 import '../../models/admin_application_item_model.dart';
 import '../../models/cv_model.dart';
 import '../../models/opportunity_model.dart';
 import '../../models/project_idea_model.dart';
 import '../../models/scholarship_model.dart';
+import '../../models/user_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../models/training_model.dart';
 import '../../providers/admin_provider.dart';
+import '../../services/admin_service.dart';
 import '../../services/company_service.dart';
 import '../../services/document_access_service.dart';
 import '../../utils/admin_palette.dart';
@@ -22,6 +25,8 @@ import '../../utils/opportunity_type.dart';
 import '../../widgets/admin/admin_ui.dart';
 import '../../widgets/profile_avatar.dart';
 import '../../widgets/shared/app_feedback.dart';
+import '../../widgets/shared/app_loading.dart';
+import 'admin_student_profile_sheet.dart';
 import 'admin_library_screen.dart';
 import 'admin_opportunity_editor_screen.dart';
 import '../student/create_idea_screen.dart';
@@ -32,12 +37,12 @@ class AdminContentCenterScreen extends StatefulWidget {
   static const int opportunitiesTab = 1;
   static const int scholarshipsTab = 2;
   static const int trainingsTab = 3;
+  static const int libraryTab = 4;
 
   final int initialTab;
   final String initialTargetId;
   final bool embedded;
   final int resetToken;
-  final VoidCallback? onOpenLibrary;
 
   const AdminContentCenterScreen({
     super.key,
@@ -45,7 +50,6 @@ class AdminContentCenterScreen extends StatefulWidget {
     this.initialTargetId = '',
     this.embedded = false,
     this.resetToken = 0,
-    this.onOpenLibrary,
   });
 
   @override
@@ -81,6 +85,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
   static const String _trainingFilterFeatured = 'featured';
   static const String _trainingFilterHidden = 'hidden';
 
+  final AdminService _adminService = AdminService();
   final CompanyService _companyService = CompanyService();
   final DocumentAccessService _documentAccessService = DocumentAccessService();
   final TextEditingController _searchController = TextEditingController();
@@ -96,9 +101,12 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
   void initState() {
     super.initState();
     _tabController = TabController(
-      length: 4,
+      length: 5,
       vsync: this,
-      initialIndex: widget.initialTab.clamp(0, 3),
+      initialIndex: widget.initialTab.clamp(
+        0,
+        AdminContentCenterScreen.libraryTab,
+      ),
     );
     _tabController.addListener(() {
       if (!_tabController.indexIsChanging) {
@@ -133,6 +141,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<AdminProvider>();
+    final adminId = context.watch<AuthProvider>().userModel?.uid.trim() ?? '';
     final keyboardVisible = MediaQuery.viewInsetsOf(context).bottom > 0;
     final hasModerationData =
         provider.allProjectIdeas.isNotEmpty ||
@@ -149,9 +158,13 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
         .length;
     final pendingApplications = provider.allApplications
         .where(
-          (a) => ApplicationStatus.parse(a.status) == ApplicationStatus.pending,
+          (a) =>
+              a.canBeManagedByAdmin(adminId) &&
+              ApplicationStatus.parse(a.status) == ApplicationStatus.pending,
         )
         .length;
+    final isLibraryTab =
+        _tabController.index == AdminContentCenterScreen.libraryTab;
 
     if (!provider.moderationLoading &&
         provider.moderationInitialized &&
@@ -166,7 +179,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
 
     final content =
         provider.moderationLoading || waitingForInitialModerationLoad
-        ? Center(child: CircularProgressIndicator(color: _accentColor))
+        ? const AppLoadingView(density: AppLoadingDensity.compact)
         : provider.moderationError != null &&
               provider.allProjectIdeas.isEmpty &&
               provider.allApplications.isEmpty &&
@@ -215,6 +228,12 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                             spacing: 10,
                             runSpacing: 10,
                             children: [
+                              AdminPill(
+                                label:
+                                    '${provider.allProjectIdeas.length} ideas',
+                                color: _ideaAccentColor,
+                                icon: Icons.lightbulb_outline_rounded,
+                              ),
                               if (pendingIdeas > 0)
                                 AdminPill(
                                   label: '$pendingIdeas pending ideas',
@@ -252,25 +271,26 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                     ),
                   ),
                 ),
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: EdgeInsets.fromLTRB(
-                    16,
-                    keyboardVisible ? 8 : 12,
-                    16,
-                    0,
-                  ),
-                  child: AdminSearchField(
-                    controller: _searchController,
-                    hintText: _searchHintForCurrentTab(),
-                    onChanged: (_) => setState(() {}),
-                    onClear: () {
-                      _searchController.clear();
-                      setState(() {});
-                    },
+              if (!isLibraryTab)
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(
+                      16,
+                      keyboardVisible ? 8 : 12,
+                      16,
+                      0,
+                    ),
+                    child: AdminSearchField(
+                      controller: _searchController,
+                      hintText: _searchHintForCurrentTab(),
+                      onChanged: (_) => setState(() {}),
+                      onClear: () {
+                        _searchController.clear();
+                        setState(() {});
+                      },
+                    ),
                   ),
                 ),
-              ),
               SliverPersistentHeader(
                 pinned: true,
                 delegate: _AdminTabBarHeaderDelegate(
@@ -319,6 +339,10 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                             icon: Icons.cast_for_education_outlined,
                             label: 'Trainings',
                           ),
+                          _buildTab(
+                            icon: Icons.menu_book_rounded,
+                            label: 'Library',
+                          ),
                         ],
                       ),
                     ),
@@ -333,6 +357,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 _buildOpportunitiesTab(provider),
                 _buildScholarshipsTab(provider),
                 _buildTrainingsTab(provider),
+                const AdminLibraryScreen(embedded: true),
               ],
             ),
           );
@@ -837,6 +862,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     Map<String, dynamic> opportunity,
     List<AdminApplicationItemModel> applications,
   ) {
+    final l10n = AppLocalizations.of(context)!;
     final opportunityTitle = (opportunity['title'] ?? 'Opportunity').toString();
     final opportunityId = (opportunity['id'] ?? '').toString().trim();
     final adminId = context.read<AuthProvider>().userModel?.uid.trim() ?? '';
@@ -937,7 +963,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                           : 'Application',
                       badges: [
                         _BadgeData(
-                          ApplicationStatus.label(item.status),
+                          ApplicationStatus.label(item.status, l10n),
                           statusColor,
                         ),
                         if (item.appliedAt != null)
@@ -960,7 +986,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                           : null,
                       onTap: () {
                         Navigator.pop(context);
-                        _showApplicationDetails(item);
+                        _showApplicantQuickActions(item);
                       },
                     );
                   }),
@@ -973,6 +999,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
   }
 
   Widget _buildOpportunitiesTab(AdminProvider provider) {
+    final l10n = AppLocalizations.of(context)!;
     final adminId = context.read<AuthProvider>().userModel?.uid.trim() ?? '';
     final searchQuery = _searchController.text.trim();
     final allOpportunities =
@@ -1330,7 +1357,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 isOpen ? AdminPalette.success : AdminPalette.textMuted,
               ),
               _BadgeData(
-                OpportunityType.label(opportunityType),
+                OpportunityType.label(opportunityType, l10n),
                 opportunityTypeColor,
               ),
               if (isOwnedByAdmin) _BadgeData('Admin', AdminPalette.primary),
@@ -1872,6 +1899,8 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
         return 'Search scholarships by title, provider, or deadline...';
       case AdminContentCenterScreen.trainingsTab:
         return 'Search trainings by title, provider, domain, or level...';
+      case AdminContentCenterScreen.libraryTab:
+        return 'Search imported resources...';
       default:
         return 'Search...';
     }
@@ -2265,7 +2294,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             ? null
             : matchingApplications.first;
         if (application != null) {
-          _showApplicationDetails(application);
+          _showApplicantQuickActions(application);
         }
         break;
       case AdminContentCenterScreen.scholarshipsTab:
@@ -2362,14 +2391,13 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
   }
 
   Future<void> _openTrainingLibrary() async {
-    if (widget.onOpenLibrary != null) {
-      widget.onOpenLibrary!();
+    FocusManager.instance.primaryFocus?.unfocus();
+    if (_tabController.index == AdminContentCenterScreen.libraryTab) {
       return;
     }
-
-    await Navigator.of(
-      context,
-    ).push(MaterialPageRoute(builder: (_) => const AdminLibraryScreen()));
+    setState(
+      () => _tabController.animateTo(AdminContentCenterScreen.libraryTab),
+    );
   }
 
   String _toggleFilterValue(
@@ -3677,44 +3705,11 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     ];
   }
 
-  Widget _buildApplicationDetailsActions(AdminApplicationItemModel item) {
-    final adminId = context.read<AuthProvider>().userModel?.uid.trim() ?? '';
-    final canReview =
-        item.canBeManagedByAdmin(adminId) &&
-        ApplicationStatus.parse(item.status) == ApplicationStatus.pending;
-    final provider = context.read<AdminProvider>();
-    final isBusy = provider.busyContentKeys.contains('application:${item.id}');
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        FilledButton.icon(
-          onPressed: () {
-            Navigator.pop(context);
-            _showApplicationCv(item.application.id);
-          },
-          icon: const Icon(Icons.description_outlined, size: 18),
-          label: const Text('View CV'),
-          style: FilledButton.styleFrom(
-            backgroundColor: AdminPalette.activity,
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(vertical: 15),
-          ),
-        ),
-        if (canReview) ...[
-          const SizedBox(height: 10),
-          _buildResponsiveActionGroup(
-            _buildAdminApplicationDecisionButtons(item, isBusy: isBusy),
-          ),
-        ],
-      ],
-    );
-  }
-
   Future<void> _updateAdminApplicationStatus(
     AdminApplicationItemModel item,
     String status,
   ) async {
+    final l10n = AppLocalizations.of(context)!;
     final adminId = context.read<AuthProvider>().userModel?.uid.trim() ?? '';
     if (!item.canBeManagedByAdmin(adminId)) {
       context.showAppSnackBar(
@@ -3736,26 +3731,269 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     }
 
     context.showAppSnackBar(
-      error ?? 'Application ${ApplicationStatus.sentenceLabel(status)}.',
+      error ?? 'Application ${ApplicationStatus.sentenceLabel(status, l10n)}.',
       title: error == null ? 'Application updated' : 'Update unavailable',
       type: error == null ? AppFeedbackType.success : AppFeedbackType.error,
     );
   }
 
-  void _showApplicationDetails(AdminApplicationItemModel item) {
-    _showContentDetailsSheet(
-      title: item.studentName,
-      subtitle: item.companyName.isNotEmpty ? item.companyName : 'Application',
-      description: item.opportunityTitle.isNotEmpty
-          ? 'Applied to ${item.opportunityTitle}.'
-          : 'Application details',
-      detailLines: [
-        _SheetDetailLine('Opportunity', item.opportunityTitle),
-        _SheetDetailLine('Company', item.companyName),
-        _SheetDetailLine('Status', ApplicationStatus.label(item.status)),
-        _SheetDetailLine('Applied', _formatTimestamp(item.appliedAt)),
-      ],
-      actionFooter: _buildApplicationDetailsActions(item),
+  void _showApplicantQuickActions(AdminApplicationItemModel item) {
+    final applicantFuture = _adminService.getUserById(
+      item.application.studentId,
+    );
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      builder: (sheetContext) {
+        return FutureBuilder<UserModel?>(
+          future: applicantFuture,
+          builder: (context, snapshot) {
+            final applicant = snapshot.data;
+            final isLoading =
+                snapshot.connectionState == ConnectionState.waiting;
+            final university = (applicant?.university ?? '').trim();
+            final academicLevel = (applicant?.academicLevel ?? '').trim();
+            final location = (applicant?.location ?? '').trim();
+            final subtitle = university.isNotEmpty
+                ? university
+                : location.isNotEmpty
+                ? location
+                : 'Student profile and submitted documents.';
+
+            return DraggableScrollableSheet(
+              initialChildSize: 0.58,
+              minChildSize: 0.34,
+              maxChildSize: 0.84,
+              expand: false,
+              builder: (context, scrollController) => ClipRRect(
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(28),
+                ),
+                child: Material(
+                  color: AdminPalette.background,
+                  child: ListView(
+                    controller: scrollController,
+                    padding: const EdgeInsets.fromLTRB(18, 12, 18, 22),
+                    children: [
+                      _buildSheetHandle(),
+                      const SizedBox(height: 16),
+                      AdminSurface(
+                        radius: 24,
+                        padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
+                        gradient: AdminPalette.heroGradient(AdminPalette.info),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.12),
+                        ),
+                        child: Column(
+                          children: [
+                            ProfileAvatar(
+                              user: applicant,
+                              userId: item.application.studentId,
+                              fallbackName: item.studentName,
+                              role: 'student',
+                              radius: 34,
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              item.studentName,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              subtitle,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontSize: 12.5,
+                                color: Colors.white70,
+                                height: 1.45,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            Wrap(
+                              alignment: WrapAlignment.center,
+                              spacing: 8,
+                              runSpacing: 8,
+                              children: [
+                                const AdminPill(
+                                  label: 'Student',
+                                  color: Colors.white,
+                                  icon: Icons.school_outlined,
+                                ),
+                                if (academicLevel.isNotEmpty)
+                                  AdminPill(
+                                    label: DisplayText.capitalizeLeadingLabel(
+                                      academicLevel,
+                                    ),
+                                    color: Colors.white,
+                                    icon: Icons.workspace_premium_outlined,
+                                  ),
+                                if ((applicant?.isActive ?? true) == false)
+                                  const AdminPill(
+                                    label: 'Blocked',
+                                    color: Colors.white,
+                                    icon: Icons.block_outlined,
+                                  ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      if (isLoading)
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 10),
+                          child: LinearProgressIndicator(),
+                        )
+                      else if (applicant == null)
+                        AdminSurface(
+                          radius: 18,
+                          padding: const EdgeInsets.all(14),
+                          child: Text(
+                            'We could not load the full student profile right now. You can still open the application CV and the visible submitted applications.',
+                            style: TextStyle(
+                              fontSize: 12.5,
+                              height: 1.5,
+                              color: AdminPalette.textSecondary,
+                            ),
+                          ),
+                        )
+                      else
+                        AdminSurface(
+                          radius: 18,
+                          padding: const EdgeInsets.all(14),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Applicant Summary',
+                                style: TextStyle(
+                                  fontSize: 13.5,
+                                  fontWeight: FontWeight.w700,
+                                  color: AdminPalette.textPrimary,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                applicant.email,
+                                style: TextStyle(
+                                  fontSize: 12.5,
+                                  color: AdminPalette.textSecondary,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              if (university.isNotEmpty) ...[
+                                const SizedBox(height: 4),
+                                Text(
+                                  university,
+                                  style: TextStyle(
+                                    fontSize: 12.5,
+                                    color: AdminPalette.textSecondary,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                              if (location.isNotEmpty) ...[
+                                const SizedBox(height: 4),
+                                Text(
+                                  location,
+                                  style: TextStyle(
+                                    fontSize: 12.5,
+                                    color: AdminPalette.textSecondary,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
+                      const SizedBox(height: 12),
+                      _buildResponsiveActionGroup([
+                        FilledButton.icon(
+                          onPressed: applicant == null
+                              ? null
+                              : () {
+                                  Navigator.pop(sheetContext);
+                                  WidgetsBinding.instance.addPostFrameCallback((
+                                    _,
+                                  ) {
+                                    if (!mounted) {
+                                      return;
+                                    }
+                                    showAdminStudentProfileSheet(
+                                      this.context,
+                                      user: applicant,
+                                    );
+                                  });
+                                },
+                          icon: const Icon(Icons.person_outline_rounded),
+                          label: const Text('View Profile'),
+                          style: FilledButton.styleFrom(
+                            backgroundColor: AdminPalette.primary,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 15),
+                          ),
+                        ),
+                        FilledButton.icon(
+                          onPressed: () {
+                            Navigator.pop(sheetContext);
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              if (!mounted) {
+                                return;
+                              }
+                              _showApplicationCv(item.application.id);
+                            });
+                          },
+                          icon: const Icon(Icons.description_outlined),
+                          label: const Text('View CV'),
+                          style: FilledButton.styleFrom(
+                            backgroundColor: AdminPalette.activity,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 15),
+                          ),
+                        ),
+                        OutlinedButton.icon(
+                          onPressed: () {
+                            Navigator.pop(sheetContext);
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              if (!mounted) {
+                                return;
+                              }
+                              showAdminStudentApplicationsSheet(
+                                this.context,
+                                studentId: item.application.studentId,
+                                studentName: item.studentName,
+                              );
+                            });
+                          },
+                          icon: const Icon(Icons.assignment_outlined),
+                          label: const Text('View All Apps'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: AdminPalette.info,
+                            side: BorderSide(
+                              color: AdminPalette.info.withValues(alpha: 0.26),
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 15),
+                          ),
+                        ),
+                      ]),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
@@ -4099,6 +4337,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
   }
 
   void _showOpportunityDetails(Map<String, dynamic> opportunity) {
+    final l10n = AppLocalizations.of(context)!;
     final provider = context.read<AdminProvider>();
     final opportunityId = (opportunity['id'] ?? '').toString();
     final applications = _applicationsForOpportunity(provider, opportunityId);
@@ -4106,7 +4345,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     final opportunityType = OpportunityType.parse(
       (opportunity['type'] ?? '').toString(),
     );
-    final typeLabel = OpportunityType.label(opportunityType);
+    final typeLabel = OpportunityType.label(opportunityType, l10n);
     final typeColor = OpportunityType.color(opportunityType);
     final description = DisplayText.capitalizeLeadingLabel(
       opportunityModel.description,
@@ -4760,141 +4999,6 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     );
   }
 
-  void _showContentDetailsSheet({
-    required String title,
-    required String subtitle,
-    required String description,
-    required List<_SheetDetailLine> detailLines,
-    String? actionLabel,
-    VoidCallback? onAction,
-    Widget? actionFooter,
-    Color? accentColor,
-    IconData heroIcon = Icons.auto_awesome_mosaic_rounded,
-    String detailsTitle = 'Item Metadata',
-  }) {
-    final visibleDetails = detailLines
-        .where((line) => line.value.trim().isNotEmpty)
-        .toList();
-    final resolvedAccentColor = accentColor ?? _accentColor;
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-      ),
-      builder: (_) => DraggableScrollableSheet(
-        initialChildSize: 0.72,
-        minChildSize: 0.4,
-        maxChildSize: 0.94,
-        expand: false,
-        builder: (context, scrollController) => ListView(
-          controller: scrollController,
-          padding: const EdgeInsets.fromLTRB(16, 10, 16, 20),
-          children: [
-            _buildSheetHandle(),
-            const SizedBox(height: 12),
-            AdminSurface(
-              radius: 20,
-              gradient: AdminPalette.heroGradient(resolvedAccentColor),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(heroIcon, color: Colors.white, size: 26),
-                  const SizedBox(height: 10),
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                    ),
-                  ),
-                  if (subtitle.trim().isNotEmpty) ...[
-                    const SizedBox(height: 4),
-                    Text(
-                      subtitle,
-                      style: const TextStyle(
-                        fontSize: 12.5,
-                        color: Colors.white70,
-                        height: 1.45,
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-            if (description.trim().isNotEmpty) ...[
-              const SizedBox(height: 10),
-              AdminSurface(
-                radius: 16,
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Description',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                        color: AdminPalette.textPrimary,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      description,
-                      style: TextStyle(
-                        fontSize: 12.8,
-                        height: 1.5,
-                        color: AdminPalette.textSecondary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-            if (visibleDetails.isNotEmpty) ...[
-              const SizedBox(height: 10),
-              Text(
-                detailsTitle,
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  color: AdminPalette.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 8),
-              ...visibleDetails.map(
-                (line) => Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: _buildDetailLine(line.label, line.value),
-                ),
-              ),
-            ],
-            if (actionLabel != null && onAction != null) ...[
-              const SizedBox(height: 8),
-              FilledButton.icon(
-                onPressed: onAction,
-                icon: const Icon(Icons.open_in_new_rounded),
-                label: Text(actionLabel),
-                style: FilledButton.styleFrom(
-                  backgroundColor: resolvedAccentColor,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 15),
-                ),
-              ),
-            ],
-            if (actionFooter != null) ...[
-              const SizedBox(height: 8),
-              actionFooter,
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-
   Future<void> _openExternalLink(String url) async {
     final uri = Uri.tryParse(url.trim());
     if (uri == null) {
@@ -4969,34 +5073,6 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               .toList(),
         ),
       ],
-    );
-  }
-
-  Widget _buildDetailLine(String label, String value) {
-    return AdminSurface(
-      radius: 18,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 11.5,
-              fontWeight: FontWeight.w700,
-              color: AdminPalette.textMuted,
-            ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            value.trim().isEmpty ? 'Not available' : value,
-            style: TextStyle(
-              fontSize: 13.5,
-              height: 1.45,
-              color: AdminPalette.textPrimary,
-            ),
-          ),
-        ],
-      ),
     );
   }
 
@@ -5333,13 +5409,6 @@ class _IdeaDetailItem {
   });
 
   Color get resolvedColor => color ?? AdminPalette.textMuted;
-}
-
-class _SheetDetailLine {
-  final String label;
-  final String value;
-
-  const _SheetDetailLine(this.label, this.value);
 }
 
 class _AdminTabBarHeaderDelegate extends SliverPersistentHeaderDelegate {

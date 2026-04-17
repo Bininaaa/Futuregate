@@ -18,6 +18,7 @@ import '../providers/training_provider.dart';
 import '../services/notification_service.dart';
 import '../theme/app_colors.dart';
 import '../widgets/no_internet_screen.dart';
+import '../widgets/shared/app_loading.dart';
 import 'auth/login_screen.dart';
 import 'auth/academic_level_selection_screen.dart';
 import 'auth/email_verification_screen.dart';
@@ -58,7 +59,15 @@ class _AuthWrapperState extends State<AuthWrapper> {
     }
 
     if (!authProvider.isInitialLoadDone) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      final colors = AppColors.of(context);
+
+      return Scaffold(
+        backgroundColor: Colors.transparent,
+        body: DecoratedBox(
+          decoration: BoxDecoration(gradient: colors.shellGradient),
+          child: const SafeArea(child: AppLoadingView(showBottomBar: true)),
+        ),
+      );
     }
 
     final user = authProvider.userModel;

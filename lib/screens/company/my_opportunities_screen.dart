@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../../l10n/generated/app_localizations.dart';
 import '../../models/opportunity_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/company_provider.dart';
@@ -19,7 +20,9 @@ import 'profile_screen.dart';
 import 'publish_opportunity_screen.dart';
 
 class MyOpportunitiesScreen extends StatefulWidget {
-  const MyOpportunitiesScreen({super.key});
+  final bool embedded;
+
+  const MyOpportunitiesScreen({super.key, this.embedded = false});
 
   @override
   State<MyOpportunitiesScreen> createState() => _MyOpportunitiesScreenState();
@@ -85,6 +88,8 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
         _searchQuery.isNotEmpty;
   }
 
+  AppLocalizations get _l10n => AppLocalizations.of(context)!;
+
   Map<String, int> _applicationCounts(CompanyProvider provider) {
     final result = <String, int>{};
     for (final application in provider.applications) {
@@ -133,7 +138,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
         opportunity.description,
         opportunity.requirements,
         opportunity.companyName,
-        OpportunityType.label(opportunity.type),
+        OpportunityType.label(opportunity.type, _l10n),
         ...opportunity.tags,
       ].join(' ').toLowerCase();
 
@@ -507,7 +512,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
                     Row(
                       children: [
                         _SoftPill(
-                          label: OpportunityType.label(opportunity.type),
+                          label: OpportunityType.label(opportunity.type, _l10n),
                           background: tone.background,
                           foreground: tone.foreground,
                         ),
@@ -626,7 +631,10 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
                     ),
                     const SizedBox(height: 18),
                     _SectionTitle(
-                      OpportunityType.requirementsLabel(opportunity.type),
+                      OpportunityType.requirementsLabel(
+                        opportunity.type,
+                        _l10n,
+                      ),
                     ),
                     const SizedBox(height: 8),
                     ..._buildRequirementItems(opportunity, tone),
@@ -745,25 +753,13 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
     final provider = context.watch<CompanyProvider>();
     final unreadCount = context.watch<NotificationProvider>().unreadCount;
 
-    if (user == null) {
-      return const Scaffold(body: Center(child: Text('Not logged in')));
-    }
-
-    final applicationCounts = _applicationCounts(provider);
-    final opportunities = _filteredOpportunities(provider, applicationCounts);
-    final totalApplicants = applicationCounts.values.fold<int>(
-      0,
-      (total, count) => total + count,
-    );
-    final openCount = provider.opportunities
-        .where((item) => item.effectiveStatus() == 'open')
-        .length;
-
-    return AppShellBackground(
-      child: Scaffold(
+    Widget wrapScaffold(Widget body) {
+      final scaffold = Scaffold(
         backgroundColor: Colors.transparent,
         floatingActionButton: FloatingActionButton.extended(
-          heroTag: 'company-opportunity-fab',
+          heroTag: widget.embedded
+              ? 'company-opportunity-fab-embedded'
+              : 'company-opportunity-fab',
           backgroundColor: _OpportunityPalette.primary,
           foregroundColor: Colors.white,
           elevation: 4,
@@ -777,144 +773,167 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
             ),
           ),
         ),
-        body: GestureDetector(
-          onTap: () => FocusScope.of(context).unfocus(),
-          child: SafeArea(
-            bottom: false,
-            child: RefreshIndicator(
-              color: _OpportunityPalette.primary,
-              onRefresh: _loadCompanyData,
-              child: CustomScrollView(
-                physics: const BouncingScrollPhysics(
-                  parent: AlwaysScrollableScrollPhysics(),
-                ),
-                slivers: [
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildTopBar(context, user, unreadCount),
-                          const SizedBox(height: 16),
-                          _buildKpiRow(
-                            total: provider.opportunities.length,
-                            open: openCount,
-                            applicants: totalApplicants,
-                          ),
-                          const SizedBox(height: 14),
-                          _buildSearchField(),
-                          const SizedBox(height: 12),
-                          _buildStatusRow(),
-                          const SizedBox(height: 8),
-                          SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            physics: const BouncingScrollPhysics(),
-                            child: _TypeFilterGroup(
-                              selectedFilter: _selectedTypeFilter,
-                              onSelected: (filter) {
-                                setState(() => _selectedTypeFilter = filter);
-                              },
-                            ),
-                          ),
-                          if ((provider.opportunitiesError ?? '')
-                              .trim()
-                              .isNotEmpty)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 12),
-                              child: _InlineBanner(
-                                icon: Icons.info_outline_rounded,
-                                title: 'Could not refresh opportunities',
-                                message: provider.opportunitiesError!,
-                              ),
-                            ),
-                          const SizedBox(height: 12),
-                          _buildResultsBar(
-                            opportunities.length,
-                            provider.opportunities.length,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  if (provider.opportunitiesLoading &&
-                      provider.opportunities.isEmpty)
-                    const SliverFillRemaining(
-                      hasScrollBody: false,
-                      child: _LoadingState(),
-                    )
-                  else if (opportunities.isEmpty)
-                    SliverFillRemaining(
-                      hasScrollBody: false,
-                      child: _EmptyState(
-                        hasExistingOpportunities:
-                            provider.opportunities.isNotEmpty,
-                        onCreate: _openPublish,
-                        onClear: _hasActiveFilters ? _clearFilters : null,
-                      ),
-                    )
-                  else if (_isGridView)
-                    SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 120),
-                      sliver: SliverGrid(
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              mainAxisSpacing: 12,
-                              crossAxisSpacing: 12,
-                              childAspectRatio: 0.78,
-                            ),
-                        delegate: SliverChildBuilderDelegate((context, index) {
-                          final opportunity = opportunities[index];
-                          final effectiveStatus = opportunity.effectiveStatus();
-                          final applicantCount =
-                              applicationCounts[opportunity.id] ?? 0;
-                          return _OpportunityGridCard(
-                            opportunity: opportunity,
-                            applicantCount: applicantCount,
-                            tone: _toneForType(opportunity.type),
-                            statusTone: _toneForStatus(effectiveStatus),
-                            timeLeftLabel: _timeLeftLabel(opportunity),
-                            statusLabel: _statusLabel(effectiveStatus),
-                            onTap: () => _showOpportunityDetails(
-                              opportunity,
-                              applicantCount,
-                            ),
-                          );
-                        }, childCount: opportunities.length),
-                      ),
-                    )
-                  else
-                    SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 120),
-                      sliver: SliverList(
-                        delegate: SliverChildBuilderDelegate((context, index) {
-                          final opportunity = opportunities[index];
-                          final effectiveStatus = opportunity.effectiveStatus();
-                          final applicantCount =
-                              applicationCounts[opportunity.id] ?? 0;
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 10),
-                            child: _OpportunityListRow(
-                              opportunity: opportunity,
-                              applicantCount: applicantCount,
-                              tone: _toneForType(opportunity.type),
-                              statusTone: _toneForStatus(effectiveStatus),
-                              timeLeftLabel: _timeLeftLabel(opportunity),
-                              postedLabel: _postedLabel(opportunity),
-                              statusLabel: _statusLabel(effectiveStatus),
-                              onTap: () => _showOpportunityDetails(
-                                opportunity,
-                                applicantCount,
-                              ),
-                            ),
-                          );
-                        }, childCount: opportunities.length),
-                      ),
-                    ),
-                ],
-              ),
+        body: widget.embedded ? body : SafeArea(bottom: false, child: body),
+      );
+      if (widget.embedded) {
+        return scaffold;
+      }
+      return AppShellBackground(child: scaffold);
+    }
+
+    if (user == null) {
+      return wrapScaffold(const Center(child: Text('Not logged in')));
+    }
+
+    final applicationCounts = _applicationCounts(provider);
+    final opportunities = _filteredOpportunities(provider, applicationCounts);
+    final totalApplicants = applicationCounts.values.fold<int>(
+      0,
+      (total, count) => total + count,
+    );
+    final openCount = provider.opportunities
+        .where((item) => item.effectiveStatus() == 'open')
+        .length;
+
+    return wrapScaffold(
+      GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: RefreshIndicator(
+          color: _OpportunityPalette.primary,
+          onRefresh: _loadCompanyData,
+          child: CustomScrollView(
+            physics: const BouncingScrollPhysics(
+              parent: AlwaysScrollableScrollPhysics(),
             ),
+            slivers: [
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(
+                    16,
+                    widget.embedded ? 8 : 12,
+                    16,
+                    12,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (!widget.embedded) ...[
+                        _buildTopBar(context, user, unreadCount),
+                        const SizedBox(height: 16),
+                      ],
+                      _buildKpiRow(
+                        total: provider.opportunities.length,
+                        open: openCount,
+                        applicants: totalApplicants,
+                      ),
+                      const SizedBox(height: 14),
+                      _buildSearchField(),
+                      const SizedBox(height: 12),
+                      _buildStatusRow(),
+                      const SizedBox(height: 8),
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        physics: const BouncingScrollPhysics(),
+                        child: _TypeFilterGroup(
+                          selectedFilter: _selectedTypeFilter,
+                          onSelected: (filter) {
+                            setState(() => _selectedTypeFilter = filter);
+                          },
+                        ),
+                      ),
+                      if ((provider.opportunitiesError ?? '').trim().isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 12),
+                          child: _InlineBanner(
+                            icon: Icons.info_outline_rounded,
+                            title: 'Could not refresh opportunities',
+                            message: provider.opportunitiesError!,
+                          ),
+                        ),
+                      const SizedBox(height: 12),
+                      _buildResultsBar(
+                        opportunities.length,
+                        provider.opportunities.length,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              if (provider.opportunitiesLoading &&
+                  provider.opportunities.isEmpty)
+                const SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: _LoadingState(),
+                )
+              else if (opportunities.isEmpty)
+                SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: _EmptyState(
+                    hasExistingOpportunities: provider.opportunities.isNotEmpty,
+                    onCreate: _openPublish,
+                    onClear: _hasActiveFilters ? _clearFilters : null,
+                  ),
+                )
+              else if (_isGridView)
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 120),
+                  sliver: SliverGrid(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          mainAxisSpacing: 12,
+                          crossAxisSpacing: 12,
+                          childAspectRatio: 0.78,
+                        ),
+                    delegate: SliverChildBuilderDelegate((context, index) {
+                      final opportunity = opportunities[index];
+                      final effectiveStatus = opportunity.effectiveStatus();
+                      final applicantCount =
+                          applicationCounts[opportunity.id] ?? 0;
+                      return _OpportunityGridCard(
+                        opportunity: opportunity,
+                        applicantCount: applicantCount,
+                        tone: _toneForType(opportunity.type),
+                        statusTone: _toneForStatus(effectiveStatus),
+                        timeLeftLabel: _timeLeftLabel(opportunity),
+                        statusLabel: _statusLabel(effectiveStatus),
+                        onTap: () => _showOpportunityDetails(
+                          opportunity,
+                          applicantCount,
+                        ),
+                      );
+                    }, childCount: opportunities.length),
+                  ),
+                )
+              else
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 120),
+                  sliver: SliverList(
+                    delegate: SliverChildBuilderDelegate((context, index) {
+                      final opportunity = opportunities[index];
+                      final effectiveStatus = opportunity.effectiveStatus();
+                      final applicantCount =
+                          applicationCounts[opportunity.id] ?? 0;
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: _OpportunityListRow(
+                          opportunity: opportunity,
+                          applicantCount: applicantCount,
+                          tone: _toneForType(opportunity.type),
+                          statusTone: _toneForStatus(effectiveStatus),
+                          timeLeftLabel: _timeLeftLabel(opportunity),
+                          postedLabel: _postedLabel(opportunity),
+                          statusLabel: _statusLabel(effectiveStatus),
+                          onTap: () => _showOpportunityDetails(
+                            opportunity,
+                            applicantCount,
+                          ),
+                        ),
+                      );
+                    }, childCount: opportunities.length),
+                  ),
+                ),
+            ],
           ),
         ),
       ),
@@ -1748,7 +1767,10 @@ class _OpportunityGridCard extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               Text(
-                OpportunityType.label(opportunity.type).toUpperCase(),
+                OpportunityType.label(
+                  opportunity.type,
+                  AppLocalizations.of(context)!,
+                ).toUpperCase(),
                 style: GoogleFonts.poppins(
                   fontSize: 9,
                   fontWeight: FontWeight.w700,
@@ -1919,7 +1941,10 @@ class _OpportunityListRow extends StatelessWidget {
                     Row(
                       children: [
                         Text(
-                          OpportunityType.label(opportunity.type),
+                          OpportunityType.label(
+                            opportunity.type,
+                            AppLocalizations.of(context)!,
+                          ),
                           style: GoogleFonts.poppins(
                             fontSize: 10.5,
                             fontWeight: FontWeight.w600,

@@ -14,7 +14,12 @@
       "Bash(python tools/generate_branding.py)",
       "Bash(flutter pub:*)",
       "Bash(xargs wc:*)",
-      "Bash(python -c ':*)"
+      "Bash(python -c ':*)",
+      "Bash(xargs grep *)",
+      "Bash(cat /c/AV4/lib/l10n/generated/*.dart)",
+      "Bash(python3 -c ' *)",
+      "Bash(python3)",
+      "Bash(grep -v \"^placeholders$\\\\|^type$\\\\|^value[0-9]$\\\\|^description$\\\\|^example$\")"
     ]
   }
 }

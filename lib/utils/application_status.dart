@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/generated/app_localizations.dart';
 import '../theme/app_colors.dart';
 
 /// Centralized application status helpers.
@@ -30,27 +31,27 @@ class ApplicationStatus {
     }
   }
 
-  static String label(String? raw) {
+  static String label(String? raw, AppLocalizations l10n) {
     switch (parse(raw)) {
       case accepted:
-        return 'Approved';
+        return l10n.uiApproved;
       case rejected:
-        return 'Rejected';
+        return l10n.uiRejected;
       case pending:
       default:
-        return 'Pending';
+        return l10n.uiPending;
     }
   }
 
-  static String sentenceLabel(String? raw) {
+  static String sentenceLabel(String? raw, AppLocalizations l10n) {
     switch (parse(raw)) {
       case accepted:
-        return 'approved';
+        return l10n.applicationStatusApprovedSentence;
       case rejected:
-        return 'rejected';
+        return l10n.applicationStatusRejectedSentence;
       case pending:
       default:
-        return 'pending';
+        return l10n.applicationStatusPendingSentence;
     }
   }
 

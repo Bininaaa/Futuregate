@@ -13,6 +13,7 @@ import '../../widgets/ideas/innovation_hub_theme.dart';
 import '../../widgets/ideas/my_ideas_toggle.dart';
 import '../../widgets/profile_avatar.dart';
 import '../../widgets/shared/app_feedback.dart';
+import '../../widgets/shared/app_loading.dart';
 import 'create_idea_screen.dart';
 import 'idea_details_screen.dart';
 import 'profile_screen.dart';
@@ -85,7 +86,7 @@ class _ProjectIdeasScreenState extends State<ProjectIdeasScreen> {
       body: SafeArea(
         top: !widget.embedded,
         child: provider.isLoading && discoverIdeas.isEmpty && myIdeas.isEmpty
-            ? const Center(child: CircularProgressIndicator())
+            ? const AppLoadingView(density: AppLoadingDensity.compact)
             : RefreshIndicator(
                 color: InnovationHubPalette.primary,
                 onRefresh: () => context.read<ProjectIdeaProvider>().fetchIdeas(

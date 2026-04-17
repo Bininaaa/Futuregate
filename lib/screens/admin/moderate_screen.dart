@@ -5,6 +5,7 @@ import '../../models/opportunity_model.dart';
 import '../../providers/admin_provider.dart';
 import '../../utils/admin_palette.dart';
 import '../../widgets/shared/app_feedback.dart';
+import '../../widgets/shared/app_loading.dart';
 
 class ModerateScreen extends StatefulWidget {
   const ModerateScreen({super.key});
@@ -120,7 +121,7 @@ class _ModerateScreenState extends State<ModerateScreen>
         ),
         Expanded(
           child: provider.moderationLoading
-              ? const Center(child: CircularProgressIndicator())
+              ? const AppLoadingView(density: AppLoadingDensity.compact)
               : TabBarView(
                   controller: _tabController,
                   children: [

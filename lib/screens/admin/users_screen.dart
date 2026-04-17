@@ -4,15 +4,15 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../providers/admin_provider.dart';
-import '../../models/cv_model.dart';
 import '../../models/user_model.dart';
-import '../../services/cv_service.dart';
 import '../../services/document_access_service.dart';
 import '../../utils/admin_palette.dart';
 import '../../utils/display_text.dart';
 import '../../widgets/admin/admin_ui.dart';
 import '../../widgets/profile_avatar.dart';
 import '../../widgets/shared/app_feedback.dart';
+import '../../widgets/shared/app_loading.dart';
+import 'admin_student_profile_sheet.dart';
 
 class UsersScreen extends StatefulWidget {
   const UsersScreen({
@@ -32,7 +32,6 @@ class UsersScreen extends StatefulWidget {
 
 class _UsersScreenState extends State<UsersScreen> {
   final TextEditingController _searchController = TextEditingController();
-  final CvService _cvService = CvService();
   final DocumentAccessService _documentAccessService = DocumentAccessService();
   bool _didOpenInitialTarget = false;
 
@@ -90,9 +89,7 @@ class _UsersScreenState extends State<UsersScreen> {
     final isLevelFilterActive = provider.userLevelFilter != 'all';
 
     if (provider.usersLoading) {
-      return Center(
-        child: CircularProgressIndicator(color: AdminPalette.primary),
-      );
+      return const AppLoadingView(density: AppLoadingDensity.compact);
     }
 
     if (provider.usersError != null && provider.allUsers.isEmpty) {
@@ -1293,6 +1290,11 @@ class _UsersScreenState extends State<UsersScreen> {
   }
 
   void _showUserDetails(UserModel user) {
+    if (user.role == 'student') {
+      showAdminStudentProfileSheet(context, user: user);
+      return;
+    }
+
     final provider = context.read<AdminProvider>();
 
     showModalBottomSheet(
@@ -1419,23 +1421,6 @@ class _UsersScreenState extends State<UsersScreen> {
                         'Website',
                         user.website,
                         'Not provided',
-                      ),
-                    ],
-                    if (user.role == 'student') ...[
-                      const SizedBox(height: 6),
-                      FutureBuilder<CvModel?>(
-                        future: _cvService.getCvByStudentId(user.uid),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 12),
-                              child: LinearProgressIndicator(),
-                            );
-                          }
-
-                          return _buildStudentCvSection(user, snapshot.data);
-                        },
                       ),
                     ],
                     if (user.role == 'company') ...[
@@ -1594,135 +1579,6 @@ class _UsersScreenState extends State<UsersScreen> {
     );
   }
 
-  Widget _buildSectionCopy(String title, String value) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w700,
-            color: AdminPalette.textPrimary,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 12.5,
-            height: 1.5,
-            color: AdminPalette.textSecondary,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildStudentCvSection(UserModel user, CvModel? cv) {
-    return AdminSurface(
-      margin: const EdgeInsets.only(bottom: 14),
-      padding: const EdgeInsets.all(16),
-      radius: 20,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const AdminSectionHeader(
-            eyebrow: 'Documents',
-            title: 'Student CV',
-            subtitle:
-                'Review the uploaded CV and the built CV export without leaving the user profile.',
-          ),
-          const SizedBox(height: 14),
-          _buildSectionCopy(
-            'Primary CV',
-            cv == null
-                ? 'No CV has been created for this user.'
-                : cv.hasUploadedCv
-                ? 'Primary CV: ${cv.uploadedCvDisplayName}'
-                : 'Primary CV not uploaded',
-          ),
-          const SizedBox(height: 6),
-          _buildSectionCopy(
-            'Built CV',
-            cv == null
-                ? 'Built CV unavailable'
-                : cv.hasExportedPdf
-                ? 'Built CV PDF available'
-                : cv.hasBuilderContent
-                ? 'Built CV information available'
-                : 'Built CV unavailable',
-          ),
-          if (cv != null && cv.hasUploadedCv) ...[
-            const SizedBox(height: 12),
-            _buildAdaptiveActionGroup([
-              _buildDocumentButton(
-                label: 'View CV',
-                icon: Icons.visibility_outlined,
-                onPressed: cv.isUploadedCvPdf
-                    ? () => _openUserCvDocument(
-                        user.uid,
-                        variant: 'primary',
-                        requirePdf: true,
-                      )
-                    : null,
-                color: AdminPalette.accent,
-              ),
-              _buildDocumentButton(
-                label: 'Download CV',
-                icon: Icons.download_outlined,
-                onPressed: () => _openUserCvDocument(
-                  user.uid,
-                  variant: 'primary',
-                  download: true,
-                ),
-                color: AdminPalette.accent,
-                outlined: true,
-              ),
-            ]),
-            if (!cv.isUploadedCvPdf) ...[
-              const SizedBox(height: 10),
-              Text(
-                'The uploaded file is not a valid PDF.',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: AdminPalette.warning,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ],
-          if (cv != null && cv.hasExportedPdf) ...[
-            const SizedBox(height: 10),
-            _buildAdaptiveActionGroup([
-              _buildDocumentButton(
-                label: 'View Built CV',
-                icon: Icons.picture_as_pdf_outlined,
-                onPressed: () => _openUserCvDocument(
-                  user.uid,
-                  variant: 'built',
-                  requirePdf: true,
-                ),
-                color: AdminPalette.primaryDark,
-              ),
-              _buildDocumentButton(
-                label: 'Download Built CV',
-                icon: Icons.download_outlined,
-                onPressed: () => _openUserCvDocument(
-                  user.uid,
-                  variant: 'built',
-                  download: true,
-                ),
-                color: AdminPalette.primaryDark,
-                outlined: true,
-              ),
-            ]),
-          ],
-        ],
-      ),
-    );
-  }
-
   Widget _buildCompanyCommercialRegisterSection(UserModel user) {
     final uploadedAt = user.commercialRegisterUploadedAt;
     final uploadedAtLabel = uploadedAt == null
@@ -1805,58 +1661,6 @@ class _UsersScreenState extends State<UsersScreen> {
         ],
       ),
     );
-  }
-
-  Future<void> _openUserCvDocument(
-    String userId, {
-    required String variant,
-    bool download = false,
-    bool requirePdf = false,
-  }) async {
-    try {
-      final document = await _documentAccessService.getUserCvDocument(
-        userId: userId,
-        variant: variant,
-      );
-      if (!mounted) return;
-
-      if (requirePdf && !document.isPdf) {
-        context.showAppSnackBar(
-          'This document is not a valid PDF file.',
-          title: 'Preview unavailable',
-          type: AppFeedbackType.warning,
-        );
-        return;
-      }
-
-      final uri = Uri.tryParse(
-        download ? document.downloadUrl : document.viewUrl,
-      );
-      if (uri == null) {
-        throw Exception('File unavailable.');
-      }
-
-      final launched = await launchUrl(
-        uri,
-        mode: LaunchMode.platformDefault,
-        webOnlyWindowName: '_blank',
-      );
-      if (!mounted) return;
-      if (!launched) {
-        context.showAppSnackBar(
-          'We couldn\'t open the document right now.',
-          title: 'Document unavailable',
-          type: AppFeedbackType.error,
-        );
-      }
-    } catch (e) {
-      if (!mounted) return;
-      context.showAppSnackBar(
-        _documentErrorMessage(e),
-        title: 'Document unavailable',
-        type: AppFeedbackType.error,
-      );
-    }
   }
 
   Future<void> _openCommercialRegister(

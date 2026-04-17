@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../l10n/generated/app_localizations.dart';
 import '../../providers/auth_provider.dart';
 import '../../utils/validators.dart';
 import '../../widgets/shared/app_content_system.dart';
@@ -50,9 +51,10 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
+    final l10n = AppLocalizations.of(context)!;
     setState(() {
       _formMessage = error == 'wrong-password'
-          ? 'Incorrect email or password. Please try again.'
+          ? l10n.uiIncorrectEmailOrPassword
           : error;
     });
   }
@@ -65,9 +67,10 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
+    final l10n = AppLocalizations.of(context)!;
     context.showAppSnackBar(
       error,
-      title: 'Google sign-in unavailable',
+      title: l10n.uiGoogleSignInUnavailable,
       type: AppFeedbackType.error,
     );
   }
@@ -75,6 +78,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
+    final l10n = AppLocalizations.of(context)!;
 
     return AuthFlowScaffold(
       child: Center(
@@ -89,8 +93,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: <Widget>[
                   AuthCompactHeader(
                     icon: Icons.lock_person_rounded,
-                    title: 'Welcome back',
-                    subtitle: 'Login to continue.',
+                    title: l10n.uiWelcomeBack,
+                    subtitle: l10n.uiLoginToContinue,
                     stickers: <AuthStickerSpec>[
                       AuthStickerSpec(
                         icon: Icons.school_rounded,
@@ -110,7 +114,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: 22),
                     AppInlineMessage(
                       type: AppFeedbackType.error,
-                      title: 'Login unavailable',
+                      title: l10n.uiLoginUnavailable,
                       message: _formMessage!,
                       compact: true,
                     ),
@@ -124,22 +128,22 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 18),
                   AuthTextField(
                     controller: _emailController,
-                    label: 'Email',
-                    hint: 'email@example.com',
+                    label: l10n.uiEmail,
+                    hint: l10n.uiEmailHint,
                     icon: Icons.email_outlined,
                     keyboardType: TextInputType.emailAddress,
-                    validator: Validators.validateEmail,
+                    validator: Validators.email(l10n),
                     textInputAction: TextInputAction.next,
                     autofillHints: const <String>[AutofillHints.email],
                   ),
                   const SizedBox(height: 14),
                   AuthTextField(
                     controller: _passwordController,
-                    label: 'Password',
-                    hint: 'Enter your password',
+                    label: l10n.uiPassword,
+                    hint: l10n.uiEnterYourPassword,
                     icon: Icons.lock_outline_rounded,
                     obscureText: _obscurePassword,
-                    validator: Validators.validateLoginPassword,
+                    validator: Validators.loginPassword(l10n),
                     textInputAction: TextInputAction.done,
                     autofillHints: const <String>[AutofillHints.password],
                     onFieldSubmitted: (_) => _login(),
@@ -156,7 +160,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 8),
                   Align(
-                    alignment: Alignment.centerRight,
+                    alignment: AlignmentDirectional.centerEnd,
                     child: TextButton(
                       onPressed: () {
                         Navigator.push(
@@ -167,7 +171,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         );
                       },
                       child: Text(
-                        'Forgot password?',
+                        l10n.uiForgotPassword,
                         style: authFlowTheme.label(
                           size: 12.8,
                           color: AuthFlowPalette.orange,
@@ -179,7 +183,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 6),
                   AppPrimaryButton(
                     theme: authFlowTheme,
-                    label: 'Login',
+                    label: l10n.uiLogin,
                     icon: Icons.login_rounded,
                     isBusy: authProvider.isLoading,
                     onPressed: authProvider.isLoading ? null : _login,
@@ -188,7 +192,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   Center(
                     child: RichText(
                       text: TextSpan(
-                        text: "Don't have an account? ",
+                        text: l10n.uiDontHaveAccountPrompt,
                         style: authFlowTheme.body(
                           size: 13.1,
                           color: authFlowTheme.textSecondary,
@@ -196,7 +200,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         children: <InlineSpan>[
                           TextSpan(
-                            text: 'Create account',
+                            text: l10n.uiCreateAccount,
                             style: authFlowTheme.label(
                               size: 13.1,
                               color: AuthFlowPalette.orange,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../l10n/generated/app_localizations.dart';
 import '../../providers/auth_provider.dart';
 import '../../utils/validators.dart';
 import '../../widgets/shared/app_content_system.dart';
@@ -95,16 +96,18 @@ class _StudentOnboardingInfoScreenState
       return;
     }
 
+    final l10n = AppLocalizations.of(context)!;
     context.showAppSnackBar(
       error,
-      title: 'Profile setup unavailable',
+      title: l10n.uiProfileSetupUnavailable,
       type: AppFeedbackType.error,
     );
   }
 
-  String? _requiredValue(String label, String? value) {
+  String? _requiredValue(String? value) {
     if (value == null || value.trim().isEmpty) {
-      return '$label is required';
+      final l10n = AppLocalizations.of(context)!;
+      return l10n.uiFieldIsRequired('');
     }
     return null;
   }
@@ -112,17 +115,19 @@ class _StudentOnboardingInfoScreenState
   @override
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
+    final l10n = AppLocalizations.of(context)!;
     final user = authProvider.userModel;
     final academicLevel = (user?.academicLevel ?? '').trim();
     final isDoctorat = academicLevel == 'doctorat';
     final levelLabel = authLevelOption(
       academicLevel.isEmpty ? 'bac' : academicLevel,
+      l10n,
     ).label;
     final email = (user?.email ?? '').trim();
 
     return AuthFlowScaffold(
       trailing: IconButton(
-        tooltip: 'Sign out',
+        tooltip: l10n.uiSignOutTooltip,
         onPressed: authProvider.isLoading
             ? null
             : () => showLogoutConfirmationSheet(context),
@@ -140,8 +145,8 @@ class _StudentOnboardingInfoScreenState
                 children: <Widget>[
                   AuthCompactHeader(
                     icon: Icons.badge_rounded,
-                    title: 'Finish profile',
-                    subtitle: 'Add your student details.',
+                    title: l10n.uiFinishProfile,
+                    subtitle: l10n.uiAddYourStudentDetails,
                     stickers: <AuthStickerSpec>[
                       AuthStickerSpec(
                         icon: Icons.school_rounded,
@@ -163,9 +168,9 @@ class _StudentOnboardingInfoScreenState
                     spacing: 8,
                     runSpacing: 8,
                     children: <Widget>[
-                      const _SetupBadge(label: 'Step 2 of 2'),
+                      _SetupBadge(label: l10n.uiStep2Of2),
                       _SetupBadge(label: levelLabel),
-                      if (email.isNotEmpty) const _SetupBadge(label: 'Google'),
+                      if (email.isNotEmpty) _SetupBadge(label: l10n.uiGoogle),
                     ],
                   ),
                   if (email.isNotEmpty || levelLabel.isNotEmpty) ...<Widget>[
@@ -175,10 +180,10 @@ class _StudentOnboardingInfoScreenState
                   const SizedBox(height: 18),
                   AuthTextField(
                     controller: _fullNameController,
-                    label: 'Full Name',
-                    hint: 'How your name should appear',
+                    label: l10n.uiFullName,
+                    hint: l10n.uiHowYourNameShouldAppear,
                     icon: Icons.badge_outlined,
-                    validator: Validators.validateFullName,
+                    validator: Validators.fullName(l10n),
                     textInputAction: TextInputAction.next,
                     autofillHints: const <String>[AutofillHints.name],
                   ),
@@ -246,7 +251,7 @@ class _StudentOnboardingInfoScreenState
                   const SizedBox(height: 22),
                   AppPrimaryButton(
                     theme: authFlowTheme,
-                    label: 'Finish',
+                    label: l10n.uiFinish,
                     icon: Icons.check_circle_outline_rounded,
                     isBusy: authProvider.isLoading,
                     onPressed: authProvider.isLoading ? null : _submit,
@@ -254,7 +259,7 @@ class _StudentOnboardingInfoScreenState
                   const SizedBox(height: 10),
                   AppSecondaryButton(
                     theme: authFlowTheme,
-                    label: 'Sign Out',
+                    label: l10n.uiSignOut,
                     icon: Icons.logout_rounded,
                     onPressed: authProvider.isLoading
                         ? null
@@ -270,32 +275,35 @@ class _StudentOnboardingInfoScreenState
   }
 
   Widget _buildUniversityField() {
+    final l10n = AppLocalizations.of(context)!;
     return AuthTextField(
       controller: _universityController,
-      label: 'University',
-      hint: 'Your university',
+      label: l10n.uiUniversity,
+      hint: l10n.uiYourUniversity,
       icon: Icons.school_outlined,
-      validator: (value) => _requiredValue('University', value),
+      validator: (value) => _requiredValue(value),
       textInputAction: TextInputAction.next,
     );
   }
 
   Widget _buildFieldOfStudyField() {
+    final l10n = AppLocalizations.of(context)!;
     return AuthTextField(
       controller: _fieldOfStudyController,
-      label: 'Field of Study',
-      hint: 'Computer science',
+      label: l10n.uiFieldOfStudy,
+      hint: l10n.uiComputerScience,
       icon: Icons.auto_stories_outlined,
-      validator: (value) => _requiredValue('Field of study', value),
+      validator: (value) => _requiredValue(value),
       textInputAction: TextInputAction.next,
     );
   }
 
   Widget _buildPhoneField() {
+    final l10n = AppLocalizations.of(context)!;
     return AuthTextField(
       controller: _phoneController,
-      label: 'Phone',
-      hint: '+213 ...',
+      label: l10n.uiPhone,
+      hint: l10n.uiPhoneHint,
       icon: Icons.phone_outlined,
       keyboardType: TextInputType.phone,
       textInputAction: TextInputAction.next,
@@ -304,10 +312,11 @@ class _StudentOnboardingInfoScreenState
   }
 
   Widget _buildLocationField() {
+    final l10n = AppLocalizations.of(context)!;
     return AuthTextField(
       controller: _locationController,
-      label: 'Location',
-      hint: 'City',
+      label: l10n.uiLocation,
+      hint: l10n.uiCity,
       icon: Icons.location_on_outlined,
       textInputAction: TextInputAction.next,
       autofillHints: const <String>[AutofillHints.addressCity],
@@ -348,6 +357,7 @@ class _ProfileMetaSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return LayoutBuilder(
       builder: (context, constraints) {
         final showTwoColumns = email.isNotEmpty && constraints.maxWidth >= 520;
@@ -358,7 +368,7 @@ class _ProfileMetaSection extends StatelessWidget {
             children: <Widget>[
               Expanded(
                 child: AuthReadOnlyTile(
-                  label: 'Email',
+                  label: l10n.uiEmail,
                   value: email,
                   icon: Icons.alternate_email_rounded,
                   maxLines: 1,
@@ -367,7 +377,7 @@ class _ProfileMetaSection extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: AuthReadOnlyTile(
-                  label: 'Level',
+                  label: l10n.uiLevel,
                   value: levelLabel,
                   icon: Icons.school_rounded,
                 ),
@@ -380,7 +390,7 @@ class _ProfileMetaSection extends StatelessWidget {
           children: <Widget>[
             if (email.isNotEmpty) ...<Widget>[
               AuthReadOnlyTile(
-                label: 'Email',
+                label: l10n.uiEmail,
                 value: email,
                 icon: Icons.alternate_email_rounded,
                 maxLines: 1,
@@ -388,7 +398,7 @@ class _ProfileMetaSection extends StatelessWidget {
               const SizedBox(height: 12),
             ],
             AuthReadOnlyTile(
-              label: 'Level',
+              label: l10n.uiLevel,
               value: levelLabel,
               icon: Icons.school_rounded,
             ),
@@ -414,6 +424,7 @@ class _ResearchCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -429,7 +440,7 @@ class _ResearchCard extends StatelessWidget {
           Row(
             children: <Widget>[
               Text(
-                'Research',
+                l10n.uiResearch,
                 style: authFlowTheme.section(
                   size: 14.3,
                   color: authFlowTheme.textPrimary,
@@ -444,7 +455,7 @@ class _ResearchCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
-                  'Optional',
+                  l10n.uiOptional,
                   style: authFlowTheme.label(
                     size: 10.7,
                     color: AuthFlowPalette.orange,
@@ -457,8 +468,8 @@ class _ResearchCard extends StatelessWidget {
           const SizedBox(height: 12),
           AuthTextField(
             controller: researchTopicController,
-            label: 'Research Topic',
-            hint: 'Your topic',
+            label: l10n.uiResearchTopic,
+            hint: l10n.uiResearchTopicHint,
             icon: Icons.topic_outlined,
             textInputAction: TextInputAction.next,
           ),
@@ -474,8 +485,8 @@ class _ResearchCard extends StatelessWidget {
                     Expanded(
                       child: AuthTextField(
                         controller: laboratoryController,
-                        label: 'Laboratory',
-                        hint: 'Lab name',
+                        label: l10n.uiLaboratory,
+                        hint: l10n.uiLabName,
                         icon: Icons.biotech_outlined,
                         textInputAction: TextInputAction.next,
                       ),
@@ -484,8 +495,8 @@ class _ResearchCard extends StatelessWidget {
                     Expanded(
                       child: AuthTextField(
                         controller: researchDomainController,
-                        label: 'Research Domain',
-                        hint: 'AI, finance...',
+                        label: l10n.uiResearchDomain,
+                        hint: l10n.uiAiFinance,
                         icon: Icons.category_outlined,
                         textInputAction: TextInputAction.next,
                       ),
@@ -498,16 +509,16 @@ class _ResearchCard extends StatelessWidget {
                 children: <Widget>[
                   AuthTextField(
                     controller: laboratoryController,
-                    label: 'Laboratory',
-                    hint: 'Lab name',
+                    label: l10n.uiLaboratory,
+                    hint: l10n.uiLabName,
                     icon: Icons.biotech_outlined,
                     textInputAction: TextInputAction.next,
                   ),
                   const SizedBox(height: 12),
                   AuthTextField(
                     controller: researchDomainController,
-                    label: 'Research Domain',
-                    hint: 'AI, finance...',
+                    label: l10n.uiResearchDomain,
+                    hint: l10n.uiAiFinance,
                     icon: Icons.category_outlined,
                     textInputAction: TextInputAction.next,
                   ),
@@ -518,8 +529,8 @@ class _ResearchCard extends StatelessWidget {
           const SizedBox(height: 12),
           AuthTextField(
             controller: supervisorController,
-            label: 'Supervisor',
-            hint: 'Supervisor name',
+            label: l10n.uiSupervisor,
+            hint: l10n.uiSupervisorHint,
             icon: Icons.person_outline_rounded,
             textInputAction: TextInputAction.done,
           ),
@@ -536,6 +547,7 @@ class _AboutYouField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -556,7 +568,7 @@ class _AboutYouField extends StatelessWidget {
             ),
             const SizedBox(width: 10),
             Text(
-              'About You',
+              l10n.uiAboutYou,
               style: authFlowTheme.label(
                 size: 12.1,
                 color: authFlowTheme.textPrimary,
@@ -578,7 +590,7 @@ class _AboutYouField extends StatelessWidget {
             weight: FontWeight.w600,
           ),
           decoration: InputDecoration(
-            hintText: 'Short intro',
+            hintText: l10n.uiShortIntro,
             hintStyle: authFlowTheme.body(
               size: 12.6,
               color: authFlowTheme.textMuted,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:provider/provider.dart';
+import '../../l10n/generated/app_localizations.dart';
 import '../../providers/auth_provider.dart';
 import '../../theme/app_colors.dart';
 import '../../utils/document_upload_validator.dart';
@@ -62,9 +63,10 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
   Future<void> _register() async {
     if (!_formKey.currentState!.validate()) return;
 
+    final l10n = AppLocalizations.of(context)!;
     final selectedFile = _commercialRegisterFile;
     final commercialRegisterError = selectedFile == null
-        ? 'Upload your commercial register to continue.'
+        ? l10n.uiUploadCommercialRegisterToContinue
         : DocumentUploadValidator.validateCommercialRegister(
             fileName: selectedFile.name,
             sizeInBytes: selectedFile.size,
@@ -93,7 +95,7 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
     if (error != null) {
       context.showAppSnackBar(
         error,
-        title: 'Registration unavailable',
+        title: l10n.uiRegistrationUnavailable,
         type: AppFeedbackType.error,
       );
     } else {
@@ -182,6 +184,7 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
   }
 
   Widget _buildBrandingArea() {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: Column(
@@ -208,7 +211,7 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
           ),
           const SizedBox(height: 14),
           Text(
-            'Company Registration',
+            l10n.uiCompanyRegistration,
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
@@ -217,7 +220,7 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
           ),
           const SizedBox(height: 6),
           Text(
-            'Register your organization to post\nopportunities and connect with talent.',
+            l10n.uiRegisterCompanySubtitle,
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 13,
@@ -231,6 +234,7 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
   }
 
   Widget _buildFormCard(AuthProvider authProvider) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
@@ -252,49 +256,49 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _buildSectionLabel('Company Information'),
+            _buildSectionLabel(l10n.uiCompanyInformation),
             const SizedBox(height: 14),
             _buildTextField(
               controller: _companyNameController,
-              label: 'Company Name',
-              hint: 'Ex: TechCorp Algeria',
+              label: l10n.uiCompanyName,
+              hint: l10n.uiExTechCorpAlgeria,
               icon: Icons.business_outlined,
               validator: (v) => (v == null || v.trim().isEmpty)
-                  ? 'Company name is required'
+                  ? l10n.uiCompanyNameIsRequired
                   : null,
             ),
             const SizedBox(height: 14),
             _buildTextField(
               controller: _sectorController,
-              label: 'Industry / Sector (optional)',
-              hint: 'Ex: Technology, Healthcare, Finance...',
+              label: l10n.uiIndustrySectorOptional,
+              hint: l10n.uiExTechnologyHealthcareFinance,
               icon: Icons.category_outlined,
             ),
             const SizedBox(height: 14),
             _buildTextField(
               controller: _descriptionController,
-              label: 'Company Description (optional)',
-              hint: 'Brief description of your organization...',
+              label: l10n.uiCompanyDescriptionOptional,
+              hint: l10n.uiBriefDescriptionOfYourOrganization,
               icon: Icons.description_outlined,
               maxLines: 3,
             ),
             const SizedBox(height: 18),
             _buildCommercialRegisterSection(),
             const SizedBox(height: 24),
-            _buildSectionLabel('Account Details'),
+            _buildSectionLabel(l10n.uiAccountDetails),
             const SizedBox(height: 14),
             _buildTextField(
               controller: _emailController,
-              label: 'Business Email',
-              hint: 'contact@company.com',
+              label: l10n.uiBusinessEmail,
+              hint: l10n.uiContactEmailHint,
               icon: Icons.email_outlined,
               keyboardType: TextInputType.emailAddress,
-              validator: Validators.validateEmail,
+              validator: Validators.email(l10n),
             ),
             const SizedBox(height: 14),
             _buildTextField(
               controller: _passwordController,
-              label: 'Password',
+              label: l10n.uiPassword,
               hint: '\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022',
               icon: Icons.lock_outline,
               obscureText: _obscurePassword,
@@ -309,13 +313,13 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
                 onPressed: () =>
                     setState(() => _obscurePassword = !_obscurePassword),
               ),
-              validator: Validators.validatePassword,
+              validator: Validators.password(l10n),
             ),
             PasswordStrengthIndicator(password: _passwordText),
             const SizedBox(height: 14),
             _buildTextField(
               controller: _confirmPasswordController,
-              label: 'Confirm Password',
+              label: l10n.uiConfirmPassword,
               hint: '\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022',
               icon: Icons.lock_outline,
               obscureText: _obscureConfirm,
@@ -330,26 +334,23 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
                 onPressed: () =>
                     setState(() => _obscureConfirm = !_obscureConfirm),
               ),
-              validator: (value) => Validators.validateConfirmPassword(
-                value,
-                _passwordController.text,
-              ),
+              validator: Validators.confirmPassword(l10n, _passwordController.text),
             ),
             const SizedBox(height: 24),
-            _buildSectionLabel('Contact (optional)'),
+            _buildSectionLabel(l10n.uiContactOptional),
             const SizedBox(height: 14),
             _buildTextField(
               controller: _phoneController,
-              label: 'Phone Number',
-              hint: '+213 xxx xxx xxx',
+              label: l10n.uiPhoneNumber,
+              hint: l10n.uiPhoneNumberHint,
               icon: Icons.phone_outlined,
               keyboardType: TextInputType.phone,
             ),
             const SizedBox(height: 14),
             _buildTextField(
               controller: _websiteController,
-              label: 'Website',
-              hint: 'https://www.company.com',
+              label: l10n.uiWebsite,
+              hint: l10n.uiWebsiteHint,
               icon: Icons.language_outlined,
               keyboardType: TextInputType.url,
             ),
@@ -465,6 +466,7 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
   }
 
   Widget _buildCommercialRegisterSection() {
+    final l10n = AppLocalizations.of(context)!;
     final selectedFile = _commercialRegisterFile;
 
     return Container(
@@ -503,7 +505,7 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Commercial Register',
+                      l10n.uiCommercialRegister,
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
@@ -512,7 +514,7 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
                     ),
                     SizedBox(height: 2),
                     Text(
-                      'Commercial Register',
+                      l10n.uiCommercialRegister,
                       style: TextStyle(fontSize: 12, color: _mediumBlue),
                     ),
                   ],
@@ -522,7 +524,7 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
           ),
           const SizedBox(height: 10),
           Text(
-            'Required for company account creation. Accepted formats: PDF, JPG, PNG. Maximum size: 10 MB.',
+            l10n.uiRequiredForCompanyAccountCreationAcceptedFormatsPdfJpgPng,
             style: TextStyle(
               fontSize: 12,
               height: 1.5,
@@ -572,7 +574,7 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
                   ),
                   TextButton(
                     onPressed: _pickCommercialRegister,
-                    child: const Text('Replace'),
+                    child: Text(l10n.uiReplace),
                   ),
                 ],
               ),
@@ -581,7 +583,7 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
             OutlinedButton.icon(
               onPressed: _pickCommercialRegister,
               icon: const Icon(Icons.upload_file_outlined),
-              label: const Text('Upload Commercial Register'),
+              label: Text(l10n.uiUploadCommercialRegister),
               style: OutlinedButton.styleFrom(
                 foregroundColor: _navyBlue,
                 side: BorderSide(color: _navyBlue.withValues(alpha: 0.3)),
@@ -607,6 +609,7 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
   }
 
   Widget _buildRegisterButton(AuthProvider authProvider) {
+    final l10n = AppLocalizations.of(context)!;
     return SizedBox(
       height: 52,
       child: authProvider.isLoading
@@ -622,8 +625,8 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
                 elevation: 3,
                 shadowColor: _navyBlue.withValues(alpha: 0.4),
               ),
-              child: const Text(
-                'Register Company',
+              child: Text(
+                l10n.uiRegisterCompany,
                 style: TextStyle(
                   fontSize: 17,
                   fontWeight: FontWeight.bold,
@@ -635,17 +638,18 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
   }
 
   Widget _buildLoginLink() {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: RichText(
         text: TextSpan(
-          text: 'Already have an account? ',
+          text: l10n.uiAlreadyHaveAccountPrompt,
           style: TextStyle(
             fontSize: 14,
             color: AppColors.current.textSecondary,
           ),
           children: [
             TextSpan(
-              text: 'Log in',
+              text: l10n.uiLogIn,
               style: TextStyle(
                 color: _accentOrange,
                 fontWeight: FontWeight.bold,
@@ -661,31 +665,32 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
   }
 
   Widget _buildTermsText() {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: RichText(
         textAlign: TextAlign.center,
         text: TextSpan(
           style: TextStyle(fontSize: 11, color: AppColors.current.textMuted),
           children: [
-            const TextSpan(text: 'By registering, you agree to our '),
+            TextSpan(text: l10n.uiByRegisteringAgreePrefix),
             TextSpan(
-              text: 'Terms of Use',
+              text: l10n.uiTermsOfUse,
               style: TextStyle(
                 decoration: TextDecoration.underline,
                 fontWeight: FontWeight.w500,
                 color: AppColors.current.textSecondary,
               ),
             ),
-            const TextSpan(text: ' and our '),
+            TextSpan(text: l10n.uiAndOur),
             TextSpan(
-              text: 'Privacy Policy',
+              text: l10n.uiPrivacyPolicy,
               style: TextStyle(
                 decoration: TextDecoration.underline,
                 fontWeight: FontWeight.w500,
                 color: AppColors.current.textSecondary,
               ),
             ),
-            const TextSpan(text: '.'),
+            TextSpan(text: l10n.uiBySigningUpAgreeSuffix),
           ],
         ),
       ),

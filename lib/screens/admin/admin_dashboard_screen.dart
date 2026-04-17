@@ -13,11 +13,11 @@ import '../../widgets/admin/admin_ui.dart';
 import '../../widgets/admin_charts.dart';
 import '../../widgets/opportunity_type_badge.dart';
 import '../../widgets/profile_avatar.dart';
+import '../../widgets/shared/app_loading.dart';
 import '../../widgets/stat_card.dart';
 import '../notifications_screen.dart';
 import 'admin_activity_center_screen.dart';
 import 'admin_content_center_screen.dart';
-import 'admin_library_screen.dart';
 import 'users_screen.dart';
 
 class AdminDashboardScreen extends StatefulWidget {
@@ -53,9 +53,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     final provider = context.watch<AdminProvider>();
 
     if (provider.isLoading) {
-      return Center(
-        child: CircularProgressIndicator(color: AdminPalette.primary),
-      );
+      return const AppLoadingView(density: AppLoadingDensity.compact);
     }
 
     if (provider.dashboardError != null) {
@@ -376,20 +374,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       return;
     }
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => Scaffold(
-          backgroundColor: AdminPalette.background,
-          appBar: AppBar(
-            title: const Text('Resource Library'),
-            backgroundColor: AdminPalette.surface,
-            foregroundColor: AdminPalette.textPrimary,
-          ),
-          body: const SafeArea(child: AdminLibraryScreen()),
-        ),
-      ),
-    );
+    _openContent(AdminContentCenterScreen.libraryTab);
   }
 
   void _openUsers() {

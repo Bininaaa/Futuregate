@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/profile_avatar.dart';
+import '../../widgets/shared/app_loading.dart';
 import '../settings/logout_confirmation_sheet.dart';
 import 'profile_screen.dart';
 
@@ -27,7 +28,9 @@ class CompanyApprovalStatusScreen extends StatelessWidget {
       return const AppShellBackground(
         child: Scaffold(
           backgroundColor: Colors.transparent,
-          body: Center(child: CircularProgressIndicator()),
+          body: SafeArea(
+            child: AppLoadingView(density: AppLoadingDensity.compact),
+          ),
         ),
       );
     }

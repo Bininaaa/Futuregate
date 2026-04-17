@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/generated/app_localizations.dart';
 import '../theme/app_colors.dart';
 
 /// Centralized definitions for opportunity types used across the app.
@@ -67,99 +68,90 @@ class OpportunityType {
     }
   }
 
-  // Display labels
-  static String label(String type) {
+  // ── Localized display labels (require AppLocalizations) ─────────────────
+
+  static String label(String type, AppLocalizations l10n) {
     switch (parse(type)) {
       case internship:
-        return 'Internship';
+        return l10n.opportunityTypeInternship;
       case sponsoring:
-        return 'Sponsored';
+        return l10n.opportunityTypeSponsored;
       case job:
       default:
-        return 'Job';
+        return l10n.opportunityTypeJob;
     }
   }
 
-  static String lowercaseLabel(String type) {
+  static String lowercaseLabel(String type, AppLocalizations l10n) =>
+      label(type, l10n).toLowerCase();
+
+  static String headline(String type, AppLocalizations l10n) {
     switch (parse(type)) {
       case internship:
-        return 'internship';
+        return l10n.opportunityHeadlineInternship;
       case sponsoring:
-        return 'sponsored';
+        return l10n.opportunityHeadlineSponsoring;
       case job:
       default:
-        return 'job';
+        return l10n.opportunityHeadlineJob;
     }
   }
 
-  static String headline(String type) {
+  static String subtitle(String type, AppLocalizations l10n) {
     switch (parse(type)) {
       case internship:
-        return 'Bring in future talent';
+        return l10n.opportunitySubtitleInternship;
       case sponsoring:
-        return 'Support students with a premium sponsored program';
+        return l10n.opportunitySubtitleSponsoring;
       case job:
       default:
-        return 'Hire for a real role';
+        return l10n.opportunitySubtitleJob;
     }
   }
 
-  // Short helper text used in selectors.
-  static String subtitle(String type) {
+  static String descriptionLabel(String type, AppLocalizations l10n) {
     switch (parse(type)) {
-      case internship:
-        return 'Learning & work experience';
       case sponsoring:
-        return 'Premium funded & partner programs';
+        return l10n.opportunityDescriptionLabelSponsoring;
+      case internship:
       case job:
       default:
-        return 'Full-time & part-time work';
+        return l10n.roleDescriptionLabel;
     }
   }
 
-  static String descriptionLabel(String type) {
+  static String descriptionHint(String type, AppLocalizations l10n) {
     switch (parse(type)) {
       case sponsoring:
-        return 'Program description';
+        return l10n.opportunityDescriptionHintSponsoring;
       case internship:
+        return l10n.opportunityDescriptionHintInternship;
       case job:
       default:
-        return 'Role description';
+        return l10n.opportunityDescriptionHintJob;
     }
   }
 
-  static String descriptionHint(String type) {
+  static String requirementsLabel(String type, AppLocalizations l10n) {
     switch (parse(type)) {
       case sponsoring:
-        return 'Describe the sponsoring program, support offered, and who it is for...';
+        return l10n.opportunityRequirementsLabelSponsoring;
       case internship:
-        return 'Describe the internship scope, learning goals, and responsibilities...';
       case job:
       default:
-        return 'Describe the role, team, and responsibilities...';
+        return l10n.opportunityRequirementsLabelJob;
     }
   }
 
-  static String requirementsLabel(String type) {
+  static String requirementsHint(String type, AppLocalizations l10n) {
     switch (parse(type)) {
       case sponsoring:
-        return 'Eligibility';
+        return l10n.opportunityRequirementsHintSponsoring;
       case internship:
+        return l10n.opportunityRequirementsHintInternship;
       case job:
       default:
-        return 'Requirements';
-    }
-  }
-
-  static String requirementsHint(String type) {
-    switch (parse(type)) {
-      case sponsoring:
-        return 'Share eligibility criteria, documents, or expectations...';
-      case internship:
-        return 'Share preferred skills, academic background, or tools...';
-      case job:
-      default:
-        return 'Share the skills and qualifications needed...';
+        return l10n.opportunityRequirementsHintJob;
     }
   }
 

@@ -11,6 +11,7 @@ import '../../providers/scholarship_provider.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/shared/app_feedback.dart';
+import '../../widgets/shared/app_loading.dart';
 import '../../widgets/student/student_workspace_shell.dart';
 import '../notifications_screen.dart';
 import 'saved_screen.dart';
@@ -308,7 +309,7 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
         top: false,
         bottom: false,
         child: provider.isLoading
-            ? Center(child: CircularProgressIndicator(color: _P.primary))
+            ? const AppLoadingView(density: AppLoadingDensity.compact)
             : CustomScrollView(
                 physics: const BouncingScrollPhysics(),
                 slivers: [

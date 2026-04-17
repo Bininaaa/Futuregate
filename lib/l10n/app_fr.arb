@@ -71,6 +71,10 @@
   "companyWorkspaceTitle": "Espace de travail de l'entreprise",
   "companyWorkspaceSubtitle": "Profil, sécurité et assistance dans un seul hub raffiné.",
   "companyWorkspaceBody": "Utilisez cette zone pour maintenir la présence de votre marque, rester au courant des notifications et gérer les parties de l'espace de travail dont vous avez le plus besoin.",
+  "companyDashboardTabSubtitle": "Suivez l'activité en direct, les nouvelles candidatures et ce qui demande votre attention en premier.",
+  "companyOpportunitiesTabSubtitle": "Publiez des postes, suivez vos annonces et gardez une vision claire du recrutement.",
+  "companyApplicationsTabSubtitle": "Examinez les candidats, les filtres et les décisions depuis une file ciblée.",
+  "companyMessagesTabSubtitle": "Restez proche des conversations, des suivis et du contexte candidat.",
   "companyProfileTitle": "Profil de l'entreprise",
   "companyProfileSubtitle": "Prévisualisez la présence de votre entreprise auprès du public",
   "editCompanyProfileTitle": "Modifier le profil de l'entreprise",
@@ -876,6 +880,8 @@
   "uiManageTeam": "Gérer l'équipe",
   "uiManageYourListings": "Gérez vos annonces",
   "uiManagedInventory": "Inventaire géré",
+  "uiManage": "Gérer",
+  "uiWorkspace": "Espace de travail",
   "uiMarkPendingReview": "Marquer en attente de révision",
   "uiMarketing": "Commercialisation",
   "uiMarketingAnalyst": "Analyste marketing",
@@ -1253,6 +1259,7 @@
   "uiSearchUniversityOrCountry": "Rechercher une université ou un pays...",
   "uiSearchUsersReviewProfilesAndManageAccountStatus": "Recherchez des utilisateurs, examinez les profils et gérez le statut du compte.",
   "uiSearchVideosForExampleAlgorithms": "Rechercher des vidéos, par exemple : algorithmes",
+  "uiSearch": "Recherche",
   "uiSector": "Secteur",
   "uiSecureYourAccount": "Sécurisez votre compte",
   "uiSecurityAnalyst": "Analyste de sécurité",
@@ -1752,7 +1759,7 @@
   "uiYoutube": "YouTube",
   "uiYoutubeImport": "Importation YouTube",
   "uiBookLabel": "Livre",
-  "uiVideoLabel": "Vid?o",
+  "uiVideoLabel": "Vidéo",
   "uiCourseLabel": "Cours",
   "uiGuideLabel": "Guide",
   "uiProgramLabel": "Programme",
@@ -1760,7 +1767,7 @@
   "uiLoading": "Chargement...",
   "uiNoTrainingResourcesAvailableRightNow": "Aucune ressource de formation disponible pour le moment",
   "uiFeature": "Mettre en avant",
-  "uiUnfeature": "Retirer de la s?lection",
+  "uiUnfeature": "Retirer de la sélection",
   "uiValuede3545": "{value1}%",
   "@uiValuede3545": {
     "placeholders": {
@@ -2124,7 +2131,7 @@
   "uiScholarshipOverview": "Aperçu de la bourse",
   "uiScholarshipDetails": "Détails de la bourse",
   "uiExpectedBenefits": "Bénéfices attendus",
-  "uiWeCouldntLoadLinkedActivity": "Nous n'avons pas pu charger l??l?ment {value1} li?.",
+  "uiWeCouldntLoadLinkedActivity": "Nous n'avons pas pu charger l'élément {value1} lié.",
   "@uiWeCouldntLoadLinkedActivity": {
     "placeholders": {
       "value1": {
@@ -2208,7 +2215,7 @@
       }
     }
   },
-  "uiInternalItems": "{value1} ?l?ments internes",
+  "uiInternalItems": "{value1} éléments internes",
   "@uiInternalItems": {
     "placeholders": {
       "value1": {
@@ -2406,21 +2413,21 @@
       }
     }
   },
-  "uiAlreadyHaveAccountPrompt": "Vous avez d?j? un compte ? ",
+  "uiAlreadyHaveAccountPrompt": "Vous avez déjà un compte ? ",
   "uiLogIn": "Se connecter",
   "uiByRegisteringAgreePrefix": "En vous inscrivant, vous acceptez nos ",
-  "uiBySigningUpAgreePrefix": "En cr?ant un compte, vous acceptez nos ",
+  "uiBySigningUpAgreePrefix": "En créant un compte, vous acceptez nos ",
   "uiAndOur": " et notre ",
   "uiCertified": "Certifi?",
-  "authGoogleMissingToken": "La connexion Google n?a pas pu r?cup?rer le jeton de compte requis.",
+  "authGoogleMissingToken": "La connexion Google n'a pas pu récupérer le jeton de compte requis.",
   "authGoogleSignInFailedShort": "La connexion Google a ?chou?.",
-  "authInvalidEmailMessage": "L?adresse e-mail n?est pas valide.",
-  "authGoogleOnlyPasswordResetMessage": "Ce compte utilise la connexion Google. Connectez-vous avec Google, puis ajoutez un mot de passe depuis les param?tres si vous voulez recevoir des e-mails de r?initialisation plus tard.",
-  "authTooManyAttemptsMessage": "Trop de tentatives. Veuillez r?essayer plus tard.",
-  "authPasswordResetFailedMessage": "Impossible d?envoyer l?e-mail de r?initialisation.",
-  "authPasswordProviderNotLinkedMessage": "Ce compte n?utilise pas l?e-mail et le mot de passe pour les changements sensibles.",
-  "authPasswordAlreadyAvailableMessage": "La connexion par e-mail et mot de passe est d?j? activ?e pour ce compte.",
-  "authMissingEmailForPasswordMessage": "Ce compte ne dispose pas d?adresse e-mail pour la connexion par mot de passe.",
+  "authInvalidEmailMessage": "L'adresse e-mail n'est pas valide.",
+  "authGoogleOnlyPasswordResetMessage": "Ce compte utilise la connexion Google. Connectez-vous avec Google, puis ajoutez un mot de passe depuis les paramètres si vous souhaitez accéder par e-mail/mot de passe.",
+  "authTooManyAttemptsMessage": "Trop de tentatives. Veuillez réessayer plus tard.",
+  "authPasswordResetFailedMessage": "Impossible d'envoyer l'e-mail de réinitialisation.",
+  "authPasswordProviderNotLinkedMessage": "Ce compte n'utilise pas l'e-mail et le mot de passe pour les changements sensibles.",
+  "authPasswordAlreadyAvailableMessage": "La connexion par e-mail et mot de passe est déjà activée pour ce compte.",
+  "authMissingEmailForPasswordMessage": "Ce compte ne dispose pas d'adresse e-mail pour la connexion par mot de passe.",
   "authPasswordChangeNotSupportedMessage": "Le changement de mot de passe est disponible uniquement pour les comptes avec connexion e-mail et mot de passe.",
   "workerNotAuthenticatedMessage": "Non authentifi?",
   "uiSearchFailedValue": "La recherche a ?chou? : {value1}",
@@ -2431,7 +2438,7 @@
       }
     }
   },
-  "uiValueImportedSuccessfully": "? {value1} ? a ?t? import? avec succ?s.",
+  "uiValueImportedSuccessfully": "« {value1} » a été importé avec succès.",
   "@uiValueImportedSuccessfully": {
     "placeholders": {
       "value1": {
@@ -2439,7 +2446,7 @@
       }
     }
   },
-  "uiImportFailedValue": "L?importation a ?chou? : {value1}",
+  "uiImportFailedValue": "L'importation a échoué : {value1}",
   "@uiImportFailedValue": {
     "placeholders": {
       "value1": {
@@ -2455,7 +2462,7 @@
       }
     }
   },
-  "uiCouldNotOpenChatValue": "Impossible d?ouvrir la discussion : {value1}",
+  "uiCouldNotOpenChatValue": "Impossible d'ouvrir la discussion : {value1}",
   "@uiCouldNotOpenChatValue": {
     "placeholders": {
       "value1": {
@@ -2471,7 +2478,7 @@
       }
     }
   },
-  "uiWeCouldnTOpenThisAttachmentValue": "Nous n?avons pas pu ouvrir cette pi?ce jointe. {value1}",
+  "uiWeCouldnTOpenThisAttachmentValue": "Nous n'avons pas pu ouvrir cette pièce jointe. {value1}",
   "@uiWeCouldnTOpenThisAttachmentValue": {
     "placeholders": {
       "value1": {
@@ -2479,27 +2486,100 @@
       }
     }
   },
-  "uiSearchBooksFailedMessage": "Une erreur est survenue pendant la recherche de livres. Veuillez r?essayer.",
+  "uiSearchBooksFailedMessage": "Une erreur est survenue pendant la recherche de livres. Veuillez réessayer.",
   "validationFullNameRequired": "Le nom complet est requis",
-  "validationNameMinLength": "Le nom doit contenir au moins 2 caract?res",
-  "validationEmailRequired": "L?e-mail est requis",
+  "validationNameMinLength": "Le nom doit contenir au moins 2 caractères",
+  "validationEmailRequired": "L'e-mail est requis",
   "validationValidEmailAddress": "Saisissez une adresse e-mail valide",
   "validationPasswordRequired": "Le mot de passe est requis",
-  "validationPasswordMinLength": "Le mot de passe doit contenir au moins 8 caract?res",
+  "validationPasswordMinLength": "Le mot de passe doit contenir au moins 8 caractères",
   "validationPasswordUppercase": "Le mot de passe doit contenir une lettre majuscule",
   "validationPasswordLowercase": "Le mot de passe doit contenir une lettre minuscule",
   "validationPasswordNumber": "Le mot de passe doit contenir un chiffre",
   "validationConfirmPasswordRequired": "Veuillez confirmer votre mot de passe",
   "validationPasswordsDoNotMatch": "Les mots de passe ne correspondent pas",
-  "documentSelectPrimaryCv": "S?lectionnez un fichier CV au format PDF.",
-  "documentPrimaryCvEmpty": "Le fichier CV s?lectionn? est vide.",
-  "documentPrimaryCvTooLarge": "Le CV principal doit ?tre inf?rieur ? 10 Mo.",
+  "documentSelectPrimaryCv": "Sélectionnez un fichier CV au format PDF.",
+  "documentPrimaryCvEmpty": "Le fichier CV sélectionné est vide.",
+  "documentPrimaryCvTooLarge": "Le CV principal doit être inférieur à 10 Mo.",
   "documentPrimaryCvMustBePdf": "Le CV principal doit ?tre import? en fichier PDF.",
   "documentCommercialRegisterRequired": "Le registre du commerce est requis.",
-  "documentCommercialRegisterEmpty": "Le fichier du registre du commerce s?lectionn? est vide.",
-  "documentCommercialRegisterTooLarge": "Le registre du commerce doit ?tre inf?rieur ? 10 Mo.",
+  "documentCommercialRegisterEmpty": "Le fichier du registre du commerce sélectionné est vide.",
+  "documentCommercialRegisterTooLarge": "Le registre du commerce doit être inférieur à 10 Mo.",
   "documentCommercialRegisterInvalidType": "Le registre du commerce doit ?tre un fichier PDF, JPG ou PNG.",
-  "applicationStatusApprovedSentence": "approuv?e",
-  "applicationStatusRejectedSentence": "rejet?e",
-  "applicationStatusPendingSentence": "en attente"
+  "applicationStatusApprovedSentence": "approuvée",
+  "applicationStatusRejectedSentence": "rejetée",
+  "applicationStatusPendingSentence": "en attente",
+  "launchAnimationHint": "Préférez un démarrage plus rapide ? Désactivez cela dans les paramètres.",
+  "onboardingSlide1Title": "Connectez-vous aux\nbonnes opportunités.",
+  "onboardingSlide1Description": "Rejoignez des entreprises, explorez de vraies voies professionnelles et franchissez la prochaine étape vers votre avenir.",
+  "onboardingSlide2Title": "Construisez un profil\négalement solide.",
+  "onboardingSlide2Description": "Créez votre profil, mettez en valeur vos compétences et préparez-vous aux opportunités qui correspondent à vos objectifs.",
+  "onboardingSlide3Title": "Ouvrez la porte à\nvotre avenir.",
+  "onboardingSlide3Description": "Construisez votre espace FutureGate pour postuler plus vite, suivre les réponses et garder stages, emplois et bourses organisés.",
+  "uiDontHaveAccountPrompt": "Vous n'avez pas de compte ? ",
+  "uiEmailHint": "email@exemple.com",
+  "uiEnterYourPassword": "Entrez votre mot de passe",
+  "uiIncorrectEmailOrPassword": "E-mail ou mot de passe incorrect. Veuillez réessayer.",
+  "uiStartYourStudentProfileSubtitle": "Démarrez votre profil étudiant.",
+  "uiHowYourNameShouldAppear": "Comment votre nom devrait apparaître",
+  "uiCreateAStrongPassword": "Créez un mot de passe fort",
+  "uiRepeatYourPassword": "Répétez votre mot de passe",
+  "uiResearchTopicHint": "L'apprentissage automatique en santé",
+  "uiLaboratoryHint": "Laboratoire de recherche",
+  "uiSupervisorHint": "Nom du superviseur",
+  "uiResearchDomainHint": "Intelligence artificielle",
+  "uiBySigningUpAgreeSuffix": ".",
+  "uiAccountCreationUnavailableTitle": "Création de compte indisponible",
+  "uiDiscoverSubtitle": "Emplois, stages et parcours sponsorisés adaptés à votre prochaine étape.",
+  "uiScholarshipsSubtitle": "Opportunités de financement, délais et voies d'études mondiales.",
+  "uiTrainingSubtitle": "Cours, livres et certifications qui affûtent votre parcours.",
+  "uiIdeasSubtitle": "Construisez, sauvegardez et développez votre prochaine idée de projet avec confiance.",
+  "uiChatSubtitle": "Restez proche des conversations, des suivis et de la collaboration.",
+  "uiHomeSubtitle": "Votre impulsion étudiante quotidienne, raccourcis et fraîche dynamique.",
+  "uiPreferFasterStart": "Préférez un démarrage plus rapide ? Désactivez cette option dans les paramètres.",
+  "opportunityTypeJob": "Emploi",
+  "opportunityTypeInternship": "Stage",
+  "opportunityTypeSponsored": "Sponsorisé",
+  "opportunityDescriptionLabelSponsoring": "Description du programme",
+  "opportunityRequirementsLabelSponsoring": "Éligibilité",
+  "opportunityRequirementsLabelJob": "Exigences",
+  "uiContinueWithGoogle": "Continuer avec Google",
+  "uiOr": "OU",
+  "authAcademicBacLabel": "Licence (LMD)",
+  "authAcademicBacDescription": "Parcours universitaire fondamental",
+  "authAcademicLicenceLabel": "Licence",
+  "authAcademicLicenceDescription": "Programme de licence",
+  "authAcademicMasterLabel": "Master",
+  "authAcademicMasterDescription": "Spécialisation académique avancée",
+  "authAcademicDoctoratLabel": "Doctorat",
+  "authAcademicDoctoratDescription": "Recherche doctorale et travail de thèse",
+  "uiJoinFutureGate": "Rejoignez FutureGate",
+  "uiImAStudent": "Je suis étudiant",
+  "uiImACompany": "Je suis une entreprise",
+  "uiEmailNotVerifiedYet": "L'adresse e-mail n'est pas encore vérifiée.",
+  "uiVerificationEmailSent": "E-mail de vérification envoyé.",
+  "uiYourUniversity": "Votre université",
+  "uiComputerScience": "Informatique",
+  "uiCity": "Ville",
+  "uiLevel": "Niveau",
+  "uiFieldIsRequired": "{field} est obligatoire",
+  "uiLabName": "Nom du laboratoire",
+  "uiAiFinance": "IA, finance...",
+  "uiPhoneHint": "+213 ...",
+  "uiRegisterCompanySubtitle": "Inscrivez votre organisation pour publier des opportunités et entrer en contact avec les talents.",
+  "uiCompanyNameIsRequired": "Le nom de l'entreprise est obligatoire",
+  "uiExTechCorpAlgeria": "Ex : TechCorp Algérie",
+  "uiExTechnologyHealthcareFinance": "Ex : Technologie, Santé, Finance...",
+  "uiBriefDescriptionOfYourOrganization": "Brève description de votre organisation...",
+  "uiContactOptional": "Contact (facultatif)",
+  "uiContactEmailHint": "contact@entreprise.com",
+  "uiPhoneNumberHint": "+213 xxx xxx xxx",
+  "uiWebsiteHint": "https://www.entreprise.com",
+  "uiUploadCommercialRegisterToContinue": "Téléversez votre registre de commerce pour continuer.",
+  "uiContinue": "Continuer",
+  "uiLocation": "Emplacement",
+  "uiBackToLoginLower": "Retour à la connexion",
+  "uiSignOutTooltip": "Déconnexion",
+  "uiCompanyInformation": "Informations sur l'entreprise",
+  "uiAccountDetails": "Détails du compte"
 }
