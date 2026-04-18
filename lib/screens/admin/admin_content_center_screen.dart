@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -36,8 +37,7 @@ class AdminContentCenterScreen extends StatefulWidget {
   static const int projectIdeasTab = 0;
   static const int opportunitiesTab = 1;
   static const int scholarshipsTab = 2;
-  static const int trainingsTab = 3;
-  static const int libraryTab = 4;
+  static const int libraryTab = 3;
 
   final int initialTab;
   final String initialTargetId;
@@ -79,11 +79,6 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
   static const String _scholarshipFilterAll = 'all';
   static const String _scholarshipFilterFeatured = 'featured';
   static const String _scholarshipFilterHidden = 'hidden';
-  static const String _trainingFilterAll = 'all';
-  static const String _trainingFilterBooks = 'books';
-  static const String _trainingFilterVideos = 'videos';
-  static const String _trainingFilterFeatured = 'featured';
-  static const String _trainingFilterHidden = 'hidden';
 
   final AdminService _adminService = AdminService();
   final CompanyService _companyService = CompanyService();
@@ -94,14 +89,13 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
   String _ideaStatusFilter = _ideaFilterAll;
   String _opportunityFilter = _opportunityFilterAll;
   String _scholarshipFilter = _scholarshipFilterAll;
-  String _trainingFilter = _trainingFilterAll;
   bool _openedInitialTarget = false;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(
-      length: 5,
+      length: 4,
       vsync: this,
       initialIndex: widget.initialTab.clamp(
         0,
@@ -138,8 +132,17 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     super.dispose();
   }
 
+  ThemeData _buildScopedTheme(BuildContext context) {
+    final theme = Theme.of(context);
+    return theme.copyWith(
+      textTheme: GoogleFonts.poppinsTextTheme(theme.textTheme),
+      primaryTextTheme: GoogleFonts.poppinsTextTheme(theme.primaryTextTheme),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final scopedTheme = _buildScopedTheme(context);
     final provider = context.watch<AdminProvider>();
     final adminId = context.watch<AuthProvider>().userModel?.uid.trim() ?? '';
     final keyboardVisible = MediaQuery.viewInsetsOf(context).bottom > 0;
@@ -260,7 +263,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                               ),
                               AdminPill(
                                 label:
-                                    '${provider.allTrainings.length} trainings',
+                                    '${provider.allTrainings.length} resources',
                                 color: AdminPalette.secondary,
                                 icon: Icons.cast_for_education_outlined,
                               ),
@@ -336,10 +339,6 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                             label: 'Scholarships',
                           ),
                           _buildTab(
-                            icon: Icons.cast_for_education_outlined,
-                            label: 'Trainings',
-                          ),
-                          _buildTab(
                             icon: Icons.menu_book_rounded,
                             label: 'Library',
                           ),
@@ -356,24 +355,26 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 _buildProjectIdeasTab(provider),
                 _buildOpportunitiesTab(provider),
                 _buildScholarshipsTab(provider),
-                _buildTrainingsTab(provider),
                 const AdminLibraryScreen(embedded: true),
               ],
             ),
           );
 
     if (widget.embedded) {
-      return content;
+      return Theme(data: scopedTheme, child: content);
     }
 
-    return Scaffold(
-      backgroundColor: AdminPalette.background,
-      appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.uiAdminContentCenter),
-        backgroundColor: AdminPalette.surface,
-        foregroundColor: _primaryColor,
+    return Theme(
+      data: scopedTheme,
+      child: Scaffold(
+        backgroundColor: AdminPalette.background,
+        appBar: AppBar(
+          title: Text(AppLocalizations.of(context)!.uiAdminContentCenter),
+          backgroundColor: AdminPalette.surface,
+          foregroundColor: _primaryColor,
+        ),
+        body: AdminShellBackground(child: SafeArea(top: false, child: content)),
       ),
-      body: AdminShellBackground(child: SafeArea(top: false, child: content)),
     );
   }
 
@@ -570,7 +571,9 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                           child: FilledButton.icon(
                             onPressed: () => _openIdeaEditor(),
                             icon: const Icon(Icons.add_rounded, size: 18),
-                            label: Text(AppLocalizations.of(context)!.uiPostAdminIdea),
+                            label: Text(
+                              AppLocalizations.of(context)!.uiPostAdminIdea,
+                            ),
                             style: FilledButton.styleFrom(
                               backgroundColor: _ideaAccentColor,
                               foregroundColor: Colors.white,
@@ -1281,7 +1284,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               onPressed: () => _showOpportunityDetails(opportunity),
               icon: const Icon(Icons.open_in_new_rounded, size: 16),
               label: Text(AppLocalizations.of(context)!.uiDetails),
-              style: _compactOutlinedFooterStyle(opportunityTypeColor),
+              style: _compactOutlinedFooterStyle(AdminPalette.primary),
             ),
             if (applications.isNotEmpty)
               FilledButton.icon(
@@ -1289,18 +1292,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                     _showOpportunityApplications(opportunity, applications),
                 icon: const Icon(Icons.assignment_outlined, size: 16),
                 label: Text('${applications.length} Apps'),
-                style: FilledButton.styleFrom(
-                  backgroundColor: pendingAppCount > 0
-                      ? AdminPalette.activity
-                      : AdminPalette.info,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 10,
-                  ),
-                  visualDensity: VisualDensity.compact,
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                ),
+                style: _compactFilledFooterStyle(AdminPalette.primary),
               ),
           ];
           if (opportunityModel.isHidden) {
@@ -1349,25 +1341,16 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               fallback:
                   'Open this post to review the full role and requirements.',
             ),
-            badges: [
-              if (opportunityModel.isHidden)
-                _BadgeData('Hidden', Colors.blueGrey),
-              _BadgeData(
-                isOpen ? 'Open' : 'Closed',
-                isOpen ? AdminPalette.success : AdminPalette.textMuted,
-              ),
-              _BadgeData(
-                OpportunityType.label(opportunityType, l10n),
-                opportunityTypeColor,
-              ),
-              if (isOwnedByAdmin) _BadgeData('Admin', AdminPalette.primary),
-              if (workModeLabel.isNotEmpty)
-                _BadgeData(workModeLabel, AdminPalette.info),
-              if (deadlineLabel != null)
-                _BadgeData(deadlineLabel, _deadlineBadgeColor(deadlineLabel)),
-              if ((compensationLabel ?? '').trim().isNotEmpty)
-                _BadgeData(compensationLabel!, AdminPalette.success),
-            ],
+            badges: _buildOpportunityBadges(
+              isHidden: opportunityModel.isHidden,
+              isOpen: isOpen,
+              typeLabel: OpportunityType.label(opportunityType, l10n),
+              typeColor: opportunityTypeColor,
+              isOwnedByAdmin: isOwnedByAdmin,
+              workModeLabel: workModeLabel,
+              deadlineLabel: deadlineLabel,
+              compensationLabel: compensationLabel,
+            ),
             onTap: () => _showOpportunityDetails(opportunity),
             metaText: _joinCardSubtitleParts([
               _buildDateMetaLabel(
@@ -1725,170 +1708,6 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     );
   }
 
-  Widget _buildTrainingsTab(AdminProvider provider) {
-    final searchQuery = _searchController.text.trim();
-    final allTrainings =
-        provider.allTrainings.where(_matchesTrainingSearch).toList()
-          ..sort((first, second) {
-            if (first.isHidden != second.isHidden) {
-              return first.isHidden ? 1 : -1;
-            }
-            if (first.isApproved != second.isApproved) {
-              return first.isApproved ? 1 : -1;
-            }
-            if (first.isFeatured != second.isFeatured) {
-              return first.isFeatured ? -1 : 1;
-            }
-            final firstTime = first.createdAt?.millisecondsSinceEpoch ?? 0;
-            final secondTime = second.createdAt?.millisecondsSinceEpoch ?? 0;
-            return secondTime.compareTo(firstTime);
-          });
-    final bookCount = allTrainings
-        .where((training) => training.type.trim().toLowerCase() == 'book')
-        .length;
-    final videoCount = allTrainings
-        .where((training) => training.type.trim().toLowerCase() == 'video')
-        .length;
-    final featuredCount = allTrainings
-        .where((training) => training.isFeatured)
-        .length;
-    final hiddenCount = allTrainings
-        .where((training) => training.isHidden)
-        .length;
-    final trainings = allTrainings
-        .where((training) => _matchesTrainingFilter(training, _trainingFilter))
-        .toList();
-
-    if (provider.allTrainings.isEmpty) {
-      return AdminEmptyState(
-        icon: Icons.cast_for_education_outlined,
-        title: 'No learning resources yet',
-        message:
-            'Import the first learning resource to start building the training library.',
-        action: FilledButton.icon(
-          onPressed: () => _openTrainingLibrary(),
-          icon: const Icon(Icons.auto_awesome_mosaic_rounded),
-          label: Text(AppLocalizations.of(context)!.openLibraryStudioLabel),
-          style: FilledButton.styleFrom(
-            backgroundColor: _libraryAccentColor,
-            foregroundColor: Colors.white,
-          ),
-        ),
-      );
-    }
-
-    return RefreshIndicator(
-      color: _accentColor,
-      onRefresh: provider.loadModerationData,
-      child: ListView.builder(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-        itemCount: trainings.isEmpty ? 2 : trainings.length + 1,
-        itemBuilder: (context, index) {
-          if (index == 0) {
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 16),
-              child: _buildCollectionWorkspaceHeader(
-                eyebrow: 'Trainings',
-                title:
-                    '${_trainingFilterTitle(_trainingFilter)} (${trainings.length})',
-                subtitle: searchQuery.isEmpty
-                    ? 'Review learning resources, spot pending items quickly, and open the right material without leaving the queue.'
-                    : 'Showing filtered results for "$searchQuery".',
-                primaryFilters: [
-                  _CollectionHeaderFilter(
-                    label: 'All',
-                    selected: _trainingFilter == _trainingFilterAll,
-                    icon: Icons.grid_view_rounded,
-                    badgeCount: allTrainings.length,
-                    onTap: () =>
-                        setState(() => _trainingFilter = _trainingFilterAll),
-                  ),
-                  _CollectionHeaderFilter(
-                    label: 'Featured',
-                    selected: _trainingFilter == _trainingFilterFeatured,
-                    icon: Icons.workspace_premium_outlined,
-                    badgeCount: featuredCount,
-                    onTap: () => setState(() {
-                      _trainingFilter = _toggleFilterValue(
-                        _trainingFilter,
-                        _trainingFilterFeatured,
-                        allValue: _trainingFilterAll,
-                      );
-                    }),
-                  ),
-                  _CollectionHeaderFilter(
-                    label: 'Hidden',
-                    selected: _trainingFilter == _trainingFilterHidden,
-                    icon: Icons.visibility_off_outlined,
-                    badgeCount: hiddenCount,
-                    onTap: () => setState(() {
-                      _trainingFilter = _toggleFilterValue(
-                        _trainingFilter,
-                        _trainingFilterHidden,
-                        allValue: _trainingFilterAll,
-                      );
-                    }),
-                  ),
-                ],
-                secondaryFilters: [
-                  _CollectionHeaderFilter(
-                    label: 'Books',
-                    selected: _trainingFilter == _trainingFilterBooks,
-                    icon: Icons.menu_book_rounded,
-                    badgeCount: bookCount,
-                    onTap: () => setState(() {
-                      _trainingFilter = _toggleFilterValue(
-                        _trainingFilter,
-                        _trainingFilterBooks,
-                        allValue: _trainingFilterAll,
-                      );
-                    }),
-                  ),
-                  _CollectionHeaderFilter(
-                    label: 'Videos',
-                    selected: _trainingFilter == _trainingFilterVideos,
-                    icon: Icons.ondemand_video_outlined,
-                    badgeCount: videoCount,
-                    onTap: () => setState(() {
-                      _trainingFilter = _toggleFilterValue(
-                        _trainingFilter,
-                        _trainingFilterVideos,
-                        allValue: _trainingFilterAll,
-                      );
-                    }),
-                  ),
-                ],
-                action: FilledButton.icon(
-                  onPressed: () => _openTrainingLibrary(),
-                  icon: const Icon(Icons.auto_awesome_mosaic_rounded, size: 18),
-                  label: Text(AppLocalizations.of(context)!.openLibraryStudioLabel),
-                  style: FilledButton.styleFrom(
-                    backgroundColor: _libraryAccentColor,
-                    foregroundColor: Colors.white,
-                  ),
-                ),
-                searchQuery: searchQuery,
-              ),
-            );
-          }
-
-          if (trainings.isEmpty) {
-            return Padding(
-              padding: const EdgeInsets.only(top: 6),
-              child: _buildEmptyState(
-                Icons.search_off_outlined,
-                _trainingEmptyMessage(_trainingFilter),
-              ),
-            );
-          }
-
-          final training = trainings[index - 1];
-          return _buildTrainingListTile(training, provider);
-        },
-      ),
-    );
-  }
-
   String _searchHintForCurrentTab() {
     switch (_tabController.index) {
       case AdminContentCenterScreen.projectIdeasTab:
@@ -1897,10 +1716,8 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
         return 'Search opportunities by title, company, location, status, or compensation...';
       case AdminContentCenterScreen.scholarshipsTab:
         return 'Search scholarships by title, provider, or deadline...';
-      case AdminContentCenterScreen.trainingsTab:
-        return 'Search trainings by title, provider, domain, or level...';
       case AdminContentCenterScreen.libraryTab:
-        return 'Search imported resources...';
+        return 'Search library resources...';
       default:
         return 'Search...';
     }
@@ -2027,7 +1844,6 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     _ideaStatusFilter = _ideaFilterAll;
     _opportunityFilter = _opportunityFilterAll;
     _scholarshipFilter = _scholarshipFilterAll;
-    _trainingFilter = _trainingFilterAll;
     _openedInitialTarget = false;
     if (_tabController.index != AdminContentCenterScreen.projectIdeasTab) {
       _tabController.index = AdminContentCenterScreen.projectIdeasTab;
@@ -2150,6 +1966,49 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     }
   }
 
+  List<_BadgeData> _buildOpportunityBadges({
+    required bool isHidden,
+    required bool isOpen,
+    required String typeLabel,
+    required Color typeColor,
+    required bool isOwnedByAdmin,
+    required String workModeLabel,
+    required String? deadlineLabel,
+    required String? compensationLabel,
+  }) {
+    final badges = <_BadgeData>[
+      _BadgeData(
+        isHidden
+            ? 'Hidden'
+            : isOpen
+            ? 'Open'
+            : 'Closed',
+        isHidden
+            ? Colors.blueGrey
+            : isOpen
+            ? AdminPalette.textSecondary
+            : AdminPalette.textMuted,
+      ),
+      _BadgeData(typeLabel, typeColor),
+    ];
+
+    final supportingLabel = workModeLabel.trim().isNotEmpty
+        ? workModeLabel
+        : (deadlineLabel?.trim().isNotEmpty ?? false)
+        ? deadlineLabel!.trim()
+        : (compensationLabel?.trim().isNotEmpty ?? false)
+        ? compensationLabel!.trim()
+        : isOwnedByAdmin
+        ? 'Admin'
+        : '';
+
+    if (supportingLabel.isNotEmpty) {
+      badges.add(_BadgeData(supportingLabel, AdminPalette.textSecondary));
+    }
+
+    return badges.take(3).toList();
+  }
+
   bool _matchesScholarshipSearch(Map<String, dynamic> scholarship) {
     final query = _searchController.text.trim().toLowerCase();
     if (query.isEmpty) {
@@ -2207,65 +2066,6 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     }
   }
 
-  bool _matchesTrainingSearch(TrainingModel training) {
-    final query = _searchController.text.trim().toLowerCase();
-    if (query.isEmpty) {
-      return true;
-    }
-
-    return training.title.toLowerCase().contains(query) ||
-        training.provider.toLowerCase().contains(query) ||
-        training.domain.toLowerCase().contains(query) ||
-        training.level.toLowerCase().contains(query) ||
-        training.source.toLowerCase().contains(query) ||
-        training.type.toLowerCase().contains(query);
-  }
-
-  bool _matchesTrainingFilter(TrainingModel training, String filter) {
-    switch (filter) {
-      case _trainingFilterBooks:
-        return training.type.trim().toLowerCase() == 'book';
-      case _trainingFilterVideos:
-        return training.type.trim().toLowerCase() == 'video';
-      case _trainingFilterFeatured:
-        return training.isFeatured;
-      case _trainingFilterHidden:
-        return training.isHidden;
-      default:
-        return true;
-    }
-  }
-
-  String _trainingFilterTitle(String filter) {
-    switch (filter) {
-      case _trainingFilterBooks:
-        return 'Book Resources';
-      case _trainingFilterVideos:
-        return 'Video Resources';
-      case _trainingFilterFeatured:
-        return 'Featured Resources';
-      case _trainingFilterHidden:
-        return 'Hidden Resources';
-      default:
-        return 'Training Library';
-    }
-  }
-
-  String _trainingEmptyMessage(String filter) {
-    switch (filter) {
-      case _trainingFilterBooks:
-        return 'No books match this search';
-      case _trainingFilterVideos:
-        return 'No videos match this search';
-      case _trainingFilterFeatured:
-        return 'No featured resources match this search';
-      case _trainingFilterHidden:
-        return 'No hidden resources match this search';
-      default:
-        return 'No training resources match this search';
-    }
-  }
-
   void _openInitialTarget(AdminProvider provider, String targetId) {
     switch (widget.initialTab) {
       case AdminContentCenterScreen.projectIdeasTab:
@@ -2306,7 +2106,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
           _showScholarshipDetails(scholarship);
         }
         break;
-      case AdminContentCenterScreen.trainingsTab:
+      case AdminContentCenterScreen.libraryTab:
         final matches = provider.allTrainings
             .where((item) => item.id == targetId)
             .toList();
@@ -2387,16 +2187,6 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
           child: Icon(icon, size: 16.5, color: effectiveColor),
         ),
       ),
-    );
-  }
-
-  Future<void> _openTrainingLibrary() async {
-    FocusManager.instance.primaryFocus?.unfocus();
-    if (_tabController.index == AdminContentCenterScreen.libraryTab) {
-      return;
-    }
-    setState(
-      () => _tabController.animateTo(AdminContentCenterScreen.libraryTab),
     );
   }
 
@@ -2660,98 +2450,6 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       metaText: metaText,
       action: trailing,
       footer: footer,
-    );
-  }
-
-  Widget _buildTrainingListTile(
-    TrainingModel training,
-    AdminProvider provider,
-  ) {
-    final trainingAccentColor = _trainingAccentColor(training.type);
-    final isTrainingVisibilityBusy = provider.busyContentKeys.contains(
-      'training:${training.id}',
-    );
-    final levelLabel = DisplayText.capitalizeWords(training.level);
-    final typeLabel = DisplayText.capitalizeWords(training.type);
-    final providerLabel = DisplayText.capitalizeLeadingLabel(
-      training.provider.isNotEmpty ? training.provider : 'Unknown provider',
-    );
-    final domainLabel = DisplayText.capitalizeLeadingLabel(training.domain);
-    final trainingFooterButtons = <Widget>[
-      OutlinedButton.icon(
-        onPressed: () => _showTrainingDetails(training),
-        icon: const Icon(Icons.open_in_new_rounded, size: 16),
-        label: Text(AppLocalizations.of(context)!.uiDetails),
-        style: _compactOutlinedFooterStyle(trainingAccentColor),
-      ),
-      if (training.displayLink.trim().isNotEmpty)
-        FilledButton.icon(
-          onPressed: () => _openExternalLink(training.displayLink),
-          icon: const Icon(Icons.open_in_new_rounded, size: 16),
-          label: Text(AppLocalizations.of(context)!.uiOpenResource),
-          style: _compactFilledFooterStyle(trainingAccentColor),
-        ),
-      if (training.isHidden)
-        _buildUnhideFooterButton(
-          onPressed: isTrainingVisibilityBusy
-              ? null
-              : () => _toggleItemVisibility(
-                  itemType: 'Training',
-                  itemTitle: training.title,
-                  isHidden: training.isHidden,
-                  onToggle: (nextHidden) =>
-                      provider.setTrainingHidden(training.id, nextHidden),
-                ),
-        ),
-    ];
-    return _buildMapListTile(
-      id: training.id,
-      icon: _trainingIcon(training.type),
-      iconColor: trainingAccentColor,
-      title: DisplayText.capitalizeWords(training.title),
-      subtitle: _joinCardSubtitleParts([providerLabel, domainLabel]),
-      description: _cleanCardDescription(
-        training.description,
-        fallback:
-            'Open this resource to review its learning summary and details.',
-      ),
-      badges: [
-        if (training.isHidden) _BadgeData('Hidden', Colors.blueGrey),
-        if (!training.isApproved) _BadgeData('Pending', _ideaAccentColor),
-        _BadgeData(typeLabel, trainingAccentColor),
-        if (levelLabel.trim().isNotEmpty)
-          _BadgeData(levelLabel, AdminPalette.info),
-        if (training.isFree == true) _BadgeData('Free', AdminPalette.success),
-        if (training.hasCertificate == true)
-          _BadgeData('Certificate', AdminPalette.activity),
-        if (training.isFeatured) _BadgeData('Featured', _accentColor),
-      ],
-      onTap: () => _showTrainingDetails(training),
-      metaText: _joinCardSubtitleParts([
-        _buildDateMetaLabel('Added', training.createdAt),
-        if (training.learnerCountLabel.trim().isNotEmpty)
-          '${training.learnerCountLabel.trim()} learners',
-      ]),
-      trailing: _buildCardActionRow([
-        _buildCompactCardAction(
-          icon: training.isHidden
-              ? Icons.visibility_rounded
-              : Icons.visibility_off_outlined,
-          color: training.isHidden
-              ? AdminPalette.success
-              : AdminPalette.textSecondary,
-          onTap: isTrainingVisibilityBusy
-              ? null
-              : () => _toggleItemVisibility(
-                  itemType: 'Training',
-                  itemTitle: training.title,
-                  isHidden: training.isHidden,
-                  onToggle: (nextHidden) =>
-                      provider.setTrainingHidden(training.id, nextHidden),
-                ),
-        ),
-      ]),
-      footer: _buildResponsiveActionGroup(trainingFooterButtons),
     );
   }
 
@@ -3866,55 +3564,6 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                               color: AdminPalette.textSecondary,
                             ),
                           ),
-                        )
-                      else
-                        AdminSurface(
-                          radius: 18,
-                          padding: const EdgeInsets.all(14),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Applicant Summary',
-                                style: TextStyle(
-                                  fontSize: 13.5,
-                                  fontWeight: FontWeight.w700,
-                                  color: AdminPalette.textPrimary,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                applicant.email,
-                                style: TextStyle(
-                                  fontSize: 12.5,
-                                  color: AdminPalette.textSecondary,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              if (university.isNotEmpty) ...[
-                                const SizedBox(height: 4),
-                                Text(
-                                  university,
-                                  style: TextStyle(
-                                    fontSize: 12.5,
-                                    color: AdminPalette.textSecondary,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
-                              if (location.isNotEmpty) ...[
-                                const SizedBox(height: 4),
-                                Text(
-                                  location,
-                                  style: TextStyle(
-                                    fontSize: 12.5,
-                                    color: AdminPalette.textSecondary,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
-                            ],
-                          ),
                         ),
                       const SizedBox(height: 12),
                       _buildResponsiveActionGroup([
@@ -3936,7 +3585,9 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                                   });
                                 },
                           icon: const Icon(Icons.person_outline_rounded),
-                          label: Text(AppLocalizations.of(context)!.uiViewProfile),
+                          label: Text(
+                            AppLocalizations.of(context)!.uiViewProfile,
+                          ),
                           style: FilledButton.styleFrom(
                             backgroundColor: AdminPalette.primary,
                             foregroundColor: Colors.white,
@@ -3976,7 +3627,9 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                             });
                           },
                           icon: const Icon(Icons.assignment_outlined),
-                          label: Text(AppLocalizations.of(context)!.uiViewAllApps),
+                          label: Text(
+                            AppLocalizations.of(context)!.uiViewAllApps,
+                          ),
                           style: OutlinedButton.styleFrom(
                             foregroundColor: AdminPalette.info,
                             side: BorderSide(
@@ -4574,7 +4227,11 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                   _showOpportunityApplications(opportunity, applications);
                 },
                 icon: const Icon(Icons.assignment_outlined),
-                label: Text(AppLocalizations.of(context)!.uiViewApplicationsCount(applications.length)),
+                label: Text(
+                  AppLocalizations.of(
+                    context,
+                  )!.uiViewApplicationsCount(applications.length),
+                ),
                 style: FilledButton.styleFrom(
                   backgroundColor: typeColor,
                   foregroundColor: Colors.white,

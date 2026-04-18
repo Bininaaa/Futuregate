@@ -874,7 +874,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           'application' => AdminContentCenterScreen.opportunitiesTab,
           'opportunity' => AdminContentCenterScreen.opportunitiesTab,
           'scholarship' => AdminContentCenterScreen.scholarshipsTab,
-          'training' => AdminContentCenterScreen.trainingsTab,
+          'training' => AdminContentCenterScreen.libraryTab,
           _ => AdminContentCenterScreen.projectIdeasTab,
         };
 

@@ -649,6 +649,7 @@ class _AdminGoogleBooksImportScreenState
     return RefreshIndicator(
       onRefresh: provider.fetchTrainings,
       child: ListView(
+        primary: false,
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
         children: [
@@ -931,6 +932,7 @@ class _AdminGoogleBooksImportScreenState
     final tabBarView = TabBarView(
       children: [
         CustomScrollView(
+          primary: false,
           physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
             SliverToBoxAdapter(

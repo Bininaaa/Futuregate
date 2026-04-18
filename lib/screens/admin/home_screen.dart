@@ -50,7 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
     const _AdminDestination(
       title: 'Content',
       subtitle:
-          'Moderate ideas, applications, listings, scholarships, training, and library imports.',
+          'Moderate ideas, applications, listings, scholarships, and library resources.',
       icon: Icons.auto_awesome_mosaic_rounded,
       navLabel: 'Content',
       compactNavLabel: 'Content',

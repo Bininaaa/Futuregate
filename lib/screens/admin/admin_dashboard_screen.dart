@@ -236,7 +236,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                   color: AdminPalette.danger,
                 ),
                 _DashboardMetric(
-                  title: 'Trainings',
+                  title: 'Library',
                   value: '${stats['trainings'] ?? 0}',
                   icon: Icons.cast_for_education_outlined,
                   color: AdminPalette.secondary,
@@ -405,7 +405,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       'application' => AdminContentCenterScreen.opportunitiesTab,
       'opportunity' => AdminContentCenterScreen.opportunitiesTab,
       'scholarship' => AdminContentCenterScreen.scholarshipsTab,
-      'training' => AdminContentCenterScreen.trainingsTab,
+      'training' => AdminContentCenterScreen.libraryTab,
       _ => AdminContentCenterScreen.projectIdeasTab,
     };
     showModalBottomSheet<void>(
@@ -427,7 +427,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       'application' => 'Manage Application',
       'opportunity' => 'Manage Opportunity',
       'scholarship' => 'Manage Scholarship',
-      'training' => 'Manage Training',
+      'training' => 'Manage Library Resource',
       _ => 'Manage Project Idea',
     };
   }
@@ -745,11 +745,11 @@ class _QuickAccessGrid extends StatelessWidget {
         onTap: () => onOpenContent(AdminContentCenterScreen.scholarshipsTab),
       ),
       _QuickAccessItem(
-        title: 'Trainings',
-        subtitle: 'Browse learning hub',
+        title: 'Library',
+        subtitle: 'Manage learning resources',
         icon: Icons.cast_for_education_outlined,
         color: AdminPalette.secondary,
-        onTap: () => onOpenContent(AdminContentCenterScreen.trainingsTab),
+        onTap: () => onOpenContent(AdminContentCenterScreen.libraryTab),
       ),
       _QuickAccessItem(
         title: 'Project Ideas',

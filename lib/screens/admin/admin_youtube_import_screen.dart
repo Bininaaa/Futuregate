@@ -623,6 +623,7 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
     return RefreshIndicator(
       onRefresh: provider.fetchTrainings,
       child: ListView(
+        primary: false,
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
         children: [
@@ -902,6 +903,7 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
     final tabBarView = TabBarView(
       children: [
         CustomScrollView(
+          primary: false,
           physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
             SliverToBoxAdapter(

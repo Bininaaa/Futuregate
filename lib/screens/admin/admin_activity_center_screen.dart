@@ -223,7 +223,7 @@ class _AdminActivityCenterScreenState extends State<AdminActivityCenterScreen> {
       'application' => AdminContentCenterScreen.opportunitiesTab,
       'opportunity' => AdminContentCenterScreen.opportunitiesTab,
       'scholarship' => AdminContentCenterScreen.scholarshipsTab,
-      'training' => AdminContentCenterScreen.trainingsTab,
+      'training' => AdminContentCenterScreen.libraryTab,
       _ => AdminContentCenterScreen.projectIdeasTab,
     };
 
@@ -263,7 +263,7 @@ class _AdminActivityCenterScreenState extends State<AdminActivityCenterScreen> {
       'application' => 'Manage Application',
       'opportunity' => 'Manage Opportunity',
       'scholarship' => 'Manage Scholarship',
-      'training' => 'Manage Training',
+      'training' => 'Manage Library Resource',
       _ => 'Manage Project Idea',
     };
   }
