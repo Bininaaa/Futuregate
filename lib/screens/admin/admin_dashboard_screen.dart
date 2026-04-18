@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import '../../l10n/generated/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/admin_activity_model.dart';
@@ -63,7 +64,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         message: 'We could not load admin analytics right now.',
         action: FilledButton(
           onPressed: provider.loadDashboardData,
-          child: const Text('Retry'),
+          child: Text(AppLocalizations.of(context)!.retryLabel),
         ),
       );
     }
@@ -389,7 +390,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         builder: (_) => Scaffold(
           backgroundColor: AdminPalette.background,
           appBar: AppBar(
-            title: const Text('User Management'),
+            title: Text(AppLocalizations.of(context)!.uiUserManagement),
             backgroundColor: AdminPalette.surface,
             foregroundColor: AdminPalette.textPrimary,
           ),

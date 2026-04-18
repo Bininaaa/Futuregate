@@ -20,6 +20,7 @@ import 'applied_opportunities_screen.dart';
 import 'opportunity_detail_screen.dart';
 import 'profile_screen.dart';
 import 'saved_screen.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 class JobsScreen extends StatefulWidget {
   const JobsScreen({super.key});
@@ -287,7 +288,7 @@ class _JobsScreenState extends State<JobsScreen> {
     final applicationStatus = appliedStatuses[opportunity.id];
     if (applicationStatus != null) {
       return JobStatusData(
-        label: ApplicationStatus.label(applicationStatus),
+        label: ApplicationStatus.label(applicationStatus, AppLocalizations.of(context)!),
         color: ApplicationStatus.color(applicationStatus),
         icon: _jobApplicationStatusIcon(applicationStatus),
       );

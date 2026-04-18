@@ -28,7 +28,7 @@ class SettingsScreen extends StatelessWidget {
     final user = authProvider.userModel;
 
     if (user == null) {
-      return const Scaffold(body: Center(child: Text('Not logged in')));
+      return Scaffold(body: Center(child: Text(l10n.notLoggedIn)));
     }
 
     final providerLabel = authProvider.linkedProviderLabel;
@@ -67,13 +67,13 @@ class SettingsScreen extends StatelessWidget {
                         color: SettingsFlowPalette.primary,
                       ),
                       SettingsStatusPill(
-                        label: 'Version ${AppMetadata.version}',
+                        label: l10n.versionLabel(AppMetadata.version),
                         color: SettingsFlowPalette.secondary,
                       ),
                       SettingsStatusPill(
                         label: (user.companyName ?? '').trim().isNotEmpty
                             ? (user.companyName ?? '').trim()
-                            : 'Company account',
+                            : l10n.companyAccountLabel,
                         color: SettingsFlowPalette.accent,
                       ),
                     ],
@@ -86,10 +86,9 @@ class SettingsScreen extends StatelessWidget {
             const SizedBox(height: 12),
             const _LaunchAnimationSettingsSection(),
             const SizedBox(height: 16),
-            const SettingsSectionHeading(
-              title: 'Security',
-              subtitle:
-                  'Keep passwords, privacy controls, and account protections close at hand.',
+            SettingsSectionHeading(
+              title: l10n.securitySectionTitle,
+              subtitle: l10n.securitySectionSubtitle,
             ),
             const SizedBox(height: 10),
             SettingsPanel(
@@ -98,9 +97,8 @@ class SettingsScreen extends StatelessWidget {
                   SettingsListRow(
                     icon: Icons.lock_outline_rounded,
                     iconColor: SettingsFlowPalette.warning,
-                    title: 'Security & Privacy',
-                    subtitle:
-                        'Passwords, email updates, privacy, and legal info',
+                    title: l10n.securityPrivacyTitle,
+                    subtitle: l10n.securityPrivacySubtitle,
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -112,9 +110,9 @@ class SettingsScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 18),
-            const SettingsSectionHeading(
-              title: 'Support',
-              subtitle: 'Helpful destinations beyond profile management.',
+            SettingsSectionHeading(
+              title: l10n.supportTitle,
+              subtitle: l10n.supportSubtitle,
             ),
             const SizedBox(height: 10),
             SettingsPanel(
@@ -123,8 +121,8 @@ class SettingsScreen extends StatelessWidget {
                   SettingsListRow(
                     icon: Icons.notifications_active_outlined,
                     iconColor: SettingsFlowPalette.secondary,
-                    title: 'Notifications',
-                    subtitle: 'Open your notifications center',
+                    title: l10n.notificationsTitle,
+                    subtitle: l10n.notificationsSubtitle,
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -136,8 +134,8 @@ class SettingsScreen extends StatelessWidget {
                   SettingsListRow(
                     icon: Icons.help_outline_rounded,
                     iconColor: SettingsFlowPalette.secondary,
-                    title: 'Help Center',
-                    subtitle: 'Browse FAQs and contact support',
+                    title: l10n.helpCenterTitle,
+                    subtitle: l10n.helpCenterSubtitle,
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -149,8 +147,8 @@ class SettingsScreen extends StatelessWidget {
                   SettingsListRow(
                     icon: Icons.info_outline_rounded,
                     iconColor: SettingsFlowPalette.primaryDark,
-                    title: 'About FutureGate',
-                    subtitle: 'Mission, version, and platform details',
+                    title: l10n.aboutFutureGateTitle,
+                    subtitle: l10n.aboutFutureGateSubtitle,
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -162,10 +160,10 @@ class SettingsScreen extends StatelessWidget {
                   SettingsListRow(
                     icon: Icons.verified_outlined,
                     iconColor: SettingsFlowPalette.success,
-                    title: 'App Version',
+                    title: l10n.appVersionTitle,
                     subtitle: AppMetadata.version,
                     trailing: SettingsStatusPill(
-                      label: 'Current',
+                      label: l10n.appVersionCurrentLabel,
                       color: SettingsFlowPalette.success,
                     ),
                   ),
@@ -181,8 +179,8 @@ class SettingsScreen extends StatelessWidget {
               child: SettingsListRow(
                 icon: Icons.logout_rounded,
                 iconColor: SettingsFlowPalette.error,
-                title: 'Sign out',
-                subtitle: 'Sign out of the company workspace',
+                title: l10n.signOutTitle,
+                subtitle: l10n.signOutCompanySubtitle,
                 destructive: true,
                 onTap: () => showLogoutConfirmationSheet(context),
               ),
@@ -196,10 +194,10 @@ class SettingsScreen extends StatelessWidget {
       final adminLevel = (user.adminLevel ?? '').trim();
       final displayName = user.fullName.trim().isNotEmpty
           ? user.fullName.trim()
-          : 'Admin account';
+          : l10n.adminAccountLabel;
 
       return SettingsPageScaffold(
-        title: 'Admin Settings',
+        title: l10n.adminSettingsTitle,
         embedded: embedded,
         showAppBar: !embedded,
         child: Column(
@@ -213,7 +211,7 @@ class SettingsScreen extends StatelessWidget {
                   Text(displayName, style: SettingsFlowTheme.heroTitle()),
                   const SizedBox(height: 8),
                   Text(
-                    'Control your workspace preferences without changing the admin profile record.',
+                    l10n.adminWorkspaceBody,
                     style: SettingsFlowTheme.caption(),
                   ),
                   const SizedBox(height: 16),
@@ -226,11 +224,11 @@ class SettingsScreen extends StatelessWidget {
                         color: SettingsFlowPalette.primary,
                       ),
                       SettingsStatusPill(
-                        label: adminLevel.isEmpty ? 'Admin' : adminLevel,
+                        label: adminLevel.isEmpty ? l10n.adminLabel : adminLevel,
                         color: SettingsFlowPalette.secondary,
                       ),
                       SettingsStatusPill(
-                        label: 'Version ${AppMetadata.version}',
+                        label: l10n.versionLabel(AppMetadata.version),
                         color: SettingsFlowPalette.accent,
                       ),
                     ],
@@ -243,10 +241,9 @@ class SettingsScreen extends StatelessWidget {
             const SizedBox(height: 12),
             const _LaunchAnimationSettingsSection(),
             const SizedBox(height: 16),
-            const SettingsSectionHeading(
-              title: 'Workspace',
-              subtitle:
-                  'Keep platform operations close without exposing profile editing.',
+            SettingsSectionHeading(
+              title: l10n.workspaceTitle,
+              subtitle: l10n.adminWorkspaceSectionSubtitle,
             ),
             const SizedBox(height: 10),
             SettingsPanel(
@@ -255,8 +252,8 @@ class SettingsScreen extends StatelessWidget {
                   SettingsListRow(
                     icon: Icons.notifications_active_outlined,
                     iconColor: SettingsFlowPalette.secondary,
-                    title: 'Notifications',
-                    subtitle: 'Open your notifications center',
+                    title: l10n.notificationsTitle,
+                    subtitle: l10n.notificationsSubtitle,
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -268,9 +265,8 @@ class SettingsScreen extends StatelessWidget {
                   SettingsListRow(
                     icon: Icons.lock_outline_rounded,
                     iconColor: SettingsFlowPalette.warning,
-                    title: 'Security & Privacy',
-                    subtitle:
-                        'Passwords, email updates, privacy, and legal info',
+                    title: l10n.securityPrivacyTitle,
+                    subtitle: l10n.securityPrivacySubtitle,
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -282,9 +278,9 @@ class SettingsScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 18),
-            const SettingsSectionHeading(
-              title: 'Support',
-              subtitle: 'App information and help for platform admins.',
+            SettingsSectionHeading(
+              title: l10n.supportTitle,
+              subtitle: l10n.adminSupportSubtitle,
             ),
             const SizedBox(height: 10),
             SettingsPanel(
@@ -293,8 +289,8 @@ class SettingsScreen extends StatelessWidget {
                   SettingsListRow(
                     icon: Icons.help_outline_rounded,
                     iconColor: SettingsFlowPalette.secondary,
-                    title: 'Help Center',
-                    subtitle: 'Browse FAQs and contact support',
+                    title: l10n.helpCenterTitle,
+                    subtitle: l10n.helpCenterSubtitle,
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -306,8 +302,8 @@ class SettingsScreen extends StatelessWidget {
                   SettingsListRow(
                     icon: Icons.info_outline_rounded,
                     iconColor: SettingsFlowPalette.primaryDark,
-                    title: 'About FutureGate',
-                    subtitle: 'Mission, version, and platform details',
+                    title: l10n.aboutFutureGateTitle,
+                    subtitle: l10n.aboutFutureGateSubtitle,
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -319,10 +315,10 @@ class SettingsScreen extends StatelessWidget {
                   SettingsListRow(
                     icon: Icons.verified_outlined,
                     iconColor: SettingsFlowPalette.success,
-                    title: 'App Version',
+                    title: l10n.appVersionTitle,
                     subtitle: AppMetadata.version,
                     trailing: SettingsStatusPill(
-                      label: 'Current',
+                      label: l10n.appVersionCurrentLabel,
                       color: SettingsFlowPalette.success,
                     ),
                   ),
@@ -338,8 +334,8 @@ class SettingsScreen extends StatelessWidget {
               child: SettingsListRow(
                 icon: Icons.logout_rounded,
                 iconColor: SettingsFlowPalette.error,
-                title: 'Sign out',
-                subtitle: 'End this admin session on the current device',
+                title: l10n.signOutTitle,
+                subtitle: l10n.signOutAdminSubtitle,
                 destructive: true,
                 onTap: () => showLogoutConfirmationSheet(context),
               ),
@@ -350,7 +346,7 @@ class SettingsScreen extends StatelessWidget {
     }
 
     return SettingsPageScaffold(
-      title: 'Settings',
+      title: l10n.settingsTitle,
       embedded: embedded,
       showAppBar: !embedded,
       child: Column(
@@ -361,10 +357,10 @@ class SettingsScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Preferences', style: SettingsFlowTheme.heroTitle()),
+                Text(l10n.preferencesTitle, style: SettingsFlowTheme.heroTitle()),
                 const SizedBox(height: 8),
                 Text(
-                  'Tune the app experience, review account details, and jump into the settings that matter most.',
+                  l10n.preferencesSubtitle,
                   style: SettingsFlowTheme.caption(),
                 ),
                 const SizedBox(height: 16),
@@ -377,7 +373,7 @@ class SettingsScreen extends StatelessWidget {
                       color: SettingsFlowPalette.primary,
                     ),
                     SettingsStatusPill(
-                      label: 'Version ${AppMetadata.version}',
+                      label: l10n.versionLabel(AppMetadata.version),
                       color: SettingsFlowPalette.secondary,
                     ),
                   ],
@@ -390,10 +386,9 @@ class SettingsScreen extends StatelessWidget {
           const SizedBox(height: 12),
           const _LaunchAnimationSettingsSection(),
           const SizedBox(height: 16),
-          const SettingsSectionHeading(
-            title: 'Experience',
-            subtitle:
-                'Keep notifications and language preferences close to your account.',
+          SettingsSectionHeading(
+            title: l10n.experienceTitle,
+            subtitle: l10n.experienceSubtitle,
           ),
           const SizedBox(height: 10),
           SettingsPanel(
@@ -402,21 +397,20 @@ class SettingsScreen extends StatelessWidget {
                 SettingsListRow(
                   icon: Icons.language_rounded,
                   iconColor: SettingsFlowPalette.secondary,
-                  title: 'Language',
-                  subtitle: 'English',
+                  title: l10n.languageTitle,
+                  subtitle: l10n.languageEnglish,
                   onTap: () => _showInfoSheet(
                     context,
-                    title: 'Language',
-                    message:
-                        'The current app experience is shown in English. Broader language selection can be introduced safely in a later iteration.',
+                    title: l10n.languageTitle,
+                    message: l10n.languageInfoSheetMessage,
                   ),
                 ),
                 const SizedBox(height: 10),
                 SettingsListRow(
                   icon: Icons.notifications_active_outlined,
                   iconColor: SettingsFlowPalette.accent,
-                  title: 'Notification Preferences',
-                  subtitle: 'Open your notifications center',
+                  title: l10n.notificationPreferencesTitle,
+                  subtitle: l10n.notificationPreferencesSubtitle,
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -428,10 +422,9 @@ class SettingsScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 18),
-          const SettingsSectionHeading(
-            title: 'Account',
-            subtitle:
-                'Use the existing profile and security flows already connected to your account.',
+          SettingsSectionHeading(
+            title: l10n.accountTitle,
+            subtitle: l10n.accountSubtitle,
           ),
           const SizedBox(height: 10),
           SettingsPanel(
@@ -440,8 +433,8 @@ class SettingsScreen extends StatelessWidget {
                 SettingsListRow(
                   icon: Icons.person_outline_rounded,
                   iconColor: SettingsFlowPalette.primaryDark,
-                  title: 'Account Preferences',
-                  subtitle: 'Update your profile details',
+                  title: l10n.accountPreferencesTitle,
+                  subtitle: l10n.accountPreferencesSubtitle,
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -453,8 +446,8 @@ class SettingsScreen extends StatelessWidget {
                 SettingsListRow(
                   icon: Icons.lock_outline_rounded,
                   iconColor: SettingsFlowPalette.warning,
-                  title: 'Security & Privacy',
-                  subtitle: 'Passwords, email updates, privacy, and legal info',
+                  title: l10n.securityPrivacyTitle,
+                  subtitle: l10n.securityPrivacySubtitle,
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -466,10 +459,10 @@ class SettingsScreen extends StatelessWidget {
                 SettingsListRow(
                   icon: Icons.info_outline_rounded,
                   iconColor: SettingsFlowPalette.secondary,
-                  title: 'App Version',
+                  title: l10n.appVersionTitle,
                   subtitle: AppMetadata.version,
                   trailing: SettingsStatusPill(
-                    label: 'Current',
+                    label: l10n.appVersionCurrentLabel,
                     color: SettingsFlowPalette.success,
                   ),
                 ),
@@ -485,8 +478,8 @@ class SettingsScreen extends StatelessWidget {
             child: SettingsListRow(
               icon: Icons.logout_rounded,
               iconColor: SettingsFlowPalette.error,
-              title: 'Sign out',
-              subtitle: 'End this session on the current device',
+              title: l10n.signOutTitle,
+              subtitle: l10n.signOutSubtitle,
               destructive: true,
               onTap: () => showLogoutConfirmationSheet(context),
             ),
@@ -501,6 +494,7 @@ class SettingsScreen extends StatelessWidget {
     required String title,
     required String message,
   }) {
+    final l10n = AppLocalizations.of(context)!;
     showModalBottomSheet<void>(
       context: context,
       backgroundColor: Colors.transparent,
@@ -533,7 +527,7 @@ class SettingsScreen extends StatelessWidget {
                 Text(message, style: SettingsFlowTheme.caption()),
                 const SizedBox(height: 16),
                 SettingsPrimaryButton(
-                  label: 'Close',
+                  label: l10n.closeLabel,
                   onPressed: () => Navigator.pop(sheetContext),
                 ),
               ],
@@ -550,12 +544,13 @@ class _ThemeSettingsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
+    final l10n = AppLocalizations.of(context)!;
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SettingsSectionHeading(title: 'Theme'),
-        SizedBox(height: 8),
-        _ThemeSettingsPanel(),
+        SettingsSectionHeading(title: l10n.themeTitle),
+        const SizedBox(height: 8),
+        const _ThemeSettingsPanel(),
       ],
     );
   }
@@ -684,9 +679,10 @@ class _LaunchAnimationSettingsSectionState
         _showStartupAnimation = previousValue;
         _isSaving = false;
       });
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Could not update the startup animation setting.'),
+        SnackBar(
+          content: Text(l10n.startupAnimErrorMessage),
         ),
       );
       return;
@@ -698,17 +694,18 @@ class _LaunchAnimationSettingsSectionState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final disabled = _isLoading || _isSaving;
     final subtitle = _isLoading
-        ? 'Checking your launch preference...'
+        ? l10n.startupAnimCheckingSubtitle
         : _showStartupAnimation
-        ? 'The launch video will play when FutureGate opens.'
-        : 'FutureGate will open directly next time.';
+        ? l10n.startupAnimOnSubtitle
+        : l10n.startupAnimOffSubtitle;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SettingsSectionHeading(title: 'Start'),
+        SettingsSectionHeading(title: l10n.startSectionTitle),
         const SizedBox(height: 8),
         SettingsPanel(
           padding: const EdgeInsets.all(8),
@@ -719,7 +716,7 @@ class _LaunchAnimationSettingsSectionState
             iconColor: _showStartupAnimation
                 ? SettingsFlowPalette.accent
                 : SettingsFlowPalette.textSecondary,
-            title: 'Show startup animation',
+            title: l10n.showStartupAnimationTitle,
             subtitle: subtitle,
             onTap: disabled
                 ? null
@@ -752,6 +749,7 @@ class _ThemeSettingsPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final controller = context.watch<ThemeController>();
     final selected = controller.preference;
     final accent = _themeAccent(selected);
@@ -761,8 +759,8 @@ class _ThemeSettingsPanel extends StatelessWidget {
       child: _CompactPreferenceRow(
         icon: _themeIcon(selected),
         iconColor: accent,
-        title: 'App theme',
-        subtitle: selected.subtitle,
+        title: l10n.appThemeTitle,
+        subtitle: _themeSubtitle(selected, l10n),
         trailing: _ThemeInlineSelect(
           selected: selected,
           onChanged: (option) async {
@@ -790,6 +788,7 @@ class _ThemeInlineSelect extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final accent = _themeAccent(selected);
 
     return Container(
@@ -816,7 +815,7 @@ class _ThemeInlineSelect extends StatelessWidget {
                 (option) => Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    _themeSelectLabel(option),
+                    _themeSelectLabel(option, l10n),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: SettingsFlowTheme.micro(accent),
@@ -838,7 +837,7 @@ class _ThemeInlineSelect extends StatelessWidget {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        _themeSelectLabel(option),
+                        _themeSelectLabel(option, l10n),
                         style: SettingsFlowTheme.body(),
                       ),
                     ],
@@ -873,11 +872,19 @@ IconData _themeIcon(AppThemePreference option) {
   };
 }
 
-String _themeSelectLabel(AppThemePreference option) {
+String _themeSelectLabel(AppThemePreference option, AppLocalizations l10n) {
   return switch (option) {
-    AppThemePreference.system => 'System',
-    AppThemePreference.light => 'Light',
-    AppThemePreference.dark => 'Dark',
+    AppThemePreference.system => l10n.themeSystemLabel,
+    AppThemePreference.light => l10n.themeLightLabel,
+    AppThemePreference.dark => l10n.themeDarkLabel,
+  };
+}
+
+String _themeSubtitle(AppThemePreference option, AppLocalizations l10n) {
+  return switch (option) {
+    AppThemePreference.system => l10n.themeSystemSubtitle,
+    AppThemePreference.light => l10n.themeLightSubtitle,
+    AppThemePreference.dark => l10n.themeDarkSubtitle,
   };
 }
 

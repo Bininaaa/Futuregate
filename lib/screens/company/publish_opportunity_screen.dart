@@ -571,9 +571,9 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
               value: _isPaid,
               label: 'Paid status',
               hint: 'Paid status',
-              items: const [
-                DropdownMenuItem<bool>(value: true, child: Text('Paid')),
-                DropdownMenuItem<bool>(value: false, child: Text('Unpaid')),
+              items: [
+                DropdownMenuItem<bool>(value: true, child: Text(AppLocalizations.of(context)!.paidLabel)),
+                DropdownMenuItem<bool>(value: false, child: Text(AppLocalizations.of(context)!.unpaidLabel)),
               ],
               onChanged: (value) {
                 setState(() => _isPaid = value);

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../l10n/generated/app_localizations.dart';
 import '../../models/admin_activity_model.dart';
 import '../../models/admin_activity_preview_model.dart';
 import '../../models/application_model.dart';
@@ -154,7 +155,7 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
     final companyName = DisplayText.capitalizeLeadingLabel(
       (relatedOpportunity['companyName'] ?? '').toString(),
     );
-    final statusLabel = ApplicationStatus.label(application.status);
+    final statusLabel = ApplicationStatus.label(application.status, AppLocalizations.of(context)!);
     final description = opportunityTitle.isNotEmpty
         ? 'Applied to $opportunityTitle.'
         : 'Application details';
@@ -221,7 +222,7 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
   List<Widget> _buildOpportunitySections(AdminActivityPreviewModel preview) {
     final opportunity = OpportunityModel.fromMap(preview.data);
     final opportunityType = OpportunityType.parse(opportunity.type);
-    final typeLabel = OpportunityType.label(opportunityType);
+    final typeLabel = OpportunityType.label(opportunityType, AppLocalizations.of(context)!);
     final typeColor = OpportunityType.color(opportunityType);
     final description = DisplayText.capitalizeLeadingLabel(
       opportunity.description,

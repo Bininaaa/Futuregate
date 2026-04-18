@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import '../../l10n/generated/app_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -62,7 +63,7 @@ class _AdminActivityCenterScreenState extends State<AdminActivityCenterScreen> {
             message: provider.activityError!,
             action: FilledButton(
               onPressed: () => provider.loadActivityFeed(reset: true),
-              child: const Text('Retry'),
+              child: Text(AppLocalizations.of(context)!.retryLabel),
             ),
           )
         : RefreshIndicator(
@@ -209,7 +210,7 @@ class _AdminActivityCenterScreenState extends State<AdminActivityCenterScreen> {
     return Scaffold(
       backgroundColor: AdminPalette.background,
       appBar: AppBar(
-        title: const Text('Recent Activity'),
+        title: Text(AppLocalizations.of(context)!.uiRecentActivity),
         backgroundColor: AdminPalette.surface,
         foregroundColor: AdminPalette.textPrimary,
       ),

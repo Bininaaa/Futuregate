@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../config/app_metadata.dart';
+import '../../l10n/generated/app_localizations.dart';
 import '../../widgets/shared/app_feedback.dart';
 import '../../widgets/shared/app_logo.dart';
 import 'settings_flow_theme.dart';
@@ -12,8 +13,9 @@ class AboutFutureGateScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return SettingsPageScaffold(
-      title: 'About FutureGate',
+      title: l10n.aboutFutureGateTitle,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -48,7 +50,7 @@ class AboutFutureGateScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Version ${AppMetadata.version}',
+                        l10n.versionLabel(AppMetadata.version),
                         style: SettingsFlowTheme.caption(),
                       ),
                     ],
@@ -61,29 +63,28 @@ class AboutFutureGateScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'FutureGate is designed as a bridge between students, their growing skills, and the real opportunities that can shape their next milestone.',
+                  l10n.aboutBridgeDescription,
                   style: SettingsFlowTheme.caption(),
                 ),
               ],
             ),
           ),
           const SizedBox(height: 18),
-          const SettingsSectionHeading(
-            title: 'Platform Story',
-            subtitle:
-                'A clearer path from student ambition to real-world opportunity.',
+          SettingsSectionHeading(
+            title: l10n.platformStoryTitle,
+            subtitle: l10n.platformStorySubtitle,
           ),
           const SizedBox(height: 10),
           SettingsPanel(
             child: Text(
-              'The app brings together profiles, CV tools, opportunities, scholarships, project ideas, and communication so students can move from discovery to action in one place.',
+              l10n.platformStoryBody,
               style: SettingsFlowTheme.caption(),
             ),
           ),
           const SizedBox(height: 18),
-          const SettingsSectionHeading(
-            title: 'More Information',
-            subtitle: 'Useful references and contact points for the platform.',
+          SettingsSectionHeading(
+            title: l10n.moreInformationTitle,
+            subtitle: l10n.moreInformationSubtitle,
           ),
           const SizedBox(height: 10),
           SettingsPanel(
@@ -92,33 +93,31 @@ class AboutFutureGateScreen extends StatelessWidget {
                 SettingsListRow(
                   icon: Icons.gavel_rounded,
                   iconColor: SettingsFlowPalette.warning,
-                  title: 'Terms',
-                  subtitle: 'Read the platform usage summary',
+                  title: l10n.termsAboutTitle,
+                  subtitle: l10n.termsAboutSubtitle,
                   onTap: () => _showInfoSheet(
                     context,
-                    title: 'Terms',
-                    message:
-                        'FutureGate expects accurate profiles, respectful communication, and responsible use of the application and content tools available in the app.',
+                    title: l10n.termsAboutTitle,
+                    message: l10n.termsAboutBody,
                   ),
                 ),
                 const SizedBox(height: 10),
                 SettingsListRow(
                   icon: Icons.privacy_tip_outlined,
                   iconColor: SettingsFlowPalette.secondary,
-                  title: 'Privacy Policy',
-                  subtitle: 'See how data supports the experience',
+                  title: l10n.privacyPolicySettingsTitle,
+                  subtitle: l10n.privacyPolicyAboutSubtitle,
                   onTap: () => _showInfoSheet(
                     context,
-                    title: 'Privacy Policy',
-                    message:
-                        'Profile, CV, notification, and application data are used only to provide the matching, review, and communication features that power the FutureGate experience.',
+                    title: l10n.privacyPolicySettingsTitle,
+                    message: l10n.privacyPolicyAboutBody,
                   ),
                 ),
                 const SizedBox(height: 10),
                 SettingsListRow(
                   icon: Icons.mail_outline_rounded,
                   iconColor: SettingsFlowPalette.primary,
-                  title: 'Contact',
+                  title: l10n.contactAboutTitle,
                   subtitle: AppMetadata.supportEmail,
                   onTap: () => _launchEmail(context),
                 ),
@@ -126,13 +125,12 @@ class AboutFutureGateScreen extends StatelessWidget {
                 SettingsListRow(
                   icon: Icons.public_rounded,
                   iconColor: SettingsFlowPalette.primaryDark,
-                  title: 'Website & Social',
-                  subtitle: 'Public links are added here as they go live',
+                  title: l10n.websiteSocialTitle,
+                  subtitle: l10n.websiteSocialSubtitle,
                   onTap: () => _showInfoSheet(
                     context,
-                    title: 'Website & Social',
-                    message:
-                        'A public website and social channels are not linked inside this build yet. Support requests can still be sent directly by email.',
+                    title: l10n.websiteSocialTitle,
+                    message: l10n.websiteSocialBody,
                   ),
                 ),
               ],
@@ -144,17 +142,18 @@ class AboutFutureGateScreen extends StatelessWidget {
   }
 
   Future<void> _launchEmail(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
     final uri = Uri(
       scheme: 'mailto',
       path: AppMetadata.supportEmail,
-      queryParameters: {'subject': 'About FutureGate'},
+      queryParameters: {'subject': l10n.aboutFutureGateSubject},
     );
 
     final launched = await launchUrl(uri);
     if (!launched && context.mounted) {
       context.showAppSnackBar(
-        'No email app is available right now.',
-        title: 'Email unavailable',
+        l10n.noEmailAppAvailableAltBody,
+        title: l10n.emailUnavailableWarningTitle,
         type: AppFeedbackType.warning,
       );
     }
@@ -165,6 +164,7 @@ class AboutFutureGateScreen extends StatelessWidget {
     required String title,
     required String message,
   }) {
+    final l10n = AppLocalizations.of(context)!;
     showModalBottomSheet<void>(
       context: context,
       backgroundColor: Colors.transparent,
@@ -197,7 +197,7 @@ class AboutFutureGateScreen extends StatelessWidget {
                 Text(message, style: SettingsFlowTheme.caption()),
                 const SizedBox(height: 16),
                 SettingsPrimaryButton(
-                  label: 'Close',
+                  label: l10n.closeLabel,
                   onPressed: () => Navigator.pop(sheetContext),
                 ),
               ],

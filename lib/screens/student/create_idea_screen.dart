@@ -1,5 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import '../../l10n/generated/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/project_idea_model.dart';
@@ -393,7 +394,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                   const SizedBox(height: 16),
                   Text(title, style: SettingsFlowTheme.sectionTitle()),
                   const SizedBox(height: 4),
-                  Text('Choose one option', style: SettingsFlowTheme.caption()),
+                  Text(AppLocalizations.of(context)!.chooseOneOptionLabel, style: SettingsFlowTheme.caption()),
                   const SizedBox(height: 16),
                   Flexible(
                     child: ListView.separated(
@@ -755,22 +756,22 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                         value: _selectedLevel,
                         label: 'Best suited for',
                         hint: 'Select student level',
-                        items: const [
+                        items: [
                           DropdownMenuItem(
                             value: 'bac',
-                            child: Text('Bachelor'),
+                            child: Text(AppLocalizations.of(context)!.uiBachelor),
                           ),
                           DropdownMenuItem(
                             value: 'licence',
-                            child: Text('Licence'),
+                            child: Text(AppLocalizations.of(context)!.academicLevelLicence),
                           ),
                           DropdownMenuItem(
                             value: 'master',
-                            child: Text('Master'),
+                            child: Text(AppLocalizations.of(context)!.academicLevelMaster),
                           ),
                           DropdownMenuItem(
                             value: 'doctorat',
-                            child: Text('Doctorate'),
+                            child: Text(AppLocalizations.of(context)!.uiDoctorate),
                           ),
                         ],
                         onChanged: (value) {

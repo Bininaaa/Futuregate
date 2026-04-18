@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../l10n/generated/app_localizations.dart';
 import '../utils/application_status.dart';
 
 class ApplicationStatusBadge extends StatelessWidget {
@@ -15,6 +16,7 @@ class ApplicationStatusBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final badgeColor = ApplicationStatus.color(status);
 
     return Container(
@@ -24,7 +26,7 @@ class ApplicationStatusBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
       ),
       child: Text(
-        ApplicationStatus.label(status),
+        ApplicationStatus.label(status, l10n),
         style: GoogleFonts.poppins(
           fontSize: fontSize,
           fontWeight: FontWeight.w600,

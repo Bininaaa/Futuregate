@@ -20,6 +20,7 @@ import 'applied_opportunities_screen.dart';
 import 'opportunity_detail_screen.dart';
 import 'profile_screen.dart';
 import 'saved_screen.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 class InternshipsScreen extends StatefulWidget {
   const InternshipsScreen({super.key});
@@ -841,10 +842,7 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
                                 itemBuilder: (context, index) {
                                   final item = availableInternships[index];
                                   final statusData =
-                                      _internshipStatusDataForOpportunity(
-                                        item.opportunity,
-                                        appliedStatuses,
-                                      );
+                                      _internshipStatusDataForOpportunity(item.opportunity, appliedStatuses, AppLocalizations.of(context)!);
                                   return _AvailableInternshipCard(
                                     item: item,
                                     statusData: statusData,
@@ -881,11 +879,7 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
                                       child: _AvailableInternshipListTile(
                                         item: availableInternships[index],
                                         statusData:
-                                            _internshipStatusDataForOpportunity(
-                                              availableInternships[index]
-                                                  .opportunity,
-                                              appliedStatuses,
-                                            ),
+                                            _internshipStatusDataForOpportunity(availableInternships[index].opportunity, appliedStatuses, AppLocalizations.of(context)!),
                                         onTap:
                                             availableInternships[index]
                                                     .opportunity ==
@@ -1373,10 +1367,7 @@ class _ApplyThisWeekSection extends StatelessWidget {
         separatorBuilder: (context, index) => SizedBox(width: cardSpacing),
         itemBuilder: (context, index) {
           final item = items[index];
-          final statusData = _internshipStatusDataForOpportunity(
-            item.opportunity,
-            appliedStatuses,
-          );
+          final statusData = _internshipStatusDataForOpportunity(item.opportunity, appliedStatuses, AppLocalizations.of(context)!);
 
           return SizedBox(
             width: cardWidth,
@@ -3446,6 +3437,7 @@ String? _availableTopBadge(_InternshipCardModel item) {
 _InternshipStatusData? _internshipStatusDataForOpportunity(
   OpportunityModel? opportunity,
   Map<String, String> appliedStatuses,
+  AppLocalizations l10n,
 ) {
   if (opportunity == null) {
     return null;
@@ -3454,7 +3446,7 @@ _InternshipStatusData? _internshipStatusDataForOpportunity(
   final applicationStatus = appliedStatuses[opportunity.id];
   if (applicationStatus != null) {
     return _InternshipStatusData(
-      label: ApplicationStatus.label(applicationStatus),
+      label: ApplicationStatus.label(applicationStatus, l10n),
       color: ApplicationStatus.color(applicationStatus),
       icon: _internshipApplicationStatusIcon(applicationStatus),
     );

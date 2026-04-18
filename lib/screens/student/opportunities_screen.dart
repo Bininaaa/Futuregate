@@ -24,6 +24,7 @@ import 'opportunity_detail_screen.dart';
 import 'sponsored_opportunities_screen.dart';
 import 'student_home_navigation.dart';
 import 'trainings_screen.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 class OpportunitiesScreen extends StatefulWidget {
   final String? initialFilter;
@@ -602,7 +603,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                                   color: OpportunityDashboardPalette.border,
                                 ),
                               ),
-                              child: const Text('Clear'),
+                              child: Text(AppLocalizations.of(context)!.uiClear),
                             ),
                           ),
                           const SizedBox(width: 10),
@@ -624,7 +625,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                                     OpportunityDashboardPalette.primary,
                                 foregroundColor: Colors.white,
                               ),
-                              child: const Text('Apply'),
+                              child: Text(AppLocalizations.of(context)!.uiApply),
                             ),
                           ),
                         ],
@@ -1058,7 +1059,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
 
     if (employment != null &&
         employment.toLowerCase() !=
-            OpportunityType.label(opportunity.type).toLowerCase()) {
+            OpportunityType.label(opportunity.type, AppLocalizations.of(context)!).toLowerCase()) {
       items.add(employment);
     }
 
@@ -1067,7 +1068,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
     }
 
     if (items.isEmpty) {
-      items.add(OpportunityType.label(opportunity.type));
+      items.add(OpportunityType.label(opportunity.type, AppLocalizations.of(context)!));
     }
 
     return _uniqueValues(items).take(maxItems).toList(growable: false);
@@ -1712,6 +1713,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                                     rank: index + 1,
                                     typeLabel: OpportunityType.label(
                                       opportunity.type,
+                                      AppLocalizations.of(context)!,
                                     ),
                                     trendLabel: _trendingSignalLabel(
                                       opportunity,
@@ -1775,7 +1777,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                           final opportunity = latestItems[index];
                           return OpportunityListTile(
                             opportunity: opportunity,
-                            typeLabel: OpportunityType.label(opportunity.type),
+                            typeLabel: OpportunityType.label(opportunity.type, AppLocalizations.of(context)!),
                             companyLocationText: _companyLocationText(
                               opportunity,
                             ),
@@ -1832,6 +1834,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                                 opportunity: opportunity,
                                 typeLabel: OpportunityType.label(
                                   opportunity.type,
+                                  AppLocalizations.of(context)!,
                                 ),
                                 companyLocationText: _companyLocationText(
                                   opportunity,

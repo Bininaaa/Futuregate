@@ -3682,9 +3682,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String uiTheLatestitemslimitNewestRolesInternshipsAndSponsoredTracks(
-    Object _latestItemsLimit,
+    Object latestItemsLimit,
   ) {
-    return 'The $_latestItemsLimit newest roles, internships, and sponsored tracks';
+    return 'The $latestItemsLimit newest roles, internships, and sponsored tracks';
   }
 
   @override
@@ -5397,4 +5397,667 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get uiAccountDetails => 'Account Details';
+
+  @override
+  String get securitySectionTitle => 'Security';
+
+  @override
+  String get securitySectionSubtitle =>
+      'Keep passwords, privacy controls, and account protections close at hand.';
+
+  @override
+  String get signOutCompanySubtitle => 'Sign out of the company workspace';
+
+  @override
+  String get adminSettingsTitle => 'Admin settings';
+
+  @override
+  String get adminAccountLabel => 'Admin account';
+
+  @override
+  String get adminWorkspaceBody =>
+      'Control your workspace preferences without changing the admin profile record.';
+
+  @override
+  String get adminLabel => 'Admin';
+
+  @override
+  String get adminWorkspaceSectionSubtitle =>
+      'Keep platform operations close without exposing profile editing.';
+
+  @override
+  String get adminSupportSubtitle =>
+      'App information and help for platform admins.';
+
+  @override
+  String get signOutAdminSubtitle =>
+      'End this admin session on the current device';
+
+  @override
+  String get themeTitle => 'Theme';
+
+  @override
+  String get appThemeTitle => 'App theme';
+
+  @override
+  String get themeSystemLabel => 'System';
+
+  @override
+  String get themeLightLabel => 'Light';
+
+  @override
+  String get themeDarkLabel => 'Dark';
+
+  @override
+  String get themeSystemSubtitle => 'Follow your device appearance setting';
+
+  @override
+  String get themeLightSubtitle => 'Keep FutureGate bright and airy';
+
+  @override
+  String get themeDarkSubtitle => 'Use the premium dark workspace';
+
+  @override
+  String get startSectionTitle => 'Start';
+
+  @override
+  String get showStartupAnimationTitle => 'Show startup animation';
+
+  @override
+  String get startupAnimCheckingSubtitle =>
+      'Checking your launch preference...';
+
+  @override
+  String get startupAnimOnSubtitle =>
+      'The launch video will play when FutureGate opens.';
+
+  @override
+  String get startupAnimOffSubtitle =>
+      'FutureGate will open directly next time.';
+
+  @override
+  String get startupAnimErrorMessage =>
+      'Could not update the startup animation setting.';
+
+  @override
+  String get languageInfoSheetMessage =>
+      'The current app experience is shown in English. Broader language selection can be introduced safely in a later iteration.';
+
+  @override
+  String get accountProtectionHubTitle => 'Your account protection hub';
+
+  @override
+  String get accountProtectionHubBody =>
+      'Update credentials, review privacy touchpoints, and keep access to your FutureGate profile secure.';
+
+  @override
+  String get accountSecuritySectionTitle => 'Account Security';
+
+  @override
+  String get accountSecuritySectionSubtitle =>
+      'Use the existing account tools safely without affecting your current sign-in flow.';
+
+  @override
+  String get addPasswordTitle => 'Add Password';
+
+  @override
+  String get addPasswordSubtitle =>
+      'Keep Google sign-in and add email/password too';
+
+  @override
+  String get changePasswordTitle => 'Change Password';
+
+  @override
+  String get changePasswordSubtitle => 'Update your sign-in password';
+
+  @override
+  String get changeEmailTitle => 'Change Email';
+
+  @override
+  String changeEmailCurrentSubtitle(Object email) {
+    return 'Current: $email';
+  }
+
+  @override
+  String get changeEmailVerifySubtitle => 'Verify a new sign-in email';
+
+  @override
+  String get googleLinkedAccountTitle => 'Google-linked account';
+
+  @override
+  String get googleManagedAccountTitle => 'Google-managed account';
+
+  @override
+  String get googleLinkedAccountBody =>
+      'This account can sign in with both Google and email/password, but the sign-in email stays managed through Google.';
+
+  @override
+  String get googleManagedAccountBody =>
+      'This account signs in with Google. You can add a password if you want email/password access too, but the sign-in email itself stays managed through Google.';
+
+  @override
+  String get twoStepVerificationTitle => 'Two-step verification';
+
+  @override
+  String get twoStepVerificationGoogleSubtitle =>
+      'Manage it through your Google account';
+
+  @override
+  String get twoStepVerificationEmailSubtitle =>
+      'Available through your email provider';
+
+  @override
+  String twoStepVerificationGoogleBody(Object provider) {
+    return 'This account signs in with $provider, so two-step verification is managed directly by Google.';
+  }
+
+  @override
+  String get twoStepVerificationEmailBody =>
+      'A dedicated in-app two-step setup is not enabled yet. For now, keep your mailbox protected and use a strong password.';
+
+  @override
+  String get manageSessionsTitle => 'Manage sessions & devices';
+
+  @override
+  String get manageSessionsSubtitle =>
+      'Review where your account is being used';
+
+  @override
+  String get sessionsDevicesTitle => 'Sessions & devices';
+
+  @override
+  String get sessionsDevicesBody =>
+      'Remote session management is not available in this build yet. Your active session on this device remains protected by Firebase authentication.';
+
+  @override
+  String get privacyControlsSectionTitle => 'Privacy Controls';
+
+  @override
+  String get privacyControlsSectionSubtitle =>
+      'Understand what information is stored and how it is used inside the platform.';
+
+  @override
+  String get dataPermissionsTitle => 'Data permissions';
+
+  @override
+  String get dataPermissionsSubtitle =>
+      'Profile, CV, and application data are used to power opportunities and recruiter review flows.';
+
+  @override
+  String get dataPermissionsBody =>
+      'FutureGate stores the profile details, CV content, saved items, and application activity needed to match students with opportunities and support application review.';
+
+  @override
+  String get privacyPolicySettingsTitle => 'Privacy Policy';
+
+  @override
+  String get privacyPolicySettingsSubtitle =>
+      'Read how personal information is handled';
+
+  @override
+  String get privacyPolicySettingsBody =>
+      'Your account data is used to provide sign-in, profile management, saved opportunities, notifications, CV access, and applications. Sensitive access is limited to the platform features that require it.';
+
+  @override
+  String get termsOfUseSettingsTitle => 'Terms of Use';
+
+  @override
+  String get termsOfUseSettingsSubtitle => 'Review expected platform usage';
+
+  @override
+  String get termsOfUseSettingsBody =>
+      'Use FutureGate responsibly, keep account information accurate, and avoid submitting misleading applications or content that violates platform rules.';
+
+  @override
+  String get addPasswordBannerTitle => 'Add email and password sign-in';
+
+  @override
+  String get addPasswordBannerBodyGeneric =>
+      'Keep Google sign-in and add a password for this account.';
+
+  @override
+  String addPasswordBannerBodyEmail(Object email) {
+    return 'Keep Google sign-in and add a password for $email.';
+  }
+
+  @override
+  String get newPasswordLabel => 'New Password';
+
+  @override
+  String get confirmPasswordLabel => 'Confirm Password';
+
+  @override
+  String get currentPasswordLabel => 'Current Password';
+
+  @override
+  String get addPasswordNote =>
+      'Your sign-in email will remain managed by Google. This only adds an additional way to sign in.';
+
+  @override
+  String get addingPasswordLabel => 'Adding...';
+
+  @override
+  String get passwordAddedSuccessBody =>
+      'Password added successfully. You can now sign in with Google or email and password.';
+
+  @override
+  String get passwordSetupAlreadyEnabled =>
+      'This account already has email and password sign-in enabled.';
+
+  @override
+  String get passwordSetupGoogleOnly =>
+      'A password can only be added while signed in to a Google account that does not already have email/password linked.';
+
+  @override
+  String get secureAccountBannerTitle => 'Secure your account';
+
+  @override
+  String get secureAccountBannerBody =>
+      'Use a strong password with a mix of letters, numbers, and symbols to keep your account protected.';
+
+  @override
+  String get updatingPasswordLabel => 'Updating...';
+
+  @override
+  String get updatePasswordLabel => 'Update Password';
+
+  @override
+  String get passwordUpdatedBody =>
+      'Your password has been updated successfully.';
+
+  @override
+  String get passwordChangesUnavailableTitle => 'Password changes unavailable';
+
+  @override
+  String get passwordChangesGoogleBody =>
+      'This account uses Google sign-in right now. Add a password first, then you can change it later.';
+
+  @override
+  String get passwordChangesOnlyBody =>
+      'Password changes are only available for accounts that already use email and password sign-in.';
+
+  @override
+  String get emailChangesUnavailableTitle => 'Email changes unavailable';
+
+  @override
+  String get emailChangesGoogleBody =>
+      'This account is linked to Google, so the sign-in email must be managed through Google.';
+
+  @override
+  String get emailChangesPasswordOnlyBody =>
+      'Email changes are only available for accounts that use email and password without Google linked.';
+
+  @override
+  String get currentEmailBannerTitle => 'Current email';
+
+  @override
+  String get noEmailAvailableBody =>
+      'No email is currently available for this account.';
+
+  @override
+  String get newEmailLabel => 'New Email';
+
+  @override
+  String get newEmailHint => 'name@example.com';
+
+  @override
+  String get emailVerificationNote =>
+      'A verification link will be sent to the new address before the change becomes active.';
+
+  @override
+  String get updatingEmailLabel => 'Updating...';
+
+  @override
+  String get updateEmailLabel => 'Update Email';
+
+  @override
+  String get verificationSentTitle => 'Verification sent';
+
+  @override
+  String get verificationSentBody =>
+      'Verification email sent. Confirm your new address to complete the update.';
+
+  @override
+  String get backLabel => 'Back';
+
+  @override
+  String get howCanWeHelpTitle => 'How can we help?';
+
+  @override
+  String get howCanWeHelpSubtitle =>
+      'Search common topics, contact support, or report something that needs attention.';
+
+  @override
+  String get searchHelpTopicsHint => 'Search help topics';
+
+  @override
+  String get quickSupportTitle => 'Quick Support';
+
+  @override
+  String get quickSupportSubtitle =>
+      'Reach out with context so the team can help faster.';
+
+  @override
+  String get contactSupportTitle => 'Contact Support';
+
+  @override
+  String get reportProblemTitle => 'Report a Problem';
+
+  @override
+  String get reportProblemSubtitle =>
+      'Share screenshots, steps, or account issues';
+
+  @override
+  String get faqsSectionTitle => 'FAQs';
+
+  @override
+  String get noTopicsMatchedSubtitle => 'No topics matched your search.';
+
+  @override
+  String helpTopicCount(Object count) {
+    return '$count help topic(s)';
+  }
+
+  @override
+  String get noHelpTopicsMatchTitle => 'No help topics match your search';
+
+  @override
+  String get noHelpTopicsMatchBody =>
+      'Try a broader search term, or contact support if you need hands-on help.';
+
+  @override
+  String get emailUnavailableWarningTitle => 'Email unavailable';
+
+  @override
+  String get noEmailAppAvailableBody =>
+      'No email app is available on this device.';
+
+  @override
+  String get supportRequestSubject => 'FutureGate Support Request';
+
+  @override
+  String get bugReportSubject => 'FutureGate Bug Report';
+
+  @override
+  String get helpAccountHelpTitle => 'Account Help';
+
+  @override
+  String get helpAccountCategory => 'Account';
+
+  @override
+  String get helpAccountDescription =>
+      'Update profile details, manage sign-in methods, and keep your student profile ready for new opportunities.';
+
+  @override
+  String get helpApplicationHelpTitle => 'Application Help';
+
+  @override
+  String get helpApplicationCategory => 'Applications';
+
+  @override
+  String get helpApplicationDescription =>
+      'Track your submissions, review statuses, and understand what recruiters need to evaluate your profile.';
+
+  @override
+  String get helpSavedItemsTitle => 'Saved Items';
+
+  @override
+  String get helpSavedItemsCategory => 'Dashboard';
+
+  @override
+  String get helpSavedItemsDescription =>
+      'Bookmark opportunities you want to revisit later and stay organized while you prepare applications.';
+
+  @override
+  String get helpCvBuilderTitle => 'CV Builder';
+
+  @override
+  String get helpCvBuilderCategory => 'CV';
+
+  @override
+  String get helpCvBuilderDescription =>
+      'Create structured CV content, choose a template, preview your document, and export a PDF when you are ready.';
+
+  @override
+  String get helpOpportunityPostingTitle => 'Opportunity Posting Help';
+
+  @override
+  String get helpOpportunityCategory => 'Platform';
+
+  @override
+  String get helpOpportunityDescription =>
+      'Learn how companies and approved listings appear inside the app so you can understand the platform flow end to end.';
+
+  @override
+  String get helpNotificationsCategory => 'Updates';
+
+  @override
+  String get helpNotificationsDescription =>
+      'Stay on top of application decisions, saved item changes, reminders, and platform alerts.';
+
+  @override
+  String get aboutBridgeDescription =>
+      'FutureGate is designed as a bridge between students, their growing skills, and the real opportunities that can shape their next milestone.';
+
+  @override
+  String get platformStoryTitle => 'Platform Story';
+
+  @override
+  String get platformStorySubtitle =>
+      'A clearer path from student ambition to real-world opportunity.';
+
+  @override
+  String get platformStoryBody =>
+      'The app brings together profiles, CV tools, opportunities, scholarships, project ideas, and communication so students can move from discovery to action in one place.';
+
+  @override
+  String get moreInformationTitle => 'More Information';
+
+  @override
+  String get moreInformationSubtitle =>
+      'Useful references and contact points for the platform.';
+
+  @override
+  String get termsAboutTitle => 'Terms';
+
+  @override
+  String get termsAboutSubtitle => 'Read the platform usage summary';
+
+  @override
+  String get termsAboutBody =>
+      'FutureGate expects accurate profiles, respectful communication, and responsible use of the application and content tools available in the app.';
+
+  @override
+  String get privacyPolicyAboutSubtitle =>
+      'See how data supports the experience';
+
+  @override
+  String get privacyPolicyAboutBody =>
+      'Profile, CV, notification, and application data are used only to provide the matching, review, and communication features that power the FutureGate experience.';
+
+  @override
+  String get contactAboutTitle => 'Contact';
+
+  @override
+  String get websiteSocialTitle => 'Website & Social';
+
+  @override
+  String get websiteSocialSubtitle =>
+      'Public links are added here as they go live';
+
+  @override
+  String get websiteSocialBody =>
+      'A public website and social channels are not linked inside this build yet. Support requests can still be sent directly by email.';
+
+  @override
+  String get noEmailAppAvailableAltBody =>
+      'No email app is available right now.';
+
+  @override
+  String get aboutFutureGateSubject => 'About FutureGate';
+
+  @override
+  String get signOutAdminQuestion => 'Sign out of admin?';
+
+  @override
+  String get signOutAdminBody =>
+      'You will leave the admin workspace on this device. Saved changes stay safe.';
+
+  @override
+  String get signOutCompanyQuestion => 'Sign out of company?';
+
+  @override
+  String get signOutCompanyBody =>
+      'You will leave the company workspace on this device. Your profile and opportunities stay saved.';
+
+  @override
+  String get signOutStudentQuestion => 'Sign out of student?';
+
+  @override
+  String get signOutStudentBody =>
+      'You will leave your student workspace on this device. Your profile and saved items stay safe.';
+
+  @override
+  String get signOutFutureGateQuestion => 'Sign out of FutureGate?';
+
+  @override
+  String get signOutFutureGateBody =>
+      'You can sign back in anytime with the same account.';
+
+  @override
+  String get adminRoleLabel => 'Admin';
+
+  @override
+  String get companyRoleLabel => 'Company';
+
+  @override
+  String get studentRoleLabel => 'Student';
+
+  @override
+  String get accountRoleLabel => 'Account';
+
+  @override
+  String get signingOutLabel => 'Signing out';
+
+  @override
+  String get futureGateAccountFallback => 'FutureGate account';
+
+  @override
+  String get studentHomeSubtitle =>
+      'Your daily student pulse, shortcuts, and fresh momentum.';
+
+  @override
+  String get studentDiscoverSubtitle =>
+      'Jobs, internships, and sponsored tracks matched to your next move.';
+
+  @override
+  String get studentScholarshipsSubtitle =>
+      'Funding opportunities, deadlines, and global study paths.';
+
+  @override
+  String get studentTrainingSubtitle =>
+      'Courses, books, and certifications that sharpen your journey.';
+
+  @override
+  String get studentIdeasSubtitle =>
+      'Build, save, and grow your next project idea with confidence.';
+
+  @override
+  String get studentChatSubtitle =>
+      'Stay close to conversations, follow-ups, and collaboration.';
+
+  @override
+  String get notificationsTooltip => 'Notifications';
+
+  @override
+  String get savedScholarshipsTooltip => 'Saved scholarships';
+
+  @override
+  String get savedTrainingTooltip => 'Saved training';
+
+  @override
+  String get savedIdeasTooltip => 'Saved ideas';
+
+  @override
+  String get deadlineSoon => 'Deadline soon';
+
+  @override
+  String fundingPrefix(Object amount) {
+    return 'Funding: $amount';
+  }
+
+  @override
+  String get savedOpportunityFallback => 'Saved opportunity';
+
+  @override
+  String get closingSoonBadge => 'Closing soon';
+
+  @override
+  String savedTypeBadge(Object type) {
+    return 'Saved $type';
+  }
+
+  @override
+  String savedTypeFromCompany(Object type, Object company) {
+    return 'Saved $type from $company';
+  }
+
+  @override
+  String savedTypeNeedsAttention(Object type) {
+    return 'Saved $type that needs attention';
+  }
+
+  @override
+  String closesDateLabel(Object date) {
+    return 'Closes $date';
+  }
+
+  @override
+  String get muteChatLabel => 'Mute Chat';
+
+  @override
+  String get unmuteChatLabel => 'Unmute Chat';
+
+  @override
+  String get chatMutedTitle => 'Chat muted';
+
+  @override
+  String get chatUnmutedTitle => 'Chat unmuted';
+
+  @override
+  String get chatMutedBody => 'Notifications for this chat are now muted.';
+
+  @override
+  String get chatUnmutedBody => 'Chat notifications are active again.';
+
+  @override
+  String get uiOpen => 'Open';
+
+  @override
+  String get uiViewAllApps => 'View All Apps';
+
+  @override
+  String uiViewApplicationsCount(Object count) {
+    return 'View Applications ($count)';
+  }
+
+  @override
+  String get openLibraryStudioLabel => 'Open Library Studio';
+
+  @override
+  String get noScholarshipLinkAvailable =>
+      'No scholarship link is available for this item yet.';
+
+  @override
+  String get couldNotOpenScholarshipLink =>
+      'Could not open the scholarship link.';
+
+  @override
+  String get editMessageLabel => 'Edit message';
+
+  @override
+  String get noRecentUsersYet => 'No recent users yet';
+
+  @override
+  String get uiBachelor => 'Bachelor';
 }

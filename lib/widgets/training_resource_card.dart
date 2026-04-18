@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import '../l10n/generated/app_localizations.dart';
 
 import '../models/training_model.dart';
 
@@ -233,7 +234,7 @@ class TrainingResourceCard extends StatelessWidget {
                       ElevatedButton.icon(
                         onPressed: onOpen,
                         icon: const Icon(Icons.open_in_new, size: 18),
-                        label: const Text('Open'),
+                        label: Text(AppLocalizations.of(context)!.uiOpen),
                       ),
                     ],
                   ),

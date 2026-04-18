@@ -30,6 +30,7 @@ import 'opportunities_screen.dart';
 import 'opportunity_detail_screen.dart';
 import 'profile_screen.dart';
 import 'scholarship_detail_screen.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 enum SavedScreenFilter { all, opportunities, scholarships, trainings, ideas }
 
@@ -114,6 +115,7 @@ class _SavedScreenState extends State<SavedScreen> {
   }
 
   List<_SavedHubItem> _buildItems({
+    required AppLocalizations l10n,
     required List<SavedOpportunityModel> opportunities,
     required List<SavedScholarshipModel> scholarships,
     required List<TrainingModel> trainings,
@@ -142,7 +144,7 @@ class _SavedScreenState extends State<SavedScreen> {
             item.title,
             item.subtitle,
             item.supporting,
-            item.categoryLabel,
+            item.categoryLabel(l10n),
           ].join(' ').toLowerCase();
 
           return searchText.contains(query);
@@ -435,6 +437,7 @@ class _SavedScreenState extends State<SavedScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final savedOpportunityProvider = context.watch<SavedOpportunityProvider>();
     final savedScholarshipProvider = context.watch<SavedScholarshipProvider>();
     final trainingProvider = context.watch<TrainingProvider>();
@@ -448,6 +451,7 @@ class _SavedScreenState extends State<SavedScreen> {
     final visibleSavedScholarships = savedScholarshipProvider.savedScholarships;
 
     final items = _buildItems(
+      l10n: l10n,
       opportunities: visibleSavedOpportunities,
       scholarships: visibleSavedScholarships,
       trainings: trainingProvider.savedTrainings,
@@ -1126,7 +1130,7 @@ class _SavedOpportunityCard extends StatelessWidget {
     return _SavedListCard(
       accent: accent,
       leadingIcon: OpportunityType.icon(item.type),
-      typeLabel: OpportunityType.label(item.type),
+      typeLabel: OpportunityType.label(item.type, AppLocalizations.of(context)!),
       savedLabel: _relativeSavedLabel(item.savedAt?.toDate()),
       title: item.title,
       subtitle: item.companyName,
@@ -1915,10 +1919,10 @@ class _SavedHubItem {
     }
   }
 
-  String get categoryLabel {
+  String categoryLabel(AppLocalizations l10n) {
     switch (kind) {
       case _SavedHubItemKind.opportunity:
-        return OpportunityType.label(opportunity!.type);
+        return OpportunityType.label(opportunity!.type, l10n);
       case _SavedHubItemKind.scholarship:
         return 'Scholarship';
       case _SavedHubItemKind.training:

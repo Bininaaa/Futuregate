@@ -308,7 +308,7 @@ class _LibraryOverviewTab extends StatelessWidget {
                   OutlinedButton.icon(
                     onPressed: onRefresh,
                     icon: const Icon(Icons.refresh_rounded),
-                    label: const Text('Retry sync'),
+                    label: Text(AppLocalizations.of(context)!.uiRetrySync),
                   ),
                 ],
               ],
@@ -457,7 +457,7 @@ class _LibraryCard extends StatelessWidget {
           FilledButton.icon(
             onPressed: onOpen,
             icon: const Icon(Icons.open_in_new_rounded),
-            label: const Text('Open Studio'),
+            label: Text(AppLocalizations.of(context)!.uiOpenStudio),
             style: FilledButton.styleFrom(
               backgroundColor: accentColor,
               foregroundColor: Colors.white,

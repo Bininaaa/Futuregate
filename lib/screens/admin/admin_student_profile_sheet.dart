@@ -561,7 +561,7 @@ class _AdminStudentApplicationsSheetState
                         action: FilledButton.icon(
                           onPressed: _retry,
                           icon: const Icon(Icons.refresh_rounded),
-                          label: const Text('Retry'),
+                          label: Text(AppLocalizations.of(context)!.retryLabel),
                         ),
                       )
                     else if (items.isEmpty)

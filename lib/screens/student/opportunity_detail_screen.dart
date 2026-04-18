@@ -21,6 +21,7 @@ import '../../widgets/app_shell_background.dart';
 import '../../widgets/shared/app_content_system.dart';
 import '../../widgets/shared/app_feedback.dart';
 import 'chat_screen.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 class OpportunityDetailScreen extends StatelessWidget {
   final OpportunityModel opportunity;
@@ -324,7 +325,7 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
           ? 'Opportunity on FutureGate'
           : widget.opportunity.title.trim(),
       'Company: $_companyName',
-      'Type: ${OpportunityType.label(_effectiveType)}',
+      'Type: ${OpportunityType.label(_effectiveType, AppLocalizations.of(context)!)}',
       if (_locationValue.isNotEmpty) 'Location: $_locationValue',
       if (_salaryLabel != null) '$_primaryCompensationLabel: ${_salaryLabel!}',
       if (_durationLabel != null) 'Duration: ${_durationLabel!}',
@@ -477,7 +478,7 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
       case ApplicationEligibilityStatus.alreadyApplied:
         final appStatus = _appliedStatusFor(applicationProvider);
         if (appStatus != null) {
-          return 'Status: ${ApplicationStatus.label(appStatus)}';
+          return 'Status: ${ApplicationStatus.label(appStatus, AppLocalizations.of(context)!)}';
         }
         return 'Already Applied';
       case ApplicationEligibilityStatus.closed:
@@ -847,7 +848,7 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
         elevation: 0,
         foregroundColor: _theme.textPrimary,
         title: Text(
-          OpportunityType.label(_effectiveType),
+          OpportunityType.label(_effectiveType, AppLocalizations.of(context)!),
           style: _theme.section(size: 18, weight: FontWeight.w700),
         ),
         actions: <Widget>[
@@ -880,7 +881,7 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
             summary: widget.opportunity.description.trim(),
             badges: <AppBadgeData>[
               AppBadgeData(
-                label: OpportunityType.label(_effectiveType),
+                label: OpportunityType.label(_effectiveType, AppLocalizations.of(context)!),
                 icon: OpportunityType.icon(_effectiveType),
               ),
               if (widget.opportunity.status.trim().isNotEmpty)
@@ -929,7 +930,7 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
             items: <AppInfoTileData>[
               AppInfoTileData(
                 label: 'Type',
-                value: OpportunityType.label(_effectiveType),
+                value: OpportunityType.label(_effectiveType, AppLocalizations.of(context)!),
                 icon: OpportunityType.icon(_effectiveType),
               ),
               AppInfoTileData(

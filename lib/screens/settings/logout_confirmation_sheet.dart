@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../l10n/generated/app_localizations.dart';
 import '../../models/user_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/profile_avatar.dart';
@@ -29,14 +30,12 @@ class LogoutConfirmationSheet extends StatefulWidget {
 
 class _LogoutConfirmationSheetState extends State<LogoutConfirmationSheet> {
   late final UserModel? _user;
-  late final _LogoutCopy _copy;
   bool _isSigningOut = false;
 
   @override
   void initState() {
     super.initState();
     _user = context.read<AuthProvider>().userModel;
-    _copy = _LogoutCopy.fromRole(_user?.role);
   }
 
   Future<void> _signOut() async {
@@ -57,6 +56,8 @@ class _LogoutConfirmationSheetState extends State<LogoutConfirmationSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final copy = _LogoutCopy.fromRole(l10n, _user?.role);
     return PopScope(
       canPop: !_isSigningOut,
       child: SafeArea(
@@ -93,10 +94,10 @@ class _LogoutConfirmationSheetState extends State<LogoutConfirmationSheet> {
                         width: 54,
                         height: 54,
                         decoration: BoxDecoration(
-                          color: _copy.color.withValues(alpha: 0.10),
+                          color: copy.color.withValues(alpha: 0.10),
                           borderRadius: SettingsFlowTheme.radius(18),
                         ),
-                        child: Icon(_copy.icon, color: _copy.color, size: 26),
+                        child: Icon(copy.icon, color: copy.color, size: 26),
                       ),
                       const SizedBox(width: 14),
                       Expanded(
@@ -104,12 +105,12 @@ class _LogoutConfirmationSheetState extends State<LogoutConfirmationSheet> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              _copy.title,
+                              copy.title,
                               style: SettingsFlowTheme.sectionTitle(),
                             ),
                             const SizedBox(height: 6),
                             Text(
-                              _copy.message,
+                              copy.message,
                               style: SettingsFlowTheme.caption(),
                             ),
                           ],
@@ -119,19 +120,21 @@ class _LogoutConfirmationSheetState extends State<LogoutConfirmationSheet> {
                   ),
                   if (_user != null) ...[
                     const SizedBox(height: 16),
-                    _LogoutAccountPreview(user: _user, copy: _copy),
+                    _LogoutAccountPreview(user: _user, copy: copy),
                   ],
                   const SizedBox(height: 18),
                   SettingsButtonGroup(
                     children: [
                       SettingsSecondaryButton(
-                        label: 'Cancel',
+                        label: l10n.cancelLabel,
                         onPressed: _isSigningOut
                             ? null
                             : () => Navigator.pop(context),
                       ),
                       SettingsPrimaryButton(
-                        label: _isSigningOut ? 'Signing out' : 'Sign out',
+                        label: _isSigningOut
+                            ? l10n.signingOutLabel
+                            : l10n.signOutTitle,
                         backgroundColor: SettingsFlowPalette.error,
                         onPressed: _isSigningOut ? null : _signOut,
                       ),
@@ -170,40 +173,37 @@ class _LogoutCopy {
     required this.color,
   });
 
-  factory _LogoutCopy.fromRole(String? role) {
+  factory _LogoutCopy.fromRole(AppLocalizations l10n, String? role) {
     switch ((role ?? '').trim().toLowerCase()) {
       case 'admin':
         return _LogoutCopy(
-          title: 'Sign out of admin?',
-          message:
-              'You will leave the admin workspace on this device. Saved changes stay safe.',
-          roleLabel: 'Admin',
+          title: l10n.signOutAdminQuestion,
+          message: l10n.signOutAdminBody,
+          roleLabel: l10n.adminRoleLabel,
           icon: Icons.admin_panel_settings_rounded,
           color: SettingsFlowPalette.primary,
         );
       case 'company':
         return _LogoutCopy(
-          title: 'Sign out of company?',
-          message:
-              'You will leave the company workspace on this device. Your profile and opportunities stay saved.',
-          roleLabel: 'Company',
+          title: l10n.signOutCompanyQuestion,
+          message: l10n.signOutCompanyBody,
+          roleLabel: l10n.companyRoleLabel,
           icon: Icons.business_center_rounded,
           color: SettingsFlowPalette.secondary,
         );
       case 'student':
         return _LogoutCopy(
-          title: 'Sign out of student?',
-          message:
-              'You will leave your student workspace on this device. Your profile and saved items stay safe.',
-          roleLabel: 'Student',
+          title: l10n.signOutStudentQuestion,
+          message: l10n.signOutStudentBody,
+          roleLabel: l10n.studentRoleLabel,
           icon: Icons.school_rounded,
           color: SettingsFlowPalette.primary,
         );
       default:
         return _LogoutCopy(
-          title: 'Sign out of FutureGate?',
-          message: 'You can sign back in anytime with the same account.',
-          roleLabel: 'Account',
+          title: l10n.signOutFutureGateQuestion,
+          message: l10n.signOutFutureGateBody,
+          roleLabel: l10n.accountRoleLabel,
           icon: Icons.logout_rounded,
           color: SettingsFlowPalette.primary,
         );
@@ -219,7 +219,8 @@ class _LogoutAccountPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final displayName = _displayName(user);
+    final l10n = AppLocalizations.of(context)!;
+    final displayName = _displayName(user, l10n);
 
     return Container(
       padding: const EdgeInsets.all(12),
@@ -269,7 +270,7 @@ class _LogoutAccountPreview extends StatelessWidget {
     );
   }
 
-  String _displayName(UserModel user) {
+  String _displayName(UserModel user, AppLocalizations l10n) {
     final companyName = (user.companyName ?? '').trim();
     final fullName = user.fullName.trim();
 
@@ -281,6 +282,6 @@ class _LogoutAccountPreview extends StatelessWidget {
       return fullName;
     }
 
-    return user.isAdmin ? 'Admin account' : 'FutureGate account';
+    return user.isAdmin ? l10n.adminAccountLabel : l10n.futureGateAccountFallback;
   }
 }

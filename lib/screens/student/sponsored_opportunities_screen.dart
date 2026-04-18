@@ -22,6 +22,7 @@ import 'applied_opportunities_screen.dart';
 import 'opportunity_detail_screen.dart';
 import 'profile_screen.dart';
 import 'saved_screen.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 class SponsoredOpportunitiesScreen extends StatefulWidget {
   const SponsoredOpportunitiesScreen({super.key});
@@ -348,7 +349,7 @@ class _SponsoredOpportunitiesScreenState
     final applicationStatus = appliedStatuses[opportunity.id];
     if (applicationStatus != null) {
       return _SponsoredActionState(
-        label: ApplicationStatus.label(applicationStatus),
+        label: ApplicationStatus.label(applicationStatus, AppLocalizations.of(context)!),
         color: ApplicationStatus.color(applicationStatus),
         icon: _sponsoredApplicationStatusIcon(applicationStatus),
       );

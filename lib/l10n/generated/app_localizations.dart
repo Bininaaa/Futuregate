@@ -6812,9 +6812,9 @@ abstract class AppLocalizations {
   /// No description provided for @uiTheLatestitemslimitNewestRolesInternshipsAndSponsoredTracks.
   ///
   /// In en, this message translates to:
-  /// **'The {_latestItemsLimit} newest roles, internships, and sponsored tracks'**
+  /// **'The {latestItemsLimit} newest roles, internships, and sponsored tracks'**
   String uiTheLatestitemslimitNewestRolesInternshipsAndSponsoredTracks(
-    Object _latestItemsLimit,
+    Object latestItemsLimit,
   );
 
   /// No description provided for @uiTheProfileAlreadyLooksPolishedAQuickRefreshFromTime.
@@ -9550,6 +9550,1146 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Account Details'**
   String get uiAccountDetails;
+
+  /// No description provided for @securitySectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Security'**
+  String get securitySectionTitle;
+
+  /// No description provided for @securitySectionSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep passwords, privacy controls, and account protections close at hand.'**
+  String get securitySectionSubtitle;
+
+  /// No description provided for @signOutCompanySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out of the company workspace'**
+  String get signOutCompanySubtitle;
+
+  /// No description provided for @adminSettingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin settings'**
+  String get adminSettingsTitle;
+
+  /// No description provided for @adminAccountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin account'**
+  String get adminAccountLabel;
+
+  /// No description provided for @adminWorkspaceBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Control your workspace preferences without changing the admin profile record.'**
+  String get adminWorkspaceBody;
+
+  /// No description provided for @adminLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin'**
+  String get adminLabel;
+
+  /// No description provided for @adminWorkspaceSectionSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep platform operations close without exposing profile editing.'**
+  String get adminWorkspaceSectionSubtitle;
+
+  /// No description provided for @adminSupportSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'App information and help for platform admins.'**
+  String get adminSupportSubtitle;
+
+  /// No description provided for @signOutAdminSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'End this admin session on the current device'**
+  String get signOutAdminSubtitle;
+
+  /// No description provided for @themeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme'**
+  String get themeTitle;
+
+  /// No description provided for @appThemeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'App theme'**
+  String get appThemeTitle;
+
+  /// No description provided for @themeSystemLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get themeSystemLabel;
+
+  /// No description provided for @themeLightLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get themeLightLabel;
+
+  /// No description provided for @themeDarkLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get themeDarkLabel;
+
+  /// No description provided for @themeSystemSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow your device appearance setting'**
+  String get themeSystemSubtitle;
+
+  /// No description provided for @themeLightSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep FutureGate bright and airy'**
+  String get themeLightSubtitle;
+
+  /// No description provided for @themeDarkSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the premium dark workspace'**
+  String get themeDarkSubtitle;
+
+  /// No description provided for @startSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get startSectionTitle;
+
+  /// No description provided for @showStartupAnimationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Show startup animation'**
+  String get showStartupAnimationTitle;
+
+  /// No description provided for @startupAnimCheckingSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking your launch preference...'**
+  String get startupAnimCheckingSubtitle;
+
+  /// No description provided for @startupAnimOnSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The launch video will play when FutureGate opens.'**
+  String get startupAnimOnSubtitle;
+
+  /// No description provided for @startupAnimOffSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'FutureGate will open directly next time.'**
+  String get startupAnimOffSubtitle;
+
+  /// No description provided for @startupAnimErrorMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not update the startup animation setting.'**
+  String get startupAnimErrorMessage;
+
+  /// No description provided for @languageInfoSheetMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The current app experience is shown in English. Broader language selection can be introduced safely in a later iteration.'**
+  String get languageInfoSheetMessage;
+
+  /// No description provided for @accountProtectionHubTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account protection hub'**
+  String get accountProtectionHubTitle;
+
+  /// No description provided for @accountProtectionHubBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Update credentials, review privacy touchpoints, and keep access to your FutureGate profile secure.'**
+  String get accountProtectionHubBody;
+
+  /// No description provided for @accountSecuritySectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Security'**
+  String get accountSecuritySectionTitle;
+
+  /// No description provided for @accountSecuritySectionSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the existing account tools safely without affecting your current sign-in flow.'**
+  String get accountSecuritySectionSubtitle;
+
+  /// No description provided for @addPasswordTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Password'**
+  String get addPasswordTitle;
+
+  /// No description provided for @addPasswordSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep Google sign-in and add email/password too'**
+  String get addPasswordSubtitle;
+
+  /// No description provided for @changePasswordTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Password'**
+  String get changePasswordTitle;
+
+  /// No description provided for @changePasswordSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Update your sign-in password'**
+  String get changePasswordSubtitle;
+
+  /// No description provided for @changeEmailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Email'**
+  String get changeEmailTitle;
+
+  /// No description provided for @changeEmailCurrentSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Current: {email}'**
+  String changeEmailCurrentSubtitle(Object email);
+
+  /// No description provided for @changeEmailVerifySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify a new sign-in email'**
+  String get changeEmailVerifySubtitle;
+
+  /// No description provided for @googleLinkedAccountTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Google-linked account'**
+  String get googleLinkedAccountTitle;
+
+  /// No description provided for @googleManagedAccountTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Google-managed account'**
+  String get googleManagedAccountTitle;
+
+  /// No description provided for @googleLinkedAccountBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This account can sign in with both Google and email/password, but the sign-in email stays managed through Google.'**
+  String get googleLinkedAccountBody;
+
+  /// No description provided for @googleManagedAccountBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This account signs in with Google. You can add a password if you want email/password access too, but the sign-in email itself stays managed through Google.'**
+  String get googleManagedAccountBody;
+
+  /// No description provided for @twoStepVerificationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Two-step verification'**
+  String get twoStepVerificationTitle;
+
+  /// No description provided for @twoStepVerificationGoogleSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage it through your Google account'**
+  String get twoStepVerificationGoogleSubtitle;
+
+  /// No description provided for @twoStepVerificationEmailSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Available through your email provider'**
+  String get twoStepVerificationEmailSubtitle;
+
+  /// No description provided for @twoStepVerificationGoogleBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This account signs in with {provider}, so two-step verification is managed directly by Google.'**
+  String twoStepVerificationGoogleBody(Object provider);
+
+  /// No description provided for @twoStepVerificationEmailBody.
+  ///
+  /// In en, this message translates to:
+  /// **'A dedicated in-app two-step setup is not enabled yet. For now, keep your mailbox protected and use a strong password.'**
+  String get twoStepVerificationEmailBody;
+
+  /// No description provided for @manageSessionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage sessions & devices'**
+  String get manageSessionsTitle;
+
+  /// No description provided for @manageSessionsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Review where your account is being used'**
+  String get manageSessionsSubtitle;
+
+  /// No description provided for @sessionsDevicesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sessions & devices'**
+  String get sessionsDevicesTitle;
+
+  /// No description provided for @sessionsDevicesBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Remote session management is not available in this build yet. Your active session on this device remains protected by Firebase authentication.'**
+  String get sessionsDevicesBody;
+
+  /// No description provided for @privacyControlsSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Controls'**
+  String get privacyControlsSectionTitle;
+
+  /// No description provided for @privacyControlsSectionSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Understand what information is stored and how it is used inside the platform.'**
+  String get privacyControlsSectionSubtitle;
+
+  /// No description provided for @dataPermissionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Data permissions'**
+  String get dataPermissionsTitle;
+
+  /// No description provided for @dataPermissionsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile, CV, and application data are used to power opportunities and recruiter review flows.'**
+  String get dataPermissionsSubtitle;
+
+  /// No description provided for @dataPermissionsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'FutureGate stores the profile details, CV content, saved items, and application activity needed to match students with opportunities and support application review.'**
+  String get dataPermissionsBody;
+
+  /// No description provided for @privacyPolicySettingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get privacyPolicySettingsTitle;
+
+  /// No description provided for @privacyPolicySettingsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Read how personal information is handled'**
+  String get privacyPolicySettingsSubtitle;
+
+  /// No description provided for @privacyPolicySettingsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account data is used to provide sign-in, profile management, saved opportunities, notifications, CV access, and applications. Sensitive access is limited to the platform features that require it.'**
+  String get privacyPolicySettingsBody;
+
+  /// No description provided for @termsOfUseSettingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of Use'**
+  String get termsOfUseSettingsTitle;
+
+  /// No description provided for @termsOfUseSettingsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Review expected platform usage'**
+  String get termsOfUseSettingsSubtitle;
+
+  /// No description provided for @termsOfUseSettingsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Use FutureGate responsibly, keep account information accurate, and avoid submitting misleading applications or content that violates platform rules.'**
+  String get termsOfUseSettingsBody;
+
+  /// No description provided for @addPasswordBannerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add email and password sign-in'**
+  String get addPasswordBannerTitle;
+
+  /// No description provided for @addPasswordBannerBodyGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep Google sign-in and add a password for this account.'**
+  String get addPasswordBannerBodyGeneric;
+
+  /// No description provided for @addPasswordBannerBodyEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep Google sign-in and add a password for {email}.'**
+  String addPasswordBannerBodyEmail(Object email);
+
+  /// No description provided for @newPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'New Password'**
+  String get newPasswordLabel;
+
+  /// No description provided for @confirmPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Password'**
+  String get confirmPasswordLabel;
+
+  /// No description provided for @currentPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Password'**
+  String get currentPasswordLabel;
+
+  /// No description provided for @addPasswordNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Your sign-in email will remain managed by Google. This only adds an additional way to sign in.'**
+  String get addPasswordNote;
+
+  /// No description provided for @addingPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Adding...'**
+  String get addingPasswordLabel;
+
+  /// No description provided for @passwordAddedSuccessBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Password added successfully. You can now sign in with Google or email and password.'**
+  String get passwordAddedSuccessBody;
+
+  /// No description provided for @passwordSetupAlreadyEnabled.
+  ///
+  /// In en, this message translates to:
+  /// **'This account already has email and password sign-in enabled.'**
+  String get passwordSetupAlreadyEnabled;
+
+  /// No description provided for @passwordSetupGoogleOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'A password can only be added while signed in to a Google account that does not already have email/password linked.'**
+  String get passwordSetupGoogleOnly;
+
+  /// No description provided for @secureAccountBannerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Secure your account'**
+  String get secureAccountBannerTitle;
+
+  /// No description provided for @secureAccountBannerBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Use a strong password with a mix of letters, numbers, and symbols to keep your account protected.'**
+  String get secureAccountBannerBody;
+
+  /// No description provided for @updatingPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Updating...'**
+  String get updatingPasswordLabel;
+
+  /// No description provided for @updatePasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Password'**
+  String get updatePasswordLabel;
+
+  /// No description provided for @passwordUpdatedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your password has been updated successfully.'**
+  String get passwordUpdatedBody;
+
+  /// No description provided for @passwordChangesUnavailableTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Password changes unavailable'**
+  String get passwordChangesUnavailableTitle;
+
+  /// No description provided for @passwordChangesGoogleBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This account uses Google sign-in right now. Add a password first, then you can change it later.'**
+  String get passwordChangesGoogleBody;
+
+  /// No description provided for @passwordChangesOnlyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Password changes are only available for accounts that already use email and password sign-in.'**
+  String get passwordChangesOnlyBody;
+
+  /// No description provided for @emailChangesUnavailableTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Email changes unavailable'**
+  String get emailChangesUnavailableTitle;
+
+  /// No description provided for @emailChangesGoogleBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This account is linked to Google, so the sign-in email must be managed through Google.'**
+  String get emailChangesGoogleBody;
+
+  /// No description provided for @emailChangesPasswordOnlyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Email changes are only available for accounts that use email and password without Google linked.'**
+  String get emailChangesPasswordOnlyBody;
+
+  /// No description provided for @currentEmailBannerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Current email'**
+  String get currentEmailBannerTitle;
+
+  /// No description provided for @noEmailAvailableBody.
+  ///
+  /// In en, this message translates to:
+  /// **'No email is currently available for this account.'**
+  String get noEmailAvailableBody;
+
+  /// No description provided for @newEmailLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'New Email'**
+  String get newEmailLabel;
+
+  /// No description provided for @newEmailHint.
+  ///
+  /// In en, this message translates to:
+  /// **'name@example.com'**
+  String get newEmailHint;
+
+  /// No description provided for @emailVerificationNote.
+  ///
+  /// In en, this message translates to:
+  /// **'A verification link will be sent to the new address before the change becomes active.'**
+  String get emailVerificationNote;
+
+  /// No description provided for @updatingEmailLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Updating...'**
+  String get updatingEmailLabel;
+
+  /// No description provided for @updateEmailLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Email'**
+  String get updateEmailLabel;
+
+  /// No description provided for @verificationSentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification sent'**
+  String get verificationSentTitle;
+
+  /// No description provided for @verificationSentBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification email sent. Confirm your new address to complete the update.'**
+  String get verificationSentBody;
+
+  /// No description provided for @backLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get backLabel;
+
+  /// No description provided for @howCanWeHelpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How can we help?'**
+  String get howCanWeHelpTitle;
+
+  /// No description provided for @howCanWeHelpSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Search common topics, contact support, or report something that needs attention.'**
+  String get howCanWeHelpSubtitle;
+
+  /// No description provided for @searchHelpTopicsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search help topics'**
+  String get searchHelpTopicsHint;
+
+  /// No description provided for @quickSupportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Support'**
+  String get quickSupportTitle;
+
+  /// No description provided for @quickSupportSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reach out with context so the team can help faster.'**
+  String get quickSupportSubtitle;
+
+  /// No description provided for @contactSupportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact Support'**
+  String get contactSupportTitle;
+
+  /// No description provided for @reportProblemTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Report a Problem'**
+  String get reportProblemTitle;
+
+  /// No description provided for @reportProblemSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Share screenshots, steps, or account issues'**
+  String get reportProblemSubtitle;
+
+  /// No description provided for @faqsSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'FAQs'**
+  String get faqsSectionTitle;
+
+  /// No description provided for @noTopicsMatchedSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No topics matched your search.'**
+  String get noTopicsMatchedSubtitle;
+
+  /// No description provided for @helpTopicCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} help topic(s)'**
+  String helpTopicCount(Object count);
+
+  /// No description provided for @noHelpTopicsMatchTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No help topics match your search'**
+  String get noHelpTopicsMatchTitle;
+
+  /// No description provided for @noHelpTopicsMatchBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Try a broader search term, or contact support if you need hands-on help.'**
+  String get noHelpTopicsMatchBody;
+
+  /// No description provided for @emailUnavailableWarningTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Email unavailable'**
+  String get emailUnavailableWarningTitle;
+
+  /// No description provided for @noEmailAppAvailableBody.
+  ///
+  /// In en, this message translates to:
+  /// **'No email app is available on this device.'**
+  String get noEmailAppAvailableBody;
+
+  /// No description provided for @supportRequestSubject.
+  ///
+  /// In en, this message translates to:
+  /// **'FutureGate Support Request'**
+  String get supportRequestSubject;
+
+  /// No description provided for @bugReportSubject.
+  ///
+  /// In en, this message translates to:
+  /// **'FutureGate Bug Report'**
+  String get bugReportSubject;
+
+  /// No description provided for @helpAccountHelpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Help'**
+  String get helpAccountHelpTitle;
+
+  /// No description provided for @helpAccountCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get helpAccountCategory;
+
+  /// No description provided for @helpAccountDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Update profile details, manage sign-in methods, and keep your student profile ready for new opportunities.'**
+  String get helpAccountDescription;
+
+  /// No description provided for @helpApplicationHelpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Application Help'**
+  String get helpApplicationHelpTitle;
+
+  /// No description provided for @helpApplicationCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Applications'**
+  String get helpApplicationCategory;
+
+  /// No description provided for @helpApplicationDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Track your submissions, review statuses, and understand what recruiters need to evaluate your profile.'**
+  String get helpApplicationDescription;
+
+  /// No description provided for @helpSavedItemsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved Items'**
+  String get helpSavedItemsTitle;
+
+  /// No description provided for @helpSavedItemsCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Dashboard'**
+  String get helpSavedItemsCategory;
+
+  /// No description provided for @helpSavedItemsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Bookmark opportunities you want to revisit later and stay organized while you prepare applications.'**
+  String get helpSavedItemsDescription;
+
+  /// No description provided for @helpCvBuilderTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'CV Builder'**
+  String get helpCvBuilderTitle;
+
+  /// No description provided for @helpCvBuilderCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'CV'**
+  String get helpCvBuilderCategory;
+
+  /// No description provided for @helpCvBuilderDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Create structured CV content, choose a template, preview your document, and export a PDF when you are ready.'**
+  String get helpCvBuilderDescription;
+
+  /// No description provided for @helpOpportunityPostingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Opportunity Posting Help'**
+  String get helpOpportunityPostingTitle;
+
+  /// No description provided for @helpOpportunityCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Platform'**
+  String get helpOpportunityCategory;
+
+  /// No description provided for @helpOpportunityDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Learn how companies and approved listings appear inside the app so you can understand the platform flow end to end.'**
+  String get helpOpportunityDescription;
+
+  /// No description provided for @helpNotificationsCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Updates'**
+  String get helpNotificationsCategory;
+
+  /// No description provided for @helpNotificationsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Stay on top of application decisions, saved item changes, reminders, and platform alerts.'**
+  String get helpNotificationsDescription;
+
+  /// No description provided for @aboutBridgeDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'FutureGate is designed as a bridge between students, their growing skills, and the real opportunities that can shape their next milestone.'**
+  String get aboutBridgeDescription;
+
+  /// No description provided for @platformStoryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Platform Story'**
+  String get platformStoryTitle;
+
+  /// No description provided for @platformStorySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'A clearer path from student ambition to real-world opportunity.'**
+  String get platformStorySubtitle;
+
+  /// No description provided for @platformStoryBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The app brings together profiles, CV tools, opportunities, scholarships, project ideas, and communication so students can move from discovery to action in one place.'**
+  String get platformStoryBody;
+
+  /// No description provided for @moreInformationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'More Information'**
+  String get moreInformationTitle;
+
+  /// No description provided for @moreInformationSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Useful references and contact points for the platform.'**
+  String get moreInformationSubtitle;
+
+  /// No description provided for @termsAboutTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms'**
+  String get termsAboutTitle;
+
+  /// No description provided for @termsAboutSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Read the platform usage summary'**
+  String get termsAboutSubtitle;
+
+  /// No description provided for @termsAboutBody.
+  ///
+  /// In en, this message translates to:
+  /// **'FutureGate expects accurate profiles, respectful communication, and responsible use of the application and content tools available in the app.'**
+  String get termsAboutBody;
+
+  /// No description provided for @privacyPolicyAboutSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'See how data supports the experience'**
+  String get privacyPolicyAboutSubtitle;
+
+  /// No description provided for @privacyPolicyAboutBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile, CV, notification, and application data are used only to provide the matching, review, and communication features that power the FutureGate experience.'**
+  String get privacyPolicyAboutBody;
+
+  /// No description provided for @contactAboutTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact'**
+  String get contactAboutTitle;
+
+  /// No description provided for @websiteSocialTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Website & Social'**
+  String get websiteSocialTitle;
+
+  /// No description provided for @websiteSocialSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Public links are added here as they go live'**
+  String get websiteSocialSubtitle;
+
+  /// No description provided for @websiteSocialBody.
+  ///
+  /// In en, this message translates to:
+  /// **'A public website and social channels are not linked inside this build yet. Support requests can still be sent directly by email.'**
+  String get websiteSocialBody;
+
+  /// No description provided for @noEmailAppAvailableAltBody.
+  ///
+  /// In en, this message translates to:
+  /// **'No email app is available right now.'**
+  String get noEmailAppAvailableAltBody;
+
+  /// No description provided for @aboutFutureGateSubject.
+  ///
+  /// In en, this message translates to:
+  /// **'About FutureGate'**
+  String get aboutFutureGateSubject;
+
+  /// No description provided for @signOutAdminQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out of admin?'**
+  String get signOutAdminQuestion;
+
+  /// No description provided for @signOutAdminBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You will leave the admin workspace on this device. Saved changes stay safe.'**
+  String get signOutAdminBody;
+
+  /// No description provided for @signOutCompanyQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out of company?'**
+  String get signOutCompanyQuestion;
+
+  /// No description provided for @signOutCompanyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You will leave the company workspace on this device. Your profile and opportunities stay saved.'**
+  String get signOutCompanyBody;
+
+  /// No description provided for @signOutStudentQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out of student?'**
+  String get signOutStudentQuestion;
+
+  /// No description provided for @signOutStudentBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You will leave your student workspace on this device. Your profile and saved items stay safe.'**
+  String get signOutStudentBody;
+
+  /// No description provided for @signOutFutureGateQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out of FutureGate?'**
+  String get signOutFutureGateQuestion;
+
+  /// No description provided for @signOutFutureGateBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You can sign back in anytime with the same account.'**
+  String get signOutFutureGateBody;
+
+  /// No description provided for @adminRoleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin'**
+  String get adminRoleLabel;
+
+  /// No description provided for @companyRoleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Company'**
+  String get companyRoleLabel;
+
+  /// No description provided for @studentRoleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Student'**
+  String get studentRoleLabel;
+
+  /// No description provided for @accountRoleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get accountRoleLabel;
+
+  /// No description provided for @signingOutLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Signing out'**
+  String get signingOutLabel;
+
+  /// No description provided for @futureGateAccountFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'FutureGate account'**
+  String get futureGateAccountFallback;
+
+  /// No description provided for @studentHomeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your daily student pulse, shortcuts, and fresh momentum.'**
+  String get studentHomeSubtitle;
+
+  /// No description provided for @studentDiscoverSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Jobs, internships, and sponsored tracks matched to your next move.'**
+  String get studentDiscoverSubtitle;
+
+  /// No description provided for @studentScholarshipsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Funding opportunities, deadlines, and global study paths.'**
+  String get studentScholarshipsSubtitle;
+
+  /// No description provided for @studentTrainingSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Courses, books, and certifications that sharpen your journey.'**
+  String get studentTrainingSubtitle;
+
+  /// No description provided for @studentIdeasSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Build, save, and grow your next project idea with confidence.'**
+  String get studentIdeasSubtitle;
+
+  /// No description provided for @studentChatSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Stay close to conversations, follow-ups, and collaboration.'**
+  String get studentChatSubtitle;
+
+  /// No description provided for @notificationsTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notificationsTooltip;
+
+  /// No description provided for @savedScholarshipsTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved scholarships'**
+  String get savedScholarshipsTooltip;
+
+  /// No description provided for @savedTrainingTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved training'**
+  String get savedTrainingTooltip;
+
+  /// No description provided for @savedIdeasTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved ideas'**
+  String get savedIdeasTooltip;
+
+  /// No description provided for @deadlineSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Deadline soon'**
+  String get deadlineSoon;
+
+  /// No description provided for @fundingPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'Funding: {amount}'**
+  String fundingPrefix(Object amount);
+
+  /// No description provided for @savedOpportunityFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved opportunity'**
+  String get savedOpportunityFallback;
+
+  /// No description provided for @closingSoonBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Closing soon'**
+  String get closingSoonBadge;
+
+  /// No description provided for @savedTypeBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved {type}'**
+  String savedTypeBadge(Object type);
+
+  /// No description provided for @savedTypeFromCompany.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved {type} from {company}'**
+  String savedTypeFromCompany(Object type, Object company);
+
+  /// No description provided for @savedTypeNeedsAttention.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved {type} that needs attention'**
+  String savedTypeNeedsAttention(Object type);
+
+  /// No description provided for @closesDateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Closes {date}'**
+  String closesDateLabel(Object date);
+
+  /// No description provided for @muteChatLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Mute Chat'**
+  String get muteChatLabel;
+
+  /// No description provided for @unmuteChatLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Unmute Chat'**
+  String get unmuteChatLabel;
+
+  /// No description provided for @chatMutedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat muted'**
+  String get chatMutedTitle;
+
+  /// No description provided for @chatUnmutedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat unmuted'**
+  String get chatUnmutedTitle;
+
+  /// No description provided for @chatMutedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications for this chat are now muted.'**
+  String get chatMutedBody;
+
+  /// No description provided for @chatUnmutedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat notifications are active again.'**
+  String get chatUnmutedBody;
+
+  /// No description provided for @uiOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get uiOpen;
+
+  /// No description provided for @uiViewAllApps.
+  ///
+  /// In en, this message translates to:
+  /// **'View All Apps'**
+  String get uiViewAllApps;
+
+  /// No description provided for @uiViewApplicationsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'View Applications ({count})'**
+  String uiViewApplicationsCount(Object count);
+
+  /// No description provided for @openLibraryStudioLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Library Studio'**
+  String get openLibraryStudioLabel;
+
+  /// No description provided for @noScholarshipLinkAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No scholarship link is available for this item yet.'**
+  String get noScholarshipLinkAvailable;
+
+  /// No description provided for @couldNotOpenScholarshipLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open the scholarship link.'**
+  String get couldNotOpenScholarshipLink;
+
+  /// No description provided for @editMessageLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit message'**
+  String get editMessageLabel;
+
+  /// No description provided for @noRecentUsersYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No recent users yet'**
+  String get noRecentUsersYet;
+
+  /// No description provided for @uiBachelor.
+  ///
+  /// In en, this message translates to:
+  /// **'Bachelor'**
+  String get uiBachelor;
 }
 
 class _AppLocalizationsDelegate

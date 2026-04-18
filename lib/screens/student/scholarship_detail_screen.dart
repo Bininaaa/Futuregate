@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/generated/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -325,8 +326,8 @@ class ScholarshipDetailScreen extends StatelessWidget {
     final uri = _linkUri;
     if (uri == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No scholarship link is available for this item yet'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.noScholarshipLinkAvailable),
         ),
       );
       return;
@@ -335,7 +336,7 @@ class ScholarshipDetailScreen extends StatelessWidget {
     final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
     if (!launched && context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not open the scholarship link')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.couldNotOpenScholarshipLink)),
       );
     }
   }

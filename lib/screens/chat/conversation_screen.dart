@@ -15,6 +15,7 @@ import '../../widgets/chat/chat_formatters.dart';
 import '../../widgets/chat/chat_confirmation_dialog.dart';
 import '../../widgets/chat/chat_input_bar.dart';
 import '../../widgets/chat/chat_message_bubble.dart';
+import '../../l10n/generated/app_localizations.dart';
 import '../../widgets/chat/chat_theme.dart';
 import '../../widgets/profile_avatar.dart';
 import '../../widgets/shared/app_feedback.dart';
@@ -429,11 +430,10 @@ class _ConversationScreenState extends State<ConversationScreen> {
 
     if (!mounted || provider.error != null) return;
 
+    final l10n = AppLocalizations.of(context)!;
     context.showAppSnackBar(
-      muted
-          ? 'Notifications for this chat are now muted.'
-          : 'Chat notifications are active again.',
-      title: muted ? 'Chat muted' : 'Chat unmuted',
+      muted ? l10n.chatMutedBody : l10n.chatUnmutedBody,
+      title: muted ? l10n.chatMutedTitle : l10n.chatUnmutedTitle,
       type: AppFeedbackType.info,
     );
   }
@@ -950,12 +950,12 @@ class _ConversationHeader extends StatelessWidget {
               itemBuilder: (context) => [
                 PopupMenuItem<String>(
                   value: 'profile',
-                  child: Text('View Profile', style: ChatThemeStyles.body()),
+                  child: Text(AppLocalizations.of(context)!.uiViewProfile, style: ChatThemeStyles.body()),
                 ),
                 PopupMenuItem<String>(
                   value: 'mute',
                   child: Text(
-                    muted ? 'Unmute Chat' : 'Mute Chat',
+                    muted ? AppLocalizations.of(context)!.unmuteChatLabel : AppLocalizations.of(context)!.muteChatLabel,
                     style: ChatThemeStyles.body(),
                   ),
                 ),

@@ -272,7 +272,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
     }
 
     if (user == null) {
-      return wrapScaffold(const Center(child: Text('Not logged in')));
+      return wrapScaffold(Center(child: Text(AppLocalizations.of(context)!.notLoggedIn)));
     }
 
     final items = _filteredItems(provider);
@@ -664,7 +664,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
       children: [
         Row(
           children: [
-            Text('FILTERS', style: sectionLabelStyle),
+            Text(AppLocalizations.of(context)!.uiFilters.toUpperCase(), style: sectionLabelStyle),
             const Spacer(),
             if (_activeFilterCount > 0)
               _CounterBadge(count: _activeFilterCount, label: 'Active'),
@@ -676,7 +676,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
           hintText: 'Search by candidate, opportunity, location, or type...',
         ),
         const SizedBox(height: 12),
-        Text('STATUS', style: sectionLabelStyle),
+        Text(AppLocalizations.of(context)!.uiStatus.toUpperCase(), style: sectionLabelStyle),
         const SizedBox(height: 8),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
@@ -718,7 +718,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
           ),
         ),
         const SizedBox(height: 12),
-        Text('TYPE', style: sectionLabelStyle),
+        Text(AppLocalizations.of(context)!.uiType.toUpperCase(), style: sectionLabelStyle),
         const SizedBox(height: 8),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
@@ -767,7 +767,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
         ),
         if (provider.opportunities.isNotEmpty) ...[
           const SizedBox(height: 12),
-          Text('ROLES', style: sectionLabelStyle),
+          Text(AppLocalizations.of(context)!.uiRoles.toUpperCase(), style: sectionLabelStyle),
           const SizedBox(height: 8),
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -1430,7 +1430,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                     ),
                     icon: Icons.checklist_rounded,
                     child: requirements.isEmpty
-                        ? const _DetailBodyText('No requirements provided.')
+                        ? _DetailBodyText(AppLocalizations.of(context)!.uiNoRequirementsProvided)
                         : _DetailBulletList(items: requirements),
                   ),
                   if (benefits.isNotEmpty) ...[
@@ -1991,7 +1991,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                     child: OutlinedButton.icon(
                       onPressed: onView,
                       icon: const Icon(Icons.visibility_outlined, size: 18),
-                      label: const Text('View CV'),
+                      label: Text(AppLocalizations.of(context)!.uiViewCv),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: accentColor,
                         side: BorderSide(
@@ -2007,7 +2007,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                     child: ElevatedButton.icon(
                       onPressed: onDownload,
                       icon: const Icon(Icons.download_outlined, size: 18),
-                      label: const Text('Download CV'),
+                      label: Text(AppLocalizations.of(context)!.uiDownloadCv),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: accentColor,
                         foregroundColor: Colors.white,

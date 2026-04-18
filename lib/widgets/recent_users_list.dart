@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/generated/app_localizations.dart';
 
 import '../models/user_model.dart';
 import 'profile_avatar.dart';
@@ -41,7 +42,7 @@ class RecentUsersList extends StatelessWidget {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
-            if (users.isEmpty) const Text('No recent users yet'),
+            if (users.isEmpty) Text(AppLocalizations.of(context)!.noRecentUsersYet),
             ...users.map(
               (user) => ListTile(
                 leading: ProfileAvatar(user: user, radius: 20),

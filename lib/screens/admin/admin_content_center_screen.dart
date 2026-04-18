@@ -202,7 +202,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 const SizedBox(height: 8),
                 TextButton(
                   onPressed: provider.loadModerationData,
-                  child: const Text('Retry'),
+                  child: Text(AppLocalizations.of(context)!.retryLabel),
                 ),
               ],
             ),
@@ -369,7 +369,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     return Scaffold(
       backgroundColor: AdminPalette.background,
       appBar: AppBar(
-        title: const Text('Admin Content Center'),
+        title: Text(AppLocalizations.of(context)!.uiAdminContentCenter),
         backgroundColor: AdminPalette.surface,
         foregroundColor: _primaryColor,
       ),
@@ -451,7 +451,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
         action: FilledButton.icon(
           onPressed: () => _openIdeaEditor(),
           icon: const Icon(Icons.add_rounded),
-          label: const Text('Post Admin Idea'),
+          label: Text(AppLocalizations.of(context)!.uiPostAdminIdea),
           style: FilledButton.styleFrom(
             backgroundColor: _ideaAccentColor,
             foregroundColor: Colors.white,
@@ -570,7 +570,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                           child: FilledButton.icon(
                             onPressed: () => _openIdeaEditor(),
                             icon: const Icon(Icons.add_rounded, size: 18),
-                            label: const Text('Post Admin Idea'),
+                            label: Text(AppLocalizations.of(context)!.uiPostAdminIdea),
                             style: FilledButton.styleFrom(
                               backgroundColor: _ideaAccentColor,
                               foregroundColor: Colors.white,
@@ -623,7 +623,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             OutlinedButton.icon(
               onPressed: () => _showProjectIdeaDetails(idea),
               icon: const Icon(Icons.open_in_new_rounded, size: 16),
-              label: const Text('Details'),
+              label: Text(AppLocalizations.of(context)!.uiDetails),
               style: _compactOutlinedFooterStyle(_ideaAccentColor),
             ),
             if (isPending)
@@ -809,7 +809,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 : () => setState(() {
                     _ideaStatusFilter = _ideaFilterPending;
                   }),
-            child: const Text('Open'),
+            child: Text(AppLocalizations.of(context)!.uiOpen),
           ),
         ],
       ),
@@ -1096,7 +1096,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
         action: FilledButton.icon(
           onPressed: () => _openOpportunityEditor(),
           icon: const Icon(Icons.add_rounded),
-          label: const Text('Post Opportunity'),
+          label: Text(AppLocalizations.of(context)!.uiPostOpportunity),
         ),
       );
     }
@@ -1214,7 +1214,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 action: FilledButton.icon(
                   onPressed: () => _openOpportunityEditor(),
                   icon: const Icon(Icons.add_rounded, size: 18),
-                  label: const Text('Post Opportunity'),
+                  label: Text(AppLocalizations.of(context)!.uiPostOpportunity),
                   style: FilledButton.styleFrom(
                     backgroundColor: AdminPalette.primary,
                     foregroundColor: Colors.white,
@@ -1280,7 +1280,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             OutlinedButton.icon(
               onPressed: () => _showOpportunityDetails(opportunity),
               icon: const Icon(Icons.open_in_new_rounded, size: 16),
-              label: const Text('Details'),
+              label: Text(AppLocalizations.of(context)!.uiDetails),
               style: _compactOutlinedFooterStyle(opportunityTypeColor),
             ),
             if (applications.isNotEmpty)
@@ -1486,7 +1486,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
         action: FilledButton.icon(
           onPressed: () => _openScholarshipEditor(),
           icon: const Icon(Icons.add_rounded),
-          label: const Text('Post Scholarship'),
+          label: Text(AppLocalizations.of(context)!.uiPostScholarship),
           style: FilledButton.styleFrom(
             backgroundColor: _scholarshipAccentColor,
             foregroundColor: Colors.white,
@@ -1554,7 +1554,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 action: FilledButton.icon(
                   onPressed: () => _openScholarshipEditor(),
                   icon: const Icon(Icons.add_rounded, size: 18),
-                  label: const Text('Post Scholarship'),
+                  label: Text(AppLocalizations.of(context)!.uiPostScholarship),
                   style: FilledButton.styleFrom(
                     backgroundColor: _scholarshipAccentColor,
                     foregroundColor: Colors.white,
@@ -1595,14 +1595,14 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             OutlinedButton.icon(
               onPressed: () => _showScholarshipDetails(scholarship),
               icon: const Icon(Icons.open_in_new_rounded, size: 16),
-              label: const Text('Details'),
+              label: Text(AppLocalizations.of(context)!.uiDetails),
               style: _compactOutlinedFooterStyle(_scholarshipAccentColor),
             ),
             if (scholarshipModel.link.trim().isNotEmpty)
               FilledButton.icon(
                 onPressed: () => _openExternalLink(scholarshipModel.link),
                 icon: const Icon(Icons.open_in_new_rounded, size: 16),
-                label: const Text('Apply Link'),
+                label: Text(AppLocalizations.of(context)!.uiApplyLink),
                 style: _compactFilledFooterStyle(_scholarshipAccentColor),
               ),
             if (scholarshipModel.isHidden)
@@ -1768,7 +1768,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
         action: FilledButton.icon(
           onPressed: () => _openTrainingLibrary(),
           icon: const Icon(Icons.auto_awesome_mosaic_rounded),
-          label: const Text('Open Library Studio'),
+          label: Text(AppLocalizations.of(context)!.openLibraryStudioLabel),
           style: FilledButton.styleFrom(
             backgroundColor: _libraryAccentColor,
             foregroundColor: Colors.white,
@@ -1861,7 +1861,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 action: FilledButton.icon(
                   onPressed: () => _openTrainingLibrary(),
                   icon: const Icon(Icons.auto_awesome_mosaic_rounded, size: 18),
-                  label: const Text('Open Library Studio'),
+                  label: Text(AppLocalizations.of(context)!.openLibraryStudioLabel),
                   style: FilledButton.styleFrom(
                     backgroundColor: _libraryAccentColor,
                     foregroundColor: Colors.white,
@@ -2681,14 +2681,14 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       OutlinedButton.icon(
         onPressed: () => _showTrainingDetails(training),
         icon: const Icon(Icons.open_in_new_rounded, size: 16),
-        label: const Text('Details'),
+        label: Text(AppLocalizations.of(context)!.uiDetails),
         style: _compactOutlinedFooterStyle(trainingAccentColor),
       ),
       if (training.displayLink.trim().isNotEmpty)
         FilledButton.icon(
           onPressed: () => _openExternalLink(training.displayLink),
           icon: const Icon(Icons.open_in_new_rounded, size: 16),
-          label: const Text('Open Resource'),
+          label: Text(AppLocalizations.of(context)!.uiOpenResource),
           style: _compactFilledFooterStyle(trainingAccentColor),
         ),
       if (training.isHidden)
@@ -3250,7 +3250,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                   _openIdeaEditor(idea: idea);
                 },
                 icon: const Icon(Icons.edit_outlined),
-                label: const Text('Edit Idea'),
+                label: Text(AppLocalizations.of(context)!.uiEditIdea),
                 style: FilledButton.styleFrom(
                   backgroundColor: _ideaAccentColor,
                   foregroundColor: Colors.white,
@@ -3695,7 +3695,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 _updateAdminApplicationStatus(item, ApplicationStatus.rejected);
               },
         icon: const Icon(Icons.block_outlined, size: 18),
-        label: const Text('Reject'),
+        label: Text(AppLocalizations.of(context)!.uiReject),
         style: OutlinedButton.styleFrom(
           foregroundColor: AdminPalette.danger,
           side: BorderSide(color: AdminPalette.danger.withValues(alpha: 0.34)),
@@ -3936,7 +3936,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                                   });
                                 },
                           icon: const Icon(Icons.person_outline_rounded),
-                          label: const Text('View Profile'),
+                          label: Text(AppLocalizations.of(context)!.uiViewProfile),
                           style: FilledButton.styleFrom(
                             backgroundColor: AdminPalette.primary,
                             foregroundColor: Colors.white,
@@ -3954,7 +3954,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                             });
                           },
                           icon: const Icon(Icons.description_outlined),
-                          label: const Text('View CV'),
+                          label: Text(AppLocalizations.of(context)!.uiViewCv),
                           style: FilledButton.styleFrom(
                             backgroundColor: AdminPalette.activity,
                             foregroundColor: Colors.white,
@@ -3976,7 +3976,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                             });
                           },
                           icon: const Icon(Icons.assignment_outlined),
-                          label: const Text('View All Apps'),
+                          label: Text(AppLocalizations.of(context)!.uiViewAllApps),
                           style: OutlinedButton.styleFrom(
                             foregroundColor: AdminPalette.info,
                             side: BorderSide(
@@ -4289,7 +4289,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 FilledButton.icon(
                   onPressed: onView,
                   icon: const Icon(Icons.visibility_outlined, size: 18),
-                  label: const Text('View CV'),
+                  label: Text(AppLocalizations.of(context)!.uiViewCv),
                   style: FilledButton.styleFrom(
                     backgroundColor: accentColor,
                     foregroundColor: Colors.white,
@@ -4300,7 +4300,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 OutlinedButton.icon(
                   onPressed: onDownload,
                   icon: const Icon(Icons.download_outlined, size: 18),
-                  label: const Text('Download CV'),
+                  label: Text(AppLocalizations.of(context)!.uiDownloadCv),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: accentColor,
                     side: BorderSide(
@@ -4574,7 +4574,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                   _showOpportunityApplications(opportunity, applications);
                 },
                 icon: const Icon(Icons.assignment_outlined),
-                label: Text('View Applications (${applications.length})'),
+                label: Text(AppLocalizations.of(context)!.uiViewApplicationsCount(applications.length)),
                 style: FilledButton.styleFrom(
                   backgroundColor: typeColor,
                   foregroundColor: Colors.white,
@@ -4985,7 +4985,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               FilledButton.icon(
                 onPressed: () => _openExternalLink(link),
                 icon: const Icon(Icons.open_in_new_rounded),
-                label: const Text('Open Resource'),
+                label: Text(AppLocalizations.of(context)!.uiOpenResource),
                 style: FilledButton.styleFrom(
                   backgroundColor: trainingAccentColor,
                   foregroundColor: Colors.white,
@@ -5299,7 +5299,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  child: const Text('Cancel'),
+                  child: Text(AppLocalizations.of(context)!.cancelLabel),
                 ),
               ),
               const SizedBox(width: 10),
@@ -5307,7 +5307,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 child: FilledButton.icon(
                   onPressed: onConfirm,
                   icon: const Icon(Icons.delete_outline_rounded, size: 18),
-                  label: const Text('Delete'),
+                  label: Text(AppLocalizations.of(context)!.uiDelete),
                   style: FilledButton.styleFrom(
                     backgroundColor: AdminPalette.danger,
                     foregroundColor: Colors.white,

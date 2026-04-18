@@ -324,9 +324,7 @@
   "uiActionUser": "{action} User",
   "@uiActionUser": {
     "placeholders": {
-      "action": {
-        "type": "Object"
-      }
+      "action": {}
     }
   },
   "uiActions": "Actions",
@@ -363,9 +361,7 @@
   "uiAllOppsValue1": "All opps ({value1})",
   "@uiAllOppsValue1": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiAllRoles": "All Roles",
@@ -376,17 +372,13 @@
   "uiApplicantcount": "{applicantCount}",
   "@uiApplicantcount": {
     "placeholders": {
-      "applicantCount": {
-        "type": "Object"
-      }
+      "applicantCount": {}
     }
   },
   "uiApplicantcountApplicants": "{applicantCount} applicants",
   "@uiApplicantcountApplicants": {
     "placeholders": {
-      "applicantCount": {
-        "type": "Object"
-      }
+      "applicantCount": {}
     }
   },
   "uiApplicants": "Applicants",
@@ -409,9 +401,7 @@
   "uiApplicationsForOpportunitytitle": "Applications for {opportunityTitle}",
   "@uiApplicationsForOpportunitytitle": {
     "placeholders": {
-      "opportunityTitle": {
-        "type": "Object"
-      }
+      "opportunityTitle": {}
     }
   },
   "uiApplicationsReceived": "Applications Received",
@@ -419,18 +409,14 @@
   "uiAppliedAppliedtext": "Applied {appliedText}",
   "@uiAppliedAppliedtext": {
     "placeholders": {
-      "appliedText": {
-        "type": "Object"
-      }
+      "appliedText": {}
     }
   },
   "uiAppliedOpportunities": "Applied opportunities",
   "uiAppliedRelativeappliedlabel": "Applied {relativeAppliedLabel}",
   "@uiAppliedRelativeappliedlabel": {
     "placeholders": {
-      "relativeAppliedLabel": {
-        "type": "Object"
-      }
+      "relativeAppliedLabel": {}
     }
   },
   "uiApply": "Apply",
@@ -443,12 +429,8 @@
   "uiApprovedValue1Approved": "{approved} {value1} approved.",
   "@uiApprovedValue1Approved": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      },
-      "approved": {
-        "type": "Object"
-      }
+      "value1": {},
+      "approved": {}
     }
   },
   "uiArchiveConversation": "Archive conversation?",
@@ -477,9 +459,7 @@
   "uiBadgecount": "{badgeCount}",
   "@uiBadgecount": {
     "placeholders": {
-      "badgeCount": {
-        "type": "Object"
-      }
+      "badgeCount": {}
     }
   },
   "uiBasicDetails": "Basic Details",
@@ -511,9 +491,7 @@
   "uiByValue1": "By {value1}",
   "@uiByValue1": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiCatalogue": "Catalogue",
@@ -562,28 +540,20 @@
   "uiCompletedOfTotalSectionsComplete": "{completed} of {total} sections complete",
   "@uiCompletedOfTotalSectionsComplete": {
     "placeholders": {
-      "completed": {
-        "type": "Object"
-      },
-      "total": {
-        "type": "Object"
-      }
+      "completed": {},
+      "total": {}
     }
   },
   "uiCompletion": "{completion}%",
   "@uiCompletion": {
     "placeholders": {
-      "completion": {
-        "type": "Object"
-      }
+      "completion": {}
     }
   },
   "uiCompletionReadyForBetterStudentMatching": "{completion}% ready for better student matching",
   "@uiCompletionReadyForBetterStudentMatching": {
     "placeholders": {
-      "completion": {
-        "type": "Object"
-      }
+      "completion": {}
     }
   },
   "uiConfirmPassword": "Confirm Password",
@@ -605,9 +575,7 @@
   "uiCount": "{count}",
   "@uiCount": {
     "placeholders": {
-      "count": {
-        "type": "Object"
-      }
+      "count": {}
     }
   },
   "uiCoursesBooksAndCertificationsThatSharpenYourJourney": "Courses, books, and certifications that sharpen your journey.",
@@ -649,17 +617,13 @@
   "uiDeleteValue1FromFirestoreThisActionCannotBeUndone": "Delete \"{value1}\" from Firestore? This action cannot be undone.",
   "@uiDeleteValue1FromFirestoreThisActionCannotBeUndone": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiDeleteValue1IfItAlreadyHasApplicationsItWillBe": "Delete \"{value1}\"? If it already has applications, it will be closed instead so history is preserved.",
   "@uiDeleteValue1IfItAlreadyHasApplicationsItWillBe": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiDeliveryAccess": "Delivery & Access",
@@ -713,9 +677,7 @@
   "uiFeaturedcountFeaturedResources": "{featuredCount} featured resources",
   "@uiFeaturedcountFeaturedResources": {
     "placeholders": {
-      "featuredCount": {
-        "type": "Object"
-      }
+      "featuredCount": {}
     }
   },
   "uiFeed": "Feed",
@@ -744,9 +706,7 @@
   "uiFundingValue1": "Funding: {value1}",
   "@uiFundingValue1": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiFuturegateExpectsAccurateProfilesRespectfulCommunicationAndResponsibleUseOf": "FutureGate expects accurate profiles, respectful communication, and responsible use of the application and content tools available in the app.",
@@ -803,9 +763,7 @@
   "uiInterestedcountInterested": "{interestedCount} Interested",
   "@uiInterestedcountInterested": {
     "placeholders": {
-      "interestedCount": {
-        "type": "Object"
-      }
+      "interestedCount": {}
     }
   },
   "uiInternships": "Internships",
@@ -835,12 +793,8 @@
   "uiLabelValue": "{label}: {value}",
   "@uiLabelValue": {
     "placeholders": {
-      "label": {
-        "type": "Object"
-      },
-      "value": {
-        "type": "Object"
-      }
+      "label": {},
+      "value": {}
     }
   },
   "uiLaboratory": "Laboratory",
@@ -894,12 +848,8 @@
   "uiMissingcountValue1StillMissingForBetterMatching": "{missingCount} {value1} still missing for better matching.",
   "@uiMissingcountValue1StillMissingForBetterMatching": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      },
-      "missingCount": {
-        "type": "Object"
-      }
+      "value1": {},
+      "missingCount": {}
     }
   },
   "uiModerateIdeaQueue": "Moderate idea queue",
@@ -930,9 +880,7 @@
   "uiNoCvAvailableForValue1": "No CV available for {value1}",
   "@uiNoCvAvailableForValue1": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiNoHelpTopicsMatchYourSearch": "No help topics match your search",
@@ -972,9 +920,7 @@
   "uiOpenCandidateProfileForStudentname": "Open candidate profile for {studentName}",
   "@uiOpenCandidateProfileForStudentname": {
     "placeholders": {
-      "studentName": {
-        "type": "Object"
-      }
+      "studentName": {}
     }
   },
   "uiOpenCvStudio": "Open CV Studio",
@@ -1015,9 +961,7 @@
   "uiPct": "{pct}%",
   "@uiPct": {
     "placeholders": {
-      "pct": {
-        "type": "Object"
-      }
+      "pct": {}
     }
   },
   "uiPending": "Pending",
@@ -1030,36 +974,26 @@
   "uiPendingValue1InReview": "{pending} {value1} in review.",
   "@uiPendingValue1InReview": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      },
-      "pending": {
-        "type": "Object"
-      }
+      "value1": {},
+      "pending": {}
     }
   },
   "uiPendingapplicationsPendingApps": "{pendingApplications} pending apps",
   "@uiPendingapplicationsPendingApps": {
     "placeholders": {
-      "pendingApplications": {
-        "type": "Object"
-      }
+      "pendingApplications": {}
     }
   },
   "uiPendingideasPendingIdeas": "{pendingIdeas} pending ideas",
   "@uiPendingideasPendingIdeas": {
     "placeholders": {
-      "pendingIdeas": {
-        "type": "Object"
-      }
+      "pendingIdeas": {}
     }
   },
   "uiPercent": "{percent}%",
   "@uiPercent": {
     "placeholders": {
-      "percent": {
-        "type": "Object"
-      }
+      "percent": {}
     }
   },
   "uiPerformance": "Performance",
@@ -1218,9 +1152,7 @@
   "uiSayHelloToOthername": "Say hello to {otherName}",
   "@uiSayHelloToOthername": {
     "placeholders": {
-      "otherName": {
-        "type": "Object"
-      }
+      "otherName": {}
     }
   },
   "uiSearchAndCurateYoutubeLessonsInOneContinuousFlowInstead": "Search and curate YouTube lessons in one continuous flow instead of working inside separate fixed windows.",
@@ -1249,9 +1181,7 @@
   "uiSearchSearchquery": "Search: {searchQuery}",
   "@uiSearchSearchquery": {
     "placeholders": {
-      "searchQuery": {
-        "type": "Object"
-      }
+      "searchQuery": {}
     }
   },
   "uiSearchTitleLocationOrKeyword": "Search title, location, or keyword",
@@ -1292,23 +1222,15 @@
   "uiShowingResultscountOfTotalapplicationsApplications": "Showing {resultsCount} of {totalApplications} applications",
   "@uiShowingResultscountOfTotalapplicationsApplications": {
     "placeholders": {
-      "resultsCount": {
-        "type": "Object"
-      },
-      "totalApplications": {
-        "type": "Object"
-      }
+      "resultsCount": {},
+      "totalApplications": {}
     }
   },
   "uiShownOfTotal": "{shown} of {total}",
   "@uiShownOfTotal": {
     "placeholders": {
-      "shown": {
-        "type": "Object"
-      },
-      "total": {
-        "type": "Object"
-      }
+      "shown": {},
+      "total": {}
     }
   },
   "uiSignIn": "Sign in",
@@ -1360,9 +1282,7 @@
   "uiSubmittedByValue1": "Submitted by: {value1}",
   "@uiSubmittedByValue1": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiSummer": "Summer",
@@ -1389,12 +1309,10 @@
   "uiTheEssentialsRecruitersAndProgramsOftenScanFirst": "The essentials recruiters and programs often scan first.",
   "uiTheEssentialsStudentsAndApplicantsUsuallyLookForFirst": "The essentials students and applicants usually look for first.",
   "uiTheHighLevelUserAndAccountPictureAdminsUsuallyNeed": "The high-level user and account picture admins usually need first.",
-  "uiTheLatestitemslimitNewestRolesInternshipsAndSponsoredTracks": "The {_latestItemsLimit} newest roles, internships, and sponsored tracks",
+  "uiTheLatestitemslimitNewestRolesInternshipsAndSponsoredTracks": "The {latestItemsLimit} newest roles, internships, and sponsored tracks",
   "@uiTheLatestitemslimitNewestRolesInternshipsAndSponsoredTracks": {
     "placeholders": {
-      "_latestItemsLimit": {
-        "type": "Object"
-      }
+      "latestItemsLimit": {}
     }
   },
   "uiTheProfileAlreadyLooksPolishedAQuickRefreshFromTime": "The profile already looks polished. A quick refresh from time to time is enough.",
@@ -1425,9 +1343,7 @@
   "uiTotalthisweek": "{totalThisWeek}",
   "@uiTotalthisweek": {
     "placeholders": {
-      "totalThisWeek": {
-        "type": "Object"
-      }
+      "totalThisWeek": {}
     }
   },
   "uiTrackEachSubmissionAndSeeWhatDeservesYourNextMove": "Track each submission and see what deserves your next move.",
@@ -1473,9 +1389,7 @@
   "uiUploadedUploadedatlabel": "Uploaded: {uploadedAtLabel}",
   "@uiUploadedUploadedatlabel": {
     "placeholders": {
-      "uploadedAtLabel": {
-        "type": "Object"
-      }
+      "uploadedAtLabel": {}
     }
   },
   "uiUrgentApplicationsThatNeedAttentionBeforeTheyExpire": "Urgent applications that need attention before they expire",
@@ -1502,183 +1416,135 @@
   "uiValue1": "{value1}%",
   "@uiValue1": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiValue1Active": "{value1} active",
   "@uiValue1Active": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiValue1Admins": "{value1} admins",
   "@uiValue1Admins": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiValue1Apps": "{value1} Apps",
   "@uiValue1Apps": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiValue1Blocked": "{value1} blocked",
   "@uiValue1Blocked": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiValue1CompanyReviews": "{value1} company reviews",
   "@uiValue1CompanyReviews": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiValue1CompanyWorkspace": "{value1} company workspace",
   "@uiValue1CompanyWorkspace": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiValue1De35": "{value1}",
   "@uiValue1De35": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiValue1Featured": "{value1} featured",
   "@uiValue1Featured": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiValue1ImportedBooks": "{value1} imported books",
   "@uiValue1ImportedBooks": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiValue1ImportedVideos": "{value1} imported videos",
   "@uiValue1ImportedVideos": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiValue1Interested": "{value1} interested",
   "@uiValue1Interested": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiValue1Mb": "{value1} MB",
   "@uiValue1Mb": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiValue1MbSelected": "{value1} MB selected",
   "@uiValue1MbSelected": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiValue1Opportunities": "{value1} opportunities",
   "@uiValue1Opportunities": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiValue1OpportunitiesCloseWithinTheNextTwoWeeks": "{value1} opportunities close within the next two weeks.",
   "@uiValue1OpportunitiesCloseWithinTheNextTwoWeeks": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiValue1Results": "{value1} results",
   "@uiValue1Results": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiValue1Scholarships": "{value1} scholarships",
   "@uiValue1Scholarships": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiValue1Trainings": "{value1} trainings",
   "@uiValue1Trainings": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiValue1Users": "{value1} users",
   "@uiValue1Users": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiValue1Value2": "{value1} ({value2})",
   "@uiValue1Value2": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      },
-      "value2": {
-        "type": "Object"
-      }
+      "value1": {},
+      "value2": {}
     }
   },
   "uiValue1Value2Dca3": "{value1} - {value2}",
   "@uiValue1Value2Dca3": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      },
-      "value2": {
-        "type": "Object"
-      }
+      "value1": {},
+      "value2": {}
     }
   },
   "uiVerification": "Verification",
@@ -1687,9 +1553,7 @@
   "uiVersionValue1": "Version {value1}",
   "@uiVersionValue1": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiVideoImportWorkspace": "Video Import Workspace",
@@ -1703,9 +1567,7 @@
   "uiViewApplicationsValue1": "View Applications ({value1})",
   "@uiViewApplicationsValue1": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiViewBuiltCv": "View Built CV",
@@ -1720,9 +1582,7 @@
   "uiWeCouldnTGenerateThisPdfPreviewRightNowValue1": "We couldn't generate this PDF preview right now. {value1}",
   "@uiWeCouldnTGenerateThisPdfPreviewRightNowValue1": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiWeDLoveToChatAbout": "\"We'd love to chat about...\"",
@@ -1736,9 +1596,7 @@
   "uiYouCanNowMessageCompanylabel": "You can now message {companyLabel}.",
   "@uiYouCanNowMessageCompanylabel": {
     "placeholders": {
-      "companyLabel": {
-        "type": "Object"
-      }
+      "companyLabel": {}
     }
   },
   "uiYouCanOpenTheCompanyProfileRightNowToImprove": "You can open the company profile right now to improve the company story, website, phone number, logo, or commercial register while the account is waiting for review.",
@@ -1778,12 +1636,8 @@
   "uiValueValue468dde": "{value1} {value2}",
   "@uiValueValue468dde": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      },
-      "value2": {
-        "type": "Object"
-      }
+      "value1": {},
+      "value2": {}
     }
   },
   "uiEdited": "Edited",
@@ -1793,17 +1647,13 @@
   "uiWeCouldntLoadLinkedActivity": "We couldn't load the linked {value1}.",
   "@uiWeCouldntLoadLinkedActivity": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiValuede3545": "{value1}%",
   "@uiValuede3545": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiWeCouldnTOpenThisAttachment": "We Couldn T Open This Attachment",
@@ -1811,118 +1661,88 @@
   "uiValueInterested27bcc0": "{value1} Interested",
   "@uiValueInterested27bcc0": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiSavedItems1d9c1a": "Saved Items",
   "uiValuePendingIdeas": "{value1} Pending Ideas",
   "@uiValuePendingIdeas": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiValuePendingApps": "{value1} Pending Apps",
   "@uiValuePendingApps": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiValueOpportunities": "{value1} opportunities",
   "@uiValueOpportunities": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiValueScholarships": "{value1} scholarships",
   "@uiValueScholarships": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiValueTrainings": "{value1} trainings",
   "@uiValueTrainings": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiScholarships": "Scholarships",
   "uiValue": "{value1}%",
   "@uiValue": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiValueValue": "{value1} ({value2})",
   "@uiValueValue": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      },
-      "value2": {
-        "type": "Object"
-      }
+      "value1": {},
+      "value2": {}
     }
   },
   "uiSearchValue": "Search {value1}",
   "@uiSearchValue": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiByValue": "By {value1}",
   "@uiByValue": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiPendingIdeasStillWaiting": "Pending Ideas Still Waiting {value1}",
   "@uiPendingIdeasStillWaiting": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiApplicationsForValue": "Applications For {value1}",
   "@uiApplicationsForValue": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiApplicationsLinkedToOpportunity": "Applications Linked To Opportunity {value1}",
   "@uiApplicationsLinkedToOpportunity": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiValueApps": "{value1} Apps",
   "@uiValueApps": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiUntitledScholarship": "Untitled Scholarship",
@@ -1932,9 +1752,7 @@
   "uiViewApplicationsValue": "View Applications ({value1})",
   "@uiViewApplicationsValue": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiOpenActivityf327dd": "Open activity",
@@ -1944,9 +1762,7 @@
   "uiDeleteValueFromFirestoreThisActionCannotBeUndone": "Delete \"{value1}\" from Firestore? This action cannot be undone.",
   "@uiDeleteValueFromFirestoreThisActionCannotBeUndone": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiThisResultDoesNotIncludeAnExternalLink": "This Result Does Not Include An External Link",
@@ -1955,41 +1771,31 @@
   "uiValueImportedBooks": "{value1} imported books",
   "@uiValueImportedBooks": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiValueFeatured": "{value1} featured",
   "@uiValueFeatured": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiValueResults": "{value1} results",
   "@uiValueResults": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiValueFeaturedResources": "{value1} Featured Resources",
   "@uiValueFeaturedResources": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiInternalItems": "{value1} internal items",
   "@uiInternalItems": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiProblemStatement1ebe49": "Problem Statement",
@@ -1997,90 +1803,68 @@
   "uiValueImportedVideos": "{value1} imported videos",
   "@uiValueImportedVideos": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiSubmittedByValue": "Submitted by: {value1}",
   "@uiSubmittedByValue": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiDueValue": "Due {value1}",
   "@uiDueValue": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiValueUsers": "{value1} users",
   "@uiValueUsers": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiValueActive": "{value1} active",
   "@uiValueActive": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiValueBlocked": "{value1} blocked",
   "@uiValueBlocked": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiValueAdmins": "{value1} admins",
   "@uiValueAdmins": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiValueCompanyReviews": "{value1} company reviews",
   "@uiValueCompanyReviews": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiValueUser": "{value1} users",
   "@uiValueUser": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiText": "Text",
   "uiUploadedValue": "Uploaded {value1}",
   "@uiUploadedValue": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiValueMb": "{value1} MB",
   "@uiValueMb": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiBackToLoginb5cd32": "Back to Login",
@@ -2093,9 +1877,7 @@
   "uiSayHelloToValue": "Say Hello To {value1}",
   "@uiSayHelloToValue": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiFieldOfStudy81e26d": "Field of Study",
@@ -2106,128 +1888,94 @@
   "uiShowingValueOfValueApplications": "Showing {value1} Of {value2} Applications",
   "@uiShowingValueOfValueApplications": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      },
-      "value2": {
-        "type": "Object"
-      }
+      "value1": {},
+      "value2": {}
     }
   },
   "uiNew66aabd": "New",
   "uiAppliedValue": "Applied {value1}",
   "@uiAppliedValue": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiTheLinkedOpportunityIsNoLongerAvailable": "The Linked Opportunity Is No Longer Available",
   "uiNoCvAvailableForValue": "No CV available for {value1}",
   "@uiNoCvAvailableForValue": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiValueValuedca30a": "{value1} {value2}",
   "@uiValueValuedca30a": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      },
-      "value2": {
-        "type": "Object"
-      }
+      "value1": {},
+      "value2": {}
     }
   },
   "uiTheRequestedFileIsNotAValidPdf": "The Requested File Is Not A Valid PDF",
   "uiValue45e7ea": "{value1}%",
   "@uiValue45e7ea": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiOpenCandidateProfileForValue": "Open Candidate Profile For {value1}",
   "@uiOpenCandidateProfileForValue": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiAppliedValue051b93": "Applied {value1}",
   "@uiAppliedValue051b93": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiValueCompanyWorkspace": "{value1} company workspace",
   "@uiValueCompanyWorkspace": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiPostOpportunity2f1ac8": "Post Opportunity",
   "uiValue391ff6": "{value1}%",
   "@uiValue391ff6": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiMoveTheDeadlineIntoTheFutureBeforeReopeningThisOpportunity": "Move The Deadline Into The Future Before Reopening This Opportunity",
   "uiDeleteValueIfItAlreadyHasApplicationsItWillBe": "Delete \"{value1}\"? If it already has applications, it will be closed instead so history is preserved.",
   "@uiDeleteValueIfItAlreadyHasApplicationsItWillBe": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiValueOfValue": "{value1} Of {value2}",
   "@uiValueOfValue": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      },
-      "value2": {
-        "type": "Object"
-      }
+      "value1": {},
+      "value2": {}
     }
   },
   "uiValueb1531b": "{value1}%",
   "@uiValueb1531b": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiValueApplicants": "{value1} Applicants",
   "@uiValueApplicants": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiDownloada479c9": "Download Ø³Ø¬Ù ØªØ¬Ø§Ø±Ù",
   "uiValueMbSelected": "{value1} MB selected",
   "@uiValueMbSelected": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiText85": "Text85",
@@ -2235,9 +1983,7 @@
   "uiVersionValue": "Version {value1}",
   "@uiVersionValue": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiNoEmailAppIsAvailableRightNow": "No Email App Is Available Right Now",
@@ -2262,20 +2008,14 @@
   "uiValuea6a59e": "{value1}%",
   "@uiValuea6a59e": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiValueOfValueSectionsComplete": "{value1} Of {value2} Sections Complete",
   "@uiValueOfValueSectionsComplete": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      },
-      "value2": {
-        "type": "Object"
-      }
+      "value1": {},
+      "value2": {}
     }
   },
   "uiYourProfileHasBeenUpdatedSuccessfully": "Your Profile Has Been Updated Successfully",
@@ -2289,9 +2029,7 @@
   "uiTheValueNewestRolesInternshipsAndSponsoredTracks": "The {value1} Newest Roles Internships And Sponsored Tracks",
   "@uiTheValueNewestRolesInternshipsAndSponsoredTracks": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiClosingSoonc287b7": "Closing soon",
@@ -2305,26 +2043,20 @@
   "uiYouCanNowMessageValue": "You Can Now Message {value1}",
   "@uiYouCanNowMessageValue": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiProfileStrength491db6": "Profile Strength",
   "uiValuee5544c": "{value1}%",
   "@uiValuee5544c": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiValuee95f65": "{value1}%",
   "@uiValuee95f65": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiThisOpportunityIsNoLongerAvailable": "This Opportunity Is No Longer Available To Open",
@@ -2332,25 +2064,19 @@
   "uiAllOppsValue": "All opps ({value1})",
   "@uiAllOppsValue": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiFundingValue": "Funding: {value1}",
   "@uiFundingValue": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiValueInterested": "{value1} interested",
   "@uiValueInterested": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiFeaturedc00531": "Featured",
@@ -2363,59 +2089,41 @@
   "uiValueValueStillMissingForBetterMatching": "{value1} {value2} Still Missing For Better Matching",
   "@uiValueValueStillMissingForBetterMatching": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      },
-      "value2": {
-        "type": "Object"
-      }
+      "value1": {},
+      "value2": {}
     }
   },
   "uiValueValueApproved": "{value1} {value2} Approved",
   "@uiValueValueApproved": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      },
-      "value2": {
-        "type": "Object"
-      }
+      "value1": {},
+      "value2": {}
     }
   },
   "uiValueValueInReview": "{value1} {value2} In Review",
   "@uiValueValueInReview": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      },
-      "value2": {
-        "type": "Object"
-      }
+      "value1": {},
+      "value2": {}
     }
   },
   "uiValueOpportunitiesCloseWithinTheNextTwoWeeks": "{value1} opportunities close within the next two weeks.",
   "@uiValueOpportunitiesCloseWithinTheNextTwoWeeks": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiExploreOpenRolesInternshipsFundingAndLearningPicksDesignedFor": "Explore Open Roles Internships Funding And Learning Picks Designed For",
   "uiValueReadyForBetterStudentMatching": "{value1} Ready For Better Student Matching",
   "@uiValueReadyForBetterStudentMatching": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiValue6497ea": "{value1}%",
   "@uiValue6497ea": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiViewProfileb98795": "View Profile",
@@ -2425,9 +2133,7 @@
   "uiWeCouldnTGenerateThisPdfPreviewRightNowValue": "We couldn't generate this PDF preview right now. {value1}",
   "@uiWeCouldnTGenerateThisPdfPreviewRightNowValue": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiAlreadyHaveAccountPrompt": "Already have an account? ",
@@ -2450,57 +2156,43 @@
   "uiSearchFailedValue": "Search failed: {value1}",
   "@uiSearchFailedValue": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiValueImportedSuccessfully": "\"{value1}\" imported successfully.",
   "@uiValueImportedSuccessfully": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiImportFailedValue": "Import failed: {value1}",
   "@uiImportFailedValue": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiValueDeleted": "\"{value1}\" deleted.",
   "@uiValueDeleted": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiCouldNotOpenChatValue": "Could not open chat: {value1}",
   "@uiCouldNotOpenChatValue": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiApplicationStatusValue": "Application {value1}.",
   "@uiApplicationStatusValue": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiWeCouldnTOpenThisAttachmentValue": "We couldn?t open this attachment. {value1}",
   "@uiWeCouldnTOpenThisAttachmentValue": {
     "placeholders": {
-      "value1": {
-        "type": "Object"
-      }
+      "value1": {}
     }
   },
   "uiSearchBooksFailedMessage": "Something went wrong while searching books. Please try again.",
@@ -2605,5 +2297,246 @@
     }
   },
   "uiCompanyInformation": "Company Information",
-  "uiAccountDetails": "Account Details"
+  "uiAccountDetails": "Account Details",
+  "securitySectionTitle": "Security",
+  "securitySectionSubtitle": "Keep passwords, privacy controls, and account protections close at hand.",
+  "signOutCompanySubtitle": "Sign out of the company workspace",
+  "adminSettingsTitle": "Admin settings",
+  "adminAccountLabel": "Admin account",
+  "adminWorkspaceBody": "Control your workspace preferences without changing the admin profile record.",
+  "adminLabel": "Admin",
+  "adminWorkspaceSectionSubtitle": "Keep platform operations close without exposing profile editing.",
+  "adminSupportSubtitle": "App information and help for platform admins.",
+  "signOutAdminSubtitle": "End this admin session on the current device",
+  "themeTitle": "Theme",
+  "appThemeTitle": "App theme",
+  "themeSystemLabel": "System",
+  "themeLightLabel": "Light",
+  "themeDarkLabel": "Dark",
+  "themeSystemSubtitle": "Follow your device appearance setting",
+  "themeLightSubtitle": "Keep FutureGate bright and airy",
+  "themeDarkSubtitle": "Use the premium dark workspace",
+  "startSectionTitle": "Start",
+  "showStartupAnimationTitle": "Show startup animation",
+  "startupAnimCheckingSubtitle": "Checking your launch preference...",
+  "startupAnimOnSubtitle": "The launch video will play when FutureGate opens.",
+  "startupAnimOffSubtitle": "FutureGate will open directly next time.",
+  "startupAnimErrorMessage": "Could not update the startup animation setting.",
+  "languageInfoSheetMessage": "The current app experience is shown in English. Broader language selection can be introduced safely in a later iteration.",
+  "accountProtectionHubTitle": "Your account protection hub",
+  "accountProtectionHubBody": "Update credentials, review privacy touchpoints, and keep access to your FutureGate profile secure.",
+  "accountSecuritySectionTitle": "Account Security",
+  "accountSecuritySectionSubtitle": "Use the existing account tools safely without affecting your current sign-in flow.",
+  "addPasswordTitle": "Add Password",
+  "addPasswordSubtitle": "Keep Google sign-in and add email/password too",
+  "changePasswordTitle": "Change Password",
+  "changePasswordSubtitle": "Update your sign-in password",
+  "changeEmailTitle": "Change Email",
+  "changeEmailCurrentSubtitle": "Current: {email}",
+  "@changeEmailCurrentSubtitle": {
+    "placeholders": {
+      "email": {}
+    }
+  },
+  "changeEmailVerifySubtitle": "Verify a new sign-in email",
+  "googleLinkedAccountTitle": "Google-linked account",
+  "googleManagedAccountTitle": "Google-managed account",
+  "googleLinkedAccountBody": "This account can sign in with both Google and email/password, but the sign-in email stays managed through Google.",
+  "googleManagedAccountBody": "This account signs in with Google. You can add a password if you want email/password access too, but the sign-in email itself stays managed through Google.",
+  "twoStepVerificationTitle": "Two-step verification",
+  "twoStepVerificationGoogleSubtitle": "Manage it through your Google account",
+  "twoStepVerificationEmailSubtitle": "Available through your email provider",
+  "twoStepVerificationGoogleBody": "This account signs in with {provider}, so two-step verification is managed directly by Google.",
+  "@twoStepVerificationGoogleBody": {
+    "placeholders": {
+      "provider": {}
+    }
+  },
+  "twoStepVerificationEmailBody": "A dedicated in-app two-step setup is not enabled yet. For now, keep your mailbox protected and use a strong password.",
+  "manageSessionsTitle": "Manage sessions & devices",
+  "manageSessionsSubtitle": "Review where your account is being used",
+  "sessionsDevicesTitle": "Sessions & devices",
+  "sessionsDevicesBody": "Remote session management is not available in this build yet. Your active session on this device remains protected by Firebase authentication.",
+  "privacyControlsSectionTitle": "Privacy Controls",
+  "privacyControlsSectionSubtitle": "Understand what information is stored and how it is used inside the platform.",
+  "dataPermissionsTitle": "Data permissions",
+  "dataPermissionsSubtitle": "Profile, CV, and application data are used to power opportunities and recruiter review flows.",
+  "dataPermissionsBody": "FutureGate stores the profile details, CV content, saved items, and application activity needed to match students with opportunities and support application review.",
+  "privacyPolicySettingsTitle": "Privacy Policy",
+  "privacyPolicySettingsSubtitle": "Read how personal information is handled",
+  "privacyPolicySettingsBody": "Your account data is used to provide sign-in, profile management, saved opportunities, notifications, CV access, and applications. Sensitive access is limited to the platform features that require it.",
+  "termsOfUseSettingsTitle": "Terms of Use",
+  "termsOfUseSettingsSubtitle": "Review expected platform usage",
+  "termsOfUseSettingsBody": "Use FutureGate responsibly, keep account information accurate, and avoid submitting misleading applications or content that violates platform rules.",
+  "addPasswordBannerTitle": "Add email and password sign-in",
+  "addPasswordBannerBodyGeneric": "Keep Google sign-in and add a password for this account.",
+  "addPasswordBannerBodyEmail": "Keep Google sign-in and add a password for {email}.",
+  "@addPasswordBannerBodyEmail": {
+    "placeholders": {
+      "email": {}
+    }
+  },
+  "newPasswordLabel": "New Password",
+  "confirmPasswordLabel": "Confirm Password",
+  "currentPasswordLabel": "Current Password",
+  "addPasswordNote": "Your sign-in email will remain managed by Google. This only adds an additional way to sign in.",
+  "addingPasswordLabel": "Adding...",
+  "passwordAddedSuccessBody": "Password added successfully. You can now sign in with Google or email and password.",
+  "passwordSetupAlreadyEnabled": "This account already has email and password sign-in enabled.",
+  "passwordSetupGoogleOnly": "A password can only be added while signed in to a Google account that does not already have email/password linked.",
+  "secureAccountBannerTitle": "Secure your account",
+  "secureAccountBannerBody": "Use a strong password with a mix of letters, numbers, and symbols to keep your account protected.",
+  "updatingPasswordLabel": "Updating...",
+  "updatePasswordLabel": "Update Password",
+  "passwordUpdatedBody": "Your password has been updated successfully.",
+  "passwordChangesUnavailableTitle": "Password changes unavailable",
+  "passwordChangesGoogleBody": "This account uses Google sign-in right now. Add a password first, then you can change it later.",
+  "passwordChangesOnlyBody": "Password changes are only available for accounts that already use email and password sign-in.",
+  "emailChangesUnavailableTitle": "Email changes unavailable",
+  "emailChangesGoogleBody": "This account is linked to Google, so the sign-in email must be managed through Google.",
+  "emailChangesPasswordOnlyBody": "Email changes are only available for accounts that use email and password without Google linked.",
+  "currentEmailBannerTitle": "Current email",
+  "noEmailAvailableBody": "No email is currently available for this account.",
+  "newEmailLabel": "New Email",
+  "newEmailHint": "name@example.com",
+  "emailVerificationNote": "A verification link will be sent to the new address before the change becomes active.",
+  "updatingEmailLabel": "Updating...",
+  "updateEmailLabel": "Update Email",
+  "verificationSentTitle": "Verification sent",
+  "verificationSentBody": "Verification email sent. Confirm your new address to complete the update.",
+  "backLabel": "Back",
+  "howCanWeHelpTitle": "How can we help?",
+  "howCanWeHelpSubtitle": "Search common topics, contact support, or report something that needs attention.",
+  "searchHelpTopicsHint": "Search help topics",
+  "quickSupportTitle": "Quick Support",
+  "quickSupportSubtitle": "Reach out with context so the team can help faster.",
+  "contactSupportTitle": "Contact Support",
+  "reportProblemTitle": "Report a Problem",
+  "reportProblemSubtitle": "Share screenshots, steps, or account issues",
+  "faqsSectionTitle": "FAQs",
+  "noTopicsMatchedSubtitle": "No topics matched your search.",
+  "helpTopicCount": "{count} help topic(s)",
+  "@helpTopicCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "noHelpTopicsMatchTitle": "No help topics match your search",
+  "noHelpTopicsMatchBody": "Try a broader search term, or contact support if you need hands-on help.",
+  "emailUnavailableWarningTitle": "Email unavailable",
+  "noEmailAppAvailableBody": "No email app is available on this device.",
+  "supportRequestSubject": "FutureGate Support Request",
+  "bugReportSubject": "FutureGate Bug Report",
+  "helpAccountHelpTitle": "Account Help",
+  "helpAccountCategory": "Account",
+  "helpAccountDescription": "Update profile details, manage sign-in methods, and keep your student profile ready for new opportunities.",
+  "helpApplicationHelpTitle": "Application Help",
+  "helpApplicationCategory": "Applications",
+  "helpApplicationDescription": "Track your submissions, review statuses, and understand what recruiters need to evaluate your profile.",
+  "helpSavedItemsTitle": "Saved Items",
+  "helpSavedItemsCategory": "Dashboard",
+  "helpSavedItemsDescription": "Bookmark opportunities you want to revisit later and stay organized while you prepare applications.",
+  "helpCvBuilderTitle": "CV Builder",
+  "helpCvBuilderCategory": "CV",
+  "helpCvBuilderDescription": "Create structured CV content, choose a template, preview your document, and export a PDF when you are ready.",
+  "helpOpportunityPostingTitle": "Opportunity Posting Help",
+  "helpOpportunityCategory": "Platform",
+  "helpOpportunityDescription": "Learn how companies and approved listings appear inside the app so you can understand the platform flow end to end.",
+  "helpNotificationsCategory": "Updates",
+  "helpNotificationsDescription": "Stay on top of application decisions, saved item changes, reminders, and platform alerts.",
+  "aboutBridgeDescription": "FutureGate is designed as a bridge between students, their growing skills, and the real opportunities that can shape their next milestone.",
+  "platformStoryTitle": "Platform Story",
+  "platformStorySubtitle": "A clearer path from student ambition to real-world opportunity.",
+  "platformStoryBody": "The app brings together profiles, CV tools, opportunities, scholarships, project ideas, and communication so students can move from discovery to action in one place.",
+  "moreInformationTitle": "More Information",
+  "moreInformationSubtitle": "Useful references and contact points for the platform.",
+  "termsAboutTitle": "Terms",
+  "termsAboutSubtitle": "Read the platform usage summary",
+  "termsAboutBody": "FutureGate expects accurate profiles, respectful communication, and responsible use of the application and content tools available in the app.",
+  "privacyPolicyAboutSubtitle": "See how data supports the experience",
+  "privacyPolicyAboutBody": "Profile, CV, notification, and application data are used only to provide the matching, review, and communication features that power the FutureGate experience.",
+  "contactAboutTitle": "Contact",
+  "websiteSocialTitle": "Website & Social",
+  "websiteSocialSubtitle": "Public links are added here as they go live",
+  "websiteSocialBody": "A public website and social channels are not linked inside this build yet. Support requests can still be sent directly by email.",
+  "noEmailAppAvailableAltBody": "No email app is available right now.",
+  "aboutFutureGateSubject": "About FutureGate",
+  "signOutAdminQuestion": "Sign out of admin?",
+  "signOutAdminBody": "You will leave the admin workspace on this device. Saved changes stay safe.",
+  "signOutCompanyQuestion": "Sign out of company?",
+  "signOutCompanyBody": "You will leave the company workspace on this device. Your profile and opportunities stay saved.",
+  "signOutStudentQuestion": "Sign out of student?",
+  "signOutStudentBody": "You will leave your student workspace on this device. Your profile and saved items stay safe.",
+  "signOutFutureGateQuestion": "Sign out of FutureGate?",
+  "signOutFutureGateBody": "You can sign back in anytime with the same account.",
+  "adminRoleLabel": "Admin",
+  "companyRoleLabel": "Company",
+  "studentRoleLabel": "Student",
+  "accountRoleLabel": "Account",
+  "signingOutLabel": "Signing out",
+  "futureGateAccountFallback": "FutureGate account",
+  "studentHomeSubtitle": "Your daily student pulse, shortcuts, and fresh momentum.",
+  "studentDiscoverSubtitle": "Jobs, internships, and sponsored tracks matched to your next move.",
+  "studentScholarshipsSubtitle": "Funding opportunities, deadlines, and global study paths.",
+  "studentTrainingSubtitle": "Courses, books, and certifications that sharpen your journey.",
+  "studentIdeasSubtitle": "Build, save, and grow your next project idea with confidence.",
+  "studentChatSubtitle": "Stay close to conversations, follow-ups, and collaboration.",
+  "notificationsTooltip": "Notifications",
+  "savedScholarshipsTooltip": "Saved scholarships",
+  "savedTrainingTooltip": "Saved training",
+  "savedIdeasTooltip": "Saved ideas",
+  "deadlineSoon": "Deadline soon",
+  "fundingPrefix": "Funding: {amount}",
+  "@fundingPrefix": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "savedOpportunityFallback": "Saved opportunity",
+  "closingSoonBadge": "Closing soon",
+  "savedTypeBadge": "Saved {type}",
+  "@savedTypeBadge": {
+    "placeholders": {
+      "type": {}
+    }
+  },
+  "savedTypeFromCompany": "Saved {type} from {company}",
+  "@savedTypeFromCompany": {
+    "placeholders": {
+      "type": {},
+      "company": {}
+    }
+  },
+  "savedTypeNeedsAttention": "Saved {type} that needs attention",
+  "@savedTypeNeedsAttention": {
+    "placeholders": {
+      "type": {}
+    }
+  },
+  "closesDateLabel": "Closes {date}",
+  "@closesDateLabel": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "muteChatLabel": "Mute Chat",
+  "unmuteChatLabel": "Unmute Chat",
+  "chatMutedTitle": "Chat muted",
+  "chatUnmutedTitle": "Chat unmuted",
+  "chatMutedBody": "Notifications for this chat are now muted.",
+  "chatUnmutedBody": "Chat notifications are active again.",
+  "uiOpen": "Open",
+  "uiViewAllApps": "View All Apps",
+  "uiViewApplicationsCount": "View Applications ({count})",
+  "@uiViewApplicationsCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "openLibraryStudioLabel": "Open Library Studio",
+  "noScholarshipLinkAvailable": "No scholarship link is available for this item yet.",
+  "couldNotOpenScholarshipLink": "Could not open the scholarship link.",
+  "editMessageLabel": "Edit message",
+  "noRecentUsersYet": "No recent users yet",
+  "uiBachelor": "Bachelor"
 }

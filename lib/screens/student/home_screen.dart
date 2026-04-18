@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../l10n/generated/app_localizations.dart';
 import '../../providers/notification_provider.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/student/student_workspace_shell.dart';
@@ -43,63 +44,64 @@ class _HomeScreenState extends State<HomeScreen> {
   late int _currentIndex;
   final Set<int> _visitedIndexes = <int>{};
 
-  late final List<_StudentDestination> _destinations = [
-    const _StudentDestination(
-      title: 'Home',
-      subtitle: 'Your daily student pulse, shortcuts, and fresh momentum.',
-      icon: Icons.home_rounded,
-      navLabel: 'Home',
-      compactNavLabel: 'Home',
-      navIcon: Icons.home_outlined,
-      activeNavIcon: Icons.home_rounded,
-    ),
-    const _StudentDestination(
-      title: 'Discover',
-      subtitle:
-          'Jobs, internships, and sponsored tracks matched to your next move.',
-      icon: Icons.explore_rounded,
-      navLabel: 'Discover',
-      compactNavLabel: 'Discover',
-      navIcon: Icons.explore_outlined,
-      activeNavIcon: Icons.explore_rounded,
-    ),
-    const _StudentDestination(
-      title: 'Scholarships',
-      subtitle: 'Funding opportunities, deadlines, and global study paths.',
-      icon: Icons.school_rounded,
-      navLabel: 'Scholarships',
-      compactNavLabel: 'Scholarships',
-      navIcon: Icons.school_outlined,
-      activeNavIcon: Icons.school_rounded,
-    ),
-    const _StudentDestination(
-      title: 'Training',
-      subtitle: 'Courses, books, and certifications that sharpen your journey.',
-      icon: Icons.cast_for_education_rounded,
-      navLabel: 'Training',
-      compactNavLabel: 'Training',
-      navIcon: Icons.cast_for_education_outlined,
-      activeNavIcon: Icons.cast_for_education_rounded,
-    ),
-    const _StudentDestination(
-      title: 'Ideas',
-      subtitle: 'Build, save, and grow your next project idea with confidence.',
-      icon: Icons.lightbulb_rounded,
-      navLabel: 'Ideas',
-      compactNavLabel: 'Ideas',
-      navIcon: Icons.lightbulb_outline,
-      activeNavIcon: Icons.lightbulb_rounded,
-    ),
-    const _StudentDestination(
-      title: 'Chat',
-      subtitle: 'Stay close to conversations, follow-ups, and collaboration.',
-      icon: Icons.chat_bubble_rounded,
-      navLabel: 'Chat',
-      compactNavLabel: 'Chat',
-      navIcon: Icons.chat_bubble_outline_rounded,
-      activeNavIcon: Icons.chat_bubble_rounded,
-    ),
-  ];
+  List<_StudentDestination> _buildDestinations(AppLocalizations l10n) {
+    return [
+      _StudentDestination(
+        title: l10n.uiHome,
+        subtitle: l10n.studentHomeSubtitle,
+        icon: Icons.home_rounded,
+        navLabel: l10n.uiHome,
+        compactNavLabel: l10n.uiHome,
+        navIcon: Icons.home_outlined,
+        activeNavIcon: Icons.home_rounded,
+      ),
+      _StudentDestination(
+        title: l10n.uiDiscover,
+        subtitle: l10n.studentDiscoverSubtitle,
+        icon: Icons.explore_rounded,
+        navLabel: l10n.uiDiscover,
+        compactNavLabel: l10n.uiDiscover,
+        navIcon: Icons.explore_outlined,
+        activeNavIcon: Icons.explore_rounded,
+      ),
+      _StudentDestination(
+        title: l10n.uiScholarships,
+        subtitle: l10n.studentScholarshipsSubtitle,
+        icon: Icons.school_rounded,
+        navLabel: l10n.uiScholarships,
+        compactNavLabel: l10n.uiScholarships,
+        navIcon: Icons.school_outlined,
+        activeNavIcon: Icons.school_rounded,
+      ),
+      _StudentDestination(
+        title: l10n.uiTraining,
+        subtitle: l10n.studentTrainingSubtitle,
+        icon: Icons.cast_for_education_rounded,
+        navLabel: l10n.uiTraining,
+        compactNavLabel: l10n.uiTraining,
+        navIcon: Icons.cast_for_education_outlined,
+        activeNavIcon: Icons.cast_for_education_rounded,
+      ),
+      _StudentDestination(
+        title: l10n.uiIdeas,
+        subtitle: l10n.studentIdeasSubtitle,
+        icon: Icons.lightbulb_rounded,
+        navLabel: l10n.uiIdeas,
+        compactNavLabel: l10n.uiIdeas,
+        navIcon: Icons.lightbulb_outline,
+        activeNavIcon: Icons.lightbulb_rounded,
+      ),
+      _StudentDestination(
+        title: l10n.uiChat,
+        subtitle: l10n.studentChatSubtitle,
+        icon: Icons.chat_bubble_rounded,
+        navLabel: l10n.uiChat,
+        compactNavLabel: l10n.uiChat,
+        navIcon: Icons.chat_bubble_outline_rounded,
+        activeNavIcon: Icons.chat_bubble_rounded,
+      ),
+    ];
+  }
 
   final List<Widget> _screens = const [
     StudentDashboardScreen(embedded: true),
@@ -190,12 +192,12 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  List<Widget> _buildTopBarActions(int unreadCount) {
+  List<Widget> _buildTopBarActions(AppLocalizations l10n, int unreadCount) {
     return switch (_currentIndex) {
       1 => [
         StudentWorkspaceActionButton(
           icon: Icons.notifications_outlined,
-          tooltip: 'Notifications',
+          tooltip: l10n.notificationsTooltip,
           badgeCount: unreadCount,
           onTap: _openNotifications,
         ),
@@ -203,34 +205,34 @@ class _HomeScreenState extends State<HomeScreen> {
       2 => [
         StudentWorkspaceActionButton(
           icon: Icons.notifications_outlined,
-          tooltip: 'Notifications',
+          tooltip: l10n.notificationsTooltip,
           badgeCount: unreadCount,
           onTap: _openNotifications,
         ),
         StudentWorkspaceActionButton(
           icon: Icons.bookmark_outline_rounded,
-          tooltip: 'Saved scholarships',
+          tooltip: l10n.savedScholarshipsTooltip,
           onTap: () => _openSavedFilter(SavedScreenFilter.scholarships),
         ),
       ],
       3 => [
         StudentWorkspaceActionButton(
           icon: Icons.bookmark_outline_rounded,
-          tooltip: 'Saved training',
+          tooltip: l10n.savedTrainingTooltip,
           onTap: () => _openSavedFilter(SavedScreenFilter.trainings),
         ),
       ],
       4 => [
         StudentWorkspaceActionButton(
           icon: Icons.bookmark_outline_rounded,
-          tooltip: 'Saved ideas',
+          tooltip: l10n.savedIdeasTooltip,
           onTap: () => _openSavedFilter(SavedScreenFilter.ideas),
         ),
       ],
       5 => [
         StudentWorkspaceActionButton(
           icon: Icons.notifications_outlined,
-          tooltip: 'Notifications',
+          tooltip: l10n.notificationsTooltip,
           badgeCount: unreadCount,
           onTap: _openNotifications,
         ),
@@ -241,9 +243,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final destinations = _buildDestinations(l10n);
     final unreadCount = context.watch<NotificationProvider>().unreadCount;
     final keyboardVisible = MediaQuery.viewInsetsOf(context).bottom > 0;
-    final destination = _destinations[_currentIndex];
+    final destination = destinations[_currentIndex];
 
     return AppShellBackground(
       child: Scaffold(
@@ -256,7 +260,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   title: destination.title,
                   subtitle: destination.subtitle,
                   icon: destination.icon,
-                  actions: _buildTopBarActions(unreadCount),
+                  actions: _buildTopBarActions(l10n, unreadCount),
                 ),
               Expanded(
                 child: Padding(
@@ -280,7 +284,7 @@ class _HomeScreenState extends State<HomeScreen> {
             : SafeArea(
                 top: false,
                 child: StudentPillNavigationBar(
-                  destinations: _destinations
+                  destinations: destinations
                       .map(
                         (destination) => StudentWorkspaceNavDestination(
                           label: destination.navLabel,

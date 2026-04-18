@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../l10n/generated/app_localizations.dart';
 import '../../models/opportunity_model.dart';
 import '../../providers/admin_provider.dart';
 import '../../utils/admin_palette.dart';
@@ -36,6 +37,7 @@ class _ModerateScreenState extends State<ModerateScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final provider = context.watch<AdminProvider>();
 
     return Column(
@@ -67,7 +69,7 @@ class _ModerateScreenState extends State<ModerateScreen>
                   children: [
                     const Icon(Icons.lightbulb, size: 14),
                     const SizedBox(width: 3),
-                    const Text('Ideas', style: TextStyle(fontSize: 11)),
+                    Text(l10n.uiIdeas, style: const TextStyle(fontSize: 11)),
                     if (provider.allProjectIdeas
                         .where((i) => i.status == 'pending')
                         .isNotEmpty) ...[
@@ -94,25 +96,25 @@ class _ModerateScreenState extends State<ModerateScreen>
                   ],
                 ),
               ),
-              const Tab(
+              Tab(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.work, size: 14),
-                    SizedBox(width: 3),
-                    Text('Offers', style: TextStyle(fontSize: 11)),
+                    const Icon(Icons.work, size: 14),
+                    const SizedBox(width: 3),
+                    Text(l10n.uiOffers, style: const TextStyle(fontSize: 11)),
                   ],
                 ),
               ),
-              const Tab(
+              Tab(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.card_giftcard, size: 14),
-                    SizedBox(width: 3),
-                    Text('Scholarships', style: TextStyle(fontSize: 11)),
+                    const Icon(Icons.card_giftcard, size: 14),
+                    const SizedBox(width: 3),
+                    Text(l10n.uiScholarships, style: const TextStyle(fontSize: 11)),
                   ],
                 ),
               ),
@@ -710,7 +712,7 @@ class _ModerateScreenState extends State<ModerateScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(ctx)!.cancelLabel),
           ),
           TextButton(
             onPressed: () {

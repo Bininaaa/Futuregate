@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/project_idea_model.dart';
+import '../../l10n/generated/app_localizations.dart';
 import '../../providers/admin_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../utils/admin_palette.dart';
@@ -95,6 +96,7 @@ class _AdminProjectIdeaEditorScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return AdminEditorScaffold(
       title: _isEditing ? 'Edit Admin Idea' : 'Publish Admin Idea',
       submitLabel: _isEditing ? 'Save Idea Changes' : 'Publish Idea',
@@ -204,17 +206,11 @@ class _AdminProjectIdeaEditorScreenState
                   AdminEditorDropdown<String>(
                     value: _level,
                     label: 'Academic level',
-                    items: const [
-                      DropdownMenuItem(value: 'bac', child: Text('Bac')),
-                      DropdownMenuItem(
-                        value: 'licence',
-                        child: Text('Licence'),
-                      ),
-                      DropdownMenuItem(value: 'master', child: Text('Master')),
-                      DropdownMenuItem(
-                        value: 'doctorat',
-                        child: Text('Doctorat'),
-                      ),
+                    items: [
+                      DropdownMenuItem(value: 'bac', child: Text(l10n.uiBac)),
+                      DropdownMenuItem(value: 'licence', child: Text(l10n.academicLevelLicence)),
+                      DropdownMenuItem(value: 'master', child: Text(l10n.academicLevelMaster)),
+                      DropdownMenuItem(value: 'doctorat', child: Text(l10n.academicLevelDoctorat)),
                     ],
                     onChanged: (value) {
                       if (value != null) setState(() => _level = value);

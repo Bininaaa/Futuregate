@@ -242,14 +242,14 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
         await showDialog<bool>(
           context: context,
           builder: (dialogContext) => AlertDialog(
-            title: const Text('Delete resource'),
+            title: Text(AppLocalizations.of(context)!.uiDeleteResource),
             content: Text(
               'Delete "${training.title}" from Firestore? This action cannot be undone.',
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(dialogContext, false),
-                child: const Text('Cancel'),
+                child: Text(AppLocalizations.of(context)!.cancelLabel),
               ),
               TextButton(
                 onPressed: () => Navigator.pop(dialogContext, true),
@@ -554,7 +554,7 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
           action: FilledButton.icon(
             onPressed: _searchVideos,
             icon: const Icon(Icons.refresh),
-            label: const Text('Retry'),
+            label: Text(AppLocalizations.of(context)!.retryLabel),
           ),
         ),
       );
@@ -613,7 +613,7 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
             action: FilledButton.icon(
               onPressed: provider.fetchTrainings,
               icon: const Icon(Icons.refresh_rounded),
-              label: const Text('Retry'),
+              label: Text(AppLocalizations.of(context)!.retryLabel),
             ),
           ),
         ),
@@ -858,7 +858,7 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
                           ? null
                           : () => _openLink(training.displayLink),
                       icon: const Icon(Icons.open_in_new),
-                      label: const Text('Open'),
+                      label: Text(AppLocalizations.of(context)!.uiOpen),
                     ),
                     OutlinedButton.icon(
                       onPressed: isBusy
@@ -868,7 +868,7 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
                         foregroundColor: AdminPalette.danger,
                       ),
                       icon: const Icon(Icons.delete_outline),
-                      label: const Text('Delete'),
+                      label: Text(AppLocalizations.of(context)!.uiDelete),
                     ),
                   ],
                 ),
@@ -977,7 +977,7 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
           return Scaffold(
             backgroundColor: AdminPalette.background,
             appBar: AppBar(
-              title: const Text('Import YouTube Videos'),
+              title: Text(AppLocalizations.of(context)!.uiImportYoutubeVideos),
               backgroundColor: AdminPalette.surface,
               foregroundColor: AdminPalette.textPrimary,
               bottom: tabBar,

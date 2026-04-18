@@ -28,6 +28,7 @@ import '../../providers/saved_scholarship_provider.dart';
 import '../../providers/scholarship_provider.dart';
 import '../../providers/student_provider.dart';
 import '../../providers/training_provider.dart';
+import '../../l10n/generated/app_localizations.dart';
 import '../../theme/app_colors.dart';
 import '../../utils/application_status.dart';
 import '../../utils/student_profile_completion.dart';
@@ -1502,7 +1503,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                child: const Text('View profile'),
+                child: Text(AppLocalizations.of(context)!.uiViewProfile),
               ),
             ],
           ),
@@ -1564,6 +1565,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     OpportunityModel item, {
     String? applicationStatus,
   }) {
+    final l10n = AppLocalizations.of(context)!;
     final normalizedType = OpportunityType.parse(item.type);
     final accent = OpportunityType.color(normalizedType);
     final deadline = _opportunityDeadline(item);
@@ -1623,7 +1625,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                         ),
                         const SizedBox(width: 6),
                         Text(
-                          OpportunityType.label(normalizedType),
+                          OpportunityType.label(normalizedType, l10n),
                           style: GoogleFonts.poppins(
                             fontSize: 10.2,
                             fontWeight: FontWeight.w700,
@@ -2468,6 +2470,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     List<SavedOpportunityModel> items,
     OpportunityProvider provider,
   ) {
+    final l10n = AppLocalizations.of(context)!;
     final activities = <_DashboardActivityEntry>[];
 
     for (final item in items) {
@@ -2489,13 +2492,13 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
       final companyName = item.companyName.trim();
       final subtitle = isUrgent
           ? companyName.isNotEmpty
-                ? 'Saved ${OpportunityType.lowercaseLabel(item.type)} from $companyName'
-                : 'Saved ${OpportunityType.lowercaseLabel(item.type)} that needs attention'
+                ? l10n.savedTypeFromCompany(OpportunityType.lowercaseLabel(item.type, l10n), companyName)
+                : l10n.savedTypeNeedsAttention(OpportunityType.lowercaseLabel(item.type, l10n))
           : (companyName.isNotEmpty
                 ? companyName
-                : OpportunityType.label(item.type));
+                : OpportunityType.label(item.type, l10n));
       final meta = deadline != null
-          ? 'Closes ${DateFormat('MMM d').format(deadline)}'
+          ? l10n.closesDateLabel(DateFormat('MMM d').format(deadline))
           : item.location.trim();
 
       activities.add(
@@ -2503,8 +2506,8 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
           dedupeKey: key,
           sortDate: savedAt,
           badgeLabel: isUrgent
-              ? 'Closing soon'
-              : 'Saved ${OpportunityType.lowercaseLabel(item.type)}',
+              ? l10n.closingSoonBadge
+              : l10n.savedTypeBadge(OpportunityType.lowercaseLabel(item.type, l10n)),
           accent: accent,
           icon: isUrgent
               ? Icons.schedule_outlined
@@ -2899,14 +2902,14 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
         0;
   }
 
-  String recentOpportunitySupportingLine(OpportunityModel item) {
+  String recentOpportunitySupportingLine(OpportunityModel item, AppLocalizations l10n) {
     final parts = <String>[
       if (item.location.trim().isNotEmpty) item.location.trim(),
       if (_recentFriendlyDeadline(item) != null) _recentFriendlyDeadline(item)!,
     ];
 
     if (parts.isEmpty) {
-      return OpportunityType.subtitle(item.type);
+      return OpportunityType.subtitle(item.type, l10n);
     }
 
     return parts.join(' • ');

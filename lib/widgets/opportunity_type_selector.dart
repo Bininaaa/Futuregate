@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../l10n/generated/app_localizations.dart';
 import '../theme/app_colors.dart';
 import '../utils/opportunity_type.dart';
 
@@ -20,6 +21,7 @@ class OpportunityTypeSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final colors = AppColors.of(context);
 
     return Row(
@@ -99,7 +101,7 @@ class OpportunityTypeSelector extends StatelessWidget {
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        OpportunityType.label(type),
+                        OpportunityType.label(type, l10n),
                         style: GoogleFonts.poppins(
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
@@ -109,7 +111,7 @@ class OpportunityTypeSelector extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        OpportunityType.subtitle(type),
+                        OpportunityType.subtitle(type, l10n),
                         style: GoogleFonts.poppins(
                           fontSize: 9.5,
                           height: 1.35,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../l10n/generated/app_localizations.dart';
 import '../utils/opportunity_type.dart';
 
 /// A compact, pill-shaped badge that displays an opportunity type
@@ -21,7 +22,8 @@ class OpportunityTypeBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final normalizedType = OpportunityType.parse(type);
     final badgeColor = OpportunityType.color(normalizedType);
-    final label = OpportunityType.label(normalizedType);
+    final l10n = AppLocalizations.of(context)!;
+    final label = OpportunityType.label(normalizedType, l10n);
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),

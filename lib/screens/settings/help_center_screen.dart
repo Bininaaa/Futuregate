@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../config/app_metadata.dart';
+import '../../l10n/generated/app_localizations.dart';
 import '../../widgets/shared/app_feedback.dart';
 import 'settings_flow_theme.dart';
 import 'settings_flow_widgets.dart';
@@ -16,50 +17,46 @@ class HelpCenterScreen extends StatefulWidget {
 class _HelpCenterScreenState extends State<HelpCenterScreen> {
   final TextEditingController _searchController = TextEditingController();
 
-  static const List<_HelpTopic> _topics = [
-    _HelpTopic(
-      title: 'Account Help',
-      category: 'Account',
-      description:
-          'Update profile details, manage sign-in methods, and keep your student profile ready for new opportunities.',
-      icon: Icons.person_outline_rounded,
-    ),
-    _HelpTopic(
-      title: 'Application Help',
-      category: 'Applications',
-      description:
-          'Track your submissions, review statuses, and understand what recruiters need to evaluate your profile.',
-      icon: Icons.assignment_outlined,
-    ),
-    _HelpTopic(
-      title: 'Saved Items',
-      category: 'Dashboard',
-      description:
-          'Bookmark opportunities you want to revisit later and stay organized while you prepare applications.',
-      icon: Icons.bookmark_outline_rounded,
-    ),
-    _HelpTopic(
-      title: 'CV Builder',
-      category: 'CV',
-      description:
-          'Create structured CV content, choose a template, preview your document, and export a PDF when you are ready.',
-      icon: Icons.description_outlined,
-    ),
-    _HelpTopic(
-      title: 'Opportunity Posting Help',
-      category: 'Platform',
-      description:
-          'Learn how companies and approved listings appear inside the app so you can understand the platform flow end to end.',
-      icon: Icons.campaign_outlined,
-    ),
-    _HelpTopic(
-      title: 'Notifications',
-      category: 'Updates',
-      description:
-          'Stay on top of application decisions, saved item changes, reminders, and platform alerts.',
-      icon: Icons.notifications_none_rounded,
-    ),
-  ];
+  List<_HelpTopic> _buildTopics(AppLocalizations l10n) {
+    return [
+      _HelpTopic(
+        title: l10n.helpAccountHelpTitle,
+        category: l10n.helpAccountCategory,
+        description: l10n.helpAccountDescription,
+        icon: Icons.person_outline_rounded,
+      ),
+      _HelpTopic(
+        title: l10n.helpApplicationHelpTitle,
+        category: l10n.helpApplicationCategory,
+        description: l10n.helpApplicationDescription,
+        icon: Icons.assignment_outlined,
+      ),
+      _HelpTopic(
+        title: l10n.helpSavedItemsTitle,
+        category: l10n.helpSavedItemsCategory,
+        description: l10n.helpSavedItemsDescription,
+        icon: Icons.bookmark_outline_rounded,
+      ),
+      _HelpTopic(
+        title: l10n.helpCvBuilderTitle,
+        category: l10n.helpCvBuilderCategory,
+        description: l10n.helpCvBuilderDescription,
+        icon: Icons.description_outlined,
+      ),
+      _HelpTopic(
+        title: l10n.helpOpportunityPostingTitle,
+        category: l10n.helpOpportunityCategory,
+        description: l10n.helpOpportunityDescription,
+        icon: Icons.campaign_outlined,
+      ),
+      _HelpTopic(
+        title: l10n.notificationsTitle,
+        category: l10n.helpNotificationsCategory,
+        description: l10n.helpNotificationsDescription,
+        icon: Icons.notifications_none_rounded,
+      ),
+    ];
+  }
 
   @override
   void dispose() {
@@ -69,8 +66,10 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final topics = _buildTopics(l10n);
     final query = _searchController.text.trim().toLowerCase();
-    final filteredTopics = _topics
+    final filteredTopics = topics
         .where(
           (topic) =>
               query.isEmpty ||
@@ -81,7 +80,7 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
         .toList();
 
     return SettingsPageScaffold(
-      title: 'Help Center',
+      title: l10n.helpCenterTitle,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -90,10 +89,10 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('How can we help?', style: SettingsFlowTheme.heroTitle()),
+                Text(l10n.howCanWeHelpTitle, style: SettingsFlowTheme.heroTitle()),
                 const SizedBox(height: 8),
                 Text(
-                  'Search common topics, contact support, or report something that needs attention.',
+                  l10n.howCanWeHelpSubtitle,
                   style: SettingsFlowTheme.caption(),
                 ),
                 const SizedBox(height: 16),
@@ -102,7 +101,7 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
                   onChanged: (_) => setState(() {}),
                   style: SettingsFlowTheme.body(),
                   decoration: InputDecoration(
-                    hintText: 'Search help topics',
+                    hintText: l10n.searchHelpTopicsHint,
                     hintStyle: SettingsFlowTheme.caption(),
                     prefixIcon: Icon(
                       Icons.search_rounded,
@@ -134,9 +133,9 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
             ),
           ),
           const SizedBox(height: 22),
-          const SettingsSectionHeading(
-            title: 'Quick Support',
-            subtitle: 'Reach out with context so the team can help faster.',
+          SettingsSectionHeading(
+            title: l10n.quickSupportTitle,
+            subtitle: l10n.quickSupportSubtitle,
           ),
           const SizedBox(height: 12),
           SettingsPanel(
@@ -145,39 +144,38 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
                 SettingsListRow(
                   icon: Icons.support_agent_outlined,
                   iconColor: SettingsFlowPalette.primary,
-                  title: 'Contact Support',
+                  title: l10n.contactSupportTitle,
                   subtitle: AppMetadata.supportEmail,
                   onTap: () => _launchEmail(
                     context,
-                    subject: 'FutureGate Support Request',
+                    subject: l10n.supportRequestSubject,
                   ),
                 ),
                 const SizedBox(height: 10),
                 SettingsListRow(
                   icon: Icons.report_problem_outlined,
                   iconColor: SettingsFlowPalette.accent,
-                  title: 'Report a Problem',
-                  subtitle: 'Share screenshots, steps, or account issues',
+                  title: l10n.reportProblemTitle,
+                  subtitle: l10n.reportProblemSubtitle,
                   onTap: () =>
-                      _launchEmail(context, subject: 'FutureGate Bug Report'),
+                      _launchEmail(context, subject: l10n.bugReportSubject),
                 ),
               ],
             ),
           ),
           const SizedBox(height: 22),
           SettingsSectionHeading(
-            title: 'FAQs',
+            title: l10n.faqsSectionTitle,
             subtitle: filteredTopics.isEmpty
-                ? 'No topics matched your search.'
-                : '${filteredTopics.length} help topic${filteredTopics.length == 1 ? '' : 's'}',
+                ? l10n.noTopicsMatchedSubtitle
+                : l10n.helpTopicCount(filteredTopics.length),
           ),
           const SizedBox(height: 12),
           if (filteredTopics.isEmpty)
-            const SettingsEmptyState(
+            SettingsEmptyState(
               icon: Icons.search_off_rounded,
-              title: 'No help topics match your search',
-              message:
-                  'Try a broader search term, or contact support if you need hands-on help.',
+              title: l10n.noHelpTopicsMatchTitle,
+              message: l10n.noHelpTopicsMatchBody,
             )
           else
             ...filteredTopics.map(
@@ -270,9 +268,10 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
       return;
     }
     if (!launched) {
+      final l10n = AppLocalizations.of(context)!;
       context.showAppSnackBar(
-        'No email app is available on this device.',
-        title: 'Email unavailable',
+        l10n.noEmailAppAvailableBody,
+        title: l10n.emailUnavailableWarningTitle,
         type: AppFeedbackType.warning,
       );
     }
@@ -285,7 +284,7 @@ class _HelpTopic {
   final String description;
   final IconData icon;
 
-  const _HelpTopic({
+  _HelpTopic({
     required this.title,
     required this.category,
     required this.description,

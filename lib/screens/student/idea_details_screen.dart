@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/generated/app_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -607,7 +608,7 @@ class IdeaDetailsScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 18),
-              Text('Manage Team', style: _theme.section(size: 20)),
+              Text(AppLocalizations.of(context)!.uiManageTeam, style: _theme.section(size: 20)),
               const SizedBox(height: 8),
               Text(
                 'Track the roles you need and the interest building around this idea.',

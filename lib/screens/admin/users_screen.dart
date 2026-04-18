@@ -8,6 +8,7 @@ import '../../models/user_model.dart';
 import '../../services/document_access_service.dart';
 import '../../utils/admin_palette.dart';
 import '../../utils/display_text.dart';
+import '../../l10n/generated/app_localizations.dart';
 import '../../widgets/admin/admin_ui.dart';
 import '../../widgets/profile_avatar.dart';
 import '../../widgets/shared/app_feedback.dart';
@@ -99,7 +100,7 @@ class _UsersScreenState extends State<UsersScreen> {
         message: provider.usersError!,
         action: FilledButton(
           onPressed: provider.loadAllUsers,
-          child: const Text('Retry'),
+          child: Text(AppLocalizations.of(context)!.retryLabel),
         ),
       );
     }

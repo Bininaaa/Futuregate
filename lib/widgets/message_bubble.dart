@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/generated/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../models/message_model.dart';
@@ -161,7 +162,7 @@ class MessageBubble extends StatelessWidget {
           children: [
             ListTile(
               leading: const Icon(Icons.edit, color: Color(0xFF004E98)),
-              title: Text('Edit message', style: GoogleFonts.poppins()),
+              title: Text(AppLocalizations.of(context)!.editMessageLabel, style: GoogleFonts.poppins()),
               onTap: () {
                 Navigator.pop(ctx);
                 onEdit?.call();

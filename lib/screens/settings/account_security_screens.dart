@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../l10n/generated/app_localizations.dart';
 import '../../providers/auth_provider.dart';
 import '../../utils/validators.dart';
 import '../../widgets/password_strength_indicator.dart';
@@ -60,18 +61,19 @@ class _AddPasswordScreenState extends State<AddPasswordScreen> {
 
     setState(() => _loading = false);
 
+    final l10n = AppLocalizations.of(context)!;
     if (error != null) {
       context.showAppSnackBar(
         error,
-        title: 'Password setup unavailable',
+        title: l10n.uiPasswordSetupUnavailable,
         type: AppFeedbackType.error,
       );
       return;
     }
 
     context.showAppSnackBar(
-      'Password added successfully. You can now sign in with Google or email and password.',
-      title: 'Password added',
+      l10n.passwordAddedSuccessBody,
+      title: l10n.uiPasswordAdded,
       type: AppFeedbackType.success,
     );
     Navigator.pop(context);
@@ -79,21 +81,22 @@ class _AddPasswordScreenState extends State<AddPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final authProvider = context.watch<AuthProvider>();
     if (!authProvider.canAddPassword) {
       return _UnsupportedSecurityAction(
-        title: 'Add Password',
-        bannerTitle: 'Password setup unavailable',
+        title: l10n.addPasswordTitle,
+        bannerTitle: l10n.uiPasswordSetupUnavailable,
         bannerMessage: authProvider.canChangePassword
-            ? 'This account already has email and password sign-in enabled.'
-            : 'A password can only be added while signed in to a Google account that does not already have email/password linked.',
+            ? l10n.passwordSetupAlreadyEnabled
+            : l10n.passwordSetupGoogleOnly,
       );
     }
 
     final currentEmail = authProvider.userModel?.email ?? '';
 
     return SettingsPageScaffold(
-      title: 'Add Password',
+      title: l10n.addPasswordTitle,
       child: Form(
         key: _formKey,
         child: Column(
@@ -101,10 +104,10 @@ class _AddPasswordScreenState extends State<AddPasswordScreen> {
           children: [
             SettingsInfoBanner(
               icon: Icons.password_rounded,
-              title: 'Add email and password sign-in',
+              title: l10n.addPasswordBannerTitle,
               message: currentEmail.isEmpty
-                  ? 'Keep Google sign-in and add a password for this account.'
-                  : 'Keep Google sign-in and add a password for $currentEmail.',
+                  ? l10n.addPasswordBannerBodyGeneric
+                  : l10n.addPasswordBannerBodyEmail(currentEmail),
             ),
             const SizedBox(height: 18),
             SettingsPanel(
@@ -112,22 +115,22 @@ class _AddPasswordScreenState extends State<AddPasswordScreen> {
                 children: [
                   _PasswordField(
                     controller: _newPasswordController,
-                    label: 'New Password',
+                    label: l10n.newPasswordLabel,
                     obscureText: _obscureNew,
                     onToggle: () => setState(() => _obscureNew = !_obscureNew),
-                    validator: Validators.validatePassword,
+                    validator: Validators.password(l10n),
                   ),
                   const SizedBox(height: 10),
                   PasswordStrengthIndicator(password: _newPasswordText),
                   const SizedBox(height: 14),
                   _PasswordField(
                     controller: _confirmPasswordController,
-                    label: 'Confirm Password',
+                    label: l10n.confirmPasswordLabel,
                     obscureText: _obscureConfirm,
                     onToggle: () =>
                         setState(() => _obscureConfirm = !_obscureConfirm),
-                    validator: (value) => Validators.validateConfirmPassword(
-                      value,
+                    validator: Validators.confirmPassword(
+                      l10n,
                       _newPasswordController.text,
                     ),
                   ),
@@ -136,12 +139,12 @@ class _AddPasswordScreenState extends State<AddPasswordScreen> {
             ),
             const SizedBox(height: 14),
             Text(
-              'Your sign-in email will remain managed by Google. This only adds an additional way to sign in.',
+              l10n.addPasswordNote,
               style: SettingsFlowTheme.caption(),
             ),
             const SizedBox(height: 20),
             SettingsPrimaryButton(
-              label: _loading ? 'Adding...' : 'Add Password',
+              label: _loading ? l10n.addingPasswordLabel : l10n.addPasswordTitle,
               icon: _loading ? null : Icons.check_rounded,
               onPressed: _loading ? null : _submit,
             ),
@@ -208,18 +211,19 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
     setState(() => _loading = false);
 
+    final l10n = AppLocalizations.of(context)!;
     if (error != null) {
       context.showAppSnackBar(
         error,
-        title: 'Password update unavailable',
+        title: l10n.uiPasswordUpdateUnavailable,
         type: AppFeedbackType.error,
       );
       return;
     }
 
     context.showAppSnackBar(
-      'Your password has been updated successfully.',
-      title: 'Password updated',
+      l10n.passwordUpdatedBody,
+      title: l10n.uiPasswordUpdated,
       type: AppFeedbackType.success,
     );
     Navigator.pop(context);
@@ -227,29 +231,29 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final authProvider = context.watch<AuthProvider>();
     if (!authProvider.canChangePassword) {
       return _UnsupportedSecurityAction(
-        title: 'Change Password',
-        bannerTitle: 'Password changes unavailable',
+        title: l10n.changePasswordTitle,
+        bannerTitle: l10n.passwordChangesUnavailableTitle,
         bannerMessage: authProvider.canAddPassword
-            ? 'This account uses Google sign-in right now. Add a password first, then you can change it later.'
-            : 'Password changes are only available for accounts that already use email and password sign-in.',
+            ? l10n.passwordChangesGoogleBody
+            : l10n.passwordChangesOnlyBody,
       );
     }
 
     return SettingsPageScaffold(
-      title: 'Change Password',
+      title: l10n.changePasswordTitle,
       child: Form(
         key: _formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SettingsInfoBanner(
+            SettingsInfoBanner(
               icon: Icons.lock_person_rounded,
-              title: 'Secure your account',
-              message:
-                  'Use a strong password with a mix of letters, numbers, and symbols to keep your account protected.',
+              title: l10n.secureAccountBannerTitle,
+              message: l10n.secureAccountBannerBody,
             ),
             const SizedBox(height: 18),
             SettingsPanel(
@@ -257,31 +261,31 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 children: [
                   _PasswordField(
                     controller: _currentPasswordController,
-                    label: 'Current Password',
+                    label: l10n.currentPasswordLabel,
                     obscureText: _obscureCurrent,
                     onToggle: () =>
                         setState(() => _obscureCurrent = !_obscureCurrent),
-                    validator: Validators.validateLoginPassword,
+                    validator: Validators.loginPassword(l10n),
                   ),
                   const SizedBox(height: 14),
                   _PasswordField(
                     controller: _newPasswordController,
-                    label: 'New Password',
+                    label: l10n.newPasswordLabel,
                     obscureText: _obscureNew,
                     onToggle: () => setState(() => _obscureNew = !_obscureNew),
-                    validator: Validators.validatePassword,
+                    validator: Validators.password(l10n),
                   ),
                   const SizedBox(height: 10),
                   PasswordStrengthIndicator(password: _newPasswordText),
                   const SizedBox(height: 14),
                   _PasswordField(
                     controller: _confirmPasswordController,
-                    label: 'Confirm Password',
+                    label: l10n.confirmPasswordLabel,
                     obscureText: _obscureConfirm,
                     onToggle: () =>
                         setState(() => _obscureConfirm = !_obscureConfirm),
-                    validator: (value) => Validators.validateConfirmPassword(
-                      value,
+                    validator: Validators.confirmPassword(
+                      l10n,
                       _newPasswordController.text,
                     ),
                   ),
@@ -290,7 +294,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             ),
             const SizedBox(height: 22),
             SettingsPrimaryButton(
-              label: _loading ? 'Updating...' : 'Update Password',
+              label: _loading ? l10n.updatingPasswordLabel : l10n.updatePasswordLabel,
               icon: _loading ? null : Icons.check_rounded,
               onPressed: _loading ? null : _submit,
             ),
@@ -341,18 +345,19 @@ class _ChangeEmailScreenState extends State<ChangeEmailScreen> {
 
     setState(() => _loading = false);
 
+    final l10n = AppLocalizations.of(context)!;
     if (error != null) {
       context.showAppSnackBar(
         error,
-        title: 'Email update unavailable',
+        title: l10n.uiEmailUpdateUnavailable,
         type: AppFeedbackType.error,
       );
       return;
     }
 
     context.showAppSnackBar(
-      'Verification email sent. Confirm your new address to complete the update.',
-      title: 'Verification sent',
+      l10n.verificationSentBody,
+      title: l10n.verificationSentTitle,
       type: AppFeedbackType.success,
     );
     Navigator.pop(context);
@@ -360,21 +365,22 @@ class _ChangeEmailScreenState extends State<ChangeEmailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final authProvider = context.watch<AuthProvider>();
     if (!authProvider.canChangeEmail) {
       return _UnsupportedSecurityAction(
-        title: 'Change Email',
-        bannerTitle: 'Email changes unavailable',
+        title: l10n.changeEmailTitle,
+        bannerTitle: l10n.emailChangesUnavailableTitle,
         bannerMessage: authProvider.hasGoogleProvider
-            ? 'This account is linked to Google, so the sign-in email must be managed through Google.'
-            : 'Email changes are only available for accounts that use email and password without Google linked.',
+            ? l10n.emailChangesGoogleBody
+            : l10n.emailChangesPasswordOnlyBody,
       );
     }
 
     final currentEmail = authProvider.userModel?.email ?? '';
 
     return SettingsPageScaffold(
-      title: 'Change Email',
+      title: l10n.changeEmailTitle,
       child: Form(
         key: _formKey,
         child: Column(
@@ -382,9 +388,9 @@ class _ChangeEmailScreenState extends State<ChangeEmailScreen> {
           children: [
             SettingsInfoBanner(
               icon: Icons.mark_email_read_outlined,
-              title: 'Current email',
+              title: l10n.currentEmailBannerTitle,
               message: currentEmail.isEmpty
-                  ? 'No email is currently available for this account.'
+                  ? l10n.noEmailAvailableBody
                   : currentEmail,
             ),
             const SizedBox(height: 18),
@@ -393,32 +399,32 @@ class _ChangeEmailScreenState extends State<ChangeEmailScreen> {
                 children: [
                   _PasswordField(
                     controller: _passwordController,
-                    label: 'Current Password',
+                    label: l10n.currentPasswordLabel,
                     obscureText: _obscurePassword,
                     onToggle: () =>
                         setState(() => _obscurePassword = !_obscurePassword),
-                    validator: Validators.validateLoginPassword,
+                    validator: Validators.loginPassword(l10n),
                   ),
                   const SizedBox(height: 14),
                   _TextField(
                     controller: _newEmailController,
-                    label: 'New Email',
-                    hintText: 'name@example.com',
+                    label: l10n.newEmailLabel,
+                    hintText: l10n.newEmailHint,
                     keyboardType: TextInputType.emailAddress,
                     prefixIcon: Icons.email_outlined,
-                    validator: Validators.validateEmail,
+                    validator: Validators.email(l10n),
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 14),
             Text(
-              'A verification link will be sent to the new address before the change becomes active.',
+              l10n.emailVerificationNote,
               style: SettingsFlowTheme.caption(),
             ),
             const SizedBox(height: 20),
             SettingsPrimaryButton(
-              label: _loading ? 'Updating...' : 'Update Email',
+              label: _loading ? l10n.updatingEmailLabel : l10n.updateEmailLabel,
               icon: _loading ? null : Icons.arrow_forward_rounded,
               onPressed: _loading ? null : _submit,
             ),
@@ -560,6 +566,7 @@ class _UnsupportedSecurityAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return SettingsPageScaffold(
       title: title,
       child: Column(
@@ -573,7 +580,7 @@ class _UnsupportedSecurityAction extends StatelessWidget {
           ),
           const SizedBox(height: 22),
           SettingsPrimaryButton(
-            label: 'Back',
+            label: l10n.backLabel,
             icon: Icons.arrow_back_rounded,
             onPressed: () => Navigator.pop(context),
           ),

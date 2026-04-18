@@ -845,7 +845,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             builder: (_) => Scaffold(
               backgroundColor: SettingsFlowPalette.background,
               appBar: AppBar(
-                title: const Text('Company Reviews'),
+                title: Text(AppLocalizations.of(context)!.uiCompanyReviews),
                 backgroundColor: SettingsFlowPalette.surface,
                 foregroundColor: SettingsFlowPalette.textPrimary,
               ),

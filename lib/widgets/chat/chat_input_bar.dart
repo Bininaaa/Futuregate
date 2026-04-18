@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 
+import '../../l10n/generated/app_localizations.dart';
 import 'chat_formatters.dart';
 import 'chat_theme.dart';
 
@@ -154,7 +155,7 @@ class ChatInputBar extends StatelessWidget {
                               size: 20,
                             ),
                             const SizedBox(width: 10),
-                            Text('Photo', style: ChatThemeStyles.body()),
+                            Text(AppLocalizations.of(context)!.uiPhoto, style: ChatThemeStyles.body()),
                           ],
                         ),
                       ),
@@ -168,7 +169,7 @@ class ChatInputBar extends StatelessWidget {
                               size: 20,
                             ),
                             const SizedBox(width: 10),
-                            Text('File', style: ChatThemeStyles.body()),
+                            Text(AppLocalizations.of(context)!.uiFile, style: ChatThemeStyles.body()),
                           ],
                         ),
                       ),

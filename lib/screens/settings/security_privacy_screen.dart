@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../l10n/generated/app_localizations.dart';
 import '../../providers/auth_provider.dart';
 import 'account_security_screens.dart';
 import 'settings_flow_theme.dart';
@@ -11,6 +12,7 @@ class SecurityPrivacyScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final authProvider = context.watch<AuthProvider>();
     final user = authProvider.userModel;
     final hasGoogleProvider = authProvider.hasGoogleProvider;
@@ -21,7 +23,7 @@ class SecurityPrivacyScreen extends StatelessWidget {
     final providerLabel = authProvider.linkedProviderLabel;
 
     return SettingsPageScaffold(
-      title: 'Security & Privacy',
+      title: l10n.securityPrivacyTitle,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -49,12 +51,12 @@ class SecurityPrivacyScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Your account protection hub',
+                    l10n.accountProtectionHubTitle,
                     style: SettingsFlowTheme.sectionTitle(),
                   ),
                   const SizedBox(height: 5),
                   Text(
-                    'Update credentials, review privacy touchpoints, and keep access to your FutureGate profile secure.',
+                    l10n.accountProtectionHubBody,
                     style: SettingsFlowTheme.caption(),
                   ),
                 ],
@@ -62,10 +64,9 @@ class SecurityPrivacyScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 18),
-          const SettingsSectionHeading(
-            title: 'Account Security',
-            subtitle:
-                'Use the existing account tools safely without affecting your current sign-in flow.',
+          SettingsSectionHeading(
+            title: l10n.accountSecuritySectionTitle,
+            subtitle: l10n.accountSecuritySectionSubtitle,
           ),
           const SizedBox(height: 10),
           SettingsPanel(
@@ -75,8 +76,8 @@ class SecurityPrivacyScreen extends StatelessWidget {
                   SettingsListRow(
                     icon: Icons.password_rounded,
                     iconColor: SettingsFlowPalette.primary,
-                    title: 'Add Password',
-                    subtitle: 'Keep Google sign-in and add email/password too',
+                    title: l10n.addPasswordTitle,
+                    subtitle: l10n.addPasswordSubtitle,
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -90,8 +91,8 @@ class SecurityPrivacyScreen extends StatelessWidget {
                   SettingsListRow(
                     icon: Icons.password_rounded,
                     iconColor: SettingsFlowPalette.primary,
-                    title: 'Change Password',
-                    subtitle: 'Update your sign-in password',
+                    title: l10n.changePasswordTitle,
+                    subtitle: l10n.changePasswordSubtitle,
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -105,10 +106,10 @@ class SecurityPrivacyScreen extends StatelessWidget {
                   SettingsListRow(
                     icon: Icons.alternate_email_rounded,
                     iconColor: SettingsFlowPalette.secondary,
-                    title: 'Change Email',
+                    title: l10n.changeEmailTitle,
                     subtitle: user?.email.isNotEmpty == true
-                        ? 'Current: ${user!.email}'
-                        : 'Verify a new sign-in email',
+                        ? l10n.changeEmailCurrentSubtitle(user!.email)
+                        : l10n.changeEmailVerifySubtitle,
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -122,11 +123,11 @@ class SecurityPrivacyScreen extends StatelessWidget {
                   SettingsInfoBanner(
                     icon: Icons.link_rounded,
                     title: hasPasswordProvider
-                        ? 'Google-linked account'
-                        : 'Google-managed account',
+                        ? l10n.googleLinkedAccountTitle
+                        : l10n.googleManagedAccountTitle,
                     message: hasPasswordProvider
-                        ? 'This account can sign in with both Google and email/password, but the sign-in email stays managed through Google.'
-                        : 'This account signs in with Google. You can add a password if you want email/password access too, but the sign-in email itself stays managed through Google.',
+                        ? l10n.googleLinkedAccountBody
+                        : l10n.googleManagedAccountBody,
                     color: SettingsFlowPalette.secondary,
                   ),
                   const SizedBox(height: 10),
@@ -134,41 +135,39 @@ class SecurityPrivacyScreen extends StatelessWidget {
                 SettingsListRow(
                   icon: Icons.verified_user_outlined,
                   iconColor: SettingsFlowPalette.success,
-                  title: 'Two-step verification',
+                  title: l10n.twoStepVerificationTitle,
                   subtitle: hasGoogleProvider
-                      ? 'Manage it through your Google account'
-                      : 'Available through your email provider',
+                      ? l10n.twoStepVerificationGoogleSubtitle
+                      : l10n.twoStepVerificationEmailSubtitle,
                   onTap: () => _showDetailsSheet(
                     context,
-                    title: 'Two-step verification',
+                    title: l10n.twoStepVerificationTitle,
                     icon: Icons.verified_user_outlined,
                     message: hasGoogleProvider
-                        ? 'This account signs in with $providerLabel, so two-step verification is managed directly by Google.'
-                        : 'A dedicated in-app two-step setup is not enabled yet. For now, keep your mailbox protected and use a strong password.',
+                        ? l10n.twoStepVerificationGoogleBody(providerLabel)
+                        : l10n.twoStepVerificationEmailBody,
                   ),
                 ),
                 const SizedBox(height: 10),
                 SettingsListRow(
                   icon: Icons.devices_rounded,
                   iconColor: SettingsFlowPalette.accent,
-                  title: 'Manage sessions & devices',
-                  subtitle: 'Review where your account is being used',
+                  title: l10n.manageSessionsTitle,
+                  subtitle: l10n.manageSessionsSubtitle,
                   onTap: () => _showDetailsSheet(
                     context,
-                    title: 'Sessions & devices',
+                    title: l10n.sessionsDevicesTitle,
                     icon: Icons.devices_rounded,
-                    message:
-                        'Remote session management is not available in this build yet. Your active session on this device remains protected by Firebase authentication.',
+                    message: l10n.sessionsDevicesBody,
                   ),
                 ),
               ],
             ),
           ),
           const SizedBox(height: 18),
-          const SettingsSectionHeading(
-            title: 'Privacy Controls',
-            subtitle:
-                'Understand what information is stored and how it is used inside the platform.',
+          SettingsSectionHeading(
+            title: l10n.privacyControlsSectionTitle,
+            subtitle: l10n.privacyControlsSectionSubtitle,
           ),
           const SizedBox(height: 10),
           SettingsPanel(
@@ -177,43 +176,39 @@ class SecurityPrivacyScreen extends StatelessWidget {
                 SettingsListRow(
                   icon: Icons.tune_rounded,
                   iconColor: SettingsFlowPalette.primaryDark,
-                  title: 'Data permissions',
-                  subtitle:
-                      'Profile, CV, and application data are used to power opportunities and recruiter review flows.',
+                  title: l10n.dataPermissionsTitle,
+                  subtitle: l10n.dataPermissionsSubtitle,
                   onTap: () => _showDetailsSheet(
                     context,
-                    title: 'Data permissions',
+                    title: l10n.dataPermissionsTitle,
                     icon: Icons.tune_rounded,
-                    message:
-                        'FutureGate stores the profile details, CV content, saved items, and application activity needed to match students with opportunities and support application review.',
+                    message: l10n.dataPermissionsBody,
                   ),
                 ),
                 const SizedBox(height: 10),
                 SettingsListRow(
                   icon: Icons.privacy_tip_outlined,
                   iconColor: SettingsFlowPalette.secondary,
-                  title: 'Privacy Policy',
-                  subtitle: 'Read how personal information is handled',
+                  title: l10n.privacyPolicySettingsTitle,
+                  subtitle: l10n.privacyPolicySettingsSubtitle,
                   onTap: () => _showDetailsSheet(
                     context,
-                    title: 'Privacy Policy',
+                    title: l10n.privacyPolicySettingsTitle,
                     icon: Icons.privacy_tip_outlined,
-                    message:
-                        'Your account data is used to provide sign-in, profile management, saved opportunities, notifications, CV access, and applications. Sensitive access is limited to the platform features that require it.',
+                    message: l10n.privacyPolicySettingsBody,
                   ),
                 ),
                 const SizedBox(height: 10),
                 SettingsListRow(
                   icon: Icons.gavel_rounded,
                   iconColor: SettingsFlowPalette.warning,
-                  title: 'Terms of Use',
-                  subtitle: 'Review expected platform usage',
+                  title: l10n.termsOfUseSettingsTitle,
+                  subtitle: l10n.termsOfUseSettingsSubtitle,
                   onTap: () => _showDetailsSheet(
                     context,
-                    title: 'Terms of Use',
+                    title: l10n.termsOfUseSettingsTitle,
                     icon: Icons.gavel_rounded,
-                    message:
-                        'Use FutureGate responsibly, keep account information accurate, and avoid submitting misleading applications or content that violates platform rules.',
+                    message: l10n.termsOfUseSettingsBody,
                   ),
                 ),
               ],
@@ -230,6 +225,7 @@ class SecurityPrivacyScreen extends StatelessWidget {
     required IconData icon,
     required String message,
   }) {
+    final l10n = AppLocalizations.of(context)!;
     showModalBottomSheet<void>(
       context: context,
       backgroundColor: Colors.transparent,
@@ -276,7 +272,7 @@ class SecurityPrivacyScreen extends StatelessWidget {
                 Text(message, style: SettingsFlowTheme.caption()),
                 const SizedBox(height: 16),
                 SettingsPrimaryButton(
-                  label: 'Close',
+                  label: l10n.closeLabel,
                   onPressed: () => Navigator.pop(sheetContext),
                 ),
               ],

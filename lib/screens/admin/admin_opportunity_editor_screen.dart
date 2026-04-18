@@ -6,6 +6,7 @@ import '../../providers/admin_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../utils/admin_palette.dart';
 import '../../utils/opportunity_metadata.dart';
+import '../../l10n/generated/app_localizations.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/opportunity_type_selector.dart';
 import '../../widgets/shared/app_content_system.dart';
@@ -141,6 +142,7 @@ class _AdminOpportunityEditorScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return AdminEditorScaffold(
       title: _isEditing
           ? 'Edit Admin Opportunity'
@@ -428,9 +430,9 @@ class _AdminOpportunityEditorScreenState
                     AdminEditorDropdown<bool>(
                       value: _isPaid,
                       label: 'Paid status',
-                      items: const [
-                        DropdownMenuItem(value: true, child: Text('Paid')),
-                        DropdownMenuItem(value: false, child: Text('Unpaid')),
+                      items: [
+                        DropdownMenuItem(value: true, child: Text(l10n.paidLabel)),
+                        DropdownMenuItem(value: false, child: Text(l10n.unpaidLabel)),
                       ],
                       onChanged: (value) => setState(() => _isPaid = value),
                     ),

@@ -15,6 +15,7 @@ import '../../widgets/student_opportunity_hub_widgets.dart';
 import 'opportunities_screen.dart';
 import 'opportunity_detail_screen.dart';
 import 'profile_screen.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 class AppliedOpportunitiesScreen extends StatefulWidget {
   const AppliedOpportunitiesScreen({super.key});
@@ -91,8 +92,8 @@ class _AppliedOpportunitiesScreenState
             item.title,
             item.companyName,
             item.location,
-            OpportunityType.label(item.type),
-            ApplicationStatus.label(item.status),
+            OpportunityType.label(item.type, AppLocalizations.of(context)!),
+            ApplicationStatus.label(item.status, AppLocalizations.of(context)!),
           ].join(' ').toLowerCase();
 
           return searchText.contains(query);
@@ -667,7 +668,7 @@ class _AppliedHistoryCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 8),
                     _AppliedLabelChip(
-                      label: ApplicationStatus.label(item.status),
+                      label: ApplicationStatus.label(item.status, AppLocalizations.of(context)!),
                       tone: statusTone,
                       filled: true,
                     ),
@@ -691,7 +692,7 @@ class _AppliedHistoryCard extends StatelessWidget {
                       ),
                       TextSpan(
                         text: item.hasOpportunity
-                            ? OpportunityType.label(item.type)
+                            ? OpportunityType.label(item.type, AppLocalizations.of(context)!)
                             : 'Archived',
                         style: GoogleFonts.poppins(
                           fontSize: 11.2,

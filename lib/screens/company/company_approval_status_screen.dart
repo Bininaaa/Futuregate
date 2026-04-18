@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
+import '../../l10n/generated/app_localizations.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/profile_avatar.dart';
@@ -21,6 +22,7 @@ class CompanyApprovalStatusScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final auth = context.watch<AuthProvider>();
     final user = auth.userModel;
 
@@ -281,7 +283,7 @@ class CompanyApprovalStatusScreen extends StatelessWidget {
                             onPressed: () =>
                                 showLogoutConfirmationSheet(context),
                             icon: const Icon(Icons.logout_rounded),
-                            label: const Text('Sign out'),
+                            label: Text(l10n.signOutTitle),
                             style: OutlinedButton.styleFrom(
                               minimumSize: const Size(double.infinity, 52),
                               foregroundColor: _ink,

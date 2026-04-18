@@ -1,5 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import '../../l10n/generated/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 import '../../config/avatar_config.dart';
@@ -501,7 +502,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
               ),
               const SizedBox(height: 14),
-              Text('Choose an Avatar', style: SettingsFlowTheme.sectionTitle()),
+              Text(AppLocalizations.of(context)!.uiChooseAvatar, style: SettingsFlowTheme.sectionTitle()),
               const SizedBox(height: 6),
               Text(
                 'Pick a built-in look, or keep using your uploaded photo.',
