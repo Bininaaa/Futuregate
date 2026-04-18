@@ -185,8 +185,11 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
   // ── Pick featured scholarship from real data ─────────────────────────────
   ScholarshipModel? _pickFeatured(List<ScholarshipModel> all) {
     if (all.isEmpty) return null;
-    final nonOxford = all.where((s) => !_isOxfordScholarship(s)).toList();
-    final candidates = nonOxford.isNotEmpty ? nonOxford : all;
+    final featured = all.where((s) => s.isFeatured).toList();
+    if (featured.isEmpty) return null;
+
+    final nonOxford = featured.where((s) => !_isOxfordScholarship(s)).toList();
+    final candidates = nonOxford.isNotEmpty ? nonOxford : featured;
 
     for (final s in candidates) {
       if (s.imageUrl?.isNotEmpty ?? false) return s;
@@ -281,6 +284,9 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
     final savedIds = savedProvider.savedScholarships
         .map((item) => item.scholarshipId)
         .toSet();
+    final hasAnyVisibleScholarships = provider.scholarships.any(
+      (scholarship) => scholarship.isVisibleToStudents(),
+    );
     final filtered = _applyFilters(provider.scholarships);
     final featured = _pickFeatured(filtered);
 
@@ -325,6 +331,13 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
                         isSaved: savedIds.contains(featured.id),
                         isSaving: savedProvider.isLoading,
                         onToggleSaved: () => _toggleSavedScholarship(featured),
+                      ),
+                    )
+                  else
+                    SliverToBoxAdapter(
+                      child: _buildNoFeaturedNotice(
+                        hasAnyVisibleScholarships: hasAnyVisibleScholarships,
+                        hasFilteredScholarships: filtered.isNotEmpty,
                       ),
                     ),
                   SliverToBoxAdapter(child: _buildSearchBar()),
@@ -598,6 +611,85 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNoFeaturedNotice({
+    required bool hasAnyVisibleScholarships,
+    required bool hasFilteredScholarships,
+  }) {
+    final title = hasFilteredScholarships
+        ? 'No featured scholarships right now'
+        : hasAnyVisibleScholarships
+        ? 'No featured scholarships in this view'
+        : 'No featured scholarships yet';
+    final subtitle = hasFilteredScholarships
+        ? 'The full scholarship list is still available below.'
+        : hasAnyVisibleScholarships
+        ? 'Try another search or filter to browse the available scholarships.'
+        : 'Featured picks will appear here once scholarships are published.';
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+        decoration: BoxDecoration(
+          color: _P.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: _P.border.withValues(alpha: 0.92)),
+          boxShadow: [
+            BoxShadow(
+              color: _P.primaryDark.withValues(alpha: 0.04),
+              blurRadius: 14,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: _P.secondary.withValues(alpha: 0.10),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                Icons.workspace_premium_outlined,
+                size: 18,
+                color: _P.secondary,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: AppTypography.product(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: _P.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    subtitle,
+                    style: AppTypography.product(
+                      fontSize: 11.3,
+                      fontWeight: FontWeight.w500,
+                      color: _P.textSecondary,
+                      height: 1.35,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -920,9 +1012,9 @@ class _ScholarshipCard extends StatelessWidget {
     final translationProvider = context.watch<OpportunityTranslationProvider>();
     final hasTranslation =
         translationProvider.statusForContent(
-          contentType: ContentTranslationType.scholarship,
-          contentId: scholarship.id,
-        ) ==
+              contentType: ContentTranslationType.scholarship,
+              contentId: scholarship.id,
+            ) ==
             TranslationStatus.ready &&
         translationProvider.translationForContent(
               contentType: ContentTranslationType.scholarship,
@@ -1144,7 +1236,8 @@ class _ScholarshipCard extends StatelessWidget {
                   ],
 
                   // ── F. Tag pill ──
-                  if (hasTranslation || scholarship.originalLanguage.isNotEmpty) ...[
+                  if (hasTranslation ||
+                      scholarship.originalLanguage.isNotEmpty) ...[
                     const SizedBox(height: 8),
                     ContentTranslationBadge(
                       showingTranslated: hasTranslation && showingTranslated,
@@ -1278,7 +1371,8 @@ class _ScholarshipCard extends StatelessWidget {
       contentType: ContentTranslationType.scholarship,
       contentId: scholarship.id,
     );
-    if (status == TranslationStatus.loading || status == TranslationStatus.ready) {
+    if (status == TranslationStatus.loading ||
+        status == TranslationStatus.ready) {
       return;
     }
 
@@ -1352,5 +1446,3 @@ class _ScholarshipCard extends StatelessWidget {
     return _P.primary.withValues(alpha: 0.85);
   }
 }
-
-

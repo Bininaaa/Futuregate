@@ -130,12 +130,14 @@ class TrainingHeroIntro extends StatelessWidget {
 class TrainingSearchBar extends StatelessWidget {
   final TextEditingController controller;
   final FocusNode focusNode;
+  final ValueChanged<String>? onChanged;
   final VoidCallback? onClear;
 
   const TrainingSearchBar({
     super.key,
     required this.controller,
     required this.focusNode,
+    this.onChanged,
     this.onClear,
   });
 
@@ -144,6 +146,7 @@ class TrainingSearchBar extends StatelessWidget {
     return TextField(
       controller: controller,
       focusNode: focusNode,
+      onChanged: onChanged,
       textInputAction: TextInputAction.search,
       style: AppTypography.product(
         fontSize: 13,
@@ -174,18 +177,22 @@ class TrainingSearchBar extends StatelessWidget {
                 ),
               ),
         filled: true,
-        fillColor: OpportunityDashboardPalette.primary.withValues(alpha: 0.06),
+        fillColor: OpportunityDashboardPalette.surface,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
           vertical: 13,
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(20),
-          borderSide: BorderSide.none,
+          borderSide: BorderSide(
+            color: OpportunityDashboardPalette.border.withValues(alpha: 0.95),
+          ),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(20),
-          borderSide: BorderSide.none,
+          borderSide: BorderSide(
+            color: OpportunityDashboardPalette.border.withValues(alpha: 0.95),
+          ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(20),
@@ -1791,4 +1798,3 @@ class _TrainingStickerData {
 
   const _TrainingStickerData({required this.label, required this.icon});
 }
-

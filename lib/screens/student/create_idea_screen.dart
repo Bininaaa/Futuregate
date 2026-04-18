@@ -17,7 +17,6 @@ import '../../widgets/app_shell_background.dart';
 import '../../widgets/ideas/innovation_hub_theme.dart';
 import '../../widgets/shared/app_content_system.dart';
 import '../../widgets/shared/app_feedback.dart';
-import '../../widgets/student/student_workspace_shell.dart';
 
 class CreateIdeaScreen extends StatefulWidget {
   final ProjectIdeaModel? idea;
@@ -407,7 +406,10 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                   const SizedBox(height: 16),
                   Text(title, style: SettingsFlowTheme.sectionTitle()),
                   const SizedBox(height: 4),
-                  Text(AppLocalizations.of(context)!.chooseOneOptionLabel, style: SettingsFlowTheme.caption()),
+                  Text(
+                    AppLocalizations.of(context)!.chooseOneOptionLabel,
+                    style: SettingsFlowTheme.caption(),
+                  ),
                   const SizedBox(height: 16),
                   Flexible(
                     child: ListView.separated(
@@ -624,6 +626,31 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
     return Uri.decodeComponent(uri.pathSegments.last);
   }
 
+  String get _screenTitle => widget.isEditMode
+      ? 'Edit Idea'
+      : widget.isAdmin
+      ? 'Publish Idea'
+      : 'Create Idea';
+
+  PreferredSizeWidget _buildSettingsStyleAppBar() {
+    return AppBar(
+      automaticallyImplyLeading: false,
+      centerTitle: false,
+      backgroundColor: Colors.transparent,
+      surfaceTintColor: Colors.transparent,
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      leading: IconButton(
+        onPressed: () => Navigator.maybePop(context),
+        icon: Icon(
+          Icons.arrow_back_ios_new_rounded,
+          color: SettingsFlowPalette.textPrimary,
+        ),
+      ),
+      title: Text(_screenTitle, style: SettingsFlowTheme.appBarTitle()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<ProjectIdeaProvider>();
@@ -631,21 +658,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
     return AppShellBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        appBar: StudentWorkspaceAppBar(
-          title: widget.isEditMode
-              ? 'Edit Idea'
-              : widget.isAdmin
-              ? 'Publish Idea'
-              : 'Create Idea',
-          subtitle: widget.isEditMode
-              ? 'Refine the concept, details, and team signals before updating.'
-              : 'Shape your idea clearly so it feels strong the moment it is submitted.',
-          icon: widget.isEditMode
-              ? Icons.edit_rounded
-              : Icons.lightbulb_rounded,
-          showBackButton: true,
-          onBack: () => Navigator.maybePop(context),
-        ),
+        appBar: _buildSettingsStyleAppBar(),
         bottomNavigationBar: SafeArea(
           minimum: const EdgeInsets.fromLTRB(20, 0, 20, 20),
           child: Container(
@@ -701,7 +714,9 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                             Expanded(
                               child: _AdminChoiceCard(
                                 label: AppLocalizations.of(context)!.uiVisible,
-                                subtitle: AppLocalizations.of(context)!.uiShowInDiscovery,
+                                subtitle: AppLocalizations.of(
+                                  context,
+                                )!.uiShowInDiscovery,
                                 selected: _adminStatus == 'approved',
                                 icon: Icons.visibility_outlined,
                                 onTap: () =>
@@ -711,8 +726,12 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                             const SizedBox(width: 10),
                             Expanded(
                               child: _AdminChoiceCard(
-                                label: AppLocalizations.of(context)!.uiHiddenLabel,
-                                subtitle: AppLocalizations.of(context)!.uiKeepOutOfDiscovery,
+                                label: AppLocalizations.of(
+                                  context,
+                                )!.uiHiddenLabel,
+                                subtitle: AppLocalizations.of(
+                                  context,
+                                )!.uiKeepOutOfDiscovery,
                                 selected: _adminStatus == 'rejected',
                                 icon: Icons.visibility_off_outlined,
                                 onTap: () =>
@@ -772,19 +791,29 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                         items: [
                           DropdownMenuItem(
                             value: 'bac',
-                            child: Text(AppLocalizations.of(context)!.uiBachelor),
+                            child: Text(
+                              AppLocalizations.of(context)!.uiBachelor,
+                            ),
                           ),
                           DropdownMenuItem(
                             value: 'licence',
-                            child: Text(AppLocalizations.of(context)!.academicLevelLicence),
+                            child: Text(
+                              AppLocalizations.of(
+                                context,
+                              )!.academicLevelLicence,
+                            ),
                           ),
                           DropdownMenuItem(
                             value: 'master',
-                            child: Text(AppLocalizations.of(context)!.academicLevelMaster),
+                            child: Text(
+                              AppLocalizations.of(context)!.academicLevelMaster,
+                            ),
                           ),
                           DropdownMenuItem(
                             value: 'doctorat',
-                            child: Text(AppLocalizations.of(context)!.uiDoctorate),
+                            child: Text(
+                              AppLocalizations.of(context)!.uiDoctorate,
+                            ),
                           ),
                         ],
                         onChanged: (value) {
@@ -797,20 +826,30 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                       AppFormDropdownField<String>(
                         theme: _theme,
                         value: _originalLanguage,
-                        label: AppLocalizations.of(context)!.originalLanguageFieldLabel,
-                        hint: AppLocalizations.of(context)!.originalLanguageFieldHint,
+                        label: AppLocalizations.of(
+                          context,
+                        )!.originalLanguageFieldLabel,
+                        hint: AppLocalizations.of(
+                          context,
+                        )!.originalLanguageFieldHint,
                         items: [
                           DropdownMenuItem(
                             value: 'fr',
-                            child: Text(AppLocalizations.of(context)!.languageFrench),
+                            child: Text(
+                              AppLocalizations.of(context)!.languageFrench,
+                            ),
                           ),
                           DropdownMenuItem(
                             value: 'en',
-                            child: Text(AppLocalizations.of(context)!.languageEnglish),
+                            child: Text(
+                              AppLocalizations.of(context)!.languageEnglish,
+                            ),
                           ),
                           DropdownMenuItem(
                             value: 'ar',
-                            child: Text(AppLocalizations.of(context)!.languageArabic),
+                            child: Text(
+                              AppLocalizations.of(context)!.languageArabic,
+                            ),
                           ),
                         ],
                         onChanged: (value) {
@@ -864,7 +903,9 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                       const SizedBox(height: 14),
                       _StyledField(
                         controller: _benefitsController,
-                        label: AppLocalizations.of(context)!.uiBenefitsAndImpact,
+                        label: AppLocalizations.of(
+                          context,
+                        )!.uiBenefitsAndImpact,
                         hint: 'Why does this idea matter right now?',
                         minLines: 3,
                         maxLines: 5,
@@ -930,36 +971,6 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                         controller: _attachmentUrlController,
                         label: AppLocalizations.of(context)!.uiDeckDemoLink,
                         hint: 'Figma, Notion, pitch deck, landing page...',
-                      ),
-                      const SizedBox(height: 14),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: InnovationHubPalette.cardTint,
-                          borderRadius: BorderRadius.circular(18),
-                          border: Border.all(
-                            color: InnovationHubPalette.border,
-                          ),
-                        ),
-                        child: SwitchListTile.adaptive(
-                          value: _isPublic,
-                          onChanged: (value) {
-                            setState(() => _isPublic = value);
-                          },
-                          activeThumbColor: InnovationHubPalette.primary,
-                          activeTrackColor: InnovationHubPalette.primary
-                              .withValues(alpha: 0.3),
-                          title: Text(
-                            'Ready for public discovery',
-                            style: _theme.label(
-                              color: InnovationHubPalette.textPrimary,
-                              size: 13,
-                            ),
-                          ),
-                          subtitle: Text(
-                            'Approved ideas appear in Discover. Pending ideas still stay visible in My Ideas.',
-                            style: _theme.body(size: 12.5),
-                          ),
-                        ),
                       ),
                     ],
                   ),

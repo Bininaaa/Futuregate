@@ -1955,7 +1955,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
           decoration: BoxDecoration(
             color: cardWhite,
             borderRadius: BorderRadius.circular(22),
-            border: Border.all(color: accent.withValues(alpha: 0.12)),
+            border: Border.all(color: accent.withValues(alpha: 0.26), width: 1),
             boxShadow: [
               BoxShadow(
                 color: accent.withValues(alpha: 0.05),
@@ -2493,8 +2493,13 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
       final companyName = item.companyName.trim();
       final subtitle = isUrgent
           ? companyName.isNotEmpty
-                ? l10n.savedTypeFromCompany(OpportunityType.lowercaseLabel(item.type, l10n), companyName)
-                : l10n.savedTypeNeedsAttention(OpportunityType.lowercaseLabel(item.type, l10n))
+                ? l10n.savedTypeFromCompany(
+                    OpportunityType.lowercaseLabel(item.type, l10n),
+                    companyName,
+                  )
+                : l10n.savedTypeNeedsAttention(
+                    OpportunityType.lowercaseLabel(item.type, l10n),
+                  )
           : (companyName.isNotEmpty
                 ? companyName
                 : OpportunityType.label(item.type, l10n));
@@ -2508,7 +2513,9 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
           sortDate: savedAt,
           badgeLabel: isUrgent
               ? l10n.closingSoonBadge
-              : l10n.savedTypeBadge(OpportunityType.lowercaseLabel(item.type, l10n)),
+              : l10n.savedTypeBadge(
+                  OpportunityType.lowercaseLabel(item.type, l10n),
+                ),
           accent: accent,
           icon: isUrgent
               ? Icons.schedule_outlined
@@ -2903,7 +2910,10 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
         0;
   }
 
-  String recentOpportunitySupportingLine(OpportunityModel item, AppLocalizations l10n) {
+  String recentOpportunitySupportingLine(
+    OpportunityModel item,
+    AppLocalizations l10n,
+  ) {
     final parts = <String>[
       if (item.location.trim().isNotEmpty) item.location.trim(),
       if (_recentFriendlyDeadline(item) != null) _recentFriendlyDeadline(item)!,
@@ -2986,7 +2996,14 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     return BoxDecoration(
       color: cardWhite,
       borderRadius: BorderRadius.circular(20),
-      border: Border.all(color: accent.withValues(alpha: 0.10)),
+      border: Border.all(color: accent.withValues(alpha: 0.24), width: 1),
+      boxShadow: [
+        BoxShadow(
+          color: accent.withValues(alpha: 0.045),
+          blurRadius: 14,
+          offset: const Offset(0, 7),
+        ),
+      ],
     );
   }
 
@@ -3752,4 +3769,3 @@ class _ProfileCompletionRingPainter extends CustomPainter {
       oldDelegate.progressColor != progressColor ||
       oldDelegate.strokeWidth != strokeWidth;
 }
-

@@ -9,6 +9,7 @@ import '../../models/user_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/chat_provider.dart';
 import '../../widgets/app_shell_background.dart';
+import '../../widgets/chat/chat_search_field.dart';
 import '../../widgets/chat/chat_theme.dart';
 import '../../widgets/profile_avatar.dart';
 import '../../widgets/shared/app_feedback.dart';
@@ -70,6 +71,12 @@ class _NewChatScreenState extends State<NewChatScreen> {
     _searchDebounce = Timer(const Duration(milliseconds: 250), () {
       _loadContacts(value.trim());
     });
+  }
+
+  void _clearSearch() {
+    _searchDebounce?.cancel();
+    _searchController.clear();
+    _loadContacts();
   }
 
   Future<void> _startConversation(UserModel contact) async {
@@ -173,38 +180,14 @@ class _NewChatScreenState extends State<NewChatScreen> {
                   ],
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: ChatThemePalette.surface,
-                    borderRadius: BorderRadius.circular(22),
-                    border: Border.all(color: ChatThemePalette.border),
-                    boxShadow: ChatThemeStyles.softShadow(0.04),
-                  ),
-                  child: TextField(
-                    controller: _searchController,
-                    onChanged: _onSearchChanged,
-                    style: ChatThemeStyles.body(),
-                    decoration: InputDecoration(
-                      icon: Icon(
-                        Icons.search_rounded,
-                        color: ChatThemePalette.textSecondary,
-                      ),
-                      hintText: currentUser?.role == 'company'
-                          ? 'Search applicants'
-                          : 'Search approved companies',
-                      hintStyle: ChatThemeStyles.body(
-                        ChatThemePalette.textSecondary,
-                      ),
-                      border: InputBorder.none,
-                    ),
-                  ),
-                ),
+              ChatSearchField(
+                controller: _searchController,
+                hintText: currentUser?.role == 'company'
+                    ? 'Search applicants'
+                    : 'Search approved companies',
+                onChanged: _onSearchChanged,
+                onClear: _clearSearch,
+                margin: const EdgeInsets.symmetric(horizontal: 20),
               ),
               const SizedBox(height: 18),
               Expanded(

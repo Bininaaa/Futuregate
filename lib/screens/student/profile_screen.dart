@@ -2013,6 +2013,8 @@ class _LinkRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final effectiveColor = destructive ? SettingsFlowPalette.error : color;
+    final rowPadding = destructive ? 7.0 : 10.0;
+    final iconSize = destructive ? 34.0 : 38.0;
 
     return Material(
       color: Colors.transparent,
@@ -2020,13 +2022,13 @@ class _LinkRow extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(18),
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10),
+          padding: EdgeInsets.symmetric(vertical: rowPadding),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                width: 38,
-                height: 38,
+                width: iconSize,
+                height: iconSize,
                 decoration: BoxDecoration(
                   color: effectiveColor.withValues(alpha: 0.10),
                   borderRadius: BorderRadius.circular(12),
@@ -2041,7 +2043,7 @@ class _LinkRow extends StatelessWidget {
                     Text(
                       title,
                       style: GoogleFonts.poppins(
-                        fontSize: 13.2,
+                        fontSize: destructive ? 12.9 : 13.2,
                         fontWeight: FontWeight.w700,
                         color: destructive
                             ? SettingsFlowPalette.error
@@ -2062,7 +2064,7 @@ class _LinkRow extends StatelessWidget {
                               : SettingsFlowPalette.textSecondary,
                           height: 1.45,
                         ),
-                        maxLines: 2,
+                        maxLines: destructive ? 1 : 2,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ],

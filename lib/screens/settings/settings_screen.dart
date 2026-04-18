@@ -178,6 +178,7 @@ class SettingsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 18),
             SettingsPanel(
+              padding: const EdgeInsets.all(10),
               color: SettingsFlowPalette.dangerTint,
               border: Border.all(
                 color: SettingsFlowPalette.error.withValues(alpha: 0.16),
@@ -188,6 +189,7 @@ class SettingsScreen extends StatelessWidget {
                 title: l10n.signOutTitle,
                 subtitle: l10n.signOutCompanySubtitle,
                 destructive: true,
+                compact: true,
                 onTap: () => showLogoutConfirmationSheet(context),
               ),
             ),
@@ -230,7 +232,9 @@ class SettingsScreen extends StatelessWidget {
                         color: SettingsFlowPalette.primary,
                       ),
                       SettingsStatusPill(
-                        label: adminLevel.isEmpty ? l10n.adminLabel : adminLevel,
+                        label: adminLevel.isEmpty
+                            ? l10n.adminLabel
+                            : adminLevel,
                         color: SettingsFlowPalette.secondary,
                       ),
                       SettingsStatusPill(
@@ -337,6 +341,7 @@ class SettingsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 18),
             SettingsPanel(
+              padding: const EdgeInsets.all(10),
               color: SettingsFlowPalette.dangerTint,
               border: Border.all(
                 color: SettingsFlowPalette.error.withValues(alpha: 0.16),
@@ -347,6 +352,7 @@ class SettingsScreen extends StatelessWidget {
                 title: l10n.signOutTitle,
                 subtitle: l10n.signOutAdminSubtitle,
                 destructive: true,
+                compact: true,
                 onTap: () => showLogoutConfirmationSheet(context),
               ),
             ),
@@ -367,7 +373,10 @@ class SettingsScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(l10n.preferencesTitle, style: SettingsFlowTheme.heroTitle()),
+                Text(
+                  l10n.preferencesTitle,
+                  style: SettingsFlowTheme.heroTitle(),
+                ),
                 const SizedBox(height: 8),
                 Text(
                   l10n.preferencesSubtitle,
@@ -411,9 +420,7 @@ class SettingsScreen extends StatelessWidget {
               subtitle: l10n.notificationPreferencesSubtitle,
               onTap: () => Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (_) => const NotificationsScreen(),
-                ),
+                MaterialPageRoute(builder: (_) => const NotificationsScreen()),
               ),
             ),
           ),
@@ -467,6 +474,7 @@ class SettingsScreen extends StatelessWidget {
           ),
           const SizedBox(height: 18),
           SettingsPanel(
+            padding: const EdgeInsets.all(10),
             color: SettingsFlowPalette.dangerTint,
             border: Border.all(
               color: SettingsFlowPalette.error.withValues(alpha: 0.16),
@@ -477,6 +485,7 @@ class SettingsScreen extends StatelessWidget {
               title: l10n.signOutTitle,
               subtitle: l10n.signOutSubtitle,
               destructive: true,
+              compact: true,
               onTap: () => showLogoutConfirmationSheet(context),
             ),
           ),
@@ -484,7 +493,6 @@ class SettingsScreen extends StatelessWidget {
       ),
     );
   }
-
 }
 
 class _ThemeSettingsSection extends StatelessWidget {
@@ -628,11 +636,9 @@ class _LaunchAnimationSettingsSectionState
         _isSaving = false;
       });
       final l10n = AppLocalizations.of(context)!;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l10n.startupAnimErrorMessage),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.startupAnimErrorMessage)));
       return;
     }
 
@@ -953,7 +959,9 @@ class _PostingLanguageSettingsPanelState
                         _languageLabel(ContentLanguage.localeFor(value), l10n),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: SettingsFlowTheme.micro(SettingsFlowPalette.accent),
+                        style: SettingsFlowTheme.micro(
+                          SettingsFlowPalette.accent,
+                        ),
                       ),
                     ),
                   )
@@ -1087,7 +1095,9 @@ class _LanguageInlineSelect extends StatelessWidget {
                     _languageLabel(opt, l10n),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: SettingsFlowTheme.micro(SettingsFlowPalette.secondary),
+                    style: SettingsFlowTheme.micro(
+                      SettingsFlowPalette.secondary,
+                    ),
                   ),
                 ),
               )

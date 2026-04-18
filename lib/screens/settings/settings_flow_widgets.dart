@@ -163,6 +163,7 @@ class SettingsIconBox extends StatelessWidget {
   final Color color;
   final Color? backgroundColor;
   final double size;
+  final double boxSize;
 
   const SettingsIconBox({
     super.key,
@@ -170,13 +171,14 @@ class SettingsIconBox extends StatelessWidget {
     required this.color,
     this.backgroundColor,
     this.size = 18,
+    this.boxSize = 40,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 40,
-      height: 40,
+      width: boxSize,
+      height: boxSize,
       decoration: BoxDecoration(
         color: backgroundColor ?? color.withValues(alpha: 0.12),
         borderRadius: SettingsFlowTheme.radius(14),
@@ -194,6 +196,7 @@ class SettingsListRow extends StatelessWidget {
   final Widget? trailing;
   final VoidCallback? onTap;
   final bool destructive;
+  final bool compact;
 
   const SettingsListRow({
     super.key,
@@ -204,6 +207,7 @@ class SettingsListRow extends StatelessWidget {
     this.trailing,
     this.onTap,
     this.destructive = false,
+    this.compact = false,
   });
 
   @override
@@ -214,12 +218,15 @@ class SettingsListRow extends StatelessWidget {
 
     return InkWell(
       onTap: onTap,
-      borderRadius: SettingsFlowTheme.radius(20),
+      borderRadius: SettingsFlowTheme.radius(compact ? 18 : 20),
       child: Ink(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        padding: EdgeInsets.symmetric(
+          horizontal: compact ? 12 : 14,
+          vertical: compact ? 9 : 12,
+        ),
         decoration: BoxDecoration(
           color: SettingsFlowPalette.surface,
-          borderRadius: SettingsFlowTheme.radius(20),
+          borderRadius: SettingsFlowTheme.radius(compact ? 18 : 20),
           border: Border.all(color: SettingsFlowPalette.border),
         ),
         child: Row(
@@ -227,6 +234,8 @@ class SettingsListRow extends StatelessWidget {
             SettingsIconBox(
               icon: icon,
               color: iconColor,
+              size: compact ? 17 : 18,
+              boxSize: compact ? 36 : 40,
               backgroundColor: destructive
                   ? SettingsFlowPalette.error.withValues(alpha: 0.10)
                   : iconColor.withValues(alpha: 0.12),
@@ -251,7 +260,7 @@ class SettingsListRow extends StatelessWidget {
                             ? SettingsFlowPalette.error.withValues(alpha: 0.8)
                             : SettingsFlowPalette.textSecondary,
                       ),
-                      maxLines: 2,
+                      maxLines: compact ? 1 : 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ],

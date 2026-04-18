@@ -727,6 +727,7 @@ class CompanyProfileScreen extends StatelessWidget {
             title: 'Sign out',
             subtitle: 'Sign out of the company workspace',
             destructive: true,
+            compact: true,
             onTap: () => showLogoutConfirmationSheet(context),
           ),
         ],

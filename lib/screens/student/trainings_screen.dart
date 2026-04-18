@@ -26,8 +26,11 @@ class TrainingsScreen extends StatefulWidget {
 }
 
 class _TrainingsScreenState extends State<TrainingsScreen> {
+  final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode();
   String _selectedDomain = 'All';
   TrainingLayoutView _trainingLayoutView = TrainingLayoutView.grid;
+  String _searchQuery = '';
 
   @override
   void initState() {
@@ -42,6 +45,8 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
 
   @override
   void dispose() {
+    _searchController.dispose();
+    _searchFocusNode.dispose();
     super.dispose();
   }
 
@@ -60,10 +65,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
     }
   }
 
-  Future<void> _openLink(
-    String link, {
-    String? emptyMessage,
-  }) async {
+  Future<void> _openLink(String link, {String? emptyMessage}) async {
     final l10n = AppLocalizations.of(context)!;
     if (link.trim().isEmpty) {
       context.showAppSnackBar(
@@ -259,6 +261,31 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
     return activeDomain == 'All' || _domainLabelFor(training) == activeDomain;
   }
 
+  bool _matchesSearchQuery(TrainingModel training) {
+    final query = _searchQuery.trim().toLowerCase();
+    if (query.isEmpty) {
+      return true;
+    }
+
+    final searchableText = [
+      training.title,
+      training.description,
+      training.provider,
+      training.domain,
+      training.level,
+      training.type,
+      training.source,
+      ...training.authors,
+    ].join(' ').toLowerCase();
+
+    return searchableText.contains(query);
+  }
+
+  void _clearSearch() {
+    _searchController.clear();
+    setState(() => _searchQuery = '');
+  }
+
   List<String> _profileRecommendationKeywords({
     required String fieldOfStudy,
     required String researchDomain,
@@ -362,12 +389,16 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
       contentType: ContentTranslationType.training,
       contentId: training.id,
     );
-    final displayTitle = translationProvider.resolvedField(
-      contentType: ContentTranslationType.training,
-      contentId: training.id,
-      field: 'title',
-      originalValue: training.title,
-    ).trim().isEmpty
+    final displayTitle =
+        translationProvider
+            .resolvedField(
+              contentType: ContentTranslationType.training,
+              contentId: training.id,
+              field: 'title',
+              originalValue: training.title,
+            )
+            .trim()
+            .isEmpty
         ? l10n.uiTrainingPrograms
         : translationProvider.resolvedField(
             contentType: ContentTranslationType.training,
@@ -404,7 +435,10 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
     );
   }
 
-  void _ensureTrainingTranslation(BuildContext context, TrainingModel training) {
+  void _ensureTrainingTranslation(
+    BuildContext context,
+    TrainingModel training,
+  ) {
     final originalLanguage = training.sourceLanguage;
     if (originalLanguage.isEmpty) {
       return;
@@ -420,7 +454,8 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
       contentType: ContentTranslationType.training,
       contentId: training.id,
     );
-    if (status == TranslationStatus.loading || status == TranslationStatus.ready) {
+    if (status == TranslationStatus.loading ||
+        status == TranslationStatus.ready) {
       return;
     }
 
@@ -680,6 +715,10 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
     final translationProvider = context.watch<OpportunityTranslationProvider>();
     final approvedTrainings = _sortedApprovedTrainings(provider.trainings);
     final availableDomains = _availableDomains(approvedTrainings);
+    final hasSearchQuery = _searchQuery.trim().isNotEmpty;
+    final searchFilteredTrainings = approvedTrainings
+        .where(_matchesSearchQuery)
+        .toList();
     final profileKeywords = _profileRecommendationKeywords(
       fieldOfStudy: currentUser?.fieldOfStudy ?? '',
       researchDomain: currentUser?.researchDomain ?? '',
@@ -687,43 +726,45 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
     final activeDomain = availableDomains.contains(_selectedDomain)
         ? _selectedDomain
         : 'All';
-    final domainFilteredTrainings = approvedTrainings
+    final domainFilteredTrainings = searchFilteredTrainings
         .where((training) => _matchesDomain(training, activeDomain))
         .toList();
     final hasApprovedTrainings = approvedTrainings.isNotEmpty;
     final recommendedTrainings = _recommendedTrainings(
-      approvedTrainings,
+      searchFilteredTrainings,
       profileKeywords: profileKeywords,
     );
     final catalogTrainings = domainFilteredTrainings;
 
     final topCards = recommendedTrainings
         .map(
-          (training) => _mapTrainingToCardData(
-            context,
-            training,
-            translationProvider,
-          ),
+          (training) =>
+              _mapTrainingToCardData(context, training, translationProvider),
         )
         .toList();
     final additionalCards = catalogTrainings
         .map(
-          (training) => _mapTrainingToCardData(
-            context,
-            training,
-            translationProvider,
-          ),
+          (training) =>
+              _mapTrainingToCardData(context, training, translationProvider),
         )
         .toList();
     final sectionTitle = l10n.trainingRecommendedForYou;
-    final showTopEmptyState = !hasApprovedTrainings;
+    final showTopEmptyState =
+        !hasApprovedTrainings ||
+        (hasSearchQuery && searchFilteredTrainings.isEmpty);
     final showDomainEmptyState =
         hasApprovedTrainings &&
+        searchFilteredTrainings.isNotEmpty &&
         activeDomain != 'All' &&
         domainFilteredTrainings.isEmpty;
-    final emptySubtitle = !hasApprovedTrainings || activeDomain == 'All'
+    final emptySubtitle = hasSearchQuery && searchFilteredTrainings.isEmpty
+        ? 'Try a different course, provider, topic, or skill.'
+        : !hasApprovedTrainings || activeDomain == 'All'
         ? l10n.uiNoTrainingProgramsAvailableRightNow
         : l10n.trainingNoProgramsForDomain(activeDomain);
+    final topEmptyTitle = hasSearchQuery && searchFilteredTrainings.isEmpty
+        ? 'No training matches your search'
+        : l10n.uiNoTrainingProgramsAvailableRightNow;
 
     Widget buildTrainingCard(
       TrainingCourseCardData card, {
@@ -817,11 +858,20 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
                       ),
                     ],
                     const SizedBox(height: 18),
+                    TrainingSearchBar(
+                      controller: _searchController,
+                      focusNode: _searchFocusNode,
+                      onChanged: (value) {
+                        setState(() => _searchQuery = value.trim());
+                      },
+                      onClear: _clearSearch,
+                    ),
+                    const SizedBox(height: 18),
                     TrainingSectionTitle(title: sectionTitle),
                     const SizedBox(height: 12),
                     if (showTopEmptyState)
                       TrainingProgramsEmptyState(
-                        title: l10n.uiNoTrainingProgramsAvailableRightNow,
+                        title: topEmptyTitle,
                         subtitle: emptySubtitle,
                       )
                     else

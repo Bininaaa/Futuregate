@@ -9,6 +9,7 @@ import '../../providers/chat_provider.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/chat/chat_action_sheet.dart';
 import '../../widgets/chat/chat_confirmation_dialog.dart';
+import '../../widgets/chat/chat_search_field.dart';
 import '../../widgets/chat/chat_theme.dart';
 import '../../widgets/chat/conversation_list_item.dart';
 import '../../widgets/profile_avatar.dart';
@@ -202,57 +203,16 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
                       ),
                     ),
                   if (widget.embedded) const SizedBox(height: 10),
-                  Container(
-                    height: 44,
-                    padding: const EdgeInsets.symmetric(horizontal: 14),
-                    decoration: BoxDecoration(
-                      color: ChatThemePalette.surfaceMuted,
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.search_rounded,
-                          color: ChatThemePalette.textSecondary,
-                          size: 20,
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: TextField(
-                            controller: _searchController,
-                            onChanged: (value) {
-                              setState(
-                                () => _searchQuery = value.trim().toLowerCase(),
-                              );
-                            },
-                            style: ChatThemeStyles.body().copyWith(
-                              fontSize: 13,
-                            ),
-                            decoration: InputDecoration(
-                              hintText: 'Search conversations...',
-                              hintStyle: ChatThemeStyles.body(
-                                ChatThemePalette.textSecondary,
-                              ).copyWith(fontSize: 13),
-                              border: InputBorder.none,
-                              isDense: true,
-                              contentPadding: EdgeInsets.zero,
-                            ),
-                          ),
-                        ),
-                        if (_searchController.text.trim().isNotEmpty)
-                          GestureDetector(
-                            onTap: () {
-                              _searchController.clear();
-                              setState(() => _searchQuery = '');
-                            },
-                            child: Icon(
-                              Icons.close_rounded,
-                              color: ChatThemePalette.textSecondary,
-                              size: 18,
-                            ),
-                          ),
-                      ],
-                    ),
+                  ChatSearchField(
+                    controller: _searchController,
+                    hintText: 'Search conversations...',
+                    onChanged: (value) {
+                      setState(() => _searchQuery = value.trim().toLowerCase());
+                    },
+                    onClear: () {
+                      _searchController.clear();
+                      setState(() => _searchQuery = '');
+                    },
                   ),
                 ],
               ),
@@ -304,11 +264,12 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
                   if (auth == null) {
                     return _EmptyState(
                       icon: Icons.lock_outline_rounded,
-                      title: AppLocalizations.of(context)!.uiSignInToSeeYourMessages,
-                      subtitle:
-                          AppLocalizations.of(
-                            context,
-                          )!.uiSignInToViewYourConversationsAndRecentUpdates,
+                      title: AppLocalizations.of(
+                        context,
+                      )!.uiSignInToSeeYourMessages,
+                      subtitle: AppLocalizations.of(
+                        context,
+                      )!.uiSignInToViewYourConversationsAndRecentUpdates,
                     );
                   }
 
@@ -607,10 +568,9 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
         final confirmed = await showChatConfirmationDialog(
           context,
           title: AppLocalizations.of(context)!.uiArchiveConversation,
-          message:
-              AppLocalizations.of(
-                context,
-              )!.uiAreYouSureYouWantToArchiveThisConversation,
+          message: AppLocalizations.of(
+            context,
+          )!.uiAreYouSureYouWantToArchiveThisConversation,
           confirmLabel: 'Archive',
           icon: Icons.archive_outlined,
         );
@@ -644,10 +604,9 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
     final confirmed = await showChatConfirmationDialog(
       context,
       title: AppLocalizations.of(context)!.uiDeleteConversation,
-      message:
-          AppLocalizations.of(
-            context,
-          )!.uiAreYouSureYouWantToDeleteThisConversationThis,
+      message: AppLocalizations.of(
+        context,
+      )!.uiAreYouSureYouWantToDeleteThisConversationThis,
       confirmLabel: AppLocalizations.of(context)!.uiDelete,
       destructive: true,
       icon: Icons.delete_outline_rounded,
