@@ -6508,12 +6508,6 @@ abstract class AppLocalizations {
   /// **'Sources'**
   String get uiSources;
 
-  /// No description provided for @uiSparks.
-  ///
-  /// In en, this message translates to:
-  /// **'Sparks'**
-  String get uiSparks;
-
   /// No description provided for @uiStackHarborPlatform.
   ///
   /// In en, this message translates to:
@@ -7579,12 +7573,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'View profile'**
   String get uiViewProfileB987;
-
-  /// No description provided for @uiViews.
-  ///
-  /// In en, this message translates to:
-  /// **'Views'**
-  String get uiViews;
 
   /// No description provided for @uiVisibility.
   ///

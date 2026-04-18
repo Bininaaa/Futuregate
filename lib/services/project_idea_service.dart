@@ -5,13 +5,11 @@ import '../models/project_idea_model.dart';
 import '../models/saved_idea_model.dart';
 import 'worker_api_service.dart';
 
-enum ProjectIdeaInteractionType { spark, interest, save }
+enum ProjectIdeaInteractionType { interest, save }
 
 extension on ProjectIdeaInteractionType {
   String get storageKey {
     switch (this) {
-      case ProjectIdeaInteractionType.spark:
-        return 'spark';
       case ProjectIdeaInteractionType.interest:
         return 'interest';
       case ProjectIdeaInteractionType.save:
@@ -21,17 +19,13 @@ extension on ProjectIdeaInteractionType {
 }
 
 class ProjectIdeaEngagementSnapshot {
-  final Map<String, int> sparksByIdeaId;
   final Map<String, int> interestedByIdeaId;
   final Set<String> savedIdeaIds;
-  final Set<String> sparkedIdeaIds;
   final Set<String> joinedIdeaIds;
 
   const ProjectIdeaEngagementSnapshot({
-    this.sparksByIdeaId = const <String, int>{},
     this.interestedByIdeaId = const <String, int>{},
     this.savedIdeaIds = const <String>{},
-    this.sparkedIdeaIds = const <String>{},
     this.joinedIdeaIds = const <String>{},
   });
 
@@ -49,20 +43,13 @@ class ProjectIdeaEngagementSnapshot {
     }
 
     return ProjectIdeaEngagementSnapshot(
-      sparksByIdeaId: readCounts(map['sparksByIdeaId']),
       interestedByIdeaId: readCounts(map['interestedByIdeaId']),
       savedIdeaIds: _parseWorkerIdSet(map['savedIdeaIds']),
-      sparkedIdeaIds: _parseWorkerIdSet(map['sparkedIdeaIds']),
       joinedIdeaIds: _parseWorkerIdSet(map['joinedIdeaIds']),
     );
   }
 
   ProjectIdeaEngagementSnapshot merge(ProjectIdeaEngagementSnapshot other) {
-    final mergedSparks = <String, int>{...sparksByIdeaId};
-    for (final entry in other.sparksByIdeaId.entries) {
-      mergedSparks[entry.key] = (mergedSparks[entry.key] ?? 0) + entry.value;
-    }
-
     final mergedInterested = <String, int>{...interestedByIdeaId};
     for (final entry in other.interestedByIdeaId.entries) {
       mergedInterested[entry.key] =
@@ -70,10 +57,8 @@ class ProjectIdeaEngagementSnapshot {
     }
 
     return ProjectIdeaEngagementSnapshot(
-      sparksByIdeaId: mergedSparks,
       interestedByIdeaId: mergedInterested,
       savedIdeaIds: <String>{...savedIdeaIds, ...other.savedIdeaIds},
-      sparkedIdeaIds: <String>{...sparkedIdeaIds, ...other.sparkedIdeaIds},
       joinedIdeaIds: <String>{...joinedIdeaIds, ...other.joinedIdeaIds},
     );
   }
@@ -496,10 +481,8 @@ class ProjectIdeaService {
     required List<String> ideaIds,
     required String currentUserId,
   }) async {
-    final sparks = <String, int>{};
     final interested = <String, int>{};
     final saved = <String>{};
-    final sparked = <String>{};
     final joined = <String>{};
 
     for (final chunk in _chunkIds(ideaIds)) {
@@ -528,12 +511,6 @@ class ProjectIdeaService {
         }
 
         switch (type) {
-          case 'spark':
-            sparks[ideaId] = (sparks[ideaId] ?? 0) + 1;
-            if (userId == currentUserId) {
-              sparked.add(ideaId);
-            }
-            break;
           case 'interest':
             interested[ideaId] = (interested[ideaId] ?? 0) + 1;
             if (userId == currentUserId) {
@@ -550,10 +527,8 @@ class ProjectIdeaService {
     }
 
     return ProjectIdeaEngagementSnapshot(
-      sparksByIdeaId: sparks,
       interestedByIdeaId: interested,
       savedIdeaIds: saved,
-      sparkedIdeaIds: sparked,
       joinedIdeaIds: joined,
     );
   }

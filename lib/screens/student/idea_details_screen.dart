@@ -51,9 +51,10 @@ class IdeaDetailsScreen extends StatelessWidget {
     if (baseIdea != null) {
       _ensureTranslation(context, baseIdea);
     }
-    final hasTranslation = baseIdea != null &&
-        _hasTranslation(baseIdea, translationProvider);
-    final showingTranslated = baseIdea != null &&
+    final hasTranslation =
+        baseIdea != null && _hasTranslation(baseIdea, translationProvider);
+    final showingTranslated =
+        baseIdea != null &&
         translationProvider.isShowingTranslatedContent(
           contentType: ContentTranslationType.idea,
           contentId: baseIdea.id,
@@ -142,8 +143,12 @@ class IdeaDetailsScreen extends StatelessWidget {
                               ? AppLocalizations.of(context)!.ideaEditLabel
                               : AppLocalizations.of(context)!.ideaManageLabel)
                         : (idea.isJoinedByCurrentUser
-                              ? AppLocalizations.of(context)!.ideaInterestedLabel
-                              : AppLocalizations.of(context)!.ideaImInterestedLabel),
+                              ? AppLocalizations.of(
+                                  context,
+                                )!.ideaInterestedLabel
+                              : AppLocalizations.of(
+                                  context,
+                                )!.ideaImInterestedLabel),
                     icon: isOwner
                         ? Icons.edit_rounded
                         : idea.isJoinedByCurrentUser
@@ -168,8 +173,12 @@ class IdeaDetailsScreen extends StatelessWidget {
                         child: AppSecondaryButton(
                           theme: _theme,
                           label: isOwner
-                              ? AppLocalizations.of(context)!.ideaManageTeamLabel
-                              : AppLocalizations.of(context)!.ideaContactCreator,
+                              ? AppLocalizations.of(
+                                  context,
+                                )!.ideaManageTeamLabel
+                              : AppLocalizations.of(
+                                  context,
+                                )!.ideaContactCreator,
                           icon: isOwner
                               ? Icons.groups_rounded
                               : Icons.person_outline_rounded,
@@ -189,8 +198,12 @@ class IdeaDetailsScreen extends StatelessWidget {
                           label: isOwner
                               ? AppLocalizations.of(context)!.ideaShareLabel
                               : (idea.isSavedByCurrentUser
-                                    ? AppLocalizations.of(context)!.ideaSavedLabel
-                                    : AppLocalizations.of(context)!.ideaSaveLabel),
+                                    ? AppLocalizations.of(
+                                        context,
+                                      )!.ideaSavedLabel
+                                    : AppLocalizations.of(
+                                        context,
+                                      )!.ideaSaveLabel),
                           icon: isOwner
                               ? Icons.ios_share_rounded
                               : idea.isSavedByCurrentUser
@@ -353,20 +366,9 @@ class IdeaDetailsScreen extends StatelessWidget {
                   icon: Icons.school_outlined,
                 ),
                 AppInfoTileData(
-                  label: AppLocalizations.of(context)!.uiSparks,
-                  value: '${idea.sparksCount}',
-                  icon: Icons.bolt_rounded,
-                  emphasize: true,
-                ),
-                AppInfoTileData(
                   label: AppLocalizations.of(context)!.uiInterested,
                   value: '${idea.interestedCount}',
                   icon: Icons.groups_rounded,
-                ),
-                AppInfoTileData(
-                  label: AppLocalizations.of(context)!.uiViews,
-                  value: '${idea.viewsCount}',
-                  icon: Icons.remove_red_eye_outlined,
                 ),
               ],
             ),
@@ -437,7 +439,9 @@ class IdeaDetailsScreen extends StatelessWidget {
                     if (idea.impactText.trim().isNotEmpty)
                       AppMetaRow(
                         theme: _theme,
-                        label: AppLocalizations.of(context)!.uiBenefitsAndImpact,
+                        label: AppLocalizations.of(
+                          context,
+                        )!.uiBenefitsAndImpact,
                         value: idea.impactText,
                       ),
                   ],
@@ -560,7 +564,8 @@ class IdeaDetailsScreen extends StatelessWidget {
       contentType: ContentTranslationType.idea,
       contentId: idea.id,
     );
-    if (status == TranslationStatus.loading || status == TranslationStatus.ready) {
+    if (status == TranslationStatus.loading ||
+        status == TranslationStatus.ready) {
       return;
     }
 
@@ -698,9 +703,6 @@ class IdeaDetailsScreen extends StatelessWidget {
     final provider = context.read<ProjectIdeaProvider>();
     String? error;
     switch (type) {
-      case ProjectIdeaInteractionType.spark:
-        error = await provider.toggleSpark(idea, auth.uid);
-        break;
       case ProjectIdeaInteractionType.interest:
         error = await provider.toggleInterest(idea, auth.uid);
         break;
@@ -790,7 +792,10 @@ class IdeaDetailsScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 18),
-              Text(AppLocalizations.of(context)!.uiManageTeam, style: _theme.section(size: 20)),
+              Text(
+                AppLocalizations.of(context)!.uiManageTeam,
+                style: _theme.section(size: 20),
+              ),
               const SizedBox(height: 8),
               Text(
                 AppLocalizations.of(

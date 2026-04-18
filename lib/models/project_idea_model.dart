@@ -31,11 +31,8 @@ class ProjectIdeaModel {
   final String authorAvatarUrl;
   final String authorPhotoType;
   final String authorAvatarId;
-  final int sparksCount;
   final int interestedCount;
-  final int viewsCount;
   final bool isSavedByCurrentUser;
-  final bool isSparkedByCurrentUser;
   final bool isJoinedByCurrentUser;
   final String originalLanguage;
 
@@ -70,11 +67,8 @@ class ProjectIdeaModel {
     this.authorAvatarUrl = '',
     this.authorPhotoType = '',
     this.authorAvatarId = '',
-    this.sparksCount = 0,
     this.interestedCount = 0,
-    this.viewsCount = 0,
     this.isSavedByCurrentUser = false,
-    this.isSparkedByCurrentUser = false,
     this.isJoinedByCurrentUser = false,
     this.originalLanguage = '',
   });
@@ -120,13 +114,10 @@ class ProjectIdeaModel {
           .trim(),
       authorPhotoType: (map['authorPhotoType'] ?? '').toString().trim(),
       authorAvatarId: (map['authorAvatarId'] ?? '').toString().trim(),
-      sparksCount: _parseInt(map['sparksCount']),
       interestedCount:
           _parseInt(map['interestedCount']) +
           _parseInt(map['collaboratorsCount']),
-      viewsCount: _parseInt(map['viewsCount']),
       isSavedByCurrentUser: _parseBool(map['isSavedByCurrentUser']),
-      isSparkedByCurrentUser: _parseBool(map['isSparkedByCurrentUser']),
       isJoinedByCurrentUser: _parseBool(map['isJoinedByCurrentUser']),
       originalLanguage: (map['originalLanguage'] ?? '').toString().trim(),
     );
@@ -163,11 +154,8 @@ class ProjectIdeaModel {
     String? authorAvatarUrl,
     String? authorPhotoType,
     String? authorAvatarId,
-    int? sparksCount,
     int? interestedCount,
-    int? viewsCount,
     bool? isSavedByCurrentUser,
-    bool? isSparkedByCurrentUser,
     bool? isJoinedByCurrentUser,
     String? originalLanguage,
   }) {
@@ -202,12 +190,8 @@ class ProjectIdeaModel {
       authorAvatarUrl: authorAvatarUrl ?? this.authorAvatarUrl,
       authorPhotoType: authorPhotoType ?? this.authorPhotoType,
       authorAvatarId: authorAvatarId ?? this.authorAvatarId,
-      sparksCount: sparksCount ?? this.sparksCount,
       interestedCount: interestedCount ?? this.interestedCount,
-      viewsCount: viewsCount ?? this.viewsCount,
       isSavedByCurrentUser: isSavedByCurrentUser ?? this.isSavedByCurrentUser,
-      isSparkedByCurrentUser:
-          isSparkedByCurrentUser ?? this.isSparkedByCurrentUser,
       isJoinedByCurrentUser:
           isJoinedByCurrentUser ?? this.isJoinedByCurrentUser,
       originalLanguage: originalLanguage ?? this.originalLanguage,
@@ -246,9 +230,7 @@ class ProjectIdeaModel {
       if (authorAvatarUrl.isNotEmpty) 'authorAvatar': authorAvatarUrl,
       if (authorPhotoType.isNotEmpty) 'authorPhotoType': authorPhotoType,
       if (authorAvatarId.isNotEmpty) 'authorAvatarId': authorAvatarId,
-      if (sparksCount > 0) 'sparksCount': sparksCount,
       if (interestedCount > 0) 'interestedCount': interestedCount,
-      if (viewsCount > 0) 'viewsCount': viewsCount,
       if (originalLanguage.isNotEmpty) 'originalLanguage': originalLanguage,
     };
   }

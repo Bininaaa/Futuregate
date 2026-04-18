@@ -3575,9 +3575,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiSources => 'Sources';
 
   @override
-  String get uiSparks => 'Des étincelles';
-
-  @override
   String get uiStackHarborPlatform => 'Stack Harbor ™ Plateforme';
 
   @override
@@ -4225,9 +4222,6 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get uiViewProfileB987 => 'Voir le profil';
-
-  @override
-  String get uiViews => 'Vues';
 
   @override
   String get uiVisibility => 'Visibilité';

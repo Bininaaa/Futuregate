@@ -3510,9 +3510,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiSources => 'مصادر';
 
   @override
-  String get uiSparks => 'الشرر';
-
-  @override
   String get uiStackHarborPlatform => 'منصة ستاك هاربور';
 
   @override
@@ -4154,9 +4151,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiViewProfileB987 => 'عرض الملف الشخصي';
-
-  @override
-  String get uiViews => 'وجهات النظر';
 
   @override
   String get uiVisibility => 'الرؤية';

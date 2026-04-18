@@ -64,8 +64,6 @@ class ProjectIdeaProvider extends ChangeNotifier {
   String? get savedIdeasError => _savedIdeasError;
   String get currentUserId => _currentUserId;
   List<SavedIdeaModel> get savedIdeas => _savedIdeas;
-  int get totalMyIdeaSparks =>
-      _myIdeas.fold<int>(0, (total, idea) => total + idea.sparksCount);
   int get totalMyIdeaInterested =>
       _myIdeas.fold<int>(0, (total, idea) => total + idea.interestedCount);
 
@@ -338,15 +336,6 @@ class ProjectIdeaProvider extends ChangeNotifier {
     }
   }
 
-  Future<String?> toggleSpark(ProjectIdeaModel idea, String userId) {
-    return _toggleInteraction(
-      idea: idea,
-      userId: userId,
-      type: ProjectIdeaInteractionType.spark,
-      isEnabled: idea.isSparkedByCurrentUser,
-    );
-  }
-
   Future<String?> toggleInterest(ProjectIdeaModel idea, String userId) {
     return _toggleInteraction(
       idea: idea,
@@ -444,11 +433,9 @@ class ProjectIdeaProvider extends ChangeNotifier {
     return ideas
         .map(
           (idea) => idea.copyWith(
-            sparksCount: engagement.sparksByIdeaId[idea.id] ?? idea.sparksCount,
             interestedCount:
                 engagement.interestedByIdeaId[idea.id] ?? idea.interestedCount,
             isSavedByCurrentUser: engagement.savedIdeaIds.contains(idea.id),
-            isSparkedByCurrentUser: engagement.sparkedIdeaIds.contains(idea.id),
             isJoinedByCurrentUser: engagement.joinedIdeaIds.contains(idea.id),
           ),
         )
@@ -513,13 +500,6 @@ class ProjectIdeaProvider extends ChangeNotifier {
     bool enabled,
   ) {
     switch (type) {
-      case ProjectIdeaInteractionType.spark:
-        return idea.copyWith(
-          sparksCount: enabled
-              ? idea.sparksCount + 1
-              : (idea.sparksCount > 0 ? idea.sparksCount - 1 : 0),
-          isSparkedByCurrentUser: enabled,
-        );
       case ProjectIdeaInteractionType.interest:
         return idea.copyWith(
           interestedCount: enabled
@@ -546,7 +526,6 @@ class ProjectIdeaProvider extends ChangeNotifier {
         .map(
           (idea) => idea.copyWith(
             isSavedByCurrentUser: false,
-            isSparkedByCurrentUser: false,
             isJoinedByCurrentUser: false,
           ),
         )

@@ -42,6 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final l10n = AppLocalizations.of(context)!;
     final unreadCount = context.watch<NotificationProvider>().unreadCount;
     final user = context.watch<AuthProvider>().userModel;
+    final keyboardVisible = MediaQuery.viewInsetsOf(context).bottom > 0;
     final destinations = <CompanyWorkspaceDestination>[
       CompanyWorkspaceDestination(
         label: l10n.uiDashboard,
@@ -68,12 +69,13 @@ class _HomeScreenState extends State<HomeScreen> {
         activeIcon: Icons.chat_bubble_rounded,
       ),
       CompanyWorkspaceDestination(
-        label: l10n.uiWorkspace,
+        label: l10n.uiSettings,
         subtitle: l10n.companyWorkspaceSubtitle,
         icon: Icons.tune_rounded,
         activeIcon: Icons.tune_rounded,
       ),
     ];
+    final destination = destinations[_currentIndex];
 
     return AppShellBackground(
       child: Scaffold(
@@ -81,35 +83,24 @@ class _HomeScreenState extends State<HomeScreen> {
         body: SafeArea(
           child: Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 10),
-                child: CompanyWorkspaceHeaderCard(
-                  destination: destinations[_currentIndex],
-                  user: user,
-                  unreadCount: unreadCount,
-                  onNotificationsTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => const NotificationsScreen(),
-                      ),
-                    );
-                  },
-                  onProfileTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => const CompanyProfileScreen(),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
-                child: CompanyWorkspaceTabBar(
-                  destinations: destinations,
-                  currentIndex: _currentIndex,
-                  onTap: _selectIndex,
-                ),
+              CompanyWorkspaceTopBar(
+                destination: destination,
+                user: user,
+                unreadCount: unreadCount,
+                onNotificationsTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const NotificationsScreen(),
+                    ),
+                  );
+                },
+                onProfileTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const CompanyProfileScreen(),
+                    ),
+                  );
+                },
               ),
               Expanded(
                 child: Padding(
@@ -128,6 +119,16 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
         ),
+        bottomNavigationBar: keyboardVisible
+            ? null
+            : SafeArea(
+                top: false,
+                child: CompanyPillNavigationBar(
+                  destinations: destinations,
+                  currentIndex: _currentIndex,
+                  onTap: _selectIndex,
+                ),
+              ),
       ),
     );
   }

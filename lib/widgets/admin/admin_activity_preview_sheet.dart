@@ -155,7 +155,10 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
     final companyName = DisplayText.capitalizeLeadingLabel(
       (relatedOpportunity['companyName'] ?? '').toString(),
     );
-    final statusLabel = ApplicationStatus.label(application.status, AppLocalizations.of(context)!);
+    final statusLabel = ApplicationStatus.label(
+      application.status,
+      AppLocalizations.of(context)!,
+    );
     final description = opportunityTitle.isNotEmpty
         ? 'Applied to $opportunityTitle.'
         : 'Application details';
@@ -222,7 +225,10 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
   List<Widget> _buildOpportunitySections(AdminActivityPreviewModel preview) {
     final opportunity = OpportunityModel.fromMap(preview.data);
     final opportunityType = OpportunityType.parse(opportunity.type);
-    final typeLabel = OpportunityType.label(opportunityType, AppLocalizations.of(context)!);
+    final typeLabel = OpportunityType.label(
+      opportunityType,
+      AppLocalizations.of(context)!,
+    );
     final typeColor = OpportunityType.color(opportunityType);
     final description = DisplayText.capitalizeLeadingLabel(
       opportunity.description,
@@ -840,22 +846,10 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
           color: statusColor,
         ),
         _PreviewHighlightItem(
-          icon: Icons.bolt_rounded,
-          label: 'Sparks',
-          value: '${idea.sparksCount}',
-          color: AdminPalette.warning,
-        ),
-        _PreviewHighlightItem(
           icon: Icons.groups_rounded,
           label: 'Interested',
           value: '${idea.interestedCount}',
           color: AdminPalette.info,
-        ),
-        _PreviewHighlightItem(
-          icon: Icons.remove_red_eye_outlined,
-          label: 'Views',
-          value: '${idea.viewsCount}',
-          color: AdminPalette.activity,
         ),
       ]),
       if (summary.trim().isNotEmpty) ...[

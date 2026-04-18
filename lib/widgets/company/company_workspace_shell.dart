@@ -180,6 +180,144 @@ class CompanyWorkspaceHeaderCard extends StatelessWidget {
   }
 }
 
+class CompanyWorkspaceTopBar extends StatelessWidget {
+  final CompanyWorkspaceDestination destination;
+  final UserModel? user;
+  final int unreadCount;
+  final VoidCallback onNotificationsTap;
+  final VoidCallback onProfileTap;
+  final EdgeInsetsGeometry margin;
+  final double radius;
+
+  const CompanyWorkspaceTopBar({
+    super.key,
+    required this.destination,
+    required this.user,
+    required this.unreadCount,
+    required this.onNotificationsTap,
+    required this.onProfileTap,
+    this.margin = const EdgeInsets.fromLTRB(16, 16, 16, 10),
+    this.radius = 22,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final compact = MediaQuery.sizeOf(context).width < 720;
+    final surface = AppColors.isDark
+        ? CompanyDashboardPalette.surfaceElevated.withValues(alpha: 0.96)
+        : CompanyDashboardPalette.surface.withValues(alpha: 0.96);
+
+    return Padding(
+      padding: margin,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: surface,
+          borderRadius: BorderRadius.circular(radius),
+          border: Border.all(
+            color: CompanyDashboardPalette.border.withValues(
+              alpha: AppColors.isDark ? 0.94 : 0.86,
+            ),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: CompanyDashboardPalette.primary.withValues(
+                alpha: AppColors.isDark ? 0.16 : 0.10,
+              ),
+              blurRadius: 24,
+              offset: const Offset(0, 12),
+            ),
+            BoxShadow(
+              color: AppColors.current.shadow.withValues(
+                alpha: AppColors.isDark ? 0.24 : 0.06,
+              ),
+              blurRadius: 16,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+          child: Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      CompanyDashboardPalette.primaryDark,
+                      CompanyDashboardPalette.primary,
+                      CompanyDashboardPalette.secondary,
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Icon(
+                  destination.activeIcon,
+                  color: Colors.white,
+                  size: 22,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      destination.label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.poppins(
+                        fontSize: compact ? 16 : 17,
+                        fontWeight: FontWeight.w700,
+                        color: CompanyDashboardPalette.textPrimary,
+                        height: 1.1,
+                      ),
+                    ),
+                    if (!compact) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        destination.subtitle,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.poppins(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w500,
+                          color: CompanyDashboardPalette.textMuted,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              const SizedBox(width: 10),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CompanyWorkspaceActionButton(
+                    icon: Icons.notifications_outlined,
+                    tooltip: AppLocalizations.of(context)!.uiNotifications,
+                    badgeCount: unreadCount,
+                    onTap: onNotificationsTap,
+                  ),
+                  const SizedBox(width: 8),
+                  CompanyWorkspaceProfileButton(
+                    user: user,
+                    onTap: onProfileTap,
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class CompanyWorkspaceTabBar extends StatelessWidget {
   final List<CompanyWorkspaceDestination> destinations;
   final int currentIndex;
@@ -303,6 +441,77 @@ class CompanyWorkspaceTabBar extends StatelessWidget {
   }
 }
 
+class CompanyPillNavigationBar extends StatelessWidget {
+  final List<CompanyWorkspaceDestination> destinations;
+  final int currentIndex;
+  final ValueChanged<int> onTap;
+
+  const CompanyPillNavigationBar({
+    super.key,
+    required this.destinations,
+    required this.currentIndex,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final width = MediaQuery.sizeOf(context).width;
+    final compact = width < 370;
+    final selectedFlex = compact ? 13 : 11;
+    const idleFlex = 5;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+        decoration: BoxDecoration(
+          color: AppColors.isDark
+              ? CompanyDashboardPalette.surfaceElevated.withValues(alpha: 0.96)
+              : CompanyDashboardPalette.surface.withValues(alpha: 0.96),
+          borderRadius: BorderRadius.circular(28),
+          border: Border.all(
+            color: CompanyDashboardPalette.border.withValues(alpha: 0.94),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: CompanyDashboardPalette.primary.withValues(
+                alpha: AppColors.isDark ? 0.16 : 0.11,
+              ),
+              blurRadius: 24,
+              offset: const Offset(0, 12),
+            ),
+            BoxShadow(
+              color: AppColors.current.shadow.withValues(
+                alpha: AppColors.isDark ? 0.24 : 0.06,
+              ),
+              blurRadius: 16,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Row(
+          children: List<Widget>.generate(
+            destinations.length,
+            (index) => Flexible(
+              flex: currentIndex == index ? selectedFlex : idleFlex,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                child: _CompanyPillNavItem(
+                  destination: destinations[index],
+                  selected: currentIndex == index,
+                  compact: compact,
+                  onTap: () => onTap(index),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class CompanyWorkspaceActionButton extends StatelessWidget {
   final IconData icon;
   final String tooltip;
@@ -375,6 +584,114 @@ class CompanyWorkspaceActionButton extends StatelessWidget {
                   ),
               ],
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _CompanyPillNavItem extends StatelessWidget {
+  final CompanyWorkspaceDestination destination;
+  final bool selected;
+  final bool compact;
+  final VoidCallback onTap;
+
+  const _CompanyPillNavItem({
+    required this.destination,
+    required this.selected,
+    required this.compact,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final selectedGradient = LinearGradient(
+      colors: [
+        CompanyDashboardPalette.primaryDark,
+        CompanyDashboardPalette.primary,
+        CompanyDashboardPalette.secondaryDark,
+      ],
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+    );
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(22),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 220),
+          curve: Curves.easeOutCubic,
+          height: 46,
+          padding: EdgeInsets.symmetric(
+            horizontal: selected ? (compact ? 4 : 6) : 0,
+          ),
+          decoration: BoxDecoration(
+            gradient: selected ? selectedGradient : null,
+            color: selected ? null : Colors.transparent,
+            borderRadius: BorderRadius.circular(22),
+            border: Border.all(
+              color: selected
+                  ? Colors.white.withValues(alpha: 0.20)
+                  : Colors.transparent,
+            ),
+            boxShadow: selected
+                ? [
+                    BoxShadow(
+                      color: CompanyDashboardPalette.primary.withValues(
+                        alpha: 0.24,
+                      ),
+                      blurRadius: 16,
+                      offset: const Offset(0, 8),
+                    ),
+                  ]
+                : null,
+          ),
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 200),
+            switchInCurve: Curves.easeOutCubic,
+            switchOutCurve: Curves.easeOutCubic,
+            child: selected
+                ? Row(
+                    key: ValueKey<String>('selected-${destination.label}'),
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        destination.activeIcon,
+                        size: compact ? 15 : 17,
+                        color: Colors.white,
+                      ),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            destination.label,
+                            maxLines: 1,
+                            softWrap: false,
+                            style: GoogleFonts.poppins(
+                              fontSize: compact ? 8.6 : 9.8,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                : Center(
+                    key: ValueKey<String>('idle-${destination.label}'),
+                    child: Icon(
+                      destination.icon,
+                      size: compact ? 17 : 19,
+                      color: CompanyDashboardPalette.textMuted.withValues(
+                        alpha: 0.92,
+                      ),
+                    ),
+                  ),
           ),
         ),
       ),

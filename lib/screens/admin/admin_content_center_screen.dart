@@ -224,9 +224,8 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                           AdminSectionHeader(
                             eyebrow: 'Moderation',
                             title: l10n.uiContentWorkspace,
-                            subtitle:
-                                l10n
-                                    .uiReviewSubmissionsMonitorQueuesAndMoveBetweenContentTypesWithout,
+                            subtitle: l10n
+                                .uiReviewSubmissionsMonitorQueuesAndMoveBetweenContentTypesWithout,
                           ),
                           const SizedBox(height: 14),
                           Wrap(
@@ -916,7 +915,9 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        l10n.uiApplicationsForOpportunitytitle(opportunityTitle),
+                        l10n.uiApplicationsForOpportunitytitle(
+                          opportunityTitle,
+                        ),
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
@@ -939,9 +940,8 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                   AdminEmptyState(
                     icon: Icons.assignment_late_outlined,
                     title: l10n.uiNoApplicationsToReviewYet,
-                    message:
-                        l10n
-                            .uiThereAreNoSubmittedApplicationsForThisOpportunityRightNow,
+                    message: l10n
+                        .uiThereAreNoSubmittedApplicationsForThisOpportunityRightNow,
                   )
                 else
                   ...liveApplications.map((item) {
@@ -1097,8 +1097,8 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       return AdminEmptyState(
         icon: Icons.work_outline,
         title: l10n.uiNoOpportunitiesPublishedYet,
-        message:
-            l10n.uiPublishTheFirstOpportunityToStartPopulatingTheStudentDiscovery,
+        message: l10n
+            .uiPublishTheFirstOpportunityToStartPopulatingTheStudentDiscovery,
         action: FilledButton.icon(
           onPressed: () => _openOpportunityEditor(),
           icon: const Icon(Icons.add_rounded),
@@ -2979,22 +2979,10 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
         color: statusColor,
       ),
       _IdeaHighlightItem(
-        icon: Icons.bolt_rounded,
-        label: 'Sparks',
-        value: '${idea.sparksCount}',
-        color: _ideaAccentColor,
-      ),
-      _IdeaHighlightItem(
         icon: Icons.groups_rounded,
         label: 'Interested',
         value: '${idea.interestedCount}',
         color: AdminPalette.info,
-      ),
-      _IdeaHighlightItem(
-        icon: Icons.remove_red_eye_outlined,
-        label: 'Views',
-        value: '${idea.viewsCount}',
-        color: AdminPalette.activity,
       ),
     ];
 
@@ -3438,7 +3426,9 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
           l10n.uiApplicationStatusValue(
             ApplicationStatus.sentenceLabel(status, l10n),
           ),
-      title: error == null ? l10n.uiApplicationUpdated : l10n.updateUnavailableTitle,
+      title: error == null
+          ? l10n.uiApplicationUpdated
+          : l10n.updateUnavailableTitle,
       type: error == null ? AppFeedbackType.success : AppFeedbackType.error,
     );
   }
@@ -4454,7 +4444,9 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               FilledButton.icon(
                 onPressed: () => _openExternalLink(link),
                 icon: const Icon(Icons.open_in_new_rounded),
-                label: Text(AppLocalizations.of(context)!.uiOpenScholarshipLink),
+                label: Text(
+                  AppLocalizations.of(context)!.uiOpenScholarshipLink,
+                ),
                 style: FilledButton.styleFrom(
                   backgroundColor: _scholarshipAccentColor,
                   foregroundColor: Colors.white,

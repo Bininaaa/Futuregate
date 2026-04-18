@@ -219,8 +219,7 @@ service cloud.firestore {
     }
 
     function isProjectIdeaInteractionType(value) {
-      return value == 'spark' ||
-          value == 'interest' ||
+      return value == 'interest' ||
           value == 'save';
     }
 

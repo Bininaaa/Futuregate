@@ -808,7 +808,7 @@ function isDuplicateWriteError(code) {
 
 function normalizeIdeaInteractionType(value) {
   const normalized = trim(value).toLowerCase();
-  return ["spark", "interest", "save"].includes(normalized) ? normalized : "";
+  return ["interest", "save"].includes(normalized) ? normalized : "";
 }
 
 function buildProjectIdeaInteractionId({ ideaId, userId, type }) {
@@ -885,10 +885,8 @@ async function listIdeaInteractionDocs(env, ideaIds) {
 
 function buildIdeaEngagementSnapshot(interactionDocs, currentUserId) {
   const normalizedUserId = trim(currentUserId);
-  const sparksByIdeaId = {};
   const interestedByIdeaId = {};
   const savedIdeaIds = new Set();
-  const sparkedIdeaIds = new Set();
   const joinedIdeaIds = new Set();
 
   for (const doc of Array.isArray(interactionDocs) ? interactionDocs : []) {
@@ -902,12 +900,6 @@ function buildIdeaEngagementSnapshot(interactionDocs, currentUserId) {
     }
 
     switch (type) {
-      case "spark":
-        sparksByIdeaId[ideaId] = (sparksByIdeaId[ideaId] || 0) + 1;
-        if (userId === normalizedUserId) {
-          sparkedIdeaIds.add(ideaId);
-        }
-        break;
       case "interest":
         interestedByIdeaId[ideaId] = (interestedByIdeaId[ideaId] || 0) + 1;
         if (userId === normalizedUserId) {
@@ -923,10 +915,8 @@ function buildIdeaEngagementSnapshot(interactionDocs, currentUserId) {
   }
 
   return {
-    sparksByIdeaId,
     interestedByIdeaId,
     savedIdeaIds: [...savedIdeaIds],
-    sparkedIdeaIds: [...sparkedIdeaIds],
     joinedIdeaIds: [...joinedIdeaIds],
   };
 }
