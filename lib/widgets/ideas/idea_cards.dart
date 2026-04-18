@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 import '../../models/project_idea_model.dart';
 import 'innovation_hub_theme.dart';
@@ -324,18 +325,18 @@ class IdeaWorkspaceCard extends StatelessWidget {
             children: [
               Expanded(
                 child: _ActionChipButton(
-                  label: 'View',
+                  label: AppLocalizations.of(context)!.uiView,
                   onTap: onView,
                   filled: true,
                 ),
               ),
               const SizedBox(width: 8),
               Expanded(
-                child: _ActionChipButton(label: 'Edit', onTap: onEdit),
+                child: _ActionChipButton(label: AppLocalizations.of(context)!.uiEdit, onTap: onEdit),
               ),
               const SizedBox(width: 8),
               Expanded(
-                child: _ActionChipButton(label: 'Team', onTap: onManageTeam),
+                child: _ActionChipButton(label: AppLocalizations.of(context)!.uiTeam, onTap: onManageTeam),
               ),
             ],
           ),

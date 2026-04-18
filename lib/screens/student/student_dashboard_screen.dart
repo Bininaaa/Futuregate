@@ -807,7 +807,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     if (!hasReadyCv) {
       return _DashboardFocus(
         badgeLabel: 'NEXT STEP',
-        title: 'Build your CV first.',
+        title: AppLocalizations.of(context)!.uiBuildCvFirst,
         subtitle:
             'A ready CV makes jobs, internships, and scholarships much quicker to apply for.',
         insight:
@@ -826,7 +826,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     if (profileCompletion < 100) {
       return _DashboardFocus(
         badgeLabel: 'PROFILE $profileCompletion% READY',
-        title: 'Complete your profile.',
+        title: AppLocalizations.of(context)!.uiCompleteProfile,
         subtitle:
             '$missingCount ${_pluralizedWord(missingCount, "detail is", "details are")} still missing for better matching.',
         insight: _profileHint(user, cv),
@@ -895,7 +895,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
       return _DashboardFocus(
         badgeLabel:
             '${snapshot.closingSoonCount} ${snapshot.closingSoonCount == 1 ? "DEADLINE" : "DEADLINES"} SOON',
-        title: 'Act before deadlines close.',
+        title: AppLocalizations.of(context)!.uiActBeforeDeadlines,
         subtitle:
             '${snapshot.closingSoonCount} opportunities close within the next two weeks.',
         insight:
@@ -918,8 +918,8 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     if (snapshot.savedCount > 0) {
       return _DashboardFocus(
         badgeLabel: 'SAVED PICKS',
-        title: 'Your shortlist is ready.',
-        subtitle: 'Revisit saved picks before the strongest deadlines slip by.',
+        title: AppLocalizations.of(context)!.uiShortlistReady,
+        subtitle: AppLocalizations.of(context)!.uiRevisitSavedPicks,
         insight:
             'Your saved list is ready for a second pass before deadlines tighten.',
         accent: primaryPurple,
@@ -935,7 +935,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
 
     return _DashboardFocus(
       badgeLabel: 'DISCOVER',
-      title: 'Find your next best opportunity.',
+      title: AppLocalizations.of(context)!.uiFindNextOpportunity,
       subtitle:
           'Explore open roles, internships, funding, and learning picks designed for students building momentum.',
       insight:
@@ -1190,14 +1190,14 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
   Widget _buildQuickAccessSection(BuildContext context) {
     final items = <_QuickAccessTileItem>[
       _QuickAccessTileItem(
-        title: 'Jobs',
+        title: AppLocalizations.of(context)!.uiJobs,
         icon: Icons.work_outline_rounded,
         color: const Color(0xFF6C63FF),
         onTap: () =>
             _openQuickAccessPage(context, builder: (_) => const JobsScreen()),
       ),
       _QuickAccessTileItem(
-        title: 'Internships',
+        title: AppLocalizations.of(context)!.uiInternships,
         icon: Icons.school_outlined,
         color: const Color(0xFF19C37D),
         onTap: () => _openQuickAccessPage(
@@ -1206,7 +1206,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
         ),
       ),
       _QuickAccessTileItem(
-        title: 'Sponsored',
+        title: AppLocalizations.of(context)!.uiSponsored,
         icon: Icons.campaign_outlined,
         color: const Color(0xFFFFB341),
         onTap: () => _openQuickAccessPage(
@@ -1215,7 +1215,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
         ),
       ),
       _QuickAccessTileItem(
-        title: 'Scholarships',
+        title: AppLocalizations.of(context)!.uiScholarships,
         icon: Icons.emoji_events_outlined,
         color: const Color(0xFF47D16C),
         onTap: () => _openQuickAccessTab(
@@ -1225,7 +1225,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
         ),
       ),
       _QuickAccessTileItem(
-        title: 'Ideas',
+        title: AppLocalizations.of(context)!.uiIdeas,
         icon: Icons.lightbulb_outline_rounded,
         color: const Color(0xFFFF6B6B),
         onTap: () => _openQuickAccessTab(
@@ -1235,7 +1235,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
         ),
       ),
       _QuickAccessTileItem(
-        title: 'CV Builder',
+        title: AppLocalizations.of(context)!.uiCvBuilder,
         icon: Icons.description_outlined,
         color: deepPurple,
         onTap: () => Navigator.push(
@@ -1244,7 +1244,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
         ),
       ),
       _QuickAccessTileItem(
-        title: 'Training',
+        title: AppLocalizations.of(context)!.uiTraining,
         icon: Icons.cast_for_education_outlined,
         color: const Color(0xFF22CFC3),
         onTap: () => _openQuickAccessTab(
@@ -1254,7 +1254,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
         ),
       ),
       _QuickAccessTileItem(
-        title: 'Saved',
+        title: AppLocalizations.of(context)!.uiSaved,
         icon: Icons.bookmark_border_rounded,
         color: const Color(0xFFF08E72),
         onTap: () => Navigator.push(
@@ -1534,7 +1534,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
         padding: const EdgeInsets.only(right: 20),
         child: _buildEmptyState(
           icon: Icons.schedule_outlined,
-          message: 'No urgent deadlines right now',
+          message: AppLocalizations.of(context)!.uiNoUrgentDeadlines,
           subtitle:
               'Upcoming deadlines are highlighted here as new opportunities go live.',
         ),
@@ -1897,8 +1897,8 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     if (items.isEmpty) {
       return _buildEmptyState(
         icon: Icons.auto_awesome,
-        message: 'No recommendations right now',
-        subtitle: 'Check back soon for fresh curated opportunities.',
+        message: AppLocalizations.of(context)!.uiNoRecommendations,
+        subtitle: AppLocalizations.of(context)!.uiCheckBackSoon,
       );
     }
 
@@ -2297,7 +2297,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
         delegate: SliverChildListDelegate([
           _buildEmptyState(
             icon: Icons.bolt_rounded,
-            message: 'No recent activity yet',
+            message: AppLocalizations.of(context)!.uiNoRecentActivity,
             subtitle:
                 'Your latest applications, saves, and CV updates are reflected here.',
           ),
@@ -2828,7 +2828,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
       }
       context.showAppSnackBar(
         'This saved resource link is not available.',
-        title: 'Link unavailable',
+        title: AppLocalizations.of(context)!.uiLinkUnavailable,
         type: AppFeedbackType.warning,
       );
       return;
@@ -2839,7 +2839,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     if (!launched && context.mounted) {
       context.showAppSnackBar(
         'We couldn\'t open this saved resource right now.',
-        title: 'Open unavailable',
+        title: AppLocalizations.of(context)!.uiOpenUnavailable,
         type: AppFeedbackType.error,
       );
     }

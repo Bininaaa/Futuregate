@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../l10n/generated/app_localizations.dart';
 import '../../providers/admin_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../utils/opportunity_metadata.dart';
@@ -327,6 +328,7 @@ class _AdminScholarshipEditorScreenState
   }
 
   Future<void> _submit() async {
+    final l10n = AppLocalizations.of(context)!;
     FocusScope.of(context).unfocus();
     _eligibilityListController.commitPendingInput();
     if (!_formKey.currentState!.validate()) return;
@@ -375,7 +377,7 @@ class _AdminScholarshipEditorScreenState
     if (error != null) {
       context.showAppSnackBar(
         error,
-        title: _isEditing ? 'Update unavailable' : 'Publish unavailable',
+        title: _isEditing ? l10n.updateUnavailableTitle : l10n.publishUnavailableTitle,
         type: AppFeedbackType.error,
       );
       return;
@@ -383,9 +385,8 @@ class _AdminScholarshipEditorScreenState
 
     context.showAppSnackBar(
       _isEditing
-          ? 'Scholarship updated successfully.'
-          : 'Scholarship published successfully.',
-      title: _isEditing ? 'Scholarship updated' : 'Scholarship published',
+          ? l10n.scholarshipUpdatedMessage
+          : l10n.scholarshipPublishedMessage,
       type: AppFeedbackType.success,
     );
     Navigator.of(context).pop(true);

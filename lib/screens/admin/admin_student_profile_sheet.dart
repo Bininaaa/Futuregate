@@ -68,6 +68,8 @@ class _AdminStudentProfileSheetState extends State<_AdminStudentProfileSheet> {
   late Future<CvModel?> _cvFuture;
   late Future<List<StudentApplicationItemModel>> _applicationsFuture;
 
+  AppLocalizations get _l10n => AppLocalizations.of(context)!;
+
   @override
   void initState() {
     super.initState();
@@ -79,6 +81,7 @@ class _AdminStudentProfileSheetState extends State<_AdminStudentProfileSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = _l10n;
     return DraggableScrollableSheet(
       initialChildSize: 0.78,
       minChildSize: 0.46,
@@ -97,81 +100,81 @@ class _AdminStudentProfileSheetState extends State<_AdminStudentProfileSheet> {
                 const SizedBox(height: 16),
                 _StudentHeroCard(user: widget.user),
                 const SizedBox(height: 18),
-                const AdminSectionHeader(
-                  eyebrow: 'Profile',
-                  title: 'Student Details',
+                AdminSectionHeader(
+                  eyebrow: l10n.uiProfile,
+                  title: l10n.uiStudentDetails,
                   subtitle:
-                      'Review identity, academic details, CV documents, and visible submitted applications in one place.',
+                      l10n.uiReviewIdentityAcademicDetailsCvDocumentsAndVisibleSubmittedApplicationsInOnePlace,
                 ),
                 const SizedBox(height: 12),
                 _DetailRow(
                   icon: Icons.email_outlined,
-                  label: 'Email',
+                  label: l10n.uiEmail,
                   value: widget.user.email,
                   preserveValueFormatting: true,
                 ),
                 _DetailRow(
                   icon: Icons.phone_outlined,
-                  label: 'Phone',
+                  label: l10n.uiPhone,
                   value: widget.user.phone,
-                  placeholder: 'Not provided',
+                  placeholder: l10n.uiNotProvided,
                   preserveValueFormatting: true,
                 ),
                 _DetailRow(
                   icon: Icons.location_on_outlined,
-                  label: 'Location',
+                  label: l10n.uiLocation,
                   value: widget.user.location,
-                  placeholder: 'Not provided',
+                  placeholder: l10n.uiNotProvided,
                 ),
                 _DetailRow(
                   icon: Icons.school_outlined,
-                  label: 'Academic Level',
+                  label: l10n.uiAcademicLevel,
                   value: widget.user.academicLevel,
-                  placeholder: 'Not provided',
+                  placeholder: l10n.uiNotProvided,
                 ),
                 _DetailRow(
                   icon: Icons.account_balance_outlined,
-                  label: 'University',
+                  label: l10n.uiUniversity,
                   value: widget.user.university,
-                  placeholder: 'Not provided',
+                  placeholder: l10n.uiNotProvided,
                 ),
                 _DetailRow(
                   icon: Icons.subject_outlined,
-                  label: 'Field of Study',
+                  label: l10n.uiFieldOfStudy,
                   value: widget.user.fieldOfStudy,
-                  placeholder: 'Not provided',
+                  placeholder: l10n.uiNotProvided,
                 ),
                 if ((widget.user.academicLevel ?? '').trim().toLowerCase() ==
                     'doctorat') ...[
                   _DetailRow(
                     icon: Icons.science_outlined,
-                    label: 'Research Topic',
+                    label: l10n.uiResearchTopic,
                     value: widget.user.researchTopic,
-                    placeholder: 'Not provided',
+                    placeholder: l10n.uiNotProvided,
                   ),
                   _DetailRow(
                     icon: Icons.biotech_outlined,
-                    label: 'Laboratory',
+                    label: l10n.uiLaboratory,
                     value: widget.user.laboratory,
-                    placeholder: 'Not provided',
+                    placeholder: l10n.uiNotProvided,
                   ),
                   _DetailRow(
                     icon: Icons.person_outline_rounded,
-                    label: 'Supervisor',
+                    label: l10n.uiSupervisor,
                     value: widget.user.supervisor,
-                    placeholder: 'Not provided',
+                    placeholder: l10n.uiNotProvided,
                   ),
                   _DetailRow(
                     icon: Icons.category_outlined,
-                    label: 'Research Domain',
+                    label: l10n.uiResearchDomain,
                     value: widget.user.researchDomain,
-                    placeholder: 'Not provided',
+                    placeholder: l10n.uiNotProvided,
                   ),
                 ],
                 if ((widget.user.bio ?? '').trim().isNotEmpty)
                   _LongFormCard(
                     icon: Icons.person_outline_rounded,
-                    title: 'Bio',
+                    title: l10n.uiBio,
                     value: widget.user.bio!.trim(),
                   ),
                 const SizedBox(height: 6),
@@ -204,6 +207,7 @@ class _AdminStudentProfileSheetState extends State<_AdminStudentProfileSheet> {
   }
 
   Widget _buildStudentCvSection(CvModel? cv) {
+    final l10n = _l10n;
     return AdminSurface(
       margin: const EdgeInsets.only(bottom: 14),
       padding: const EdgeInsets.all(16),
@@ -211,38 +215,38 @@ class _AdminStudentProfileSheetState extends State<_AdminStudentProfileSheet> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const AdminSectionHeader(
-            eyebrow: 'Documents',
-            title: 'Student CV',
+          AdminSectionHeader(
+            eyebrow: l10n.uiDocuments,
+            title: l10n.uiStudentCv,
             subtitle:
-                'Review the uploaded CV and the built CV export without leaving the student profile.',
+                l10n.uiReviewTheUploadedCvAndTheBuiltCvExportWithoutLeavingTheStudentProfile,
           ),
           const SizedBox(height: 14),
           _SectionCopy(
-            title: 'Primary CV',
+            title: l10n.uiPrimaryCv,
             value: cv == null
-                ? 'No CV has been created for this student.'
+                ? l10n.uiNoCvHasBeenCreatedForThisStudent
                 : cv.hasUploadedCv
-                ? 'Primary CV: ${cv.uploadedCvDisplayName}'
-                : 'Primary CV not uploaded',
+                ? l10n.uiPrimaryCvValue(cv.uploadedCvDisplayName)
+                : l10n.uiPrimaryCvNotUploaded,
           ),
           const SizedBox(height: 6),
           _SectionCopy(
-            title: 'Built CV',
+            title: l10n.uiBuiltCv,
             value: cv == null
-                ? 'Built CV unavailable'
+                ? l10n.uiBuiltCvUnavailable
                 : cv.hasExportedPdf
-                ? 'Built CV PDF available'
+                ? l10n.uiBuiltCvPdfAvailable
                 : cv.hasBuilderContent
-                ? 'Built CV information available'
-                : 'Built CV unavailable',
+                ? l10n.uiBuiltCvInformationAvailable
+                : l10n.uiBuiltCvUnavailable,
           ),
           if (cv != null && cv.hasUploadedCv) ...[
             const SizedBox(height: 12),
             _AdaptiveActionGroup(
               buttons: [
                 _DocumentButton(
-                  label: 'View CV',
+                  label: l10n.uiViewCv,
                   icon: Icons.visibility_outlined,
                   onPressed: cv.isUploadedCvPdf
                       ? () => _openUserCvDocument(
@@ -254,7 +258,7 @@ class _AdminStudentProfileSheetState extends State<_AdminStudentProfileSheet> {
                   color: AdminPalette.accent,
                 ),
                 _DocumentButton(
-                  label: 'Download CV',
+                  label: l10n.uiDownloadCv,
                   icon: Icons.download_outlined,
                   onPressed: () => _openUserCvDocument(
                     widget.user.uid,
@@ -269,7 +273,7 @@ class _AdminStudentProfileSheetState extends State<_AdminStudentProfileSheet> {
             if (!cv.isUploadedCvPdf) ...[
               const SizedBox(height: 10),
               Text(
-                'The uploaded file is not a valid PDF.',
+                l10n.uiTheUploadedFileIsNotAValidPdf,
                 style: TextStyle(
                   fontSize: 12,
                   color: AdminPalette.warning,
@@ -283,7 +287,7 @@ class _AdminStudentProfileSheetState extends State<_AdminStudentProfileSheet> {
             _AdaptiveActionGroup(
               buttons: [
                 _DocumentButton(
-                  label: 'View Built CV',
+                  label: l10n.uiViewBuiltCv,
                   icon: Icons.picture_as_pdf_outlined,
                   onPressed: () => _openUserCvDocument(
                     widget.user.uid,
@@ -293,7 +297,7 @@ class _AdminStudentProfileSheetState extends State<_AdminStudentProfileSheet> {
                   color: AdminPalette.primaryDark,
                 ),
                 _DocumentButton(
-                  label: 'Download Built CV',
+                  label: l10n.uiDownloadBuiltCv,
                   icon: Icons.download_outlined,
                   onPressed: () => _openUserCvDocument(
                     widget.user.uid,
@@ -314,15 +318,16 @@ class _AdminStudentProfileSheetState extends State<_AdminStudentProfileSheet> {
   Widget _buildApplicationsSection(
     AsyncSnapshot<List<StudentApplicationItemModel>> snapshot,
   ) {
+    final l10n = _l10n;
     final items = snapshot.data ?? const <StudentApplicationItemModel>[];
     final countLabel = switch (snapshot.connectionState) {
-      ConnectionState.waiting => 'Loading visible applications...',
+      ConnectionState.waiting => l10n.uiLoadingVisibleApplications,
       _ when snapshot.hasError =>
-        'Application history is unavailable right now.',
+        l10n.uiApplicationHistoryIsUnavailableRightNow,
       _ when items.isEmpty =>
-        'No visible applications available for this student.',
-      _ when items.length == 1 => '1 visible application',
-      _ => '${items.length} visible applications',
+        l10n.uiNoVisibleApplicationsAvailableForThisStudent,
+      _ when items.length == 1 => l10n.uiOneVisibleApplication,
+      _ => l10n.uiVisibleApplicationsCount(items.length),
     };
 
     return AdminSurface(
@@ -332,18 +337,18 @@ class _AdminStudentProfileSheetState extends State<_AdminStudentProfileSheet> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const AdminSectionHeader(
-            eyebrow: 'Applications',
-            title: 'Student Applications',
+          AdminSectionHeader(
+            eyebrow: l10n.uiApplications,
+            title: l10n.uiStudentApplications,
             subtitle:
-                'Open the student application history using the same visible-opportunity rule shown in the app.',
+                l10n.uiReviewTheStudentApplicationHistoryUsingTheSameVisibleOpportunityRuleShownInTheApp,
           ),
           const SizedBox(height: 14),
-          _SectionCopy(title: 'Visible submissions', value: countLabel),
+          _SectionCopy(title: l10n.uiVisibleSubmissions, value: countLabel),
           if (snapshot.hasError) ...[
             const SizedBox(height: 10),
             Text(
-              'We could not load the application count right now. You can still open the applications sheet and try again.',
+              l10n.uiCouldNotLoadApplicationCountRightNowYouCanStillOpenTheApplicationsSheetAndTryAgain,
               style: TextStyle(
                 fontSize: 12,
                 height: 1.45,
@@ -357,7 +362,7 @@ class _AdminStudentProfileSheetState extends State<_AdminStudentProfileSheet> {
             width: double.infinity,
             child: _DocumentButton(
               label: items.isEmpty
-                  ? 'View All Apps'
+                  ? l10n.uiViewAllApps
                   : 'View All Apps (${items.length})',
               icon: Icons.assignment_outlined,
               onPressed: () => showAdminStudentApplicationsSheet(
@@ -379,6 +384,7 @@ class _AdminStudentProfileSheetState extends State<_AdminStudentProfileSheet> {
     bool download = false,
     bool requirePdf = false,
   }) async {
+    final l10n = AppLocalizations.of(context)!;
     try {
       final document = await _documentAccessService.getUserCvDocument(
         userId: userId,
@@ -390,8 +396,8 @@ class _AdminStudentProfileSheetState extends State<_AdminStudentProfileSheet> {
 
       if (requirePdf && !document.isPdf) {
         context.showAppSnackBar(
-          'This document is not a valid PDF file.',
-          title: 'Preview unavailable',
+          l10n.uiThisDocumentIsNotAValidPdfFile,
+          title: l10n.uiPreviewUnavailable,
           type: AppFeedbackType.warning,
         );
         return;
@@ -415,8 +421,8 @@ class _AdminStudentProfileSheetState extends State<_AdminStudentProfileSheet> {
 
       if (!launched) {
         context.showAppSnackBar(
-          'We could not open the document right now.',
-          title: 'Document unavailable',
+          l10n.uiCouldNotOpenTheDocumentRightNow,
+          title: l10n.uiDocumentUnavailable,
           type: AppFeedbackType.error,
         );
       }
@@ -427,7 +433,7 @@ class _AdminStudentProfileSheetState extends State<_AdminStudentProfileSheet> {
 
       context.showAppSnackBar(
         _documentErrorMessage(error),
-        title: 'Document unavailable',
+        title: l10n.uiDocumentUnavailable,
         type: AppFeedbackType.error,
       );
     }
@@ -436,13 +442,13 @@ class _AdminStudentProfileSheetState extends State<_AdminStudentProfileSheet> {
   String _documentErrorMessage(Object error) {
     final message = error.toString().toLowerCase();
     if (message.contains('permission') || message.contains('403')) {
-      return 'Permission denied while opening the document.';
+      return _l10n.uiPermissionDeniedWhileOpeningTheDocument;
     }
     if (message.contains('404') || message.contains('not found')) {
-      return 'The requested document is no longer available.';
+      return _l10n.uiTheRequestedDocumentIsNoLongerAvailable;
     }
 
-    return 'We could not open the document right now.';
+    return _l10n.uiCouldNotOpenTheDocumentRightNow;
   }
 }
 
@@ -484,6 +490,7 @@ class _AdminStudentApplicationsSheetState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return DraggableScrollableSheet(
       initialChildSize: 0.72,
       minChildSize: 0.4,
@@ -525,8 +532,8 @@ class _AdminStudentApplicationsSheetState
                           const SizedBox(height: 10),
                           Text(
                             widget.studentName.trim().isEmpty
-                                ? 'Student applications'
-                                : '${widget.studentName} applications',
+                                ? l10n.uiStudentApplications
+                                : l10n.uiApplicationsForValue(widget.studentName),
                             style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w700,
@@ -536,8 +543,8 @@ class _AdminStudentApplicationsSheetState
                           const SizedBox(height: 4),
                           Text(
                             snapshot.connectionState == ConnectionState.waiting
-                                ? 'Loading visible opportunity applications.'
-                                : '${items.length} visible application${items.length == 1 ? '' : 's'} available for review.',
+                                ? l10n.uiLoadingVisibleOpportunityApplications
+                                : l10n.uiVisibleApplicationsAvailableForReviewCount(items.length),
                             style: const TextStyle(
                               fontSize: 12.5,
                               color: Colors.white70,
@@ -555,9 +562,9 @@ class _AdminStudentApplicationsSheetState
                     else if (snapshot.hasError)
                       AdminEmptyState(
                         icon: Icons.assignment_late_outlined,
-                        title: 'Application history unavailable',
+                        title: l10n.uiApplicationHistoryUnavailable,
                         message:
-                            'We could not load this student\'s visible applications right now.',
+                            l10n.uiCouldNotLoadThisStudentsVisibleApplicationsRightNow,
                         action: FilledButton.icon(
                           onPressed: _retry,
                           icon: const Icon(Icons.refresh_rounded),
@@ -565,11 +572,11 @@ class _AdminStudentApplicationsSheetState
                         ),
                       )
                     else if (items.isEmpty)
-                      const AdminEmptyState(
+                      AdminEmptyState(
                         icon: Icons.assignment_turned_in_outlined,
-                        title: 'No visible applications',
+                        title: l10n.uiNoVisibleApplications,
                         message:
-                            'This student has no applications linked to open and visible opportunities right now.',
+                            l10n.uiThisStudentHasNoApplicationsLinkedToOpenAndVisibleOpportunitiesRightNow,
                       )
                     else
                       ...items.map(_buildApplicationCard),
@@ -587,8 +594,8 @@ class _AdminStudentApplicationsSheetState
     final l10n = AppLocalizations.of(context)!;
     final statusColor = _statusColor(item.status);
     final appliedLabel = item.appliedAt == null
-        ? 'Applied date unavailable'
-        : 'Applied ${DateFormat('MMM d, yyyy').format(item.appliedAt!)}';
+        ? l10n.uiAppliedDateUnavailable
+        : l10n.uiAppliedValue(DateFormat('MMM d, yyyy').format(item.appliedAt!));
 
     return AdminSurface(
       margin: const EdgeInsets.only(bottom: 10),
@@ -677,6 +684,7 @@ class _StudentHeroCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final academicLevel = (user.academicLevel ?? '').trim();
     final university = (user.university ?? '').trim();
 
@@ -702,7 +710,7 @@ class _StudentHeroCard extends StatelessWidget {
           Text(
             university.isNotEmpty
                 ? university
-                : 'Student profile available for admin review.',
+                : l10n.uiStudentProfileAvailableForAdminReview,
             textAlign: TextAlign.center,
             style: const TextStyle(
               fontSize: 12.8,
@@ -716,8 +724,8 @@ class _StudentHeroCard extends StatelessWidget {
             spacing: 8,
             runSpacing: 8,
             children: [
-              const AdminPill(
-                label: 'Student',
+              AdminPill(
+                label: l10n.uiStudent,
                 color: Colors.white,
                 icon: Icons.school_outlined,
               ),
@@ -728,7 +736,7 @@ class _StudentHeroCard extends StatelessWidget {
                   icon: Icons.workspace_premium_outlined,
                 ),
               AdminPill(
-                label: user.isActive ? 'Active' : 'Blocked',
+                label: user.isActive ? l10n.uiActive : l10n.uiBlocked,
                 color: Colors.white,
                 icon: user.isActive
                     ? Icons.check_circle_outline_rounded
@@ -765,12 +773,13 @@ class _DetailRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final trimmedValue = (value ?? '').trim();
     final displayValue = trimmedValue.isNotEmpty
         ? (preserveValueFormatting
               ? trimmedValue
               : DisplayText.capitalizeLeadingLabel(trimmedValue))
-        : (placeholder ?? 'Not provided');
+        : (placeholder ?? l10n.uiNotProvided);
 
     return AdminSurface(
       margin: const EdgeInsets.only(bottom: 10),

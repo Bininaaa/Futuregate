@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/generated/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../models/user_model.dart';
@@ -288,7 +289,7 @@ class StudentWorkspaceUtilityHeader extends StatelessWidget {
       if (showSavedShortcut)
         StudentWorkspaceUtilityActionButton(
           icon: Icons.bookmark_outline_rounded,
-          tooltip: 'Saved items',
+          tooltip: AppLocalizations.of(context)!.uiSavedItems,
           compact: compact,
           accentColor: accentColor,
           borderColor: borderColor,
@@ -298,7 +299,7 @@ class StudentWorkspaceUtilityHeader extends StatelessWidget {
       if (showAppliedShortcut)
         StudentWorkspaceUtilityActionButton(
           icon: Icons.assignment_turned_in_outlined,
-          tooltip: 'Applied opportunities',
+          tooltip: AppLocalizations.of(context)!.uiAppliedOpportunities,
           compact: compact,
           accentColor: accentColor,
           borderColor: borderColor,
@@ -422,7 +423,7 @@ class _StudentWorkspaceUtilityAvatar extends StatelessWidget {
     final avatarSurface = accentColor.withValues(alpha: 0.10);
 
     return Tooltip(
-      message: 'Profile',
+      message: AppLocalizations.of(context)!.uiProfile,
       child: Material(
         color: Colors.transparent,
         child: InkWell(

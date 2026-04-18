@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 import 'chat_theme.dart';
 
@@ -76,7 +77,7 @@ Future<bool?> showChatConfirmationDialog(
                 children: [
                   Expanded(
                     child: _DialogButton(
-                      label: 'Cancel',
+                      label: AppLocalizations.of(context)!.cancelLabel,
                       onTap: () => Navigator.pop(context, false),
                     ),
                   ),

@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import '../../l10n/generated/app_localizations.dart';
 import 'package:printing/printing.dart';
 import 'package:provider/provider.dart';
 
@@ -46,14 +47,14 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
     if (error == null) {
       context.showAppSnackBar(
         'Your CV PDF has been exported and saved.',
-        title: 'Export complete',
+        title: AppLocalizations.of(context)!.uiExportComplete,
         type: AppFeedbackType.success,
       );
       Navigator.pop(context, true);
     } else {
       context.showAppSnackBar(
         error,
-        title: 'Export unavailable',
+        title: AppLocalizations.of(context)!.uiExportUnavailable,
         type: AppFeedbackType.error,
       );
     }
@@ -72,8 +73,8 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: StudentWorkspaceAppBar(
-          title: 'CV Preview',
-          subtitle: 'Review the final layout before you export or share it.',
+          title: AppLocalizations.of(context)!.uiCvPreview,
+          subtitle: AppLocalizations.of(context)!.uiCvPreviewSubtitle,
           icon: Icons.picture_as_pdf_rounded,
           showBackButton: true,
           onBack: () => Navigator.maybePop(context),
@@ -86,7 +87,7 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
                 }
                 return StudentWorkspaceActionButton(
                   icon: Icons.share_outlined,
-                  tooltip: 'Share PDF',
+                  tooltip: AppLocalizations.of(context)!.uiSharePdf,
                   onTap: () => _share(snapshot.data!),
                 );
               },
@@ -124,7 +125,7 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
                         child: AppEmptyStateNotice(
                           type: AppFeedbackType.error,
                           icon: Icons.picture_as_pdf_rounded,
-                          title: 'Preview unavailable',
+                          title: AppLocalizations.of(context)!.uiPreviewUnavailable,
                           message:
                               'We couldn\'t generate this PDF preview right now. ${snapshot.error}',
                           accentColor: SettingsFlowPalette.error,
@@ -168,7 +169,7 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
                       ),
                     )
                   : SettingsPrimaryButton(
-                      label: 'Export & Save CV',
+                      label: AppLocalizations.of(context)!.uiExportSaveCv,
                       icon: Icons.cloud_upload_outlined,
                       onPressed: _exportAndUpload,
                     ),

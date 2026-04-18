@@ -98,12 +98,12 @@ class _AdminProjectIdeaEditorScreenState
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return AdminEditorScaffold(
-      title: _isEditing ? 'Edit Admin Idea' : 'Publish Admin Idea',
-      submitLabel: _isEditing ? 'Save Idea Changes' : 'Publish Idea',
+      title: _isEditing ? l10n.uiEditIdea : l10n.publishIdeaTitle,
+      submitLabel: _isEditing ? l10n.saveIdeaChangesLabel : l10n.publishLabel,
       icon: Icons.lightbulb_outline_rounded,
       accentColor: AdminPalette.warning,
       subtitle:
-          'Add a platform-curated idea with a strong story, clear metadata, and the same polished structure users already recognize in the innovation feed.',
+          l10n.uiAddAPlatformCuratedIdeaWithAStrongStoryClear,
       isSubmitting: _isSubmitting,
       onSubmit: _submit,
       child: Form(
@@ -111,9 +111,9 @@ class _AdminProjectIdeaEditorScreenState
         child: Column(
           children: [
             AdminEditorSection(
-              title: 'Publishing',
+              title: l10n.publishingSectionTitle,
               subtitle:
-                  'Choose whether the idea is visible in discovery and whether it reads as a public collaboration opportunity.',
+                  l10n.uiChooseWhetherTheIdeaIsVisibleInDiscoveryAndWhether,
               child: Column(
                 children: [
                   Row(
@@ -145,7 +145,7 @@ class _AdminProjectIdeaEditorScreenState
                   AdminEditorToggleCard(
                     value: _isPublic,
                     onChanged: (value) => setState(() => _isPublic = value),
-                    title: 'Public collaboration allowed',
+                    title: l10n.uiPublicCollaborationAllowed,
                     subtitle:
                         'When enabled, the idea reads like a public community opportunity instead of a hidden internal note.',
                   ),
@@ -154,9 +154,9 @@ class _AdminProjectIdeaEditorScreenState
             ),
             const SizedBox(height: 16),
             AdminEditorSection(
-              title: 'Core Story',
+              title: l10n.uiCoreStory,
               subtitle:
-                  'Keep the headline and overview crisp so the idea reads strongly in both cards and full detail views.',
+                  l10n.uiKeepTheHeadlineAndOverviewCrispSoTheIdeaReads,
               child: Column(
                 children: [
                   AdminEditorField(
@@ -191,9 +191,10 @@ class _AdminProjectIdeaEditorScreenState
             ),
             const SizedBox(height: 16),
             AdminEditorSection(
-              title: 'Metadata and collaboration',
+              title: l10n.uiMetadataAndCollaboration,
               subtitle:
-                  'These fields shape the filters, badges, and collaboration framing used throughout the app.',
+                  l10n
+                      .uiTheseFieldsShapeTheFiltersBadgesAndCollaborationFramingUsed,
               child: Column(
                 children: [
                   AdminEditorField(

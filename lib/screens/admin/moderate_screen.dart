@@ -323,7 +323,9 @@ class _ModerateScreenState extends State<ModerateScreen>
                                     if (error != null && context.mounted) {
                                       context.showAppSnackBar(
                                         error,
-                                        title: 'Update unavailable',
+                                        title: AppLocalizations.of(
+                                          context,
+                                        )!.updateUnavailableTitle,
                                         type: AppFeedbackType.error,
                                       );
                                     }
@@ -354,7 +356,9 @@ class _ModerateScreenState extends State<ModerateScreen>
                                     if (error != null && context.mounted) {
                                       context.showAppSnackBar(
                                         error,
-                                        title: 'Update unavailable',
+                                        title: AppLocalizations.of(
+                                          context,
+                                        )!.updateUnavailableTitle,
                                         type: AppFeedbackType.error,
                                       );
                                     }
@@ -513,7 +517,7 @@ class _ModerateScreenState extends State<ModerateScreen>
                     if (error != null && context.mounted) {
                       context.showAppSnackBar(
                         error,
-                        title: 'Delete unavailable',
+                        title: AppLocalizations.of(context)!.uiDeleteUnavailable,
                         type: AppFeedbackType.error,
                       );
                     }
@@ -649,7 +653,7 @@ class _ModerateScreenState extends State<ModerateScreen>
                     if (error != null && context.mounted) {
                       context.showAppSnackBar(
                         error,
-                        title: 'Delete unavailable',
+                        title: AppLocalizations.of(context)!.uiDeleteUnavailable,
                         type: AppFeedbackType.error,
                       );
                     }

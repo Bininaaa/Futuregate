@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import '../l10n/generated/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../utils/opportunity_dashboard_palette.dart';
@@ -68,7 +69,7 @@ class TrainingHeaderBar extends StatelessWidget {
       children: [
         _HeaderIconButton(
           icon: Icons.menu_rounded,
-          tooltip: 'Training menu',
+          tooltip: AppLocalizations.of(context)!.uiTrainingMenu,
           onTap: onMenuTap,
         ),
         const SizedBox(width: 12),
@@ -84,7 +85,7 @@ class TrainingHeaderBar extends StatelessWidget {
         ),
         _HeaderIconButton(
           icon: Icons.search_rounded,
-          tooltip: 'Focus search',
+          tooltip: AppLocalizations.of(context)!.uiFocusSearch,
           onTap: onSearchTap,
         ),
       ],
@@ -148,7 +149,7 @@ class TrainingSearchBar extends StatelessWidget {
         color: OpportunityDashboardPalette.textPrimary,
       ),
       decoration: InputDecoration(
-        hintText: 'Search for courses...',
+        hintText: AppLocalizations.of(context)!.uiSearchCourses,
         hintStyle: GoogleFonts.poppins(
           fontSize: 13,
           fontWeight: FontWeight.w500,
@@ -162,7 +163,7 @@ class TrainingSearchBar extends StatelessWidget {
         suffixIcon: controller.text.trim().isEmpty
             ? null
             : IconButton(
-                tooltip: 'Clear search',
+                tooltip: AppLocalizations.of(context)!.uiClearSearch,
                 onPressed: onClear,
                 icon: Icon(
                   Icons.close_rounded,
@@ -1463,31 +1464,31 @@ class _TrainingInfoSticker extends StatelessWidget {
 
   const _TrainingInfoSticker({required this.data});
 
-  _TrainingStickerData _stickerData() {
+  _TrainingStickerData _stickerData(AppLocalizations l10n) {
     switch (data.trainingType.trim().toLowerCase()) {
       case 'video':
-        return const _TrainingStickerData(
-          label: 'VIDEO',
+        return _TrainingStickerData(
+          label: l10n.uiVideo.toUpperCase(),
           icon: Icons.play_circle_fill_rounded,
         );
       case 'book':
-        return const _TrainingStickerData(
-          label: 'BOOK',
+        return _TrainingStickerData(
+          label: l10n.uiBook.toUpperCase(),
           icon: Icons.auto_stories_rounded,
         );
       case 'file':
-        return const _TrainingStickerData(
-          label: 'GUIDE',
+        return _TrainingStickerData(
+          label: l10n.uiGuide.toUpperCase(),
           icon: Icons.description_rounded,
         );
       case 'course':
-        return const _TrainingStickerData(
-          label: 'COURSE',
+        return _TrainingStickerData(
+          label: l10n.uiCourse.toUpperCase(),
           icon: Icons.cast_for_education_rounded,
         );
       default:
-        return const _TrainingStickerData(
-          label: 'TRAIN',
+        return _TrainingStickerData(
+          label: l10n.uiTrain.toUpperCase(),
           icon: Icons.school_rounded,
         );
     }
@@ -1495,7 +1496,7 @@ class _TrainingInfoSticker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final sticker = _stickerData();
+    final sticker = _stickerData(AppLocalizations.of(context)!);
 
     return Transform.rotate(
       angle: -0.045,

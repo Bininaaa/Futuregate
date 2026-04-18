@@ -140,7 +140,7 @@ class TrainingResourceCard extends StatelessWidget {
                       ),
                       if (training.isFeatured)
                         _buildChip(
-                          label: 'FEATURED',
+                          label: AppLocalizations.of(context)!.uiFeatured.toUpperCase(),
                           color: Colors.amber.shade800,
                           icon: Icons.star_rounded,
                         ),

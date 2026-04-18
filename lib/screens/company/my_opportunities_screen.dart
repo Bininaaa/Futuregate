@@ -281,8 +281,8 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
     final currentStatus = opportunity.effectiveStatus();
     if (currentStatus == 'closed' && opportunity.isDeadlineExpired()) {
       context.showAppSnackBar(
-        'Move the deadline into the future before reopening this opportunity.',
-        title: 'Deadline expired',
+        _l10n.uiMoveTheDeadlineIntoTheFutureBeforeReopeningThisOpportunity,
+        title: _l10n.uiDeadlineExpired,
         type: AppFeedbackType.warning,
       );
       return;
@@ -300,7 +300,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
     if (error != null) {
       context.showAppSnackBar(
         error,
-        title: 'Update unavailable',
+        title: _l10n.updateUnavailableTitle,
         type: AppFeedbackType.error,
       );
       return;
@@ -319,7 +319,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
             borderRadius: BorderRadius.circular(18),
           ),
           title: Text(
-            'Delete opportunity',
+            _l10n.uiDeleteOpportunity,
             style: GoogleFonts.poppins(
               fontSize: 16,
               fontWeight: FontWeight.w700,
@@ -337,7 +337,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
             TextButton(
               onPressed: () => Navigator.pop(dialogContext, false),
               child: Text(
-                'Cancel',
+                _l10n.cancelLabel,
                 style: GoogleFonts.poppins(
                   fontWeight: FontWeight.w600,
                   color: _OpportunityPalette.textSecondary,
@@ -347,7 +347,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
             TextButton(
               onPressed: () => Navigator.pop(dialogContext, true),
               child: Text(
-                'Delete',
+                _l10n.uiDelete,
                 style: GoogleFonts.poppins(
                   fontWeight: FontWeight.w700,
                   color: _OpportunityPalette.error,
@@ -373,7 +373,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
     if (error != null) {
       context.showAppSnackBar(
         error,
-        title: 'Delete unavailable',
+        title: _l10n.uiDeleteUnavailable,
         type: AppFeedbackType.error,
       );
       return;
@@ -386,9 +386,11 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
 
     context.showAppSnackBar(
       wasClosed == true
-          ? 'Opportunity closed because applications already exist.'
-          : 'Opportunity deleted.',
-      title: wasClosed == true ? 'Opportunity closed' : 'Opportunity deleted',
+          ? _l10n.uiOpportunityClosedBecauseApplicationsAlreadyExist
+          : _l10n.uiOpportunityDeleted,
+      title: wasClosed == true
+          ? _l10n.uiOpportunityClosed
+          : _l10n.uiOpportunityDeleted,
       type: AppFeedbackType.success,
     );
   }
@@ -782,7 +784,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
     }
 
     if (user == null) {
-      return wrapScaffold(const Center(child: Text('Not logged in')));
+      return wrapScaffold(Center(child: Text(_l10n.notLoggedIn)));
     }
 
     final applicationCounts = _applicationCounts(provider);
@@ -846,7 +848,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
                           padding: const EdgeInsets.only(top: 12),
                           child: _InlineBanner(
                             icon: Icons.info_outline_rounded,
-                            title: 'Could not refresh opportunities',
+                            title: _l10n.uiCouldNotRefreshOpportunities,
                             message: provider.opportunitiesError!,
                           ),
                         ),

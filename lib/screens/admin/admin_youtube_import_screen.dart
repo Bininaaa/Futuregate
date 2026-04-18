@@ -47,6 +47,8 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
   String _selectedDomain = 'Informatique';
   String _selectedLevel = 'licence';
 
+  AppLocalizations get _l10n => AppLocalizations.of(context)!;
+
   final List<String> _domains = const [
     'Informatique',
     'Mathematiques',
@@ -92,8 +94,8 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
 
     if (query.isEmpty) {
       context.showAppSnackBar(
-        'Enter a search query to continue.',
-        title: 'Search required',
+        _l10n.uiEnterASearchQueryToContinue,
+        title: _l10n.uiSearchRequired,
         type: AppFeedbackType.warning,
       );
       return;
@@ -132,7 +134,7 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
 
       context.showAppSnackBar(
         message,
-        title: 'Search unavailable',
+        title: _l10n.uiSearchUnavailable,
         type: AppFeedbackType.error,
       );
     } finally {
@@ -149,8 +151,8 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
 
     if (adminId.isEmpty) {
       context.showAppSnackBar(
-        'Admin user not found.',
-        title: 'Import unavailable',
+        _l10n.uiAdminUserNotFound,
+        title: _l10n.uiImportUnavailable,
         type: AppFeedbackType.error,
       );
       return;
@@ -180,8 +182,8 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
       }
 
       context.showAppSnackBar(
-        '"${video.title}" imported successfully.',
-        title: 'Import complete',
+        _l10n.uiValueImportedSuccessfully(video.title),
+        title: _l10n.uiImportComplete,
         type: AppFeedbackType.success,
       );
     } catch (e) {
@@ -190,8 +192,8 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
       }
 
       context.showAppSnackBar(
-        'Import failed: $e',
-        title: 'Import unavailable',
+        _l10n.uiImportFailedValue(e),
+        title: _l10n.uiImportUnavailable,
         type: AppFeedbackType.error,
       );
     } finally {
@@ -222,9 +224,9 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
       }
       context.showAppSnackBar(
         training.isFeatured
-            ? 'This resource was removed from featured.'
-            : 'This resource is now featured.',
-        title: 'Featured list updated',
+            ? _l10n.uiResourceRemovedFromFeatured
+            : _l10n.uiResourceFeatured,
+        title: _l10n.uiFeaturedListUpdated,
         type: AppFeedbackType.success,
       );
       return;
@@ -232,7 +234,7 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
 
     context.showAppSnackBar(
       error,
-      title: 'Update unavailable',
+      title: _l10n.updateUnavailableTitle,
       type: AppFeedbackType.error,
     );
   }
@@ -244,7 +246,9 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
           builder: (dialogContext) => AlertDialog(
             title: Text(AppLocalizations.of(context)!.uiDeleteResource),
             content: Text(
-              'Delete "${training.title}" from Firestore? This action cannot be undone.',
+              _l10n.uiDeleteValueFromFirestoreThisActionCannotBeUndone(
+                training.title,
+              ),
             ),
             actions: [
               TextButton(
@@ -253,8 +257,8 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
               ),
               TextButton(
                 onPressed: () => Navigator.pop(dialogContext, true),
-                child: const Text(
-                  'Delete',
+                child: Text(
+                  _l10n.uiDelete,
                   style: TextStyle(color: Colors.red),
                 ),
               ),
@@ -281,8 +285,8 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
         return;
       }
       context.showAppSnackBar(
-        '"${training.title}" deleted.',
-        title: 'Resource deleted',
+        _l10n.uiValueDeleted(training.title),
+        title: _l10n.uiResourceDeleted,
         type: AppFeedbackType.success,
       );
       return;
@@ -290,7 +294,7 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
 
     context.showAppSnackBar(
       error,
-      title: 'Delete unavailable',
+      title: _l10n.uiDeleteUnavailable,
       type: AppFeedbackType.error,
     );
   }
@@ -298,8 +302,8 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
   Future<void> _openLink(String link) async {
     if (link.trim().isEmpty) {
       context.showAppSnackBar(
-        'This result does not include an external link.',
-        title: 'Link unavailable',
+        _l10n.uiThisResultDoesNotIncludeAnExternalLink,
+        title: _l10n.uiLinkUnavailable,
         type: AppFeedbackType.warning,
       );
       return;
@@ -308,8 +312,8 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
     final uri = Uri.tryParse(link);
     if (uri == null) {
       context.showAppSnackBar(
-        'This link is not valid.',
-        title: 'Link unavailable',
+        _l10n.uiThisLinkIsNotValid,
+        title: _l10n.uiLinkUnavailable,
         type: AppFeedbackType.warning,
       );
       return;
@@ -319,8 +323,8 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
 
     if (!launched && mounted) {
       context.showAppSnackBar(
-        'We couldn\'t open this link right now.',
-        title: 'Open unavailable',
+        _l10n.uiWeCouldNotOpenThisLinkRightNow,
+        title: _l10n.uiOpenUnavailable,
         type: AppFeedbackType.error,
       );
     }
@@ -423,17 +427,17 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
       child: AdminSurface(
         child: Column(
           children: [
-            const AdminSectionHeader(
-              eyebrow: 'YouTube',
-              title: 'Import Videos',
+            AdminSectionHeader(
+              eyebrow: _l10n.uiYoutube,
+              title: _l10n.uiImportVideos,
               subtitle:
-                  'Search educational videos, review the metadata, and publish curated content into the admin library.',
+                  _l10n.uiSearchEducationalVideosReviewTheMetadataAndPublishCuratedContent,
             ),
             const SizedBox(height: 14),
             TextField(
               controller: _searchController,
               decoration: InputDecoration(
-                hintText: 'Search videos, for example: algorithms',
+                hintText: _l10n.uiSearchVideosForExampleAlgorithms,
                 prefixIcon: const Icon(Icons.search),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
@@ -447,8 +451,8 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
                 Expanded(
                   child: DropdownButtonFormField<String>(
                     initialValue: _selectedDomain,
-                    decoration: const InputDecoration(
-                      labelText: 'Domain',
+                    decoration: InputDecoration(
+                      labelText: _l10n.uiDomain,
                       border: OutlineInputBorder(),
                     ),
                     items: _domains
@@ -472,8 +476,8 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
                 Expanded(
                   child: DropdownButtonFormField<String>(
                     initialValue: _selectedLevel,
-                    decoration: const InputDecoration(
-                      labelText: 'Level',
+                    decoration: InputDecoration(
+                      labelText: _l10n.uiLevel,
                       border: OutlineInputBorder(),
                     ),
                     items: _levels
@@ -507,7 +511,7 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
                     : const Icon(Icons.search),
-                label: Text(_isSearching ? 'Searching...' : 'Search'),
+                label: Text(_isSearching ? _l10n.uiSearching : _l10n.uiSearch),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AdminPalette.primary,
                   foregroundColor: Colors.white,
@@ -533,13 +537,12 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
     }
 
     if (!_hasSearched) {
-      return const SliverFillRemaining(
+      return SliverFillRemaining(
         hasScrollBody: false,
         child: AdminEmptyState(
           icon: Icons.ondemand_video_rounded,
-          title: 'Start with a YouTube search',
-          message:
-              'Use a topic search to bring back import-ready videos for review.',
+          title: _l10n.uiStartWithAYoutubeSearch,
+          message: _l10n.uiUseATopicSearchToBringBackImportReadyVideosForReview,
         ),
       );
     }
@@ -549,7 +552,7 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
         hasScrollBody: false,
         child: AdminEmptyState(
           icon: Icons.error_outline_rounded,
-          title: 'Search failed',
+          title: _l10n.uiSearchFailed,
           message: _searchError!,
           action: FilledButton.icon(
             onPressed: _searchVideos,
@@ -561,13 +564,13 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
     }
 
     if (_results.isEmpty) {
-      return const SliverFillRemaining(
+      return SliverFillRemaining(
         hasScrollBody: false,
         child: AdminEmptyState(
           icon: Icons.search_off_rounded,
-          title: 'No videos match this search',
+          title: _l10n.uiNoVideosMatchThisSearch,
           message:
-              'Try a broader query or switch the domain and level context before searching again.',
+              _l10n.uiTryABroaderQueryOrSwitchTheDomainAndLevelContextBeforeSearchingAgain,
         ),
       );
     }
@@ -608,7 +611,7 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: AdminEmptyState(
             icon: Icons.error_outline_rounded,
-            title: 'Video library unavailable',
+            title: _l10n.uiVideoLibraryUnavailable,
             message: provider.errorMessage!,
             action: FilledButton.icon(
               onPressed: provider.fetchTrainings,
@@ -631,11 +634,11 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const AdminSectionHeader(
-                  eyebrow: 'Library',
-                  title: 'Manage Imported Videos',
+                AdminSectionHeader(
+                  eyebrow: _l10n.uiLibrary,
+                  title: _l10n.uiManageImportedVideos,
                   subtitle:
-                      'This workspace is dedicated to YouTube imports, so video curation stays focused.',
+                      _l10n.uiThisWorkspaceIsDedicatedToYouTubeImportsSoVideoCurationStaysFocused,
                 ),
                 const SizedBox(height: 14),
                 Wrap(
@@ -654,7 +657,7 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
                       icon: Icons.star_rounded,
                     ),
                     AdminPill(
-                      label: provider.isLoading ? 'Syncing' : 'Synced',
+                      label: provider.isLoading ? _l10n.uiSyncing : _l10n.uiSynced,
                       color: provider.isLoading
                           ? AdminPalette.warning
                           : AdminPalette.success,
@@ -669,13 +672,12 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
           ),
           const SizedBox(height: 12),
           if (videos.isEmpty)
-            const Padding(
+            Padding(
               padding: EdgeInsets.only(top: 60),
               child: AdminEmptyState(
                 icon: Icons.ondemand_video_rounded,
-                title: 'No videos imported yet',
-                message:
-                    'Import a few YouTube results first, then manage featuring, opening, and deleting from here.',
+                title: _l10n.uiNoVideosImportedYet,
+                message: _l10n.uiImportAFewYoutubeResultsFirstThenManageFeaturingOpening,
               ),
             )
           else
@@ -741,9 +743,9 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
                   spacing: 8,
                   runSpacing: 8,
                   children: [
-                    AdminPill(label: 'VIDEO', color: AdminPalette.danger),
+                    AdminPill(label: _l10n.uiVideoLabel, color: AdminPalette.danger),
                     AdminPill(
-                      label: 'YouTube',
+                      label: _l10n.uiYoutube,
                       color: AdminPalette.textPrimary,
                     ),
                     if (video.domain.trim().isNotEmpty)
@@ -763,7 +765,7 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
               backgroundColor: AdminPalette.primary,
               foregroundColor: Colors.white,
             ),
-            child: Text(isImportingVideo ? 'Importing...' : 'Import'),
+            child: Text(isImportingVideo ? _l10n.uiImporting : _l10n.uiImport),
           ),
         ],
       ),
@@ -831,7 +833,7 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
                       ),
                     if (training.isFeatured)
                       _AdminChip(
-                        label: 'featured',
+                        label: _l10n.uiFeatured,
                         color: Colors.amber.shade800,
                       ),
                   ],
@@ -851,7 +853,7 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
                             : Icons.star_rounded,
                       ),
                       label: Text(
-                        training.isFeatured ? 'Unfeature' : 'Feature',
+                        training.isFeatured ? _l10n.uiUnfeature : _l10n.uiFeature,
                       ),
                     ),
                     OutlinedButton.icon(
@@ -913,11 +915,11 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const AdminSectionHeader(
-                        eyebrow: 'Studio',
-                        title: 'Video Import Workspace',
+                      AdminSectionHeader(
+                        eyebrow: l10n.uiStudio,
+                        title: l10n.uiVideoImportWorkspace,
                         subtitle:
-                            'Search and curate YouTube lessons in one continuous flow instead of working inside separate fixed windows.',
+                            l10n.uiSearchAndCurateYoutubeLessonsInOneContinuousFlowInstead,
                       ),
                       const SizedBox(height: 14),
                       Wrap(

@@ -64,25 +64,13 @@ class _SponsoredPalette {
 
 class _SponsoredOpportunitiesScreenState
     extends State<SponsoredOpportunitiesScreen> {
-  static const List<_SponsoredFilterDefinition> _filters = [
-    _SponsoredFilterDefinition(value: _SponsoredFilter.all, label: 'All'),
-    _SponsoredFilterDefinition(
-      value: _SponsoredFilter.funding,
-      label: 'Funding',
-    ),
-    _SponsoredFilterDefinition(
-      value: _SponsoredFilter.startup,
-      label: 'Startup',
-    ),
-    _SponsoredFilterDefinition(
-      value: _SponsoredFilter.competition,
-      label: 'Competition',
-    ),
-    _SponsoredFilterDefinition(value: _SponsoredFilter.grants, label: 'Grants'),
-    _SponsoredFilterDefinition(
-      value: _SponsoredFilter.internships,
-      label: 'Internships',
-    ),
+  List<_SponsoredFilterDefinition> _buildFilters(AppLocalizations l10n) => [
+    _SponsoredFilterDefinition(value: _SponsoredFilter.all, label: l10n.uiAll),
+    _SponsoredFilterDefinition(value: _SponsoredFilter.funding, label: l10n.uiFunding),
+    _SponsoredFilterDefinition(value: _SponsoredFilter.startup, label: l10n.uiStartup),
+    _SponsoredFilterDefinition(value: _SponsoredFilter.competition, label: l10n.uiCompetition),
+    _SponsoredFilterDefinition(value: _SponsoredFilter.grants, label: l10n.uiGrants),
+    _SponsoredFilterDefinition(value: _SponsoredFilter.internships, label: l10n.uiInternships),
   ];
 
   final TextEditingController _searchController = TextEditingController();
@@ -189,7 +177,7 @@ class _SponsoredOpportunitiesScreenState
     if (userId == null || userId.isEmpty) {
       context.showAppSnackBar(
         'Sign in to save opportunities for later.',
-        title: 'Login required',
+        title: AppLocalizations.of(context)!.uiLoginRequired,
         type: AppFeedbackType.warning,
       );
       return;
@@ -257,7 +245,7 @@ class _SponsoredOpportunitiesScreenState
     if (currentUser == null) {
       context.showAppSnackBar(
         'Sign in to continue with your application.',
-        title: 'Login required',
+        title: AppLocalizations.of(context)!.uiLoginRequired,
         type: AppFeedbackType.warning,
       );
       return;
@@ -280,7 +268,7 @@ class _SponsoredOpportunitiesScreenState
       if (eligibility != ApplicationEligibilityStatus.available) {
         context.showAppSnackBar(
           _messageForEligibility(eligibility),
-          title: 'Application blocked',
+          title: AppLocalizations.of(context)!.uiApplicationBlocked,
           type: AppFeedbackType.warning,
         );
         return;
@@ -296,7 +284,7 @@ class _SponsoredOpportunitiesScreenState
       if (cv == null) {
         context.showAppSnackBar(
           'Create your CV before applying to this opportunity.',
-          title: 'CV required',
+          title: AppLocalizations.of(context)!.uiCvRequired,
           type: AppFeedbackType.warning,
         );
         return;
@@ -356,18 +344,18 @@ class _SponsoredOpportunitiesScreenState
     }
 
     if (!opportunity.isVisibleToStudents()) {
-      return const _SponsoredActionState(
-        label: 'Unavailable',
-        color: Color(0xFF94A3B8),
+      return _SponsoredActionState(
+        label: AppLocalizations.of(context)!.uiUnavailable,
+        color: const Color(0xFF94A3B8),
         icon: Icons.visibility_off_rounded,
       );
     }
 
     final normalizedStatus = opportunity.effectiveStatus();
     if (normalizedStatus.isNotEmpty && normalizedStatus != 'open') {
-      return const _SponsoredActionState(
-        label: 'Closed',
-        color: Color(0xFF94A3B8),
+      return _SponsoredActionState(
+        label: AppLocalizations.of(context)!.uiClosed,
+        color: const Color(0xFF94A3B8),
         icon: Icons.lock_outline_rounded,
       );
     }
@@ -454,13 +442,13 @@ class _SponsoredOpportunitiesScreenState
     }).toList();
   }
 
-  String _labelForFilter(_SponsoredFilter filter) {
-    for (final item in _filters) {
+  String _labelForFilter(_SponsoredFilter filter, AppLocalizations l10n) {
+    for (final item in _buildFilters(l10n)) {
       if (item.value == filter) {
         return item.label;
       }
     }
-    return 'All';
+    return l10n.uiAll;
   }
 
   _SponsoredCardModel _mapOpportunityToCardModel(OpportunityModel opportunity) {
@@ -860,7 +848,8 @@ class _SponsoredOpportunitiesScreenState
         .toSet();
     final hasActiveFilters =
         _searchQuery.isNotEmpty || _activeFilter != _SponsoredFilter.all;
-    final activeFilterLabel = _labelForFilter(_activeFilter);
+    final l10n = AppLocalizations.of(context)!;
+    final activeFilterLabel = _labelForFilter(_activeFilter, l10n);
     final showCatalogEmptyState = allCards.isEmpty && !hasActiveFilters;
     final countLabel = visibleCards.length == 1
         ? '1 program live now'
@@ -885,7 +874,7 @@ class _SponsoredOpportunitiesScreenState
           children: [
             StudentWorkspaceUtilityHeader(
               user: authProvider.userModel,
-              title: 'Sponsored',
+              title: AppLocalizations.of(context)!.uiSponsored,
               onProfileTap: _openProfile,
               onOpenSaved: _openSavedItems,
               onOpenApplied: _openAppliedItems,
@@ -986,11 +975,11 @@ class _SponsoredOpportunitiesScreenState
                               padding: EdgeInsets.symmetric(
                                 horizontal: horizontalPadding,
                               ),
-                              itemCount: _filters.length,
+                              itemCount: _buildFilters(l10n).length,
                               separatorBuilder: (context, index) =>
                                   const SizedBox(width: 8),
                               itemBuilder: (context, index) {
-                                final filter = _filters[index];
+                                final filter = _buildFilters(l10n)[index];
                                 final isActive = filter.value == _activeFilter;
 
                                 return _SponsoredFilterChip(
@@ -1014,7 +1003,7 @@ class _SponsoredOpportunitiesScreenState
                               horizontal: horizontalPadding,
                             ),
                             child: _SponsoredSectionHeader(
-                              title: 'All Sponsored Programs',
+                              title: AppLocalizations.of(context)!.uiAllSponsoredPrograms,
                               countLabel: hasActiveFilters
                                   ? '$countLabel matched in ${activeFilterLabel.toLowerCase()}'
                                   : countLabel,
@@ -1252,7 +1241,7 @@ class _SponsoredSearchBar extends StatelessWidget {
       ),
       decoration: InputDecoration(
         isDense: compact,
-        hintText: 'Search programs, partners...',
+        hintText: AppLocalizations.of(context)!.uiSearchPrograms,
         hintStyle: GoogleFonts.poppins(
           fontSize: compact ? 12 : 14,
           color: OpportunityDashboardPalette.textSecondary,
@@ -1266,7 +1255,7 @@ class _SponsoredSearchBar extends StatelessWidget {
             ? null
             : IconButton(
                 onPressed: onClear,
-                tooltip: 'Clear search',
+                tooltip: AppLocalizations.of(context)!.uiClearSearch,
                 icon: const Icon(Icons.close_rounded),
                 color: OpportunityDashboardPalette.textSecondary,
               ),
@@ -1833,7 +1822,7 @@ class _SponsoredGridCard extends StatelessWidget {
                                 children: [
                                   _SponsoredMetaChip(
                                     icon: Icons.workspace_premium_rounded,
-                                    label: 'Sponsored',
+                                    label: AppLocalizations.of(context)!.uiSponsored,
                                     foregroundColor: Colors.white,
                                     backgroundColor: Colors.white.withValues(
                                       alpha: 0.14,

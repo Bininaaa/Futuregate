@@ -49,6 +49,7 @@ class _AdminActivityCenterScreenState extends State<AdminActivityCenterScreen> {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<AdminProvider>();
+    final l10n = AppLocalizations.of(context)!;
     final query = _searchController.text.trim();
     final activities = provider.recentActivity
         .where((activity) => activity.matchesQuery(query))
@@ -59,11 +60,11 @@ class _AdminActivityCenterScreenState extends State<AdminActivityCenterScreen> {
         : provider.activityError != null && provider.recentActivity.isEmpty
         ? AdminEmptyState(
             icon: Icons.error_outline_rounded,
-            title: 'Activity feed unavailable',
+            title: l10n.uiActivityFeedUnavailable,
             message: provider.activityError!,
             action: FilledButton(
               onPressed: () => provider.loadActivityFeed(reset: true),
-              child: Text(AppLocalizations.of(context)!.retryLabel),
+              child: Text(l10n.retryLabel),
             ),
           )
         : RefreshIndicator(
@@ -80,12 +81,13 @@ class _AdminActivityCenterScreenState extends State<AdminActivityCenterScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           AdminSectionHeader(
-                            eyebrow: 'Live Feed',
-                            title: 'Recent Platform Activity',
+                            eyebrow: l10n.uiLiveFeed,
+                            title: l10n.uiRecentPlatformActivity,
                             subtitle:
-                                'Review the latest moderation updates, publishing changes, and submissions from one clean queue.',
+                                l10n
+                                    .uiReviewTheLatestModerationUpdatesPublishingChangesAndSubmissionsFrom,
                             trailing: IconButton(
-                              tooltip: 'Refresh activity feed',
+                              tooltip: l10n.uiRefreshActivityFeed,
                               onPressed: provider.activityLoading
                                   ? null
                                   : () =>
@@ -118,7 +120,7 @@ class _AdminActivityCenterScreenState extends State<AdminActivityCenterScreen> {
                     padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
                     child: AdminSearchField(
                       controller: _searchController,
-                      hintText: 'Search by type, title, actor, or status...',
+                      hintText: l10n.uiSearchByTypeTitleActorOrStatus,
                       onChanged: (_) => setState(() {}),
                       onClear: () {
                         _searchController.clear();
@@ -148,8 +150,10 @@ class _AdminActivityCenterScreenState extends State<AdminActivityCenterScreen> {
                           const SizedBox(width: 8),
                           Text(
                             query.isEmpty
-                                ? '${activities.length} recent activities'
-                                : '${activities.length} matching activities',
+                                ? l10n.uiRecentActivitiesCount(activities.length)
+                                : l10n.uiMatchingActivitiesCount(
+                                    activities.length,
+                                  ),
                             style: TextStyle(
                               fontSize: 12.5,
                               fontWeight: FontWeight.w700,
@@ -158,7 +162,7 @@ class _AdminActivityCenterScreenState extends State<AdminActivityCenterScreen> {
                           ),
                           const Spacer(),
                           Text(
-                            'Newest first',
+                            l10n.uiNewestFirst,
                             style: TextStyle(
                               fontSize: 11.5,
                               fontWeight: FontWeight.w600,
@@ -170,13 +174,12 @@ class _AdminActivityCenterScreenState extends State<AdminActivityCenterScreen> {
                     ),
                   ),
                 if (activities.isEmpty)
-                  const SliverFillRemaining(
+                  SliverFillRemaining(
                     hasScrollBody: false,
                     child: AdminEmptyState(
                       icon: Icons.history_toggle_off_rounded,
-                      title: 'No activity matches this search',
-                      message:
-                          'Try a broader query or refresh to load the latest events.',
+                      title: l10n.uiNoActivityMatchesThisSearch,
+                      message: l10n.uiTryABroaderQueryOrRefreshToLoadTheLatest,
                     ),
                   )
                 else ...[
@@ -259,12 +262,13 @@ class _AdminActivityCenterScreenState extends State<AdminActivityCenterScreen> {
   }
 
   String _manageLabelForActivity(AdminActivityModel activity) {
+    final l10n = AppLocalizations.of(context)!;
     return switch (activity.type) {
-      'application' => 'Manage Application',
-      'opportunity' => 'Manage Opportunity',
-      'scholarship' => 'Manage Scholarship',
-      'training' => 'Manage Library Resource',
-      _ => 'Manage Project Idea',
+      'application' => l10n.uiManageApplication,
+      'opportunity' => l10n.uiManageOpportunity,
+      'scholarship' => l10n.uiManageScholarship,
+      'training' => l10n.uiManageLibraryResource,
+      _ => l10n.uiManageProjectIdea,
     };
   }
 }

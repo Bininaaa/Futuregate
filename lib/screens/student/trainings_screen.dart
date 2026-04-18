@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/generated/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -63,7 +64,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
     if (link.trim().isEmpty) {
       context.showAppSnackBar(
         emptyMessage,
-        title: 'Link unavailable',
+        title: AppLocalizations.of(context)!.uiLinkUnavailable,
         type: AppFeedbackType.warning,
       );
       return;
@@ -73,7 +74,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
     if (uri == null) {
       context.showAppSnackBar(
         'This training link is not valid.',
-        title: 'Link unavailable',
+        title: AppLocalizations.of(context)!.uiLinkUnavailable,
         type: AppFeedbackType.warning,
       );
       return;
@@ -84,7 +85,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
     if (!launched && mounted) {
       context.showAppSnackBar(
         'We couldn\'t open this training link right now.',
-        title: 'Open unavailable',
+        title: AppLocalizations.of(context)!.uiOpenUnavailable,
         type: AppFeedbackType.error,
       );
     }
@@ -96,7 +97,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
     if (userId.isEmpty) {
       context.showAppSnackBar(
         'Sign in to save training resources for later.',
-        title: 'Login required',
+        title: AppLocalizations.of(context)!.uiLoginRequired,
         type: AppFeedbackType.warning,
       );
       return;
@@ -218,15 +219,15 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
     }
 
     return StudentWorkspaceAppBar(
-      title: 'Training',
-      subtitle: 'Courses, books, and certifications that sharpen your journey.',
+      title: AppLocalizations.of(context)!.uiTraining,
+      subtitle: AppLocalizations.of(context)!.uiTrainingSubtitle,
       icon: Icons.cast_for_education_rounded,
       showBackButton: true,
       onBack: () => Navigator.maybePop(context),
       actions: [
         StudentWorkspaceActionButton(
           icon: Icons.bookmark_outline_rounded,
-          tooltip: 'Saved resources',
+          tooltip: AppLocalizations.of(context)!.uiSavedResources,
           onTap: _openSavedTrainings,
         ),
       ],
@@ -443,7 +444,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
     if (training.isFree == true) {
       badges.add(
         TrainingCourseBadgeData(
-          label: 'FREE',
+          label: AppLocalizations.of(context)!.uiFree.toUpperCase(),
           backgroundColor: Color(0xFFDCFCE7),
           foregroundColor: OpportunityDashboardPalette.success,
         ),
@@ -453,7 +454,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
     if (_looksCertified(training)) {
       badges.add(
         TrainingCourseBadgeData(
-          label: 'CERTIFIED',
+          label: AppLocalizations.of(context)!.uiCertified.toUpperCase(),
           backgroundColor: Color(0xFFDBEAFE),
           foregroundColor: OpportunityDashboardPalette.primaryDark,
         ),
@@ -463,7 +464,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
     if (badges.isEmpty && training.isFeatured) {
       badges.add(
         TrainingCourseBadgeData(
-          label: 'FEATURED',
+          label: AppLocalizations.of(context)!.uiFeatured.toUpperCase(),
           backgroundColor: Color(0xFFFFEDD5),
           foregroundColor: OpportunityDashboardPalette.accent,
         ),
@@ -476,7 +477,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
         case 'course':
           badges.add(
             TrainingCourseBadgeData(
-              label: 'COURSE',
+              label: AppLocalizations.of(context)!.uiCourse.toUpperCase(),
               backgroundColor: Color(0xFFDBEAFE),
               foregroundColor: OpportunityDashboardPalette.primaryDark,
             ),
@@ -485,7 +486,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
         case 'video':
           badges.add(
             TrainingCourseBadgeData(
-              label: 'VIDEO',
+              label: AppLocalizations.of(context)!.uiVideo.toUpperCase(),
               backgroundColor: Color(0xFFFEF3C7),
               foregroundColor: OpportunityDashboardPalette.warning,
             ),
@@ -493,17 +494,17 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
           break;
         case 'book':
           badges.add(
-            const TrainingCourseBadgeData(
-              label: 'BOOK',
-              backgroundColor: Color(0xFFFCE7F3),
-              foregroundColor: Color(0xFFBE185D),
+            TrainingCourseBadgeData(
+              label: AppLocalizations.of(context)!.uiBook.toUpperCase(),
+              backgroundColor: const Color(0xFFFCE7F3),
+              foregroundColor: const Color(0xFFBE185D),
             ),
           );
           break;
         case 'file':
           badges.add(
             TrainingCourseBadgeData(
-              label: 'GUIDE',
+              label: AppLocalizations.of(context)!.uiGuide.toUpperCase(),
               backgroundColor: Color(0xFFEDE9FE),
               foregroundColor: OpportunityDashboardPalette.primary,
             ),
@@ -512,7 +513,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
         default:
           badges.add(
             TrainingCourseBadgeData(
-              label: 'PROGRAM',
+              label: AppLocalizations.of(context)!.uiProgram.toUpperCase(),
               backgroundColor: Color(0xFFEDE9FE),
               foregroundColor: OpportunityDashboardPalette.primary,
             ),
@@ -703,7 +704,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
                     const SizedBox(height: 12),
                     if (showTopEmptyState)
                       TrainingProgramsEmptyState(
-                        title: 'No training programs available right now',
+                        title: AppLocalizations.of(context)!.uiNoTrainingAvailableNow,
                         subtitle: emptySubtitle,
                       )
                     else
@@ -730,7 +731,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
                       if (showDomainEmptyState) ...[
                         const SizedBox(height: 16),
                         TrainingProgramsEmptyState(
-                          title: 'No training programs available in this topic',
+                          title: AppLocalizations.of(context)!.uiNoTrainingInTopic,
                           subtitle: emptySubtitle,
                         ),
                       ] else if (additionalCards.isNotEmpty) ...[

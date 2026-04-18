@@ -47,21 +47,12 @@ class _InternshipVisualPalette {
 }
 
 class _InternshipsScreenState extends State<InternshipsScreen> {
-  static const List<_QuickFilterDefinition> _quickFilters = [
-    _QuickFilterDefinition(
-      value: _InternshipQuickFilter.remote,
-      label: 'Remote',
-    ),
-    _QuickFilterDefinition(value: _InternshipQuickFilter.paid, label: 'Paid'),
-    _QuickFilterDefinition(
-      value: _InternshipQuickFilter.summer,
-      label: 'Summer',
-    ),
-    _QuickFilterDefinition(value: _InternshipQuickFilter.tech, label: 'Tech'),
-    _QuickFilterDefinition(
-      value: _InternshipQuickFilter.marketing,
-      label: 'Marketing',
-    ),
+  List<_QuickFilterDefinition> _buildQuickFilters(AppLocalizations l10n) => [
+    _QuickFilterDefinition(value: _InternshipQuickFilter.remote, label: l10n.uiRemote),
+    _QuickFilterDefinition(value: _InternshipQuickFilter.paid, label: l10n.uiPaid),
+    _QuickFilterDefinition(value: _InternshipQuickFilter.summer, label: l10n.uiSummer),
+    _QuickFilterDefinition(value: _InternshipQuickFilter.tech, label: l10n.uiTech),
+    _QuickFilterDefinition(value: _InternshipQuickFilter.marketing, label: l10n.uiMarketing),
   ];
 
   final TextEditingController _searchController = TextEditingController();
@@ -156,7 +147,7 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
     if (userId == null || userId.isEmpty) {
       context.showAppSnackBar(
         'Sign in to save internships for later.',
-        title: 'Login required',
+        title: AppLocalizations.of(context)!.uiLoginRequired,
         type: AppFeedbackType.warning,
       );
       return;
@@ -696,7 +687,7 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
           children: [
             StudentWorkspaceUtilityHeader(
               user: authProvider.userModel,
-              title: 'Internships',
+              title: AppLocalizations.of(context)!.uiInternships,
               onProfileTap: _openProfile,
               onOpenSaved: _openSavedItems,
               onOpenApplied: _openAppliedItems,
@@ -744,7 +735,7 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
                     const SizedBox(height: 10),
                     _InternshipFilterChipRow(
                       activeFilter: _selectedQuickFilter,
-                      filters: _quickFilters,
+                      filters: _buildQuickFilters(AppLocalizations.of(context)!),
                       onSelected: (filter) {
                         setState(() {
                           _selectedQuickFilter = _selectedQuickFilter == filter
@@ -755,7 +746,7 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
                     ),
                     const SizedBox(height: 18),
                     _InternshipSectionHeader(
-                      title: 'Featured Internships',
+                      title: AppLocalizations.of(context)!.uiFeaturedInternships,
                       actionLabel: 'Browse all',
                       onAction: _scrollToAvailableSection,
                     ),
@@ -789,7 +780,7 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
                     Container(
                       key: _availableSectionKey,
                       child: _InternshipSectionHeader(
-                        title: 'Available Internships',
+                        title: AppLocalizations.of(context)!.uiAvailableInternships,
                         countLabel: availableCountLabel,
                         trailing: _InternshipViewToggle(
                           viewMode: _viewMode,
@@ -3453,18 +3444,18 @@ _InternshipStatusData? _internshipStatusDataForOpportunity(
   }
 
   if (!opportunity.isVisibleToStudents()) {
-    return const _InternshipStatusData(
-      label: 'Unavailable',
-      color: Color(0xFF64748B),
+    return _InternshipStatusData(
+      label: l10n.uiUnavailable,
+      color: const Color(0xFF64748B),
       icon: Icons.visibility_off_rounded,
     );
   }
 
   final normalizedStatus = opportunity.effectiveStatus();
   if (normalizedStatus.isNotEmpty && normalizedStatus != 'open') {
-    return const _InternshipStatusData(
-      label: 'Closed',
-      color: Color(0xFF64748B),
+    return _InternshipStatusData(
+      label: l10n.uiClosed,
+      color: const Color(0xFF64748B),
       icon: Icons.lock_outline_rounded,
     );
   }

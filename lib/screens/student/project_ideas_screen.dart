@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/generated/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/project_idea_model.dart';
@@ -503,7 +504,7 @@ class _ProjectIdeasScreenState extends State<ProjectIdeasScreen> {
     if (error != null && mounted) {
       context.showAppSnackBar(
         error,
-        title: 'Update unavailable',
+        title: AppLocalizations.of(context)!.uiUpdateUnavailable,
         type: AppFeedbackType.error,
       );
     }
@@ -609,8 +610,8 @@ class _DiscoverIdeasSection extends StatelessWidget {
     if (ideas.isEmpty) {
       return _EmptyState(
         icon: Icons.auto_awesome_outlined,
-        title: 'No ideas match this view',
-        subtitle: 'Try a different filter or start a new idea.',
+        title: AppLocalizations.of(context)!.uiNoIdeasMatchView,
+        subtitle: AppLocalizations.of(context)!.uiTryDifferentFilter,
         ctaLabel: 'Create an idea',
         onTap: onCreateTap,
       );
@@ -697,8 +698,8 @@ class _MyIdeasSection extends StatelessWidget {
     if (ideas.isEmpty) {
       return _EmptyState(
         icon: Icons.lightbulb_outline_rounded,
-        title: 'No ideas yet',
-        subtitle: 'Create your first idea or adjust the filters.',
+        title: AppLocalizations.of(context)!.uiNoIdeasYet,
+        subtitle: AppLocalizations.of(context)!.uiCreateFirstIdea,
         ctaLabel: 'Create your first idea',
         onTap: onCreateTap,
       );
@@ -710,11 +711,11 @@ class _MyIdeasSection extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: _StatCard(label: 'Ideas', value: '${ideas.length}'),
+              child: _StatCard(label: AppLocalizations.of(context)!.uiIdeas, value: '${ideas.length}'),
             ),
             const SizedBox(width: 10),
             Expanded(
-              child: _StatCard(label: 'Interested', value: '$totalInterested'),
+              child: _StatCard(label: AppLocalizations.of(context)!.uiInterested, value: '$totalInterested'),
             ),
           ],
         ),

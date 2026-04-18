@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 import '../../config/cv_template_config.dart';
 import '../../models/cv_model.dart';
@@ -37,15 +38,15 @@ class _CvTemplateSelectorScreenState extends State<CvTemplateSelectorScreen> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: StudentWorkspaceAppBar(
-          title: 'Choose Template',
-          subtitle: 'Pick the resume style that best fits the role you want.',
+          title: AppLocalizations.of(context)!.uiChooseTemplate,
+          subtitle: AppLocalizations.of(context)!.uiChooseTemplateSubtitle,
           icon: Icons.style_rounded,
           showBackButton: true,
           onBack: () => Navigator.maybePop(context),
           actions: [
             StudentWorkspaceActionButton(
               icon: Icons.check_rounded,
-              tooltip: 'Apply template',
+              tooltip: AppLocalizations.of(context)!.uiApplyTemplate,
               onTap: () => Navigator.pop(context, _selectedId),
             ),
           ],

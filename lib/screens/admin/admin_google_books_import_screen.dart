@@ -49,6 +49,8 @@ class _AdminGoogleBooksImportScreenState
   String _selectedLevel = 'licence';
   String _selectedLanguage = 'fr';
 
+  AppLocalizations get _l10n => AppLocalizations.of(context)!;
+
   final List<String> _domains = const [
     'Informatique',
     'Mathematiques',
@@ -96,8 +98,8 @@ class _AdminGoogleBooksImportScreenState
 
     if (query.isEmpty) {
       context.showAppSnackBar(
-        'Enter a search query to continue.',
-        title: 'Search required',
+        _l10n.uiEnterASearchQueryToContinue,
+        title: _l10n.uiSearchRequired,
         type: AppFeedbackType.warning,
       );
       return;
@@ -136,8 +138,8 @@ class _AdminGoogleBooksImportScreenState
       });
 
       context.showAppSnackBar(
-        'Search failed: $e',
-        title: 'Search unavailable',
+        _l10n.uiSearchFailedValue(e),
+        title: _l10n.uiSearchUnavailable,
         type: AppFeedbackType.error,
       );
     } finally {
@@ -154,8 +156,8 @@ class _AdminGoogleBooksImportScreenState
 
     if (adminId.isEmpty) {
       context.showAppSnackBar(
-        'Admin user not found.',
-        title: 'Import unavailable',
+        _l10n.uiAdminUserNotFound,
+        title: _l10n.uiImportUnavailable,
         type: AppFeedbackType.error,
       );
       return;
@@ -185,8 +187,8 @@ class _AdminGoogleBooksImportScreenState
       }
 
       context.showAppSnackBar(
-        '"${book.title}" imported successfully.',
-        title: 'Import complete',
+        _l10n.uiValueImportedSuccessfully(book.title),
+        title: _l10n.uiImportComplete,
         type: AppFeedbackType.success,
       );
     } catch (e) {
@@ -195,8 +197,8 @@ class _AdminGoogleBooksImportScreenState
       }
 
       context.showAppSnackBar(
-        'Import failed: $e',
-        title: 'Import unavailable',
+        _l10n.uiImportFailedValue(e),
+        title: _l10n.uiImportUnavailable,
         type: AppFeedbackType.error,
       );
     } finally {
@@ -227,9 +229,9 @@ class _AdminGoogleBooksImportScreenState
       }
       context.showAppSnackBar(
         training.isFeatured
-            ? 'This resource was removed from featured.'
-            : 'This resource is now featured.',
-        title: 'Featured list updated',
+            ? _l10n.uiResourceRemovedFromFeatured
+            : _l10n.uiResourceFeatured,
+        title: _l10n.uiFeaturedListUpdated,
         type: AppFeedbackType.success,
       );
       return;
@@ -237,7 +239,7 @@ class _AdminGoogleBooksImportScreenState
 
     context.showAppSnackBar(
       error,
-      title: 'Update unavailable',
+      title: _l10n.updateUnavailableTitle,
       type: AppFeedbackType.error,
     );
   }
@@ -249,7 +251,9 @@ class _AdminGoogleBooksImportScreenState
           builder: (dialogContext) => AlertDialog(
             title: Text(AppLocalizations.of(context)!.uiDeleteResource),
             content: Text(
-              'Delete "${training.title}" from Firestore? This action cannot be undone.',
+              _l10n.uiDeleteValueFromFirestoreThisActionCannotBeUndone(
+                training.title,
+              ),
             ),
             actions: [
               TextButton(
@@ -258,8 +262,8 @@ class _AdminGoogleBooksImportScreenState
               ),
               TextButton(
                 onPressed: () => Navigator.pop(dialogContext, true),
-                child: const Text(
-                  'Delete',
+                child: Text(
+                  _l10n.uiDelete,
                   style: TextStyle(color: Colors.red),
                 ),
               ),
@@ -286,8 +290,8 @@ class _AdminGoogleBooksImportScreenState
         return;
       }
       context.showAppSnackBar(
-        '"${training.title}" deleted.',
-        title: 'Resource deleted',
+        _l10n.uiValueDeleted(training.title),
+        title: _l10n.uiResourceDeleted,
         type: AppFeedbackType.success,
       );
       return;
@@ -295,7 +299,7 @@ class _AdminGoogleBooksImportScreenState
 
     context.showAppSnackBar(
       error,
-      title: 'Delete unavailable',
+      title: _l10n.uiDeleteUnavailable,
       type: AppFeedbackType.error,
     );
   }
@@ -303,8 +307,8 @@ class _AdminGoogleBooksImportScreenState
   Future<void> _openLink(String link) async {
     if (link.trim().isEmpty) {
       context.showAppSnackBar(
-        'This result does not include an external link.',
-        title: 'Link unavailable',
+        _l10n.uiThisResultDoesNotIncludeAnExternalLink,
+        title: _l10n.uiLinkUnavailable,
         type: AppFeedbackType.warning,
       );
       return;
@@ -313,8 +317,8 @@ class _AdminGoogleBooksImportScreenState
     final uri = Uri.tryParse(link);
     if (uri == null) {
       context.showAppSnackBar(
-        'This link is not valid.',
-        title: 'Link unavailable',
+        _l10n.uiThisLinkIsNotValid,
+        title: _l10n.uiLinkUnavailable,
         type: AppFeedbackType.warning,
       );
       return;
@@ -324,8 +328,8 @@ class _AdminGoogleBooksImportScreenState
 
     if (!launched && mounted) {
       context.showAppSnackBar(
-        'We couldn\'t open this link right now.',
-        title: 'Open unavailable',
+        _l10n.uiWeCouldNotOpenThisLinkRightNow,
+        title: _l10n.uiOpenUnavailable,
         type: AppFeedbackType.error,
       );
     }
@@ -424,17 +428,16 @@ class _AdminGoogleBooksImportScreenState
       child: AdminSurface(
         child: Column(
           children: [
-            const AdminSectionHeader(
-              eyebrow: 'Google Books',
-              title: 'Import Books',
-              subtitle:
-                  'Search by topic, domain, level, and language before publishing a curated resource into the library.',
+            AdminSectionHeader(
+              eyebrow: _l10n.uiGoogleBooks,
+              title: _l10n.uiImportBooks,
+              subtitle: _l10n.uiSearchByTopicDomainLevelAndLanguageBeforePublishingA,
             ),
             const SizedBox(height: 14),
             TextField(
               controller: _searchController,
               decoration: InputDecoration(
-                hintText: 'Search books, for example: algorithms',
+                hintText: _l10n.uiSearchBooksForExampleAlgorithms,
                 prefixIcon: const Icon(Icons.search),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
@@ -448,8 +451,8 @@ class _AdminGoogleBooksImportScreenState
                 Expanded(
                   child: DropdownButtonFormField<String>(
                     initialValue: _selectedDomain,
-                    decoration: const InputDecoration(
-                      labelText: 'Domain',
+                    decoration: InputDecoration(
+                      labelText: _l10n.uiDomain,
                       border: OutlineInputBorder(),
                     ),
                     items: _domains
@@ -473,8 +476,8 @@ class _AdminGoogleBooksImportScreenState
                 Expanded(
                   child: DropdownButtonFormField<String>(
                     initialValue: _selectedLevel,
-                    decoration: const InputDecoration(
-                      labelText: 'Level',
+                    decoration: InputDecoration(
+                      labelText: _l10n.uiLevel,
                       border: OutlineInputBorder(),
                     ),
                     items: _levels
@@ -499,15 +502,15 @@ class _AdminGoogleBooksImportScreenState
             const SizedBox(height: 10),
             DropdownButtonFormField<String>(
               initialValue: _selectedLanguage,
-              decoration: const InputDecoration(
-                labelText: 'Language',
+              decoration: InputDecoration(
+                labelText: _l10n.uiLanguage,
                 border: OutlineInputBorder(),
               ),
               items: _languages
                   .map(
                     (item) => DropdownMenuItem(
                       value: item,
-                      child: Text(item.isEmpty ? 'Any' : item),
+                      child: Text(item.isEmpty ? _l10n.uiAny : item),
                     ),
                   )
                   .toList(),
@@ -533,7 +536,7 @@ class _AdminGoogleBooksImportScreenState
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
                     : const Icon(Icons.search),
-                label: Text(_isSearching ? 'Searching...' : 'Search'),
+                label: Text(_isSearching ? _l10n.uiSearching : _l10n.uiSearch),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AdminPalette.primary,
                   foregroundColor: Colors.white,
@@ -559,13 +562,13 @@ class _AdminGoogleBooksImportScreenState
     }
 
     if (!_hasSearched) {
-      return const SliverFillRemaining(
+      return SliverFillRemaining(
         hasScrollBody: false,
         child: AdminEmptyState(
           icon: Icons.menu_book_rounded,
-          title: 'Start with a Google Books search',
+          title: _l10n.uiStartWithAGoogleBooksSearch,
           message:
-              'Use a topic, domain, or language filter to bring in curated books for review.',
+              _l10n.uiUseATopicDomainOrLanguageFilterToBringInCuratedBooksForReview,
         ),
       );
     }
@@ -575,7 +578,7 @@ class _AdminGoogleBooksImportScreenState
         hasScrollBody: false,
         child: AdminEmptyState(
           icon: Icons.error_outline_rounded,
-          title: 'Search failed',
+          title: _l10n.uiSearchFailed,
           message: _searchError!,
           action: FilledButton.icon(
             onPressed: _searchBooks,
@@ -587,13 +590,13 @@ class _AdminGoogleBooksImportScreenState
     }
 
     if (_results.isEmpty) {
-      return const SliverFillRemaining(
+      return SliverFillRemaining(
         hasScrollBody: false,
         child: AdminEmptyState(
           icon: Icons.search_off_rounded,
-          title: 'No books match this search',
+          title: _l10n.uiNoBooksMatchThisSearch,
           message:
-              'Try a broader query or change the language and domain filters before searching again.',
+              _l10n.uiTryABroaderQueryOrChangeTheLanguageAndDomainFiltersBeforeSearchingAgain,
         ),
       );
     }
@@ -634,7 +637,7 @@ class _AdminGoogleBooksImportScreenState
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: AdminEmptyState(
             icon: Icons.error_outline_rounded,
-            title: 'Book library unavailable',
+            title: _l10n.uiBookLibraryUnavailable,
             message: provider.errorMessage!,
             action: FilledButton.icon(
               onPressed: provider.fetchTrainings,
@@ -657,11 +660,11 @@ class _AdminGoogleBooksImportScreenState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const AdminSectionHeader(
-                  eyebrow: 'Library',
-                  title: 'Manage Imported Books',
+                AdminSectionHeader(
+                  eyebrow: _l10n.uiLibrary,
+                  title: _l10n.uiManageImportedBooks,
                   subtitle:
-                      'This workspace is dedicated to Google Books imports, so book curation stays focused.',
+                      _l10n.uiThisWorkspaceIsDedicatedToGoogleBooksImportsSoBookCurationStaysFocused,
                 ),
                 const SizedBox(height: 14),
                 Wrap(
@@ -680,7 +683,7 @@ class _AdminGoogleBooksImportScreenState
                       icon: Icons.star_rounded,
                     ),
                     AdminPill(
-                      label: provider.isLoading ? 'Syncing' : 'Synced',
+                      label: provider.isLoading ? _l10n.uiSyncing : _l10n.uiSynced,
                       color: provider.isLoading
                           ? AdminPalette.warning
                           : AdminPalette.success,
@@ -695,13 +698,12 @@ class _AdminGoogleBooksImportScreenState
           ),
           const SizedBox(height: 12),
           if (books.isEmpty)
-            const Padding(
+            Padding(
               padding: EdgeInsets.only(top: 60),
               child: AdminEmptyState(
                 icon: Icons.menu_book_rounded,
-                title: 'No books imported yet',
-                message:
-                    'Import a few Google Books results first, then manage featuring, opening, and deleting from here.',
+                title: _l10n.uiNoBooksImportedYet,
+                message: _l10n.uiImportAFewGoogleBooksResultsFirstThenManageFeaturing,
               ),
             )
           else
@@ -769,7 +771,7 @@ class _AdminGoogleBooksImportScreenState
                   spacing: 8,
                   runSpacing: 8,
                   children: [
-                    AdminPill(label: 'BOOK', color: AdminPalette.info),
+                    AdminPill(label: _l10n.uiBookLabel, color: AdminPalette.info),
                     if (book.language.trim().isNotEmpty)
                       AdminPill(
                         label: book.language.toUpperCase(),
@@ -792,7 +794,7 @@ class _AdminGoogleBooksImportScreenState
               backgroundColor: AdminPalette.primary,
               foregroundColor: Colors.white,
             ),
-            child: Text(isImportingBook ? 'Importing...' : 'Import'),
+            child: Text(isImportingBook ? _l10n.uiImporting : _l10n.uiImport),
           ),
         ],
       ),
@@ -860,7 +862,7 @@ class _AdminGoogleBooksImportScreenState
                       ),
                     if (training.isFeatured)
                       _AdminChip(
-                        label: 'featured',
+                        label: _l10n.uiFeatured,
                         color: Colors.amber.shade800,
                       ),
                   ],
@@ -880,7 +882,7 @@ class _AdminGoogleBooksImportScreenState
                             : Icons.star_rounded,
                       ),
                       label: Text(
-                        training.isFeatured ? 'Unfeature' : 'Feature',
+                        training.isFeatured ? _l10n.uiUnfeature : _l10n.uiFeature,
                       ),
                     ),
                     OutlinedButton.icon(
@@ -942,11 +944,11 @@ class _AdminGoogleBooksImportScreenState
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const AdminSectionHeader(
-                        eyebrow: 'Studio',
-                        title: 'Book Import Workspace',
+                      AdminSectionHeader(
+                        eyebrow: l10n.uiStudio,
+                        title: l10n.uiBookImportWorkspace,
                         subtitle:
-                            'Search and import books in one continuous flow instead of working inside separate fixed windows.',
+                            l10n.uiSearchAndImportBooksInOneContinuousFlowInsteadOf,
                       ),
                       const SizedBox(height: 14),
                       Wrap(
@@ -964,7 +966,7 @@ class _AdminGoogleBooksImportScreenState
                           ),
                           AdminPill(
                             label: _selectedLanguage.isEmpty
-                                ? 'Any language'
+                                ? l10n.uiAny
                                 : _selectedLanguage.toUpperCase(),
                             color: AdminPalette.success,
                           ),

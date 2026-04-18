@@ -84,7 +84,7 @@ class ChatInputBar extends StatelessWidget {
                 if (isEditing)
                   _StatusBanner(
                     icon: Icons.edit_outlined,
-                    label: 'Editing message',
+                    label: AppLocalizations.of(context)!.uiEditingMessage,
                     onClear: onCancelEdit,
                   ),
                 if (isEditing && pendingAttachment != null)
@@ -109,19 +109,19 @@ class ChatInputBar extends StatelessWidget {
                       children: [
                         _AiChip(
                           icon: Icons.auto_awesome_outlined,
-                          label: 'Formalize',
+                          label: AppLocalizations.of(context)!.uiFormalize,
                           onTap: onAiFormalize,
                         ),
                         const SizedBox(width: 6),
                         _AiChip(
                           icon: Icons.spellcheck_rounded,
-                          label: 'Correct',
+                          label: AppLocalizations.of(context)!.uiCorrect,
                           onTap: onAiCorrect,
                         ),
                         const SizedBox(width: 6),
                         _AiChip(
                           icon: Icons.translate_rounded,
-                          label: 'Translate',
+                          label: AppLocalizations.of(context)!.uiTranslate,
                           onTap: onAiTranslate,
                         ),
                       ],
@@ -132,7 +132,7 @@ class ChatInputBar extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   PopupMenuButton<String>(
-                    tooltip: 'Attach',
+                    tooltip: AppLocalizations.of(context)!.uiAttach,
                     color: ChatThemePalette.surface,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(18),

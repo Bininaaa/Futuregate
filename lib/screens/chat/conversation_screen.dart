@@ -194,11 +194,12 @@ class _ConversationScreenState extends State<ConversationScreen> {
   }
 
   Future<void> _handleAiTask(String task, {String? targetLanguage}) async {
+    final l10n = AppLocalizations.of(context)!;
     final text = _messageController.text.trim();
     if (text.isEmpty) {
       context.showAppSnackBar(
-        'Write a message before using AI tools.',
-        title: 'Message required',
+        l10n.uiWriteMessageBeforeAiTools,
+        title: l10n.uiMessageRequired,
         type: AppFeedbackType.warning,
       );
       return;
@@ -220,7 +221,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
       if (!mounted) return;
       context.showAppSnackBar(
         _readableError(e.toString()),
-        title: 'AI action unavailable',
+        title: l10n.uiAiActionUnavailable,
         type: AppFeedbackType.error,
       );
     } finally {
@@ -229,11 +230,12 @@ class _ConversationScreenState extends State<ConversationScreen> {
   }
 
   void _showTranslateSheet() {
+    final l10n = AppLocalizations.of(context)!;
     final text = _messageController.text.trim();
     if (text.isEmpty) {
       context.showAppSnackBar(
-        'Write a message before choosing a translation.',
-        title: 'Message required',
+        l10n.uiWriteMessageBeforeTranslation,
+        title: l10n.uiMessageRequired,
         type: AppFeedbackType.warning,
       );
       return;
@@ -252,7 +254,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Translate to',
+                l10n.uiTranslateTo,
                 style: ChatThemeStyles.cardTitle().copyWith(fontSize: 16),
               ),
               const SizedBox(height: 14),
@@ -293,9 +295,9 @@ class _ConversationScreenState extends State<ConversationScreen> {
   Future<void> _deleteMessage(String messageId) async {
     final confirm = await showChatConfirmationDialog(
       context,
-      title: 'Delete message?',
-      message: 'Delete this message for everyone?',
-      confirmLabel: 'Delete',
+      title: AppLocalizations.of(context)!.uiDeleteMessage,
+      message: AppLocalizations.of(context)!.uiDeleteThisMessageForEveryone,
+      confirmLabel: AppLocalizations.of(context)!.uiDelete,
       destructive: true,
       icon: Icons.delete_outline_rounded,
     );
@@ -335,7 +337,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
 
       context.showAppSnackBar(
         _readableError(error),
-        title: 'Message unavailable',
+        title: AppLocalizations.of(context)!.uiMessageUnavailable,
         type: AppFeedbackType.error,
       );
       context.read<ChatProvider>().clearError();
@@ -388,8 +390,10 @@ class _ConversationScreenState extends State<ConversationScreen> {
     if (archived) {
       final confirmed = await showChatConfirmationDialog(
         context,
-        title: 'Archive conversation?',
-        message: 'Are you sure you want to archive this conversation?',
+        title: AppLocalizations.of(context)!.uiArchiveConversation,
+        message:
+            AppLocalizations.of(context)!
+                .uiAreYouSureYouWantToArchiveThisConversation,
         confirmLabel: 'Archive',
         icon: Icons.archive_outlined,
       );
@@ -407,9 +411,11 @@ class _ConversationScreenState extends State<ConversationScreen> {
 
     context.showAppSnackBar(
       archived
-          ? 'This conversation has been moved to Archived.'
-          : 'This conversation is back in your inbox.',
-      title: archived ? 'Conversation archived' : 'Conversation restored',
+          ? AppLocalizations.of(context)!.uiConversationMovedToArchived
+          : AppLocalizations.of(context)!.uiConversationBackInInbox,
+      title: archived
+          ? AppLocalizations.of(context)!.uiConversationArchived
+          : AppLocalizations.of(context)!.uiConversationRestored,
       type: AppFeedbackType.success,
     );
 
@@ -445,10 +451,11 @@ class _ConversationScreenState extends State<ConversationScreen> {
 
     final confirmed = await showChatConfirmationDialog(
       context,
-      title: 'Delete conversation?',
+      title: AppLocalizations.of(context)!.uiDeleteConversation,
       message:
-          'Are you sure you want to delete this conversation? This action cannot be undone.',
-      confirmLabel: 'Delete',
+          AppLocalizations.of(context)!
+              .uiAreYouSureYouWantToDeleteThisConversationThis,
+      confirmLabel: AppLocalizations.of(context)!.uiDelete,
       destructive: true,
       icon: Icons.delete_outline_rounded,
     );
@@ -461,8 +468,8 @@ class _ConversationScreenState extends State<ConversationScreen> {
     if (!mounted || provider.error != null) return;
 
     context.showAppSnackBar(
-      'The conversation has been deleted.',
-      title: 'Conversation deleted',
+      AppLocalizations.of(context)!.uiTheConversationHasBeenDeleted,
+      title: AppLocalizations.of(context)!.uiConversationDeleted,
       type: AppFeedbackType.success,
     );
     Navigator.pop(context);

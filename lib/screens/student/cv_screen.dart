@@ -1,5 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import '../../l10n/generated/app_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -118,7 +119,7 @@ class _CvScreenState extends State<CvScreen> {
     if (cv == null || !cv.hasBuilderContent) {
       context.showAppSnackBar(
         'Add your CV details before generating a PDF.',
-        title: 'Content needed',
+        title: AppLocalizations.of(context)!.uiContentNeeded,
         type: AppFeedbackType.warning,
       );
       return;
@@ -163,7 +164,7 @@ class _CvScreenState extends State<CvScreen> {
       if (!mounted) return;
       context.showAppSnackBar(
         validationError,
-        title: 'Upload unavailable',
+        title: AppLocalizations.of(context)!.uiUploadUnavailable,
         type: AppFeedbackType.warning,
       );
       return;
@@ -227,7 +228,7 @@ class _CvScreenState extends State<CvScreen> {
       if (requirePdf && !document.isPdf) {
         context.showAppSnackBar(
           'This file is not a valid PDF yet.',
-          title: 'Preview unavailable',
+          title: AppLocalizations.of(context)!.uiPreviewUnavailable,
           type: AppFeedbackType.warning,
         );
         return;
@@ -249,7 +250,7 @@ class _CvScreenState extends State<CvScreen> {
       if (!launched) {
         context.showAppSnackBar(
           'We couldn\'t open the document right now.',
-          title: 'Open unavailable',
+          title: AppLocalizations.of(context)!.uiOpenUnavailable,
           type: AppFeedbackType.error,
         );
       }
@@ -257,7 +258,7 @@ class _CvScreenState extends State<CvScreen> {
       if (!mounted) return;
       context.showAppSnackBar(
         _documentErrorMessage(e),
-        title: 'Document unavailable',
+        title: AppLocalizations.of(context)!.uiDocumentUnavailable,
         type: AppFeedbackType.error,
       );
     }
@@ -283,7 +284,7 @@ class _CvScreenState extends State<CvScreen> {
     final progress = completed / total;
 
     return SettingsPageScaffold(
-      title: 'My CV',
+      title: AppLocalizations.of(context)!.uiMyCv,
       actions: [
         IconButton(
           onPressed: _reload,
@@ -462,7 +463,7 @@ class _CvScreenState extends State<CvScreen> {
                       SettingsButtonGroup(
                         children: [
                           SettingsSecondaryButton(
-                            label: 'Preview',
+                            label: AppLocalizations.of(context)!.uiPreview,
                             icon: Icons.visibility_outlined,
                             onPressed: cv != null && cv.hasBuilderContent
                                 ? () => _navigateToPreview(cv)
@@ -536,7 +537,7 @@ class _CvScreenState extends State<CvScreen> {
                         if (cv.hasUploadedCv)
                           _FileRow(
                             icon: Icons.upload_file_rounded,
-                            label: 'Uploaded CV',
+                            label: AppLocalizations.of(context)!.uiUploadedCv,
                             isActive:
                                 cv.primaryCvMode == 'uploaded' ||
                                 !cv.hasExportedPdf,

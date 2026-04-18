@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/generated/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/auth_provider.dart';
@@ -135,7 +136,7 @@ class _CvEditScreenState extends State<CvEditScreen> {
     if (error == null) {
       context.showAppSnackBar(
         'Your CV changes have been saved.',
-        title: 'CV saved',
+        title: AppLocalizations.of(context)!.uiCvSaved,
         type: AppFeedbackType.success,
       );
 
@@ -192,7 +193,7 @@ class _CvEditScreenState extends State<CvEditScreen> {
     } else {
       context.showAppSnackBar(
         error,
-        title: 'Save unavailable',
+        title: AppLocalizations.of(context)!.uiSaveUnavailable,
         type: AppFeedbackType.error,
       );
     }
@@ -276,7 +277,7 @@ class _CvEditScreenState extends State<CvEditScreen> {
               controller: degreeCtrl,
               style: SettingsFlowTheme.body(),
               decoration: _inputDecoration(
-                label: 'Degree',
+                label: AppLocalizations.of(context)!.uiDegree,
                 prefixIcon: Icons.school_outlined,
               ),
             ),
@@ -285,7 +286,7 @@ class _CvEditScreenState extends State<CvEditScreen> {
               controller: institutionCtrl,
               style: SettingsFlowTheme.body(),
               decoration: _inputDecoration(
-                label: 'Institution',
+                label: AppLocalizations.of(context)!.uiInstitution,
                 prefixIcon: Icons.business_outlined,
               ),
             ),
@@ -294,7 +295,7 @@ class _CvEditScreenState extends State<CvEditScreen> {
               controller: yearCtrl,
               style: SettingsFlowTheme.body(),
               decoration: _inputDecoration(
-                label: 'Year',
+                label: AppLocalizations.of(context)!.uiYear,
                 prefixIcon: Icons.calendar_today_outlined,
               ),
             ),
@@ -376,7 +377,7 @@ class _CvEditScreenState extends State<CvEditScreen> {
               controller: positionCtrl,
               style: SettingsFlowTheme.body(),
               decoration: _inputDecoration(
-                label: 'Position',
+                label: AppLocalizations.of(context)!.uiPosition,
                 prefixIcon: Icons.work_outline,
               ),
             ),
@@ -385,7 +386,7 @@ class _CvEditScreenState extends State<CvEditScreen> {
               controller: companyCtrl,
               style: SettingsFlowTheme.body(),
               decoration: _inputDecoration(
-                label: 'Company',
+                label: AppLocalizations.of(context)!.uiCompany,
                 prefixIcon: Icons.business_outlined,
               ),
             ),
@@ -394,7 +395,7 @@ class _CvEditScreenState extends State<CvEditScreen> {
               controller: durationCtrl,
               style: SettingsFlowTheme.body(),
               decoration: _inputDecoration(
-                label: 'Duration',
+                label: AppLocalizations.of(context)!.uiDuration,
                 hint: 'e.g. Jan 2023 — Present',
                 prefixIcon: Icons.date_range_outlined,
               ),
@@ -432,14 +433,14 @@ class _CvEditScreenState extends State<CvEditScreen> {
     final cvProvider = context.watch<CvProvider>();
 
     return SettingsPageScaffold(
-      title: 'Edit CV',
+      title: AppLocalizations.of(context)!.uiEditCv,
       child: Form(
         key: _formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // ── Personal Information ──
-            const SettingsSectionHeading(title: 'Personal Information'),
+            SettingsSectionHeading(title: AppLocalizations.of(context)!.uiPersonalInformation),
             const SizedBox(height: 10),
             SettingsPanel(
               child: Column(
@@ -448,7 +449,7 @@ class _CvEditScreenState extends State<CvEditScreen> {
                     controller: _fullNameController,
                     style: SettingsFlowTheme.body(),
                     decoration: _inputDecoration(
-                      label: 'Full Name',
+                      label: AppLocalizations.of(context)!.uiFullName,
                       prefixIcon: Icons.badge_outlined,
                     ),
                     validator: (v) =>
@@ -460,7 +461,7 @@ class _CvEditScreenState extends State<CvEditScreen> {
                     style: SettingsFlowTheme.body(),
                     keyboardType: TextInputType.emailAddress,
                     decoration: _inputDecoration(
-                      label: 'Email',
+                      label: AppLocalizations.of(context)!.uiEmail,
                       prefixIcon: Icons.email_outlined,
                     ),
                     validator: (v) =>
@@ -472,7 +473,7 @@ class _CvEditScreenState extends State<CvEditScreen> {
                     style: SettingsFlowTheme.body(),
                     keyboardType: TextInputType.phone,
                     decoration: _inputDecoration(
-                      label: 'Phone',
+                      label: AppLocalizations.of(context)!.uiPhone,
                       prefixIcon: Icons.phone_outlined,
                     ),
                   ),
@@ -481,7 +482,7 @@ class _CvEditScreenState extends State<CvEditScreen> {
                     controller: _addressController,
                     style: SettingsFlowTheme.body(),
                     decoration: _inputDecoration(
-                      label: 'Address',
+                      label: AppLocalizations.of(context)!.uiAddress,
                       prefixIcon: Icons.location_on_outlined,
                     ),
                   ),
@@ -492,7 +493,7 @@ class _CvEditScreenState extends State<CvEditScreen> {
             const SizedBox(height: 24),
 
             // ── Professional Summary ──
-            const SettingsSectionHeading(title: 'Professional Summary'),
+            SettingsSectionHeading(title: AppLocalizations.of(context)!.uiProfessionalSummary),
             const SizedBox(height: 10),
             SettingsPanel(
               child: TextFormField(
@@ -500,7 +501,7 @@ class _CvEditScreenState extends State<CvEditScreen> {
                 style: SettingsFlowTheme.body(),
                 maxLines: 4,
                 decoration: _inputDecoration(
-                  label: 'A brief summary of your profile',
+                  label: AppLocalizations.of(context)!.uiBriefSummary,
                 ),
               ),
             ),
@@ -509,7 +510,7 @@ class _CvEditScreenState extends State<CvEditScreen> {
 
             // ── Education ──
             SettingsSectionHeading(
-              title: 'Education',
+              title: AppLocalizations.of(context)!.uiEducation,
               trailing: _addChip(onTap: () => _addOrEditEducation()),
             ),
             const SizedBox(height: 10),
@@ -533,7 +534,7 @@ class _CvEditScreenState extends State<CvEditScreen> {
 
             // ── Experience ──
             SettingsSectionHeading(
-              title: 'Experience',
+              title: AppLocalizations.of(context)!.uiExperience,
               trailing: _addChip(onTap: () => _addOrEditExperience()),
             ),
             const SizedBox(height: 10),
@@ -556,7 +557,7 @@ class _CvEditScreenState extends State<CvEditScreen> {
             const SizedBox(height: 24),
 
             // ── Skills ──
-            const SettingsSectionHeading(title: 'Skills'),
+            SettingsSectionHeading(title: AppLocalizations.of(context)!.uiSkills),
             const SizedBox(height: 10),
             SettingsPanel(
               child: Column(
@@ -579,7 +580,7 @@ class _CvEditScreenState extends State<CvEditScreen> {
                     controller: _skillInputController,
                     style: SettingsFlowTheme.body(),
                     decoration: _inputDecoration(
-                      label: 'Add a skill',
+                      label: AppLocalizations.of(context)!.uiAddSkill,
                       hint: 'Type and press Enter',
                       prefixIcon: Icons.auto_awesome_outlined,
                       suffixIcon: IconButton(
@@ -599,7 +600,7 @@ class _CvEditScreenState extends State<CvEditScreen> {
             const SizedBox(height: 24),
 
             // ── Languages ──
-            const SettingsSectionHeading(title: 'Languages'),
+            SettingsSectionHeading(title: AppLocalizations.of(context)!.uiLanguages),
             const SizedBox(height: 10),
             SettingsPanel(
               child: Column(
@@ -622,7 +623,7 @@ class _CvEditScreenState extends State<CvEditScreen> {
                     controller: _languageInputController,
                     style: SettingsFlowTheme.body(),
                     decoration: _inputDecoration(
-                      label: 'Add a language',
+                      label: AppLocalizations.of(context)!.uiAddALanguage,
                       hint: 'Type and press Enter',
                       prefixIcon: Icons.translate_outlined,
                       suffixIcon: IconButton(
@@ -652,7 +653,7 @@ class _CvEditScreenState extends State<CvEditScreen> {
                     ),
                   )
                 : SettingsPrimaryButton(
-                    label: 'Save CV',
+                    label: AppLocalizations.of(context)!.uiSaveCv,
                     icon: Icons.check_rounded,
                     onPressed: _save,
                   ),

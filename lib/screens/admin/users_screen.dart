@@ -36,6 +36,8 @@ class _UsersScreenState extends State<UsersScreen> {
   final DocumentAccessService _documentAccessService = DocumentAccessService();
   bool _didOpenInitialTarget = false;
 
+  AppLocalizations get _l10n => AppLocalizations.of(context)!;
+
   @override
   void initState() {
     super.initState();
@@ -86,6 +88,7 @@ class _UsersScreenState extends State<UsersScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = _l10n;
     final provider = context.watch<AdminProvider>();
     final isLevelFilterActive = provider.userLevelFilter != 'all';
 
@@ -96,7 +99,7 @@ class _UsersScreenState extends State<UsersScreen> {
     if (provider.usersError != null && provider.allUsers.isEmpty) {
       return AdminEmptyState(
         icon: Icons.group_off_rounded,
-        title: 'Users could not be loaded',
+        title: l10n.uiUsersCouldNotBeLoaded,
         message: provider.usersError!,
         action: FilledButton(
           onPressed: provider.loadAllUsers,
@@ -118,11 +121,10 @@ class _UsersScreenState extends State<UsersScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const AdminSectionHeader(
+                    AdminSectionHeader(
                       eyebrow: 'Control',
-                      title: 'User Management',
-                      subtitle:
-                          'Search quickly, filter by role or level, and review account status without jumping around the admin area.',
+                      title: l10n.uiUserManagement,
+                      subtitle: l10n.uiSearchQuicklyFilterByRoleOrLevelAndReviewAccount,
                     ),
                     const SizedBox(height: 14),
                     Wrap(
@@ -167,7 +169,7 @@ class _UsersScreenState extends State<UsersScreen> {
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
               child: AdminSearchField(
                 controller: _searchController,
-                hintText: 'Search by name or email...',
+                hintText: l10n.uiSearchByNameOrEmail,
                 onChanged: provider.setUserSearch,
                 onClear: () {
                   _searchController.clear();
@@ -235,7 +237,7 @@ class _UsersScreenState extends State<UsersScreen> {
                   child: Row(
                     children: [
                       AdminPill(
-                        label: 'Company review',
+                        label: l10n.uiCompanyReview,
                         color: AdminPalette.warning,
                         icon: isLevelFilterActive
                             ? Icons.lock_outline_rounded
@@ -244,7 +246,7 @@ class _UsersScreenState extends State<UsersScreen> {
                       const SizedBox(width: 4),
                       if (isLevelFilterActive) ...[
                         AdminPill(
-                          label: 'Disabled while level filter is active',
+                          label: l10n.uiDisabledWhileLevelFilterIsActive,
                           color: AdminPalette.textMuted,
                           icon: Icons.info_outline_rounded,
                         ),
@@ -271,13 +273,13 @@ class _UsersScreenState extends State<UsersScreen> {
               ),
             ),
           if (provider.allUsers.isEmpty)
-            const SliverFillRemaining(
+            SliverFillRemaining(
               hasScrollBody: false,
               child: AdminEmptyState(
                 icon: Icons.people_outline_rounded,
-                title: 'No users match this search',
+                title: l10n.uiNoUsersMatchThisSearch,
                 message:
-                    'Try another search or relax the current role and level filters.',
+                    l10n.uiTryAnotherSearchOrRelaxTheCurrentRoleAndLevelFilters,
               ),
             )
           else
@@ -463,7 +465,7 @@ class _UsersScreenState extends State<UsersScreen> {
                           const SizedBox(width: 8),
                           _buildMiniActionButton(
                             icon: Icons.more_horiz_rounded,
-                            tooltip: 'User actions',
+                            tooltip: _l10n.uiUserActions,
                             onTap: () => _showUserActionsSheet(user, provider),
                           ),
                         ],
@@ -533,8 +535,8 @@ class _UsersScreenState extends State<UsersScreen> {
 
     return AdminPill(
       label: isCompany
-          ? (user.isActive ? 'Active' : 'Blocked')
-          : (user.isActive ? 'Active' : 'Blocked'),
+          ? (user.isActive ? _l10n.uiActive : _l10n.uiBlocked)
+          : (user.isActive ? _l10n.uiActive : _l10n.uiBlocked),
       color: color,
       icon: user.isActive
           ? Icons.check_circle_outline_rounded
@@ -546,7 +548,7 @@ class _UsersScreenState extends State<UsersScreen> {
     final actions = <Widget>[
       if (!user.isCompanyApproved)
         _buildCompanyQuickActionButton(
-          label: 'Approve',
+          label: _l10n.uiApprove,
           icon: Icons.verified_rounded,
           color: AdminPalette.success,
           filled: true,
@@ -555,7 +557,7 @@ class _UsersScreenState extends State<UsersScreen> {
         ),
       if (user.isCompanyPendingApproval)
         _buildCompanyQuickActionButton(
-          label: 'Reject',
+          label: _l10n.uiReject,
           icon: Icons.gpp_bad_outlined,
           color: AdminPalette.danger,
           onPressed: () =>
@@ -691,7 +693,7 @@ class _UsersScreenState extends State<UsersScreen> {
           icon: _approvalDisplayIcon(user.normalizedApprovalStatus),
         ),
       AdminPill(
-        label: user.isActive ? 'Active' : 'Blocked',
+        label: user.isActive ? _l10n.uiActive : _l10n.uiBlocked,
         color: Colors.white,
         icon: user.isActive
             ? Icons.check_circle_outline_rounded
@@ -877,6 +879,7 @@ class _UsersScreenState extends State<UsersScreen> {
   }
 
   void _showUserActionsSheet(UserModel user, AdminProvider provider) {
+    final l10n = _l10n;
     final actionLabel = user.isActive ? 'Block User' : 'Unblock User';
     final actionColor = user.isActive
         ? AdminPalette.danger
@@ -909,16 +912,14 @@ class _UsersScreenState extends State<UsersScreen> {
                   _buildOverlayUserHeaderCard(
                     user: user,
                     compact: true,
-                    eyebrow: 'Quick actions',
-                    subtitle:
-                        'Choose the next moderation step or open the full profile.',
+                    eyebrow: l10n.uiQuickActions,
+                    subtitle: l10n.uiChooseTheNextModerationStepOrOpenTheFullProfile,
                   ),
                   const SizedBox(height: 12),
                   _buildActionSheetTile(
                     icon: Icons.person_outline_rounded,
-                    title: 'View Profile',
-                    subtitle:
-                        'Open the full admin profile sheet for this user.',
+                    title: l10n.uiViewProfile,
+                    subtitle: l10n.uiOpenTheFullAdminProfileSheetForThisUser,
                     color: AdminPalette.primary,
                     onTap: () {
                       Navigator.pop(sheetContext);
@@ -929,7 +930,7 @@ class _UsersScreenState extends State<UsersScreen> {
                     const SizedBox(height: 10),
                     _buildActionSheetTile(
                       icon: Icons.verified_rounded,
-                      title: 'Approve Company',
+                      title: l10n.uiApproveCompany,
                       subtitle:
                           'Unlock the company workspace and move it into the approved state.',
                       color: AdminPalette.success,
@@ -943,7 +944,7 @@ class _UsersScreenState extends State<UsersScreen> {
                     const SizedBox(height: 10),
                     _buildActionSheetTile(
                       icon: Icons.gpp_bad_outlined,
-                      title: 'Reject Company',
+                      title: l10n.uiRejectCompany,
                       subtitle:
                           'Keep the company out of the workspace until the profile is corrected.',
                       color: AdminPalette.danger,
@@ -958,7 +959,7 @@ class _UsersScreenState extends State<UsersScreen> {
                     const SizedBox(height: 10),
                     _buildActionSheetTile(
                       icon: Icons.pending_actions_rounded,
-                      title: 'Mark Pending Review',
+                      title: l10n.uiMarkPendingReview,
                       subtitle:
                           'Move the company back into the review queue for another check.',
                       color: AdminPalette.warning,
@@ -1001,9 +1002,9 @@ class _UsersScreenState extends State<UsersScreen> {
         ? user.companyName!.trim()
         : user.fullName;
     final actionLabel = switch (nextStatus) {
-      'approved' => 'Approve Company',
-      'rejected' => 'Reject Company',
-      _ => 'Mark Pending Review',
+      'approved' => _l10n.uiApproveCompany,
+      'rejected' => _l10n.uiRejectCompany,
+      _ => _l10n.uiMarkPendingReview,
     };
     final actionColor = switch (nextStatus) {
       'approved' => AdminPalette.success,
@@ -1025,7 +1026,7 @@ class _UsersScreenState extends State<UsersScreen> {
     };
 
     _showConfirmationDialog(
-      eyebrow: 'Company moderation',
+      eyebrow: _l10n.uiCompanyModeration,
       title: actionLabel,
       message: message,
       targetLabel: companyLabel,
@@ -1033,9 +1034,9 @@ class _UsersScreenState extends State<UsersScreen> {
       icon: actionIcon,
       accentColor: actionColor,
       confirmLabel: switch (nextStatus) {
-        'approved' => 'Approve',
-        'rejected' => 'Reject',
-        _ => 'Set Pending',
+        'approved' => _l10n.uiApprove,
+        'rejected' => _l10n.uiReject,
+        _ => _l10n.uiPending,
       },
       onConfirm: () =>
           provider.updateCompanyApprovalStatus(user.uid, nextStatus),
@@ -1178,7 +1179,7 @@ class _UsersScreenState extends State<UsersScreen> {
                 const SizedBox(height: 18),
                 _buildAdaptiveActionGroup([
                   _buildDocumentButton(
-                    label: 'Cancel',
+                    label: AppLocalizations.of(context)!.cancelLabel,
                     icon: Icons.close_rounded,
                     onPressed: () => Navigator.pop(ctx),
                     color: AdminPalette.textMuted,
@@ -1194,7 +1195,8 @@ class _UsersScreenState extends State<UsersScreen> {
                       if (error != null && context.mounted) {
                         context.showAppSnackBar(
                           error,
-                          title: 'Update unavailable',
+                          title:
+                              AppLocalizations.of(context)!.updateUnavailableTitle,
                           type: AppFeedbackType.error,
                         );
                       }
@@ -1326,16 +1328,16 @@ class _UsersScreenState extends State<UsersScreen> {
                     const SizedBox(height: 16),
                     _buildOverlayUserHeaderCard(
                       user: user,
-                      eyebrow: 'Profile overview',
+                      eyebrow: _l10n.uiProfileOverview,
                       subtitle:
-                          'Review identity, status, and submitted information in one place.',
+                          _l10n.uiReviewIdentityStatusAndSubmittedInformationInOnePlace,
                     ),
                     const SizedBox(height: 18),
-                    const AdminSectionHeader(
-                      eyebrow: 'Profile',
-                      title: 'User Details',
+                    AdminSectionHeader(
+                      eyebrow: _l10n.uiProfile,
+                      title: _l10n.uiUserDetails,
                       subtitle:
-                          'Review contact info, account status, and role-specific details in one clean profile view.',
+                          _l10n.uiReviewContactInfoAccountStatusAndRoleSpecificDetailsInOneCleanProfileView,
                     ),
                     const SizedBox(height: 12),
                     _buildDetailRow(Icons.email_outlined, 'Email', user.email),
@@ -1496,7 +1498,7 @@ class _UsersScreenState extends State<UsersScreen> {
     final buttons = <Widget>[
       if (!user.isCompanyApproved)
         _buildDocumentButton(
-          label: 'Approve Company',
+          label: _l10n.uiApproveCompany,
           icon: Icons.verified_rounded,
           onPressed: () =>
               _showCompanyApprovalDialog(user, provider, 'approved'),
@@ -1504,7 +1506,7 @@ class _UsersScreenState extends State<UsersScreen> {
         ),
       if (!user.isCompanyRejected)
         _buildDocumentButton(
-          label: 'Reject Company',
+          label: _l10n.uiRejectCompany,
           icon: Icons.gpp_bad_outlined,
           onPressed: () =>
               _showCompanyApprovalDialog(user, provider, 'rejected'),
@@ -1525,7 +1527,7 @@ class _UsersScreenState extends State<UsersScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Moderation Actions',
+            _l10n.uiModerationActions,
             style: TextStyle(
               fontSize: 13.5,
               fontWeight: FontWeight.w700,
@@ -1534,7 +1536,7 @@ class _UsersScreenState extends State<UsersScreen> {
           ),
           const SizedBox(height: 4),
           Text(
-            'Update the company approval state from here without leaving the profile.',
+            _l10n.uiUpdateTheCompanyApprovalStateFromHereWithoutLeavingTheProfile,
             style: TextStyle(
               fontSize: 12,
               height: 1.45,
@@ -1668,6 +1670,7 @@ class _UsersScreenState extends State<UsersScreen> {
     String companyId, {
     bool download = false,
   }) async {
+    final l10n = AppLocalizations.of(context)!;
     try {
       final document = await _documentAccessService
           .getCompanyCommercialRegister(companyId: companyId);
@@ -1685,8 +1688,8 @@ class _UsersScreenState extends State<UsersScreen> {
       );
       if (!launched && mounted) {
         context.showAppSnackBar(
-          'We couldn\'t open the document right now.',
-          title: 'Document unavailable',
+          l10n.uiCouldNotOpenTheDocumentRightNow,
+          title: l10n.uiDocumentUnavailable,
           type: AppFeedbackType.error,
         );
       }
@@ -1694,7 +1697,7 @@ class _UsersScreenState extends State<UsersScreen> {
       if (!mounted) return;
       context.showAppSnackBar(
         _documentErrorMessage(e),
-        title: 'Document unavailable',
+        title: l10n.uiDocumentUnavailable,
         type: AppFeedbackType.error,
       );
     }

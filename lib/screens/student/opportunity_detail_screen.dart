@@ -191,7 +191,7 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
     if (currentUser == null) {
       context.showAppSnackBar(
         'Sign in to continue with your application.',
-        title: 'Login required',
+        title: AppLocalizations.of(context)!.uiLoginRequired,
         type: AppFeedbackType.warning,
       );
       return;
@@ -212,7 +212,7 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
       if (eligibility != ApplicationEligibilityStatus.available) {
         context.showAppSnackBar(
           _messageForStatus(eligibility),
-          title: 'Application blocked',
+          title: AppLocalizations.of(context)!.uiApplicationBlocked,
           type: AppFeedbackType.warning,
         );
         _refreshEligibility();
@@ -228,7 +228,7 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
       if (cv == null) {
         context.showAppSnackBar(
           'Create your CV before applying to this opportunity.',
-          title: 'CV required',
+          title: AppLocalizations.of(context)!.uiCvRequired,
           type: AppFeedbackType.warning,
         );
         return;
@@ -269,7 +269,7 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
     if (currentUser == null) {
       context.showAppSnackBar(
         'Sign in to save opportunities for later.',
-        title: 'Login required',
+        title: AppLocalizations.of(context)!.uiLoginRequired,
         type: AppFeedbackType.warning,
       );
       return;
@@ -352,7 +352,7 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
     if (widget.opportunity.isAdminPosted) {
       context.showAppSnackBar(
         'The company will contact you by email soon.',
-        title: 'Application approved',
+        title: AppLocalizations.of(context)!.uiApplicationApprovedB0Cb,
         type: AppFeedbackType.info,
       );
       return;
@@ -362,7 +362,7 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
     if (currentUser == null) {
       context.showAppSnackBar(
         'Sign in to chat with the company.',
-        title: 'Login required',
+        title: AppLocalizations.of(context)!.uiLoginRequired,
         type: AppFeedbackType.warning,
       );
       return;
@@ -378,7 +378,7 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
     if (companyId.isEmpty) {
       context.showAppSnackBar(
         'Company details are missing for this opportunity.',
-        title: 'Chat unavailable',
+        title: AppLocalizations.of(context)!.uiChatUnavailable,
         type: AppFeedbackType.error,
       );
       return;
@@ -421,7 +421,7 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
 
       context.showAppSnackBar(
         'Could not open chat: $error',
-        title: 'Chat unavailable',
+        title: AppLocalizations.of(context)!.uiChatUnavailable,
         type: AppFeedbackType.error,
       );
     } finally {
@@ -826,7 +826,7 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
                       Expanded(
                         child: AppSecondaryButton(
                           theme: _theme,
-                          label: 'Share',
+                          label: AppLocalizations.of(context)!.uiShare,
                           icon: Icons.ios_share_rounded,
                           onPressed: _shareOpportunity,
                         ),
@@ -860,7 +860,7 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
             ),
           ),
           IconButton(
-            tooltip: 'Share opportunity',
+            tooltip: AppLocalizations.of(context)!.uiShareOpportunity,
             onPressed: _shareOpportunity,
             icon: const Icon(Icons.ios_share_rounded),
           ),
@@ -897,19 +897,19 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
               children: <Widget>[
                 AppMetaRow(
                   theme: _theme,
-                  label: 'Location',
+                  label: AppLocalizations.of(context)!.uiLocation,
                   value: _locationValue,
                   icon: Icons.location_on_outlined,
                 ),
                 AppMetaRow(
                   theme: _theme,
-                  label: 'Deadline',
+                  label: AppLocalizations.of(context)!.uiDeadline,
                   value: _deadlineLabel ?? '',
                   icon: Icons.event_outlined,
                 ),
                 AppMetaRow(
                   theme: _theme,
-                  label: 'Posted',
+                  label: AppLocalizations.of(context)!.uiPosted,
                   value: widget.opportunity.createdAt == null
                       ? ''
                       : DateFormat(
@@ -929,7 +929,7 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
             theme: _theme,
             items: <AppInfoTileData>[
               AppInfoTileData(
-                label: 'Type',
+                label: AppLocalizations.of(context)!.uiType,
                 value: OpportunityType.label(_effectiveType, AppLocalizations.of(context)!),
                 icon: OpportunityType.icon(_effectiveType),
               ),
@@ -942,37 +942,37 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
                 emphasize: _primaryCompensationValue != null,
               ),
               AppInfoTileData(
-                label: 'Location',
+                label: AppLocalizations.of(context)!.uiLocation,
                 value: _locationValue,
                 icon: Icons.location_on_outlined,
               ),
               AppInfoTileData(
-                label: 'Deadline',
+                label: AppLocalizations.of(context)!.uiDeadline,
                 value: _deadlineLabel ?? '',
                 icon: Icons.event_available_rounded,
               ),
               AppInfoTileData(
-                label: 'Duration',
+                label: AppLocalizations.of(context)!.uiDuration,
                 value: _durationLabel ?? '',
                 icon: Icons.schedule_outlined,
               ),
               AppInfoTileData(
-                label: 'Work mode',
+                label: AppLocalizations.of(context)!.uiWorkMode,
                 value: _workModeLabel ?? '',
                 icon: Icons.lan_outlined,
               ),
               AppInfoTileData(
-                label: 'Employment',
+                label: AppLocalizations.of(context)!.uiEmploymentType,
                 value: _employmentTypeLabel ?? '',
                 icon: Icons.badge_outlined,
               ),
               AppInfoTileData(
-                label: 'Experience',
+                label: AppLocalizations.of(context)!.uiExperienceLevel,
                 value: _experienceLevelLabel ?? '',
                 icon: Icons.trending_up_rounded,
               ),
               AppInfoTileData(
-                label: 'Start date',
+                label: AppLocalizations.of(context)!.uiStartDate,
                 value: _startDateLabel ?? '',
                 icon: Icons.play_circle_outline_rounded,
               ),
@@ -1042,7 +1042,7 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
             const SizedBox(height: 16),
             AppDetailSection(
               theme: _theme,
-              title: 'Benefits',
+              title: AppLocalizations.of(context)!.uiBenefits,
               icon: Icons.workspace_premium_outlined,
               child: _OpportunityTextOrList(
                 theme: _theme,
@@ -1060,7 +1060,7 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
             const SizedBox(height: 16),
             AppDetailSection(
               theme: _theme,
-              title: 'Application Process',
+              title: AppLocalizations.of(context)!.uiApplicationProcess,
               icon: Icons.assignment_outlined,
               child: _OpportunityTextOrList(
                 theme: _theme,
@@ -1083,7 +1083,7 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
             const SizedBox(height: 16),
             AppDetailSection(
               theme: _theme,
-              title: 'Skills Needed',
+              title: AppLocalizations.of(context)!.uiSkillsNeeded,
               icon: Icons.auto_fix_high_outlined,
               child: _OpportunityChipWrap(
                 theme: _theme,
@@ -1098,34 +1098,34 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
           const SizedBox(height: 16),
           AppDetailSection(
             theme: _theme,
-            title: 'Additional Information',
+            title: AppLocalizations.of(context)!.uiAdditionalInformation,
             icon: Icons.info_outline_rounded,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 AppMetaRow(
                   theme: _theme,
-                  label: 'Company',
+                  label: AppLocalizations.of(context)!.uiCompany,
                   value: _companyName,
                 ),
                 AppMetaRow(
                   theme: _theme,
-                  label: 'Work mode',
+                  label: AppLocalizations.of(context)!.uiWorkMode,
                   value: _workModeLabel ?? '',
                 ),
                 AppMetaRow(
                   theme: _theme,
-                  label: 'Employment type',
+                  label: AppLocalizations.of(context)!.uiEmploymentType,
                   value: _employmentTypeLabel ?? '',
                 ),
                 AppMetaRow(
                   theme: _theme,
-                  label: 'Experience level',
+                  label: AppLocalizations.of(context)!.uiExperienceLevel,
                   value: _experienceLevelLabel ?? '',
                 ),
                 AppMetaRow(
                   theme: _theme,
-                  label: 'Paid status',
+                  label: AppLocalizations.of(context)!.uiPaidStatus,
                   value:
                       OpportunityMetadata.formatPaidLabel(
                         widget.opportunity.isPaid,
@@ -1139,28 +1139,28 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
                 ),
                 AppMetaRow(
                   theme: _theme,
-                  label: 'Duration',
+                  label: AppLocalizations.of(context)!.uiDuration,
                   value: _durationLabel ?? '',
                 ),
                 AppMetaRow(
                   theme: _theme,
-                  label: 'Start date',
+                  label: AppLocalizations.of(context)!.uiStartDate,
                   value: _startDateLabel ?? '',
                 ),
                 AppMetaRow(
                   theme: _theme,
-                  label: 'Contact',
+                  label: AppLocalizations.of(context)!.uiContact,
                   value: _contactInfo ?? '',
                 ),
                 AppMetaRow(
                   theme: _theme,
-                  label: 'External link',
+                  label: AppLocalizations.of(context)!.uiExternalLink,
                   value: _externalLink ?? '',
                 ),
                 if (_readList(<String>['attachments', 'documents']).isNotEmpty)
                   AppMetaRow(
                     theme: _theme,
-                    label: 'Attachments',
+                    label: AppLocalizations.of(context)!.uiAttachments,
                     value: _readList(<String>[
                       'attachments',
                       'documents',
@@ -1173,7 +1173,7 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
             const SizedBox(height: 16),
             AppDetailSection(
               theme: _theme,
-              title: 'Tags',
+              title: AppLocalizations.of(context)!.uiTags,
               icon: Icons.local_offer_outlined,
               child: _OpportunityChipWrap(theme: _theme, items: _explicitTags),
             ),
@@ -1183,21 +1183,21 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
             const SizedBox(height: 16),
             AppDetailSection(
               theme: _theme,
-              title: 'External Application',
+              title: AppLocalizations.of(context)!.uiExternalApplication,
               icon: Icons.open_in_new_rounded,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   AppMetaRow(
                     theme: _theme,
-                    label: 'Link',
+                    label: AppLocalizations.of(context)!.uiLink,
                     value: _externalLink!,
                     icon: Icons.link_rounded,
                   ),
                   const SizedBox(height: 8),
                   AppPrimaryButton(
                     theme: _theme,
-                    label: 'Open Link',
+                    label: AppLocalizations.of(context)!.uiOpenLink,
                     icon: Icons.open_in_new_rounded,
                     onPressed: () => _openExternalLink(_externalLink!),
                   ),

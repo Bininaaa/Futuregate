@@ -202,7 +202,7 @@ class ScholarshipDetailScreen extends StatelessWidget {
     return const [];
   }
 
-  List<_ScholarshipStatData> get _stats {
+  List<_ScholarshipStatData> _buildStats(AppLocalizations l10n) {
     final stats = <_ScholarshipStatData>[
       _ScholarshipStatData(
         icon: Icons.payments_rounded,
@@ -213,7 +213,7 @@ class ScholarshipDetailScreen extends StatelessWidget {
       ),
       _ScholarshipStatData(
         icon: Icons.event_available_rounded,
-        label: 'Deadline',
+        label: l10n.uiDeadline,
         value: _deadlineText,
         accentColor: _P.accent,
       ),
@@ -224,7 +224,7 @@ class ScholarshipDetailScreen extends StatelessWidget {
       stats.add(
         _ScholarshipStatData(
           icon: Icons.public_rounded,
-          label: 'Destination',
+          label: l10n.uiDestination,
           value: location,
           accentColor: _P.secondary,
         ),
@@ -233,7 +233,7 @@ class ScholarshipDetailScreen extends StatelessWidget {
       stats.add(
         _ScholarshipStatData(
           icon: Icons.apartment_rounded,
-          label: 'Provider',
+          label: l10n.uiProvider,
           value: _provider,
           accentColor: _P.secondary,
         ),
@@ -254,7 +254,7 @@ class ScholarshipDetailScreen extends StatelessWidget {
       stats.add(
         _ScholarshipStatData(
           icon: Icons.workspace_premium_rounded,
-          label: 'Support Type',
+          label: l10n.uiSupportType,
           value: _fundingType!,
           accentColor: _P.primaryDark,
         ),
@@ -264,16 +264,16 @@ class ScholarshipDetailScreen extends StatelessWidget {
     return stats;
   }
 
-  List<_ScholarshipProfileRowData> get _profileRows {
+  List<_ScholarshipProfileRowData> _buildProfileRows(AppLocalizations l10n) {
     final rows = <_ScholarshipProfileRowData>[
       _ScholarshipProfileRowData(
         icon: Icons.business_center_rounded,
-        label: 'Provider',
+        label: l10n.uiProvider,
         value: _provider,
       ),
       _ScholarshipProfileRowData(
         icon: Icons.calendar_month_rounded,
-        label: 'Application deadline',
+        label: l10n.uiApplicationDeadline,
         value: _deadlineText,
       ),
     ];
@@ -283,7 +283,7 @@ class ScholarshipDetailScreen extends StatelessWidget {
       rows.add(
         _ScholarshipProfileRowData(
           icon: Icons.location_on_outlined,
-          label: 'Location',
+          label: l10n.uiLocation,
           value: location,
         ),
       );
@@ -293,7 +293,7 @@ class ScholarshipDetailScreen extends StatelessWidget {
       rows.add(
         _ScholarshipProfileRowData(
           icon: Icons.wallet_giftcard_rounded,
-          label: 'Funding type',
+          label: l10n.uiFundingType,
           value: _fundingType!,
         ),
       );
@@ -303,7 +303,7 @@ class ScholarshipDetailScreen extends StatelessWidget {
       rows.add(
         _ScholarshipProfileRowData(
           icon: Icons.auto_stories_rounded,
-          label: 'Level',
+          label: l10n.uiLevel,
           value: _level!,
         ),
       );
@@ -313,7 +313,7 @@ class ScholarshipDetailScreen extends StatelessWidget {
       rows.add(
         _ScholarshipProfileRowData(
           icon: Icons.category_rounded,
-          label: 'Category',
+          label: l10n.uiCategory,
           value: _category!,
         ),
       );
@@ -414,9 +414,10 @@ class ScholarshipDetailScreen extends StatelessWidget {
     final isSaved = existingSaved != null;
     final hasLink = _linkUri != null;
     final location = _locationText;
+    final l10n = AppLocalizations.of(context)!;
     final chips = _heroChips;
     final eligibilityItems = _eligibilityItems;
-    final profileRows = _profileRows;
+    final profileRows = _buildProfileRows(l10n);
 
     return AppShellBackground(
       child: Scaffold(
@@ -529,17 +530,17 @@ class ScholarshipDetailScreen extends StatelessWidget {
                       const SizedBox(height: 22),
                       _PageSectionHeading(
                         eyebrow: 'AT A GLANCE',
-                        title: 'Quick Snapshot',
+                        title: AppLocalizations.of(context)!.uiQuickSnapshot,
                         subtitle:
                             'Everything important is surfaced here before you open the full application call.',
                       ),
                       const SizedBox(height: 14),
-                      _ScholarshipStatsWrap(stats: _stats),
+                      _ScholarshipStatsWrap(stats: _buildStats(l10n)),
                       const SizedBox(height: 22),
                       _ScholarshipSectionCard(
                         icon: Icons.auto_awesome_rounded,
                         iconColor: _P.primary,
-                        title: 'About This Scholarship',
+                        title: AppLocalizations.of(context)!.uiAboutThisScholarship,
                         subtitle:
                             'A focused overview so the opportunity feels easy to scan.',
                         child: Text(
@@ -555,7 +556,7 @@ class ScholarshipDetailScreen extends StatelessWidget {
                       _ScholarshipSectionCard(
                         icon: Icons.verified_user_rounded,
                         iconColor: _P.secondary,
-                        title: 'Who Can Apply',
+                        title: AppLocalizations.of(context)!.uiWhoCanApply,
                         subtitle:
                             'Check the core eligibility signals before moving forward.',
                         child: eligibilityItems.isEmpty
@@ -592,7 +593,7 @@ class ScholarshipDetailScreen extends StatelessWidget {
                       _ScholarshipSectionCard(
                         icon: Icons.fact_check_outlined,
                         iconColor: _P.accent,
-                        title: 'Scholarship Profile',
+                        title: AppLocalizations.of(context)!.uiScholarshipProfile,
                         subtitle:
                             'A cleaner breakdown of the provider, destination, and track.',
                         child: Column(
@@ -635,7 +636,7 @@ class ScholarshipDetailScreen extends StatelessWidget {
                       _ScholarshipSectionCard(
                         icon: Icons.launch_rounded,
                         iconColor: _P.primaryDark,
-                        title: 'Application Link',
+                        title: AppLocalizations.of(context)!.uiApplicationLink,
                         subtitle:
                             'Continue with confidence on the official destination.',
                         child: _ApplicationPreviewCard(

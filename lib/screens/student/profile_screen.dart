@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import '../../l10n/generated/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
@@ -368,37 +369,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     return [
       _FactData(
-        label: 'Email',
+        label: AppLocalizations.of(context)!.uiEmail,
         value: email.isNotEmpty ? email : null,
         icon: Icons.alternate_email_rounded,
         color: SettingsFlowPalette.primary,
       ),
       _FactData(
-        label: 'Phone',
+        label: AppLocalizations.of(context)!.uiPhone,
         value: phone.isNotEmpty ? phone : null,
         icon: Icons.phone_outlined,
         color: SettingsFlowPalette.secondary,
       ),
       _FactData(
-        label: 'Location',
+        label: AppLocalizations.of(context)!.uiLocation,
         value: location.isNotEmpty ? location : null,
         icon: Icons.location_on_outlined,
         color: SettingsFlowPalette.accent,
       ),
       _FactData(
-        label: 'Academic Level',
+        label: AppLocalizations.of(context)!.uiAcademicLevel80Cc,
         value: academicLevel.isNotEmpty ? academicLevel : null,
         icon: Icons.layers_outlined,
         color: SettingsFlowPalette.primaryDark,
       ),
       _FactData(
-        label: 'University',
+        label: AppLocalizations.of(context)!.uiUniversity,
         value: university.isNotEmpty ? university : null,
         icon: Icons.school_outlined,
         color: SettingsFlowPalette.secondary,
       ),
       _FactData(
-        label: 'Field of Study',
+        label: AppLocalizations.of(context)!.uiFieldOfStudy,
         value: fieldOfStudy.isNotEmpty ? fieldOfStudy : null,
         icon: Icons.menu_book_outlined,
         color: SettingsFlowPalette.accent,
@@ -618,13 +619,13 @@ class _ProfileHeader extends StatelessWidget {
                         builder: (context, innerConstraints) {
                           final stacked = innerConstraints.maxWidth < 360;
                           final editButton = _HeaderButton(
-                            label: 'Edit Profile',
+                            label: AppLocalizations.of(context)!.uiEditProfile,
                             icon: Icons.edit_outlined,
                             onTap: onEdit,
                             filled: true,
                           );
                           final cvButton = _HeaderButton(
-                            label: 'Open CV Studio',
+                            label: AppLocalizations.of(context)!.uiOpenCvStudio,
                             icon: Icons.description_outlined,
                             onTap: onCv,
                           );
@@ -1033,7 +1034,7 @@ class _HeroStatusCard extends StatelessWidget {
             children: [
               _SectionChip(
                 icon: Icons.insights_outlined,
-                label: 'Profile strength',
+                label: AppLocalizations.of(context)!.uiProfileStrength,
                 color: SettingsFlowPalette.secondary,
               ),
               const Spacer(),
@@ -1101,7 +1102,7 @@ class _HeroStatusCard extends StatelessWidget {
                     width: tileWidth,
                     child: _HeroMetricTile(
                       value: '$savedCount',
-                      label: 'Saved',
+                      label: AppLocalizations.of(context)!.uiSaved,
                       icon: Icons.bookmark_outline_rounded,
                       color: SettingsFlowPalette.secondary,
                       onTap: onSaved,
@@ -1111,7 +1112,7 @@ class _HeroStatusCard extends StatelessWidget {
                     width: tileWidth,
                     child: _HeroMetricTile(
                       value: '$appliedCount',
-                      label: 'Applied',
+                      label: AppLocalizations.of(context)!.uiApplied,
                       icon: Icons.send_rounded,
                       color: SettingsFlowPalette.accent,
                       onTap: onApplied,
@@ -1121,7 +1122,7 @@ class _HeroStatusCard extends StatelessWidget {
                     width: tileWidth,
                     child: _HeroMetricTile(
                       value: cvStatus,
-                      label: 'CV Studio',
+                      label: AppLocalizations.of(context)!.uiCvStudio,
                       icon: Icons.description_outlined,
                       color: cvStatus == 'Ready'
                           ? SettingsFlowPalette.success
@@ -1136,7 +1137,7 @@ class _HeroStatusCard extends StatelessWidget {
                       value: unreadNotifications > 0
                           ? '$unreadNotifications new'
                           : 'All clear',
-                      label: 'Alerts',
+                      label: AppLocalizations.of(context)!.uiAlerts,
                       icon: Icons.notifications_none_rounded,
                       color: SettingsFlowPalette.primary,
                       onTap: onNotifications,
@@ -1490,13 +1491,13 @@ class _ActivityStrip extends StatelessWidget {
             builder: (context, constraints) {
               final stacked = constraints.maxWidth < 390;
               final editButton = _SurfaceActionButton(
-                label: 'Edit profile',
+                label: AppLocalizations.of(context)!.uiEditProfile,
                 icon: Icons.edit_outlined,
                 filled: true,
                 onTap: onEdit,
               );
               final cvButton = _SurfaceActionButton(
-                label: 'Open CV Studio',
+                label: AppLocalizations.of(context)!.uiOpenCvStudio,
                 icon: Icons.description_outlined,
                 onTap: onCv,
               );
@@ -1549,12 +1550,12 @@ class _DetailsCard extends StatelessWidget {
             children: [
               _SectionChip(
                 icon: Icons.account_circle_outlined,
-                label: 'Student snapshot',
+                label: AppLocalizations.of(context)!.uiStudentSnapshot,
                 color: SettingsFlowPalette.accent,
               ),
               const Spacer(),
               _PillActionButton(
-                label: 'Edit',
+                label: AppLocalizations.of(context)!.uiEdit,
                 icon: Icons.edit_outlined,
                 color: SettingsFlowPalette.primary,
                 onTap: onEdit,
@@ -1775,7 +1776,7 @@ class _LinksCard extends StatelessWidget {
         children: [
           _SectionChip(
             icon: Icons.dashboard_customize_outlined,
-            label: 'Student toolkit',
+            label: AppLocalizations.of(context)!.uiStudentToolkit,
             color: SettingsFlowPalette.primaryDark,
           ),
           const SizedBox(height: 16),
@@ -1793,15 +1794,15 @@ class _LinksCard extends StatelessWidget {
             builder: (context, constraints) {
               final stacked = constraints.maxWidth < 360;
               final cvCard = _FeaturedActionCard(
-                title: 'CV Studio',
-                subtitle: 'Build, upload, and export your CV.',
+                title: AppLocalizations.of(context)!.uiCvStudio,
+                subtitle: AppLocalizations.of(context)!.uiCvStudioSubtitle,
                 icon: Icons.description_outlined,
                 color: SettingsFlowPalette.secondary,
                 onTap: onCv,
               );
               final savedCard = _FeaturedActionCard(
-                title: 'Saved collection',
-                subtitle: 'Jump back into everything you bookmarked.',
+                title: AppLocalizations.of(context)!.uiSavedCollection,
+                subtitle: AppLocalizations.of(context)!.uiJumpBackBookmarked,
                 icon: Icons.bookmark_outline_rounded,
                 color: SettingsFlowPalette.primary,
                 onTap: onSaved,
@@ -1826,7 +1827,7 @@ class _LinksCard extends StatelessWidget {
           _LinkRow(
             icon: Icons.notifications_none_rounded,
             color: SettingsFlowPalette.accent,
-            title: 'Notifications',
+            title: AppLocalizations.of(context)!.uiNotifications,
             subtitle: unreadNotifications > 0
                 ? '$unreadNotifications unread right now'
                 : 'Everything is caught up.',
@@ -1837,16 +1838,16 @@ class _LinksCard extends StatelessWidget {
           _LinkRow(
             icon: Icons.tune_rounded,
             color: SettingsFlowPalette.primaryDark,
-            title: 'Settings',
-            subtitle: 'Preferences, display, and app choices.',
+            title: AppLocalizations.of(context)!.uiSettings,
+            subtitle: AppLocalizations.of(context)!.uiSettingsSubtitle,
             onTap: onSettings,
           ),
           _linkDivider(),
           _LinkRow(
             icon: Icons.lock_outline_rounded,
             color: SettingsFlowPalette.primary,
-            title: 'Security & privacy',
-            subtitle: 'Password and account protection.',
+            title: AppLocalizations.of(context)!.uiSecurityPrivacy,
+            subtitle: AppLocalizations.of(context)!.uiSecuritySubtitle,
             onTap: onSecurity,
           ),
           Padding(
@@ -1859,16 +1860,16 @@ class _LinksCard extends StatelessWidget {
           _LinkRow(
             icon: Icons.help_outline_rounded,
             color: SettingsFlowPalette.secondary,
-            title: 'Help center',
-            subtitle: 'Answers, guidance, and support.',
+            title: AppLocalizations.of(context)!.uiHelpCenter,
+            subtitle: AppLocalizations.of(context)!.uiHelpCenterSubtitle,
             onTap: onHelp,
           ),
           _linkDivider(),
           _LinkRow(
             icon: Icons.info_outline_rounded,
             color: SettingsFlowPalette.accent,
-            title: 'About FutureGate',
-            subtitle: 'Learn more about the platform.',
+            title: AppLocalizations.of(context)!.uiAboutFutureGate,
+            subtitle: AppLocalizations.of(context)!.uiAboutSubtitle,
             onTap: onAbout,
           ),
           Padding(
@@ -1881,8 +1882,8 @@ class _LinksCard extends StatelessWidget {
           _LinkRow(
             icon: Icons.logout_rounded,
             color: SettingsFlowPalette.error,
-            title: 'Sign out',
-            subtitle: 'End this session on the current device.',
+            title: AppLocalizations.of(context)!.signOutTitle,
+            subtitle: AppLocalizations.of(context)!.uiSignOutSubtitle,
             onTap: onLogout,
             destructive: true,
           ),

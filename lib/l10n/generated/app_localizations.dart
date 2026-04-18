@@ -10690,6 +10690,1026 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Bachelor'**
   String get uiBachelor;
+
+  /// Success title when an opportunity is closed
+  ///
+  /// In en, this message translates to:
+  /// **'Opportunity closed'**
+  String get uiOpportunityClosed;
+
+  /// Success title when an opportunity is deleted
+  ///
+  /// In en, this message translates to:
+  /// **'Opportunity deleted'**
+  String get uiOpportunityDeleted;
+
+  /// Success message when deleting an opportunity closes it because applications already exist
+  ///
+  /// In en, this message translates to:
+  /// **'Opportunity closed because applications already exist.'**
+  String get uiOpportunityClosedBecauseApplicationsAlreadyExist;
+
+  /// Generic error message when a document cannot be opened
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t open the document right now.'**
+  String get uiCouldNotOpenTheDocumentRightNow;
+
+  /// Generic error message when a link cannot be opened
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t open this link right now.'**
+  String get uiWeCouldNotOpenThisLinkRightNow;
+
+  /// Success message when a resource is removed from featured
+  ///
+  /// In en, this message translates to:
+  /// **'This resource was removed from featured.'**
+  String get uiResourceRemovedFromFeatured;
+
+  /// Success message when a resource is added to featured
+  ///
+  /// In en, this message translates to:
+  /// **'This resource is now featured.'**
+  String get uiResourceFeatured;
+
+  /// Label shown when there is no uploaded CV file
+  ///
+  /// In en, this message translates to:
+  /// **'No uploaded CV'**
+  String get uiNoUploadedCv;
+
+  /// Status message when a built CV PDF is available
+  ///
+  /// In en, this message translates to:
+  /// **'Built CV PDF is ready for review.'**
+  String get uiBuiltCvPdfReadyForReview;
+
+  /// Status message when built CV content exists without an exported PDF
+  ///
+  /// In en, this message translates to:
+  /// **'Built CV details are available, but no PDF has been exported yet.'**
+  String get uiBuiltCvDetailsAvailableNoPdfYet;
+
+  /// Status message when no built CV data exists
+  ///
+  /// In en, this message translates to:
+  /// **'No built CV details available.'**
+  String get uiNoBuiltCvDetailsAvailable;
+
+  /// Success title when a conversation is archived
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation archived'**
+  String get uiConversationArchived;
+
+  /// Success title when a conversation is restored from archive
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation restored'**
+  String get uiConversationRestored;
+
+  /// Success message when a conversation is archived
+  ///
+  /// In en, this message translates to:
+  /// **'This conversation has been moved to Archived.'**
+  String get uiConversationMovedToArchived;
+
+  /// Success message when a conversation is restored to the inbox
+  ///
+  /// In en, this message translates to:
+  /// **'This conversation is back in your inbox.'**
+  String get uiConversationBackInInbox;
+
+  /// Warning shown when the user tries to use AI tools without a message
+  ///
+  /// In en, this message translates to:
+  /// **'Write a message before using AI tools.'**
+  String get uiWriteMessageBeforeAiTools;
+
+  /// Warning shown when the user opens translation choices without a message
+  ///
+  /// In en, this message translates to:
+  /// **'Write a message before choosing a translation.'**
+  String get uiWriteMessageBeforeTranslation;
+
+  /// Subtitle showing the number of unread alerts
+  ///
+  /// In en, this message translates to:
+  /// **'{count} unread alerts'**
+  String uiUnreadAlertsCount(Object count);
+
+  /// Subtitle for the notifications quick access tile
+  ///
+  /// In en, this message translates to:
+  /// **'Open alert center'**
+  String get uiOpenAlertCenter;
+
+  /// Quick access subtitle for learning resources management
+  ///
+  /// In en, this message translates to:
+  /// **'Manage learning resources'**
+  String get uiManageLearningResources;
+
+  /// Action label to manage an application
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Application'**
+  String get uiManageApplication;
+
+  /// Action label to manage an opportunity
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Opportunity'**
+  String get uiManageOpportunity;
+
+  /// Action label to manage a scholarship
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Scholarship'**
+  String get uiManageScholarship;
+
+  /// Action label to manage a library resource
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Library Resource'**
+  String get uiManageLibraryResource;
+
+  /// Action label to manage a project idea
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Project Idea'**
+  String get uiManageProjectIdea;
+
+  /// Label showing the number of recent activities
+  ///
+  /// In en, this message translates to:
+  /// **'{count} recent activities'**
+  String uiRecentActivitiesCount(Object count);
+
+  /// Label showing the number of activities matching a search
+  ///
+  /// In en, this message translates to:
+  /// **'{count} matching activities'**
+  String uiMatchingActivitiesCount(Object count);
+
+  /// Submit label when saving changes to an idea
+  ///
+  /// In en, this message translates to:
+  /// **'Save idea changes'**
+  String get saveIdeaChangesLabel;
+
+  /// Opportunity editor subtitle in edit mode
+  ///
+  /// In en, this message translates to:
+  /// **'Update the fields below and save.'**
+  String get uiUpdateTheFieldsBelowAndSave;
+
+  /// Opportunity editor subtitle in create mode
+  ///
+  /// In en, this message translates to:
+  /// **'Fill in the fields below, then publish.'**
+  String get uiFillInTheFieldsBelowThenPublish;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'Book Library'**
+  String get uiBookLibrary;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'Featured Resources'**
+  String get uiFeaturedResources;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'Hidden Resources'**
+  String get uiHiddenResources;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'No featured resources match this search'**
+  String get uiNoFeaturedResourcesMatchThisSearch;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'No hidden resources match this search'**
+  String get uiNoHiddenResourcesMatchThisSearch;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'No library resources match this search'**
+  String get uiNoLibraryResourcesMatchThisSearch;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'This resource link is invalid.'**
+  String get uiThisResourceLinkIsInvalid;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'This resource is visible again.'**
+  String get uiThisResourceIsVisibleAgain;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'This resource was hidden. You can restore it later.'**
+  String get uiThisResourceWasHiddenYouCanRestoreItLater;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'Resource visible'**
+  String get uiResourceVisible;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'Resource hidden'**
+  String get uiResourceHidden;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown provider'**
+  String get uiUnknownProvider;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep books and video resources in one admin-friendly library, then open the source studios only when you need new imports.'**
+  String
+  get uiKeepBooksAndVideoResourcesInOneAdminFriendlyLibraryThenOpenTheSourceStudiosOnlyWhenYouNeedNewImports;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'Library now holds all learning resources. Search, filter, review details, and jump into import studios when you need to add more.'**
+  String
+  get uiLibraryNowHoldsAllLearningResourcesSearchFilterReviewDetailsAndJumpIntoImportStudiosWhenYouNeedToAddMore;
+
+  /// Subtitle shown when the admin library is filtered by a search query.
+  ///
+  /// In en, this message translates to:
+  /// **'Showing filtered results for \"{searchQuery}\".'**
+  String uiShowingFilteredResultsForSearchQuery(Object searchQuery);
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'Search library by title, provider, domain, level, or source...'**
+  String get uiSearchLibraryByTitleProviderDomainLevelOrSource;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide'**
+  String get uiHide;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'Unhide'**
+  String get uiUnhide;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'Library unavailable'**
+  String get uiLibraryUnavailable;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get uiLanguage;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'Searching...'**
+  String get uiSearching;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'Import'**
+  String get uiImport;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'Importing...'**
+  String get uiImporting;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'Syncing'**
+  String get uiSyncing;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'Synced'**
+  String get uiSynced;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'Student Details'**
+  String get uiStudentDetails;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'Review identity, academic details, CV documents, and visible submitted applications in one place.'**
+  String
+  get uiReviewIdentityAcademicDetailsCvDocumentsAndVisibleSubmittedApplicationsInOnePlace;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'Review the uploaded CV and the built CV export without leaving the student profile.'**
+  String
+  get uiReviewTheUploadedCvAndTheBuiltCvExportWithoutLeavingTheStudentProfile;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'No CV has been created for this student.'**
+  String get uiNoCvHasBeenCreatedForThisStudent;
+
+  /// Label showing the primary CV file name.
+  ///
+  /// In en, this message translates to:
+  /// **'Primary CV: {value}'**
+  String uiPrimaryCvValue(Object value);
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'Primary CV not uploaded'**
+  String get uiPrimaryCvNotUploaded;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'Built CV unavailable'**
+  String get uiBuiltCvUnavailable;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'Built CV PDF available'**
+  String get uiBuiltCvPdfAvailable;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'Built CV information available'**
+  String get uiBuiltCvInformationAvailable;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading visible applications...'**
+  String get uiLoadingVisibleApplications;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'Application history is unavailable right now.'**
+  String get uiApplicationHistoryIsUnavailableRightNow;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'No visible applications available for this student.'**
+  String get uiNoVisibleApplicationsAvailableForThisStudent;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'1 visible application'**
+  String get uiOneVisibleApplication;
+
+  /// Count of visible applications for a student.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} visible applications'**
+  String uiVisibleApplicationsCount(Object count);
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'Student Applications'**
+  String get uiStudentApplications;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the student application history using the same visible-opportunity rule shown in the app.'**
+  String
+  get uiReviewTheStudentApplicationHistoryUsingTheSameVisibleOpportunityRuleShownInTheApp;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'Visible submissions'**
+  String get uiVisibleSubmissions;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'We could not load the application count right now. You can still open the applications sheet and try again.'**
+  String
+  get uiCouldNotLoadApplicationCountRightNowYouCanStillOpenTheApplicationsSheetAndTryAgain;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'Student profile available for admin review.'**
+  String get uiStudentProfileAvailableForAdminReview;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'Application history unavailable'**
+  String get uiApplicationHistoryUnavailable;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'No visible applications'**
+  String get uiNoVisibleApplications;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading visible opportunity applications.'**
+  String get uiLoadingVisibleOpportunityApplications;
+
+  /// Count of visible applications available for review.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} visible applications available for review.'**
+  String uiVisibleApplicationsAvailableForReviewCount(Object count);
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'We could not load this student\'s visible applications right now.'**
+  String get uiCouldNotLoadThisStudentsVisibleApplicationsRightNow;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'This student has no applications linked to open and visible opportunities right now.'**
+  String
+  get uiThisStudentHasNoApplicationsLinkedToOpenAndVisibleOpportunitiesRightNow;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'Applied date unavailable'**
+  String get uiAppliedDateUnavailable;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'Permission denied while opening the document.'**
+  String get uiPermissionDeniedWhileOpeningTheDocument;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'The requested document is no longer available.'**
+  String get uiTheRequestedDocumentIsNoLongerAvailable;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'Not provided'**
+  String get uiNotProvided;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'Student'**
+  String get uiStudent;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'Blocked'**
+  String get uiBlocked;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'Use a topic, domain, or language filter to bring in curated books for review.'**
+  String get uiUseATopicDomainOrLanguageFilterToBringInCuratedBooksForReview;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'Try a broader query or change the language and domain filters before searching again.'**
+  String
+  get uiTryABroaderQueryOrChangeTheLanguageAndDomainFiltersBeforeSearchingAgain;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'This workspace is dedicated to Google Books imports, so book curation stays focused.'**
+  String
+  get uiThisWorkspaceIsDedicatedToGoogleBooksImportsSoBookCurationStaysFocused;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'Use a topic search to bring back import-ready videos for review.'**
+  String get uiUseATopicSearchToBringBackImportReadyVideosForReview;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'Try a broader query or switch the domain and level context before searching again.'**
+  String
+  get uiTryABroaderQueryOrSwitchTheDomainAndLevelContextBeforeSearchingAgain;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'This workspace is dedicated to YouTube imports, so video curation stays focused.'**
+  String
+  get uiThisWorkspaceIsDedicatedToYouTubeImportsSoVideoCurationStaysFocused;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'Video Library'**
+  String get uiVideoLibrary;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'Learning Resources'**
+  String get uiLearningResources;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'Primary CV'**
+  String get uiPrimaryCv;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'Try another search or relax the current role and level filters.'**
+  String get uiTryAnotherSearchOrRelaxTheCurrentRoleAndLevelFilters;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'Review contact info, account status, and role-specific details in one clean profile view.'**
+  String
+  get uiReviewContactInfoAccountStatusAndRoleSpecificDetailsInOneCleanProfileView;
+
+  /// Admin localization label.
+  ///
+  /// In en, this message translates to:
+  /// **'Update the company approval state from here without leaving the profile.'**
+  String get uiUpdateTheCompanyApprovalStateFromHereWithoutLeavingTheProfile;
+
+  /// Label for device/system default locale option
+  ///
+  /// In en, this message translates to:
+  /// **'Device Default'**
+  String get languageDeviceDefault;
+
+  /// uiSponsored
+  ///
+  /// In en, this message translates to:
+  /// **'Sponsored'**
+  String get uiSponsored;
+
+  /// uiClosed
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
+  String get uiClosed;
+
+  /// uiCourse
+  ///
+  /// In en, this message translates to:
+  /// **'Course'**
+  String get uiCourse;
+
+  /// uiVideo
+  ///
+  /// In en, this message translates to:
+  /// **'Video'**
+  String get uiVideo;
+
+  /// uiBook
+  ///
+  /// In en, this message translates to:
+  /// **'Book'**
+  String get uiBook;
+
+  /// uiGuide
+  ///
+  /// In en, this message translates to:
+  /// **'Guide'**
+  String get uiGuide;
+
+  /// uiProgram
+  ///
+  /// In en, this message translates to:
+  /// **'Program'**
+  String get uiProgram;
+
+  /// uiTrain
+  ///
+  /// In en, this message translates to:
+  /// **'Training'**
+  String get uiTrain;
+
+  /// uiCategory
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get uiCategory;
+
+  /// uiDeadline
+  ///
+  /// In en, this message translates to:
+  /// **'Deadline'**
+  String get uiDeadline;
+
+  /// uiDuration
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
+  String get uiDuration;
+
+  /// uiWorkMode
+  ///
+  /// In en, this message translates to:
+  /// **'Work mode'**
+  String get uiWorkMode;
+
+  /// uiEmploymentType
+  ///
+  /// In en, this message translates to:
+  /// **'Employment type'**
+  String get uiEmploymentType;
+
+  /// uiPaidStatus
+  ///
+  /// In en, this message translates to:
+  /// **'Paid status'**
+  String get uiPaidStatus;
+
+  /// uiTags
+  ///
+  /// In en, this message translates to:
+  /// **'Tags'**
+  String get uiTags;
+
+  /// uiLoginRequired
+  ///
+  /// In en, this message translates to:
+  /// **'Login required'**
+  String get uiLoginRequired;
+
+  /// uiUploadUnavailable
+  ///
+  /// In en, this message translates to:
+  /// **'Upload unavailable'**
+  String get uiUploadUnavailable;
+
+  /// uiUploadInProgress
+  ///
+  /// In en, this message translates to:
+  /// **'Upload in progress'**
+  String get uiUploadInProgress;
+
+  /// uiUpdateUnavailable
+  ///
+  /// In en, this message translates to:
+  /// **'Update unavailable'**
+  String get uiUpdateUnavailable;
+
+  /// uiEditingLocked
+  ///
+  /// In en, this message translates to:
+  /// **'Editing locked'**
+  String get uiEditingLocked;
+
+  /// uiSubmissionUnavailable
+  ///
+  /// In en, this message translates to:
+  /// **'Submission unavailable'**
+  String get uiSubmissionUnavailable;
+
+  /// uiNoUrgentDeadlines
+  ///
+  /// In en, this message translates to:
+  /// **'No urgent deadlines right now'**
+  String get uiNoUrgentDeadlines;
+
+  /// uiNoRecommendations
+  ///
+  /// In en, this message translates to:
+  /// **'No recommendations right now'**
+  String get uiNoRecommendations;
+
+  /// uiCheckBackSoon
+  ///
+  /// In en, this message translates to:
+  /// **'Check back soon for fresh curated opportunities.'**
+  String get uiCheckBackSoon;
+
+  /// uiNoRecentActivity
+  ///
+  /// In en, this message translates to:
+  /// **'No recent activity yet'**
+  String get uiNoRecentActivity;
+
+  /// uiNoTrendingOpportunities
+  ///
+  /// In en, this message translates to:
+  /// **'No trending opportunities right now'**
+  String get uiNoTrendingOpportunities;
+
+  /// uiNoOpportunitiesMatchView
+  ///
+  /// In en, this message translates to:
+  /// **'No opportunities match this view'**
+  String get uiNoOpportunitiesMatchView;
+
+  /// uiNoIdeasMatchView
+  ///
+  /// In en, this message translates to:
+  /// **'No ideas match this view'**
+  String get uiNoIdeasMatchView;
+
+  /// uiNoTrainingAvailableNow
+  ///
+  /// In en, this message translates to:
+  /// **'No training programs available right now'**
+  String get uiNoTrainingAvailableNow;
+
+  /// uiNoTrainingInTopic
+  ///
+  /// In en, this message translates to:
+  /// **'No training programs available in this topic'**
+  String get uiNoTrainingInTopic;
+
+  /// uiLoadingApplications
+  ///
+  /// In en, this message translates to:
+  /// **'Loading your applications...'**
+  String get uiLoadingApplications;
+
+  /// uiLoadingSavedItems
+  ///
+  /// In en, this message translates to:
+  /// **'Loading your saved items...'**
+  String get uiLoadingSavedItems;
+
+  /// uiBuildCvFirst
+  ///
+  /// In en, this message translates to:
+  /// **'Build your CV first.'**
+  String get uiBuildCvFirst;
+
+  /// uiCompleteProfile
+  ///
+  /// In en, this message translates to:
+  /// **'Complete your profile.'**
+  String get uiCompleteProfile;
+
+  /// uiActBeforeDeadlines
+  ///
+  /// In en, this message translates to:
+  /// **'Act before deadlines close.'**
+  String get uiActBeforeDeadlines;
+
+  /// uiShortlistReady
+  ///
+  /// In en, this message translates to:
+  /// **'Your shortlist is ready.'**
+  String get uiShortlistReady;
+
+  /// uiRevisitSavedPicks
+  ///
+  /// In en, this message translates to:
+  /// **'Revisit saved picks before the strongest deadlines slip by.'**
+  String get uiRevisitSavedPicks;
+
+  /// uiFindNextOpportunity
+  ///
+  /// In en, this message translates to:
+  /// **'Find your next best opportunity.'**
+  String get uiFindNextOpportunity;
+
+  /// uiJumpBackBookmarked
+  ///
+  /// In en, this message translates to:
+  /// **'Jump back into everything you bookmarked.'**
+  String get uiJumpBackBookmarked;
+
+  /// uiRemote
+  ///
+  /// In en, this message translates to:
+  /// **'Remote'**
+  String get uiRemote;
+
+  /// uiPaid
+  ///
+  /// In en, this message translates to:
+  /// **'Paid'**
+  String get uiPaid;
+
+  /// uiNotifications
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get uiNotifications;
+
+  /// uiSettings
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get uiSettings;
+
+  /// uiAboutFutureGate
+  ///
+  /// In en, this message translates to:
+  /// **'About FutureGate'**
+  String get uiAboutFutureGate;
+
+  /// uiSettingsSubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Preferences, display, and app choices.'**
+  String get uiSettingsSubtitle;
+
+  /// uiSecuritySubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Password and account protection.'**
+  String get uiSecuritySubtitle;
+
+  /// uiHelpCenterSubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Answers, guidance, and support.'**
+  String get uiHelpCenterSubtitle;
+
+  /// uiAboutSubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Learn more about the platform.'**
+  String get uiAboutSubtitle;
+
+  /// uiSignOutSubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'End this session on the current device.'**
+  String get uiSignOutSubtitle;
+
+  /// uiExperience
+  ///
+  /// In en, this message translates to:
+  /// **'Experience'**
+  String get uiExperience;
+
+  /// uiBriefSummary
+  ///
+  /// In en, this message translates to:
+  /// **'A brief summary of your profile'**
+  String get uiBriefSummary;
+
+  /// uiAddSkill
+  ///
+  /// In en, this message translates to:
+  /// **'Add a skill'**
+  String get uiAddSkill;
+
+  /// uiCvPreviewSubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Review the final layout before you export or share it.'**
+  String get uiCvPreviewSubtitle;
+
+  /// uiChooseTemplateSubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Pick the resume style that best fits the role you want.'**
+  String get uiChooseTemplateSubtitle;
+
+  /// uiProvider
+  ///
+  /// In en, this message translates to:
+  /// **'Provider'**
+  String get uiProvider;
+
+  /// uiApplicationDeadline
+  ///
+  /// In en, this message translates to:
+  /// **'Application deadline'**
+  String get uiApplicationDeadline;
+
+  /// uiFundingType
+  ///
+  /// In en, this message translates to:
+  /// **'Funding type'**
+  String get uiFundingType;
+
+  /// uiAmount
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get uiAmount;
+
+  /// uiSearchCourses
+  ///
+  /// In en, this message translates to:
+  /// **'Search for courses...'**
+  String get uiSearchCourses;
+
+  /// uiSelectCategory
+  ///
+  /// In en, this message translates to:
+  /// **'Select category'**
+  String get uiSelectCategory;
+
+  /// uiSelectStage
+  ///
+  /// In en, this message translates to:
+  /// **'Select stage'**
+  String get uiSelectStage;
+
+  /// uiPublish
+  ///
+  /// In en, this message translates to:
+  /// **'Publish'**
+  String get uiPublish;
+
+  /// uiHiddenLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Hidden'**
+  String get uiHiddenLabel;
+
+  /// uiSearchPrograms
+  ///
+  /// In en, this message translates to:
+  /// **'Search programs, partners...'**
+  String get uiSearchPrograms;
+
+  /// uiInternshipsSubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Hands-on student placements'**
+  String get uiInternshipsSubtitle;
+
+  /// uiSponsoredSubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Partner-backed support'**
+  String get uiSponsoredSubtitle;
+
+  /// uiTryDifferentFilter
+  ///
+  /// In en, this message translates to:
+  /// **'Try a different filter or start a new idea.'**
+  String get uiTryDifferentFilter;
+
+  /// uiCreateFirstIdea
+  ///
+  /// In en, this message translates to:
+  /// **'Create your first idea or adjust the filters.'**
+  String get uiCreateFirstIdea;
+
+  /// uiCvStudioSubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Build, upload, and export your CV.'**
+  String get uiCvStudioSubtitle;
 }
 
 class _AppLocalizationsDelegate

@@ -144,6 +144,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
   Widget build(BuildContext context) {
     final scopedTheme = _buildScopedTheme(context);
     final provider = context.watch<AdminProvider>();
+    final l10n = AppLocalizations.of(context)!;
     final adminId = context.watch<AuthProvider>().userModel?.uid.trim() ?? '';
     final keyboardVisible = MediaQuery.viewInsetsOf(context).bottom > 0;
     final hasModerationData =
@@ -220,11 +221,12 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const AdminSectionHeader(
+                          AdminSectionHeader(
                             eyebrow: 'Moderation',
-                            title: 'Content Workspace',
+                            title: l10n.uiContentWorkspace,
                             subtitle:
-                                'Review submissions, monitor queues, and move between content types without losing context.',
+                                l10n
+                                    .uiReviewSubmissionsMonitorQueuesAndMoveBetweenContentTypesWithout,
                           ),
                           const SizedBox(height: 14),
                           Wrap(
@@ -327,20 +329,20 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                         tabs: [
                           _buildTab(
                             icon: Icons.lightbulb,
-                            label: 'Ideas',
+                            label: l10n.uiProjectIdeas,
                             badgeCount: pendingIdeas,
                           ),
                           _buildTab(
                             icon: Icons.work_outline,
-                            label: 'Opportunities',
+                            label: l10n.uiOpportunities,
                           ),
                           _buildTab(
                             icon: Icons.card_giftcard,
-                            label: 'Scholarships',
+                            label: l10n.uiScholarships,
                           ),
                           _buildTab(
                             icon: Icons.menu_book_rounded,
-                            label: 'Library',
+                            label: l10n.uiLibrary,
                           ),
                         ],
                       ),
@@ -369,7 +371,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       child: Scaffold(
         backgroundColor: AdminPalette.background,
         appBar: AppBar(
-          title: Text(AppLocalizations.of(context)!.uiAdminContentCenter),
+          title: Text(l10n.uiAdminContentCenter),
           backgroundColor: AdminPalette.surface,
           foregroundColor: _primaryColor,
         ),
@@ -415,6 +417,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
   }
 
   Widget _buildProjectIdeasTab(AdminProvider provider) {
+    final l10n = AppLocalizations.of(context)!;
     final adminId = context.read<AuthProvider>().userModel?.uid.trim() ?? '';
     final allIdeas = provider.allProjectIdeas.where(_matchesIdeaSearch).toList()
       ..sort(_compareIdeasForAdmin);
@@ -446,13 +449,12 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     if (provider.allProjectIdeas.isEmpty) {
       return AdminEmptyState(
         icon: Icons.lightbulb_outline,
-        title: 'No project ideas to review yet',
-        message:
-            'Create the first project idea to start shaping the innovation feed.',
+        title: l10n.uiNoProjectIdeasToReviewYet,
+        message: l10n.uiCreateTheFirstProjectIdeaToStartShapingTheInnovation,
         action: FilledButton.icon(
           onPressed: () => _openIdeaEditor(),
           icon: const Icon(Icons.add_rounded),
-          label: Text(AppLocalizations.of(context)!.uiPostAdminIdea),
+          label: Text(l10n.uiPostAdminIdea),
           style: FilledButton.styleFrom(
             backgroundColor: _ideaAccentColor,
             foregroundColor: Colors.white,
@@ -641,7 +643,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                         if (error != null && context.mounted) {
                           context.showAppSnackBar(
                             error,
-                            title: 'Update unavailable',
+                            title: l10n.updateUnavailableTitle,
                             type: AppFeedbackType.error,
                           );
                         }
@@ -662,7 +664,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                         if (error != null && context.mounted) {
                           context.showAppSnackBar(
                             error,
-                            title: 'Update unavailable',
+                            title: l10n.updateUnavailableTitle,
                             type: AppFeedbackType.error,
                           );
                         }
@@ -743,7 +745,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                     if (error != null && context.mounted) {
                       context.showAppSnackBar(
                         error,
-                        title: 'Delete unavailable',
+                        title: l10n.uiDeleteUnavailable,
                         type: AppFeedbackType.error,
                       );
                     }
@@ -914,7 +916,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        'Applications for $opportunityTitle',
+                        l10n.uiApplicationsForOpportunitytitle(opportunityTitle),
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
@@ -934,11 +936,12 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 ),
                 const SizedBox(height: 10),
                 if (liveApplications.isEmpty)
-                  const AdminEmptyState(
+                  AdminEmptyState(
                     icon: Icons.assignment_late_outlined,
-                    title: 'No applications to review yet',
+                    title: l10n.uiNoApplicationsToReviewYet,
                     message:
-                        'There are no submitted applications for this opportunity right now.',
+                        l10n
+                            .uiThereAreNoSubmittedApplicationsForThisOpportunityRightNow,
                   )
                 else
                   ...liveApplications.map((item) {
@@ -1093,9 +1096,9 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     if (provider.allOpportunities.isEmpty) {
       return AdminEmptyState(
         icon: Icons.work_outline,
-        title: 'No opportunities published yet',
+        title: l10n.uiNoOpportunitiesPublishedYet,
         message:
-            'Publish the first opportunity to start populating the student discovery experience.',
+            l10n.uiPublishTheFirstOpportunityToStartPopulatingTheStudentDiscovery,
         action: FilledButton.icon(
           onPressed: () => _openOpportunityEditor(),
           icon: const Icon(Icons.add_rounded),
@@ -1402,7 +1405,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                     if (error != null && context.mounted) {
                       context.showAppSnackBar(
                         error,
-                        title: 'Delete unavailable',
+                        title: l10n.uiDeleteUnavailable,
                         type: AppFeedbackType.error,
                       );
                     }
@@ -1417,6 +1420,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
   }
 
   Widget _buildScholarshipsTab(AdminProvider provider) {
+    final l10n = AppLocalizations.of(context)!;
     final searchQuery = _searchController.text.trim();
     final allScholarships =
         provider.allScholarships.where(_matchesScholarshipSearch).toList()
@@ -1463,9 +1467,9 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     if (provider.allScholarships.isEmpty) {
       return AdminEmptyState(
         icon: Icons.card_giftcard,
-        title: 'No scholarships published yet',
+        title: l10n.uiNoScholarshipsPublishedYet,
         message:
-            'Publish the first scholarship to start shaping the student discovery catalog.',
+            l10n.uiPublishTheFirstScholarshipToStartShapingTheStudentDiscovery,
         action: FilledButton.icon(
           onPressed: () => _openScholarshipEditor(),
           icon: const Icon(Icons.add_rounded),
@@ -1694,7 +1698,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                     if (error != null && context.mounted) {
                       context.showAppSnackBar(
                         error,
-                        title: 'Delete unavailable',
+                        title: l10n.uiDeleteUnavailable,
                         type: AppFeedbackType.error,
                       );
                     }
@@ -2204,6 +2208,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     required bool isHidden,
     required Future<String?> Function(bool nextHidden) onToggle,
   }) async {
+    final l10n = AppLocalizations.of(context)!;
     final nextHidden = !isHidden;
     final error = await onToggle(nextHidden);
     if (!mounted) {
@@ -2213,7 +2218,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     if (error != null) {
       context.showAppSnackBar(
         error,
-        title: 'Update unavailable',
+        title: l10n.updateUnavailableTitle,
         type: AppFeedbackType.error,
       );
       return;
@@ -2833,7 +2838,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               const SizedBox(height: 8),
               if (problemText.trim().isNotEmpty) ...[
                 _buildIdeaNarrativeCard(
-                  title: 'Problem Statement',
+                  title: AppLocalizations.of(context)!.uiProblemStatement,
                   value: problemText,
                   icon: Icons.report_problem_outlined,
                   color: AdminPalette.danger,
@@ -2842,7 +2847,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               ],
               if (solutionText.trim().isNotEmpty) ...[
                 _buildIdeaNarrativeCard(
-                  title: 'Proposed Solution',
+                  title: AppLocalizations.of(context)!.uiProposedSolution,
                   value: solutionText,
                   icon: Icons.auto_fix_high_outlined,
                   color: _ideaAccentColor,
@@ -2851,7 +2856,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               ],
               if (benefitsText.trim().isNotEmpty)
                 _buildIdeaNarrativeCard(
-                  title: 'Expected Benefits',
+                  title: AppLocalizations.of(context)!.uiExpectedBenefits,
                   value: benefitsText,
                   icon: Icons.trending_up_rounded,
                   color: AdminPalette.success,
@@ -3411,8 +3416,8 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     final adminId = context.read<AuthProvider>().userModel?.uid.trim() ?? '';
     if (!item.canBeManagedByAdmin(adminId)) {
       context.showAppSnackBar(
-        'You can only update applications for opportunities you posted as admin.',
-        title: 'Application unavailable',
+        l10n.uiYouCanOnlyUpdateApplicationsForOpportunitiesYouPostedAs,
+        title: l10n.uiApplicationUnavailable,
         type: AppFeedbackType.warning,
       );
       return;
@@ -3429,8 +3434,11 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     }
 
     context.showAppSnackBar(
-      error ?? 'Application ${ApplicationStatus.sentenceLabel(status, l10n)}.',
-      title: error == null ? 'Application updated' : 'Update unavailable',
+      error ??
+          l10n.uiApplicationStatusValue(
+            ApplicationStatus.sentenceLabel(status, l10n),
+          ),
+      title: error == null ? l10n.uiApplicationUpdated : l10n.updateUnavailableTitle,
       type: error == null ? AppFeedbackType.success : AppFeedbackType.error,
     );
   }
@@ -3651,6 +3659,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
   }
 
   Future<void> _showApplicationCv(String applicationId) async {
+    final l10n = AppLocalizations.of(context)!;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -3736,10 +3745,10 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                     ],
                     const SizedBox(height: 18),
                     _buildApplicationDocumentCard(
-                      title: 'Primary CV PDF',
+                      title: l10n.uiPrimaryCvPdf,
                       subtitle: cv.hasUploadedCv
                           ? 'File: ${cv.uploadedCvDisplayName}\nUploaded: ${_formatDocumentDate(cv.uploadedCvUploadedAt)}'
-                          : 'No uploaded CV',
+                          : l10n.uiNoUploadedCv,
                       accentColor: _accentColor,
                       warningText: cv.hasUploadedCv && !cv.isUploadedCvPdf
                           ? 'This uploaded file is not a valid PDF. Ask the user to replace it with a PDF version.'
@@ -3761,12 +3770,12 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                     ),
                     const SizedBox(height: 10),
                     _buildApplicationDocumentCard(
-                      title: 'Built CV',
+                      title: l10n.uiBuiltCv,
                       subtitle: cv.hasExportedPdf
-                          ? 'Built CV PDF is ready for review.'
+                          ? l10n.uiBuiltCvPdfReadyForReview
                           : cv.hasBuilderContent
-                          ? 'Built CV details are available, but the PDF has not been exported yet.'
-                          : 'No built CV details available.',
+                          ? l10n.uiBuiltCvDetailsAvailableNoPdfYet
+                          : l10n.uiNoBuiltCvDetailsAvailable,
                       accentColor: _primaryColor,
                       onView: cv.hasExportedPdf
                           ? () => _openApplicationDocument(
@@ -3839,6 +3848,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     bool download = false,
     bool requirePdf = false,
   }) async {
+    final l10n = AppLocalizations.of(context)!;
     try {
       final document = await _documentAccessService.getApplicationCvDocument(
         applicationId: applicationId,
@@ -3848,8 +3858,8 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
 
       if (requirePdf && !document.isPdf) {
         context.showAppSnackBar(
-          'This document is not a valid PDF file.',
-          title: 'Preview unavailable',
+          l10n.uiThisDocumentIsNotAValidPdfFile,
+          title: l10n.uiPreviewUnavailable,
           type: AppFeedbackType.warning,
         );
         return;
@@ -3870,8 +3880,8 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       if (!mounted) return;
       if (!launched) {
         context.showAppSnackBar(
-          'We couldn\'t open the document right now.',
-          title: 'Document unavailable',
+          l10n.uiCouldNotOpenTheDocumentRightNow,
+          title: l10n.uiDocumentUnavailable,
           type: AppFeedbackType.error,
         );
       }
@@ -3879,7 +3889,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       if (!mounted) return;
       context.showAppSnackBar(
         _documentErrorMessage(e),
-        title: 'Document unavailable',
+        title: l10n.uiDocumentUnavailable,
         type: AppFeedbackType.error,
       );
     }
@@ -4128,7 +4138,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             if (description.trim().isNotEmpty) ...[
               const SizedBox(height: 10),
               _buildIdeaNarrativeCard(
-                title: 'Role Overview',
+                title: AppLocalizations.of(context)!.uiRoleOverview,
                 value: description,
                 icon: Icons.description_outlined,
                 color: typeColor,
@@ -4182,7 +4192,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             if (requirements.isNotEmpty) ...[
               const SizedBox(height: 10),
               _buildDetailListCard(
-                title: 'Requirements',
+                title: AppLocalizations.of(context)!.requirementsLabel,
                 items: requirements,
                 icon: Icons.checklist_rounded,
                 color: typeColor,
@@ -4191,7 +4201,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             if (benefits.isNotEmpty) ...[
               const SizedBox(height: 10),
               _buildDetailListCard(
-                title: 'Benefits',
+                title: AppLocalizations.of(context)!.uiBenefits,
                 items: benefits,
                 icon: Icons.star_outline_rounded,
                 color: AdminPalette.success,
@@ -4367,7 +4377,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             if (description.trim().isNotEmpty) ...[
               const SizedBox(height: 10),
               _buildIdeaNarrativeCard(
-                title: 'Scholarship Overview',
+                title: AppLocalizations.of(context)!.uiScholarshipOverview,
                 value: description,
                 icon: Icons.description_outlined,
                 color: _scholarshipAccentColor,
@@ -4376,7 +4386,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             if (eligibility.trim().isNotEmpty) ...[
               const SizedBox(height: 10),
               _buildIdeaNarrativeCard(
-                title: 'Eligibility',
+                title: AppLocalizations.of(context)!.eligibilityLabel,
                 value: eligibility,
                 icon: Icons.verified_user_outlined,
                 color: AdminPalette.activity,
@@ -4444,7 +4454,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               FilledButton.icon(
                 onPressed: () => _openExternalLink(link),
                 icon: const Icon(Icons.open_in_new_rounded),
-                label: const Text('Open Scholarship Link'),
+                label: Text(AppLocalizations.of(context)!.uiOpenScholarshipLink),
                 style: FilledButton.styleFrom(
                   backgroundColor: _scholarshipAccentColor,
                   foregroundColor: Colors.white,
@@ -4577,7 +4587,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             if (description.trim().isNotEmpty) ...[
               const SizedBox(height: 10),
               _buildIdeaNarrativeCard(
-                title: 'Training Overview',
+                title: AppLocalizations.of(context)!.uiTrainingOverview,
                 value: description,
                 icon: Icons.description_outlined,
                 color: trainingAccentColor,
@@ -4797,7 +4807,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
   Widget _buildEmptyState(IconData icon, String message) {
     return AdminEmptyState(
       icon: icon,
-      title: 'No results in this view',
+      title: AppLocalizations.of(context)!.uiNoResultsInThisView,
       message: message,
     );
   }

@@ -92,7 +92,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (error != null) {
       context.showAppSnackBar(
         error,
-        title: 'Update unavailable',
+        title: AppLocalizations.of(context)!.uiUpdateUnavailable,
         type: AppFeedbackType.error,
       );
       return;
@@ -106,7 +106,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     context.showAppSnackBar(
       'Your profile has been updated successfully.',
-      title: 'Profile updated',
+      title: AppLocalizations.of(context)!.uiProfileUpdated,
       type: AppFeedbackType.success,
     );
     Navigator.pop(context);
@@ -130,7 +130,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (error != null) {
       context.showAppSnackBar(
         error,
-        title: 'Avatar unavailable',
+        title: AppLocalizations.of(context)!.uiAvatarUnavailable,
         type: AppFeedbackType.error,
       );
       return;
@@ -156,7 +156,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (error != null) {
       context.showAppSnackBar(
         error,
-        title: 'Photo unavailable',
+        title: AppLocalizations.of(context)!.uiPhotoUnavailable,
         type: AppFeedbackType.error,
       );
       return;
@@ -191,7 +191,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       }
       context.showAppSnackBar(
         'Choose an image smaller than 5 MB.',
-        title: 'Upload unavailable',
+        title: AppLocalizations.of(context)!.uiUploadUnavailable,
         type: AppFeedbackType.warning,
       );
       return;
@@ -220,7 +220,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (error != null) {
       context.showAppSnackBar(
         error,
-        title: 'Upload unavailable',
+        title: AppLocalizations.of(context)!.uiUploadUnavailable,
         type: AppFeedbackType.error,
       );
       return;
@@ -244,7 +244,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (error != null) {
       context.showAppSnackBar(
         error,
-        title: 'Remove unavailable',
+        title: AppLocalizations.of(context)!.uiRemoveUnavailable,
         type: AppFeedbackType.error,
       );
       return;
@@ -263,7 +263,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final isUploadActive = student?.photoType == 'upload';
 
     return SettingsPageScaffold(
-      title: 'Edit Profile',
+      title: AppLocalizations.of(context)!.uiEditProfile,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -340,13 +340,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 SettingsButtonGroup(
                   children: [
                     SettingsSecondaryButton(
-                      label: 'Choose Avatar',
+                      label: AppLocalizations.of(context)!.uiChooseAvatar,
                       icon: Icons.face_retouching_natural_rounded,
                       onPressed: () =>
                           _showAvatarPicker(context, student?.avatarId),
                     ),
                     SettingsPrimaryButton(
-                      label: 'Upload Photo',
+                      label: AppLocalizations.of(context)!.uiUploadPhoto,
                       icon: Icons.upload_rounded,
                       onPressed: _pickAndUploadPhoto,
                     ),
@@ -358,11 +358,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     children: [
                       if (hasUploadedPhoto && !isUploadActive)
                         SettingsSecondaryButton(
-                          label: 'Use Uploaded',
+                          label: AppLocalizations.of(context)!.uiUseUploaded,
                           onPressed: _useUploadedPhoto,
                         ),
                       SettingsSecondaryButton(
-                        label: 'Remove Photo',
+                        label: AppLocalizations.of(context)!.uiRemovePhoto,
                         color: SettingsFlowPalette.error,
                         onPressed: _removePhoto,
                       ),
@@ -373,8 +373,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
           ),
           const SizedBox(height: 18),
-          const SettingsSectionHeading(
-            title: 'Basic Details',
+          SettingsSectionHeading(
+            title: AppLocalizations.of(context)!.uiBasicDetails,
             subtitle:
                 'Use graceful fallbacks where data is missing and keep email changes on the secure auth flow.',
           ),
@@ -384,13 +384,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               children: [
                 _ProfileField(
                   controller: _fullNameController,
-                  label: 'Full Name',
+                  label: AppLocalizations.of(context)!.uiFullName,
                   icon: Icons.badge_outlined,
                 ),
                 const SizedBox(height: 14),
                 _ProfileField(
                   controller: _emailController,
-                  label: 'Email',
+                  label: AppLocalizations.of(context)!.uiEmail,
                   icon: Icons.email_outlined,
                   readOnly: true,
                   suffix: TextButton(
@@ -417,22 +417,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 const SizedBox(height: 14),
                 _ProfileField(
                   controller: _phoneController,
-                  label: 'Phone',
+                  label: AppLocalizations.of(context)!.uiPhone,
                   icon: Icons.phone_outlined,
                   keyboardType: TextInputType.phone,
                 ),
                 const SizedBox(height: 14),
                 _ProfileField(
                   controller: _locationController,
-                  label: 'Location',
+                  label: AppLocalizations.of(context)!.uiLocation,
                   icon: Icons.location_on_outlined,
                 ),
               ],
             ),
           ),
           const SizedBox(height: 18),
-          const SettingsSectionHeading(
-            title: 'Academic Profile',
+          SettingsSectionHeading(
+            title: AppLocalizations.of(context)!.uiAcademicProfile,
             subtitle:
                 'Keep your student context current so opportunity matching stays useful.',
           ),
@@ -442,19 +442,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               children: [
                 _ProfileField(
                   controller: _universityController,
-                  label: 'University',
+                  label: AppLocalizations.of(context)!.uiUniversity,
                   icon: Icons.school_outlined,
                 ),
                 const SizedBox(height: 14),
                 _ProfileField(
                   controller: _fieldOfStudyController,
-                  label: 'Field of Study',
+                  label: AppLocalizations.of(context)!.uiFieldOfStudy,
                   icon: Icons.auto_stories_outlined,
                 ),
                 const SizedBox(height: 14),
                 _ProfileField(
                   controller: _bioController,
-                  label: 'Bio',
+                  label: AppLocalizations.of(context)!.uiBio,
                   icon: Icons.notes_rounded,
                   maxLines: 5,
                 ),

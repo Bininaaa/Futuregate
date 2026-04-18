@@ -145,16 +145,16 @@ class _AdminOpportunityEditorScreenState
     final l10n = AppLocalizations.of(context)!;
     return AdminEditorScaffold(
       title: _isEditing
-          ? 'Edit Admin Opportunity'
-          : 'Publish Admin Opportunity',
+          ? l10n.editAdminOpportunityTitle
+          : l10n.publishAdminOpportunityTitle,
       submitLabel: _isEditing
-          ? 'Save Opportunity Changes'
-          : 'Publish Opportunity',
+          ? l10n.saveOpportunityChangesLabel
+          : l10n.publishLabel,
       icon: Icons.work_outline_rounded,
       accentColor: OpportunityType.color(_type),
       subtitle: _isEditing
-          ? 'Update the fields below and save.'
-          : 'Fill in the fields below, then publish.',
+          ? l10n.uiUpdateTheFieldsBelowAndSave
+          : l10n.uiFillInTheFieldsBelowThenPublish,
       isSubmitting: _isSubmitting,
       onSubmit: _submit,
       child: Form(
@@ -162,7 +162,7 @@ class _AdminOpportunityEditorScreenState
         child: Column(
           children: [
             AdminEditorSection(
-              title: 'Basic Information',
+              title: l10n.uiBasicInformation,
               child: Column(
                 children: [
                   AdminEditorField(
@@ -176,8 +176,8 @@ class _AdminOpportunityEditorScreenState
                     children: [
                       Expanded(
                         child: AdminEditorChoiceCard(
-                          label: 'Open',
-                          subtitle: 'Visible to students',
+                          label: l10n.uiOpen,
+                          subtitle: l10n.openStatusSubtitle,
                           selected: _status == 'open',
                           color: AdminPalette.success,
                           icon: Icons.visibility_outlined,
@@ -187,8 +187,8 @@ class _AdminOpportunityEditorScreenState
                       const SizedBox(width: 10),
                       Expanded(
                         child: AdminEditorChoiceCard(
-                          label: 'Closed',
-                          subtitle: 'Saved but hidden',
+                          label: l10n.closedStatusLabel,
+                          subtitle: l10n.savedHiddenLabel,
                           selected: _status == 'closed',
                           color: AdminPalette.textMuted,
                           icon: Icons.lock_outline_rounded,
@@ -227,7 +227,7 @@ class _AdminOpportunityEditorScreenState
             ),
             const SizedBox(height: 12),
             AdminEditorSection(
-              title: 'Description',
+              title: l10n.descriptionSectionTitle,
               child: AdminEditorField(
                 controller: _descriptionController,
                 label: 'Description',
@@ -238,7 +238,7 @@ class _AdminOpportunityEditorScreenState
             ),
             const SizedBox(height: 12),
             AdminEditorSection(
-              title: 'Requirements And Eligibility',
+              title: l10n.uiRequirementsAndEligibility,
               subtitle:
                   'Add one clear item at a time so students see a clean checklist.',
               child: AdminEditorListField(
@@ -260,7 +260,7 @@ class _AdminOpportunityEditorScreenState
             ),
             const SizedBox(height: 12),
             AdminEditorSection(
-              title: 'Logistics',
+              title: l10n.logisticsTitle,
               child: Column(
                 children: [
                   AdminEditorField(

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../l10n/generated/app_localizations.dart';
 import '../../models/conversation_model.dart';
 import '../../models/user_model.dart';
 import '../../providers/auth_provider.dart';
@@ -107,7 +108,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
       }
       context.showAppSnackBar(
         _readableError(error),
-        title: 'Chat unavailable',
+        title: AppLocalizations.of(context)!.uiChatUnavailable,
         type: AppFeedbackType.warning,
       );
       return;

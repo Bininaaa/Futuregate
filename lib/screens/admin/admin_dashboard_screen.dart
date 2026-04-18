@@ -52,6 +52,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<AdminProvider>();
+    final l10n = AppLocalizations.of(context)!;
 
     if (provider.isLoading) {
       return const AppLoadingView(density: AppLoadingDensity.compact);
@@ -60,11 +61,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     if (provider.dashboardError != null) {
       return AdminEmptyState(
         icon: Icons.error_outline_rounded,
-        title: 'Dashboard unavailable',
-        message: 'We could not load admin analytics right now.',
+        title: l10n.uiDashboardUnavailable,
+        message: l10n.uiWeCouldNotLoadAdminAnalyticsRightNow,
         action: FilledButton(
           onPressed: provider.loadDashboardData,
-          child: Text(AppLocalizations.of(context)!.retryLabel),
+          child: Text(l10n.retryLabel),
         ),
       );
     }
@@ -84,72 +85,72 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             AdminHeroCard(
-              title: 'Admin Control Room',
+              title: l10n.uiAdminControlRoom,
               subtitle:
-                  'Review companies, content, and platform activity from one focused workspace.',
+                  l10n
+                      .uiReviewCompaniesContentAndPlatformActivityFromOneFocusedWorkspace,
               icon: Icons.admin_panel_settings_rounded,
               accentColor: AdminPalette.secondary,
               actions: [
                 AdminActionChip(
-                  label: 'Review Companies',
+                  label: l10n.uiReviewCompanies,
                   icon: Icons.verified_user_outlined,
                   onTap: _openUsers,
                 ),
                 AdminActionChip(
-                  label: 'Review Content',
+                  label: l10n.uiReviewContent,
                   icon: Icons.auto_awesome_mosaic_rounded,
                   filled: true,
                   onTap: () =>
                       _openContent(AdminContentCenterScreen.projectIdeasTab),
                 ),
                 AdminActionChip(
-                  label: 'Open Activity',
+                  label: l10n.uiOpenActivity,
                   icon: Icons.timeline_rounded,
                   onTap: _openActivityCenter,
                 ),
                 AdminActionChip(
-                  label: 'Library',
+                  label: l10n.uiLibrary,
                   icon: Icons.menu_book_rounded,
                   onTap: _openLibrary,
                 ),
               ],
             ),
             const SizedBox(height: 18),
-            const AdminSectionHeader(
-              eyebrow: 'Snapshot',
-              title: 'Platform Overview',
-              subtitle:
-                  'The high-level user and account picture admins usually need first.',
+            AdminSectionHeader(
+              eyebrow: l10n.uiSnapshot,
+              title: l10n.uiPlatformOverview,
+              subtitle: l10n.uiTheHighLevelUserAndAccountPictureAdminsUsuallyNeed,
             ),
             const SizedBox(height: 12),
             _DashboardMetricGrid(
               items: [
                 _DashboardMetric(
-                  title: 'Total Users',
+                  title: l10n.uiTotalUsers,
                   value: '${stats['totalUsers'] ?? 0}',
                   icon: Icons.people_alt_outlined,
                   color: AdminPalette.primary,
                 ),
                 _DashboardMetric(
-                  title: 'Active Users',
+                  title: l10n.uiActiveUsers,
                   value: '${stats['activeUsers'] ?? 0}',
                   icon: Icons.check_circle_outline_rounded,
                   color: AdminPalette.success,
                 ),
                 _DashboardMetric(
-                  title: 'Students',
+                  title: l10n.uiStudents,
                   value: '${stats['students'] ?? 0}',
                   icon: Icons.school_outlined,
                   color: AdminPalette.info,
                 ),
                 _DashboardMetric(
-                  title: 'Companies',
+                  title: l10n.uiCompanies,
                   value: '${stats['companies'] ?? 0}',
                   icon: Icons.business_center_outlined,
                   color: AdminPalette.secondary,
                 ),
                 _DashboardMetric(
-                  title: 'Pending Reviews',
+                  title: l10n.uiPendingReviews,
                   value: '${stats['pendingCompanies'] ?? 0}',
                   icon: Icons.pending_actions_rounded,
                   color: AdminPalette.warning,
@@ -157,35 +158,35 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               ],
             ),
             const SizedBox(height: 24),
-            const AdminSectionHeader(
-              eyebrow: 'Students',
-              title: 'Academic Breakdown',
+            AdminSectionHeader(
+              eyebrow: l10n.uiStudents,
+              title: l10n.uiAcademicBreakdown,
               subtitle:
-                  'See how the student population is distributed by level before diving into the charts.',
+                  l10n.uiSeeHowTheStudentPopulationIsDistributedByLevelBefore,
             ),
             const SizedBox(height: 12),
             _DashboardMetricGrid(
               items: [
                 _DashboardMetric(
-                  title: 'Bac',
+                  title: l10n.uiBac,
                   value: '${stats['bac'] ?? 0}',
                   icon: Icons.menu_book_outlined,
                   color: AdminPalette.accent,
                 ),
                 _DashboardMetric(
-                  title: 'Licence',
+                  title: l10n.academicLevelLicence,
                   value: '${stats['licence'] ?? 0}',
                   icon: Icons.import_contacts_outlined,
                   color: AdminPalette.primary,
                 ),
                 _DashboardMetric(
-                  title: 'Master',
+                  title: l10n.academicLevelMaster,
                   value: '${stats['master'] ?? 0}',
                   icon: Icons.workspace_premium_outlined,
                   color: AdminPalette.activity,
                 ),
                 _DashboardMetric(
-                  title: 'Doctorat',
+                  title: l10n.academicLevelDoctorat,
                   value: '${stats['doctorat'] ?? 0}',
                   icon: Icons.science_outlined,
                   color: AdminPalette.secondary,
@@ -208,47 +209,46 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             const SizedBox(height: 16),
             MonthlyRegistrationsLineChart(monthlyData: monthlyRegistrations),
             const SizedBox(height: 24),
-            const AdminSectionHeader(
-              eyebrow: 'Content',
-              title: 'Managed Inventory',
-              subtitle:
-                  'A quick count of the content types handled inside the admin workspace.',
+            AdminSectionHeader(
+              eyebrow: l10n.uiContent,
+              title: l10n.uiManagedInventory,
+              subtitle: l10n.uiAQuickCountOfTheContentTypesHandledInsideThe,
             ),
             const SizedBox(height: 12),
             _DashboardMetricGrid(
               items: [
                 _DashboardMetric(
-                  title: 'Opportunities',
+                  title: l10n.uiOpportunities,
                   value: '${stats['opportunities'] ?? 0}',
                   icon: Icons.work_outline_rounded,
                   color: AdminPalette.accent,
                 ),
                 _DashboardMetric(
-                  title: 'Applications',
+                  title: l10n.uiApplications,
                   value: '${stats['applications'] ?? 0}',
                   icon: Icons.assignment_outlined,
                   color: AdminPalette.activity,
                 ),
                 _DashboardMetric(
-                  title: 'Scholarships',
+                  title: l10n.uiScholarships,
                   value: '${stats['scholarships'] ?? 0}',
                   icon: Icons.card_giftcard_outlined,
                   color: AdminPalette.danger,
                 ),
                 _DashboardMetric(
-                  title: 'Library',
+                  title: l10n.uiLibrary,
                   value: '${stats['trainings'] ?? 0}',
                   icon: Icons.cast_for_education_outlined,
                   color: AdminPalette.secondary,
                 ),
                 _DashboardMetric(
-                  title: 'Project Ideas',
+                  title: l10n.uiProjectIdeas,
                   value: '${stats['projectIdeas'] ?? 0}',
                   icon: Icons.lightbulb_outline_rounded,
                   color: AdminPalette.warning,
                 ),
                 _DashboardMetric(
-                  title: 'Conversations',
+                  title: l10n.uiConversations,
                   value: '${stats['conversations'] ?? 0}',
                   icon: Icons.chat_bubble_outline_rounded,
                   color: AdminPalette.success,
@@ -256,17 +256,17 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               ],
             ),
             const SizedBox(height: 24),
-            const AdminSectionHeader(
-              eyebrow: 'Performance',
-              title: 'Engagement Analytics',
+            AdminSectionHeader(
+              eyebrow: l10n.uiPerformance,
+              title: l10n.uiEngagementAnalytics,
               subtitle:
-                  'These ratios help admins see whether users are engaging deeply or only browsing.',
+                  l10n.uiTheseRatiosHelpAdminsSeeWhetherUsersAreEngagingDeeply,
             ),
             const SizedBox(height: 12),
             _InsightTile(
               icon: Icons.percent_rounded,
               iconColor: AdminPalette.info,
-              title: 'Application Rate',
+              title: l10n.uiApplicationRate,
               value:
                   '${((stats['applicationRate'] ?? 0.0) as double).toStringAsFixed(1)} apps per opportunity',
             ),
@@ -274,7 +274,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             _InsightTile(
               icon: Icons.description_outlined,
               iconColor: AdminPalette.success,
-              title: 'CV Completion Rate',
+              title: l10n.uiCvCompletionRate,
               value:
                   '${((stats['cvCompletionRate'] ?? 0.0) as double).toStringAsFixed(0)}% (${stats['totalCvs'] ?? 0} of ${stats['students'] ?? 0} students)',
             ),
@@ -282,13 +282,13 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             _InsightTile(
               icon: Icons.pending_actions_outlined,
               iconColor: AdminPalette.warning,
-              title: 'Pending Project Ideas',
+              title: l10n.uiPendingProjectIdeas,
               value:
                   '${stats['pendingIdeas'] ?? 0} pending and ${stats['approvedIdeas'] ?? 0} approved',
             ),
             const SizedBox(height: 24),
             _RankedListCard(
-              title: 'Most Applied Opportunities',
+              title: l10n.uiMostAppliedOpportunities,
               icon: Icons.trending_up_rounded,
               color: AdminPalette.activity,
               items: (stats['topApplied'] as List<dynamic>?) ?? [],
@@ -296,18 +296,17 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             ),
             const SizedBox(height: 16),
             _RankedListCard(
-              title: 'Most Saved Opportunities',
+              title: l10n.uiMostSavedOpportunities,
               icon: Icons.bookmark_outline_rounded,
               color: AdminPalette.accent,
               items: (stats['topSaved'] as List<dynamic>?) ?? [],
               suffixLabel: 'saves',
             ),
             const SizedBox(height: 24),
-            const AdminSectionHeader(
-              eyebrow: 'Actions',
-              title: 'Quick Access',
-              subtitle:
-                  'Jump straight into the admin areas you open most often.',
+            AdminSectionHeader(
+              eyebrow: l10n.uiActions,
+              title: l10n.uiQuickAccess,
+              subtitle: l10n.uiJumpStraightIntoTheAdminAreasYouOpenMostOften,
             ),
             const SizedBox(height: 12),
             _QuickAccessGrid(
@@ -317,11 +316,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               onOpenLibrary: _openLibrary,
             ),
             const SizedBox(height: 24),
-            const AdminSectionHeader(
-              eyebrow: 'Feed',
-              title: 'Recent Activity',
-              subtitle:
-                  'Use the live feed to jump directly into the right moderation target.',
+            AdminSectionHeader(
+              eyebrow: l10n.uiFeed,
+              title: l10n.uiRecentActivity,
+              subtitle: l10n.uiUseTheLiveFeedToJumpDirectlyIntoTheRight,
             ),
             const SizedBox(height: 12),
             _RecentActivityCard(
@@ -423,12 +421,13 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   }
 
   String _manageLabelForActivity(AdminActivityModel activity) {
+    final l10n = AppLocalizations.of(context)!;
     return switch (activity.type) {
-      'application' => 'Manage Application',
-      'opportunity' => 'Manage Opportunity',
-      'scholarship' => 'Manage Scholarship',
-      'training' => 'Manage Library Resource',
-      _ => 'Manage Project Idea',
+      'application' => l10n.uiManageApplication,
+      'opportunity' => l10n.uiManageOpportunity,
+      'scholarship' => l10n.uiManageScholarship,
+      'training' => l10n.uiManageLibraryResource,
+      _ => l10n.uiManageProjectIdea,
     };
   }
 }
@@ -584,6 +583,7 @@ class _RankedListCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return AdminSurface(
       radius: 22,
       child: Column(
@@ -610,7 +610,7 @@ class _RankedListCard extends StatelessWidget {
           const SizedBox(height: 12),
           if (items.isEmpty)
             Text(
-              'No highlights available yet',
+              l10n.uiNoHighlightsAvailableYet,
               style: TextStyle(color: AdminPalette.textMuted),
             ),
           ...items.asMap().entries.map((entry) {
@@ -722,54 +722,55 @@ class _QuickAccessGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final items = [
       _QuickAccessItem(
-        title: 'Applications',
-        subtitle: 'Review offer submissions',
+        title: l10n.uiApplications,
+        subtitle: l10n.uiReviewOfferSubmissions,
         icon: Icons.assignment_outlined,
         color: AdminPalette.activity,
         onTap: () => onOpenContent(AdminContentCenterScreen.opportunitiesTab),
       ),
       _QuickAccessItem(
-        title: 'Opportunities',
-        subtitle: 'Manage live offers',
+        title: l10n.uiOpportunities,
+        subtitle: l10n.uiManageLiveOffers,
         icon: Icons.work_outline_rounded,
         color: AdminPalette.accent,
         onTap: () => onOpenContent(AdminContentCenterScreen.opportunitiesTab),
       ),
       _QuickAccessItem(
-        title: 'Scholarships',
-        subtitle: 'Review funding queue',
+        title: l10n.uiScholarships,
+        subtitle: l10n.uiReviewFundingQueue,
         icon: Icons.card_giftcard_outlined,
         color: AdminPalette.danger,
         onTap: () => onOpenContent(AdminContentCenterScreen.scholarshipsTab),
       ),
       _QuickAccessItem(
-        title: 'Library',
-        subtitle: 'Manage learning resources',
+        title: l10n.uiLibrary,
+        subtitle: l10n.uiManageLearningResources,
         icon: Icons.cast_for_education_outlined,
         color: AdminPalette.secondary,
         onTap: () => onOpenContent(AdminContentCenterScreen.libraryTab),
       ),
       _QuickAccessItem(
-        title: 'Project Ideas',
-        subtitle: 'Moderate idea queue',
+        title: l10n.uiProjectIdeas,
+        subtitle: l10n.uiModerateIdeaQueue,
         icon: Icons.lightbulb_outline_rounded,
         color: AdminPalette.warning,
         onTap: () => onOpenContent(AdminContentCenterScreen.projectIdeasTab),
       ),
       _QuickAccessItem(
-        title: 'Activity',
-        subtitle: 'Track latest events',
+        title: l10n.uiActivity,
+        subtitle: l10n.uiTrackLatestEvents,
         icon: Icons.timeline_rounded,
         color: AdminPalette.info,
         onTap: onOpenActivity,
       ),
       _QuickAccessItem(
-        title: 'Notifications',
+        title: l10n.notificationsTitle,
         subtitle: unreadCount > 0
-            ? '$unreadCount unread alerts'
-            : 'Open alert center',
+            ? l10n.uiUnreadAlertsCount(unreadCount)
+            : l10n.uiOpenAlertCenter,
         icon: Icons.notifications_outlined,
         color: AdminPalette.primary,
         badgeCount: unreadCount,
@@ -779,8 +780,8 @@ class _QuickAccessGrid extends StatelessWidget {
         ),
       ),
       _QuickAccessItem(
-        title: 'Library',
-        subtitle: 'Curate resource hub',
+        title: l10n.uiLibrary,
+        subtitle: l10n.uiCurateResourceHub,
         icon: Icons.menu_book_rounded,
         color: AdminPalette.secondary,
         onTap: onOpenLibrary,
@@ -1154,7 +1155,7 @@ class _RecentUsersCard extends StatelessWidget {
               Icon(Icons.person_add_alt_1_rounded, color: AdminPalette.primary),
               SizedBox(width: 8),
               Text(
-                'Recent Users',
+                AppLocalizations.of(context)!.uiRecentUsers,
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
@@ -1166,7 +1167,7 @@ class _RecentUsersCard extends StatelessWidget {
           const SizedBox(height: 12),
           if (users.isEmpty)
             Text(
-              'No recent users yet',
+              AppLocalizations.of(context)!.uiNoRecentUsersYet,
               style: TextStyle(color: AdminPalette.textMuted),
             ),
           ...users.asMap().entries.map((entry) {
@@ -1278,6 +1279,7 @@ class _RecentOpportunitiesCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return AdminSurface(
       radius: 22,
       child: Column(
@@ -1288,7 +1290,7 @@ class _RecentOpportunitiesCard extends StatelessWidget {
               Icon(Icons.work_outline_rounded, color: AdminPalette.accent),
               SizedBox(width: 8),
               Text(
-                'Recent Opportunities',
+                l10n.uiRecentOpportunities,
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
@@ -1300,7 +1302,7 @@ class _RecentOpportunitiesCard extends StatelessWidget {
           const SizedBox(height: 12),
           if (opportunities.isEmpty)
             Text(
-              'No opportunities published yet',
+              l10n.uiNoOpportunitiesPublishedYet,
               style: TextStyle(color: AdminPalette.textMuted),
             ),
           ...opportunities.asMap().entries.map((entry) {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 import '../../models/conversation_model.dart';
 import '../../models/user_model.dart';
@@ -222,14 +223,14 @@ class _ConversationListItemState extends State<ConversationListItem> {
                                       .withValues(alpha: 0.07),
                                 ),
                               if (widget.isMuted)
-                                const _MetaPill(
+                                _MetaPill(
                                   icon: Icons.notifications_off_outlined,
-                                  label: 'Muted',
+                                  label: AppLocalizations.of(context)!.uiMuted,
                                 ),
                               if (widget.isArchived)
                                 _MetaPill(
                                   icon: Icons.archive_outlined,
-                                  label: 'Archived',
+                                  label: AppLocalizations.of(context)!.uiArchived,
                                   foregroundColor: ChatThemePalette.secondary,
                                   backgroundColor: Color(0x1100A38C),
                                 ),

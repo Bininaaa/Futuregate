@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 import 'innovation_hub_theme.dart';
 
@@ -28,14 +29,14 @@ class MyIdeasToggle extends StatelessWidget {
         children: [
           Expanded(
             child: _SegmentButton(
-              label: 'Discover',
+              label: AppLocalizations.of(context)!.uiDiscover,
               selected: selected == IdeasHubSegment.discover,
               onTap: () => onChanged(IdeasHubSegment.discover),
             ),
           ),
           Expanded(
             child: _SegmentButton(
-              label: 'My Ideas',
+              label: AppLocalizations.of(context)!.uiMyIdeas,
               selected: selected == IdeasHubSegment.mine,
               onTap: () => onChanged(IdeasHubSegment.mine),
             ),

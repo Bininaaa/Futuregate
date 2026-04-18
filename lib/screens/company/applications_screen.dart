@@ -1316,8 +1316,8 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
   ) {
     if (opportunity == null) {
       context.showAppSnackBar(
-        'The linked opportunity is no longer available.',
-        title: 'Opportunity unavailable',
+        _l10n.uiTheLinkedOpportunityIsNoLongerAvailable,
+        title: _l10n.uiOpportunityUnavailable,
         type: AppFeedbackType.warning,
       );
       return;
@@ -1549,8 +1549,8 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
         return;
       }
       context.showAppSnackBar(
-        'Could not open chat: $error',
-        title: 'Chat unavailable',
+        _l10n.uiCouldNotOpenChatValue(error),
+        title: _l10n.uiChatUnavailable,
         type: AppFeedbackType.error,
       );
     }
@@ -1576,7 +1576,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
     if (error != null) {
       context.showAppSnackBar(
         error,
-        title: 'Update unavailable',
+        title: _l10n.updateUnavailableTitle,
         type: AppFeedbackType.error,
       );
       return;
@@ -1591,8 +1591,10 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
     }
 
     context.showAppSnackBar(
-      'Application ${ApplicationStatus.sentenceLabel(status, _l10n)}.',
-      title: 'Application updated',
+      _l10n.uiApplicationStatusValue(
+        ApplicationStatus.sentenceLabel(status, _l10n),
+      ),
+      title: _l10n.uiApplicationUpdated,
       type: AppFeedbackType.success,
     );
   }
@@ -1737,10 +1739,10 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                       ],
                       const SizedBox(height: 18),
                       _buildDocumentReviewCard(
-                        title: 'Primary CV PDF',
+                        title: _l10n.uiPrimaryCvPdf,
                         subtitle: cv.hasUploadedCv
                             ? 'File: ${cv.uploadedCvDisplayName}\nUploaded: ${_formatDate(cv.uploadedCvUploadedAt)}'
-                            : 'No uploaded CV',
+                            : _l10n.uiNoUploadedCv,
                         accentColor: _ApplicationsPalette.primary,
                         warningText: cv.hasUploadedCv && !cv.isUploadedCvPdf
                             ? 'This uploaded file is not a valid PDF. Ask the applicant to replace it with a PDF version.'
@@ -1762,12 +1764,12 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                       ),
                       const SizedBox(height: 14),
                       _buildDocumentReviewCard(
-                        title: 'Built CV',
+                        title: _l10n.uiBuiltCv,
                         subtitle: cv.hasExportedPdf
-                            ? 'Built CV PDF is ready for review.'
+                            ? _l10n.uiBuiltCvPdfReadyForReview
                             : cv.hasBuilderContent
-                            ? 'Built CV information is available, but no PDF has been exported yet.'
-                            : 'No built CV details available.',
+                            ? _l10n.uiBuiltCvDetailsAvailableNoPdfYet
+                            : _l10n.uiNoBuiltCvDetailsAvailable,
                         accentColor: _ApplicationsPalette.secondaryDark,
                         onView: cv.hasExportedPdf
                             ? () => _openApplicationDocument(
@@ -1893,8 +1895,8 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
 
       if (requirePdf && !document.isPdf) {
         context.showAppSnackBar(
-          'The requested file is not a valid PDF.',
-          title: 'Preview unavailable',
+          _l10n.uiTheRequestedFileIsNotAValidPdf,
+          title: _l10n.uiPreviewUnavailable,
           type: AppFeedbackType.warning,
         );
         return;
@@ -1917,8 +1919,8 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
       }
       if (!launched) {
         context.showAppSnackBar(
-          'We couldn\'t open the document right now.',
-          title: 'Document unavailable',
+          _l10n.uiCouldNotOpenTheDocumentRightNow,
+          title: _l10n.uiDocumentUnavailable,
           type: AppFeedbackType.error,
         );
       }
@@ -1928,7 +1930,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
       }
       context.showAppSnackBar(
         _documentErrorMessage(error),
-        title: 'Document unavailable',
+        title: _l10n.uiDocumentUnavailable,
         type: AppFeedbackType.error,
       );
     }

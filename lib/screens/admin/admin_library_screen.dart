@@ -45,6 +45,8 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
 
   String _libraryFilter = _filterAll;
 
+  AppLocalizations get _l10n => AppLocalizations.of(context)!;
+
   @override
   void initState() {
     super.initState();
@@ -130,30 +132,30 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
   String _libraryFilterTitle(String filter) {
     switch (filter) {
       case _filterBooks:
-        return 'Book Library';
+        return _l10n.uiBookLibrary;
       case _filterVideos:
-        return 'Video Library';
+        return _l10n.uiVideoLibrary;
       case _filterFeatured:
-        return 'Featured Resources';
+        return _l10n.uiFeaturedResources;
       case _filterHidden:
-        return 'Hidden Resources';
+        return _l10n.uiHiddenResources;
       default:
-        return 'Library';
+        return _l10n.uiLibrary;
     }
   }
 
   String _libraryEmptyMessage(String filter) {
     switch (filter) {
       case _filterBooks:
-        return 'No books match this search';
+        return _l10n.uiNoBooksMatchThisSearch;
       case _filterVideos:
-        return 'No videos match this search';
+        return _l10n.uiNoVideosMatchThisSearch;
       case _filterFeatured:
-        return 'No featured resources match this search';
+        return _l10n.uiNoFeaturedResourcesMatchThisSearch;
       case _filterHidden:
-        return 'No hidden resources match this search';
+        return _l10n.uiNoHiddenResourcesMatchThisSearch;
       default:
-        return 'No library resources match this search';
+        return _l10n.uiNoLibraryResourcesMatchThisSearch;
     }
   }
 
@@ -205,8 +207,8 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
     final uri = Uri.tryParse(link);
     if (uri == null) {
       context.showAppSnackBar(
-        'This resource link is invalid.',
-        title: 'Link unavailable',
+        _l10n.uiThisResourceLinkIsInvalid,
+        title: _l10n.uiLinkUnavailable,
         type: AppFeedbackType.error,
       );
       return;
@@ -222,8 +224,8 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
     }
     if (!launched) {
       context.showAppSnackBar(
-        'We could not open this resource right now.',
-        title: 'Link unavailable',
+        _l10n.uiWeCouldNotOpenThisLinkRightNow,
+        title: _l10n.uiLinkUnavailable,
         type: AppFeedbackType.error,
       );
     }
@@ -243,7 +245,7 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
     if (error != null) {
       context.showAppSnackBar(
         error,
-        title: 'Update unavailable',
+        title: _l10n.updateUnavailableTitle,
         type: AppFeedbackType.error,
       );
       return;
@@ -256,9 +258,9 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
 
     context.showAppSnackBar(
       training.isHidden
-          ? 'This resource is visible again.'
-          : 'This resource was hidden. You can restore it later.',
-      title: training.isHidden ? 'Resource visible' : 'Resource hidden',
+          ? _l10n.uiThisResourceIsVisibleAgain
+          : _l10n.uiThisResourceWasHiddenYouCanRestoreItLater,
+      title: training.isHidden ? _l10n.uiResourceVisible : _l10n.uiResourceHidden,
       type: AppFeedbackType.success,
     );
   }
@@ -266,7 +268,7 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
   Future<void> _showTrainingDetails(TrainingModel training) async {
     final accentColor = _resourceAccentColor(training.type);
     final providerLabel = DisplayText.capitalizeLeadingLabel(
-      training.provider.isNotEmpty ? training.provider : 'Unknown provider',
+      training.provider.isNotEmpty ? training.provider : _l10n.uiUnknownProvider,
     );
     final domainLabel = DisplayText.capitalizeLeadingLabel(training.domain);
     final levelLabel = DisplayText.capitalizeWords(training.level);
@@ -301,7 +303,7 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
                     _buildSheetHandle(),
                     const SizedBox(height: 14),
                     AdminSectionHeader(
-                      eyebrow: 'Library',
+                      eyebrow: _l10n.uiLibrary,
                       title: DisplayText.capitalizeWords(training.title),
                       subtitle: _joinCardSubtitleParts([
                         providerLabel,
@@ -316,11 +318,11 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
                       children: [
                         _buildBadge(typeLabel, accentColor),
                         if (!training.isApproved)
-                          _buildBadge('Pending', AdminPalette.textSecondary),
+                          _buildBadge(_l10n.uiPending, AdminPalette.textSecondary),
                         if (training.isFeatured)
-                          _buildBadge('Featured', AdminPalette.textSecondary),
+                          _buildBadge(_l10n.uiFeatured, AdminPalette.textSecondary),
                         if (training.isHidden)
-                          _buildBadge('Hidden', Colors.blueGrey),
+                          _buildBadge(_l10n.uiHidden, Colors.blueGrey),
                         if (sourceLabel.isNotEmpty)
                           _buildBadge(sourceLabel, AdminPalette.textSecondary),
                       ],
@@ -387,7 +389,9 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
                               : Icons.visibility_off_outlined,
                           size: 16,
                         ),
-                        label: Text(training.isHidden ? 'Unhide' : 'Hide'),
+                        label: Text(
+                          training.isHidden ? _l10n.uiUnhide : _l10n.uiHide,
+                        ),
                         style: _compactOutlinedFooterStyle(
                           training.isHidden
                               ? AdminPalette.success
@@ -464,7 +468,7 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: AdminEmptyState(
             icon: Icons.error_outline_rounded,
-            title: 'Library unavailable',
+            title: _l10n.uiLibraryUnavailable,
             message: provider.errorMessage!,
             action: FilledButton.icon(
               onPressed: () => _syncLibraryState(),
@@ -491,18 +495,17 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 AdminSectionHeader(
-                  eyebrow: 'Library',
+                  eyebrow: _l10n.uiLibrary,
                   title:
                       '${_libraryFilterTitle(_libraryFilter)} (${trainings.length})',
                   subtitle: searchQuery.isEmpty
-                      ? 'Library now holds all learning resources. Search, filter, review details, and jump into import studios when you need to add more.'
-                      : 'Showing filtered results for "$searchQuery".',
+                      ? _l10n.uiLibraryNowHoldsAllLearningResourcesSearchFilterReviewDetailsAndJumpIntoImportStudiosWhenYouNeedToAddMore
+                      : _l10n.uiShowingFilteredResultsForSearchQuery(searchQuery),
                 ),
                 const SizedBox(height: 12),
                 AdminSearchField(
                   controller: _searchController,
-                  hintText:
-                      'Search library by title, provider, domain, level, or source...',
+                  hintText: _l10n.uiSearchLibraryByTitleProviderDomainLevelOrSource,
                   onChanged: (_) => setState(() {}),
                   onClear: () {
                     _searchController.clear();
@@ -512,14 +515,14 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
                 const SizedBox(height: 12),
                 _buildFilterChipRow([
                   AdminFilterChip(
-                    label: 'All',
+                    label: _l10n.uiAll,
                     selected: _libraryFilter == _filterAll,
                     icon: Icons.grid_view_rounded,
                     badgeCount: allTrainings.length,
                     onTap: () => setState(() => _libraryFilter = _filterAll),
                   ),
                   AdminFilterChip(
-                    label: 'Featured',
+                    label: _l10n.uiFeatured,
                     selected: _libraryFilter == _filterFeatured,
                     icon: Icons.workspace_premium_outlined,
                     badgeCount: featuredCount,
@@ -532,7 +535,7 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
                     }),
                   ),
                   AdminFilterChip(
-                    label: 'Hidden',
+                    label: _l10n.uiHidden,
                     selected: _libraryFilter == _filterHidden,
                     icon: Icons.visibility_off_outlined,
                     badgeCount: hiddenCount,
@@ -548,7 +551,7 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
                 const SizedBox(height: 8),
                 _buildFilterChipRow([
                   AdminFilterChip(
-                    label: 'Books',
+                    label: _l10n.uiBooks,
                     selected: _libraryFilter == _filterBooks,
                     icon: Icons.menu_book_rounded,
                     badgeCount: bookCount,
@@ -561,7 +564,7 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
                     }),
                   ),
                   AdminFilterChip(
-                    label: 'Videos',
+                    label: _l10n.uiVideos,
                     selected: _libraryFilter == _filterVideos,
                     icon: Icons.ondemand_video_outlined,
                     badgeCount: videoCount,
@@ -609,7 +612,7 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
               padding: const EdgeInsets.only(top: 16),
               child: AdminEmptyState(
                 icon: Icons.search_off_outlined,
-                title: 'No resources in this view',
+                title: _l10n.uiNoResultsInThisView,
                 message: _libraryEmptyMessage(_libraryFilter),
               ),
             )
@@ -635,17 +638,17 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
   }) {
     final accentColor = _resourceAccentColor(training.type);
     final providerLabel = DisplayText.capitalizeLeadingLabel(
-      training.provider.isNotEmpty ? training.provider : 'Unknown provider',
+      training.provider.isNotEmpty ? training.provider : _l10n.uiUnknownProvider,
     );
     final domainLabel = DisplayText.capitalizeLeadingLabel(training.domain);
     final levelLabel = DisplayText.capitalizeWords(training.level);
     final typeLabel = DisplayText.capitalizeWords(training.type);
     final statusLabel = training.isHidden
-        ? 'Hidden'
+        ? _l10n.uiHidden
         : !training.isApproved
-        ? 'Pending'
+        ? _l10n.uiPending
         : training.isFeatured
-        ? 'Featured'
+        ? _l10n.uiFeatured
         : '';
     final badges = <_LibraryBadge>[
       _LibraryBadge(typeLabel, accentColor),
@@ -784,7 +787,7 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
                             ? null
                             : () => _toggleTrainingVisibility(training),
                         icon: const Icon(Icons.visibility_rounded, size: 16),
-                        label: const Text('Unhide'),
+                        label: Text(_l10n.uiUnhide),
                         style: _compactOutlinedFooterStyle(
                           AdminPalette.success,
                         ),
@@ -1020,11 +1023,11 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const AdminSectionHeader(
-                  eyebrow: 'Library',
-                  title: 'Learning Resources',
+                AdminSectionHeader(
+                  eyebrow: l10n.uiLibrary,
+                  title: l10n.uiLearningResources,
                   subtitle:
-                      'Keep books and video resources in one admin-friendly library, then open the source studios only when you need new imports.',
+                      l10n.uiKeepBooksAndVideoResourcesInOneAdminFriendlyLibraryThenOpenTheSourceStudiosOnlyWhenYouNeedNewImports,
                 ),
                 const SizedBox(height: 12),
                 Wrap(

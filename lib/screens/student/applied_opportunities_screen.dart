@@ -167,7 +167,7 @@ class _AppliedOpportunitiesScreenState
 
       context.showAppSnackBar(
         'This opportunity is no longer available to open.',
-        title: 'Opportunity unavailable',
+        title: AppLocalizations.of(context)!.uiOpportunityUnavailable,
         type: AppFeedbackType.warning,
       );
       return;
@@ -207,7 +207,7 @@ class _AppliedOpportunitiesScreenState
             children: [
               StudentWorkspaceUtilityHeader(
                 user: authProvider.userModel,
-                title: 'Applied',
+                title: AppLocalizations.of(context)!.uiApplied,
                 onProfileTap: _openProfile,
                 compact: isCompact,
                 backgroundColor: Colors.transparent,
@@ -222,7 +222,7 @@ class _AppliedOpportunitiesScreenState
                 actions: [
                   StudentWorkspaceUtilityHeaderAction(
                     icon: Icons.refresh_rounded,
-                    tooltip: 'Refresh applications',
+                    tooltip: AppLocalizations.of(context)!.uiRefreshApplications,
                     onTap: _loadApplications,
                   ),
                 ],
@@ -327,10 +327,10 @@ class _AppliedOpportunitiesScreenState
                       ),
                       if (provider.submittedApplicationsLoading &&
                           provider.submittedApplications.isEmpty)
-                        const SliverFillRemaining(
+                        SliverFillRemaining(
                           hasScrollBody: false,
                           child: StudentOpportunityLoadingState(
-                            title: 'Loading your applications...',
+                            title: AppLocalizations.of(context)!.uiLoadingApplications,
                             message:
                                 'Pulling together your submitted opportunities and their latest statuses.',
                           ),
@@ -478,7 +478,7 @@ class _AppliedCompactSummary extends StatelessWidget {
                   SizedBox(
                     width: tileWidth,
                     child: _AppliedMiniStat(
-                      label: 'Total',
+                      label: AppLocalizations.of(context)!.uiTotal,
                       value: '$total',
                       color: StudentOpportunityHubPalette.primary,
                       icon: Icons.layers_rounded,
@@ -487,7 +487,7 @@ class _AppliedCompactSummary extends StatelessWidget {
                   SizedBox(
                     width: tileWidth,
                     child: _AppliedMiniStat(
-                      label: 'Pending',
+                      label: AppLocalizations.of(context)!.uiPending,
                       value: '$pending',
                       color: StudentOpportunityHubPalette.warning,
                       icon: Icons.hourglass_top_rounded,
@@ -496,7 +496,7 @@ class _AppliedCompactSummary extends StatelessWidget {
                   SizedBox(
                     width: tileWidth,
                     child: _AppliedMiniStat(
-                      label: 'Approved',
+                      label: AppLocalizations.of(context)!.uiApproved,
                       value: '$approved',
                       color: StudentOpportunityHubPalette.success,
                       icon: Icons.verified_rounded,
@@ -505,7 +505,7 @@ class _AppliedCompactSummary extends StatelessWidget {
                   SizedBox(
                     width: tileWidth,
                     child: _AppliedMiniStat(
-                      label: 'Rejected',
+                      label: AppLocalizations.of(context)!.uiRejected,
                       value: '$rejected',
                       color: StudentOpportunityHubPalette.error,
                       icon: Icons.cancel_outlined,

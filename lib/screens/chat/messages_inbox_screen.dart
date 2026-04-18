@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../l10n/generated/app_localizations.dart';
 import '../../models/conversation_model.dart';
 import '../../models/user_model.dart';
 import '../../providers/auth_provider.dart';
@@ -301,11 +302,13 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
                   }
 
                   if (auth == null) {
-                    return const _EmptyState(
+                    return _EmptyState(
                       icon: Icons.lock_outline_rounded,
-                      title: 'Sign in to see your messages',
+                      title: AppLocalizations.of(context)!.uiSignInToSeeYourMessages,
                       subtitle:
-                          'Sign in to view your conversations and recent updates.',
+                          AppLocalizations.of(
+                            context,
+                          )!.uiSignInToViewYourConversationsAndRecentUpdates,
                     );
                   }
 
@@ -588,9 +591,11 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
       }
       context.showAppSnackBar(
         muted
-            ? 'Notifications for this conversation are now muted.'
-            : 'Conversation notifications are active again.',
-        title: muted ? 'Conversation muted' : 'Conversation unmuted',
+            ? AppLocalizations.of(context)!.chatMutedBody
+            : AppLocalizations.of(context)!.chatUnmutedBody,
+        title: muted
+            ? AppLocalizations.of(context)!.chatMutedTitle
+            : AppLocalizations.of(context)!.chatUnmutedTitle,
         type: AppFeedbackType.info,
       );
       return;
@@ -601,8 +606,11 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
       if (archived) {
         final confirmed = await showChatConfirmationDialog(
           context,
-          title: 'Archive conversation?',
-          message: 'Are you sure you want to archive this conversation?',
+          title: AppLocalizations.of(context)!.uiArchiveConversation,
+          message:
+              AppLocalizations.of(
+                context,
+              )!.uiAreYouSureYouWantToArchiveThisConversation,
           confirmLabel: 'Archive',
           icon: Icons.archive_outlined,
         );
@@ -623,9 +631,11 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
       }
       context.showAppSnackBar(
         archived
-            ? 'This conversation has been moved to Archived.'
-            : 'This conversation is back in your inbox.',
-        title: archived ? 'Conversation archived' : 'Conversation restored',
+            ? AppLocalizations.of(context)!.uiConversationMovedToArchived
+            : AppLocalizations.of(context)!.uiConversationBackInInbox,
+        title: archived
+            ? AppLocalizations.of(context)!.uiConversationArchived
+            : AppLocalizations.of(context)!.uiConversationRestored,
         type: AppFeedbackType.success,
       );
       return;
@@ -633,10 +643,12 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
 
     final confirmed = await showChatConfirmationDialog(
       context,
-      title: 'Delete conversation?',
+      title: AppLocalizations.of(context)!.uiDeleteConversation,
       message:
-          'Are you sure you want to delete this conversation? This action cannot be undone.',
-      confirmLabel: 'Delete',
+          AppLocalizations.of(
+            context,
+          )!.uiAreYouSureYouWantToDeleteThisConversationThis,
+      confirmLabel: AppLocalizations.of(context)!.uiDelete,
       destructive: true,
       icon: Icons.delete_outline_rounded,
     );
@@ -654,8 +666,8 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
       return;
     }
     context.showAppSnackBar(
-      'The conversation has been deleted.',
-      title: 'Conversation deleted',
+      AppLocalizations.of(context)!.uiTheConversationHasBeenDeleted,
+      title: AppLocalizations.of(context)!.uiConversationDeleted,
       type: AppFeedbackType.success,
     );
   }
@@ -663,7 +675,7 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
   void _showProviderError(String error) {
     context.showAppSnackBar(
       error.replaceFirst(RegExp(r'^Exception:\\s*'), ''),
-      title: 'Messages unavailable',
+      title: AppLocalizations.of(context)!.uiMessagesUnavailable,
       type: AppFeedbackType.error,
     );
     context.read<ChatProvider>().clearError();

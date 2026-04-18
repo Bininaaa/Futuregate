@@ -146,7 +146,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
     if (_isUploadingImage) {
       context.showAppSnackBar(
         'Please wait for the cover image upload to finish.',
-        title: 'Upload in progress',
+        title: AppLocalizations.of(context)!.uiUploadInProgress,
         type: AppFeedbackType.warning,
       );
       return;
@@ -282,7 +282,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
 
     context.showAppSnackBar(
       error,
-      title: 'Submission unavailable',
+      title: AppLocalizations.of(context)!.uiSubmissionUnavailable,
       type: AppFeedbackType.error,
     );
   }
@@ -331,7 +331,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
 
   Future<void> _pickCategory() async {
     final value = await _showOptionPicker(
-      title: 'Select category',
+      title: AppLocalizations.of(context)!.uiSelectCategory,
       options: innovationHubDefaultCategories,
       currentValue: _selectedCategory,
     );
@@ -346,7 +346,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
 
   Future<void> _pickStage() async {
     final value = await _showOptionPicker(
-      title: 'Select stage',
+      title: AppLocalizations.of(context)!.uiSelectStage,
       options: innovationHubStageOptions,
       currentValue: _selectedStage,
     );
@@ -527,7 +527,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
     if (file.size > 5 * 1024 * 1024) {
       context.showAppSnackBar(
         'Choose an image smaller than 5 MB.',
-        title: 'Upload unavailable',
+        title: AppLocalizations.of(context)!.uiUploadUnavailable,
         type: AppFeedbackType.warning,
       );
       return;
@@ -537,7 +537,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
     if (currentUser == null) {
       context.showAppSnackBar(
         'Please sign in again to upload images.',
-        title: 'Login required',
+        title: AppLocalizations.of(context)!.uiLoginRequired,
         type: AppFeedbackType.warning,
       );
       return;
@@ -565,7 +565,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
 
       context.showAppSnackBar(
         'Cover image uploaded successfully.',
-        title: 'Upload complete',
+        title: AppLocalizations.of(context)!.uiUploadComplete,
         type: AppFeedbackType.success,
       );
     } catch (error) {
@@ -576,7 +576,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
       setState(() => _isUploadingImage = false);
       context.showAppSnackBar(
         _formatUploadError(error),
-        title: 'Upload unavailable',
+        title: AppLocalizations.of(context)!.uiUploadUnavailable,
         type: AppFeedbackType.error,
       );
     }
@@ -678,7 +678,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                 if (widget.isAdmin) ...[
                   const SizedBox(height: 18),
                   _SectionCard(
-                    title: 'Publish',
+                    title: AppLocalizations.of(context)!.uiPublish,
                     subtitle:
                         'Keep visibility decisions in the same structured publishing area used across content flows.',
                     child: Column(
@@ -687,8 +687,8 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                           children: [
                             Expanded(
                               child: _AdminChoiceCard(
-                                label: 'Visible',
-                                subtitle: 'Show in discovery',
+                                label: AppLocalizations.of(context)!.uiVisible,
+                                subtitle: AppLocalizations.of(context)!.uiShowInDiscovery,
                                 selected: _adminStatus == 'approved',
                                 icon: Icons.visibility_outlined,
                                 onTap: () =>
@@ -698,8 +698,8 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                             const SizedBox(width: 10),
                             Expanded(
                               child: _AdminChoiceCard(
-                                label: 'Hidden',
-                                subtitle: 'Keep out of discovery',
+                                label: AppLocalizations.of(context)!.uiHiddenLabel,
+                                subtitle: AppLocalizations.of(context)!.uiKeepOutOfDiscovery,
                                 selected: _adminStatus == 'rejected',
                                 icon: Icons.visibility_off_outlined,
                                 onTap: () =>
@@ -714,27 +714,27 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                 ],
                 const SizedBox(height: 18),
                 _SectionCard(
-                  title: 'Idea Basics',
+                  title: AppLocalizations.of(context)!.uiIdeaBasics,
                   subtitle:
                       'Set the core headline, category, and stage so the idea reads clearly from the start.',
                   child: Column(
                     children: [
                       _StyledField(
                         controller: _titleController,
-                        label: 'Idea Title',
+                        label: AppLocalizations.of(context)!.uiIdeaTitle,
                         hint: 'AI-powered campus wellbeing assistant',
                         validator: _requiredValidator,
                       ),
                       const SizedBox(height: 14),
                       _StyledField(
                         controller: _taglineController,
-                        label: 'Short Tagline',
+                        label: AppLocalizations.of(context)!.uiShortTagline,
                         hint:
                             'A smarter way for students to find support fast.',
                       ),
                       const SizedBox(height: 18),
                       _CvSingleSelectField(
-                        title: 'Category',
+                        title: AppLocalizations.of(context)!.uiCategory,
                         controller: _categoryController,
                         fieldLabel: 'Choose a category',
                         hint: 'Pick the idea category',
@@ -743,7 +743,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                       ),
                       const SizedBox(height: 18),
                       _CvSingleSelectField(
-                        title: 'Stage',
+                        title: AppLocalizations.of(context)!.uiStage,
                         controller: _stageController,
                         fieldLabel: 'Choose a stage',
                         hint: 'Pick the current stage',
@@ -754,7 +754,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                       AppFormDropdownField<String>(
                         theme: _theme,
                         value: _selectedLevel,
-                        label: 'Best suited for',
+                        label: AppLocalizations.of(context)!.uiBestSuitedFor,
                         hint: 'Select student level',
                         items: [
                           DropdownMenuItem(
@@ -785,14 +785,14 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                 ),
                 const SizedBox(height: 18),
                 _SectionCard(
-                  title: 'Idea Description',
+                  title: AppLocalizations.of(context)!.uiIdeaDescription,
                   subtitle:
                       'Explain the concept, the problem behind it, and the solution you want collaborators to understand.',
                   child: Column(
                     children: [
                       _StyledField(
                         controller: _overviewController,
-                        label: 'Idea Overview',
+                        label: AppLocalizations.of(context)!.uiIdeaOverview,
                         hint:
                             'Describe the concept, what it does, and how it comes to life.',
                         validator: _requiredValidator,
@@ -802,7 +802,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                       const SizedBox(height: 14),
                       _StyledField(
                         controller: _problemController,
-                        label: 'Problem Statement',
+                        label: AppLocalizations.of(context)!.uiProblemStatement,
                         hint: 'What student challenge does this idea solve?',
                         minLines: 3,
                         maxLines: 5,
@@ -810,7 +810,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                       const SizedBox(height: 14),
                       _StyledField(
                         controller: _solutionController,
-                        label: 'Solution',
+                        label: AppLocalizations.of(context)!.uiSolution,
                         hint:
                             'Explain the proposed solution and why it stands out.',
                         minLines: 3,
@@ -819,13 +819,13 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                       const SizedBox(height: 14),
                       _StyledField(
                         controller: _audienceController,
-                        label: 'Target Audience',
+                        label: AppLocalizations.of(context)!.uiTargetAudience,
                         hint: 'Students, clubs, mentors, campuses...',
                       ),
                       const SizedBox(height: 14),
                       _StyledField(
                         controller: _benefitsController,
-                        label: 'Benefits / Impact',
+                        label: AppLocalizations.of(context)!.uiBenefitsAndImpact,
                         hint: 'Why does this idea matter right now?',
                         minLines: 3,
                         maxLines: 5,
@@ -835,14 +835,14 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                 ),
                 const SizedBox(height: 18),
                 _SectionCard(
-                  title: 'Collaboration',
+                  title: AppLocalizations.of(context)!.uiCollaboration,
                   subtitle:
                       'Show the roles, skills, and resources that will help this idea move forward.',
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _SelectionWrap(
-                        title: 'Team Needed',
+                        title: AppLocalizations.of(context)!.uiTeamNeeded,
                         selectedValues: _selectedRoles,
                         controller: _customRolesController,
                         fieldLabel: 'Add a role',
@@ -855,7 +855,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                       ),
                       const SizedBox(height: 18),
                       _SelectionWrap(
-                        title: 'Skills Needed',
+                        title: AppLocalizations.of(context)!.uiSkillsNeeded,
                         selectedValues: _selectedSkills,
                         controller: _customSkillsController,
                         fieldLabel: 'Add a skill',
@@ -869,7 +869,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                       const SizedBox(height: 14),
                       _StyledField(
                         controller: _resourcesController,
-                        label: 'Resources / Needs',
+                        label: AppLocalizations.of(context)!.uiResourcesNeeds,
                         hint:
                             'Prototype support, mentor feedback, pilot testers...',
                         minLines: 3,
@@ -880,7 +880,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                 ),
                 const SizedBox(height: 18),
                 _SectionCard(
-                  title: 'Optional Extras',
+                  title: AppLocalizations.of(context)!.uiOptionalExtras,
                   subtitle:
                       'Add the supporting materials, visibility settings, and attachments that make the post feel complete.',
                   child: Column(
@@ -889,7 +889,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                       const SizedBox(height: 14),
                       _StyledField(
                         controller: _attachmentUrlController,
-                        label: 'Deck / Demo Link',
+                        label: AppLocalizations.of(context)!.uiDeckDemoLink,
                         hint: 'Figma, Notion, pitch deck, landing page...',
                       ),
                       const SizedBox(height: 14),
@@ -1192,7 +1192,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
           Expanded(
             child: AppMetaRow(
               theme: _theme,
-              label: 'Visibility',
+              label: AppLocalizations.of(context)!.uiVisibility,
               value: _isPublic ? 'Public-ready' : 'Private draft',
               icon: _isPublic
                   ? Icons.public_rounded
@@ -1202,7 +1202,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
           Expanded(
             child: AppMetaRow(
               theme: _theme,
-              label: 'Focus',
+              label: AppLocalizations.of(context)!.uiFocus,
               value: academicLevelLabel(_selectedLevel),
               icon: Icons.school_outlined,
             ),
@@ -1216,7 +1216,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
     return AppInfoHint(
       theme: _theme,
       icon: Icons.lock_outline_rounded,
-      title: 'Editing locked',
+      title: AppLocalizations.of(context)!.uiEditingLocked,
       message:
           'Only pending ideas can be edited. This idea has already moved past review, so the form is shown in locked mode.',
     );

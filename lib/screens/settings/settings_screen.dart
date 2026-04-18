@@ -5,6 +5,7 @@ import '../../config/app_metadata.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/app_intro_preferences_service.dart';
+import '../../theme/locale_controller.dart';
 import '../../theme/theme_controller.dart';
 import '../../widgets/shared/app_restart_scope.dart';
 import '../notifications_screen.dart';
@@ -83,6 +84,8 @@ class SettingsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 18),
             const _ThemeSettingsSection(),
+            const SizedBox(height: 12),
+            const _LanguageSettingsSection(),
             const SizedBox(height: 12),
             const _LaunchAnimationSettingsSection(),
             const SizedBox(height: 16),
@@ -239,6 +242,8 @@ class SettingsScreen extends StatelessWidget {
             const SizedBox(height: 18),
             const _ThemeSettingsSection(),
             const SizedBox(height: 12),
+            const _LanguageSettingsSection(),
+            const SizedBox(height: 12),
             const _LaunchAnimationSettingsSection(),
             const SizedBox(height: 16),
             SettingsSectionHeading(
@@ -384,6 +389,8 @@ class SettingsScreen extends StatelessWidget {
           const SizedBox(height: 18),
           const _ThemeSettingsSection(),
           const SizedBox(height: 12),
+          const _LanguageSettingsSection(),
+          const SizedBox(height: 12),
           const _LaunchAnimationSettingsSection(),
           const SizedBox(height: 16),
           SettingsSectionHeading(
@@ -392,33 +399,17 @@ class SettingsScreen extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           SettingsPanel(
-            child: Column(
-              children: [
-                SettingsListRow(
-                  icon: Icons.language_rounded,
-                  iconColor: SettingsFlowPalette.secondary,
-                  title: l10n.languageTitle,
-                  subtitle: l10n.languageEnglish,
-                  onTap: () => _showInfoSheet(
-                    context,
-                    title: l10n.languageTitle,
-                    message: l10n.languageInfoSheetMessage,
-                  ),
+            child: SettingsListRow(
+              icon: Icons.notifications_active_outlined,
+              iconColor: SettingsFlowPalette.accent,
+              title: l10n.notificationPreferencesTitle,
+              subtitle: l10n.notificationPreferencesSubtitle,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const NotificationsScreen(),
                 ),
-                const SizedBox(height: 10),
-                SettingsListRow(
-                  icon: Icons.notifications_active_outlined,
-                  iconColor: SettingsFlowPalette.accent,
-                  title: l10n.notificationPreferencesTitle,
-                  subtitle: l10n.notificationPreferencesSubtitle,
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const NotificationsScreen(),
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
           const SizedBox(height: 18),
@@ -489,54 +480,6 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  void _showInfoSheet(
-    BuildContext context, {
-    required String title,
-    required String message,
-  }) {
-    final l10n = AppLocalizations.of(context)!;
-    showModalBottomSheet<void>(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (sheetContext) {
-        return SafeArea(
-          child: Container(
-            margin: const EdgeInsets.all(14),
-            padding: const EdgeInsets.all(18),
-            decoration: BoxDecoration(
-              color: SettingsFlowPalette.surface,
-              borderRadius: SettingsFlowTheme.radius(24),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: Container(
-                    width: 42,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: SettingsFlowPalette.border,
-                      borderRadius: SettingsFlowTheme.radius(999),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 14),
-                Text(title, style: SettingsFlowTheme.sectionTitle()),
-                const SizedBox(height: 10),
-                Text(message, style: SettingsFlowTheme.caption()),
-                const SizedBox(height: 16),
-                SettingsPrimaryButton(
-                  label: l10n.closeLabel,
-                  onPressed: () => Navigator.pop(sheetContext),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
 }
 
 class _ThemeSettingsSection extends StatelessWidget {
@@ -895,5 +838,148 @@ bool _isEffectiveDarkTheme(AppThemePreference option) {
           Brightness.dark,
     AppThemePreference.light => false,
     AppThemePreference.dark => true,
+  };
+}
+
+// ── Language settings ─────────────────────────────────────────────────────────
+
+class _LanguageSettingsSection extends StatelessWidget {
+  const _LanguageSettingsSection();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SettingsSectionHeading(title: l10n.languageTitle),
+        const SizedBox(height: 8),
+        const _LanguageSettingsPanel(),
+      ],
+    );
+  }
+}
+
+class _LanguageSettingsPanel extends StatelessWidget {
+  const _LanguageSettingsPanel();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final controller = context.watch<LocaleController>();
+    final locale = controller.locale;
+
+    return SettingsPanel(
+      padding: const EdgeInsets.all(8),
+      child: _CompactPreferenceRow(
+        icon: Icons.language_rounded,
+        iconColor: SettingsFlowPalette.secondary,
+        title: l10n.languageTitle,
+        subtitle: _languageLabel(locale, l10n),
+        trailing: _LanguageInlineSelect(
+          selected: locale,
+          onChanged: (chosen) async {
+            await context.read<LocaleController>().setLocale(chosen);
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class _LanguageInlineSelect extends StatelessWidget {
+  final Locale? selected;
+  final Future<void> Function(Locale?) onChanged;
+
+  const _LanguageInlineSelect({
+    required this.selected,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    // null = follow device; explicit locales for each supported language
+    const options = <Locale?>[null, Locale('en'), Locale('fr'), Locale('ar')];
+
+    return Container(
+      constraints: const BoxConstraints(minWidth: 104, maxWidth: 148),
+      padding: const EdgeInsetsDirectional.only(start: 10, end: 4),
+      decoration: BoxDecoration(
+        color: SettingsFlowPalette.secondary.withValues(alpha: 0.12),
+        borderRadius: SettingsFlowTheme.radius(999),
+        border: Border.all(
+          color: SettingsFlowPalette.secondary.withValues(alpha: 0.24),
+        ),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<Locale?>(
+          value: selected,
+          isDense: true,
+          borderRadius: SettingsFlowTheme.radius(14),
+          dropdownColor: SettingsFlowPalette.surface,
+          icon: Icon(
+            Icons.keyboard_arrow_down_rounded,
+            color: SettingsFlowPalette.secondary,
+            size: 18,
+          ),
+          selectedItemBuilder: (_) => options
+              .map(
+                (opt) => Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    _languageLabel(opt, l10n),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: SettingsFlowTheme.micro(SettingsFlowPalette.secondary),
+                  ),
+                ),
+              )
+              .toList(growable: false),
+          items: options
+              .map(
+                (opt) => DropdownMenuItem<Locale?>(
+                  value: opt,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        _languageFlag(opt),
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        _languageLabel(opt, l10n),
+                        style: SettingsFlowTheme.body(),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+              .toList(growable: false),
+          onChanged: (opt) => onChanged(opt),
+        ),
+      ),
+    );
+  }
+}
+
+String _languageLabel(Locale? locale, AppLocalizations l10n) {
+  if (locale == null) return l10n.languageDeviceDefault;
+  return switch (locale.languageCode) {
+    'en' => l10n.languageEnglish,
+    'fr' => l10n.languageFrench,
+    'ar' => l10n.languageArabic,
+    _ => l10n.unknownLanguage,
+  };
+}
+
+String _languageFlag(Locale? locale) {
+  if (locale == null) return '🌐';
+  return switch (locale.languageCode) {
+    'en' => '🇬🇧',
+    'fr' => '🇫🇷',
+    'ar' => '🇩🇿',
+    _ => '🌐',
   };
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/generated/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
@@ -285,7 +286,7 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
       appBar: widget.embedded
           ? null
           : StudentWorkspaceAppBar(
-              title: 'Scholarships',
+              title: AppLocalizations.of(context)!.uiScholarships,
               subtitle:
                   'Curated funding paths, deadlines, and global study options.',
               icon: Icons.school_rounded,
@@ -294,13 +295,13 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
               actions: [
                 StudentWorkspaceActionButton(
                   icon: Icons.notifications_outlined,
-                  tooltip: 'Notifications',
+                  tooltip: AppLocalizations.of(context)!.uiNotifications,
                   badgeCount: unreadCount,
                   onTap: _openNotifications,
                 ),
                 StudentWorkspaceActionButton(
                   icon: Icons.bookmark_outline_rounded,
-                  tooltip: 'Saved scholarships',
+                  tooltip: AppLocalizations.of(context)!.uiSavedScholarships,
                   onTap: _openSavedScholarships,
                 ),
               ],

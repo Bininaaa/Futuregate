@@ -309,7 +309,7 @@ class _SavedScreenState extends State<SavedScreen> {
     if (opportunity == null) {
       context.showAppSnackBar(
         'This opportunity is no longer available.',
-        title: 'Opportunity unavailable',
+        title: AppLocalizations.of(context)!.uiOpportunityUnavailable,
         type: AppFeedbackType.warning,
       );
       return;
@@ -330,7 +330,7 @@ class _SavedScreenState extends State<SavedScreen> {
     if (scholarship == null) {
       context.showAppSnackBar(
         'This scholarship is no longer available.',
-        title: 'Scholarship unavailable',
+        title: AppLocalizations.of(context)!.uiScholarshipUnavailable,
         type: AppFeedbackType.warning,
       );
       return;
@@ -350,7 +350,7 @@ class _SavedScreenState extends State<SavedScreen> {
       if (!mounted) return;
       context.showAppSnackBar(
         'This training does not have a link yet.',
-        title: 'Link unavailable',
+        title: AppLocalizations.of(context)!.uiLinkUnavailable,
         type: AppFeedbackType.warning,
       );
       return;
@@ -483,7 +483,7 @@ class _SavedScreenState extends State<SavedScreen> {
             children: [
               StudentWorkspaceUtilityHeader(
                 user: authProvider.userModel,
-                title: 'Saved',
+                title: AppLocalizations.of(context)!.uiSaved,
                 onProfileTap: _openProfile,
                 compact: isCompact,
                 backgroundColor: Colors.transparent,
@@ -498,7 +498,7 @@ class _SavedScreenState extends State<SavedScreen> {
                 actions: [
                   StudentWorkspaceUtilityHeaderAction(
                     icon: Icons.refresh_rounded,
-                    tooltip: 'Refresh saved items',
+                    tooltip: AppLocalizations.of(context)!.uiRefreshSavedItems,
                     onTap: _loadSavedContent,
                   ),
                 ],
@@ -709,10 +709,10 @@ class _SavedScreenState extends State<SavedScreen> {
                         ),
                       ),
                       if (isInitialLoading)
-                        const SliverFillRemaining(
+                        SliverFillRemaining(
                           hasScrollBody: false,
                           child: StudentOpportunityLoadingState(
-                            title: 'Loading your saved items...',
+                            title: AppLocalizations.of(context)!.uiLoadingSavedItems,
                             message:
                                 'Pulling together your saved opportunities, scholarships, trainings, and ideas.',
                           ),
@@ -919,7 +919,7 @@ class _SavedCompactSummary extends StatelessWidget {
                   SizedBox(
                     width: constraints.maxWidth,
                     child: _SavedMiniStat(
-                      label: 'Total',
+                      label: AppLocalizations.of(context)!.uiTotal,
                       value: '$total',
                       color: StudentOpportunityHubPalette.primary,
                       icon: Icons.layers_rounded,
@@ -929,7 +929,7 @@ class _SavedCompactSummary extends StatelessWidget {
                   SizedBox(
                     width: tileWidth,
                     child: _SavedMiniStat(
-                      label: 'Opps',
+                      label: AppLocalizations.of(context)!.uiOpps,
                       value: '$opportunities',
                       color: StudentOpportunityHubPalette.accent,
                       icon: Icons.work_outline_rounded,
@@ -938,7 +938,7 @@ class _SavedCompactSummary extends StatelessWidget {
                   SizedBox(
                     width: tileWidth,
                     child: _SavedMiniStat(
-                      label: 'Scholarships',
+                      label: AppLocalizations.of(context)!.uiScholarships,
                       value: '$scholarships',
                       color: StudentOpportunityHubPalette.secondary,
                       icon: Icons.workspace_premium_outlined,
@@ -947,7 +947,7 @@ class _SavedCompactSummary extends StatelessWidget {
                   SizedBox(
                     width: tileWidth,
                     child: _SavedMiniStat(
-                      label: 'Trainings',
+                      label: AppLocalizations.of(context)!.uiTraining,
                       value: '$trainings',
                       color: const Color(0xFF6366F1),
                       icon: Icons.cast_for_education_outlined,
@@ -956,7 +956,7 @@ class _SavedCompactSummary extends StatelessWidget {
                   SizedBox(
                     width: tileWidth,
                     child: _SavedMiniStat(
-                      label: 'Ideas',
+                      label: AppLocalizations.of(context)!.uiIdeas,
                       value: '$ideas',
                       color: InnovationHubPalette.primary,
                       icon: Icons.lightbulb_outline_rounded,
@@ -1156,7 +1156,7 @@ class _SavedOpportunityCard extends StatelessWidget {
         if (isClosingSoon && !isExpired)
           _SavedMetaChip(
             icon: Icons.local_fire_department_outlined,
-            label: 'Closing soon',
+            label: AppLocalizations.of(context)!.uiClosingSoon,
             tone: StudentOpportunityHubPalette.accent,
           ),
       ],
@@ -1280,16 +1280,16 @@ class _SavedTrainingCard extends StatelessWidget {
             label: item.language.trim(),
           ),
         if (item.isFree == true)
-          const _SavedMetaChip(
+          _SavedMetaChip(
             icon: Icons.money_off_rounded,
-            label: 'Free',
-            tone: Color(0xFF10B981),
+            label: AppLocalizations.of(context)!.uiFree,
+            tone: const Color(0xFF10B981),
           ),
         if (item.hasCertificate == true)
-          const _SavedMetaChip(
+          _SavedMetaChip(
             icon: Icons.verified_outlined,
-            label: 'Certificate',
-            tone: Color(0xFF6366F1),
+            label: AppLocalizations.of(context)!.uiCertified,
+            tone: const Color(0xFF6366F1),
           ),
       ],
       isOpening: isOpening,

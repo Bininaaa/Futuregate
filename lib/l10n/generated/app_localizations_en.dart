@@ -6060,4 +6060,584 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get uiBachelor => 'Bachelor';
+
+  @override
+  String get uiOpportunityClosed => 'Opportunity closed';
+
+  @override
+  String get uiOpportunityDeleted => 'Opportunity deleted';
+
+  @override
+  String get uiOpportunityClosedBecauseApplicationsAlreadyExist =>
+      'Opportunity closed because applications already exist.';
+
+  @override
+  String get uiCouldNotOpenTheDocumentRightNow =>
+      'We couldn\'t open the document right now.';
+
+  @override
+  String get uiWeCouldNotOpenThisLinkRightNow =>
+      'We couldn\'t open this link right now.';
+
+  @override
+  String get uiResourceRemovedFromFeatured =>
+      'This resource was removed from featured.';
+
+  @override
+  String get uiResourceFeatured => 'This resource is now featured.';
+
+  @override
+  String get uiNoUploadedCv => 'No uploaded CV';
+
+  @override
+  String get uiBuiltCvPdfReadyForReview => 'Built CV PDF is ready for review.';
+
+  @override
+  String get uiBuiltCvDetailsAvailableNoPdfYet =>
+      'Built CV details are available, but no PDF has been exported yet.';
+
+  @override
+  String get uiNoBuiltCvDetailsAvailable => 'No built CV details available.';
+
+  @override
+  String get uiConversationArchived => 'Conversation archived';
+
+  @override
+  String get uiConversationRestored => 'Conversation restored';
+
+  @override
+  String get uiConversationMovedToArchived =>
+      'This conversation has been moved to Archived.';
+
+  @override
+  String get uiConversationBackInInbox =>
+      'This conversation is back in your inbox.';
+
+  @override
+  String get uiWriteMessageBeforeAiTools =>
+      'Write a message before using AI tools.';
+
+  @override
+  String get uiWriteMessageBeforeTranslation =>
+      'Write a message before choosing a translation.';
+
+  @override
+  String uiUnreadAlertsCount(Object count) {
+    return '$count unread alerts';
+  }
+
+  @override
+  String get uiOpenAlertCenter => 'Open alert center';
+
+  @override
+  String get uiManageLearningResources => 'Manage learning resources';
+
+  @override
+  String get uiManageApplication => 'Manage Application';
+
+  @override
+  String get uiManageOpportunity => 'Manage Opportunity';
+
+  @override
+  String get uiManageScholarship => 'Manage Scholarship';
+
+  @override
+  String get uiManageLibraryResource => 'Manage Library Resource';
+
+  @override
+  String get uiManageProjectIdea => 'Manage Project Idea';
+
+  @override
+  String uiRecentActivitiesCount(Object count) {
+    return '$count recent activities';
+  }
+
+  @override
+  String uiMatchingActivitiesCount(Object count) {
+    return '$count matching activities';
+  }
+
+  @override
+  String get saveIdeaChangesLabel => 'Save idea changes';
+
+  @override
+  String get uiUpdateTheFieldsBelowAndSave =>
+      'Update the fields below and save.';
+
+  @override
+  String get uiFillInTheFieldsBelowThenPublish =>
+      'Fill in the fields below, then publish.';
+
+  @override
+  String get uiBookLibrary => 'Book Library';
+
+  @override
+  String get uiFeaturedResources => 'Featured Resources';
+
+  @override
+  String get uiHiddenResources => 'Hidden Resources';
+
+  @override
+  String get uiNoFeaturedResourcesMatchThisSearch =>
+      'No featured resources match this search';
+
+  @override
+  String get uiNoHiddenResourcesMatchThisSearch =>
+      'No hidden resources match this search';
+
+  @override
+  String get uiNoLibraryResourcesMatchThisSearch =>
+      'No library resources match this search';
+
+  @override
+  String get uiThisResourceLinkIsInvalid => 'This resource link is invalid.';
+
+  @override
+  String get uiThisResourceIsVisibleAgain => 'This resource is visible again.';
+
+  @override
+  String get uiThisResourceWasHiddenYouCanRestoreItLater =>
+      'This resource was hidden. You can restore it later.';
+
+  @override
+  String get uiResourceVisible => 'Resource visible';
+
+  @override
+  String get uiResourceHidden => 'Resource hidden';
+
+  @override
+  String get uiUnknownProvider => 'Unknown provider';
+
+  @override
+  String
+  get uiKeepBooksAndVideoResourcesInOneAdminFriendlyLibraryThenOpenTheSourceStudiosOnlyWhenYouNeedNewImports =>
+      'Keep books and video resources in one admin-friendly library, then open the source studios only when you need new imports.';
+
+  @override
+  String
+  get uiLibraryNowHoldsAllLearningResourcesSearchFilterReviewDetailsAndJumpIntoImportStudiosWhenYouNeedToAddMore =>
+      'Library now holds all learning resources. Search, filter, review details, and jump into import studios when you need to add more.';
+
+  @override
+  String uiShowingFilteredResultsForSearchQuery(Object searchQuery) {
+    return 'Showing filtered results for \"$searchQuery\".';
+  }
+
+  @override
+  String get uiSearchLibraryByTitleProviderDomainLevelOrSource =>
+      'Search library by title, provider, domain, level, or source...';
+
+  @override
+  String get uiHide => 'Hide';
+
+  @override
+  String get uiUnhide => 'Unhide';
+
+  @override
+  String get uiLibraryUnavailable => 'Library unavailable';
+
+  @override
+  String get uiLanguage => 'Language';
+
+  @override
+  String get uiSearching => 'Searching...';
+
+  @override
+  String get uiImport => 'Import';
+
+  @override
+  String get uiImporting => 'Importing...';
+
+  @override
+  String get uiSyncing => 'Syncing';
+
+  @override
+  String get uiSynced => 'Synced';
+
+  @override
+  String get uiStudentDetails => 'Student Details';
+
+  @override
+  String
+  get uiReviewIdentityAcademicDetailsCvDocumentsAndVisibleSubmittedApplicationsInOnePlace =>
+      'Review identity, academic details, CV documents, and visible submitted applications in one place.';
+
+  @override
+  String
+  get uiReviewTheUploadedCvAndTheBuiltCvExportWithoutLeavingTheStudentProfile =>
+      'Review the uploaded CV and the built CV export without leaving the student profile.';
+
+  @override
+  String get uiNoCvHasBeenCreatedForThisStudent =>
+      'No CV has been created for this student.';
+
+  @override
+  String uiPrimaryCvValue(Object value) {
+    return 'Primary CV: $value';
+  }
+
+  @override
+  String get uiPrimaryCvNotUploaded => 'Primary CV not uploaded';
+
+  @override
+  String get uiBuiltCvUnavailable => 'Built CV unavailable';
+
+  @override
+  String get uiBuiltCvPdfAvailable => 'Built CV PDF available';
+
+  @override
+  String get uiBuiltCvInformationAvailable => 'Built CV information available';
+
+  @override
+  String get uiLoadingVisibleApplications => 'Loading visible applications...';
+
+  @override
+  String get uiApplicationHistoryIsUnavailableRightNow =>
+      'Application history is unavailable right now.';
+
+  @override
+  String get uiNoVisibleApplicationsAvailableForThisStudent =>
+      'No visible applications available for this student.';
+
+  @override
+  String get uiOneVisibleApplication => '1 visible application';
+
+  @override
+  String uiVisibleApplicationsCount(Object count) {
+    return '$count visible applications';
+  }
+
+  @override
+  String get uiStudentApplications => 'Student Applications';
+
+  @override
+  String
+  get uiReviewTheStudentApplicationHistoryUsingTheSameVisibleOpportunityRuleShownInTheApp =>
+      'Open the student application history using the same visible-opportunity rule shown in the app.';
+
+  @override
+  String get uiVisibleSubmissions => 'Visible submissions';
+
+  @override
+  String
+  get uiCouldNotLoadApplicationCountRightNowYouCanStillOpenTheApplicationsSheetAndTryAgain =>
+      'We could not load the application count right now. You can still open the applications sheet and try again.';
+
+  @override
+  String get uiStudentProfileAvailableForAdminReview =>
+      'Student profile available for admin review.';
+
+  @override
+  String get uiApplicationHistoryUnavailable =>
+      'Application history unavailable';
+
+  @override
+  String get uiNoVisibleApplications => 'No visible applications';
+
+  @override
+  String get uiLoadingVisibleOpportunityApplications =>
+      'Loading visible opportunity applications.';
+
+  @override
+  String uiVisibleApplicationsAvailableForReviewCount(Object count) {
+    return '$count visible applications available for review.';
+  }
+
+  @override
+  String get uiCouldNotLoadThisStudentsVisibleApplicationsRightNow =>
+      'We could not load this student\'s visible applications right now.';
+
+  @override
+  String
+  get uiThisStudentHasNoApplicationsLinkedToOpenAndVisibleOpportunitiesRightNow =>
+      'This student has no applications linked to open and visible opportunities right now.';
+
+  @override
+  String get uiAppliedDateUnavailable => 'Applied date unavailable';
+
+  @override
+  String get uiPermissionDeniedWhileOpeningTheDocument =>
+      'Permission denied while opening the document.';
+
+  @override
+  String get uiTheRequestedDocumentIsNoLongerAvailable =>
+      'The requested document is no longer available.';
+
+  @override
+  String get uiNotProvided => 'Not provided';
+
+  @override
+  String get uiStudent => 'Student';
+
+  @override
+  String get uiBlocked => 'Blocked';
+
+  @override
+  String get uiUseATopicDomainOrLanguageFilterToBringInCuratedBooksForReview =>
+      'Use a topic, domain, or language filter to bring in curated books for review.';
+
+  @override
+  String
+  get uiTryABroaderQueryOrChangeTheLanguageAndDomainFiltersBeforeSearchingAgain =>
+      'Try a broader query or change the language and domain filters before searching again.';
+
+  @override
+  String
+  get uiThisWorkspaceIsDedicatedToGoogleBooksImportsSoBookCurationStaysFocused =>
+      'This workspace is dedicated to Google Books imports, so book curation stays focused.';
+
+  @override
+  String get uiUseATopicSearchToBringBackImportReadyVideosForReview =>
+      'Use a topic search to bring back import-ready videos for review.';
+
+  @override
+  String
+  get uiTryABroaderQueryOrSwitchTheDomainAndLevelContextBeforeSearchingAgain =>
+      'Try a broader query or switch the domain and level context before searching again.';
+
+  @override
+  String
+  get uiThisWorkspaceIsDedicatedToYouTubeImportsSoVideoCurationStaysFocused =>
+      'This workspace is dedicated to YouTube imports, so video curation stays focused.';
+
+  @override
+  String get uiVideoLibrary => 'Video Library';
+
+  @override
+  String get uiLearningResources => 'Learning Resources';
+
+  @override
+  String get uiPrimaryCv => 'Primary CV';
+
+  @override
+  String get uiTryAnotherSearchOrRelaxTheCurrentRoleAndLevelFilters =>
+      'Try another search or relax the current role and level filters.';
+
+  @override
+  String
+  get uiReviewContactInfoAccountStatusAndRoleSpecificDetailsInOneCleanProfileView =>
+      'Review contact info, account status, and role-specific details in one clean profile view.';
+
+  @override
+  String get uiUpdateTheCompanyApprovalStateFromHereWithoutLeavingTheProfile =>
+      'Update the company approval state from here without leaving the profile.';
+
+  @override
+  String get languageDeviceDefault => 'Device Default';
+
+  @override
+  String get uiSponsored => 'Sponsored';
+
+  @override
+  String get uiClosed => 'Closed';
+
+  @override
+  String get uiCourse => 'Course';
+
+  @override
+  String get uiVideo => 'Video';
+
+  @override
+  String get uiBook => 'Book';
+
+  @override
+  String get uiGuide => 'Guide';
+
+  @override
+  String get uiProgram => 'Program';
+
+  @override
+  String get uiTrain => 'Training';
+
+  @override
+  String get uiCategory => 'Category';
+
+  @override
+  String get uiDeadline => 'Deadline';
+
+  @override
+  String get uiDuration => 'Duration';
+
+  @override
+  String get uiWorkMode => 'Work mode';
+
+  @override
+  String get uiEmploymentType => 'Employment type';
+
+  @override
+  String get uiPaidStatus => 'Paid status';
+
+  @override
+  String get uiTags => 'Tags';
+
+  @override
+  String get uiLoginRequired => 'Login required';
+
+  @override
+  String get uiUploadUnavailable => 'Upload unavailable';
+
+  @override
+  String get uiUploadInProgress => 'Upload in progress';
+
+  @override
+  String get uiUpdateUnavailable => 'Update unavailable';
+
+  @override
+  String get uiEditingLocked => 'Editing locked';
+
+  @override
+  String get uiSubmissionUnavailable => 'Submission unavailable';
+
+  @override
+  String get uiNoUrgentDeadlines => 'No urgent deadlines right now';
+
+  @override
+  String get uiNoRecommendations => 'No recommendations right now';
+
+  @override
+  String get uiCheckBackSoon =>
+      'Check back soon for fresh curated opportunities.';
+
+  @override
+  String get uiNoRecentActivity => 'No recent activity yet';
+
+  @override
+  String get uiNoTrendingOpportunities => 'No trending opportunities right now';
+
+  @override
+  String get uiNoOpportunitiesMatchView => 'No opportunities match this view';
+
+  @override
+  String get uiNoIdeasMatchView => 'No ideas match this view';
+
+  @override
+  String get uiNoTrainingAvailableNow =>
+      'No training programs available right now';
+
+  @override
+  String get uiNoTrainingInTopic =>
+      'No training programs available in this topic';
+
+  @override
+  String get uiLoadingApplications => 'Loading your applications...';
+
+  @override
+  String get uiLoadingSavedItems => 'Loading your saved items...';
+
+  @override
+  String get uiBuildCvFirst => 'Build your CV first.';
+
+  @override
+  String get uiCompleteProfile => 'Complete your profile.';
+
+  @override
+  String get uiActBeforeDeadlines => 'Act before deadlines close.';
+
+  @override
+  String get uiShortlistReady => 'Your shortlist is ready.';
+
+  @override
+  String get uiRevisitSavedPicks =>
+      'Revisit saved picks before the strongest deadlines slip by.';
+
+  @override
+  String get uiFindNextOpportunity => 'Find your next best opportunity.';
+
+  @override
+  String get uiJumpBackBookmarked =>
+      'Jump back into everything you bookmarked.';
+
+  @override
+  String get uiRemote => 'Remote';
+
+  @override
+  String get uiPaid => 'Paid';
+
+  @override
+  String get uiNotifications => 'Notifications';
+
+  @override
+  String get uiSettings => 'Settings';
+
+  @override
+  String get uiAboutFutureGate => 'About FutureGate';
+
+  @override
+  String get uiSettingsSubtitle => 'Preferences, display, and app choices.';
+
+  @override
+  String get uiSecuritySubtitle => 'Password and account protection.';
+
+  @override
+  String get uiHelpCenterSubtitle => 'Answers, guidance, and support.';
+
+  @override
+  String get uiAboutSubtitle => 'Learn more about the platform.';
+
+  @override
+  String get uiSignOutSubtitle => 'End this session on the current device.';
+
+  @override
+  String get uiExperience => 'Experience';
+
+  @override
+  String get uiBriefSummary => 'A brief summary of your profile';
+
+  @override
+  String get uiAddSkill => 'Add a skill';
+
+  @override
+  String get uiCvPreviewSubtitle =>
+      'Review the final layout before you export or share it.';
+
+  @override
+  String get uiChooseTemplateSubtitle =>
+      'Pick the resume style that best fits the role you want.';
+
+  @override
+  String get uiProvider => 'Provider';
+
+  @override
+  String get uiApplicationDeadline => 'Application deadline';
+
+  @override
+  String get uiFundingType => 'Funding type';
+
+  @override
+  String get uiAmount => 'Amount';
+
+  @override
+  String get uiSearchCourses => 'Search for courses...';
+
+  @override
+  String get uiSelectCategory => 'Select category';
+
+  @override
+  String get uiSelectStage => 'Select stage';
+
+  @override
+  String get uiPublish => 'Publish';
+
+  @override
+  String get uiHiddenLabel => 'Hidden';
+
+  @override
+  String get uiSearchPrograms => 'Search programs, partners...';
+
+  @override
+  String get uiInternshipsSubtitle => 'Hands-on student placements';
+
+  @override
+  String get uiSponsoredSubtitle => 'Partner-backed support';
+
+  @override
+  String get uiTryDifferentFilter =>
+      'Try a different filter or start a new idea.';
+
+  @override
+  String get uiCreateFirstIdea =>
+      'Create your first idea or adjust the filters.';
+
+  @override
+  String get uiCvStudioSubtitle => 'Build, upload, and export your CV.';
 }

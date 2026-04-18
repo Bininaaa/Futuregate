@@ -2538,5 +2538,702 @@
   "couldNotOpenScholarshipLink": "Could not open the scholarship link.",
   "editMessageLabel": "Edit message",
   "noRecentUsersYet": "No recent users yet",
-  "uiBachelor": "Bachelor"
+  "uiBachelor": "Bachelor",
+  "uiOpportunityClosed": "Opportunity closed",
+  "@uiOpportunityClosed": {
+    "description": "Success title when an opportunity is closed"
+  },
+  "uiOpportunityDeleted": "Opportunity deleted",
+  "@uiOpportunityDeleted": {
+    "description": "Success title when an opportunity is deleted"
+  },
+  "uiOpportunityClosedBecauseApplicationsAlreadyExist": "Opportunity closed because applications already exist.",
+  "@uiOpportunityClosedBecauseApplicationsAlreadyExist": {
+    "description": "Success message when deleting an opportunity closes it because applications already exist"
+  },
+  "uiCouldNotOpenTheDocumentRightNow": "We couldn't open the document right now.",
+  "@uiCouldNotOpenTheDocumentRightNow": {
+    "description": "Generic error message when a document cannot be opened"
+  },
+  "uiWeCouldNotOpenThisLinkRightNow": "We couldn't open this link right now.",
+  "@uiWeCouldNotOpenThisLinkRightNow": {
+    "description": "Generic error message when a link cannot be opened"
+  },
+  "uiResourceRemovedFromFeatured": "This resource was removed from featured.",
+  "@uiResourceRemovedFromFeatured": {
+    "description": "Success message when a resource is removed from featured"
+  },
+  "uiResourceFeatured": "This resource is now featured.",
+  "@uiResourceFeatured": {
+    "description": "Success message when a resource is added to featured"
+  },
+  "uiNoUploadedCv": "No uploaded CV",
+  "@uiNoUploadedCv": {
+    "description": "Label shown when there is no uploaded CV file"
+  },
+  "uiBuiltCvPdfReadyForReview": "Built CV PDF is ready for review.",
+  "@uiBuiltCvPdfReadyForReview": {
+    "description": "Status message when a built CV PDF is available"
+  },
+  "uiBuiltCvDetailsAvailableNoPdfYet": "Built CV details are available, but no PDF has been exported yet.",
+  "@uiBuiltCvDetailsAvailableNoPdfYet": {
+    "description": "Status message when built CV content exists without an exported PDF"
+  },
+  "uiNoBuiltCvDetailsAvailable": "No built CV details available.",
+  "@uiNoBuiltCvDetailsAvailable": {
+    "description": "Status message when no built CV data exists"
+  },
+  "uiConversationArchived": "Conversation archived",
+  "@uiConversationArchived": {
+    "description": "Success title when a conversation is archived"
+  },
+  "uiConversationRestored": "Conversation restored",
+  "@uiConversationRestored": {
+    "description": "Success title when a conversation is restored from archive"
+  },
+  "uiConversationMovedToArchived": "This conversation has been moved to Archived.",
+  "@uiConversationMovedToArchived": {
+    "description": "Success message when a conversation is archived"
+  },
+  "uiConversationBackInInbox": "This conversation is back in your inbox.",
+  "@uiConversationBackInInbox": {
+    "description": "Success message when a conversation is restored to the inbox"
+  },
+  "uiWriteMessageBeforeAiTools": "Write a message before using AI tools.",
+  "@uiWriteMessageBeforeAiTools": {
+    "description": "Warning shown when the user tries to use AI tools without a message"
+  },
+  "uiWriteMessageBeforeTranslation": "Write a message before choosing a translation.",
+  "@uiWriteMessageBeforeTranslation": {
+    "description": "Warning shown when the user opens translation choices without a message"
+  },
+  "uiUnreadAlertsCount": "{count} unread alerts",
+  "@uiUnreadAlertsCount": {
+    "description": "Subtitle showing the number of unread alerts",
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "uiOpenAlertCenter": "Open alert center",
+  "@uiOpenAlertCenter": {
+    "description": "Subtitle for the notifications quick access tile"
+  },
+  "uiManageLearningResources": "Manage learning resources",
+  "@uiManageLearningResources": {
+    "description": "Quick access subtitle for learning resources management"
+  },
+  "uiManageApplication": "Manage Application",
+  "@uiManageApplication": {
+    "description": "Action label to manage an application"
+  },
+  "uiManageOpportunity": "Manage Opportunity",
+  "@uiManageOpportunity": {
+    "description": "Action label to manage an opportunity"
+  },
+  "uiManageScholarship": "Manage Scholarship",
+  "@uiManageScholarship": {
+    "description": "Action label to manage a scholarship"
+  },
+  "uiManageLibraryResource": "Manage Library Resource",
+  "@uiManageLibraryResource": {
+    "description": "Action label to manage a library resource"
+  },
+  "uiManageProjectIdea": "Manage Project Idea",
+  "@uiManageProjectIdea": {
+    "description": "Action label to manage a project idea"
+  },
+  "uiRecentActivitiesCount": "{count} recent activities",
+  "@uiRecentActivitiesCount": {
+    "description": "Label showing the number of recent activities",
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "uiMatchingActivitiesCount": "{count} matching activities",
+  "@uiMatchingActivitiesCount": {
+    "description": "Label showing the number of activities matching a search",
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "saveIdeaChangesLabel": "Save idea changes",
+  "@saveIdeaChangesLabel": {
+    "description": "Submit label when saving changes to an idea"
+  },
+  "uiUpdateTheFieldsBelowAndSave": "Update the fields below and save.",
+  "@uiUpdateTheFieldsBelowAndSave": {
+    "description": "Opportunity editor subtitle in edit mode"
+  },
+  "uiFillInTheFieldsBelowThenPublish": "Fill in the fields below, then publish.",
+  "@uiFillInTheFieldsBelowThenPublish": {
+    "description": "Opportunity editor subtitle in create mode"
+  },
+  "uiBookLibrary": "Book Library",
+  "@uiBookLibrary": {
+    "description": "Admin localization label."
+  },
+  "uiFeaturedResources": "Featured Resources",
+  "@uiFeaturedResources": {
+    "description": "Admin localization label."
+  },
+  "uiHiddenResources": "Hidden Resources",
+  "@uiHiddenResources": {
+    "description": "Admin localization label."
+  },
+  "uiNoFeaturedResourcesMatchThisSearch": "No featured resources match this search",
+  "@uiNoFeaturedResourcesMatchThisSearch": {
+    "description": "Admin localization label."
+  },
+  "uiNoHiddenResourcesMatchThisSearch": "No hidden resources match this search",
+  "@uiNoHiddenResourcesMatchThisSearch": {
+    "description": "Admin localization label."
+  },
+  "uiNoLibraryResourcesMatchThisSearch": "No library resources match this search",
+  "@uiNoLibraryResourcesMatchThisSearch": {
+    "description": "Admin localization label."
+  },
+  "uiThisResourceLinkIsInvalid": "This resource link is invalid.",
+  "@uiThisResourceLinkIsInvalid": {
+    "description": "Admin localization label."
+  },
+  "uiThisResourceIsVisibleAgain": "This resource is visible again.",
+  "@uiThisResourceIsVisibleAgain": {
+    "description": "Admin localization label."
+  },
+  "uiThisResourceWasHiddenYouCanRestoreItLater": "This resource was hidden. You can restore it later.",
+  "@uiThisResourceWasHiddenYouCanRestoreItLater": {
+    "description": "Admin localization label."
+  },
+  "uiResourceVisible": "Resource visible",
+  "@uiResourceVisible": {
+    "description": "Admin localization label."
+  },
+  "uiResourceHidden": "Resource hidden",
+  "@uiResourceHidden": {
+    "description": "Admin localization label."
+  },
+  "uiUnknownProvider": "Unknown provider",
+  "@uiUnknownProvider": {
+    "description": "Admin localization label."
+  },
+  "uiKeepBooksAndVideoResourcesInOneAdminFriendlyLibraryThenOpenTheSourceStudiosOnlyWhenYouNeedNewImports": "Keep books and video resources in one admin-friendly library, then open the source studios only when you need new imports.",
+  "@uiKeepBooksAndVideoResourcesInOneAdminFriendlyLibraryThenOpenTheSourceStudiosOnlyWhenYouNeedNewImports": {
+    "description": "Admin localization label."
+  },
+  "uiLibraryNowHoldsAllLearningResourcesSearchFilterReviewDetailsAndJumpIntoImportStudiosWhenYouNeedToAddMore": "Library now holds all learning resources. Search, filter, review details, and jump into import studios when you need to add more.",
+  "@uiLibraryNowHoldsAllLearningResourcesSearchFilterReviewDetailsAndJumpIntoImportStudiosWhenYouNeedToAddMore": {
+    "description": "Admin localization label."
+  },
+  "uiShowingFilteredResultsForSearchQuery": "Showing filtered results for \"{searchQuery}\".",
+  "@uiShowingFilteredResultsForSearchQuery": {
+    "description": "Subtitle shown when the admin library is filtered by a search query.",
+    "placeholders": {
+      "searchQuery": {}
+    }
+  },
+  "uiSearchLibraryByTitleProviderDomainLevelOrSource": "Search library by title, provider, domain, level, or source...",
+  "@uiSearchLibraryByTitleProviderDomainLevelOrSource": {
+    "description": "Admin localization label."
+  },
+  "uiHide": "Hide",
+  "@uiHide": {
+    "description": "Admin localization label."
+  },
+  "uiUnhide": "Unhide",
+  "@uiUnhide": {
+    "description": "Admin localization label."
+  },
+  "uiLibraryUnavailable": "Library unavailable",
+  "@uiLibraryUnavailable": {
+    "description": "Admin localization label."
+  },
+  "uiLanguage": "Language",
+  "@uiLanguage": {
+    "description": "Admin localization label."
+  },
+  "uiSearching": "Searching...",
+  "@uiSearching": {
+    "description": "Admin localization label."
+  },
+  "uiImport": "Import",
+  "@uiImport": {
+    "description": "Admin localization label."
+  },
+  "uiImporting": "Importing...",
+  "@uiImporting": {
+    "description": "Admin localization label."
+  },
+  "uiSyncing": "Syncing",
+  "@uiSyncing": {
+    "description": "Admin localization label."
+  },
+  "uiSynced": "Synced",
+  "@uiSynced": {
+    "description": "Admin localization label."
+  },
+  "uiStudentDetails": "Student Details",
+  "@uiStudentDetails": {
+    "description": "Admin localization label."
+  },
+  "uiReviewIdentityAcademicDetailsCvDocumentsAndVisibleSubmittedApplicationsInOnePlace": "Review identity, academic details, CV documents, and visible submitted applications in one place.",
+  "@uiReviewIdentityAcademicDetailsCvDocumentsAndVisibleSubmittedApplicationsInOnePlace": {
+    "description": "Admin localization label."
+  },
+  "uiReviewTheUploadedCvAndTheBuiltCvExportWithoutLeavingTheStudentProfile": "Review the uploaded CV and the built CV export without leaving the student profile.",
+  "@uiReviewTheUploadedCvAndTheBuiltCvExportWithoutLeavingTheStudentProfile": {
+    "description": "Admin localization label."
+  },
+  "uiNoCvHasBeenCreatedForThisStudent": "No CV has been created for this student.",
+  "@uiNoCvHasBeenCreatedForThisStudent": {
+    "description": "Admin localization label."
+  },
+  "uiPrimaryCvValue": "Primary CV: {value}",
+  "@uiPrimaryCvValue": {
+    "description": "Label showing the primary CV file name.",
+    "placeholders": {
+      "value": {}
+    }
+  },
+  "uiPrimaryCvNotUploaded": "Primary CV not uploaded",
+  "@uiPrimaryCvNotUploaded": {
+    "description": "Admin localization label."
+  },
+  "uiBuiltCvUnavailable": "Built CV unavailable",
+  "@uiBuiltCvUnavailable": {
+    "description": "Admin localization label."
+  },
+  "uiBuiltCvPdfAvailable": "Built CV PDF available",
+  "@uiBuiltCvPdfAvailable": {
+    "description": "Admin localization label."
+  },
+  "uiBuiltCvInformationAvailable": "Built CV information available",
+  "@uiBuiltCvInformationAvailable": {
+    "description": "Admin localization label."
+  },
+  "uiLoadingVisibleApplications": "Loading visible applications...",
+  "@uiLoadingVisibleApplications": {
+    "description": "Admin localization label."
+  },
+  "uiApplicationHistoryIsUnavailableRightNow": "Application history is unavailable right now.",
+  "@uiApplicationHistoryIsUnavailableRightNow": {
+    "description": "Admin localization label."
+  },
+  "uiNoVisibleApplicationsAvailableForThisStudent": "No visible applications available for this student.",
+  "@uiNoVisibleApplicationsAvailableForThisStudent": {
+    "description": "Admin localization label."
+  },
+  "uiOneVisibleApplication": "1 visible application",
+  "@uiOneVisibleApplication": {
+    "description": "Admin localization label."
+  },
+  "uiVisibleApplicationsCount": "{count} visible applications",
+  "@uiVisibleApplicationsCount": {
+    "description": "Count of visible applications for a student.",
+    "placeholders": {
+      "count": {
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "uiStudentApplications": "Student Applications",
+  "@uiStudentApplications": {
+    "description": "Admin localization label."
+  },
+  "uiReviewTheStudentApplicationHistoryUsingTheSameVisibleOpportunityRuleShownInTheApp": "Open the student application history using the same visible-opportunity rule shown in the app.",
+  "@uiReviewTheStudentApplicationHistoryUsingTheSameVisibleOpportunityRuleShownInTheApp": {
+    "description": "Admin localization label."
+  },
+  "uiVisibleSubmissions": "Visible submissions",
+  "@uiVisibleSubmissions": {
+    "description": "Admin localization label."
+  },
+  "uiCouldNotLoadApplicationCountRightNowYouCanStillOpenTheApplicationsSheetAndTryAgain": "We could not load the application count right now. You can still open the applications sheet and try again.",
+  "@uiCouldNotLoadApplicationCountRightNowYouCanStillOpenTheApplicationsSheetAndTryAgain": {
+    "description": "Admin localization label."
+  },
+  "uiStudentProfileAvailableForAdminReview": "Student profile available for admin review.",
+  "@uiStudentProfileAvailableForAdminReview": {
+    "description": "Admin localization label."
+  },
+  "uiApplicationHistoryUnavailable": "Application history unavailable",
+  "@uiApplicationHistoryUnavailable": {
+    "description": "Admin localization label."
+  },
+  "uiNoVisibleApplications": "No visible applications",
+  "@uiNoVisibleApplications": {
+    "description": "Admin localization label."
+  },
+  "uiLoadingVisibleOpportunityApplications": "Loading visible opportunity applications.",
+  "@uiLoadingVisibleOpportunityApplications": {
+    "description": "Admin localization label."
+  },
+  "uiVisibleApplicationsAvailableForReviewCount": "{count} visible applications available for review.",
+  "@uiVisibleApplicationsAvailableForReviewCount": {
+    "description": "Count of visible applications available for review.",
+    "placeholders": {
+      "count": {
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "uiCouldNotLoadThisStudentsVisibleApplicationsRightNow": "We could not load this student's visible applications right now.",
+  "@uiCouldNotLoadThisStudentsVisibleApplicationsRightNow": {
+    "description": "Admin localization label."
+  },
+  "uiThisStudentHasNoApplicationsLinkedToOpenAndVisibleOpportunitiesRightNow": "This student has no applications linked to open and visible opportunities right now.",
+  "@uiThisStudentHasNoApplicationsLinkedToOpenAndVisibleOpportunitiesRightNow": {
+    "description": "Admin localization label."
+  },
+  "uiAppliedDateUnavailable": "Applied date unavailable",
+  "@uiAppliedDateUnavailable": {
+    "description": "Admin localization label."
+  },
+  "uiPermissionDeniedWhileOpeningTheDocument": "Permission denied while opening the document.",
+  "@uiPermissionDeniedWhileOpeningTheDocument": {
+    "description": "Admin localization label."
+  },
+  "uiTheRequestedDocumentIsNoLongerAvailable": "The requested document is no longer available.",
+  "@uiTheRequestedDocumentIsNoLongerAvailable": {
+    "description": "Admin localization label."
+  },
+  "uiNotProvided": "Not provided",
+  "@uiNotProvided": {
+    "description": "Admin localization label."
+  },
+  "uiStudent": "Student",
+  "@uiStudent": {
+    "description": "Admin localization label."
+  },
+  "uiBlocked": "Blocked",
+  "@uiBlocked": {
+    "description": "Admin localization label."
+  },
+  "uiUseATopicDomainOrLanguageFilterToBringInCuratedBooksForReview": "Use a topic, domain, or language filter to bring in curated books for review.",
+  "@uiUseATopicDomainOrLanguageFilterToBringInCuratedBooksForReview": {
+    "description": "Admin localization label."
+  },
+  "uiTryABroaderQueryOrChangeTheLanguageAndDomainFiltersBeforeSearchingAgain": "Try a broader query or change the language and domain filters before searching again.",
+  "@uiTryABroaderQueryOrChangeTheLanguageAndDomainFiltersBeforeSearchingAgain": {
+    "description": "Admin localization label."
+  },
+  "uiThisWorkspaceIsDedicatedToGoogleBooksImportsSoBookCurationStaysFocused": "This workspace is dedicated to Google Books imports, so book curation stays focused.",
+  "@uiThisWorkspaceIsDedicatedToGoogleBooksImportsSoBookCurationStaysFocused": {
+    "description": "Admin localization label."
+  },
+  "uiUseATopicSearchToBringBackImportReadyVideosForReview": "Use a topic search to bring back import-ready videos for review.",
+  "@uiUseATopicSearchToBringBackImportReadyVideosForReview": {
+    "description": "Admin localization label."
+  },
+  "uiTryABroaderQueryOrSwitchTheDomainAndLevelContextBeforeSearchingAgain": "Try a broader query or switch the domain and level context before searching again.",
+  "@uiTryABroaderQueryOrSwitchTheDomainAndLevelContextBeforeSearchingAgain": {
+    "description": "Admin localization label."
+  },
+  "uiThisWorkspaceIsDedicatedToYouTubeImportsSoVideoCurationStaysFocused": "This workspace is dedicated to YouTube imports, so video curation stays focused.",
+  "@uiThisWorkspaceIsDedicatedToYouTubeImportsSoVideoCurationStaysFocused": {
+    "description": "Admin localization label."
+  },
+  "uiVideoLibrary": "Video Library",
+  "@uiVideoLibrary": {
+    "description": "Admin localization label."
+  },
+  "uiLearningResources": "Learning Resources",
+  "@uiLearningResources": {
+    "description": "Admin localization label."
+  },
+  "uiPrimaryCv": "Primary CV",
+  "@uiPrimaryCv": {
+    "description": "Admin localization label."
+  },
+  "uiTryAnotherSearchOrRelaxTheCurrentRoleAndLevelFilters": "Try another search or relax the current role and level filters.",
+  "@uiTryAnotherSearchOrRelaxTheCurrentRoleAndLevelFilters": {
+    "description": "Admin localization label."
+  },
+  "uiReviewContactInfoAccountStatusAndRoleSpecificDetailsInOneCleanProfileView": "Review contact info, account status, and role-specific details in one clean profile view.",
+  "@uiReviewContactInfoAccountStatusAndRoleSpecificDetailsInOneCleanProfileView": {
+    "description": "Admin localization label."
+  },
+  "uiUpdateTheCompanyApprovalStateFromHereWithoutLeavingTheProfile": "Update the company approval state from here without leaving the profile.",
+  "@uiUpdateTheCompanyApprovalStateFromHereWithoutLeavingTheProfile": {
+    "description": "Admin localization label."
+  },
+  "languageDeviceDefault": "Device Default",
+  "@languageDeviceDefault": {
+    "description": "Label for device/system default locale option"
+  },
+  "uiSponsored": "Sponsored",
+  "@uiSponsored": {
+    "description": "uiSponsored"
+  },
+  "uiClosed": "Closed",
+  "@uiClosed": {
+    "description": "uiClosed"
+  },
+  "uiCourse": "Course",
+  "@uiCourse": {
+    "description": "uiCourse"
+  },
+  "uiVideo": "Video",
+  "@uiVideo": {
+    "description": "uiVideo"
+  },
+  "uiBook": "Book",
+  "@uiBook": {
+    "description": "uiBook"
+  },
+  "uiGuide": "Guide",
+  "@uiGuide": {
+    "description": "uiGuide"
+  },
+  "uiProgram": "Program",
+  "@uiProgram": {
+    "description": "uiProgram"
+  },
+  "uiTrain": "Training",
+  "@uiTrain": {
+    "description": "uiTrain"
+  },
+  "uiCategory": "Category",
+  "@uiCategory": {
+    "description": "uiCategory"
+  },
+  "uiDeadline": "Deadline",
+  "@uiDeadline": {
+    "description": "uiDeadline"
+  },
+  "uiDuration": "Duration",
+  "@uiDuration": {
+    "description": "uiDuration"
+  },
+  "uiWorkMode": "Work mode",
+  "@uiWorkMode": {
+    "description": "uiWorkMode"
+  },
+  "uiEmploymentType": "Employment type",
+  "@uiEmploymentType": {
+    "description": "uiEmploymentType"
+  },
+  "uiPaidStatus": "Paid status",
+  "@uiPaidStatus": {
+    "description": "uiPaidStatus"
+  },
+  "uiTags": "Tags",
+  "@uiTags": {
+    "description": "uiTags"
+  },
+  "uiLoginRequired": "Login required",
+  "@uiLoginRequired": {
+    "description": "uiLoginRequired"
+  },
+  "uiUploadUnavailable": "Upload unavailable",
+  "@uiUploadUnavailable": {
+    "description": "uiUploadUnavailable"
+  },
+  "uiUploadInProgress": "Upload in progress",
+  "@uiUploadInProgress": {
+    "description": "uiUploadInProgress"
+  },
+  "uiUpdateUnavailable": "Update unavailable",
+  "@uiUpdateUnavailable": {
+    "description": "uiUpdateUnavailable"
+  },
+  "uiEditingLocked": "Editing locked",
+  "@uiEditingLocked": {
+    "description": "uiEditingLocked"
+  },
+  "uiSubmissionUnavailable": "Submission unavailable",
+  "@uiSubmissionUnavailable": {
+    "description": "uiSubmissionUnavailable"
+  },
+  "uiNoUrgentDeadlines": "No urgent deadlines right now",
+  "@uiNoUrgentDeadlines": {
+    "description": "uiNoUrgentDeadlines"
+  },
+  "uiNoRecommendations": "No recommendations right now",
+  "@uiNoRecommendations": {
+    "description": "uiNoRecommendations"
+  },
+  "uiCheckBackSoon": "Check back soon for fresh curated opportunities.",
+  "@uiCheckBackSoon": {
+    "description": "uiCheckBackSoon"
+  },
+  "uiNoRecentActivity": "No recent activity yet",
+  "@uiNoRecentActivity": {
+    "description": "uiNoRecentActivity"
+  },
+  "uiNoTrendingOpportunities": "No trending opportunities right now",
+  "@uiNoTrendingOpportunities": {
+    "description": "uiNoTrendingOpportunities"
+  },
+  "uiNoOpportunitiesMatchView": "No opportunities match this view",
+  "@uiNoOpportunitiesMatchView": {
+    "description": "uiNoOpportunitiesMatchView"
+  },
+  "uiNoIdeasMatchView": "No ideas match this view",
+  "@uiNoIdeasMatchView": {
+    "description": "uiNoIdeasMatchView"
+  },
+  "uiNoTrainingAvailableNow": "No training programs available right now",
+  "@uiNoTrainingAvailableNow": {
+    "description": "uiNoTrainingAvailableNow"
+  },
+  "uiNoTrainingInTopic": "No training programs available in this topic",
+  "@uiNoTrainingInTopic": {
+    "description": "uiNoTrainingInTopic"
+  },
+  "uiLoadingApplications": "Loading your applications...",
+  "@uiLoadingApplications": {
+    "description": "uiLoadingApplications"
+  },
+  "uiLoadingSavedItems": "Loading your saved items...",
+  "@uiLoadingSavedItems": {
+    "description": "uiLoadingSavedItems"
+  },
+  "uiBuildCvFirst": "Build your CV first.",
+  "@uiBuildCvFirst": {
+    "description": "uiBuildCvFirst"
+  },
+  "uiCompleteProfile": "Complete your profile.",
+  "@uiCompleteProfile": {
+    "description": "uiCompleteProfile"
+  },
+  "uiActBeforeDeadlines": "Act before deadlines close.",
+  "@uiActBeforeDeadlines": {
+    "description": "uiActBeforeDeadlines"
+  },
+  "uiShortlistReady": "Your shortlist is ready.",
+  "@uiShortlistReady": {
+    "description": "uiShortlistReady"
+  },
+  "uiRevisitSavedPicks": "Revisit saved picks before the strongest deadlines slip by.",
+  "@uiRevisitSavedPicks": {
+    "description": "uiRevisitSavedPicks"
+  },
+  "uiFindNextOpportunity": "Find your next best opportunity.",
+  "@uiFindNextOpportunity": {
+    "description": "uiFindNextOpportunity"
+  },
+  "uiJumpBackBookmarked": "Jump back into everything you bookmarked.",
+  "@uiJumpBackBookmarked": {
+    "description": "uiJumpBackBookmarked"
+  },
+  "uiRemote": "Remote",
+  "@uiRemote": {
+    "description": "uiRemote"
+  },
+  "uiPaid": "Paid",
+  "@uiPaid": {
+    "description": "uiPaid"
+  },
+  "uiNotifications": "Notifications",
+  "@uiNotifications": {
+    "description": "uiNotifications"
+  },
+  "uiSettings": "Settings",
+  "@uiSettings": {
+    "description": "uiSettings"
+  },
+  "uiAboutFutureGate": "About FutureGate",
+  "@uiAboutFutureGate": {
+    "description": "uiAboutFutureGate"
+  },
+  "uiSettingsSubtitle": "Preferences, display, and app choices.",
+  "@uiSettingsSubtitle": {
+    "description": "uiSettingsSubtitle"
+  },
+  "uiSecuritySubtitle": "Password and account protection.",
+  "@uiSecuritySubtitle": {
+    "description": "uiSecuritySubtitle"
+  },
+  "uiHelpCenterSubtitle": "Answers, guidance, and support.",
+  "@uiHelpCenterSubtitle": {
+    "description": "uiHelpCenterSubtitle"
+  },
+  "uiAboutSubtitle": "Learn more about the platform.",
+  "@uiAboutSubtitle": {
+    "description": "uiAboutSubtitle"
+  },
+  "uiSignOutSubtitle": "End this session on the current device.",
+  "@uiSignOutSubtitle": {
+    "description": "uiSignOutSubtitle"
+  },
+  "uiExperience": "Experience",
+  "@uiExperience": {
+    "description": "uiExperience"
+  },
+  "uiBriefSummary": "A brief summary of your profile",
+  "@uiBriefSummary": {
+    "description": "uiBriefSummary"
+  },
+  "uiAddSkill": "Add a skill",
+  "@uiAddSkill": {
+    "description": "uiAddSkill"
+  },
+  "uiCvPreviewSubtitle": "Review the final layout before you export or share it.",
+  "@uiCvPreviewSubtitle": {
+    "description": "uiCvPreviewSubtitle"
+  },
+  "uiChooseTemplateSubtitle": "Pick the resume style that best fits the role you want.",
+  "@uiChooseTemplateSubtitle": {
+    "description": "uiChooseTemplateSubtitle"
+  },
+  "uiProvider": "Provider",
+  "@uiProvider": {
+    "description": "uiProvider"
+  },
+  "uiApplicationDeadline": "Application deadline",
+  "@uiApplicationDeadline": {
+    "description": "uiApplicationDeadline"
+  },
+  "uiFundingType": "Funding type",
+  "@uiFundingType": {
+    "description": "uiFundingType"
+  },
+  "uiAmount": "Amount",
+  "@uiAmount": {
+    "description": "uiAmount"
+  },
+  "uiSearchCourses": "Search for courses...",
+  "@uiSearchCourses": {
+    "description": "uiSearchCourses"
+  },
+  "uiSelectCategory": "Select category",
+  "@uiSelectCategory": {
+    "description": "uiSelectCategory"
+  },
+  "uiSelectStage": "Select stage",
+  "@uiSelectStage": {
+    "description": "uiSelectStage"
+  },
+  "uiPublish": "Publish",
+  "@uiPublish": {
+    "description": "uiPublish"
+  },
+  "uiHiddenLabel": "Hidden",
+  "@uiHiddenLabel": {
+    "description": "uiHiddenLabel"
+  },
+  "uiSearchPrograms": "Search programs, partners...",
+  "@uiSearchPrograms": {
+    "description": "uiSearchPrograms"
+  },
+  "uiInternshipsSubtitle": "Hands-on student placements",
+  "@uiInternshipsSubtitle": {
+    "description": "uiInternshipsSubtitle"
+  },
+  "uiSponsoredSubtitle": "Partner-backed support",
+  "@uiSponsoredSubtitle": {
+    "description": "uiSponsoredSubtitle"
+  },
+  "uiTryDifferentFilter": "Try a different filter or start a new idea.",
+  "@uiTryDifferentFilter": {
+    "description": "uiTryDifferentFilter"
+  },
+  "uiCreateFirstIdea": "Create your first idea or adjust the filters.",
+  "@uiCreateFirstIdea": {
+    "description": "uiCreateFirstIdea"
+  },
+  "uiCvStudioSubtitle": "Build, upload, and export your CV.",
+  "@uiCvStudioSubtitle": {
+    "description": "uiCvStudioSubtitle"
+  }
 }

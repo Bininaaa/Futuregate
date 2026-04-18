@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/generated/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../models/user_model.dart';
@@ -155,7 +156,7 @@ class CompanyWorkspaceHeaderCard extends StatelessWidget {
                 children: [
                   CompanyWorkspaceActionButton(
                     icon: Icons.notifications_outlined,
-                    tooltip: 'Notifications',
+                    tooltip: AppLocalizations.of(context)!.uiNotifications,
                     badgeCount: unreadCount,
                     onTap: onNotificationsTap,
                   ),
@@ -394,7 +395,7 @@ class CompanyWorkspaceProfileButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Tooltip(
-      message: 'Company profile',
+      message: AppLocalizations.of(context)!.uiCompanyProfile,
       child: Material(
         color: Colors.transparent,
         child: InkWell(

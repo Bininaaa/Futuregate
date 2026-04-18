@@ -94,7 +94,7 @@ class IdeaDetailsScreen extends StatelessWidget {
               ),
             ),
             IconButton(
-              tooltip: 'Share idea',
+              tooltip: AppLocalizations.of(context)!.uiShareIdea,
               onPressed: () => _shareIdea(idea),
               icon: const Icon(Icons.ios_share_rounded),
             ),
@@ -250,20 +250,20 @@ class IdeaDetailsScreen extends StatelessWidget {
                 children: <Widget>[
                   AppMetaRow(
                     theme: _theme,
-                    label: 'Creator',
+                    label: AppLocalizations.of(context)!.uiCreator,
                     value: idea.creatorName,
                     icon: Icons.person_outline_rounded,
                   ),
                   AppMetaRow(
                     theme: _theme,
-                    label: 'Last updated',
+                    label: AppLocalizations.of(context)!.uiLastUpdated,
                     value: idea.lastUpdatedLabel,
                     icon: Icons.update_rounded,
                   ),
                   if (idea.createdAt != null)
                     AppMetaRow(
                       theme: _theme,
-                      label: 'Posted',
+                      label: AppLocalizations.of(context)!.uiPosted,
                       value: DateFormat(
                         'MMM d, yyyy',
                       ).format(idea.createdAt!.toDate()),
@@ -277,44 +277,44 @@ class IdeaDetailsScreen extends StatelessWidget {
               theme: _theme,
               items: <AppInfoTileData>[
                 AppInfoTileData(
-                  label: 'Stage',
+                  label: AppLocalizations.of(context)!.uiStage,
                   value: idea.displayStage,
                   icon: Icons.timeline_outlined,
                   color: stageColor,
                 ),
                 if (showModerationStatus)
                   AppInfoTileData(
-                    label: 'Status',
+                    label: AppLocalizations.of(context)!.uiStatus,
                     value: idea.statusLabel,
                     icon: Icons.flag_outlined,
                     color: statusColor,
                   ),
                 AppInfoTileData(
-                  label: 'Category',
+                  label: AppLocalizations.of(context)!.uiCategory,
                   value: idea.displayCategory,
                   icon: innovationCategoryIcon(idea.displayCategory),
                   color: categoryColor,
                 ),
                 AppInfoTileData(
-                  label: 'Level',
+                  label: AppLocalizations.of(context)!.uiLevel,
                   value: idea.level.trim().isNotEmpty
                       ? academicLevelLabel(idea.level)
                       : '',
                   icon: Icons.school_outlined,
                 ),
                 AppInfoTileData(
-                  label: 'Sparks',
+                  label: AppLocalizations.of(context)!.uiSparks,
                   value: '${idea.sparksCount}',
                   icon: Icons.bolt_rounded,
                   emphasize: true,
                 ),
                 AppInfoTileData(
-                  label: 'Interested',
+                  label: AppLocalizations.of(context)!.uiInterested,
                   value: '${idea.interestedCount}',
                   icon: Icons.groups_rounded,
                 ),
                 AppInfoTileData(
-                  label: 'Views',
+                  label: AppLocalizations.of(context)!.uiViews,
                   value: '${idea.viewsCount}',
                   icon: Icons.remove_red_eye_outlined,
                 ),
@@ -323,7 +323,7 @@ class IdeaDetailsScreen extends StatelessWidget {
             const SizedBox(height: 16),
             AppDetailSection(
               theme: _theme,
-              title: 'Overview',
+              title: AppLocalizations.of(context)!.uiOverview,
               icon: Icons.auto_awesome_rounded,
               child: Text(
                 idea.overviewText,
@@ -336,7 +336,7 @@ class IdeaDetailsScreen extends StatelessWidget {
               const SizedBox(height: 16),
               AppDetailSection(
                 theme: _theme,
-                title: 'Full Description',
+                title: AppLocalizations.of(context)!.uiFullDescription,
                 icon: Icons.description_outlined,
                 child: Text(
                   idea.description,
@@ -348,7 +348,7 @@ class IdeaDetailsScreen extends StatelessWidget {
               const SizedBox(height: 16),
               AppDetailSection(
                 theme: _theme,
-                title: 'Problem Statement',
+                title: AppLocalizations.of(context)!.uiProblemStatement,
                 icon: Icons.help_outline_rounded,
                 child: Text(
                   idea.problemText,
@@ -360,7 +360,7 @@ class IdeaDetailsScreen extends StatelessWidget {
               const SizedBox(height: 16),
               AppDetailSection(
                 theme: _theme,
-                title: 'Proposed Solution',
+                title: AppLocalizations.of(context)!.uiProposedSolution,
                 icon: Icons.rocket_launch_outlined,
                 child: Text(
                   idea.solutionText,
@@ -373,7 +373,7 @@ class IdeaDetailsScreen extends StatelessWidget {
               const SizedBox(height: 16),
               AppDetailSection(
                 theme: _theme,
-                title: 'Audience And Impact',
+                title: AppLocalizations.of(context)!.uiAudienceAndImpact,
                 icon: Icons.groups_2_outlined,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -381,13 +381,13 @@ class IdeaDetailsScreen extends StatelessWidget {
                     if (idea.targetAudience.trim().isNotEmpty)
                       AppMetaRow(
                         theme: _theme,
-                        label: 'Target audience',
+                        label: AppLocalizations.of(context)!.uiTargetAudience,
                         value: idea.targetAudience,
                       ),
                     if (idea.impactText.trim().isNotEmpty)
                       AppMetaRow(
                         theme: _theme,
-                        label: 'Benefits and impact',
+                        label: AppLocalizations.of(context)!.uiBenefitsAndImpact,
                         value: idea.impactText,
                       ),
                   ],
@@ -401,7 +401,7 @@ class IdeaDetailsScreen extends StatelessWidget {
               const SizedBox(height: 16),
               AppDetailSection(
                 theme: _theme,
-                title: 'Collaboration Needs',
+                title: AppLocalizations.of(context)!.uiCollaborationNeeds,
                 icon: Icons.diversity_3_outlined,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -409,7 +409,7 @@ class IdeaDetailsScreen extends StatelessWidget {
                     if (idea.displayTeamNeeded.isNotEmpty)
                       _TagBlock(
                         theme: _theme,
-                        title: 'Team needed',
+                        title: AppLocalizations.of(context)!.uiTeamNeeded,
                         values: idea.displayTeamNeeded,
                       ),
                     if (idea.displaySkills.isNotEmpty) ...<Widget>[
@@ -417,7 +417,7 @@ class IdeaDetailsScreen extends StatelessWidget {
                         const SizedBox(height: 14),
                       _TagBlock(
                         theme: _theme,
-                        title: 'Skills needed',
+                        title: AppLocalizations.of(context)!.uiSkillsNeeded,
                         values: idea.displaySkills,
                       ),
                     ],
@@ -425,7 +425,7 @@ class IdeaDetailsScreen extends StatelessWidget {
                       const SizedBox(height: 14),
                       AppMetaRow(
                         theme: _theme,
-                        label: 'Tools and stack',
+                        label: AppLocalizations.of(context)!.uiToolsAndStack,
                         value: idea.tools,
                       ),
                     ],
@@ -433,7 +433,7 @@ class IdeaDetailsScreen extends StatelessWidget {
                       const SizedBox(height: 8),
                       AppMetaRow(
                         theme: _theme,
-                        label: 'Resources or needs',
+                        label: AppLocalizations.of(context)!.uiResourcesOrNeeds,
                         value: idea.resourcesNeeded,
                       ),
                     ],
@@ -445,21 +445,21 @@ class IdeaDetailsScreen extends StatelessWidget {
               const SizedBox(height: 16),
               AppDetailSection(
                 theme: _theme,
-                title: 'References And Links',
+                title: AppLocalizations.of(context)!.uiReferencesAndLinks,
                 icon: Icons.attach_file_rounded,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     AppMetaRow(
                       theme: _theme,
-                      label: 'Attachment',
+                      label: AppLocalizations.of(context)!.uiAttachment,
                       value: idea.attachmentUrl,
                       icon: Icons.link_rounded,
                     ),
                     const SizedBox(height: 8),
                     AppPrimaryButton(
                       theme: _theme,
-                      label: 'Open Attachment',
+                      label: AppLocalizations.of(context)!.uiOpenAttachment,
                       icon: Icons.open_in_new_rounded,
                       onPressed: () =>
                           _openExternalLink(context, idea.attachmentUrl),
@@ -472,7 +472,7 @@ class IdeaDetailsScreen extends StatelessWidget {
               const SizedBox(height: 16),
               AppDetailSection(
                 theme: _theme,
-                title: 'Tags',
+                title: AppLocalizations.of(context)!.uiTags,
                 icon: Icons.local_offer_outlined,
                 child: Wrap(
                   spacing: 8,
@@ -530,7 +530,7 @@ class IdeaDetailsScreen extends StatelessWidget {
     if (error != null && context.mounted) {
       context.showAppSnackBar(
         error,
-        title: 'Update unavailable',
+        title: AppLocalizations.of(context)!.uiUpdateUnavailable,
         type: AppFeedbackType.error,
       );
     }
@@ -562,7 +562,7 @@ class IdeaDetailsScreen extends StatelessWidget {
     if (!launched && context.mounted) {
       context.showAppSnackBar(
         'Could not open that link.',
-        title: 'Open unavailable',
+        title: AppLocalizations.of(context)!.uiOpenUnavailable,
         type: AppFeedbackType.error,
       );
     }
@@ -617,7 +617,7 @@ class IdeaDetailsScreen extends StatelessWidget {
               const SizedBox(height: 18),
               AppDetailSection(
                 theme: _theme,
-                title: 'Interest Snapshot',
+                title: AppLocalizations.of(context)!.uiInterestSnapshot,
                 icon: Icons.groups_rounded,
                 child: IdeaMetricsRow(interestedCount: idea.interestedCount),
               ),
@@ -625,11 +625,11 @@ class IdeaDetailsScreen extends StatelessWidget {
                 const SizedBox(height: 14),
                 AppDetailSection(
                   theme: _theme,
-                  title: 'Open Roles',
+                  title: AppLocalizations.of(context)!.uiOpenRoles,
                   icon: Icons.badge_outlined,
                   child: _TagBlock(
                     theme: _theme,
-                    title: 'Roles',
+                    title: AppLocalizations.of(context)!.uiRoles,
                     values: idea.displayTeamNeeded,
                   ),
                 ),
@@ -638,11 +638,11 @@ class IdeaDetailsScreen extends StatelessWidget {
                 const SizedBox(height: 14),
                 AppDetailSection(
                   theme: _theme,
-                  title: 'Key Skills',
+                  title: AppLocalizations.of(context)!.uiKeySkills,
                   icon: Icons.auto_fix_high_outlined,
                   child: _TagBlock(
                     theme: _theme,
-                    title: 'Skills',
+                    title: AppLocalizations.of(context)!.uiSkills,
                     values: idea.displaySkills,
                   ),
                 ),

@@ -35,7 +35,7 @@ class _JobsScreenState extends State<JobsScreen> {
   List<JobCategoryData> get _categories => [
     JobCategoryData(
       key: 'tech',
-      label: 'Tech',
+      label: AppLocalizations.of(context)!.uiTech,
       icon: Icons.code_rounded,
       accentColor: OpportunityDashboardPalette.primary,
       surfaceTint: AppColors.current.primarySoft,
@@ -70,7 +70,7 @@ class _JobsScreenState extends State<JobsScreen> {
     ),
     JobCategoryData(
       key: 'design',
-      label: 'Design',
+      label: AppLocalizations.of(context)!.uiDesign,
       icon: Icons.brush_rounded,
       accentColor: OpportunityDashboardPalette.primaryDark,
       surfaceTint: AppColors.current.infoSoft,
@@ -90,7 +90,7 @@ class _JobsScreenState extends State<JobsScreen> {
     ),
     JobCategoryData(
       key: 'business',
-      label: 'Business',
+      label: AppLocalizations.of(context)!.uiBusiness,
       icon: Icons.business_center_rounded,
       accentColor: OpportunityDashboardPalette.secondary,
       surfaceTint: AppColors.current.secondarySoft,
@@ -111,7 +111,7 @@ class _JobsScreenState extends State<JobsScreen> {
     ),
     JobCategoryData(
       key: 'marketing',
-      label: 'Marketing',
+      label: AppLocalizations.of(context)!.uiMarketing,
       icon: Icons.campaign_rounded,
       accentColor: OpportunityDashboardPalette.accent,
       surfaceTint: AppColors.current.accentSoft,
@@ -130,7 +130,7 @@ class _JobsScreenState extends State<JobsScreen> {
     ),
     JobCategoryData(
       key: 'legal',
-      label: 'Legal',
+      label: AppLocalizations.of(context)!.uiLegal,
       icon: Icons.gavel_rounded,
       accentColor: OpportunityDashboardPalette.warning,
       surfaceTint: AppColors.current.warningSoft,
@@ -237,7 +237,7 @@ class _JobsScreenState extends State<JobsScreen> {
     if (userId == null || userId.isEmpty) {
       context.showAppSnackBar(
         'Sign in to save opportunities for later.',
-        title: 'Login required',
+        title: AppLocalizations.of(context)!.uiLoginRequired,
         type: AppFeedbackType.warning,
       );
       return;
@@ -295,18 +295,18 @@ class _JobsScreenState extends State<JobsScreen> {
     }
 
     if (!opportunity.isVisibleToStudents()) {
-      return const JobStatusData(
-        label: 'Unavailable',
-        color: Color(0xFF64748B),
+      return JobStatusData(
+        label: AppLocalizations.of(context)!.uiUnavailable,
+        color: const Color(0xFF64748B),
         icon: Icons.visibility_off_rounded,
       );
     }
 
     final normalizedStatus = opportunity.effectiveStatus();
     if (normalizedStatus.isNotEmpty && normalizedStatus != 'open') {
-      return const JobStatusData(
-        label: 'Closed',
-        color: Color(0xFF64748B),
+      return JobStatusData(
+        label: AppLocalizations.of(context)!.uiClosed,
+        color: const Color(0xFF64748B),
         icon: Icons.lock_outline_rounded,
       );
     }
@@ -980,7 +980,7 @@ class _JobsScreenState extends State<JobsScreen> {
               SliverToBoxAdapter(
                 child: StudentWorkspaceUtilityHeader(
                   user: authProvider.userModel,
-                  title: 'Jobs',
+                  title: AppLocalizations.of(context)!.uiJobs,
                   onProfileTap: _openProfile,
                   onOpenSaved: _openSavedItems,
                   onOpenApplied: _openAppliedItems,
@@ -1058,7 +1058,7 @@ class _JobsScreenState extends State<JobsScreen> {
                 ),
                 sliver: SliverToBoxAdapter(
                   child: _SectionHeader(
-                    title: 'Categories',
+                    title: AppLocalizations.of(context)!.uiCategories,
                     actionLabel: 'See All',
                     compact: isCompact,
                     onAction: () {
@@ -1216,7 +1216,7 @@ class _JobsScreenState extends State<JobsScreen> {
                 ),
                 sliver: SliverToBoxAdapter(
                   child: _SectionHeader(
-                    title: 'Available Jobs',
+                    title: AppLocalizations.of(context)!.uiAvailableJobs,
                     countLabel: availableRoles.length == 1
                         ? '1 job'
                         : '${availableRoles.length} jobs',
@@ -1814,7 +1814,7 @@ class _JobsSearchBar extends StatelessWidget {
             ? null
             : IconButton(
                 onPressed: onClear,
-                tooltip: 'Clear search',
+                tooltip: AppLocalizations.of(context)!.uiClearSearch,
                 icon: const Icon(Icons.close_rounded),
                 color: OpportunityDashboardPalette.textSecondary,
               ),

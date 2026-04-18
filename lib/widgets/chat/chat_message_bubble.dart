@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import '../../l10n/generated/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../models/message_model.dart';
@@ -206,7 +207,7 @@ class ChatMessageBubble extends StatelessWidget {
             if (message.isTextMessage)
               ChatActionSheetItem(
                 icon: Icons.edit_outlined,
-                label: 'Edit message',
+                label: AppLocalizations.of(context)!.uiEditMessage,
                 accentColor: ChatThemePalette.primary,
                 onTap: () {
                   Navigator.pop(context);
@@ -215,7 +216,7 @@ class ChatMessageBubble extends StatelessWidget {
               ),
             ChatActionSheetItem(
               icon: Icons.delete_outline_rounded,
-              label: 'Delete for everyone',
+              label: AppLocalizations.of(context)!.uiDeleteForEveryone,
               accentColor: ChatThemePalette.error,
               onTap: () {
                 Navigator.pop(context);
@@ -509,7 +510,7 @@ class _FileAttachmentBubble extends StatelessWidget {
       if (!launched && context.mounted) {
         context.showAppSnackBar(
           'We couldn\'t open this attachment.',
-          title: 'Attachment unavailable',
+          title: AppLocalizations.of(context)!.uiAttachmentUnavailable,
           type: AppFeedbackType.error,
         );
       }
@@ -520,7 +521,7 @@ class _FileAttachmentBubble extends StatelessWidget {
 
       context.showAppSnackBar(
         'We couldn\'t open this attachment. $error',
-        title: 'Attachment unavailable',
+        title: AppLocalizations.of(context)!.uiAttachmentUnavailable,
         type: AppFeedbackType.error,
       );
     }

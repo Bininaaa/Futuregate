@@ -330,7 +330,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
     if (userId == null || userId.isEmpty) {
       context.showAppSnackBar(
         'Sign in to save opportunities for later.',
-        title: 'Login required',
+        title: AppLocalizations.of(context)!.uiLoginRequired,
         type: AppFeedbackType.warning,
       );
       return;
@@ -448,7 +448,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                       Wrap(
                         spacing: 10,
                         runSpacing: 10,
-                        children: _dashboardFilters.map((filter) {
+                        children: _buildDashboardFilters(AppLocalizations.of(context)!).map((filter) {
                           return buildChip(
                             label: filter.label,
                             icon: filter.icon,
@@ -476,7 +476,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                         runSpacing: 10,
                         children: [
                           buildChip(
-                            label: 'Any',
+                            label: AppLocalizations.of(context)!.uiAny,
                             selected: draftEmploymentType == null,
                             onTap: () {
                               setModalState(() {
@@ -517,7 +517,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                         runSpacing: 10,
                         children: [
                           buildChip(
-                            label: 'Any',
+                            label: AppLocalizations.of(context)!.uiAny,
                             selected: draftWorkMode == null,
                             onTap: () {
                               setModalState(() {
@@ -556,7 +556,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                         runSpacing: 10,
                         children: [
                           buildChip(
-                            label: 'Paid only',
+                            label: AppLocalizations.of(context)!.uiPaidOnly,
                             selected: draftPaidOnly,
                             onTap: () {
                               setModalState(() {
@@ -566,7 +566,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                             icon: Icons.payments_outlined,
                           ),
                           buildChip(
-                            label: 'Closing soon',
+                            label: AppLocalizations.of(context)!.uiClosingSoon,
                             selected: draftClosingSoonOnly,
                             onTap: () {
                               setModalState(() {
@@ -1364,7 +1364,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
               suffixIcon: _searchQuery.isEmpty
                   ? null
                   : IconButton(
-                      tooltip: 'Clear search',
+                      tooltip: AppLocalizations.of(context)!.uiClearSearch,
                       onPressed: _searchController.clear,
                       icon: const Icon(Icons.close_rounded),
                     ),
@@ -1392,10 +1392,10 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
           height: 36,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
-            itemCount: _dashboardFilters.length,
+            itemCount: _buildDashboardFilters(AppLocalizations.of(context)!).length,
             separatorBuilder: (context, index) => const SizedBox(width: 8),
             itemBuilder: (context, index) {
-              final filter = _dashboardFilters[index];
+              final filter = _buildDashboardFilters(AppLocalizations.of(context)!)[index];
               final isActive = filter.value == _activeFilter;
 
               return GestureDetector(
@@ -1518,7 +1518,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
       appBar: widget.embedded
           ? null
           : StudentWorkspaceAppBar(
-              title: 'Discover',
+              title: AppLocalizations.of(context)!.uiDiscover,
               subtitle:
                   'Jobs, internships, sponsored tracks, and training in one stream.',
               icon: Icons.explore_rounded,
@@ -1527,12 +1527,12 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
               actions: [
                 StudentWorkspaceActionButton(
                   icon: Icons.search_rounded,
-                  tooltip: 'Focus search',
+                  tooltip: AppLocalizations.of(context)!.uiFocusSearch,
                   onTap: () => _focusSearchField(),
                 ),
                 StudentWorkspaceActionButton(
                   icon: Icons.tune_rounded,
-                  tooltip: 'Filter opportunities',
+                  tooltip: AppLocalizations.of(context)!.uiFilterOpportunities,
                   onTap: () => _showFilterSheet(),
                 ),
               ],
@@ -1571,7 +1571,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                       child: Column(
                         children: [
                           OpportunityHeroCard(
-                            title: 'Jobs',
+                            title: AppLocalizations.of(context)!.uiJobs,
                             subtitle:
                                 'Discover premium open roles from trusted employers and remote-ready teams.',
                             supportingLabel: _supportingCountText(
@@ -1595,8 +1595,8 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                               children: [
                                 Expanded(
                                   child: OpportunityCategoryCard(
-                                    title: 'Internships',
-                                    subtitle: 'Hands-on student placements',
+                                    title: AppLocalizations.of(context)!.uiInternships,
+                                    subtitle: AppLocalizations.of(context)!.uiInternshipsSubtitle,
                                     caption: _supportingCountText(
                                       count: internshipItems.length,
                                       singular: 'open internship',
@@ -1622,8 +1622,8 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                                 const SizedBox(width: 10),
                                 Expanded(
                                   child: OpportunityCategoryCard(
-                                    title: 'Sponsored',
-                                    subtitle: 'Partner-backed support',
+                                    title: AppLocalizations.of(context)!.uiSponsored,
+                                    subtitle: AppLocalizations.of(context)!.uiSponsoredSubtitle,
                                     caption: _supportingCountText(
                                       count: sponsoredItems.length,
                                       singular: 'active track',
@@ -1650,7 +1650,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                           ),
                           const SizedBox(height: 10),
                           TrainingProgramsCard(
-                            title: 'Training Programs',
+                            title: AppLocalizations.of(context)!.uiTraining,
                             subtitle: '',
                             badgeLabel: trainingProvider.isLoading
                                 ? 'Loading...'
@@ -1672,7 +1672,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                     sliver: SliverToBoxAdapter(
                       key: _trendingSectionKey,
                       child: TrendingOpportunitySectionHeader(
-                        title: 'Trending Opportunities',
+                        title: AppLocalizations.of(context)!.uiTrendingOpportunities,
                         subtitle:
                             'Featured, fresh, and high-signal picks from live data',
                         actionLabel: 'View All',
@@ -1691,7 +1691,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                               padding: const EdgeInsets.only(right: 20),
                               child: OpportunityDashboardEmptyState(
                                 icon: Icons.trending_up_rounded,
-                                title: 'No trending opportunities right now',
+                                title: AppLocalizations.of(context)!.uiNoTrendingOpportunities,
                                 subtitle:
                                     'Fresh recommendations are highlighted as new listings go live.',
                                 color: OpportunityDashboardPalette.primary,
@@ -1746,7 +1746,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                     sliver: SliverToBoxAdapter(
                       key: _latestSectionKey,
                       child: OpportunitySectionHeader(
-                        title: 'Latest Opportunities',
+                        title: AppLocalizations.of(context)!.uiLatestOpportunities,
                         subtitle:
                             'The $_latestItemsLimit newest roles, internships, and sponsored tracks',
                         accentColor: OpportunityDashboardPalette.success,
@@ -1759,7 +1759,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                       sliver: SliverToBoxAdapter(
                         child: OpportunityDashboardEmptyState(
                           icon: Icons.search_off_rounded,
-                          title: 'No opportunities match this view',
+                          title: AppLocalizations.of(context)!.uiNoOpportunitiesMatchView,
                           subtitle:
                               'Try adjusting your search or filters to uncover more matches.',
                           color: OpportunityDashboardPalette.success,
@@ -1801,7 +1801,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                     padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
                     sliver: SliverToBoxAdapter(
                       child: OpportunitySectionHeader(
-                        title: 'Closing Soon',
+                        title: AppLocalizations.of(context)!.uiClosingSoon,
                         subtitle:
                             'Urgent applications that need attention before they expire',
                         accentColor: OpportunityDashboardPalette.error,
@@ -1814,7 +1814,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                         ? SliverToBoxAdapter(
                             child: OpportunityDashboardEmptyState(
                               icon: Icons.hourglass_bottom_rounded,
-                              title: 'No urgent deadlines right now',
+                              title: AppLocalizations.of(context)!.uiNoUrgentDeadlines,
                               subtitle:
                                   'Opportunities nearing their deadlines are highlighted here.',
                               color: OpportunityDashboardPalette.error,
@@ -1893,25 +1893,25 @@ class _DashboardFilterDefinition {
   });
 }
 
-const List<_DashboardFilterDefinition> _dashboardFilters = [
+List<_DashboardFilterDefinition> _buildDashboardFilters(AppLocalizations l10n) => [
   _DashboardFilterDefinition(
     value: _OpportunityDashboardFilter.all,
-    label: 'All',
+    label: l10n.uiAll,
     icon: Icons.apps_rounded,
   ),
   _DashboardFilterDefinition(
     value: _OpportunityDashboardFilter.job,
-    label: 'Jobs',
+    label: l10n.uiJobs,
     icon: Icons.work_outline_rounded,
   ),
   _DashboardFilterDefinition(
     value: _OpportunityDashboardFilter.internship,
-    label: 'Internships',
+    label: l10n.uiInternships,
     icon: Icons.school_outlined,
   ),
   _DashboardFilterDefinition(
     value: _OpportunityDashboardFilter.sponsored,
-    label: 'Sponsored',
+    label: l10n.uiSponsored,
     icon: Icons.campaign_outlined,
   ),
 ];
