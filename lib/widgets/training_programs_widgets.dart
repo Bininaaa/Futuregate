@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '../l10n/generated/app_localizations.dart';
-import 'package:google_fonts/google_fonts.dart';
+import '../theme/app_typography.dart';
 
 import '../utils/opportunity_dashboard_palette.dart';
 import 'shared/app_feedback.dart';
@@ -75,8 +75,8 @@ class TrainingHeaderBar extends StatelessWidget {
         const SizedBox(width: 12),
         Expanded(
           child: Text(
-            'Training Programs',
-            style: GoogleFonts.poppins(
+            AppLocalizations.of(context)!.uiTrainingPrograms,
+            style: AppTypography.product(
               fontSize: 17,
               fontWeight: FontWeight.w700,
               color: OpportunityDashboardPalette.primary,
@@ -102,8 +102,8 @@ class TrainingHeroIntro extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Build your next skill',
-          style: GoogleFonts.poppins(
+          AppLocalizations.of(context)!.uiBuildYourNextSkill,
+          style: AppTypography.product(
             fontSize: 25,
             fontWeight: FontWeight.w700,
             height: 1.1,
@@ -112,8 +112,10 @@ class TrainingHeroIntro extends StatelessWidget {
         ),
         const SizedBox(height: 6),
         Text(
-          'Build skills and grow your career with curated learning paths.',
-          style: GoogleFonts.poppins(
+          AppLocalizations.of(
+            context,
+          )!.uiCoursesBooksAndCertificationsThatSharpenYourJourney,
+          style: AppTypography.product(
             fontSize: 13,
             fontWeight: FontWeight.w500,
             height: 1.5,
@@ -143,14 +145,14 @@ class TrainingSearchBar extends StatelessWidget {
       controller: controller,
       focusNode: focusNode,
       textInputAction: TextInputAction.search,
-      style: GoogleFonts.poppins(
+      style: AppTypography.product(
         fontSize: 13,
         fontWeight: FontWeight.w500,
         color: OpportunityDashboardPalette.textPrimary,
       ),
       decoration: InputDecoration(
         hintText: AppLocalizations.of(context)!.uiSearchCourses,
-        hintStyle: GoogleFonts.poppins(
+        hintStyle: AppTypography.product(
           fontSize: 13,
           fontWeight: FontWeight.w500,
           color: OpportunityDashboardPalette.textSecondary,
@@ -205,7 +207,7 @@ class TrainingSectionTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       title,
-      style: GoogleFonts.poppins(
+      style: AppTypography.product(
         fontSize: 16,
         fontWeight: FontWeight.w700,
         color: OpportunityDashboardPalette.textPrimary,
@@ -354,7 +356,7 @@ class TrainingCourseCard extends StatelessWidget {
                                       Expanded(
                                         child: Text(
                                           data.providerName,
-                                          style: GoogleFonts.poppins(
+                                          style: AppTypography.product(
                                             fontSize: 11.5,
                                             fontWeight: FontWeight.w500,
                                             color: OpportunityDashboardPalette
@@ -376,7 +378,7 @@ class TrainingCourseCard extends StatelessWidget {
                               data.title,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
-                              style: GoogleFonts.poppins(
+                              style: AppTypography.product(
                                 fontSize: 14.75,
                                 fontWeight: FontWeight.w700,
                                 height: 1.2,
@@ -416,7 +418,7 @@ class TrainingCourseCard extends StatelessWidget {
                                         Flexible(
                                           child: Text(
                                             data.ratingLabel!,
-                                            style: GoogleFonts.poppins(
+                                            style: AppTypography.product(
                                               fontSize: 11.5,
                                               fontWeight: FontWeight.w600,
                                               color: OpportunityDashboardPalette
@@ -529,7 +531,7 @@ class TrainingCourseListCard extends StatelessWidget {
                                   data.providerName,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                  style: GoogleFonts.poppins(
+                                  style: AppTypography.product(
                                     fontSize: 11.5,
                                     fontWeight: FontWeight.w500,
                                     color: OpportunityDashboardPalette
@@ -549,7 +551,7 @@ class TrainingCourseListCard extends StatelessWidget {
                       data.title,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.poppins(
+                      style: AppTypography.product(
                         fontSize: 14.25,
                         fontWeight: FontWeight.w700,
                         height: 1.2,
@@ -590,7 +592,7 @@ class TrainingCourseListCard extends StatelessWidget {
                                     data.ratingLabel!,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: GoogleFonts.poppins(
+                                    style: AppTypography.product(
                                       fontSize: 11.5,
                                       fontWeight: FontWeight.w600,
                                       color: OpportunityDashboardPalette
@@ -686,8 +688,8 @@ class TrainingCatalogueSelector extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Catalogue',
-                    style: GoogleFonts.poppins(
+                    AppLocalizations.of(context)!.uiCatalogue,
+                    style: AppTypography.product(
                       fontSize: 13.5,
                       fontWeight: FontWeight.w700,
                       color: OpportunityDashboardPalette.textPrimary,
@@ -695,8 +697,8 @@ class TrainingCatalogueSelector extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Choose your domain',
-                    style: GoogleFonts.poppins(
+                    AppLocalizations.of(context)!.uiChooseYourDomain,
+                    style: AppTypography.product(
                       fontSize: 11.5,
                       fontWeight: FontWeight.w500,
                       color: OpportunityDashboardPalette.textSecondary,
@@ -816,7 +818,7 @@ class TrainingProviderAvatar extends StatelessWidget {
           ? Center(
               child: Text(
                 initial.toUpperCase(),
-                style: GoogleFonts.poppins(
+                style: AppTypography.product(
                   fontSize: 11.5,
                   fontWeight: FontWeight.w700,
                   color: accentColor,
@@ -829,7 +831,7 @@ class TrainingProviderAvatar extends StatelessWidget {
               errorWidget: (context, url, error) => Center(
                 child: Text(
                   initial.toUpperCase(),
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: 11.5,
                     fontWeight: FontWeight.w700,
                     color: accentColor,
@@ -972,7 +974,7 @@ class _TrainingListMedia extends StatelessWidget {
               data.categoryLabel,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: GoogleFonts.poppins(
+              style: AppTypography.product(
                 fontSize: 9.5,
                 fontWeight: FontWeight.w600,
                 color: Colors.white,
@@ -1099,7 +1101,7 @@ class _TrainingCourseVisual extends StatelessWidget {
             children: [
               Text(
                 data.categoryLabel,
-                style: GoogleFonts.poppins(
+                style: AppTypography.product(
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
                   color: Colors.white.withValues(alpha: 0.92),
@@ -1110,7 +1112,7 @@ class _TrainingCourseVisual extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 data.providerName,
-                style: GoogleFonts.poppins(
+                style: AppTypography.product(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
                   color: Colors.white,
@@ -1174,7 +1176,7 @@ class _TrainingVideoVisual extends StatelessWidget {
               ),
               child: Text(
                 data.categoryLabel,
-                style: GoogleFonts.poppins(
+                style: AppTypography.product(
                   fontSize: 10,
                   fontWeight: FontWeight.w600,
                   color: Colors.white,
@@ -1315,7 +1317,7 @@ class _TrainingFileVisual extends StatelessWidget {
                 Expanded(
                   child: Text(
                     data.categoryLabel,
-                    style: GoogleFonts.poppins(
+                    style: AppTypography.product(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
                       color: Colors.white,
@@ -1407,7 +1409,7 @@ class _BookCoverFallback extends StatelessWidget {
             const Spacer(),
             Text(
               data.categoryLabel,
-              style: GoogleFonts.poppins(
+              style: AppTypography.product(
                 fontSize: 10,
                 fontWeight: FontWeight.w600,
                 color: Colors.white.withValues(alpha: 0.92),
@@ -1418,7 +1420,7 @@ class _BookCoverFallback extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               data.providerName,
-              style: GoogleFonts.poppins(
+              style: AppTypography.product(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
                 color: Colors.white,
@@ -1448,7 +1450,7 @@ class _TrainingImageBadge extends StatelessWidget {
       ),
       child: Text(
         badge.label,
-        style: GoogleFonts.poppins(
+        style: AppTypography.product(
           fontSize: 9,
           fontWeight: FontWeight.w700,
           letterSpacing: 0.2,
@@ -1524,7 +1526,7 @@ class _TrainingInfoSticker extends StatelessWidget {
             const SizedBox(width: 5),
             Text(
               sticker.label,
-              style: GoogleFonts.poppins(
+              style: AppTypography.product(
                 fontSize: 9.5,
                 fontWeight: FontWeight.w700,
                 letterSpacing: 0.35,
@@ -1551,6 +1553,12 @@ class _TrainingCatalogueChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizedLabel = switch (label.trim()) {
+      'All' => AppLocalizations.of(context)!.uiAll,
+      'General' => AppLocalizations.of(context)!.trainingGeneralDomainLabel,
+      _ => label,
+    };
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -1570,9 +1578,9 @@ class _TrainingCatalogueChip extends StatelessWidget {
             ),
           ),
           child: Text(
-            label,
+            localizedLabel,
             textAlign: TextAlign.center,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 11.5,
               fontWeight: FontWeight.w600,
               color: isSelected
@@ -1646,7 +1654,7 @@ class _TrainingMetaItem extends StatelessWidget {
         const SizedBox(width: 4),
         Text(
           label,
-          style: GoogleFonts.poppins(
+          style: AppTypography.product(
             fontSize: 11,
             fontWeight: FontWeight.w500,
             color: OpportunityDashboardPalette.textSecondary,
@@ -1677,8 +1685,8 @@ class _StartTrainingButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(13),
           ),
           child: Text(
-            'Start',
-            style: GoogleFonts.poppins(
+            AppLocalizations.of(context)!.uiStart,
+            style: AppTypography.product(
               fontSize: 11.5,
               fontWeight: FontWeight.w700,
               color: OpportunityDashboardPalette.primary,
@@ -1783,3 +1791,4 @@ class _TrainingStickerData {
 
   const _TrainingStickerData({required this.label, required this.icon});
 }
+

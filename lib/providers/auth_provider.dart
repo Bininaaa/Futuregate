@@ -420,6 +420,30 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  Future<String?> updatePreferredPostingLanguage(String languageCode) async {
+    final currentUser = _userModel;
+    if (currentUser == null) {
+      return 'User not found';
+    }
+
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser.uid)
+          .update(<String, dynamic>{
+            'preferredPostingLanguage': languageCode.trim(),
+          });
+
+      _userModel = currentUser.copyWith(
+        preferredPostingLanguage: languageCode.trim(),
+      );
+      notifyListeners();
+      return null;
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
   // --------------- Email Verification ---------------
 
   bool get hasPasswordProvider => _authService.hasPasswordProvider;

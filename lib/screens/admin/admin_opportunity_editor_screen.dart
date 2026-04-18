@@ -7,6 +7,8 @@ import '../../providers/auth_provider.dart';
 import '../../utils/admin_palette.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../../theme/locale_controller.dart';
+import '../../utils/content_language.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/opportunity_type_selector.dart';
 import '../../widgets/shared/app_content_system.dart';
@@ -49,6 +51,7 @@ class _AdminOpportunityEditorScreenState
   String? _workMode;
   bool? _isPaid;
   DateTime? _applicationDeadline;
+  String _originalLanguage = 'fr';
   bool _isSubmitting = false;
 
   bool get _isEditing => widget.initialOpportunity != null;
@@ -66,6 +69,7 @@ class _AdminOpportunityEditorScreenState
     _publisherController.text = auth?.fullName.trim().isNotEmpty == true
         ? auth!.fullName.trim()
         : 'FutureGate Admin';
+    _originalLanguage = _preferredPostingLanguage();
 
     final raw = widget.initialOpportunity;
     if (raw == null) return;
@@ -75,6 +79,10 @@ class _AdminOpportunityEditorScreenState
         raw['companyName']?.toString().trim().isNotEmpty == true
         ? raw['companyName'].toString().trim()
         : _publisherController.text;
+    _originalLanguage = ContentLanguage.normalizeCode(
+      opportunity.originalLanguage,
+      fallback: _preferredPostingLanguage(),
+    );
     _titleController.text = opportunity.title;
     _descriptionController.text = opportunity.description;
     _locationController.text = opportunity.location;
@@ -121,6 +129,21 @@ class _AdminOpportunityEditorScreenState
     _employmentType = opportunity.employmentType;
     _workMode = opportunity.workMode;
     _isPaid = opportunity.isPaid;
+  }
+
+  String _preferredPostingLanguage() {
+    final auth = context.read<AuthProvider>().userModel;
+    final preferred = ContentLanguage.normalizeCode(
+      auth?.preferredPostingLanguage,
+    );
+    if (preferred.isNotEmpty) {
+      return preferred;
+    }
+
+    return ContentLanguage.normalizeCode(
+      LocaleController.activeLanguageCode,
+      fallback: 'fr',
+    );
   }
 
   @override
@@ -203,6 +226,11 @@ class _AdminOpportunityEditorScreenState
                     label: 'Opportunity title',
                     hint: 'e.g. Junior Flutter Developer',
                     validator: adminRequiredMin('Title', min: 4),
+                  ),
+                  const SizedBox(height: 12),
+                  _LanguageSelector(
+                    value: _originalLanguage,
+                    onChanged: (v) => setState(() => _originalLanguage = v),
                   ),
                   const SizedBox(height: 12),
                   OpportunityTypeSelector(
@@ -546,6 +574,7 @@ class _AdminOpportunityEditorScreenState
       'duration': _isInternship
           ? OpportunityMetadata.normalizeDuration(_durationController.text)
           : null,
+      'originalLanguage': _originalLanguage,
     };
 
     final provider = context.read<AdminProvider>();
@@ -734,5 +763,73 @@ class _AdminOpportunityEditorScreenState
   String _formatNum(num? value) {
     if (value == null) return '';
     return value % 1 == 0 ? value.toStringAsFixed(0) : value.toString();
+  }
+}
+
+class _LanguageSelector extends StatelessWidget {
+  final String value;
+  final ValueChanged<String> onChanged;
+
+  const _LanguageSelector({required this.value, required this.onChanged});
+
+  static const _options = <(String, String, String)>[
+    ('fr', '🇫🇷', 'French'),
+    ('ar', '🇩🇿', 'Arabic'),
+    ('en', '🇬🇧', 'English'),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Row(
+      children: [
+        Icon(Icons.translate_rounded, size: 18, color: AdminPalette.textMuted),
+        const SizedBox(width: 8),
+        Text(
+          l10n.postingLanguageLabel,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: AdminPalette.textSecondary,
+          ),
+        ),
+        const SizedBox(width: 12),
+        ..._options.map((opt) {
+          final (code, flag, name) = opt;
+          final selected = value == code;
+          return Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: GestureDetector(
+              onTap: () => onChanged(code),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 150),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: selected
+                      ? AdminPalette.primary.withValues(alpha: 0.12)
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: selected
+                        ? AdminPalette.primary
+                        : AdminPalette.border,
+                  ),
+                ),
+                child: Text(
+                  '$flag $name',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                    color: selected
+                        ? AdminPalette.primary
+                        : AdminPalette.textSecondary,
+                  ),
+                ),
+              ),
+            ),
+          );
+        }),
+      ],
+    );
   }
 }

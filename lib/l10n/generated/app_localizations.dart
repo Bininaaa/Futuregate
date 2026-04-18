@@ -11710,6 +11710,762 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Build, upload, and export your CV.'**
   String get uiCvStudioSubtitle;
+
+  /// notifAdminTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Admin Notifications'**
+  String get notifAdminTitle;
+
+  /// notifCompanyTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Company Notifications'**
+  String get notifCompanyTitle;
+
+  /// notifReadAll
+  ///
+  /// In en, this message translates to:
+  /// **'Read all'**
+  String get notifReadAll;
+
+  /// notifFilterAll
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get notifFilterAll;
+
+  /// notifFilterNewContent
+  ///
+  /// In en, this message translates to:
+  /// **'New content'**
+  String get notifFilterNewContent;
+
+  /// notifFilterUnread
+  ///
+  /// In en, this message translates to:
+  /// **'Unread'**
+  String get notifFilterUnread;
+
+  /// notifFilterApplications
+  ///
+  /// In en, this message translates to:
+  /// **'Applications'**
+  String get notifFilterApplications;
+
+  /// notifFilterMessages
+  ///
+  /// In en, this message translates to:
+  /// **'Messages'**
+  String get notifFilterMessages;
+
+  /// notifContentAll
+  ///
+  /// In en, this message translates to:
+  /// **'All new'**
+  String get notifContentAll;
+
+  /// notifContentOpportunities
+  ///
+  /// In en, this message translates to:
+  /// **'Opportunities'**
+  String get notifContentOpportunities;
+
+  /// notifContentTrainings
+  ///
+  /// In en, this message translates to:
+  /// **'Trainings'**
+  String get notifContentTrainings;
+
+  /// notifContentScholarships
+  ///
+  /// In en, this message translates to:
+  /// **'Scholarships'**
+  String get notifContentScholarships;
+
+  /// notifContentIdeas
+  ///
+  /// In en, this message translates to:
+  /// **'Ideas'**
+  String get notifContentIdeas;
+
+  /// notifOppAll
+  ///
+  /// In en, this message translates to:
+  /// **'All opps'**
+  String get notifOppAll;
+
+  /// notifOppJobs
+  ///
+  /// In en, this message translates to:
+  /// **'Jobs'**
+  String get notifOppJobs;
+
+  /// notifOppInternships
+  ///
+  /// In en, this message translates to:
+  /// **'Internships'**
+  String get notifOppInternships;
+
+  /// notifOppSponsored
+  ///
+  /// In en, this message translates to:
+  /// **'Sponsored'**
+  String get notifOppSponsored;
+
+  /// notifAllCaughtUp
+  ///
+  /// In en, this message translates to:
+  /// **'All caught up'**
+  String get notifAllCaughtUp;
+
+  /// notifTypeMessage
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get notifTypeMessage;
+
+  /// notifTypeApplication
+  ///
+  /// In en, this message translates to:
+  /// **'Application'**
+  String get notifTypeApplication;
+
+  /// notifTypeOpportunity
+  ///
+  /// In en, this message translates to:
+  /// **'Opportunity'**
+  String get notifTypeOpportunity;
+
+  /// notifTypeScholarship
+  ///
+  /// In en, this message translates to:
+  /// **'Scholarship'**
+  String get notifTypeScholarship;
+
+  /// notifTypeTraining
+  ///
+  /// In en, this message translates to:
+  /// **'Training'**
+  String get notifTypeTraining;
+
+  /// notifTypeIdea
+  ///
+  /// In en, this message translates to:
+  /// **'Idea'**
+  String get notifTypeIdea;
+
+  /// notifTypeCompanyReview
+  ///
+  /// In en, this message translates to:
+  /// **'Company review'**
+  String get notifTypeCompanyReview;
+
+  /// notifTypeUpdate
+  ///
+  /// In en, this message translates to:
+  /// **'Update'**
+  String get notifTypeUpdate;
+
+  /// notifJustNow
+  ///
+  /// In en, this message translates to:
+  /// **'Just now'**
+  String get notifJustNow;
+
+  /// postingLanguageLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Posting language'**
+  String get postingLanguageLabel;
+
+  /// postingLanguageHint
+  ///
+  /// In en, this message translates to:
+  /// **'Language this content is written in'**
+  String get postingLanguageHint;
+
+  /// translateLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Translate'**
+  String get translateLabel;
+
+  /// translatingLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Translating...'**
+  String get translatingLabel;
+
+  /// translationDoneLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Translation ready'**
+  String get translationDoneLabel;
+
+  /// translationFailedLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Translation unavailable'**
+  String get translationFailedLabel;
+
+  /// showOriginalLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Show original'**
+  String get showOriginalLabel;
+
+  /// showTranslatedLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Show translated'**
+  String get showTranslatedLabel;
+
+  /// contentLanguageLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Content language'**
+  String get contentLanguageLabel;
+
+  /// autoTranslatedBadge
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-translated'**
+  String get autoTranslatedBadge;
+
+  /// translatedBadge
+  ///
+  /// In en, this message translates to:
+  /// **'Translated'**
+  String get translatedBadge;
+
+  /// originalBadge
+  ///
+  /// In en, this message translates to:
+  /// **'Original'**
+  String get originalBadge;
+
+  /// translationNote
+  ///
+  /// In en, this message translates to:
+  /// **'This content was automatically translated. Tap \"Show original\" to see the source.'**
+  String get translationNote;
+
+  /// dashSectionClosingSoon
+  ///
+  /// In en, this message translates to:
+  /// **'Closing Soon'**
+  String get dashSectionClosingSoon;
+
+  /// dashSectionRecommended
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended'**
+  String get dashSectionRecommended;
+
+  /// dashSectionQuickAccess
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Access'**
+  String get dashSectionQuickAccess;
+
+  /// dashSectionLatestActivity
+  ///
+  /// In en, this message translates to:
+  /// **'Latest Activities'**
+  String get dashSectionLatestActivity;
+
+  /// dashSectionSavedShortlist
+  ///
+  /// In en, this message translates to:
+  /// **'Saved shortlist'**
+  String get dashSectionSavedShortlist;
+
+  /// dashBuildCv
+  ///
+  /// In en, this message translates to:
+  /// **'Build CV'**
+  String get dashBuildCv;
+
+  /// dashCompleteProfile
+  ///
+  /// In en, this message translates to:
+  /// **'Complete Profile'**
+  String get dashCompleteProfile;
+
+  /// dashDiscover
+  ///
+  /// In en, this message translates to:
+  /// **'Discover'**
+  String get dashDiscover;
+
+  /// dashViewStatus
+  ///
+  /// In en, this message translates to:
+  /// **'View Status'**
+  String get dashViewStatus;
+
+  /// dashTrackStatus
+  ///
+  /// In en, this message translates to:
+  /// **'Track Status'**
+  String get dashTrackStatus;
+
+  /// dashSeeOpenRoles
+  ///
+  /// In en, this message translates to:
+  /// **'See Open Roles'**
+  String get dashSeeOpenRoles;
+
+  /// dashOpenSaved
+  ///
+  /// In en, this message translates to:
+  /// **'Open Saved'**
+  String get dashOpenSaved;
+
+  /// scholarshipOpportunityFallback
+  ///
+  /// In en, this message translates to:
+  /// **'Scholarship Opportunity'**
+  String get scholarshipOpportunityFallback;
+
+  /// scholarshipPartnerFallback
+  ///
+  /// In en, this message translates to:
+  /// **'FutureGate Partner'**
+  String get scholarshipPartnerFallback;
+
+  /// scholarshipNoDescFallback
+  ///
+  /// In en, this message translates to:
+  /// **'This scholarship does not include a detailed description yet.'**
+  String get scholarshipNoDescFallback;
+
+  /// scholarshipNoEligFallback
+  ///
+  /// In en, this message translates to:
+  /// **'Eligibility details will be shared by the scholarship provider.'**
+  String get scholarshipNoEligFallback;
+
+  /// scholarshipDeadlineFallback
+  ///
+  /// In en, this message translates to:
+  /// **'Provider-announced deadline'**
+  String get scholarshipDeadlineFallback;
+
+  /// scholarshipFundingFallback
+  ///
+  /// In en, this message translates to:
+  /// **'Funding shared on the official call'**
+  String get scholarshipFundingFallback;
+
+  /// scholarshipFeaturedBadge
+  ///
+  /// In en, this message translates to:
+  /// **'FEATURED'**
+  String get scholarshipFeaturedBadge;
+
+  /// scholarshipDefaultBadge
+  ///
+  /// In en, this message translates to:
+  /// **'SCHOLARSHIP'**
+  String get scholarshipDefaultBadge;
+
+  /// scholarshipFundingAmount
+  ///
+  /// In en, this message translates to:
+  /// **'Funding Amount'**
+  String get scholarshipFundingAmount;
+
+  /// scholarshipFundingDetails
+  ///
+  /// In en, this message translates to:
+  /// **'Funding Details'**
+  String get scholarshipFundingDetails;
+
+  /// scholarshipStudyLevel
+  ///
+  /// In en, this message translates to:
+  /// **'Study Level'**
+  String get scholarshipStudyLevel;
+
+  /// scholarshipProgramType
+  ///
+  /// In en, this message translates to:
+  /// **'Program Type'**
+  String get scholarshipProgramType;
+
+  /// scholarshipAtAGlance
+  ///
+  /// In en, this message translates to:
+  /// **'AT A GLANCE'**
+  String get scholarshipAtAGlance;
+
+  /// scholarshipNoLink
+  ///
+  /// In en, this message translates to:
+  /// **'The provider has not attached an external application link yet.'**
+  String get scholarshipNoLink;
+
+  /// scholarshipOfficialSource
+  ///
+  /// In en, this message translates to:
+  /// **'Official scholarship source'**
+  String get scholarshipOfficialSource;
+
+  /// scholarshipOpenPage
+  ///
+  /// In en, this message translates to:
+  /// **'Open Official Page'**
+  String get scholarshipOpenPage;
+
+  /// scholarshipLinkUnavailable
+  ///
+  /// In en, this message translates to:
+  /// **'Link Not Available'**
+  String get scholarshipLinkUnavailable;
+
+  /// ideaNotAvailable
+  ///
+  /// In en, this message translates to:
+  /// **'This idea is no longer available.'**
+  String get ideaNotAvailable;
+
+  /// ideaHubTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Innovation Hub'**
+  String get ideaHubTitle;
+
+  /// ideaUnsaveTooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Unsave idea'**
+  String get ideaUnsaveTooltip;
+
+  /// ideaSaveTooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Save idea'**
+  String get ideaSaveTooltip;
+
+  /// ideaEditLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Idea'**
+  String get ideaEditLabel;
+
+  /// ideaManageLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Manage This Idea'**
+  String get ideaManageLabel;
+
+  /// ideaInterestedLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Interested'**
+  String get ideaInterestedLabel;
+
+  /// ideaImInterestedLabel
+  ///
+  /// In en, this message translates to:
+  /// **'I\'m Interested'**
+  String get ideaImInterestedLabel;
+
+  /// ideaManageTeamLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Team'**
+  String get ideaManageTeamLabel;
+
+  /// ideaContactCreator
+  ///
+  /// In en, this message translates to:
+  /// **'Contact Creator'**
+  String get ideaContactCreator;
+
+  /// ideaSavedLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Saved'**
+  String get ideaSavedLabel;
+
+  /// ideaSaveLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Save Idea'**
+  String get ideaSaveLabel;
+
+  /// ideaShareLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Share Idea'**
+  String get ideaShareLabel;
+
+  /// trainingRecommendedForYou
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended for you'**
+  String get trainingRecommendedForYou;
+
+  /// No description provided for @trainingNoProgramsForDomain.
+  ///
+  /// In en, this message translates to:
+  /// **'No training programs are available right now for {domain}.'**
+  String trainingNoProgramsForDomain(Object domain);
+
+  /// trainingLinkMissingMessage
+  ///
+  /// In en, this message translates to:
+  /// **'This training does not have a link yet.'**
+  String get trainingLinkMissingMessage;
+
+  /// trainingLinkInvalidMessage
+  ///
+  /// In en, this message translates to:
+  /// **'This training link is not valid.'**
+  String get trainingLinkInvalidMessage;
+
+  /// trainingLinkOpenFailedMessage
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t open this training link right now.'**
+  String get trainingLinkOpenFailedMessage;
+
+  /// trainingSaveLoginMessage
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to save training resources for later.'**
+  String get trainingSaveLoginMessage;
+
+  /// trainingRemovedSavedMessage
+  ///
+  /// In en, this message translates to:
+  /// **'Removed from saved resources'**
+  String get trainingRemovedSavedMessage;
+
+  /// trainingSavedMessage
+  ///
+  /// In en, this message translates to:
+  /// **'Resource saved'**
+  String get trainingSavedMessage;
+
+  /// trainingSavedUpdatedTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Saved items updated'**
+  String get trainingSavedUpdatedTitle;
+
+  /// trainingUpdateUnavailableTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Update unavailable'**
+  String get trainingUpdateUnavailableTitle;
+
+  /// trainingProviderFallback
+  ///
+  /// In en, this message translates to:
+  /// **'Training Provider'**
+  String get trainingProviderFallback;
+
+  /// trainingFlexibleLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Flexible'**
+  String get trainingFlexibleLabel;
+
+  /// trainingAllLevelsLabel
+  ///
+  /// In en, this message translates to:
+  /// **'All levels'**
+  String get trainingAllLevelsLabel;
+
+  /// trainingCareerCourseLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Career Course'**
+  String get trainingCareerCourseLabel;
+
+  /// trainingVideoLessonLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Video Lesson'**
+  String get trainingVideoLessonLabel;
+
+  /// trainingReadingTrackLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Reading Track'**
+  String get trainingReadingTrackLabel;
+
+  /// trainingGuideToolkitLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Guide & Toolkit'**
+  String get trainingGuideToolkitLabel;
+
+  /// trainingLearningPathLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Learning Path'**
+  String get trainingLearningPathLabel;
+
+  /// trainingGeneralDomainLabel
+  ///
+  /// In en, this message translates to:
+  /// **'General'**
+  String get trainingGeneralDomainLabel;
+
+  /// opportunityFutureGatePartner
+  ///
+  /// In en, this message translates to:
+  /// **'FutureGate partner'**
+  String get opportunityFutureGatePartner;
+
+  /// opportunityStudentInternshipFallback
+  ///
+  /// In en, this message translates to:
+  /// **'Student Internship Opportunity'**
+  String get opportunityStudentInternshipFallback;
+
+  /// opportunitySponsoredFallback
+  ///
+  /// In en, this message translates to:
+  /// **'Sponsored Opportunity'**
+  String get opportunitySponsoredFallback;
+
+  /// opportunityOpenJobFallback
+  ///
+  /// In en, this message translates to:
+  /// **'Open Job Opportunity'**
+  String get opportunityOpenJobFallback;
+
+  /// opportunityOpenFallback
+  ///
+  /// In en, this message translates to:
+  /// **'Open Opportunity'**
+  String get opportunityOpenFallback;
+
+  /// scholarshipExploreLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Explore Scholarship'**
+  String get scholarshipExploreLabel;
+
+  /// ideaCreateCta
+  ///
+  /// In en, this message translates to:
+  /// **'Create an idea'**
+  String get ideaCreateCta;
+
+  /// ideaCreateFirstCta
+  ///
+  /// In en, this message translates to:
+  /// **'Create your first idea'**
+  String get ideaCreateFirstCta;
+
+  /// ideaPublicLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Public'**
+  String get ideaPublicLabel;
+
+  /// ideaPrivateLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Private'**
+  String get ideaPrivateLabel;
+
+  /// ideaSharedFromHub
+  ///
+  /// In en, this message translates to:
+  /// **'Shared from Innovation Hub'**
+  String get ideaSharedFromHub;
+
+  /// ideaCategoryInnovation
+  ///
+  /// In en, this message translates to:
+  /// **'Innovation'**
+  String get ideaCategoryInnovation;
+
+  /// ideaCategoryAi
+  ///
+  /// In en, this message translates to:
+  /// **'AI'**
+  String get ideaCategoryAi;
+
+  /// ideaCategoryFintech
+  ///
+  /// In en, this message translates to:
+  /// **'Fintech'**
+  String get ideaCategoryFintech;
+
+  /// ideaCategoryEdTech
+  ///
+  /// In en, this message translates to:
+  /// **'EdTech'**
+  String get ideaCategoryEdTech;
+
+  /// ideaCategorySustainability
+  ///
+  /// In en, this message translates to:
+  /// **'Sustainability'**
+  String get ideaCategorySustainability;
+
+  /// ideaCategorySocialImpact
+  ///
+  /// In en, this message translates to:
+  /// **'Social Impact'**
+  String get ideaCategorySocialImpact;
+
+  /// ideaStageConcept
+  ///
+  /// In en, this message translates to:
+  /// **'Concept'**
+  String get ideaStageConcept;
+
+  /// ideaStageMvp
+  ///
+  /// In en, this message translates to:
+  /// **'MVP'**
+  String get ideaStageMvp;
+
+  /// ideaStagePrototype
+  ///
+  /// In en, this message translates to:
+  /// **'Prototype'**
+  String get ideaStagePrototype;
+
+  /// ideaStageBeta
+  ///
+  /// In en, this message translates to:
+  /// **'Beta'**
+  String get ideaStageBeta;
+
+  /// scholarshipRemovedSavedMessage
+  ///
+  /// In en, this message translates to:
+  /// **'Removed from saved scholarships'**
+  String get scholarshipRemovedSavedMessage;
+
+  /// scholarshipSavedMessage
+  ///
+  /// In en, this message translates to:
+  /// **'Scholarship saved'**
+  String get scholarshipSavedMessage;
+
+  /// scholarshipSnapshotSubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Everything important is surfaced here before you open the full application call.'**
+  String get scholarshipSnapshotSubtitle;
+
+  /// scholarshipOverviewSubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'A focused overview so the opportunity feels easy to scan.'**
+  String get scholarshipOverviewSubtitle;
 }
 
 class _AppLocalizationsDelegate

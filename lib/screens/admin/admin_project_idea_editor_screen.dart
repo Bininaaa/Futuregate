@@ -5,7 +5,9 @@ import '../../models/project_idea_model.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../providers/admin_provider.dart';
 import '../../providers/auth_provider.dart';
+import '../../theme/locale_controller.dart';
 import '../../utils/admin_palette.dart';
+import '../../utils/content_language.dart';
 import '../../widgets/shared/app_feedback.dart';
 import 'admin_editor_widgets.dart';
 
@@ -43,12 +45,17 @@ class _AdminProjectIdeaEditorScreenState
   bool _isPublic = true;
   String _level = 'licence';
   String _status = 'approved';
+  String _originalLanguage = 'fr';
 
   bool get _isEditing => widget.initialIdea != null;
 
   @override
   void initState() {
     super.initState();
+    _originalLanguage = ContentLanguage.normalizeCode(
+      LocaleController.activeLanguageCode,
+      fallback: 'fr',
+    );
     final idea = widget.initialIdea;
     if (idea == null) return;
 
@@ -71,6 +78,10 @@ class _AdminProjectIdeaEditorScreenState
     _isPublic = idea.isPublic;
     _level = idea.level.trim().isEmpty ? 'licence' : idea.level;
     _status = idea.status == 'rejected' ? 'rejected' : 'approved';
+    _originalLanguage = ContentLanguage.normalizeCode(
+      idea.originalLanguage,
+      fallback: _originalLanguage,
+    );
   }
 
   @override
@@ -218,6 +229,30 @@ class _AdminProjectIdeaEditorScreenState
                     },
                   ),
                   const SizedBox(height: 14),
+                  AdminEditorDropdown<String>(
+                    value: _originalLanguage,
+                    label: l10n.originalLanguageFieldLabel,
+                    items: [
+                      DropdownMenuItem(
+                        value: 'fr',
+                        child: Text(l10n.languageFrench),
+                      ),
+                      DropdownMenuItem(
+                        value: 'en',
+                        child: Text(l10n.languageEnglish),
+                      ),
+                      DropdownMenuItem(
+                        value: 'ar',
+                        child: Text(l10n.languageArabic),
+                      ),
+                    ],
+                    onChanged: (value) {
+                      if (value != null) {
+                        setState(() => _originalLanguage = value);
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 14),
                   AdminEditorField(
                     controller: _categoryController,
                     label: 'Category',
@@ -314,6 +349,7 @@ class _AdminProjectIdeaEditorScreenState
       'description': _descriptionController.text.trim(),
       'domain': _domainController.text.trim(),
       'level': _level,
+      'originalLanguage': _originalLanguage,
       'category': _categoryController.text.trim(),
       'stage': _stageController.text.trim(),
       'tools': _toolsController.text.trim(),

@@ -11,8 +11,10 @@ import '../../providers/application_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/chat_provider.dart';
 import '../../providers/cv_provider.dart';
+import '../../providers/opportunity_translation_provider.dart';
 import '../../providers/saved_opportunity_provider.dart';
 import '../../services/application_service.dart';
+import '../../theme/locale_controller.dart';
 import '../../theme/app_colors.dart';
 import '../../utils/application_status.dart';
 import '../../utils/opportunity_metadata.dart';
@@ -128,11 +130,10 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
     _eligibilityFuture = _loadEligibility();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) {
-        return;
-      }
+      if (!mounted) return;
       _ensureSavedStateLoaded();
       _ensureApplicationsLoaded();
+      _ensureTranslation();
     });
   }
 
@@ -176,6 +177,27 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
     setState(() {
       _eligibilityFuture = _loadEligibility();
     });
+  }
+
+  void _ensureTranslation() {
+    final opp = widget.opportunity;
+    final originalLang = opp.originalLanguage;
+    if (originalLang == null || originalLang.isEmpty) return;
+
+    final localeController = context.read<LocaleController>();
+    final currentLocale = localeController.locale?.languageCode ??
+        Localizations.localeOf(context).languageCode;
+
+    if (currentLocale == originalLang) return;
+
+    context.read<OpportunityTranslationProvider>().ensureTranslation(
+      opportunityId: opp.id,
+      title: opp.title,
+      description: opp.description,
+      requirements: opp.requirements,
+      currentLocale: currentLocale,
+      originalLocale: originalLang,
+    );
   }
 
   Future<void> _apply() async {
@@ -753,6 +775,21 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final translationProvider = context.watch<OpportunityTranslationProvider>();
+    final translation = translationProvider.translationFor(widget.opportunity.id);
+    final showingTranslated = translationProvider.isShowingTranslated(widget.opportunity.id);
+    final hasTranslation = translation != null &&
+        translationProvider.statusFor(widget.opportunity.id) == TranslationStatus.ready;
+    final isTranslating = translationProvider.statusFor(widget.opportunity.id) == TranslationStatus.loading;
+
+    final displayTitle = (hasTranslation && showingTranslated)
+        ? translation.title
+        : widget.opportunity.title;
+    final displayDescription = (hasTranslation && showingTranslated)
+        ? translation.description
+        : widget.opportunity.description;
+
     final savedProvider = context.watch<SavedOpportunityProvider>();
     final applicationProvider = context.watch<ApplicationProvider>();
     final acceptedApplication = _acceptedApplication(applicationProvider);
@@ -874,11 +911,9 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
           AppDetailHeroCard(
             theme: _theme,
             icon: OpportunityType.icon(_effectiveType),
-            title: widget.opportunity.title.trim().isEmpty
-                ? 'Opportunity'
-                : widget.opportunity.title.trim(),
+            title: displayTitle.trim().isEmpty ? l10n.notifTypeOpportunity : displayTitle.trim(),
             subtitle: _companyName,
-            summary: widget.opportunity.description.trim(),
+            summary: displayDescription.trim(),
             badges: <AppBadgeData>[
               AppBadgeData(
                 label: OpportunityType.label(_effectiveType, AppLocalizations.of(context)!),
@@ -920,6 +955,18 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
               ],
             ),
           ),
+          if (isTranslating || hasTranslation) ...[
+            const SizedBox(height: 10),
+            _TranslationBanner(
+              theme: _theme,
+              isTranslating: isTranslating,
+              hasTranslation: hasTranslation,
+              showingTranslated: showingTranslated,
+              originalLanguage: widget.opportunity.originalLanguage ?? '',
+              onToggle: () => translationProvider.toggleTranslated(widget.opportunity.id),
+              l10n: l10n,
+            ),
+          ],
           if (isAdminAcceptedOpportunity) ...<Widget>[
             const SizedBox(height: 16),
             _ApprovedEmailContactNotice(theme: _theme),
@@ -1508,6 +1555,109 @@ class _OpportunityChipWrap extends StatelessWidget {
             ),
           )
           .toList(growable: false),
+    );
+  }
+}
+
+class _TranslationBanner extends StatelessWidget {
+  final AppContentTheme theme;
+  final bool isTranslating;
+  final bool hasTranslation;
+  final bool showingTranslated;
+  final String originalLanguage;
+  final VoidCallback onToggle;
+  final AppLocalizations l10n;
+
+  const _TranslationBanner({
+    required this.theme,
+    required this.isTranslating,
+    required this.hasTranslation,
+    required this.showingTranslated,
+    required this.originalLanguage,
+    required this.onToggle,
+    required this.l10n,
+  });
+
+  String _langName() => switch (originalLanguage) {
+    'ar' => l10n.languageArabic,
+    'fr' => l10n.languageFrench,
+    'en' => l10n.languageEnglish,
+    _ => l10n.unknownLanguage,
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = theme.accent;
+
+    if (isTranslating) {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        decoration: BoxDecoration(
+          color: accent.withValues(alpha: 0.07),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: accent.withValues(alpha: 0.18)),
+        ),
+        child: Row(
+          children: [
+            SizedBox(
+              width: 14,
+              height: 14,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: accent.withValues(alpha: 0.7),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Text(
+              l10n.translatingLabel,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: accent,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        color: accent.withValues(alpha: 0.07),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: accent.withValues(alpha: 0.18)),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.translate_rounded, size: 15, color: accent),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              showingTranslated
+                  ? '${l10n.translatedFromLabel} ${_langName()}'
+                  : l10n.viewingOriginalVersionLabel,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: accent,
+              ),
+            ),
+          ),
+          GestureDetector(
+            onTap: onToggle,
+            child: Text(
+              showingTranslated ? l10n.showOriginalLabel : l10n.showTranslatedLabel,
+              style: TextStyle(
+                fontSize: 11.5,
+                fontWeight: FontWeight.w700,
+                color: accent,
+                decoration: TextDecoration.underline,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

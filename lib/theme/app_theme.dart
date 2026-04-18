@@ -27,18 +27,22 @@ class AppTheme {
         ? ThemeData.dark(useMaterial3: true)
         : ThemeData.light(useMaterial3: true);
 
-    // Use Cairo for Arabic; Poppins for every other locale.
+    // Arabic fallback font family name (Noto Sans Arabic via google_fonts)
+    final notoArabicFamily = GoogleFonts.notoSansArabic().fontFamily;
+
+    // Use Cairo (+ Noto Sans Arabic fallback) for Arabic; Poppins otherwise.
     final textTheme = isArabic
         ? GoogleFonts.cairoTextTheme(base.textTheme).apply(
             bodyColor: colors.textPrimary,
             displayColor: colors.textPrimary,
+            fontFamilyFallback: notoArabicFamily != null ? [notoArabicFamily] : [],
           )
         : GoogleFonts.poppinsTextTheme(base.textTheme).apply(
             bodyColor: colors.textPrimary,
             displayColor: colors.textPrimary,
           );
 
-    // Inline font helper — picks Cairo or Poppins based on locale.
+    // Inline font helper — picks Cairo (+ Noto fallback) or Poppins.
     TextStyle f({
       double? fontSize,
       FontWeight? fontWeight,
@@ -51,6 +55,11 @@ class AppTheme {
                 fontWeight: fontWeight,
                 color: color,
                 height: height,
+                textStyle: TextStyle(
+                  fontFamilyFallback: notoArabicFamily != null
+                      ? [notoArabicFamily]
+                      : null,
+                ),
               )
             : GoogleFonts.poppins(
                 fontSize: fontSize,
@@ -420,6 +429,7 @@ class AppTheme {
     final isDark = colors.isDarkMode;
     final fillColor = isDark ? colors.surfaceMuted : colors.surface;
 
+    final notoFamily = GoogleFonts.notoSansArabic().fontFamily;
     TextStyle inputFont({
       double? fontSize,
       FontWeight? fontWeight,
@@ -432,6 +442,9 @@ class AppTheme {
                 fontWeight: fontWeight,
                 color: color,
                 height: height,
+                textStyle: TextStyle(
+                  fontFamilyFallback: notoFamily != null ? [notoFamily] : null,
+                ),
               )
             : GoogleFonts.poppins(
                 fontSize: fontSize,

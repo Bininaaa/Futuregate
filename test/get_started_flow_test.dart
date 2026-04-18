@@ -9,6 +9,7 @@ import 'package:avenirdz/screens/auth/role_chooser_screen.dart';
 import 'package:avenirdz/screens/onboarding/get_started_screen.dart';
 import 'package:avenirdz/screens/post_launch_gate_screen.dart';
 import 'package:avenirdz/services/app_intro_preferences_service.dart';
+import 'package:avenirdz/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
@@ -114,6 +115,11 @@ class FakeAuthProvider extends ChangeNotifier implements AuthProvider {
 
   @override
   Future<String?> signInWithGoogle() async {
+    return null;
+  }
+
+  @override
+  Future<String?> updatePreferredPostingLanguage(String languageCode) async {
     return null;
   }
 
@@ -316,7 +322,11 @@ Widget buildTestApp({
         value: FakeConnectivityProvider(),
       ),
     ],
-    child: MaterialApp(home: home),
+    child: MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: home,
+    ),
   );
 }
 

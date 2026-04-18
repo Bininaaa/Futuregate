@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -29,6 +28,7 @@ import '../../providers/scholarship_provider.dart';
 import '../../providers/student_provider.dart';
 import '../../providers/training_provider.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../../theme/app_typography.dart';
 import '../../theme/app_colors.dart';
 import '../../utils/application_status.dart';
 import '../../utils/student_profile_completion.dart';
@@ -198,6 +198,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     final savedOpportunityProvider = context.watch<SavedOpportunityProvider>();
     final savedScholarshipProvider = context.watch<SavedScholarshipProvider>();
     final projectIdeaProvider = context.watch<ProjectIdeaProvider>();
+    final l10n = AppLocalizations.of(context)!;
     final firstName = (user?.fullName ?? 'Student').split(' ').first;
     final profileCompletion = _profileCompletionPercent(user, cv);
     final showProfilePrompt = profileCompletion < 100;
@@ -245,7 +246,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
             SliverPadding(
               padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
               sliver: SliverToBoxAdapter(
-                child: _buildSectionHeader('Closing Soon'),
+                child: _buildSectionHeader(l10n.dashSectionClosingSoon),
               ),
             ),
             SliverPadding(
@@ -258,7 +259,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
               padding: const EdgeInsets.fromLTRB(20, 22, 20, 0),
               sliver: SliverToBoxAdapter(
                 child: _buildSectionHeader(
-                  'Recommended',
+                  l10n.dashSectionRecommended,
                   onSeeAll: () => _openDiscover(context),
                 ),
               ),
@@ -276,7 +277,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
             SliverPadding(
               padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
               sliver: SliverToBoxAdapter(
-                child: _buildSectionHeader('Quick Access'),
+                child: _buildSectionHeader(l10n.dashSectionQuickAccess),
               ),
             ),
             SliverPadding(
@@ -288,7 +289,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
             SliverPadding(
               padding: const EdgeInsets.fromLTRB(20, 22, 20, 0),
               sliver: SliverToBoxAdapter(
-                child: _buildSectionHeader('Latest Activities'),
+                child: _buildSectionHeader(l10n.dashSectionLatestActivity),
               ),
             ),
             SliverPadding(
@@ -447,7 +448,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                       children: [
                         Text(
                           _greetingForTime(_now),
-                          style: GoogleFonts.poppins(
+                          style: AppTypography.product(
                             fontSize: 11.2,
                             fontWeight: FontWeight.w600,
                             letterSpacing: 0.15,
@@ -457,7 +458,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                         const SizedBox(height: 2),
                         Text(
                           firstName,
-                          style: GoogleFonts.poppins(
+                          style: AppTypography.product(
                             fontSize: 22,
                             fontWeight: FontWeight.w700,
                             color: Colors.white,
@@ -467,7 +468,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                           const SizedBox(height: 2),
                           Text(
                             studentIdentity,
-                            style: GoogleFonts.poppins(
+                            style: AppTypography.product(
                               fontSize: 11.6,
                               fontWeight: FontWeight.w600,
                               color: Colors.white.withValues(alpha: 0.78),
@@ -540,7 +541,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                                 ),
                                 child: Text(
                                   unreadCount > 9 ? '9+' : '$unreadCount',
-                                  style: GoogleFonts.poppins(
+                                  style: AppTypography.product(
                                     fontSize: 8.5,
                                     fontWeight: FontWeight.w700,
                                     color: Colors.white,
@@ -570,7 +571,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                 ),
                 child: Text(
                   focus.badgeLabel,
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: 9.7,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.42,
@@ -581,7 +582,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
               const SizedBox(height: 9),
               Text(
                 focus.title,
-                style: GoogleFonts.poppins(
+                style: AppTypography.product(
                   fontSize: 21,
                   height: 1.12,
                   fontWeight: FontWeight.w700,
@@ -593,7 +594,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
               const SizedBox(height: 7),
               Text(
                 focus.subtitle,
-                style: GoogleFonts.poppins(
+                style: AppTypography.product(
                   fontSize: 11.4,
                   height: 1.4,
                   fontWeight: FontWeight.w500,
@@ -623,7 +624,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                       Expanded(
                         child: Text(
                           focus.insight,
-                          style: GoogleFonts.poppins(
+                          style: AppTypography.product(
                             fontSize: 10.9,
                             height: 1.35,
                             fontWeight: FontWeight.w500,
@@ -1002,7 +1003,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
               Expanded(
                 child: Text(
                   label,
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: 11.6,
                     fontWeight: FontWeight.w800,
                     color: isOnDark
@@ -1097,7 +1098,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                         Expanded(
                           child: Text(
                             'Saved shortlist',
-                            style: GoogleFonts.poppins(
+                            style: AppTypography.product(
                               fontSize: 12.6,
                               fontWeight: FontWeight.w700,
                               color: Colors.white,
@@ -1117,7 +1118,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                             totalSaved == 0
                                 ? 'Start saving'
                                 : '$totalSaved saved',
-                            style: GoogleFonts.poppins(
+                            style: AppTypography.product(
                               fontSize: 9.8,
                               fontWeight: FontWeight.w700,
                               color: Colors.white,
@@ -1129,7 +1130,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                     const SizedBox(height: 4),
                     Text(
                       summary,
-                      style: GoogleFonts.poppins(
+                      style: AppTypography.product(
                         fontSize: 10.8,
                         height: 1.35,
                         fontWeight: FontWeight.w500,
@@ -1174,7 +1175,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
       ),
       child: Text(
         label,
-        style: GoogleFonts.poppins(
+        style: AppTypography.product(
           fontSize: 9.6,
           fontWeight: FontWeight.w700,
           color: Colors.white.withValues(alpha: 0.92),
@@ -1336,7 +1337,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                         textAlign: TextAlign.center,
                         maxLines: 1,
                         softWrap: false,
-                        style: GoogleFonts.poppins(
+                        style: AppTypography.product(
                           fontSize: 11.2,
                           height: 1,
                           fontWeight: FontWeight.w700,
@@ -1401,7 +1402,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                   children: [
                     Text(
                       'Complete your profile',
-                      style: GoogleFonts.poppins(
+                      style: AppTypography.product(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
                         color: textDark,
@@ -1410,7 +1411,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                     const SizedBox(height: 3),
                     Text(
                       '$completion% ready for better student matching',
-                      style: GoogleFonts.poppins(
+                      style: AppTypography.product(
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
                         color: textMedium,
@@ -1430,7 +1431,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                 ),
                 child: Text(
                   '$completion%',
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: 10.5,
                     fontWeight: FontWeight.w700,
                     color: accent,
@@ -1442,7 +1443,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
           const SizedBox(height: 14),
           Text(
             _profileHint(user, cv),
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 12,
               height: 1.4,
               color: textMedium,
@@ -1477,7 +1478,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                     ),
                     child: Text(
                       primaryLabel,
-                      style: GoogleFonts.poppins(
+                      style: AppTypography.product(
                         fontSize: 11.5,
                         fontWeight: FontWeight.w700,
                         color: Colors.white,
@@ -1498,7 +1499,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                     horizontal: 6,
                     vertical: 10,
                   ),
-                  textStyle: GoogleFonts.poppins(
+                  textStyle: AppTypography.product(
                     fontSize: 11.5,
                     fontWeight: FontWeight.w700,
                   ),
@@ -1626,7 +1627,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                         const SizedBox(width: 6),
                         Text(
                           OpportunityType.label(normalizedType, l10n),
-                          style: GoogleFonts.poppins(
+                          style: AppTypography.product(
                             fontSize: 10.2,
                             fontWeight: FontWeight.w700,
                             color: accent,
@@ -1647,7 +1648,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                     ),
                     child: Text(
                       deadlineLabel,
-                      style: GoogleFonts.poppins(
+                      style: AppTypography.product(
                         fontSize: 9.8,
                         fontWeight: FontWeight.w700,
                         color: urgencyColor,
@@ -1659,7 +1660,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
               const SizedBox(height: 12),
               Text(
                 item.title,
-                style: GoogleFonts.poppins(
+                style: AppTypography.product(
                   fontSize: 14.2,
                   fontWeight: FontWeight.w700,
                   color: textDark,
@@ -1686,7 +1687,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                       children: [
                         Text(
                           item.companyName,
-                          style: GoogleFonts.poppins(
+                          style: AppTypography.product(
                             fontSize: 11.5,
                             fontWeight: FontWeight.w700,
                             color: textDark,
@@ -1706,7 +1707,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                             Expanded(
                               child: Text(
                                 locationLabel,
-                                style: GoogleFonts.poppins(
+                                style: AppTypography.product(
                                   fontSize: 10.4,
                                   fontWeight: FontWeight.w500,
                                   color: textMedium,
@@ -1745,7 +1746,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                     Expanded(
                       child: Text(
                         footerLabel,
-                        style: GoogleFonts.poppins(
+                        style: AppTypography.product(
                           fontSize: 10.6,
                           fontWeight: FontWeight.w600,
                           color: textDark,
@@ -1785,7 +1786,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
       alignment: Alignment.center,
       child: Text(
         letter,
-        style: GoogleFonts.poppins(
+        style: AppTypography.product(
           fontSize: 14,
           fontWeight: FontWeight.w700,
           color: accent,
@@ -1991,7 +1992,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                     const SizedBox(width: 8),
                     Text(
                       freshness,
-                      style: GoogleFonts.poppins(
+                      style: AppTypography.product(
                         fontSize: 10.5,
                         fontWeight: FontWeight.w700,
                         color: textLight,
@@ -2015,7 +2016,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                       children: [
                         Text(
                           item.companyName,
-                          style: GoogleFonts.poppins(
+                          style: AppTypography.product(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
                             color: textDark,
@@ -2034,7 +2035,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                             Expanded(
                               child: Text(
                                 locationLabel,
-                                style: GoogleFonts.poppins(
+                                style: AppTypography.product(
                                   fontSize: 10,
                                   color: textLight,
                                 ),
@@ -2052,7 +2053,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
               const SizedBox(height: 10),
               Text(
                 item.title,
-                style: GoogleFonts.poppins(
+                style: AppTypography.product(
                   fontSize: 15.2,
                   fontWeight: FontWeight.w700,
                   color: textDark,
@@ -2066,7 +2067,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                   item.description,
                   fallback: 'A strong opportunity worth a closer look.',
                 ),
-                style: GoogleFonts.poppins(
+                style: AppTypography.product(
                   fontSize: 10.8,
                   height: 1.3,
                   fontWeight: FontWeight.w500,
@@ -2090,7 +2091,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                     Expanded(
                       child: Text(
                         reason,
-                        style: GoogleFonts.poppins(
+                        style: AppTypography.product(
                           fontSize: 9.6,
                           height: 1.2,
                           fontWeight: FontWeight.w600,
@@ -2135,7 +2136,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                                   : footerMetaLabel,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: GoogleFonts.poppins(
+                              style: AppTypography.product(
                                 fontSize: 9.2,
                                 fontWeight: FontWeight.w700,
                                 color: accent,
@@ -2148,7 +2149,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                   else
                     Text(
                       'Open details',
-                      style: GoogleFonts.poppins(
+                      style: AppTypography.product(
                         fontSize: 9.6,
                         fontWeight: FontWeight.w700,
                         color: textMedium,
@@ -2200,7 +2201,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
               placeholder: (_, _) => Center(
                 child: Text(
                   companyName.isNotEmpty ? companyName[0].toUpperCase() : 'C',
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: fontSize,
                     fontWeight: FontWeight.w700,
                     color: primaryPurple,
@@ -2210,7 +2211,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
               errorWidget: (_, _, _) => Center(
                 child: Text(
                   companyName.isNotEmpty ? companyName[0].toUpperCase() : 'C',
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: fontSize,
                     fontWeight: FontWeight.w700,
                     color: primaryPurple,
@@ -2221,7 +2222,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
           : Center(
               child: Text(
                 companyName.isNotEmpty ? companyName[0].toUpperCase() : 'C',
-                style: GoogleFonts.poppins(
+                style: AppTypography.product(
                   fontSize: fontSize,
                   fontWeight: FontWeight.w700,
                   color: primaryPurple,
@@ -2360,7 +2361,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                             padding: const EdgeInsets.only(left: 8, top: 2),
                             child: Text(
                               item.trailingLabel!,
-                              style: GoogleFonts.poppins(
+                              style: AppTypography.product(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w700,
                                 color: textLight,
@@ -2372,7 +2373,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                     const SizedBox(height: 6),
                     Text(
                       item.title,
-                      style: GoogleFonts.poppins(
+                      style: AppTypography.product(
                         fontSize: 13.6,
                         fontWeight: FontWeight.w700,
                         color: textDark,
@@ -2383,7 +2384,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                     const SizedBox(height: 3),
                     Text(
                       item.subtitle,
-                      style: GoogleFonts.poppins(
+                      style: AppTypography.product(
                         fontSize: 11.3,
                         fontWeight: FontWeight.w600,
                         color: textMedium,
@@ -2998,7 +2999,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
       ),
       child: Text(
         label,
-        style: GoogleFonts.poppins(
+        style: AppTypography.product(
           fontSize: 9.8,
           fontWeight: FontWeight.w700,
           color: color,
@@ -3034,7 +3035,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
         const SizedBox(width: 4),
         Text(
           label,
-          style: GoogleFonts.poppins(
+          style: AppTypography.product(
             fontSize: 10.4,
             fontWeight: FontWeight.w500,
             color: tone == textLight ? textLight : tone,
@@ -3564,7 +3565,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
           const SizedBox(height: 14),
           Text(
             message,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 14,
               fontWeight: FontWeight.w600,
               color: textMedium,
@@ -3573,7 +3574,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
           const SizedBox(height: 4),
           Text(
             subtitle,
-            style: GoogleFonts.poppins(fontSize: 12, color: textLight),
+            style: AppTypography.product(fontSize: 12, color: textLight),
             textAlign: TextAlign.center,
           ),
         ],
@@ -3751,3 +3752,4 @@ class _ProfileCompletionRingPainter extends CustomPainter {
       oldDelegate.progressColor != progressColor ||
       oldDelegate.strokeWidth != strokeWidth;
 }
+

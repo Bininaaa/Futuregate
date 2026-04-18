@@ -6,6 +6,8 @@ import 'package:avenirdz/providers/auth_provider.dart';
 import 'package:avenirdz/providers/connectivity_provider.dart';
 import 'package:avenirdz/providers/notification_provider.dart';
 import 'package:avenirdz/screens/auth_wrapper.dart';
+import 'package:avenirdz/l10n/generated/app_localizations.dart';
+import 'package:avenirdz/widgets/shared/app_loading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
@@ -90,6 +92,11 @@ class FakeAuthProvider extends ChangeNotifier implements AuthProvider {
 
   @override
   Future<String?> signInWithGoogle() async {
+    return null;
+  }
+
+  @override
+  Future<String?> updatePreferredPostingLanguage(String languageCode) async {
     return null;
   }
 
@@ -290,7 +297,11 @@ void main() {
           value: FakeConnectivityProvider(),
         ),
       ],
-      child: const MaterialApp(home: AuthWrapper()),
+      child: const MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: AuthWrapper(),
+      ),
     );
   }
 
@@ -305,7 +316,7 @@ void main() {
     await tester.pumpWidget(buildTestApp(authProvider));
     await tester.pump();
 
-    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    expect(find.byType(AppLoadingView), findsOneWidget);
     expect(authProvider.loadCurrentUserCalled, isTrue);
   });
 

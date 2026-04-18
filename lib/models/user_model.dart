@@ -35,6 +35,7 @@ class UserModel {
   final bool isActive;
   final String provider; // 'email' or 'google'
   final bool studentOnboardingPending;
+  final String preferredPostingLanguage;
 
   bool get isEmailProvider => provider == 'email';
   bool get isGoogleProvider => provider == 'google';
@@ -78,6 +79,7 @@ class UserModel {
     this.isOnline = false,
     this.lastSeenAt,
     this.studentOnboardingPending = false,
+    this.preferredPostingLanguage = '',
   });
 
   bool get needsAcademicLevel =>
@@ -144,6 +146,8 @@ class UserModel {
       isActive: map['isActive'] ?? true,
       provider: map['provider'] ?? 'email',
       studentOnboardingPending: map['studentOnboardingPending'] == true,
+      preferredPostingLanguage:
+          (map['preferredPostingLanguage'] ?? '').toString().trim(),
     );
   }
 
@@ -183,6 +187,7 @@ class UserModel {
       'isActive': isActive,
       'provider': provider,
       'studentOnboardingPending': studentOnboardingPending,
+      'preferredPostingLanguage': preferredPostingLanguage,
     };
   }
 
@@ -221,6 +226,7 @@ class UserModel {
     bool? isActive,
     String? provider,
     bool? studentOnboardingPending,
+    String? preferredPostingLanguage,
   }) {
     return UserModel(
       uid: uid ?? this.uid,
@@ -263,6 +269,8 @@ class UserModel {
       provider: provider ?? this.provider,
       studentOnboardingPending:
           studentOnboardingPending ?? this.studentOnboardingPending,
+      preferredPostingLanguage:
+          preferredPostingLanguage ?? this.preferredPostingLanguage,
     );
   }
 

@@ -36,6 +36,7 @@ class OpportunityModel {
   final List<String> requirementItems;
   final List<String> benefits;
   final Map<String, dynamic> rawData;
+  final String? originalLanguage;
 
   OpportunityModel({
     required this.id,
@@ -70,6 +71,7 @@ class OpportunityModel {
     this.requirementItems = const [],
     this.benefits = const [],
     this.rawData = const {},
+    this.originalLanguage,
   });
 
   factory OpportunityModel.fromMap(Map<String, dynamic> map) {
@@ -125,6 +127,7 @@ class OpportunityModel {
         compensationText: OpportunityMetadata.extractCompensationText(data),
       ),
       rawData: data,
+      originalLanguage: data['originalLanguage']?.toString(),
     );
   }
 
@@ -168,6 +171,7 @@ class OpportunityModel {
       'tags': tags,
       'requirementItems': requirementItems,
       'benefits': benefits,
+      if (originalLanguage != null) 'originalLanguage': originalLanguage,
     };
   }
 

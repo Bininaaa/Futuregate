@@ -14,6 +14,9 @@ class LocaleController extends ChangeNotifier {
     Locale('ar'),
   ];
 
+  static String _activeLanguageCode =
+      WidgetsBinding.instance.platformDispatcher.locale.languageCode;
+
   LocaleController({SharedPreferencesAsync? preferences})
     : _preferences = preferences ?? SharedPreferencesAsync();
 
@@ -24,6 +27,8 @@ class LocaleController extends ChangeNotifier {
 
   /// The currently active locale. [null] means follow the device locale.
   Locale? get locale => _locale;
+
+  static String get activeLanguageCode => _activeLanguageCode;
 
   bool get loaded => _loaded;
 
@@ -38,6 +43,7 @@ class LocaleController extends ChangeNotifier {
     } catch (_) {
       _locale = null;
     } finally {
+      _refreshActiveLanguageCode(_locale);
       _loaded = true;
     }
   }
@@ -48,6 +54,7 @@ class LocaleController extends ChangeNotifier {
 
     _locale = locale;
     _loaded = true;
+    _refreshActiveLanguageCode(_locale);
     notifyListeners();
 
     try {
@@ -66,5 +73,11 @@ class LocaleController extends ChangeNotifier {
     final supported = supportedLocales.where((l) => l.languageCode == value);
     if (supported.isEmpty) return null;
     return supported.first;
+  }
+
+  static void _refreshActiveLanguageCode(Locale? locale) {
+    _activeLanguageCode =
+        locale?.languageCode ??
+        WidgetsBinding.instance.platformDispatcher.locale.languageCode;
   }
 }

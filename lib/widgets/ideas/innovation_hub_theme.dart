@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
+import '../../l10n/generated/app_localizations.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_typography.dart';
 
 class InnovationHubPalette {
   static Color get primary => AppColors.current.primary;
@@ -45,7 +46,7 @@ class InnovationHubPalette {
 
 class InnovationHubTypography {
   static TextStyle title({Color? color, double size = 30}) {
-    return GoogleFonts.sora(
+    return AppTypography.innovationTitle(
       fontSize: size,
       fontWeight: FontWeight.w700,
       height: 1.08,
@@ -54,7 +55,7 @@ class InnovationHubTypography {
   }
 
   static TextStyle section({Color? color, double size = 18}) {
-    return GoogleFonts.sora(
+    return AppTypography.innovationTitle(
       fontSize: size,
       fontWeight: FontWeight.w700,
       height: 1.12,
@@ -68,7 +69,7 @@ class InnovationHubTypography {
     FontWeight weight = FontWeight.w500,
     double height = 1.45,
   }) {
-    return GoogleFonts.manrope(
+    return AppTypography.innovationBody(
       fontSize: size,
       fontWeight: weight,
       height: height,
@@ -81,7 +82,7 @@ class InnovationHubTypography {
     double size = 12,
     FontWeight weight = FontWeight.w700,
   }) {
-    return GoogleFonts.manrope(
+    return AppTypography.innovationBody(
       fontSize: size,
       fontWeight: weight,
       color: color ?? InnovationHubPalette.textSecondary,
@@ -217,6 +218,73 @@ String academicLevelLabel(String value) {
       return 'Master';
     case 'doctorat':
       return 'Doctorate';
+    default:
+      return value.trim();
+  }
+}
+
+String innovationCategoryLabel(BuildContext context, String value) {
+  final l10n = AppLocalizations.of(context)!;
+  switch (value.trim().toLowerCase()) {
+    case 'ai':
+      return l10n.ideaCategoryAi;
+    case 'business':
+      return l10n.uiBusiness;
+    case 'tech':
+      return l10n.uiTech;
+    case 'design':
+      return l10n.uiDesign;
+    case 'fintech':
+      return l10n.ideaCategoryFintech;
+    case 'edtech':
+      return l10n.ideaCategoryEdTech;
+    case 'health':
+      return l10n.uiHealth;
+    case 'sustainability':
+      return l10n.ideaCategorySustainability;
+    case 'social impact':
+      return l10n.ideaCategorySocialImpact;
+    default:
+      final trimmed = value.trim();
+      return trimmed.isEmpty ? l10n.ideaCategoryInnovation : trimmed;
+  }
+}
+
+String innovationStageLabel(BuildContext context, String value) {
+  final l10n = AppLocalizations.of(context)!;
+  switch (value.trim().toLowerCase()) {
+    case 'concept':
+      return l10n.ideaStageConcept;
+    case 'research':
+      return l10n.uiResearch;
+    case 'mvp':
+      return l10n.ideaStageMvp;
+    case 'prototype':
+      return l10n.ideaStagePrototype;
+    case 'beta':
+      return l10n.ideaStageBeta;
+    default:
+      final trimmed = value.trim();
+      return trimmed.isEmpty ? l10n.ideaStageConcept : trimmed;
+  }
+}
+
+String innovationVisibilityLabel(BuildContext context, bool isPublic) {
+  final l10n = AppLocalizations.of(context)!;
+  return isPublic ? l10n.ideaPublicLabel : l10n.ideaPrivateLabel;
+}
+
+String academicLevelDisplayLabel(BuildContext context, String value) {
+  final l10n = AppLocalizations.of(context)!;
+  switch (value.trim().toLowerCase()) {
+    case 'bac':
+      return l10n.academicLevelBachelor;
+    case 'licence':
+      return l10n.academicLevelLicence;
+    case 'master':
+      return l10n.academicLevelMaster;
+    case 'doctorat':
+      return l10n.academicLevelDoctorat;
     default:
       return value.trim();
   }

@@ -5,7 +5,10 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../models/training_model.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/opportunity_translation_provider.dart';
 import '../../providers/training_provider.dart';
+import '../../services/opportunity_translation_service.dart';
+import '../../utils/content_language.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/shared/app_feedback.dart';
@@ -59,12 +62,13 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
 
   Future<void> _openLink(
     String link, {
-    String emptyMessage = 'This training does not have a link yet.',
+    String? emptyMessage,
   }) async {
+    final l10n = AppLocalizations.of(context)!;
     if (link.trim().isEmpty) {
       context.showAppSnackBar(
-        emptyMessage,
-        title: AppLocalizations.of(context)!.uiLinkUnavailable,
+        emptyMessage ?? l10n.trainingLinkMissingMessage,
+        title: l10n.uiLinkUnavailable,
         type: AppFeedbackType.warning,
       );
       return;
@@ -73,8 +77,8 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
     final uri = Uri.tryParse(link);
     if (uri == null) {
       context.showAppSnackBar(
-        'This training link is not valid.',
-        title: AppLocalizations.of(context)!.uiLinkUnavailable,
+        l10n.trainingLinkInvalidMessage,
+        title: l10n.uiLinkUnavailable,
         type: AppFeedbackType.warning,
       );
       return;
@@ -84,20 +88,21 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
 
     if (!launched && mounted) {
       context.showAppSnackBar(
-        'We couldn\'t open this training link right now.',
-        title: AppLocalizations.of(context)!.uiOpenUnavailable,
+        l10n.trainingLinkOpenFailedMessage,
+        title: l10n.uiOpenUnavailable,
         type: AppFeedbackType.error,
       );
     }
   }
 
   Future<void> _toggleSavedTraining(TrainingModel training) async {
+    final l10n = AppLocalizations.of(context)!;
     final auth = context.read<AuthProvider>().userModel;
     final userId = auth?.uid.trim() ?? '';
     if (userId.isEmpty) {
       context.showAppSnackBar(
-        'Sign in to save training resources for later.',
-        title: AppLocalizations.of(context)!.uiLoginRequired,
+        l10n.trainingSaveLoginMessage,
+        title: l10n.uiLoginRequired,
         type: AppFeedbackType.warning,
       );
       return;
@@ -118,12 +123,12 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
     context.showAppSnackBar(
       normalizedError == null || normalizedError.isEmpty
           ? wasSaved
-                ? 'Removed from saved resources'
-                : 'Resource saved'
+                ? l10n.trainingRemovedSavedMessage
+                : l10n.trainingSavedMessage
           : normalizedError,
       title: normalizedError == null || normalizedError.isEmpty
-          ? 'Saved items updated'
-          : 'Update unavailable',
+          ? l10n.trainingSavedUpdatedTitle
+          : l10n.trainingUpdateUnavailableTitle,
       type: normalizedError == null || normalizedError.isEmpty
           ? AppFeedbackType.success
           : AppFeedbackType.error,
@@ -341,27 +346,116 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
     return null;
   }
 
-  TrainingCourseCardData _mapTrainingToCardData(TrainingModel training) {
+  TrainingCourseCardData _mapTrainingToCardData(
+    BuildContext context,
+    TrainingModel training,
+    OpportunityTranslationProvider translationProvider,
+  ) {
+    _ensureTrainingTranslation(context, training);
     final accent = _accentFor(training);
+    final l10n = AppLocalizations.of(context)!;
+    final hasTranslation = _hasTrainingTranslation(
+      training,
+      translationProvider,
+    );
+    final showingTranslated = translationProvider.isShowingTranslatedContent(
+      contentType: ContentTranslationType.training,
+      contentId: training.id,
+    );
+    final displayTitle = translationProvider.resolvedField(
+      contentType: ContentTranslationType.training,
+      contentId: training.id,
+      field: 'title',
+      originalValue: training.title,
+    ).trim().isEmpty
+        ? l10n.uiTrainingPrograms
+        : translationProvider.resolvedField(
+            contentType: ContentTranslationType.training,
+            contentId: training.id,
+            field: 'title',
+            originalValue: training.title,
+          );
 
     return TrainingCourseCardData(
       id: training.id,
-      title: training.title.trim().isEmpty
-          ? 'Training Program'
-          : training.title.trim(),
-      providerName: _providerName(training),
+      title: displayTitle,
+      providerName: _providerName(context, training),
       providerLogoUrl: training.providerLogo.trim(),
       imageUrl: training.thumbnail.trim(),
       trainingType: training.type.trim(),
-      durationLabel: _durationLabel(training),
-      levelLabel: _levelLabel(training),
+      durationLabel: _durationLabel(context, training),
+      levelLabel: _levelLabel(context, training),
       ratingLabel: _ratingLabel(training),
-      categoryLabel: _categoryLabel(training),
+      categoryLabel: _categoryLabel(context, training),
       accentColor: accent.primary,
       secondaryAccentColor: accent.secondary,
       fallbackIcon: _iconForTraining(training),
-      badges: _badgesForTraining(training),
+      badges: [
+        ..._badgesForTraining(training),
+        if (training.sourceLanguage.isNotEmpty)
+          TrainingCourseBadgeData(
+            label: hasTranslation && showingTranslated
+                ? '${l10n.translatedFromLabel} ${ContentLanguage.localizedName(context, training.sourceLanguage)}'
+                : '${l10n.originalLanguageLabel}: ${ContentLanguage.localizedName(context, training.sourceLanguage)}',
+            backgroundColor: accent.primary.withValues(alpha: 0.12),
+            foregroundColor: accent.primary,
+          ),
+      ],
     );
+  }
+
+  void _ensureTrainingTranslation(BuildContext context, TrainingModel training) {
+    final originalLanguage = training.sourceLanguage;
+    if (originalLanguage.isEmpty) {
+      return;
+    }
+
+    final currentLocale = Localizations.localeOf(context).languageCode;
+    if (currentLocale == originalLanguage) {
+      return;
+    }
+
+    final provider = context.read<OpportunityTranslationProvider>();
+    final status = provider.statusForContent(
+      contentType: ContentTranslationType.training,
+      contentId: training.id,
+    );
+    if (status == TranslationStatus.loading || status == TranslationStatus.ready) {
+      return;
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!context.mounted) {
+        return;
+      }
+
+      context.read<OpportunityTranslationProvider>().ensureContentTranslation(
+        contentType: ContentTranslationType.training,
+        contentId: training.id,
+        fields: <String, String>{
+          'title': training.title,
+          'description': training.description,
+        },
+        currentLocale: currentLocale,
+        originalLocale: originalLanguage,
+      );
+    });
+  }
+
+  bool _hasTrainingTranslation(
+    TrainingModel training,
+    OpportunityTranslationProvider provider,
+  ) {
+    return provider.statusForContent(
+              contentType: ContentTranslationType.training,
+              contentId: training.id,
+            ) ==
+            TranslationStatus.ready &&
+        provider.translationForContent(
+              contentType: ContentTranslationType.training,
+              contentId: training.id,
+            ) !=
+            null;
   }
 
   _TrainingAccent _accentFor(TrainingModel training) {
@@ -392,38 +486,45 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
     return accents[seed.hashCode.abs() % accents.length];
   }
 
-  String _providerName(TrainingModel training) {
+  String _providerName(BuildContext context, TrainingModel training) {
     final provider = training.provider.trim();
     if (provider.isNotEmpty) {
       return provider;
     }
 
     final authorText = training.authors.join(', ').trim();
-    return authorText.isNotEmpty ? authorText : 'Training Provider';
+    return authorText.isNotEmpty
+        ? authorText
+        : AppLocalizations.of(context)!.trainingProviderFallback;
   }
 
-  String _durationLabel(TrainingModel training) {
+  String _durationLabel(BuildContext context, TrainingModel training) {
     final duration = training.duration.trim();
-    return duration.isNotEmpty ? duration : 'Flexible';
+    return duration.isNotEmpty
+        ? duration
+        : AppLocalizations.of(context)!.trainingFlexibleLabel;
   }
 
-  String _levelLabel(TrainingModel training) {
+  String _levelLabel(BuildContext context, TrainingModel training) {
     final level = training.level.trim();
-    return level.isNotEmpty ? _titleCase(level) : 'All levels';
+    return level.isNotEmpty
+        ? _titleCase(level)
+        : AppLocalizations.of(context)!.trainingAllLevelsLabel;
   }
 
-  String _categoryLabel(TrainingModel training) {
+  String _categoryLabel(BuildContext context, TrainingModel training) {
     final domain = training.domain.trim();
     if (domain.isNotEmpty) {
       return domain;
     }
 
+    final l10n = AppLocalizations.of(context)!;
     return switch (training.type.trim().toLowerCase()) {
-      'course' => 'Career Course',
-      'video' => 'Video Lesson',
-      'book' => 'Reading Track',
-      'file' => 'Guide & Toolkit',
-      _ => 'Learning Path',
+      'course' => l10n.trainingCareerCourseLabel,
+      'video' => l10n.trainingVideoLessonLabel,
+      'book' => l10n.trainingReadingTrackLabel,
+      'file' => l10n.trainingGuideToolkitLabel,
+      _ => l10n.trainingLearningPathLabel,
     };
   }
 
@@ -573,8 +674,10 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final currentUser = context.watch<AuthProvider>().userModel;
     final provider = context.watch<TrainingProvider>();
+    final translationProvider = context.watch<OpportunityTranslationProvider>();
     final approvedTrainings = _sortedApprovedTrainings(provider.trainings);
     final availableDomains = _availableDomains(approvedTrainings);
     final profileKeywords = _profileRecommendationKeywords(
@@ -594,19 +697,33 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
     );
     final catalogTrainings = domainFilteredTrainings;
 
-    final topCards = recommendedTrainings.map(_mapTrainingToCardData).toList();
-    final additionalCards = catalogTrainings
-        .map(_mapTrainingToCardData)
+    final topCards = recommendedTrainings
+        .map(
+          (training) => _mapTrainingToCardData(
+            context,
+            training,
+            translationProvider,
+          ),
+        )
         .toList();
-    final sectionTitle = 'Recommended for you';
+    final additionalCards = catalogTrainings
+        .map(
+          (training) => _mapTrainingToCardData(
+            context,
+            training,
+            translationProvider,
+          ),
+        )
+        .toList();
+    final sectionTitle = l10n.trainingRecommendedForYou;
     final showTopEmptyState = !hasApprovedTrainings;
     final showDomainEmptyState =
         hasApprovedTrainings &&
         activeDomain != 'All' &&
         domainFilteredTrainings.isEmpty;
     final emptySubtitle = !hasApprovedTrainings || activeDomain == 'All'
-        ? 'No training programs are available right now.'
-        : 'No training programs are available right now for $activeDomain.';
+        ? l10n.uiNoTrainingProgramsAvailableRightNow
+        : l10n.trainingNoProgramsForDomain(activeDomain);
 
     Widget buildTrainingCard(
       TrainingCourseCardData card, {
@@ -704,7 +821,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
                     const SizedBox(height: 12),
                     if (showTopEmptyState)
                       TrainingProgramsEmptyState(
-                        title: AppLocalizations.of(context)!.uiNoTrainingAvailableNow,
+                        title: l10n.uiNoTrainingProgramsAvailableRightNow,
                         subtitle: emptySubtitle,
                       )
                     else
@@ -731,7 +848,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
                       if (showDomainEmptyState) ...[
                         const SizedBox(height: 16),
                         TrainingProgramsEmptyState(
-                          title: AppLocalizations.of(context)!.uiNoTrainingInTopic,
+                          title: l10n.uiNoTrainingProgramsAvailableInThisTopic,
                           subtitle: emptySubtitle,
                         ),
                       ] else if (additionalCards.isNotEmpty) ...[

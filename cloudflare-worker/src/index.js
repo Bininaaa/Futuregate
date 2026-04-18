@@ -1660,6 +1660,7 @@ async function handleImportYoutubeVideo(request, env) {
   const video = body.selectedVideo;
   const domain = trim(body.domain).slice(0, 120);
   const level = trim(body.level).slice(0, 50);
+  const language = trim(body.language).slice(0, 20);
   const isFeatured = body.isFeatured === true;
 
   if (!video || !trim(video.youtubeVideoId)) {
@@ -1670,6 +1671,9 @@ async function handleImportYoutubeVideo(request, env) {
   }
   if (!level) {
     return err("A training level is required.");
+  }
+  if (!language) {
+    return err("A training language is required.");
   }
 
   const youtubeVideoId = trim(video.youtubeVideoId);
@@ -1692,7 +1696,7 @@ async function handleImportYoutubeVideo(request, env) {
     source: "youtube",
     thumbnail: secureThumbnail(video.thumbnail),
     domain,
-    language: "",
+    language,
     youtubeVideoId,
     isApproved:
       typeof existingData.isApproved === "boolean"
@@ -3142,6 +3146,9 @@ async function handleSubmitProjectIdea(request, env) {
   const domain = normalizeIdeaValue(body.domain);
   const level = normalizeIdeaValue(body.level, { lowerCase: true });
   const tools = normalizeIdeaValue(body.tools);
+  const originalLanguage = normalizeIdeaValue(body.originalLanguage, {
+    lowerCase: true,
+  });
   const tagline = normalizeIdeaValue(body.tagline);
   const shortDescription =
     normalizeIdeaValue(body.shortDescription) || tagline || description;
@@ -3194,6 +3201,7 @@ async function handleSubmitProjectIdea(request, env) {
     domain,
     level,
     tools,
+    originalLanguage,
     tagline,
     shortDescription,
     category,

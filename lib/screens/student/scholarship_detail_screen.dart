@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../l10n/generated/app_localizations.dart';
-import 'package:google_fonts/google_fonts.dart';
+import '../../theme/app_typography.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -8,9 +8,12 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../models/saved_scholarship_model.dart';
 import '../../models/scholarship_model.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/opportunity_translation_provider.dart';
 import '../../providers/saved_scholarship_provider.dart';
+import '../../services/opportunity_translation_service.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
 import '../../widgets/app_shell_background.dart';
+import '../../widgets/shared/content_translation_widgets.dart';
 
 typedef _P = OpportunityDashboardPalette;
 
@@ -19,40 +22,40 @@ class ScholarshipDetailScreen extends StatelessWidget {
 
   const ScholarshipDetailScreen({super.key, required this.scholarship});
 
-  String get _title {
+  String _title(AppLocalizations l10n) {
     final value = scholarship.title.trim();
-    return value.isEmpty ? 'Scholarship Opportunity' : value;
+    return value.isEmpty ? l10n.scholarshipOpportunityFallback : value;
   }
 
-  String get _provider {
+  String _provider(AppLocalizations l10n) {
     final value = scholarship.provider.trim();
-    return value.isEmpty ? 'FutureGate Partner' : value;
+    return value.isEmpty ? l10n.scholarshipPartnerFallback : value;
   }
 
-  String get _description {
+  String _description(AppLocalizations l10n) {
     final value = scholarship.description.trim();
     return value.isEmpty
-        ? 'This scholarship does not include a detailed description yet.'
+        ? l10n.scholarshipNoDescFallback
         : value;
   }
 
-  String get _eligibility {
+  String _eligibility(AppLocalizations l10n) {
     final value = scholarship.eligibility.trim();
     return value.isEmpty
-        ? 'Eligibility details will be shared by the scholarship provider.'
+        ? l10n.scholarshipNoEligFallback
         : value;
   }
 
-  String get _deadlineText {
+  String _deadlineText(AppLocalizations l10n) {
     final value = scholarship.deadline.trim();
-    return value.isEmpty ? 'Provider-announced deadline' : value;
+    return value.isEmpty ? l10n.scholarshipDeadlineFallback : value;
   }
 
-  String get _amountText {
+  String _amountText(AppLocalizations l10n) {
     final amount = scholarship.amount;
     if (amount <= 0) {
       final funding = _fundingType;
-      return funding ?? 'Funding shared on the official call';
+      return funding ?? l10n.scholarshipFundingFallback;
     }
 
     final isWholeNumber = amount is int || amount == amount.roundToDouble();
@@ -166,55 +169,21 @@ class ScholarshipDetailScreen extends StatelessWidget {
     return chips.take(3).toList(growable: false);
   }
 
-  List<String> get _eligibilityItems {
-    if (scholarship.eligibilityItems.isNotEmpty) {
-      return scholarship.eligibilityItems.take(6).toList(growable: false);
-    }
-
-    final normalized = scholarship.eligibility.replaceAll('\r', '\n').trim();
-    if (normalized.isEmpty) {
-      return const [];
-    }
-
-    final lineItems = normalized
-        .split('\n')
-        .map(
-          (item) =>
-              item.trim().replaceFirst(RegExp('^[-*\\u2022]\\s*'), '').trim(),
-        )
-        .where((item) => item.isNotEmpty)
-        .toList(growable: false);
-
-    if (lineItems.length > 1) {
-      return lineItems.take(6).toList(growable: false);
-    }
-
-    final segmented = normalized
-        .split(RegExp('[;\\u2022]'))
-        .map((item) => item.trim())
-        .where((item) => item.isNotEmpty)
-        .toList(growable: false);
-
-    if (segmented.length > 1) {
-      return segmented.take(6).toList(growable: false);
-    }
-
-    return const [];
-  }
-
   List<_ScholarshipStatData> _buildStats(AppLocalizations l10n) {
     final stats = <_ScholarshipStatData>[
       _ScholarshipStatData(
         icon: Icons.payments_rounded,
-        label: scholarship.amount > 0 ? 'Funding Amount' : 'Funding Details',
-        value: _amountText,
+        label: scholarship.amount > 0
+            ? l10n.scholarshipFundingAmount
+            : l10n.scholarshipFundingDetails,
+        value: _amountText(l10n),
         accentColor: _P.primary,
         highlight: true,
       ),
       _ScholarshipStatData(
         icon: Icons.event_available_rounded,
         label: l10n.uiDeadline,
-        value: _deadlineText,
+        value: _deadlineText(l10n),
         accentColor: _P.accent,
       ),
     ];
@@ -234,7 +203,7 @@ class ScholarshipDetailScreen extends StatelessWidget {
         _ScholarshipStatData(
           icon: Icons.apartment_rounded,
           label: l10n.uiProvider,
-          value: _provider,
+          value: _provider(l10n),
           accentColor: _P.secondary,
         ),
       );
@@ -245,7 +214,9 @@ class ScholarshipDetailScreen extends StatelessWidget {
       stats.add(
         _ScholarshipStatData(
           icon: Icons.school_rounded,
-          label: _level != null ? 'Study Level' : 'Program Type',
+          label: _level != null
+              ? l10n.scholarshipStudyLevel
+              : l10n.scholarshipProgramType,
           value: academicLabel,
           accentColor: _P.primaryDark,
         ),
@@ -269,12 +240,12 @@ class ScholarshipDetailScreen extends StatelessWidget {
       _ScholarshipProfileRowData(
         icon: Icons.business_center_rounded,
         label: l10n.uiProvider,
-        value: _provider,
+        value: _provider(l10n),
       ),
       _ScholarshipProfileRowData(
         icon: Icons.calendar_month_rounded,
         label: l10n.uiApplicationDeadline,
-        value: _deadlineText,
+        value: _deadlineText(l10n),
       ),
     ];
 
@@ -322,6 +293,90 @@ class ScholarshipDetailScreen extends StatelessWidget {
     return rows;
   }
 
+  void _ensureTranslation(BuildContext context) {
+    final originalLanguage = scholarship.originalLanguage.trim();
+    if (originalLanguage.isEmpty) {
+      return;
+    }
+
+    final currentLocale = Localizations.localeOf(context).languageCode;
+    if (currentLocale == originalLanguage) {
+      return;
+    }
+
+    final provider = context.read<OpportunityTranslationProvider>();
+    final status = provider.statusForContent(
+      contentType: ContentTranslationType.scholarship,
+      contentId: scholarship.id,
+    );
+    if (status == TranslationStatus.loading || status == TranslationStatus.ready) {
+      return;
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!context.mounted) {
+        return;
+      }
+
+      context.read<OpportunityTranslationProvider>().ensureContentTranslation(
+        contentType: ContentTranslationType.scholarship,
+        contentId: scholarship.id,
+        fields: <String, String>{
+          'title': scholarship.title,
+          'description': scholarship.description,
+          'eligibility': scholarship.eligibility,
+        },
+        currentLocale: currentLocale,
+        originalLocale: originalLanguage,
+      );
+    });
+  }
+
+  bool _hasTranslation(OpportunityTranslationProvider provider) {
+    return provider.statusForContent(
+              contentType: ContentTranslationType.scholarship,
+              contentId: scholarship.id,
+            ) ==
+            TranslationStatus.ready &&
+        provider.translationForContent(
+              contentType: ContentTranslationType.scholarship,
+              contentId: scholarship.id,
+            ) !=
+            null;
+  }
+
+  List<String> _translatedEligibilityItems(String value) {
+    final normalized = value.replaceAll('\r', '\n').trim();
+    if (normalized.isEmpty) {
+      return const <String>[];
+    }
+
+    final lineItems = normalized
+        .split('\n')
+        .map(
+          (item) =>
+              item.trim().replaceFirst(RegExp('^[-*\\u2022]\\s*'), '').trim(),
+        )
+        .where((item) => item.isNotEmpty)
+        .toList(growable: false);
+
+    if (lineItems.length > 1) {
+      return lineItems.take(6).toList(growable: false);
+    }
+
+    final segmented = normalized
+        .split(RegExp('[;\\u2022]'))
+        .map((item) => item.trim())
+        .where((item) => item.isNotEmpty)
+        .toList(growable: false);
+
+    if (segmented.length > 1) {
+      return segmented.take(6).toList(growable: false);
+    }
+
+    return const <String>[];
+  }
+
   Future<void> _openLink(BuildContext context) async {
     final uri = _linkUri;
     if (uri == null) {
@@ -356,16 +411,20 @@ class ScholarshipDetailScreen extends StatelessWidget {
       }
     }
 
-    final location = _locationText ?? 'Location not specified';
+    final l10n = AppLocalizations.of(context)!;
+    final fallbackTitle = _title(l10n);
+    final fallbackProvider = _provider(l10n);
+    final fallbackDeadline = _deadlineText(l10n);
+    final location = _locationText ?? l10n.uiLocation;
 
     final error = existing != null
         ? await provider.unsaveScholarship(existing.id, userId)
         : await provider.saveScholarship(
             studentId: userId,
             scholarshipId: scholarship.id,
-            title: _title,
-            provider: _provider,
-            deadline: _deadlineText,
+            title: fallbackTitle,
+            provider: fallbackProvider,
+            deadline: fallbackDeadline,
             location: location,
             fundingType: _fundingType ?? '',
             level: _level ?? '',
@@ -380,8 +439,8 @@ class ScholarshipDetailScreen extends StatelessWidget {
         content: Text(
           error ??
               (existing != null
-                  ? 'Removed from saved scholarships'
-                  : 'Scholarship saved'),
+                  ? l10n.scholarshipRemovedSavedMessage
+                  : l10n.scholarshipSavedMessage),
         ),
       ),
     );
@@ -389,7 +448,9 @@ class ScholarshipDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    _ensureTranslation(context);
     final auth = context.watch<AuthProvider>().userModel;
+    final translationProvider = context.watch<OpportunityTranslationProvider>();
     final savedProvider = context.watch<SavedScholarshipProvider>();
     final currentUserId = auth?.uid.trim() ?? '';
     if (currentUserId.isNotEmpty &&
@@ -415,8 +476,57 @@ class ScholarshipDetailScreen extends StatelessWidget {
     final hasLink = _linkUri != null;
     final location = _locationText;
     final l10n = AppLocalizations.of(context)!;
+    final fallbackTitle = _title(l10n);
+    final fallbackProvider = _provider(l10n);
+    final fallbackDescription = _description(l10n);
+    final fallbackEligibility = _eligibility(l10n);
+    final fallbackDeadline = _deadlineText(l10n);
     final chips = _heroChips;
-    final eligibilityItems = _eligibilityItems;
+    final hasTranslation = _hasTranslation(translationProvider);
+    final showingTranslated = translationProvider.isShowingTranslatedContent(
+      contentType: ContentTranslationType.scholarship,
+      contentId: scholarship.id,
+    );
+    final displayTitle = translationProvider.resolvedField(
+      contentType: ContentTranslationType.scholarship,
+      contentId: scholarship.id,
+      field: 'title',
+      originalValue: scholarship.title,
+    ).trim().isEmpty
+        ? fallbackTitle
+        : translationProvider.resolvedField(
+            contentType: ContentTranslationType.scholarship,
+            contentId: scholarship.id,
+            field: 'title',
+            originalValue: scholarship.title,
+          );
+    final displayDescription = translationProvider.resolvedField(
+      contentType: ContentTranslationType.scholarship,
+      contentId: scholarship.id,
+      field: 'description',
+      originalValue: scholarship.description,
+    ).trim().isEmpty
+        ? fallbackDescription
+        : translationProvider.resolvedField(
+            contentType: ContentTranslationType.scholarship,
+            contentId: scholarship.id,
+            field: 'description',
+            originalValue: scholarship.description,
+          );
+    final displayEligibility = translationProvider.resolvedField(
+      contentType: ContentTranslationType.scholarship,
+      contentId: scholarship.id,
+      field: 'eligibility',
+      originalValue: scholarship.eligibility,
+    ).trim().isEmpty
+        ? fallbackEligibility
+        : translationProvider.resolvedField(
+            contentType: ContentTranslationType.scholarship,
+            contentId: scholarship.id,
+            field: 'eligibility',
+            originalValue: scholarship.eligibility,
+          );
+    final eligibilityItems = _translatedEligibilityItems(displayEligibility);
     final profileRows = _buildProfileRows(l10n);
 
     return AppShellBackground(
@@ -467,7 +577,7 @@ class ScholarshipDetailScreen extends StatelessWidget {
                           child: Text(
                             'Scholarship',
                             textAlign: TextAlign.center,
-                            style: GoogleFonts.poppins(
+                            style: AppTypography.product(
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
                               color: _P.textPrimary,
@@ -519,20 +629,49 @@ class ScholarshipDetailScreen extends StatelessWidget {
                         scholarship: scholarship,
                         badgeLabel: _primaryBadgeLabel,
                         secondaryBadgeLabel: _secondaryBadgeLabel,
-                        provider: _provider,
-                        title: _title,
+                        provider: fallbackProvider,
+                        title: displayTitle,
                         location: location,
                         deadline: scholarship.deadline.trim().isEmpty
                             ? null
-                            : _deadlineText,
+                            : fallbackDeadline,
                         chips: chips,
                       ),
+                      if (translationProvider.statusForContent(
+                                contentType: ContentTranslationType.scholarship,
+                                contentId: scholarship.id,
+                              ) ==
+                              TranslationStatus.loading ||
+                          hasTranslation) ...[
+                        const SizedBox(height: 14),
+                        ContentTranslationBanner(
+                          isTranslating:
+                              translationProvider.statusForContent(
+                                contentType: ContentTranslationType.scholarship,
+                                contentId: scholarship.id,
+                              ) ==
+                              TranslationStatus.loading,
+                          hasTranslation: hasTranslation,
+                          showingTranslated: showingTranslated,
+                          originalLanguage: scholarship.originalLanguage,
+                          onToggle: () =>
+                              translationProvider.toggleTranslatedContent(
+                                contentType:
+                                    ContentTranslationType.scholarship,
+                                contentId: scholarship.id,
+                              ),
+                          accentColor: _P.primary,
+                          surfaceColor: _P.surface,
+                          borderColor: _P.border,
+                          titleColor: _P.textPrimary,
+                          subtitleColor: _P.textSecondary,
+                        ),
+                      ],
                       const SizedBox(height: 22),
                       _PageSectionHeading(
-                        eyebrow: 'AT A GLANCE',
+                        eyebrow: l10n.scholarshipAtAGlance,
                         title: AppLocalizations.of(context)!.uiQuickSnapshot,
-                        subtitle:
-                            'Everything important is surfaced here before you open the full application call.',
+                        subtitle: l10n.scholarshipSnapshotSubtitle,
                       ),
                       const SizedBox(height: 14),
                       _ScholarshipStatsWrap(stats: _buildStats(l10n)),
@@ -541,11 +680,10 @@ class ScholarshipDetailScreen extends StatelessWidget {
                         icon: Icons.auto_awesome_rounded,
                         iconColor: _P.primary,
                         title: AppLocalizations.of(context)!.uiAboutThisScholarship,
-                        subtitle:
-                            'A focused overview so the opportunity feels easy to scan.',
+                        subtitle: l10n.scholarshipOverviewSubtitle,
                         child: Text(
-                          _description,
-                          style: GoogleFonts.poppins(
+                          displayDescription,
+                          style: AppTypography.product(
                             fontSize: 13,
                             height: 1.7,
                             color: _P.textSecondary,
@@ -561,8 +699,8 @@ class ScholarshipDetailScreen extends StatelessWidget {
                             'Check the core eligibility signals before moving forward.',
                         child: eligibilityItems.isEmpty
                             ? Text(
-                                _eligibility,
-                                style: GoogleFonts.poppins(
+                                displayEligibility,
+                                style: AppTypography.product(
                                   fontSize: 13,
                                   height: 1.7,
                                   color: _P.textSecondary,
@@ -613,7 +751,7 @@ class ScholarshipDetailScreen extends StatelessWidget {
                               const SizedBox(height: 16),
                               Text(
                                 'Highlights',
-                                style: GoogleFonts.poppins(
+                                style: AppTypography.product(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w700,
                                   color: _P.textPrimary,
@@ -805,7 +943,7 @@ class _ScholarshipHeroCard extends StatelessWidget {
                   const Spacer(),
                   Text(
                     provider.toUpperCase(),
-                    style: GoogleFonts.poppins(
+                    style: AppTypography.product(
                       fontSize: 10,
                       fontWeight: FontWeight.w600,
                       letterSpacing: 0,
@@ -817,7 +955,7 @@ class _ScholarshipHeroCard extends StatelessWidget {
                     title,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.poppins(
+                    style: AppTypography.product(
                       fontSize: isCompact ? 21 : 24,
                       fontWeight: FontWeight.w800,
                       height: 1.12,
@@ -939,7 +1077,7 @@ class _PageSectionHeading extends StatelessWidget {
       children: [
         Text(
           eyebrow,
-          style: GoogleFonts.poppins(
+          style: AppTypography.product(
             fontSize: 10,
             fontWeight: FontWeight.w700,
             letterSpacing: 0,
@@ -949,7 +1087,7 @@ class _PageSectionHeading extends StatelessWidget {
         const SizedBox(height: 6),
         Text(
           title,
-          style: GoogleFonts.poppins(
+          style: AppTypography.product(
             fontSize: 22,
             fontWeight: FontWeight.w800,
             color: _P.textPrimary,
@@ -958,7 +1096,7 @@ class _PageSectionHeading extends StatelessWidget {
         const SizedBox(height: 6),
         Text(
           subtitle,
-          style: GoogleFonts.poppins(
+          style: AppTypography.product(
             fontSize: 12.25,
             height: 1.55,
             color: _P.textSecondary,
@@ -1040,7 +1178,7 @@ class _ScholarshipStatCard extends StatelessWidget {
           const SizedBox(height: 14),
           Text(
             data.label,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 11,
               fontWeight: FontWeight.w600,
               color: _P.textSecondary,
@@ -1051,7 +1189,7 @@ class _ScholarshipStatCard extends StatelessWidget {
             data.value,
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 14,
               fontWeight: FontWeight.w700,
               height: 1.35,
@@ -1118,7 +1256,7 @@ class _ScholarshipSectionCard extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: GoogleFonts.poppins(
+                      style: AppTypography.product(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
                         color: _P.textPrimary,
@@ -1127,7 +1265,7 @@ class _ScholarshipSectionCard extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       subtitle,
-                      style: GoogleFonts.poppins(
+                      style: AppTypography.product(
                         fontSize: 11.75,
                         height: 1.5,
                         color: _P.textSecondary,
@@ -1176,7 +1314,7 @@ class _EligibilityItem extends StatelessWidget {
           Expanded(
             child: Text(
               text,
-              style: GoogleFonts.poppins(
+              style: AppTypography.product(
                 fontSize: 12.5,
                 height: 1.55,
                 color: _P.textPrimary,
@@ -1214,7 +1352,7 @@ class _ProfileRow extends StatelessWidget {
               children: [
                 Text(
                   data.label,
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: 10.5,
                     fontWeight: FontWeight.w600,
                     color: _P.textSecondary,
@@ -1223,7 +1361,7 @@ class _ProfileRow extends StatelessWidget {
                 const SizedBox(height: 3),
                 Text(
                   data.value,
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: 12.75,
                     fontWeight: FontWeight.w600,
                     height: 1.45,
@@ -1300,7 +1438,7 @@ class _ApplicationPreviewCard extends StatelessWidget {
               children: [
                 Text(
                   hostLabel ?? 'Official scholarship source',
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: 12.5,
                     fontWeight: FontWeight.w700,
                     color: _P.textPrimary,
@@ -1311,7 +1449,7 @@ class _ApplicationPreviewCard extends StatelessWidget {
                   previewText,
                   maxLines: enabled ? 3 : 4,
                   overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: 11.75,
                     height: 1.55,
                     color: _P.textSecondary,
@@ -1361,7 +1499,7 @@ class _ScholarshipActionBar extends StatelessWidget {
             enabled
                 ? 'Open the official scholarship page'
                 : 'Application link unavailable',
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 13,
               fontWeight: FontWeight.w700,
               color: _P.textPrimary,
@@ -1372,7 +1510,7 @@ class _ScholarshipActionBar extends StatelessWidget {
             enabled
                 ? 'Continue on ${hostLabel ?? 'the provider website'} to review the full call and complete your application.'
                 : 'This scholarship is styled and ready, but the provider still needs to add its application URL.',
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 11.75,
               height: 1.5,
               color: _P.textSecondary,
@@ -1432,7 +1570,7 @@ class _PrimaryActionButton extends StatelessWidget {
               const SizedBox(width: 10),
               Text(
                 label,
-                style: GoogleFonts.poppins(
+                style: AppTypography.product(
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
                   color: Colors.white,
@@ -1514,7 +1652,7 @@ class _GlassPill extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: GoogleFonts.poppins(
+        style: AppTypography.product(
           fontSize: compact ? 10 : 10.5,
           fontWeight: FontWeight.w700,
           letterSpacing: 0,
@@ -1545,7 +1683,7 @@ class _HeroMetaLine extends StatelessWidget {
               text,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: GoogleFonts.poppins(
+              style: AppTypography.product(
                 fontSize: 11.5,
                 fontWeight: FontWeight.w500,
                 color: Colors.white.withValues(alpha: 0.82),
@@ -1574,7 +1712,7 @@ class _TagChip extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: GoogleFonts.poppins(
+        style: AppTypography.product(
           fontSize: 10.5,
           fontWeight: FontWeight.w600,
           color: _P.primary,
@@ -1629,3 +1767,4 @@ class _ScholarshipProfileRowData {
     required this.value,
   });
 }
+

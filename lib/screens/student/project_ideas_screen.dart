@@ -205,7 +205,7 @@ class _ProjectIdeasScreenState extends State<ProjectIdeasScreen> {
         const SizedBox(width: 12),
         Expanded(
           child: Text(
-            'Innovation Hub',
+            AppLocalizations.of(context)!.ideaHubTitle,
             style: InnovationHubTypography.section(
               size: 20,
               color: InnovationHubPalette.primary,
@@ -236,7 +236,7 @@ class _ProjectIdeasScreenState extends State<ProjectIdeasScreen> {
           size: 13.5,
         ),
         decoration: InputDecoration(
-          hintText: 'Search ideas...',
+          hintText: AppLocalizations.of(context)!.uiSearchIdeas,
           hintStyle: InnovationHubTypography.body(
             color: InnovationHubPalette.textSecondary.withValues(alpha: 0.82),
             size: 13.5,
@@ -276,7 +276,7 @@ class _ProjectIdeasScreenState extends State<ProjectIdeasScreen> {
           final category = categories[index];
           final selected = provider.filterDomain == category;
           return FilterChip(
-            label: Text(category),
+            label: Text(innovationCategoryLabel(context, category)),
             selected: selected,
             onSelected: (_) {
               provider.setFilterDomain(selected ? null : category);
@@ -306,17 +306,18 @@ class _ProjectIdeasScreenState extends State<ProjectIdeasScreen> {
   }
 
   Widget _buildFilterChips() {
+    final l10n = AppLocalizations.of(context)!;
     final auth = context.read<AuthProvider>().userModel;
     final filters = _segment == IdeasHubSegment.discover
         ? <_IdeaFilter, String>{
-            _IdeaFilter.all: 'All',
-            if (auth != null) _IdeaFilter.interested: 'Interested',
+            _IdeaFilter.all: l10n.uiAll,
+            if (auth != null) _IdeaFilter.interested: l10n.uiInterested,
           }
         : <_IdeaFilter, String>{
-            _IdeaFilter.all: 'All',
-            _IdeaFilter.approved: 'Approved',
-            _IdeaFilter.pending: 'Pending',
-            _IdeaFilter.rejected: 'Rejected',
+            _IdeaFilter.all: l10n.uiAll,
+            _IdeaFilter.approved: l10n.uiApproved,
+            _IdeaFilter.pending: l10n.uiPending,
+            _IdeaFilter.rejected: l10n.uiRejected,
           };
 
     return SizedBox(
@@ -551,7 +552,7 @@ class _ProjectIdeasScreenState extends State<ProjectIdeasScreen> {
             if (idea.displayTeamNeeded.isNotEmpty) ...[
               const SizedBox(height: 14),
               Text(
-                'Open Roles',
+                AppLocalizations.of(context)!.uiOpenRoles,
                 style: InnovationHubTypography.label(
                   color: InnovationHubPalette.textSecondary,
                   size: 12,
@@ -569,7 +570,7 @@ class _ProjectIdeasScreenState extends State<ProjectIdeasScreen> {
             if (idea.displaySkills.isNotEmpty) ...[
               const SizedBox(height: 14),
               Text(
-                'Skills',
+                AppLocalizations.of(context)!.uiSkills,
                 style: InnovationHubTypography.label(
                   color: InnovationHubPalette.textSecondary,
                   size: 12,
@@ -612,7 +613,7 @@ class _DiscoverIdeasSection extends StatelessWidget {
         icon: Icons.auto_awesome_outlined,
         title: AppLocalizations.of(context)!.uiNoIdeasMatchView,
         subtitle: AppLocalizations.of(context)!.uiTryDifferentFilter,
-        ctaLabel: 'Create an idea',
+        ctaLabel: AppLocalizations.of(context)!.ideaCreateCta,
         onTap: onCreateTap,
       );
     }
@@ -700,7 +701,7 @@ class _MyIdeasSection extends StatelessWidget {
         icon: Icons.lightbulb_outline_rounded,
         title: AppLocalizations.of(context)!.uiNoIdeasYet,
         subtitle: AppLocalizations.of(context)!.uiCreateFirstIdea,
-        ctaLabel: 'Create your first idea',
+        ctaLabel: AppLocalizations.of(context)!.ideaCreateFirstCta,
         onTap: onCreateTap,
       );
     }

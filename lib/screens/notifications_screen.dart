@@ -45,6 +45,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final provider = context.watch<NotificationProvider>();
     final authProvider = context.read<AuthProvider>();
     final user = authProvider.userModel;
@@ -59,24 +60,25 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     final visibleNotifications = provider.notifications
         .where(_matchesFilter)
         .toList();
-    final summaryTitle = _summaryTitle(provider, visibleNotifications.length);
+    final summaryTitle = _summaryTitle(l10n, provider, visibleNotifications.length);
     final summaryMessage = _summaryMessage(
+      l10n,
       role,
       provider,
       visibleNotifications.length,
     );
-    final emptyTitle = _emptyStateTitle();
-    final emptyMessage = _emptyStateMessage();
+    final emptyTitle = _emptyStateTitle(l10n);
+    final emptyMessage = _emptyStateMessage(l10n, role);
 
     return Scaffold(
       backgroundColor: SettingsFlowPalette.background,
       appBar: AppBar(
         title: Text(
           role == 'admin'
-              ? 'Admin Notifications'
+              ? l10n.notifAdminTitle
               : role == 'company'
-              ? 'Company Notifications'
-              : 'Notifications',
+              ? l10n.notifCompanyTitle
+              : l10n.notificationsTitle,
           style: SettingsFlowTheme.appBarTitle(),
         ),
         backgroundColor: Colors.transparent,
@@ -98,7 +100,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               ),
               onPressed: () => provider.markAllAsRead(userId),
               child: Text(
-                'Read all',
+                l10n.notifReadAll,
                 style: SettingsFlowTheme.micro(SettingsFlowPalette.primary),
               ),
             ),
@@ -154,7 +156,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                           (filter) => Padding(
                             padding: const EdgeInsets.only(right: 8),
                             child: ChoiceChip(
-                              label: Text(_filterLabel(filter)),
+                              label: Text(_filterLabel(l10n, filter)),
                               selected: _selectedFilter == filter,
                               showCheckmark: false,
                               labelStyle: SettingsFlowTheme.micro(
@@ -206,7 +208,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                                       padding: const EdgeInsets.only(right: 8),
                                       child: ChoiceChip(
                                         label: Text(
-                                          _contentFilterLabel(filter),
+                                          _contentFilterLabel(l10n, filter),
                                         ),
                                         selected:
                                             _selectedContentFilter == filter,
@@ -270,7 +272,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                                       padding: const EdgeInsets.only(right: 8),
                                       child: ChoiceChip(
                                         label: Text(
-                                          _opportunityFilterLabel(filter),
+                                          _opportunityFilterLabel(l10n, filter),
                                         ),
                                         selected:
                                             _selectedOpportunityFilter ==
@@ -381,13 +383,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     ];
   }
 
-  String _filterLabel(_NotificationFilter filter) {
+  String _filterLabel(AppLocalizations l10n, _NotificationFilter filter) {
     return switch (filter) {
-      _NotificationFilter.all => 'All',
-      _NotificationFilter.newContent => 'New content',
-      _NotificationFilter.unread => 'Unread',
-      _NotificationFilter.applications => 'Applications',
-      _NotificationFilter.messages => 'Messages',
+      _NotificationFilter.all => l10n.notifFilterAll,
+      _NotificationFilter.newContent => l10n.notifFilterNewContent,
+      _NotificationFilter.unread => l10n.notifFilterUnread,
+      _NotificationFilter.applications => l10n.notifFilterApplications,
+      _NotificationFilter.messages => l10n.notifFilterMessages,
     };
   }
 
@@ -416,13 +418,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     }
   }
 
-  String _contentFilterLabel(_NotificationContentFilter filter) {
+  String _contentFilterLabel(AppLocalizations l10n, _NotificationContentFilter filter) {
     return switch (filter) {
-      _NotificationContentFilter.all => 'All new',
-      _NotificationContentFilter.opportunities => 'Opportunities',
-      _NotificationContentFilter.trainings => 'Trainings',
-      _NotificationContentFilter.scholarships => 'Scholarships',
-      _NotificationContentFilter.ideas => 'Ideas',
+      _NotificationContentFilter.all => l10n.notifContentAll,
+      _NotificationContentFilter.opportunities => l10n.notifContentOpportunities,
+      _NotificationContentFilter.trainings => l10n.notifContentTrainings,
+      _NotificationContentFilter.scholarships => l10n.notifContentScholarships,
+      _NotificationContentFilter.ideas => l10n.notifContentIdeas,
     };
   }
 
@@ -441,12 +443,12 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     }
   }
 
-  String _opportunityFilterLabel(_OpportunityNotificationFilter filter) {
+  String _opportunityFilterLabel(AppLocalizations l10n, _OpportunityNotificationFilter filter) {
     return switch (filter) {
-      _OpportunityNotificationFilter.all => 'All opps',
-      _OpportunityNotificationFilter.jobs => 'Jobs',
-      _OpportunityNotificationFilter.internships => 'Internships',
-      _OpportunityNotificationFilter.sponsored => 'Sponsored',
+      _OpportunityNotificationFilter.all => l10n.notifOppAll,
+      _OpportunityNotificationFilter.jobs => l10n.notifOppJobs,
+      _OpportunityNotificationFilter.internships => l10n.notifOppInternships,
+      _OpportunityNotificationFilter.sponsored => l10n.notifOppSponsored,
     };
   }
 
@@ -573,16 +575,16 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     }
   }
 
-  String _summaryTitle(NotificationProvider provider, int visibleCount) {
+  String _summaryTitle(AppLocalizations l10n, NotificationProvider provider, int visibleCount) {
     if (provider.notifications.isEmpty) {
-      return 'All caught up';
+      return l10n.notifAllCaughtUp;
     }
 
     switch (_selectedFilter) {
       case _NotificationFilter.all:
         return provider.unreadCount > 0
             ? '${provider.unreadCount} unread updates'
-            : 'All caught up';
+            : l10n.notifAllCaughtUp;
       case _NotificationFilter.unread:
         return visibleCount > 0
             ? '$visibleCount unread notifications'
@@ -619,6 +621,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   }
 
   String _summaryMessage(
+    AppLocalizations l10n,
     String role,
     NotificationProvider provider,
     int visibleCount,
@@ -666,7 +669,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     }
   }
 
-  String _emptyStateTitle() {
+  String _emptyStateTitle(AppLocalizations l10n) {
     switch (_selectedFilter) {
       case _NotificationFilter.all:
         return 'No notifications right now';
@@ -688,7 +691,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     }
   }
 
-  String _emptyStateMessage() {
+  String _emptyStateMessage(AppLocalizations l10n, String role) {
     switch (_selectedFilter) {
       case _NotificationFilter.all:
         return 'Check back after your next application, message, or content update.';
@@ -1317,23 +1320,23 @@ class _NotificationCard extends StatelessWidget {
 
     switch (type) {
       case 'chat':
-        return 'Message';
+        return l10n.notifTypeMessage;
       case 'application':
-        return 'Application';
+        return l10n.notifTypeApplication;
       case 'opportunity':
         return opportunityType.trim().isNotEmpty
             ? OpportunityType.label(opportunityType, l10n)
-            : 'Opportunity';
+            : l10n.notifTypeOpportunity;
       case 'scholarship':
-        return 'Scholarship';
+        return l10n.notifTypeScholarship;
       case 'training':
-        return 'Training';
+        return l10n.notifTypeTraining;
       case 'project_idea':
-        return 'Idea';
+        return l10n.notifTypeIdea;
       case 'company_review':
-        return 'Company review';
+        return l10n.notifTypeCompanyReview;
       default:
-        return 'Update';
+        return l10n.notifTypeUpdate;
     }
   }
 

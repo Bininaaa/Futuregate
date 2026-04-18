@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../theme/app_colors.dart';
+import '../../theme/app_typography.dart';
 
 class ChatThemePalette {
   static Color get primary => AppColors.current.primary;
@@ -70,7 +70,7 @@ class ChatThemePalette {
 
 class ChatThemeStyles {
   static TextStyle title([Color? color]) {
-    return GoogleFonts.poppins(
+    return AppTypography.product(
       fontSize: 26,
       fontWeight: FontWeight.w600,
       color: color ?? ChatThemePalette.textPrimary,
@@ -80,7 +80,7 @@ class ChatThemeStyles {
   }
 
   static TextStyle sectionLabel([Color? color]) {
-    return GoogleFonts.poppins(
+    return AppTypography.product(
       fontSize: 11,
       fontWeight: FontWeight.w600,
       color: color ?? ChatThemePalette.textSecondary,
@@ -89,7 +89,7 @@ class ChatThemeStyles {
   }
 
   static TextStyle cardTitle([Color? color]) {
-    return GoogleFonts.poppins(
+    return AppTypography.product(
       fontSize: 15.2,
       fontWeight: FontWeight.w600,
       color: color ?? ChatThemePalette.textPrimary,
@@ -99,7 +99,7 @@ class ChatThemeStyles {
   }
 
   static TextStyle dialogTitle([Color? color]) {
-    return GoogleFonts.poppins(
+    return AppTypography.product(
       fontSize: 20,
       fontWeight: FontWeight.w600,
       color: color ?? ChatThemePalette.textPrimary,
@@ -109,7 +109,7 @@ class ChatThemeStyles {
   }
 
   static TextStyle body([Color? color]) {
-    return GoogleFonts.poppins(
+    return AppTypography.product(
       fontSize: 13.4,
       fontWeight: FontWeight.w500,
       color: color ?? ChatThemePalette.textPrimary,
@@ -118,7 +118,7 @@ class ChatThemeStyles {
   }
 
   static TextStyle actionLabel([Color? color]) {
-    return GoogleFonts.poppins(
+    return AppTypography.product(
       fontSize: 14,
       fontWeight: FontWeight.w500,
       color: color ?? ChatThemePalette.textPrimary,
@@ -128,7 +128,7 @@ class ChatThemeStyles {
   }
 
   static TextStyle meta([Color? color]) {
-    return GoogleFonts.poppins(
+    return AppTypography.product(
       fontSize: 11,
       fontWeight: FontWeight.w500,
       color: color ?? ChatThemePalette.textSecondary,

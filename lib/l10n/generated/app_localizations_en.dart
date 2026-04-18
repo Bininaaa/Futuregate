@@ -6640,4 +6640,396 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get uiCvStudioSubtitle => 'Build, upload, and export your CV.';
+
+  @override
+  String get notifAdminTitle => 'Admin Notifications';
+
+  @override
+  String get notifCompanyTitle => 'Company Notifications';
+
+  @override
+  String get notifReadAll => 'Read all';
+
+  @override
+  String get notifFilterAll => 'All';
+
+  @override
+  String get notifFilterNewContent => 'New content';
+
+  @override
+  String get notifFilterUnread => 'Unread';
+
+  @override
+  String get notifFilterApplications => 'Applications';
+
+  @override
+  String get notifFilterMessages => 'Messages';
+
+  @override
+  String get notifContentAll => 'All new';
+
+  @override
+  String get notifContentOpportunities => 'Opportunities';
+
+  @override
+  String get notifContentTrainings => 'Trainings';
+
+  @override
+  String get notifContentScholarships => 'Scholarships';
+
+  @override
+  String get notifContentIdeas => 'Ideas';
+
+  @override
+  String get notifOppAll => 'All opps';
+
+  @override
+  String get notifOppJobs => 'Jobs';
+
+  @override
+  String get notifOppInternships => 'Internships';
+
+  @override
+  String get notifOppSponsored => 'Sponsored';
+
+  @override
+  String get notifAllCaughtUp => 'All caught up';
+
+  @override
+  String get notifTypeMessage => 'Message';
+
+  @override
+  String get notifTypeApplication => 'Application';
+
+  @override
+  String get notifTypeOpportunity => 'Opportunity';
+
+  @override
+  String get notifTypeScholarship => 'Scholarship';
+
+  @override
+  String get notifTypeTraining => 'Training';
+
+  @override
+  String get notifTypeIdea => 'Idea';
+
+  @override
+  String get notifTypeCompanyReview => 'Company review';
+
+  @override
+  String get notifTypeUpdate => 'Update';
+
+  @override
+  String get notifJustNow => 'Just now';
+
+  @override
+  String get postingLanguageLabel => 'Posting language';
+
+  @override
+  String get postingLanguageHint => 'Language this content is written in';
+
+  @override
+  String get translateLabel => 'Translate';
+
+  @override
+  String get translatingLabel => 'Translating...';
+
+  @override
+  String get translationDoneLabel => 'Translation ready';
+
+  @override
+  String get translationFailedLabel => 'Translation unavailable';
+
+  @override
+  String get showOriginalLabel => 'Show original';
+
+  @override
+  String get showTranslatedLabel => 'Show translated';
+
+  @override
+  String get contentLanguageLabel => 'Content language';
+
+  @override
+  String get autoTranslatedBadge => 'Auto-translated';
+
+  @override
+  String get translatedBadge => 'Translated';
+
+  @override
+  String get originalBadge => 'Original';
+
+  @override
+  String get translationNote =>
+      'This content was automatically translated. Tap \"Show original\" to see the source.';
+
+  @override
+  String get dashSectionClosingSoon => 'Closing Soon';
+
+  @override
+  String get dashSectionRecommended => 'Recommended';
+
+  @override
+  String get dashSectionQuickAccess => 'Quick Access';
+
+  @override
+  String get dashSectionLatestActivity => 'Latest Activities';
+
+  @override
+  String get dashSectionSavedShortlist => 'Saved shortlist';
+
+  @override
+  String get dashBuildCv => 'Build CV';
+
+  @override
+  String get dashCompleteProfile => 'Complete Profile';
+
+  @override
+  String get dashDiscover => 'Discover';
+
+  @override
+  String get dashViewStatus => 'View Status';
+
+  @override
+  String get dashTrackStatus => 'Track Status';
+
+  @override
+  String get dashSeeOpenRoles => 'See Open Roles';
+
+  @override
+  String get dashOpenSaved => 'Open Saved';
+
+  @override
+  String get scholarshipOpportunityFallback => 'Scholarship Opportunity';
+
+  @override
+  String get scholarshipPartnerFallback => 'FutureGate Partner';
+
+  @override
+  String get scholarshipNoDescFallback =>
+      'This scholarship does not include a detailed description yet.';
+
+  @override
+  String get scholarshipNoEligFallback =>
+      'Eligibility details will be shared by the scholarship provider.';
+
+  @override
+  String get scholarshipDeadlineFallback => 'Provider-announced deadline';
+
+  @override
+  String get scholarshipFundingFallback =>
+      'Funding shared on the official call';
+
+  @override
+  String get scholarshipFeaturedBadge => 'FEATURED';
+
+  @override
+  String get scholarshipDefaultBadge => 'SCHOLARSHIP';
+
+  @override
+  String get scholarshipFundingAmount => 'Funding Amount';
+
+  @override
+  String get scholarshipFundingDetails => 'Funding Details';
+
+  @override
+  String get scholarshipStudyLevel => 'Study Level';
+
+  @override
+  String get scholarshipProgramType => 'Program Type';
+
+  @override
+  String get scholarshipAtAGlance => 'AT A GLANCE';
+
+  @override
+  String get scholarshipNoLink =>
+      'The provider has not attached an external application link yet.';
+
+  @override
+  String get scholarshipOfficialSource => 'Official scholarship source';
+
+  @override
+  String get scholarshipOpenPage => 'Open Official Page';
+
+  @override
+  String get scholarshipLinkUnavailable => 'Link Not Available';
+
+  @override
+  String get ideaNotAvailable => 'This idea is no longer available.';
+
+  @override
+  String get ideaHubTitle => 'Innovation Hub';
+
+  @override
+  String get ideaUnsaveTooltip => 'Unsave idea';
+
+  @override
+  String get ideaSaveTooltip => 'Save idea';
+
+  @override
+  String get ideaEditLabel => 'Edit Idea';
+
+  @override
+  String get ideaManageLabel => 'Manage This Idea';
+
+  @override
+  String get ideaInterestedLabel => 'Interested';
+
+  @override
+  String get ideaImInterestedLabel => 'I\'m Interested';
+
+  @override
+  String get ideaManageTeamLabel => 'Manage Team';
+
+  @override
+  String get ideaContactCreator => 'Contact Creator';
+
+  @override
+  String get ideaSavedLabel => 'Saved';
+
+  @override
+  String get ideaSaveLabel => 'Save Idea';
+
+  @override
+  String get ideaShareLabel => 'Share Idea';
+
+  @override
+  String get trainingRecommendedForYou => 'Recommended for you';
+
+  @override
+  String trainingNoProgramsForDomain(Object domain) {
+    return 'No training programs are available right now for $domain.';
+  }
+
+  @override
+  String get trainingLinkMissingMessage =>
+      'This training does not have a link yet.';
+
+  @override
+  String get trainingLinkInvalidMessage => 'This training link is not valid.';
+
+  @override
+  String get trainingLinkOpenFailedMessage =>
+      'We couldn\'t open this training link right now.';
+
+  @override
+  String get trainingSaveLoginMessage =>
+      'Sign in to save training resources for later.';
+
+  @override
+  String get trainingRemovedSavedMessage => 'Removed from saved resources';
+
+  @override
+  String get trainingSavedMessage => 'Resource saved';
+
+  @override
+  String get trainingSavedUpdatedTitle => 'Saved items updated';
+
+  @override
+  String get trainingUpdateUnavailableTitle => 'Update unavailable';
+
+  @override
+  String get trainingProviderFallback => 'Training Provider';
+
+  @override
+  String get trainingFlexibleLabel => 'Flexible';
+
+  @override
+  String get trainingAllLevelsLabel => 'All levels';
+
+  @override
+  String get trainingCareerCourseLabel => 'Career Course';
+
+  @override
+  String get trainingVideoLessonLabel => 'Video Lesson';
+
+  @override
+  String get trainingReadingTrackLabel => 'Reading Track';
+
+  @override
+  String get trainingGuideToolkitLabel => 'Guide & Toolkit';
+
+  @override
+  String get trainingLearningPathLabel => 'Learning Path';
+
+  @override
+  String get trainingGeneralDomainLabel => 'General';
+
+  @override
+  String get opportunityFutureGatePartner => 'FutureGate partner';
+
+  @override
+  String get opportunityStudentInternshipFallback =>
+      'Student Internship Opportunity';
+
+  @override
+  String get opportunitySponsoredFallback => 'Sponsored Opportunity';
+
+  @override
+  String get opportunityOpenJobFallback => 'Open Job Opportunity';
+
+  @override
+  String get opportunityOpenFallback => 'Open Opportunity';
+
+  @override
+  String get scholarshipExploreLabel => 'Explore Scholarship';
+
+  @override
+  String get ideaCreateCta => 'Create an idea';
+
+  @override
+  String get ideaCreateFirstCta => 'Create your first idea';
+
+  @override
+  String get ideaPublicLabel => 'Public';
+
+  @override
+  String get ideaPrivateLabel => 'Private';
+
+  @override
+  String get ideaSharedFromHub => 'Shared from Innovation Hub';
+
+  @override
+  String get ideaCategoryInnovation => 'Innovation';
+
+  @override
+  String get ideaCategoryAi => 'AI';
+
+  @override
+  String get ideaCategoryFintech => 'Fintech';
+
+  @override
+  String get ideaCategoryEdTech => 'EdTech';
+
+  @override
+  String get ideaCategorySustainability => 'Sustainability';
+
+  @override
+  String get ideaCategorySocialImpact => 'Social Impact';
+
+  @override
+  String get ideaStageConcept => 'Concept';
+
+  @override
+  String get ideaStageMvp => 'MVP';
+
+  @override
+  String get ideaStagePrototype => 'Prototype';
+
+  @override
+  String get ideaStageBeta => 'Beta';
+
+  @override
+  String get scholarshipRemovedSavedMessage =>
+      'Removed from saved scholarships';
+
+  @override
+  String get scholarshipSavedMessage => 'Scholarship saved';
+
+  @override
+  String get scholarshipSnapshotSubtitle =>
+      'Everything important is surfaced here before you open the full application call.';
+
+  @override
+  String get scholarshipOverviewSubtitle =>
+      'A focused overview so the opportunity feels easy to scan.';
 }

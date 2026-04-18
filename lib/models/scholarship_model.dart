@@ -23,6 +23,7 @@ class ScholarshipModel {
   final String? level;
   final bool isFeatured;
   final bool isHidden;
+  final String originalLanguage;
   final List<String> tags;
   final List<String> eligibilityItems;
   final Map<String, dynamic> rawData;
@@ -48,6 +49,7 @@ class ScholarshipModel {
     this.level,
     this.isFeatured = false,
     this.isHidden = false,
+    this.originalLanguage = '',
     this.tags = const [],
     this.eligibilityItems = const [],
     this.rawData = const {},
@@ -114,6 +116,11 @@ class ScholarshipModel {
         'studyLevel',
         'degreeLevel',
       ]),
+      originalLanguage: _readFirstString(rawData, const [
+            'originalLanguage',
+            'sourceLanguage',
+          ]) ??
+          '',
       isFeatured: _readBool(rawData['featured']) ?? false,
       isHidden: _readBool(rawData['isHidden']) ?? false,
       tags: _readStringList(rawData['tags']),
@@ -148,6 +155,7 @@ class ScholarshipModel {
       'fundingType': fundingType,
       'category': category,
       'level': level,
+      'originalLanguage': originalLanguage,
       'featured': isFeatured,
       'isHidden': isHidden,
       'tags': tags,

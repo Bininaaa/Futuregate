@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../utils/content_language.dart';
+
 class TrainingModel {
   final String id;
   final String title;
@@ -141,6 +143,8 @@ class TrainingModel {
   }
 
   String get displayLink => link.trim().isNotEmpty ? link : previewLink;
+
+  String get sourceLanguage => ContentLanguage.normalizeCode(language);
 
   TrainingModel copyWith({
     String? id,

@@ -1,8 +1,118 @@
 import 'package:flutter/material.dart';
 import '../../l10n/generated/app_localizations.dart';
+import 'package:provider/provider.dart';
 
 import '../../models/project_idea_model.dart';
+import '../../providers/opportunity_translation_provider.dart';
+import '../../services/opportunity_translation_service.dart';
+import '../shared/content_translation_widgets.dart';
 import 'innovation_hub_theme.dart';
+
+void _ensureIdeaTranslation(BuildContext context, ProjectIdeaModel idea) {
+  final originalLanguage = idea.originalLanguage.trim();
+  if (originalLanguage.isEmpty) {
+    return;
+  }
+
+  final currentLocale = Localizations.localeOf(context).languageCode;
+  if (currentLocale == originalLanguage) {
+    return;
+  }
+
+  final provider = context.read<OpportunityTranslationProvider>();
+  final status = provider.statusForContent(
+    contentType: ContentTranslationType.idea,
+    contentId: idea.id,
+  );
+  if (status == TranslationStatus.loading || status == TranslationStatus.ready) {
+    return;
+  }
+
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    if (!context.mounted) {
+      return;
+    }
+
+    context.read<OpportunityTranslationProvider>().ensureContentTranslation(
+      contentType: ContentTranslationType.idea,
+      contentId: idea.id,
+      fields: <String, String>{
+        'title': idea.title,
+        'tagline': idea.tagline,
+        'shortDescription': idea.shortDescription,
+        'description': idea.description,
+        'targetAudience': idea.targetAudience,
+        'problemStatement': idea.problemStatement,
+        'solution': idea.solution,
+        'resourcesNeeded': idea.resourcesNeeded,
+        'benefits': idea.benefits,
+      },
+      currentLocale: currentLocale,
+      originalLocale: originalLanguage,
+    );
+  });
+}
+
+String _ideaDisplayTitle(
+  ProjectIdeaModel idea,
+  OpportunityTranslationProvider provider,
+) {
+  return provider.resolvedField(
+    contentType: ContentTranslationType.idea,
+    contentId: idea.id,
+    field: 'title',
+    originalValue: idea.title,
+  );
+}
+
+String _ideaDisplaySummary(
+  ProjectIdeaModel idea,
+  OpportunityTranslationProvider provider,
+) {
+  for (final entry in <MapEntry<String, String>>[
+    MapEntry('shortDescription', idea.shortDescription),
+    MapEntry('tagline', idea.tagline),
+    MapEntry('description', idea.description),
+    MapEntry('solution', idea.solution),
+    MapEntry('problemStatement', idea.problemStatement),
+  ]) {
+    final value = provider.resolvedField(
+      contentType: ContentTranslationType.idea,
+      contentId: idea.id,
+      field: entry.key,
+      originalValue: entry.value,
+    );
+    if (value.trim().isNotEmpty) {
+      return _truncateIdeaText(value, 96);
+    }
+  }
+
+  return idea.cardSummary;
+}
+
+bool _hasIdeaTranslation(
+  ProjectIdeaModel idea,
+  OpportunityTranslationProvider provider,
+) {
+  return provider.statusForContent(
+            contentType: ContentTranslationType.idea,
+            contentId: idea.id,
+          ) ==
+          TranslationStatus.ready &&
+      provider.translationForContent(
+            contentType: ContentTranslationType.idea,
+            contentId: idea.id,
+          ) !=
+          null;
+}
+
+String _truncateIdeaText(String value, int maxLength) {
+  final trimmed = value.trim();
+  if (trimmed.length <= maxLength) {
+    return trimmed;
+  }
+  return '${trimmed.substring(0, maxLength).trimRight()}...';
+}
 
 class IdeaCard extends StatelessWidget {
   final ProjectIdeaModel idea;
@@ -20,6 +130,15 @@ class IdeaCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    _ensureIdeaTranslation(context, idea);
+    final translationProvider = context.watch<OpportunityTranslationProvider>();
+    final hasTranslation = _hasIdeaTranslation(idea, translationProvider);
+    final showingTranslated = translationProvider.isShowingTranslatedContent(
+      contentType: ContentTranslationType.idea,
+      contentId: idea.id,
+    );
+    final displayTitle = _ideaDisplayTitle(idea, translationProvider);
+    final displaySummary = _ideaDisplaySummary(idea, translationProvider);
     final categoryColor = innovationCategoryColor(idea.displayCategory);
 
     return Material(
@@ -59,21 +178,30 @@ class IdeaCard extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               Text(
-                idea.title,
+                displayTitle,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: InnovationHubTypography.section(size: 14),
               ),
               const SizedBox(height: 4),
               Text(
-                idea.cardSummary,
+                displaySummary,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: InnovationHubTypography.body(size: 12),
               ),
+              const SizedBox(height: 8),
+              ContentTranslationBadge(
+                showingTranslated: hasTranslation && showingTranslated,
+                originalLanguage: idea.originalLanguage,
+                foregroundColor: InnovationHubPalette.primary,
+                backgroundColor:
+                    InnovationHubPalette.primary.withValues(alpha: 0.08),
+                borderColor: InnovationHubPalette.primary.withValues(alpha: 0.12),
+              ),
               const SizedBox(height: 10),
               _MiniBadge(
-                label: idea.displayStage,
+                label: innovationStageLabel(context, idea.displayStage),
                 color: innovationStageColor(idea.displayStage),
               ),
               if (showStatus) ...[
@@ -125,6 +253,15 @@ class IdeaListCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    _ensureIdeaTranslation(context, idea);
+    final translationProvider = context.watch<OpportunityTranslationProvider>();
+    final hasTranslation = _hasIdeaTranslation(idea, translationProvider);
+    final showingTranslated = translationProvider.isShowingTranslatedContent(
+      contentType: ContentTranslationType.idea,
+      contentId: idea.id,
+    );
+    final displayTitle = _ideaDisplayTitle(idea, translationProvider);
+    final displaySummary = _ideaDisplaySummary(idea, translationProvider);
     final categoryColor = innovationCategoryColor(idea.displayCategory);
 
     return Material(
@@ -162,23 +299,33 @@ class IdeaListCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      idea.title,
+                      displayTitle,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: InnovationHubTypography.section(size: 15),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      idea.cardSummary,
+                      displaySummary,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: InnovationHubTypography.body(size: 12.5),
                     ),
                     const SizedBox(height: 8),
+                    ContentTranslationBadge(
+                      showingTranslated: hasTranslation && showingTranslated,
+                      originalLanguage: idea.originalLanguage,
+                      foregroundColor: InnovationHubPalette.primary,
+                      backgroundColor:
+                          InnovationHubPalette.primary.withValues(alpha: 0.08),
+                      borderColor:
+                          InnovationHubPalette.primary.withValues(alpha: 0.12),
+                    ),
+                    const SizedBox(height: 8),
                     Row(
                       children: [
                         _MiniBadge(
-                          label: idea.displayStage,
+                          label: innovationStageLabel(context, idea.displayStage),
                           color: innovationStageColor(idea.displayStage),
                         ),
                         if (showStatus) ...[
@@ -235,6 +382,15 @@ class IdeaWorkspaceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    _ensureIdeaTranslation(context, idea);
+    final translationProvider = context.watch<OpportunityTranslationProvider>();
+    final hasTranslation = _hasIdeaTranslation(idea, translationProvider);
+    final showingTranslated = translationProvider.isShowingTranslatedContent(
+      contentType: ContentTranslationType.idea,
+      contentId: idea.id,
+    );
+    final displayTitle = _ideaDisplayTitle(idea, translationProvider);
+    final displaySummary = _ideaDisplaySummary(idea, translationProvider);
     final categoryColor = innovationCategoryColor(idea.displayCategory);
 
     return Container(
@@ -269,7 +425,7 @@ class IdeaWorkspaceCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      idea.title,
+                      displayTitle,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: InnovationHubTypography.section(size: 15),
@@ -290,20 +446,32 @@ class IdeaWorkspaceCard extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Text(
-            idea.cardSummary,
+            displaySummary,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: InnovationHubTypography.body(size: 13),
+          ),
+          const SizedBox(height: 8),
+          ContentTranslationBadge(
+            showingTranslated: hasTranslation && showingTranslated,
+            originalLanguage: idea.originalLanguage,
+            foregroundColor: InnovationHubPalette.primary,
+            backgroundColor:
+                InnovationHubPalette.primary.withValues(alpha: 0.08),
+            borderColor: InnovationHubPalette.primary.withValues(alpha: 0.12),
           ),
           const SizedBox(height: 10),
           Row(
             children: [
               _MiniBadge(
-                label: idea.displayStage,
+                label: innovationStageLabel(context, idea.displayStage),
                 color: innovationStageColor(idea.displayStage),
               ),
               const SizedBox(width: 6),
-              _MiniBadge(label: idea.displayCategory, color: categoryColor),
+              _MiniBadge(
+                label: innovationCategoryLabel(context, idea.displayCategory),
+                color: categoryColor,
+              ),
               const Spacer(),
               Icon(
                 Icons.people_outline_rounded,

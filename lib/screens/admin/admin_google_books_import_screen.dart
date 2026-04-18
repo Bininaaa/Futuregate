@@ -174,6 +174,9 @@ class _AdminGoogleBooksImportScreenState
         adminId: adminId,
         domain: _selectedDomain,
         level: _selectedLevel,
+        sourceLanguage: _selectedLanguage.isNotEmpty
+            ? _selectedLanguage
+            : book.sourceLanguage,
       );
 
       if (!mounted) {

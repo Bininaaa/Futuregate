@@ -1,14 +1,18 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 import '../l10n/generated/app_localizations.dart';
 import '../models/opportunity_model.dart';
+import '../providers/opportunity_translation_provider.dart';
+import '../services/opportunity_translation_service.dart';
+import '../theme/app_typography.dart';
 import '../utils/application_status.dart';
 import '../utils/opportunity_dashboard_palette.dart';
 import '../utils/opportunity_type.dart';
 import 'shared/app_feedback.dart';
 import 'shared/app_loading.dart';
+import 'shared/content_translation_widgets.dart';
 
 IconData _applicationStatusIcon(String status) {
   switch (ApplicationStatus.parse(status)) {
@@ -22,18 +26,93 @@ IconData _applicationStatusIcon(String status) {
   }
 }
 
-String _opportunityDisplayTitle(OpportunityModel opportunity) {
+String _opportunityBaseTitle(
+  BuildContext context,
+  OpportunityModel opportunity,
+) {
   final title = opportunity.title.trim();
   if (title.isNotEmpty) {
     return title;
   }
 
+  final l10n = AppLocalizations.of(context)!;
   return switch (OpportunityType.parse(opportunity.type)) {
-    OpportunityType.internship => 'Student Internship Opportunity',
-    OpportunityType.sponsoring => 'Sponsored Opportunity',
-    OpportunityType.job => 'Open Job Opportunity',
-    _ => 'Open Opportunity',
+    OpportunityType.internship => l10n.opportunityStudentInternshipFallback,
+    OpportunityType.sponsoring => l10n.opportunitySponsoredFallback,
+    OpportunityType.job => l10n.opportunityOpenJobFallback,
+    _ => l10n.opportunityOpenFallback,
   };
+}
+
+String _opportunityDisplayTitle(
+  BuildContext context,
+  OpportunityModel opportunity,
+  OpportunityTranslationProvider provider,
+) {
+  return provider.resolvedField(
+    contentType: ContentTranslationType.opportunity,
+    contentId: opportunity.id,
+    field: 'title',
+    originalValue: _opportunityBaseTitle(context, opportunity),
+  );
+}
+
+void _ensureOpportunityTranslation(
+  BuildContext context,
+  OpportunityModel opportunity,
+) {
+  final originalLanguage = opportunity.originalLanguage?.trim() ?? '';
+  if (originalLanguage.isEmpty) {
+    return;
+  }
+
+  final currentLocale = Localizations.localeOf(context).languageCode;
+  if (currentLocale == originalLanguage) {
+    return;
+  }
+
+  final provider = context.read<OpportunityTranslationProvider>();
+  final status = provider.statusForContent(
+    contentType: ContentTranslationType.opportunity,
+    contentId: opportunity.id,
+  );
+  if (status == TranslationStatus.loading || status == TranslationStatus.ready) {
+    return;
+  }
+
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    if (!context.mounted) {
+      return;
+    }
+
+    context.read<OpportunityTranslationProvider>().ensureContentTranslation(
+      contentType: ContentTranslationType.opportunity,
+      contentId: opportunity.id,
+      fields: <String, String>{
+        'title': _opportunityBaseTitle(context, opportunity),
+        'description': opportunity.description,
+        'requirements': opportunity.requirements,
+      },
+      currentLocale: currentLocale,
+      originalLocale: originalLanguage,
+    );
+  });
+}
+
+bool _hasOpportunityTranslation(
+  OpportunityModel opportunity,
+  OpportunityTranslationProvider provider,
+) {
+  return provider.statusForContent(
+            contentType: ContentTranslationType.opportunity,
+            contentId: opportunity.id,
+          ) ==
+          TranslationStatus.ready &&
+      provider.translationForContent(
+            contentType: ContentTranslationType.opportunity,
+            contentId: opportunity.id,
+          ) !=
+          null;
 }
 
 class OpportunitySectionHeader extends StatelessWidget {
@@ -77,7 +156,7 @@ class OpportunitySectionHeader extends StatelessWidget {
                   Flexible(
                     child: Text(
                       title,
-                      style: GoogleFonts.poppins(
+                      style: AppTypography.product(
                         fontSize: 17,
                         fontWeight: FontWeight.w700,
                         color: OpportunityDashboardPalette.textPrimary,
@@ -89,7 +168,7 @@ class OpportunitySectionHeader extends StatelessWidget {
               const SizedBox(height: 3),
               Text(
                 subtitle,
-                style: GoogleFonts.poppins(
+                style: AppTypography.product(
                   fontSize: 11.2,
                   height: 1.35,
                   color: OpportunityDashboardPalette.textSecondary,
@@ -120,7 +199,7 @@ class OpportunitySectionHeader extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(999),
                 ),
-                textStyle: GoogleFonts.poppins(
+                textStyle: AppTypography.product(
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
                 ),
@@ -185,7 +264,7 @@ class TrendingOpportunitySectionHeader extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: GoogleFonts.poppins(
+                      style: AppTypography.product(
                         fontSize: 17,
                         fontWeight: FontWeight.w700,
                         color: OpportunityDashboardPalette.textPrimary,
@@ -194,7 +273,7 @@ class TrendingOpportunitySectionHeader extends StatelessWidget {
                     const SizedBox(height: 3),
                     Text(
                       subtitle,
-                      style: GoogleFonts.poppins(
+                      style: AppTypography.product(
                         fontSize: 11.2,
                         height: 1.35,
                         color: OpportunityDashboardPalette.textSecondary,
@@ -224,7 +303,7 @@ class TrendingOpportunitySectionHeader extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(999),
               ),
-              textStyle: GoogleFonts.poppins(
+              textStyle: AppTypography.product(
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
               ),
@@ -337,8 +416,8 @@ class OpportunityHeroCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(999),
                         ),
                         child: Text(
-                          'Featured destination',
-                          style: GoogleFonts.poppins(
+                          AppLocalizations.of(context)!.uiFeaturedDestination,
+                          style: AppTypography.product(
                             fontSize: 9.5,
                             fontWeight: FontWeight.w600,
                             color: Colors.white,
@@ -349,7 +428,7 @@ class OpportunityHeroCard extends StatelessWidget {
                       const SizedBox(height: 12),
                       Text(
                         title,
-                        style: GoogleFonts.poppins(
+                        style: AppTypography.product(
                           fontSize: 24,
                           fontWeight: FontWeight.w700,
                           color: Colors.white,
@@ -359,7 +438,7 @@ class OpportunityHeroCard extends StatelessWidget {
                       const SizedBox(height: 6),
                       Text(
                         subtitle,
-                        style: GoogleFonts.poppins(
+                        style: AppTypography.product(
                           fontSize: 12,
                           height: 1.4,
                           color: Colors.white.withValues(alpha: 0.84),
@@ -373,7 +452,7 @@ class OpportunityHeroCard extends StatelessWidget {
                           Flexible(
                             child: Text(
                               supportingLabel,
-                              style: GoogleFonts.poppins(
+                              style: AppTypography.product(
                                 fontSize: 11.5,
                                 fontWeight: FontWeight.w600,
                                 color: Colors.white,
@@ -472,7 +551,7 @@ class OpportunityCategoryCard extends StatelessWidget {
                   const SizedBox(height: 16),
                   Text(
                     title,
-                    style: GoogleFonts.poppins(
+                    style: AppTypography.product(
                       fontSize: 13.5,
                       fontWeight: FontWeight.w700,
                       color: OpportunityDashboardPalette.textPrimary,
@@ -487,7 +566,7 @@ class OpportunityCategoryCard extends StatelessWidget {
                       alignment: Alignment.topLeft,
                       child: Text(
                         subtitle,
-                        style: GoogleFonts.poppins(
+                        style: AppTypography.product(
                           fontSize: 9.8,
                           color: OpportunityDashboardPalette.textSecondary,
                           height: 1.18,
@@ -500,7 +579,7 @@ class OpportunityCategoryCard extends StatelessWidget {
                   const SizedBox(height: 5),
                   Text(
                     caption,
-                    style: GoogleFonts.poppins(
+                    style: AppTypography.product(
                       fontSize: 10,
                       fontWeight: FontWeight.w600,
                       color: color,
@@ -574,7 +653,7 @@ class TrainingProgramsCard extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: GoogleFonts.poppins(
+                      style: AppTypography.product(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
                         color: OpportunityDashboardPalette.textPrimary,
@@ -584,7 +663,7 @@ class TrainingProgramsCard extends StatelessWidget {
                       const SizedBox(height: 3),
                       Text(
                         subtitle,
-                        style: GoogleFonts.poppins(
+                        style: AppTypography.product(
                           fontSize: 11.5,
                           color: OpportunityDashboardPalette.textSecondary,
                         ),
@@ -606,7 +685,7 @@ class TrainingProgramsCard extends StatelessWidget {
                   ),
                   child: Text(
                     badgeLabel!,
-                    style: GoogleFonts.poppins(
+                    style: AppTypography.product(
                       fontSize: 10,
                       fontWeight: FontWeight.w600,
                       color: OpportunityDashboardPalette.textSecondary,
@@ -731,13 +810,28 @@ class TrendingOpportunityCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final translationProvider = context.watch<OpportunityTranslationProvider>();
+    _ensureOpportunityTranslation(context, opportunity);
+    final hasTranslation = _hasOpportunityTranslation(
+      opportunity,
+      translationProvider,
+    );
+    final showingTranslated = translationProvider.isShowingTranslatedContent(
+      contentType: ContentTranslationType.opportunity,
+      contentId: opportunity.id,
+    );
+    final displayTitle = _opportunityDisplayTitle(
+      context,
+      opportunity,
+      translationProvider,
+    );
     final tone = _toneForOpportunityType(opportunity.type);
     final textScale = MediaQuery.textScalerOf(context).scale(1);
     final isCompactLayout =
         MediaQuery.sizeOf(context).width < 380 || textScale > 1.08;
     final companyLabel = companyName?.trim().isNotEmpty == true
         ? companyName!.trim()
-        : 'FutureGate partner';
+        : l10n.opportunityFutureGatePartner;
     final locationLabel = locationText?.trim();
     final metaItems = _metaItems();
     final cardWidth = isCompactLayout ? 206.0 : 220.0;
@@ -780,7 +874,7 @@ class TrendingOpportunityCard extends StatelessWidget {
                     ),
                     child: Text(
                       '#$rank',
-                      style: GoogleFonts.poppins(
+                      style: AppTypography.product(
                         fontSize: 9.8,
                         fontWeight: FontWeight.w700,
                         color: tone.strongAccent,
@@ -836,7 +930,7 @@ class TrendingOpportunityCard extends StatelessWidget {
                       children: [
                         Text(
                           companyLabel,
-                          style: GoogleFonts.poppins(
+                          style: AppTypography.product(
                             fontSize: 11.2,
                             fontWeight: FontWeight.w600,
                             color: OpportunityDashboardPalette.textPrimary,
@@ -849,7 +943,7 @@ class TrendingOpportunityCard extends StatelessWidget {
                           const SizedBox(height: 2),
                           Text(
                             locationLabel,
-                            style: GoogleFonts.poppins(
+                            style: AppTypography.product(
                               fontSize: 10.1,
                               color: OpportunityDashboardPalette.textSecondary,
                             ),
@@ -864,8 +958,8 @@ class TrendingOpportunityCard extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               Text(
-                _opportunityDisplayTitle(opportunity),
-                style: GoogleFonts.poppins(
+                displayTitle,
+                style: AppTypography.product(
                   fontSize: 14.3,
                   fontWeight: FontWeight.w700,
                   color: OpportunityDashboardPalette.textPrimary,
@@ -874,12 +968,23 @@ class TrendingOpportunityCard extends StatelessWidget {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
+              if (hasTranslation ||
+                  (opportunity.originalLanguage?.trim().isNotEmpty ?? false)) ...[
+                const SizedBox(height: 7),
+                ContentTranslationBadge(
+                  showingTranslated: hasTranslation && showingTranslated,
+                  originalLanguage: opportunity.originalLanguage ?? '',
+                  foregroundColor: tone.strongAccent,
+                  backgroundColor: tone.accent.withValues(alpha: 0.08),
+                  borderColor: tone.accent.withValues(alpha: 0.12),
+                ),
+              ],
               if (compensationText != null &&
                   compensationText!.trim().isNotEmpty) ...[
                 const SizedBox(height: 7),
                 Text(
                   compensationText!,
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
                     color: tone.strongAccent,
@@ -962,6 +1067,21 @@ class OpportunityListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final translationProvider = context.watch<OpportunityTranslationProvider>();
+    _ensureOpportunityTranslation(context, opportunity);
+    final hasTranslation = _hasOpportunityTranslation(
+      opportunity,
+      translationProvider,
+    );
+    final showingTranslated = translationProvider.isShowingTranslatedContent(
+      contentType: ContentTranslationType.opportunity,
+      contentId: opportunity.id,
+    );
+    final displayTitle = _opportunityDisplayTitle(
+      context,
+      opportunity,
+      translationProvider,
+    );
     final tone = _toneForOpportunityType(opportunity.type);
     final effectiveBadgeColor =
         badgeColor ?? OpportunityDashboardPalette.primary;
@@ -1069,8 +1189,8 @@ class OpportunityListTile extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            _opportunityDisplayTitle(opportunity),
-                            style: GoogleFonts.poppins(
+                            displayTitle,
+                            style: AppTypography.product(
                               fontSize: 14.2,
                               fontWeight: FontWeight.w700,
                               color: OpportunityDashboardPalette.textPrimary,
@@ -1079,6 +1199,22 @@ class OpportunityListTile extends StatelessWidget {
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
+                          if (hasTranslation ||
+                              (opportunity.originalLanguage?.trim().isNotEmpty ??
+                                  false)) ...[
+                            const SizedBox(height: 6),
+                            ContentTranslationBadge(
+                              showingTranslated:
+                                  hasTranslation && showingTranslated,
+                              originalLanguage:
+                                  opportunity.originalLanguage ?? '',
+                              foregroundColor: tone.strongAccent,
+                              backgroundColor:
+                                  tone.accent.withValues(alpha: 0.08),
+                              borderColor:
+                                  tone.accent.withValues(alpha: 0.12),
+                            ),
+                          ],
                           const SizedBox(height: 4),
                           Row(
                             children: [
@@ -1092,7 +1228,7 @@ class OpportunityListTile extends StatelessWidget {
                               Expanded(
                                 child: Text(
                                   companyLocationText,
-                                  style: GoogleFonts.poppins(
+                                  style: AppTypography.product(
                                     fontSize: 11,
                                     color: OpportunityDashboardPalette
                                         .textSecondary,
@@ -1128,7 +1264,7 @@ class OpportunityListTile extends StatelessWidget {
                                   Flexible(
                                     child: Text(
                                       compensationText!,
-                                      style: GoogleFonts.poppins(
+                                      style: AppTypography.product(
                                         fontSize: 12,
                                         fontWeight: FontWeight.w700,
                                         color: tone.strongAccent,
@@ -1226,7 +1362,7 @@ class _OpportunityMetadataText extends StatelessWidget {
 
     return Text(
       visibleItems.join(separator),
-      style: GoogleFonts.poppins(
+      style: AppTypography.product(
         fontSize: fontSize,
         fontWeight: FontWeight.w500,
         color: color,
@@ -1335,7 +1471,7 @@ class _OpportunityCompanyAvatar extends StatelessWidget {
           ? Center(
               child: Text(
                 label,
-                style: GoogleFonts.poppins(
+                style: AppTypography.product(
                   fontSize: size * 0.34,
                   fontWeight: FontWeight.w700,
                   color: resolvedAccent,
@@ -1348,7 +1484,7 @@ class _OpportunityCompanyAvatar extends StatelessWidget {
               errorWidget: (context, url, error) => Center(
                 child: Text(
                   label,
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: size * 0.34,
                     fontWeight: FontWeight.w700,
                     color: resolvedAccent,
@@ -1453,7 +1589,7 @@ class _OpportunityAccentChip extends StatelessWidget {
           ],
           Text(
             label,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 9.5,
               fontWeight: FontWeight.w700,
               color: foreground,
@@ -1467,3 +1603,4 @@ class _OpportunityAccentChip extends StatelessWidget {
     );
   }
 }
+

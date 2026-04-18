@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../providers/admin_provider.dart';
 import '../../providers/auth_provider.dart';
+import '../../theme/locale_controller.dart';
+import '../../utils/content_language.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../widgets/shared/app_content_system.dart';
 import '../../widgets/shared/app_feedback.dart';
@@ -42,12 +44,14 @@ class _AdminScholarshipEditorScreenState
   DateTime? _deadline;
   bool _featured = false;
   bool _isSubmitting = false;
+  String _originalLanguage = 'fr';
 
   bool get _isEditing => widget.initialScholarship != null;
 
   @override
   void initState() {
     super.initState();
+    _originalLanguage = _defaultOriginalLanguage();
     final scholarship = widget.initialScholarship;
     if (scholarship == null) return;
 
@@ -81,6 +85,25 @@ class _AdminScholarshipEditorScreenState
     );
     _featured = scholarship['featured'] == true;
     _deadline = OpportunityMetadata.parseDateTimeLike(scholarship['deadline']);
+    _originalLanguage = ContentLanguage.normalizeCode(
+      scholarship['originalLanguage']?.toString(),
+      fallback: _defaultOriginalLanguage(),
+    );
+  }
+
+  String _defaultOriginalLanguage() {
+    final auth = context.read<AuthProvider>().userModel;
+    final preferred = ContentLanguage.normalizeCode(
+      auth?.preferredPostingLanguage,
+    );
+    if (preferred.isNotEmpty) {
+      return preferred;
+    }
+
+    return ContentLanguage.normalizeCode(
+      LocaleController.activeLanguageCode,
+      fallback: 'fr',
+    );
   }
 
   @override
@@ -151,6 +174,30 @@ class _AdminScholarshipEditorScreenState
                     label: 'Provider',
                     hint: 'Who offers this scholarship?',
                     validator: adminRequiredMin('Provider', min: 2),
+                  ),
+                  const SizedBox(height: 14),
+                  AdminEditorDropdown<String>(
+                    value: _originalLanguage,
+                    label: AppLocalizations.of(context)!.originalLanguageFieldLabel,
+                    items: [
+                      DropdownMenuItem(
+                        value: 'fr',
+                        child: Text(AppLocalizations.of(context)!.languageFrench),
+                      ),
+                      DropdownMenuItem(
+                        value: 'en',
+                        child: Text(AppLocalizations.of(context)!.languageEnglish),
+                      ),
+                      DropdownMenuItem(
+                        value: 'ar',
+                        child: Text(AppLocalizations.of(context)!.languageArabic),
+                      ),
+                    ],
+                    onChanged: (value) {
+                      if (value != null) {
+                        setState(() => _originalLanguage = value);
+                      }
+                    },
                   ),
                 ],
               ),
@@ -358,6 +405,7 @@ class _AdminScholarshipEditorScreenState
       'category': _categoryController.text.trim(),
       'level': _levelController.text.trim(),
       'tags': adminSplitCsv(_tagsController.text),
+      'originalLanguage': _originalLanguage,
       'featured': _featured,
       'createdBy': auth.uid,
       'createdByRole': 'admin',

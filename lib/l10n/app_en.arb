@@ -3235,5 +3235,511 @@
   "uiCvStudioSubtitle": "Build, upload, and export your CV.",
   "@uiCvStudioSubtitle": {
     "description": "uiCvStudioSubtitle"
+  },
+  "notifAdminTitle": "Admin Notifications",
+  "@notifAdminTitle": {
+    "description": "notifAdminTitle"
+  },
+  "notifCompanyTitle": "Company Notifications",
+  "@notifCompanyTitle": {
+    "description": "notifCompanyTitle"
+  },
+  "notifReadAll": "Read all",
+  "@notifReadAll": {
+    "description": "notifReadAll"
+  },
+  "notifFilterAll": "All",
+  "@notifFilterAll": {
+    "description": "notifFilterAll"
+  },
+  "notifFilterNewContent": "New content",
+  "@notifFilterNewContent": {
+    "description": "notifFilterNewContent"
+  },
+  "notifFilterUnread": "Unread",
+  "@notifFilterUnread": {
+    "description": "notifFilterUnread"
+  },
+  "notifFilterApplications": "Applications",
+  "@notifFilterApplications": {
+    "description": "notifFilterApplications"
+  },
+  "notifFilterMessages": "Messages",
+  "@notifFilterMessages": {
+    "description": "notifFilterMessages"
+  },
+  "notifContentAll": "All new",
+  "@notifContentAll": {
+    "description": "notifContentAll"
+  },
+  "notifContentOpportunities": "Opportunities",
+  "@notifContentOpportunities": {
+    "description": "notifContentOpportunities"
+  },
+  "notifContentTrainings": "Trainings",
+  "@notifContentTrainings": {
+    "description": "notifContentTrainings"
+  },
+  "notifContentScholarships": "Scholarships",
+  "@notifContentScholarships": {
+    "description": "notifContentScholarships"
+  },
+  "notifContentIdeas": "Ideas",
+  "@notifContentIdeas": {
+    "description": "notifContentIdeas"
+  },
+  "notifOppAll": "All opps",
+  "@notifOppAll": {
+    "description": "notifOppAll"
+  },
+  "notifOppJobs": "Jobs",
+  "@notifOppJobs": {
+    "description": "notifOppJobs"
+  },
+  "notifOppInternships": "Internships",
+  "@notifOppInternships": {
+    "description": "notifOppInternships"
+  },
+  "notifOppSponsored": "Sponsored",
+  "@notifOppSponsored": {
+    "description": "notifOppSponsored"
+  },
+  "notifAllCaughtUp": "All caught up",
+  "@notifAllCaughtUp": {
+    "description": "notifAllCaughtUp"
+  },
+  "notifTypeMessage": "Message",
+  "@notifTypeMessage": {
+    "description": "notifTypeMessage"
+  },
+  "notifTypeApplication": "Application",
+  "@notifTypeApplication": {
+    "description": "notifTypeApplication"
+  },
+  "notifTypeOpportunity": "Opportunity",
+  "@notifTypeOpportunity": {
+    "description": "notifTypeOpportunity"
+  },
+  "notifTypeScholarship": "Scholarship",
+  "@notifTypeScholarship": {
+    "description": "notifTypeScholarship"
+  },
+  "notifTypeTraining": "Training",
+  "@notifTypeTraining": {
+    "description": "notifTypeTraining"
+  },
+  "notifTypeIdea": "Idea",
+  "@notifTypeIdea": {
+    "description": "notifTypeIdea"
+  },
+  "notifTypeCompanyReview": "Company review",
+  "@notifTypeCompanyReview": {
+    "description": "notifTypeCompanyReview"
+  },
+  "notifTypeUpdate": "Update",
+  "@notifTypeUpdate": {
+    "description": "notifTypeUpdate"
+  },
+  "notifJustNow": "Just now",
+  "@notifJustNow": {
+    "description": "notifJustNow"
+  },
+  "postingLanguageLabel": "Posting language",
+  "@postingLanguageLabel": {
+    "description": "postingLanguageLabel"
+  },
+  "postingLanguageHint": "Language this content is written in",
+  "@postingLanguageHint": {
+    "description": "postingLanguageHint"
+  },
+  "translateLabel": "Translate",
+  "@translateLabel": {
+    "description": "translateLabel"
+  },
+  "translatingLabel": "Translating...",
+  "@translatingLabel": {
+    "description": "translatingLabel"
+  },
+  "translationDoneLabel": "Translation ready",
+  "@translationDoneLabel": {
+    "description": "translationDoneLabel"
+  },
+  "translationFailedLabel": "Translation unavailable",
+  "@translationFailedLabel": {
+    "description": "translationFailedLabel"
+  },
+  "showOriginalLabel": "Show original",
+  "@showOriginalLabel": {
+    "description": "showOriginalLabel"
+  },
+  "showTranslatedLabel": "Show translated",
+  "@showTranslatedLabel": {
+    "description": "showTranslatedLabel"
+  },
+  "contentLanguageLabel": "Content language",
+  "@contentLanguageLabel": {
+    "description": "contentLanguageLabel"
+  },
+  "autoTranslatedBadge": "Auto-translated",
+  "@autoTranslatedBadge": {
+    "description": "autoTranslatedBadge"
+  },
+  "translatedBadge": "Translated",
+  "@translatedBadge": {
+    "description": "translatedBadge"
+  },
+  "originalBadge": "Original",
+  "@originalBadge": {
+    "description": "originalBadge"
+  },
+  "translationNote": "This content was automatically translated. Tap \"Show original\" to see the source.",
+  "@translationNote": {
+    "description": "translationNote"
+  },
+  "dashSectionClosingSoon": "Closing Soon",
+  "@dashSectionClosingSoon": {
+    "description": "dashSectionClosingSoon"
+  },
+  "dashSectionRecommended": "Recommended",
+  "@dashSectionRecommended": {
+    "description": "dashSectionRecommended"
+  },
+  "dashSectionQuickAccess": "Quick Access",
+  "@dashSectionQuickAccess": {
+    "description": "dashSectionQuickAccess"
+  },
+  "dashSectionLatestActivity": "Latest Activities",
+  "@dashSectionLatestActivity": {
+    "description": "dashSectionLatestActivity"
+  },
+  "dashSectionSavedShortlist": "Saved shortlist",
+  "@dashSectionSavedShortlist": {
+    "description": "dashSectionSavedShortlist"
+  },
+  "dashBuildCv": "Build CV",
+  "@dashBuildCv": {
+    "description": "dashBuildCv"
+  },
+  "dashCompleteProfile": "Complete Profile",
+  "@dashCompleteProfile": {
+    "description": "dashCompleteProfile"
+  },
+  "dashDiscover": "Discover",
+  "@dashDiscover": {
+    "description": "dashDiscover"
+  },
+  "dashViewStatus": "View Status",
+  "@dashViewStatus": {
+    "description": "dashViewStatus"
+  },
+  "dashTrackStatus": "Track Status",
+  "@dashTrackStatus": {
+    "description": "dashTrackStatus"
+  },
+  "dashSeeOpenRoles": "See Open Roles",
+  "@dashSeeOpenRoles": {
+    "description": "dashSeeOpenRoles"
+  },
+  "dashOpenSaved": "Open Saved",
+  "@dashOpenSaved": {
+    "description": "dashOpenSaved"
+  },
+  "scholarshipOpportunityFallback": "Scholarship Opportunity",
+  "@scholarshipOpportunityFallback": {
+    "description": "scholarshipOpportunityFallback"
+  },
+  "scholarshipPartnerFallback": "FutureGate Partner",
+  "@scholarshipPartnerFallback": {
+    "description": "scholarshipPartnerFallback"
+  },
+  "scholarshipNoDescFallback": "This scholarship does not include a detailed description yet.",
+  "@scholarshipNoDescFallback": {
+    "description": "scholarshipNoDescFallback"
+  },
+  "scholarshipNoEligFallback": "Eligibility details will be shared by the scholarship provider.",
+  "@scholarshipNoEligFallback": {
+    "description": "scholarshipNoEligFallback"
+  },
+  "scholarshipDeadlineFallback": "Provider-announced deadline",
+  "@scholarshipDeadlineFallback": {
+    "description": "scholarshipDeadlineFallback"
+  },
+  "scholarshipFundingFallback": "Funding shared on the official call",
+  "@scholarshipFundingFallback": {
+    "description": "scholarshipFundingFallback"
+  },
+  "scholarshipFeaturedBadge": "FEATURED",
+  "@scholarshipFeaturedBadge": {
+    "description": "scholarshipFeaturedBadge"
+  },
+  "scholarshipDefaultBadge": "SCHOLARSHIP",
+  "@scholarshipDefaultBadge": {
+    "description": "scholarshipDefaultBadge"
+  },
+  "scholarshipFundingAmount": "Funding Amount",
+  "@scholarshipFundingAmount": {
+    "description": "scholarshipFundingAmount"
+  },
+  "scholarshipFundingDetails": "Funding Details",
+  "@scholarshipFundingDetails": {
+    "description": "scholarshipFundingDetails"
+  },
+  "scholarshipStudyLevel": "Study Level",
+  "@scholarshipStudyLevel": {
+    "description": "scholarshipStudyLevel"
+  },
+  "scholarshipProgramType": "Program Type",
+  "@scholarshipProgramType": {
+    "description": "scholarshipProgramType"
+  },
+  "scholarshipAtAGlance": "AT A GLANCE",
+  "@scholarshipAtAGlance": {
+    "description": "scholarshipAtAGlance"
+  },
+  "scholarshipNoLink": "The provider has not attached an external application link yet.",
+  "@scholarshipNoLink": {
+    "description": "scholarshipNoLink"
+  },
+  "scholarshipOfficialSource": "Official scholarship source",
+  "@scholarshipOfficialSource": {
+    "description": "scholarshipOfficialSource"
+  },
+  "scholarshipOpenPage": "Open Official Page",
+  "@scholarshipOpenPage": {
+    "description": "scholarshipOpenPage"
+  },
+  "scholarshipLinkUnavailable": "Link Not Available",
+  "@scholarshipLinkUnavailable": {
+    "description": "scholarshipLinkUnavailable"
+  },
+  "ideaNotAvailable": "This idea is no longer available.",
+  "@ideaNotAvailable": {
+    "description": "ideaNotAvailable"
+  },
+  "ideaHubTitle": "Innovation Hub",
+  "@ideaHubTitle": {
+    "description": "ideaHubTitle"
+  },
+  "ideaUnsaveTooltip": "Unsave idea",
+  "@ideaUnsaveTooltip": {
+    "description": "ideaUnsaveTooltip"
+  },
+  "ideaSaveTooltip": "Save idea",
+  "@ideaSaveTooltip": {
+    "description": "ideaSaveTooltip"
+  },
+  "ideaEditLabel": "Edit Idea",
+  "@ideaEditLabel": {
+    "description": "ideaEditLabel"
+  },
+  "ideaManageLabel": "Manage This Idea",
+  "@ideaManageLabel": {
+    "description": "ideaManageLabel"
+  },
+  "ideaInterestedLabel": "Interested",
+  "@ideaInterestedLabel": {
+    "description": "ideaInterestedLabel"
+  },
+  "ideaImInterestedLabel": "I'm Interested",
+  "@ideaImInterestedLabel": {
+    "description": "ideaImInterestedLabel"
+  },
+  "ideaManageTeamLabel": "Manage Team",
+  "@ideaManageTeamLabel": {
+    "description": "ideaManageTeamLabel"
+  },
+  "ideaContactCreator": "Contact Creator",
+  "@ideaContactCreator": {
+    "description": "ideaContactCreator"
+  },
+  "ideaSavedLabel": "Saved",
+  "@ideaSavedLabel": {
+    "description": "ideaSavedLabel"
+  },
+  "ideaSaveLabel": "Save Idea",
+  "@ideaSaveLabel": {
+    "description": "ideaSaveLabel"
+  },
+  "ideaShareLabel": "Share Idea",
+  "@ideaShareLabel": {
+    "description": "ideaShareLabel"
+  },
+  "trainingRecommendedForYou": "Recommended for you",
+  "@trainingRecommendedForYou": {
+    "description": "trainingRecommendedForYou"
+  },
+  "trainingNoProgramsForDomain": "No training programs are available right now for {domain}.",
+  "@trainingNoProgramsForDomain": {
+    "placeholders": {
+      "domain": {}
+    }
+  },
+  "trainingLinkMissingMessage": "This training does not have a link yet.",
+  "@trainingLinkMissingMessage": {
+    "description": "trainingLinkMissingMessage"
+  },
+  "trainingLinkInvalidMessage": "This training link is not valid.",
+  "@trainingLinkInvalidMessage": {
+    "description": "trainingLinkInvalidMessage"
+  },
+  "trainingLinkOpenFailedMessage": "We couldn't open this training link right now.",
+  "@trainingLinkOpenFailedMessage": {
+    "description": "trainingLinkOpenFailedMessage"
+  },
+  "trainingSaveLoginMessage": "Sign in to save training resources for later.",
+  "@trainingSaveLoginMessage": {
+    "description": "trainingSaveLoginMessage"
+  },
+  "trainingRemovedSavedMessage": "Removed from saved resources",
+  "@trainingRemovedSavedMessage": {
+    "description": "trainingRemovedSavedMessage"
+  },
+  "trainingSavedMessage": "Resource saved",
+  "@trainingSavedMessage": {
+    "description": "trainingSavedMessage"
+  },
+  "trainingSavedUpdatedTitle": "Saved items updated",
+  "@trainingSavedUpdatedTitle": {
+    "description": "trainingSavedUpdatedTitle"
+  },
+  "trainingUpdateUnavailableTitle": "Update unavailable",
+  "@trainingUpdateUnavailableTitle": {
+    "description": "trainingUpdateUnavailableTitle"
+  },
+  "trainingProviderFallback": "Training Provider",
+  "@trainingProviderFallback": {
+    "description": "trainingProviderFallback"
+  },
+  "trainingFlexibleLabel": "Flexible",
+  "@trainingFlexibleLabel": {
+    "description": "trainingFlexibleLabel"
+  },
+  "trainingAllLevelsLabel": "All levels",
+  "@trainingAllLevelsLabel": {
+    "description": "trainingAllLevelsLabel"
+  },
+  "trainingCareerCourseLabel": "Career Course",
+  "@trainingCareerCourseLabel": {
+    "description": "trainingCareerCourseLabel"
+  },
+  "trainingVideoLessonLabel": "Video Lesson",
+  "@trainingVideoLessonLabel": {
+    "description": "trainingVideoLessonLabel"
+  },
+  "trainingReadingTrackLabel": "Reading Track",
+  "@trainingReadingTrackLabel": {
+    "description": "trainingReadingTrackLabel"
+  },
+  "trainingGuideToolkitLabel": "Guide & Toolkit",
+  "@trainingGuideToolkitLabel": {
+    "description": "trainingGuideToolkitLabel"
+  },
+  "trainingLearningPathLabel": "Learning Path",
+  "@trainingLearningPathLabel": {
+    "description": "trainingLearningPathLabel"
+  },
+  "trainingGeneralDomainLabel": "General",
+  "@trainingGeneralDomainLabel": {
+    "description": "trainingGeneralDomainLabel"
+  },
+  "opportunityFutureGatePartner": "FutureGate partner",
+  "@opportunityFutureGatePartner": {
+    "description": "opportunityFutureGatePartner"
+  },
+  "opportunityStudentInternshipFallback": "Student Internship Opportunity",
+  "@opportunityStudentInternshipFallback": {
+    "description": "opportunityStudentInternshipFallback"
+  },
+  "opportunitySponsoredFallback": "Sponsored Opportunity",
+  "@opportunitySponsoredFallback": {
+    "description": "opportunitySponsoredFallback"
+  },
+  "opportunityOpenJobFallback": "Open Job Opportunity",
+  "@opportunityOpenJobFallback": {
+    "description": "opportunityOpenJobFallback"
+  },
+  "opportunityOpenFallback": "Open Opportunity",
+  "@opportunityOpenFallback": {
+    "description": "opportunityOpenFallback"
+  },
+  "scholarshipExploreLabel": "Explore Scholarship",
+  "@scholarshipExploreLabel": {
+    "description": "scholarshipExploreLabel"
+  },
+  "ideaCreateCta": "Create an idea",
+  "@ideaCreateCta": {
+    "description": "ideaCreateCta"
+  },
+  "ideaCreateFirstCta": "Create your first idea",
+  "@ideaCreateFirstCta": {
+    "description": "ideaCreateFirstCta"
+  },
+  "ideaPublicLabel": "Public",
+  "@ideaPublicLabel": {
+    "description": "ideaPublicLabel"
+  },
+  "ideaPrivateLabel": "Private",
+  "@ideaPrivateLabel": {
+    "description": "ideaPrivateLabel"
+  },
+  "ideaSharedFromHub": "Shared from Innovation Hub",
+  "@ideaSharedFromHub": {
+    "description": "ideaSharedFromHub"
+  },
+  "ideaCategoryInnovation": "Innovation",
+  "@ideaCategoryInnovation": {
+    "description": "ideaCategoryInnovation"
+  },
+  "ideaCategoryAi": "AI",
+  "@ideaCategoryAi": {
+    "description": "ideaCategoryAi"
+  },
+  "ideaCategoryFintech": "Fintech",
+  "@ideaCategoryFintech": {
+    "description": "ideaCategoryFintech"
+  },
+  "ideaCategoryEdTech": "EdTech",
+  "@ideaCategoryEdTech": {
+    "description": "ideaCategoryEdTech"
+  },
+  "ideaCategorySustainability": "Sustainability",
+  "@ideaCategorySustainability": {
+    "description": "ideaCategorySustainability"
+  },
+  "ideaCategorySocialImpact": "Social Impact",
+  "@ideaCategorySocialImpact": {
+    "description": "ideaCategorySocialImpact"
+  },
+  "ideaStageConcept": "Concept",
+  "@ideaStageConcept": {
+    "description": "ideaStageConcept"
+  },
+  "ideaStageMvp": "MVP",
+  "@ideaStageMvp": {
+    "description": "ideaStageMvp"
+  },
+  "ideaStagePrototype": "Prototype",
+  "@ideaStagePrototype": {
+    "description": "ideaStagePrototype"
+  },
+  "ideaStageBeta": "Beta",
+  "@ideaStageBeta": {
+    "description": "ideaStageBeta"
+  },
+  "scholarshipRemovedSavedMessage": "Removed from saved scholarships",
+  "@scholarshipRemovedSavedMessage": {
+    "description": "scholarshipRemovedSavedMessage"
+  },
+  "scholarshipSavedMessage": "Scholarship saved",
+  "@scholarshipSavedMessage": {
+    "description": "scholarshipSavedMessage"
+  },
+  "scholarshipSnapshotSubtitle": "Everything important is surfaced here before you open the full application call.",
+  "@scholarshipSnapshotSubtitle": {
+    "description": "scholarshipSnapshotSubtitle"
+  },
+  "scholarshipOverviewSubtitle": "A focused overview so the opportunity feels easy to scan.",
+  "@scholarshipOverviewSubtitle": {
+    "description": "scholarshipOverviewSubtitle"
   }
 }

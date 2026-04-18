@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
+import '../../theme/app_typography.dart';
 import '../../theme/app_colors.dart';
 import 'app_feedback.dart';
 
@@ -81,14 +81,14 @@ class AppContentTheme {
   }) {
     switch (typography) {
       case AppContentTypography.innovation:
-        return GoogleFonts.sora(
+        return AppTypography.innovationTitle(
           fontSize: size,
           fontWeight: weight,
           height: 1.06,
           color: color ?? textPrimary,
         );
       case AppContentTypography.product:
-        return GoogleFonts.poppins(
+        return AppTypography.product(
           fontSize: size,
           fontWeight: weight,
           height: 1.1,
@@ -104,14 +104,14 @@ class AppContentTheme {
   }) {
     switch (typography) {
       case AppContentTypography.innovation:
-        return GoogleFonts.sora(
+        return AppTypography.innovationTitle(
           fontSize: size,
           fontWeight: weight,
           height: 1.12,
           color: color ?? textPrimary,
         );
       case AppContentTypography.product:
-        return GoogleFonts.poppins(
+        return AppTypography.product(
           fontSize: size,
           fontWeight: weight,
           height: 1.16,
@@ -128,14 +128,14 @@ class AppContentTheme {
   }) {
     switch (typography) {
       case AppContentTypography.innovation:
-        return GoogleFonts.manrope(
+        return AppTypography.innovationBody(
           fontSize: size,
           fontWeight: weight,
           height: height,
           color: color ?? textSecondary,
         );
       case AppContentTypography.product:
-        return GoogleFonts.poppins(
+        return AppTypography.product(
           fontSize: size,
           fontWeight: weight,
           height: height,
@@ -151,14 +151,14 @@ class AppContentTheme {
   }) {
     switch (typography) {
       case AppContentTypography.innovation:
-        return GoogleFonts.manrope(
+        return AppTypography.innovationBody(
           fontSize: size,
           fontWeight: weight,
           letterSpacing: 0.12,
           color: color ?? textPrimary,
         );
       case AppContentTypography.product:
-        return GoogleFonts.poppins(
+        return AppTypography.product(
           fontSize: size,
           fontWeight: weight,
           letterSpacing: 0.08,
@@ -287,7 +287,7 @@ InputDecoration _fieldDecoration({
       borderRadius: BorderRadius.circular(16),
       borderSide: BorderSide(color: theme.error, width: 1.4),
     ),
-    errorStyle: GoogleFonts.poppins(
+    errorStyle: AppTypography.product(
       fontSize: 11.6,
       fontWeight: FontWeight.w600,
       height: 1.35,
@@ -707,7 +707,7 @@ class _AppEditableListFieldState extends State<AppEditableListField> {
               const SizedBox(height: AppContentSpacing.xs),
               Text(
                 field.errorText ?? '',
-                style: GoogleFonts.poppins(
+                style: AppTypography.product(
                   fontSize: 11.6,
                   fontWeight: FontWeight.w600,
                   height: 1.35,

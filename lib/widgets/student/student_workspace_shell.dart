@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../l10n/generated/app_localizations.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../models/user_model.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_typography.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
 import '../profile_avatar.dart';
 
@@ -87,7 +87,7 @@ class StudentWorkspaceTopBar extends StatelessWidget {
                       title,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.poppins(
+                      style: AppTypography.product(
                         fontSize: compact ? 16 : 17,
                         fontWeight: FontWeight.w700,
                         color: OpportunityDashboardPalette.textPrimary,
@@ -99,7 +99,7 @@ class StudentWorkspaceTopBar extends StatelessWidget {
                         subtitle,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.poppins(
+                        style: AppTypography.product(
                           fontSize: 11.5,
                           fontWeight: FontWeight.w500,
                           color: OpportunityDashboardPalette.textSecondary,
@@ -221,7 +221,7 @@ class StudentWorkspaceActionButton extends StatelessWidget {
                         ),
                         child: Text(
                           badgeCount > 9 ? '9+' : '$badgeCount',
-                          style: GoogleFonts.poppins(
+                          style: AppTypography.product(
                             fontSize: 9.5,
                             fontWeight: FontWeight.w700,
                             color: Colors.white,
@@ -340,7 +340,7 @@ class StudentWorkspaceUtilityHeader extends StatelessWidget {
                   'STUDENT SPACE',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: compact ? 9.2 : 9.8,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 1.4,
@@ -352,7 +352,7 @@ class StudentWorkspaceUtilityHeader extends StatelessWidget {
                   title,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.spaceGrotesk(
+                  style: AppTypography.display(
                     fontSize: compact ? 21 : 28,
                     fontWeight: FontWeight.w700,
                     letterSpacing: -0.7,
@@ -708,7 +708,7 @@ class _StudentPillNavItem extends StatelessWidget {
                           label,
                           maxLines: 1,
                           softWrap: false,
-                          style: GoogleFonts.poppins(
+                          style: AppTypography.product(
                             fontSize: compact ? 8.7 : 9.8,
                             fontWeight: FontWeight.w700,
                             color: Colors.white,

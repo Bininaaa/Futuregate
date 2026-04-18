@@ -24,6 +24,7 @@ import 'providers/company_provider.dart';
 import 'providers/chat_provider.dart';
 import 'providers/notification_provider.dart';
 import 'providers/connectivity_provider.dart';
+import 'providers/opportunity_translation_provider.dart';
 import 'screens/launch_screen.dart';
 import 'screens/notifications_screen.dart';
 import 'theme/app_colors.dart';
@@ -106,6 +107,7 @@ class FutureGateApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ChatProvider()),
         ChangeNotifierProvider(create: (_) => NotificationProvider()),
         ChangeNotifierProvider(create: (_) => ConnectivityProvider()),
+        ChangeNotifierProvider(create: (_) => OpportunityTranslationProvider()),
       ],
       child: const _PresenceAwareApp(),
     );

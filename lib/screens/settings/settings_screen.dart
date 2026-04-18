@@ -7,6 +7,7 @@ import '../../providers/auth_provider.dart';
 import '../../services/app_intro_preferences_service.dart';
 import '../../theme/locale_controller.dart';
 import '../../theme/theme_controller.dart';
+import '../../utils/content_language.dart';
 import '../../widgets/shared/app_restart_scope.dart';
 import '../notifications_screen.dart';
 import '../student/edit_profile_screen.dart';
@@ -86,6 +87,8 @@ class SettingsScreen extends StatelessWidget {
             const _ThemeSettingsSection(),
             const SizedBox(height: 12),
             const _LanguageSettingsSection(),
+            const SizedBox(height: 12),
+            const _PostingLanguageSettingsSection(),
             const SizedBox(height: 12),
             const _LaunchAnimationSettingsSection(),
             const SizedBox(height: 16),
@@ -243,6 +246,8 @@ class SettingsScreen extends StatelessWidget {
             const _ThemeSettingsSection(),
             const SizedBox(height: 12),
             const _LanguageSettingsSection(),
+            const SizedBox(height: 12),
+            const _PostingLanguageSettingsSection(),
             const SizedBox(height: 12),
             const _LaunchAnimationSettingsSection(),
             const SizedBox(height: 16),
@@ -856,6 +861,157 @@ class _LanguageSettingsSection extends StatelessWidget {
         const SizedBox(height: 8),
         const _LanguageSettingsPanel(),
       ],
+    );
+  }
+}
+
+class _PostingLanguageSettingsSection extends StatelessWidget {
+  const _PostingLanguageSettingsSection();
+
+  @override
+  Widget build(BuildContext context) {
+    final user = context.watch<AuthProvider>().userModel;
+    if (user == null || (!user.isCompany && !user.isAdmin)) {
+      return const SizedBox.shrink();
+    }
+
+    final l10n = AppLocalizations.of(context)!;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SettingsSectionHeading(
+          title: l10n.postingLanguageLabel,
+          subtitle: l10n.postingLanguageHint,
+        ),
+        const SizedBox(height: 8),
+        const _PostingLanguageSettingsPanel(),
+      ],
+    );
+  }
+}
+
+class _PostingLanguageSettingsPanel extends StatefulWidget {
+  const _PostingLanguageSettingsPanel();
+
+  @override
+  State<_PostingLanguageSettingsPanel> createState() =>
+      _PostingLanguageSettingsPanelState();
+}
+
+class _PostingLanguageSettingsPanelState
+    extends State<_PostingLanguageSettingsPanel> {
+  bool _isSaving = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final auth = context.watch<AuthProvider>();
+    final currentValue = ContentLanguage.normalizeCode(
+      auth.userModel?.preferredPostingLanguage,
+      fallback: 'fr',
+    );
+
+    return SettingsPanel(
+      padding: const EdgeInsets.all(8),
+      child: _CompactPreferenceRow(
+        icon: Icons.translate_rounded,
+        iconColor: SettingsFlowPalette.accent,
+        title: l10n.postingLanguageLabel,
+        subtitle: l10n.postingLanguageHint,
+        trailing: Container(
+          constraints: const BoxConstraints(minWidth: 104, maxWidth: 148),
+          padding: const EdgeInsetsDirectional.only(start: 10, end: 4),
+          decoration: BoxDecoration(
+            color: SettingsFlowPalette.accent.withValues(alpha: 0.12),
+            borderRadius: SettingsFlowTheme.radius(999),
+            border: Border.all(
+              color: SettingsFlowPalette.accent.withValues(alpha: 0.24),
+            ),
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              value: currentValue,
+              isDense: true,
+              borderRadius: SettingsFlowTheme.radius(14),
+              dropdownColor: SettingsFlowPalette.surface,
+              icon: _isSaving
+                  ? const SizedBox(
+                      width: 14,
+                      height: 14,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : Icon(
+                      Icons.keyboard_arrow_down_rounded,
+                      color: SettingsFlowPalette.accent,
+                      size: 18,
+                    ),
+              selectedItemBuilder: (_) => const ['fr', 'en', 'ar']
+                  .map(
+                    (value) => Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        _languageLabel(ContentLanguage.localeFor(value), l10n),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: SettingsFlowTheme.micro(SettingsFlowPalette.accent),
+                      ),
+                    ),
+                  )
+                  .toList(growable: false),
+              items: const ['fr', 'en', 'ar']
+                  .map(
+                    (value) => DropdownMenuItem<String>(
+                      value: value,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            _languageFlag(ContentLanguage.localeFor(value)),
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            _languageLabel(
+                              ContentLanguage.localeFor(value),
+                              l10n,
+                            ),
+                            style: SettingsFlowTheme.body(),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                  .toList(growable: false),
+              onChanged: _isSaving
+                  ? null
+                  : (value) async {
+                      if (value == null || value == currentValue) {
+                        return;
+                      }
+
+                      setState(() => _isSaving = true);
+                      final error = await context
+                          .read<AuthProvider>()
+                          .updatePreferredPostingLanguage(value);
+                      if (!context.mounted) {
+                        return;
+                      }
+
+                      final messenger = ScaffoldMessenger.of(context);
+                      final updatedL10n = AppLocalizations.of(context)!;
+                      setState(() => _isSaving = false);
+                      messenger.showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            error ?? updatedL10n.languageUpdatedMessage,
+                          ),
+                        ),
+                      );
+                    },
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

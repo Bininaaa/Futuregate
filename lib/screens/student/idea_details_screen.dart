@@ -7,13 +7,16 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../models/project_idea_model.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/opportunity_translation_provider.dart';
 import '../../providers/project_idea_provider.dart';
+import '../../services/opportunity_translation_service.dart';
 import '../../services/project_idea_service.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/ideas/idea_metrics_row.dart';
 import '../../widgets/ideas/innovation_hub_theme.dart';
 import '../../widgets/profile_avatar.dart';
 import '../../widgets/shared/app_content_system.dart';
+import '../../widgets/shared/content_translation_widgets.dart';
 import '../../widgets/shared/app_feedback.dart';
 import '../chat/user_profile_preview_screen.dart';
 import 'create_idea_screen.dart';
@@ -42,8 +45,22 @@ class IdeaDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<ProjectIdeaProvider>();
+    final translationProvider = context.watch<OpportunityTranslationProvider>();
     final auth = context.watch<AuthProvider>().userModel;
-    final idea = provider.findIdeaById(ideaId) ?? initialIdea;
+    final baseIdea = provider.findIdeaById(ideaId) ?? initialIdea;
+    if (baseIdea != null) {
+      _ensureTranslation(context, baseIdea);
+    }
+    final hasTranslation = baseIdea != null &&
+        _hasTranslation(baseIdea, translationProvider);
+    final showingTranslated = baseIdea != null &&
+        translationProvider.isShowingTranslatedContent(
+          contentType: ContentTranslationType.idea,
+          contentId: baseIdea.id,
+        );
+    final idea = baseIdea == null
+        ? null
+        : _displayIdea(baseIdea, translationProvider);
     final isOwner = auth?.uid == idea?.submittedBy;
 
     if (idea == null) {
@@ -53,7 +70,7 @@ class IdeaDetailsScreen extends StatelessWidget {
           appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0),
           body: Center(
             child: Text(
-              'This idea is no longer available.',
+              AppLocalizations.of(context)!.ideaNotAvailable,
               style: _theme.body(color: _theme.textPrimary),
             ),
           ),
@@ -74,12 +91,14 @@ class IdeaDetailsScreen extends StatelessWidget {
           foregroundColor: _theme.textPrimary,
           elevation: 0,
           title: Text(
-            'Innovation Hub',
+            AppLocalizations.of(context)!.ideaHubTitle,
             style: _theme.section(size: 18, weight: FontWeight.w700),
           ),
           actions: <Widget>[
             IconButton(
-              tooltip: idea.isSavedByCurrentUser ? 'Unsave idea' : 'Save idea',
+              tooltip: idea.isSavedByCurrentUser
+                  ? AppLocalizations.of(context)!.ideaUnsaveTooltip
+                  : AppLocalizations.of(context)!.ideaSaveTooltip,
               onPressed: auth == null
                   ? null
                   : () => _toggleInteraction(
@@ -95,7 +114,7 @@ class IdeaDetailsScreen extends StatelessWidget {
             ),
             IconButton(
               tooltip: AppLocalizations.of(context)!.uiShareIdea,
-              onPressed: () => _shareIdea(idea),
+              onPressed: () => _shareIdea(context, idea),
               icon: const Icon(Icons.ios_share_rounded),
             ),
             const SizedBox(width: 6),
@@ -120,11 +139,11 @@ class IdeaDetailsScreen extends StatelessWidget {
                     theme: _theme,
                     label: isOwner
                         ? (idea.status.toLowerCase() == 'pending'
-                              ? 'Edit Idea'
-                              : 'Manage This Idea')
+                              ? AppLocalizations.of(context)!.ideaEditLabel
+                              : AppLocalizations.of(context)!.ideaManageLabel)
                         : (idea.isJoinedByCurrentUser
-                              ? 'Interested'
-                              : "I'm Interested"),
+                              ? AppLocalizations.of(context)!.ideaInterestedLabel
+                              : AppLocalizations.of(context)!.ideaImInterestedLabel),
                     icon: isOwner
                         ? Icons.edit_rounded
                         : idea.isJoinedByCurrentUser
@@ -148,7 +167,9 @@ class IdeaDetailsScreen extends StatelessWidget {
                       Expanded(
                         child: AppSecondaryButton(
                           theme: _theme,
-                          label: isOwner ? 'Manage Team' : 'Contact Creator',
+                          label: isOwner
+                              ? AppLocalizations.of(context)!.ideaManageTeamLabel
+                              : AppLocalizations.of(context)!.ideaContactCreator,
                           icon: isOwner
                               ? Icons.groups_rounded
                               : Icons.person_outline_rounded,
@@ -166,10 +187,10 @@ class IdeaDetailsScreen extends StatelessWidget {
                         child: AppSecondaryButton(
                           theme: _theme,
                           label: isOwner
-                              ? 'Share Idea'
+                              ? AppLocalizations.of(context)!.ideaShareLabel
                               : (idea.isSavedByCurrentUser
-                                    ? 'Saved'
-                                    : 'Save Idea'),
+                                    ? AppLocalizations.of(context)!.ideaSavedLabel
+                                    : AppLocalizations.of(context)!.ideaSaveLabel),
                           icon: isOwner
                               ? Icons.ios_share_rounded
                               : idea.isSavedByCurrentUser
@@ -177,7 +198,7 @@ class IdeaDetailsScreen extends StatelessWidget {
                               : Icons.bookmark_outline_rounded,
                           onPressed: () {
                             if (isOwner) {
-                              _shareIdea(idea);
+                              _shareIdea(context, idea);
                               return;
                             }
                             _toggleInteraction(
@@ -217,12 +238,12 @@ class IdeaDetailsScreen extends StatelessWidget {
               ),
               badges: <AppBadgeData>[
                 AppBadgeData(
-                  label: idea.displayCategory,
+                  label: innovationCategoryLabel(context, idea.displayCategory),
                   icon: innovationCategoryIcon(idea.displayCategory),
                   color: categoryColor,
                 ),
                 AppBadgeData(
-                  label: idea.displayStage,
+                  label: innovationStageLabel(context, idea.displayStage),
                   icon: Icons.timeline_outlined,
                   color: stageColor,
                 ),
@@ -234,12 +255,12 @@ class IdeaDetailsScreen extends StatelessWidget {
                   ),
                 if (idea.level.trim().isNotEmpty)
                   AppBadgeData(
-                    label: academicLevelLabel(idea.level),
+                    label: academicLevelDisplayLabel(context, idea.level),
                     icon: Icons.school_outlined,
                     color: _theme.secondary,
                   ),
                 AppBadgeData(
-                  label: idea.isPublic ? 'Public' : 'Private',
+                  label: innovationVisibilityLabel(context, idea.isPublic),
                   icon: idea.isPublic
                       ? Icons.public_rounded
                       : Icons.lock_outline_rounded,
@@ -272,13 +293,42 @@ class IdeaDetailsScreen extends StatelessWidget {
                 ],
               ),
             ),
+            if (baseIdea != null &&
+                (translationProvider.statusForContent(
+                          contentType: ContentTranslationType.idea,
+                          contentId: baseIdea.id,
+                        ) ==
+                        TranslationStatus.loading ||
+                    hasTranslation)) ...<Widget>[
+              const SizedBox(height: 12),
+              ContentTranslationBanner(
+                isTranslating:
+                    translationProvider.statusForContent(
+                      contentType: ContentTranslationType.idea,
+                      contentId: baseIdea.id,
+                    ) ==
+                    TranslationStatus.loading,
+                hasTranslation: hasTranslation,
+                showingTranslated: showingTranslated,
+                originalLanguage: baseIdea.originalLanguage,
+                onToggle: () => translationProvider.toggleTranslatedContent(
+                  contentType: ContentTranslationType.idea,
+                  contentId: baseIdea.id,
+                ),
+                accentColor: _theme.accent,
+                surfaceColor: _theme.surface,
+                borderColor: _theme.border,
+                titleColor: _theme.textPrimary,
+                subtitleColor: _theme.textSecondary,
+              ),
+            ],
             const SizedBox(height: 16),
             AppInfoTileGrid(
               theme: _theme,
               items: <AppInfoTileData>[
                 AppInfoTileData(
                   label: AppLocalizations.of(context)!.uiStage,
-                  value: idea.displayStage,
+                  value: innovationStageLabel(context, idea.displayStage),
                   icon: Icons.timeline_outlined,
                   color: stageColor,
                 ),
@@ -291,14 +341,14 @@ class IdeaDetailsScreen extends StatelessWidget {
                   ),
                 AppInfoTileData(
                   label: AppLocalizations.of(context)!.uiCategory,
-                  value: idea.displayCategory,
+                  value: innovationCategoryLabel(context, idea.displayCategory),
                   icon: innovationCategoryIcon(idea.displayCategory),
                   color: categoryColor,
                 ),
                 AppInfoTileData(
                   label: AppLocalizations.of(context)!.uiLevel,
                   value: idea.level.trim().isNotEmpty
-                      ? academicLevelLabel(idea.level)
+                      ? academicLevelDisplayLabel(context, idea.level)
                       : '',
                   icon: Icons.school_outlined,
                 ),
@@ -494,11 +544,143 @@ class IdeaDetailsScreen extends StatelessWidget {
     );
   }
 
-  void _shareIdea(ProjectIdeaModel idea) {
+  void _ensureTranslation(BuildContext context, ProjectIdeaModel idea) {
+    final originalLanguage = idea.originalLanguage.trim();
+    if (originalLanguage.isEmpty) {
+      return;
+    }
+
+    final currentLocale = Localizations.localeOf(context).languageCode;
+    if (currentLocale == originalLanguage) {
+      return;
+    }
+
+    final provider = context.read<OpportunityTranslationProvider>();
+    final status = provider.statusForContent(
+      contentType: ContentTranslationType.idea,
+      contentId: idea.id,
+    );
+    if (status == TranslationStatus.loading || status == TranslationStatus.ready) {
+      return;
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!context.mounted) {
+        return;
+      }
+
+      context.read<OpportunityTranslationProvider>().ensureContentTranslation(
+        contentType: ContentTranslationType.idea,
+        contentId: idea.id,
+        fields: <String, String>{
+          'title': idea.title,
+          'tagline': idea.tagline,
+          'shortDescription': idea.shortDescription,
+          'description': idea.description,
+          'targetAudience': idea.targetAudience,
+          'problemStatement': idea.problemStatement,
+          'solution': idea.solution,
+          'resourcesNeeded': idea.resourcesNeeded,
+          'benefits': idea.benefits,
+        },
+        currentLocale: currentLocale,
+        originalLocale: originalLanguage,
+      );
+    });
+  }
+
+  bool _hasTranslation(
+    ProjectIdeaModel idea,
+    OpportunityTranslationProvider provider,
+  ) {
+    return provider.statusForContent(
+              contentType: ContentTranslationType.idea,
+              contentId: idea.id,
+            ) ==
+            TranslationStatus.ready &&
+        provider.translationForContent(
+              contentType: ContentTranslationType.idea,
+              contentId: idea.id,
+            ) !=
+            null;
+  }
+
+  ProjectIdeaModel _displayIdea(
+    ProjectIdeaModel idea,
+    OpportunityTranslationProvider provider,
+  ) {
+    final hasTranslation = _hasTranslation(idea, provider);
+    final showingTranslated = provider.isShowingTranslatedContent(
+      contentType: ContentTranslationType.idea,
+      contentId: idea.id,
+    );
+    if (!hasTranslation || !showingTranslated) {
+      return idea;
+    }
+
+    return idea.copyWith(
+      title: provider.resolvedField(
+        contentType: ContentTranslationType.idea,
+        contentId: idea.id,
+        field: 'title',
+        originalValue: idea.title,
+      ),
+      tagline: provider.resolvedField(
+        contentType: ContentTranslationType.idea,
+        contentId: idea.id,
+        field: 'tagline',
+        originalValue: idea.tagline,
+      ),
+      shortDescription: provider.resolvedField(
+        contentType: ContentTranslationType.idea,
+        contentId: idea.id,
+        field: 'shortDescription',
+        originalValue: idea.shortDescription,
+      ),
+      description: provider.resolvedField(
+        contentType: ContentTranslationType.idea,
+        contentId: idea.id,
+        field: 'description',
+        originalValue: idea.description,
+      ),
+      targetAudience: provider.resolvedField(
+        contentType: ContentTranslationType.idea,
+        contentId: idea.id,
+        field: 'targetAudience',
+        originalValue: idea.targetAudience,
+      ),
+      problemStatement: provider.resolvedField(
+        contentType: ContentTranslationType.idea,
+        contentId: idea.id,
+        field: 'problemStatement',
+        originalValue: idea.problemStatement,
+      ),
+      solution: provider.resolvedField(
+        contentType: ContentTranslationType.idea,
+        contentId: idea.id,
+        field: 'solution',
+        originalValue: idea.solution,
+      ),
+      resourcesNeeded: provider.resolvedField(
+        contentType: ContentTranslationType.idea,
+        contentId: idea.id,
+        field: 'resourcesNeeded',
+        originalValue: idea.resourcesNeeded,
+      ),
+      benefits: provider.resolvedField(
+        contentType: ContentTranslationType.idea,
+        contentId: idea.id,
+        field: 'benefits',
+        originalValue: idea.benefits,
+      ),
+    );
+  }
+
+  void _shareIdea(BuildContext context, ProjectIdeaModel idea) {
     SharePlus.instance.share(
       ShareParams(
         text:
-            '${idea.title}\n\n${idea.overviewText}\n\nShared from Innovation Hub',
+            '${idea.title}\n\n${idea.overviewText}\n\n${AppLocalizations.of(context)!.ideaSharedFromHub}',
       ),
     );
   }
@@ -561,7 +743,7 @@ class IdeaDetailsScreen extends StatelessWidget {
     final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
     if (!launched && context.mounted) {
       context.showAppSnackBar(
-        'Could not open that link.',
+        AppLocalizations.of(context)!.uiCouldNotOpenThatLink,
         title: AppLocalizations.of(context)!.uiOpenUnavailable,
         type: AppFeedbackType.error,
       );
@@ -611,7 +793,9 @@ class IdeaDetailsScreen extends StatelessWidget {
               Text(AppLocalizations.of(context)!.uiManageTeam, style: _theme.section(size: 20)),
               const SizedBox(height: 8),
               Text(
-                'Track the roles you need and the interest building around this idea.',
+                AppLocalizations.of(
+                  context,
+                )!.uiTrackTheRolesYouNeedAndTheInterestBuildingAround,
                 style: _theme.body(size: 13.5),
               ),
               const SizedBox(height: 18),

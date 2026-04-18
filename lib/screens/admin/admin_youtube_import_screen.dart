@@ -10,7 +10,9 @@ import '../../providers/auth_provider.dart';
 import '../../providers/training_provider.dart';
 import '../../services/training_service.dart';
 import '../../services/youtube_service.dart';
+import '../../theme/locale_controller.dart';
 import '../../utils/admin_palette.dart';
+import '../../utils/content_language.dart';
 import '../../widgets/admin/admin_ui.dart';
 import '../../widgets/shared/app_feedback.dart';
 import '../../widgets/shared/app_loading.dart';
@@ -46,6 +48,7 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
 
   String _selectedDomain = 'Informatique';
   String _selectedLevel = 'licence';
+  String _selectedLanguage = '';
 
   AppLocalizations get _l10n => AppLocalizations.of(context)!;
 
@@ -70,9 +73,15 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
     'general',
   ];
 
+  final List<String> _languages = const ['', 'fr', 'en', 'ar'];
+
   @override
   void initState() {
     super.initState();
+    _selectedLanguage = ContentLanguage.normalizeCode(
+      LocaleController.activeLanguageCode,
+      fallback: '',
+    );
     Future.microtask(() async {
       if (!mounted) {
         return;
@@ -158,6 +167,15 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
       return;
     }
 
+    if (_selectedLanguage.trim().isEmpty) {
+      context.showAppSnackBar(
+        _l10n.originalLanguageFieldHint,
+        title: _l10n.originalLanguageFieldLabel,
+        type: AppFeedbackType.warning,
+      );
+      return;
+    }
+
     setState(() {
       _isImporting = true;
       _importingVideoId = video.id;
@@ -169,6 +187,7 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
         adminId: adminId,
         domain: _selectedDomain,
         level: _selectedLevel,
+        sourceLanguage: _selectedLanguage,
       );
 
       if (!mounted) {
@@ -498,6 +517,39 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
                   ),
                 ),
               ],
+            ),
+            const SizedBox(height: 10),
+            DropdownButtonFormField<String>(
+              initialValue: _selectedLanguage,
+              decoration: InputDecoration(
+                labelText: _l10n.originalLanguageFieldLabel,
+                border: const OutlineInputBorder(),
+              ),
+              items: _languages
+                  .map(
+                    (item) => DropdownMenuItem(
+                      value: item,
+                      child: Text(
+                        item.isEmpty
+                            ? _l10n.originalLanguageFieldHint
+                            : switch (item) {
+                                'fr' => _l10n.languageFrench,
+                                'ar' => _l10n.languageArabic,
+                                _ => _l10n.languageEnglish,
+                              },
+                      ),
+                    ),
+                  )
+                  .toList(),
+              onChanged: (value) {
+                if (value == null) {
+                  return;
+                }
+
+                setState(() {
+                  _selectedLanguage = value;
+                });
+              },
             ),
             const SizedBox(height: 12),
             SizedBox(
@@ -939,6 +991,11 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
                             label: _selectedLevel,
                             color: AdminPalette.warning,
                           ),
+                          if (_selectedLanguage.trim().isNotEmpty)
+                            AdminPill(
+                              label: _selectedLanguage.toUpperCase(),
+                              color: AdminPalette.success,
+                            ),
                         ],
                       ),
                     ],

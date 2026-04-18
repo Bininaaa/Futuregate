@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
 import '../../l10n/generated/app_localizations.dart';
-import 'package:google_fonts/google_fonts.dart';
+import '../../theme/app_typography.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/saved_scholarship_model.dart';
 import '../../models/scholarship_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/notification_provider.dart';
+import '../../providers/opportunity_translation_provider.dart';
 import '../../providers/saved_scholarship_provider.dart';
 import '../../providers/scholarship_provider.dart';
+import '../../services/opportunity_translation_service.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/shared/app_feedback.dart';
 import '../../widgets/shared/app_loading.dart';
+import '../../widgets/shared/content_translation_widgets.dart';
 import '../../widgets/student/student_workspace_shell.dart';
 import '../notifications_screen.dart';
 import 'saved_screen.dart';
@@ -375,7 +378,7 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
         children: [
           Text(
             'AVAILABLE NOW',
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 9,
               fontWeight: FontWeight.w600,
               letterSpacing: 2.2,
@@ -385,7 +388,7 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
           const SizedBox(height: 4),
           Text(
             'Featured\nScholarship',
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 24,
               fontWeight: FontWeight.w800,
               height: 1.15,
@@ -396,7 +399,7 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
           Text(
             'A quick highlight picked from the scholarships '
             'currently available below.',
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 11.5,
               fontWeight: FontWeight.w400,
               height: 1.45,
@@ -519,7 +522,7 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
                         ),
                         child: Text(
                           'FEATURED',
-                          style: GoogleFonts.poppins(
+                          style: AppTypography.product(
                             fontSize: 8.5,
                             fontWeight: FontWeight.w700,
                             letterSpacing: 0.8,
@@ -543,7 +546,7 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
                       if (heroProvider.isNotEmpty) ...[
                         Text(
                           heroProvider,
-                          style: GoogleFonts.poppins(
+                          style: AppTypography.product(
                             fontSize: 10.5,
                             fontWeight: FontWeight.w500,
                             color: Colors.white70,
@@ -555,7 +558,7 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
                       ],
                       Text(
                         heroTitle,
-                        style: GoogleFonts.poppins(
+                        style: AppTypography.product(
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
                           color: Colors.white,
@@ -577,7 +580,7 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
                             Expanded(
                               child: Text(
                                 heroLocation,
-                                style: GoogleFonts.poppins(
+                                style: AppTypography.product(
                                   fontSize: 10.5,
                                   fontWeight: FontWeight.w400,
                                   color: Colors.white70,
@@ -671,10 +674,10 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
         child: TextField(
           controller: _searchController,
           onChanged: (value) => setState(() => _searchQuery = value.trim()),
-          style: GoogleFonts.poppins(fontSize: 12, color: _P.textPrimary),
+          style: AppTypography.product(fontSize: 12, color: _P.textPrimary),
           decoration: InputDecoration(
             hintText: 'Search university or country...',
-            hintStyle: GoogleFonts.poppins(
+            hintStyle: AppTypography.product(
               fontSize: 12,
               color: _P.textSecondary.withValues(alpha: 0.6),
             ),
@@ -732,7 +735,7 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
                 ),
                 child: Text(
                   _filters[index],
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: 10.5,
                     fontWeight: FontWeight.w500,
                     color: isActive
@@ -763,7 +766,7 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
               children: [
                 Text(
                   'BROWSE',
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: 9,
                     fontWeight: FontWeight.w600,
                     letterSpacing: 2.2,
@@ -773,7 +776,7 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
                 const SizedBox(height: 3),
                 Text(
                   'Available\nScholarships',
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: 20,
                     fontWeight: FontWeight.w800,
                     height: 1.15,
@@ -791,7 +794,7 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
                 children: [
                   Text(
                     'View all scholarships',
-                    style: GoogleFonts.poppins(
+                    style: AppTypography.product(
                       fontSize: 10.5,
                       fontWeight: FontWeight.w500,
                       color: _P.primary,
@@ -835,7 +838,7 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
           const SizedBox(height: 14),
           Text(
             'No scholarships match your search',
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 14,
               fontWeight: FontWeight.w600,
               color: _P.textPrimary,
@@ -845,7 +848,7 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
           Text(
             'Try adjusting your search or filters\nto explore more scholarships.',
             textAlign: TextAlign.center,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 11.5,
               color: _P.textSecondary,
               height: 1.45,
@@ -913,6 +916,35 @@ class _ScholarshipCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    _ensureTranslation(context);
+    final translationProvider = context.watch<OpportunityTranslationProvider>();
+    final hasTranslation =
+        translationProvider.statusForContent(
+          contentType: ContentTranslationType.scholarship,
+          contentId: scholarship.id,
+        ) ==
+            TranslationStatus.ready &&
+        translationProvider.translationForContent(
+              contentType: ContentTranslationType.scholarship,
+              contentId: scholarship.id,
+            ) !=
+            null;
+    final showingTranslated = translationProvider.isShowingTranslatedContent(
+      contentType: ContentTranslationType.scholarship,
+      contentId: scholarship.id,
+    );
+    final displayTitle = translationProvider.resolvedField(
+      contentType: ContentTranslationType.scholarship,
+      contentId: scholarship.id,
+      field: 'title',
+      originalValue: scholarship.title,
+    );
+    final displayDescription = translationProvider.resolvedField(
+      contentType: ContentTranslationType.scholarship,
+      contentId: scholarship.id,
+      field: 'description',
+      originalValue: scholarship.description,
+    );
     final hasImage =
         scholarship.imageUrl != null && scholarship.imageUrl!.isNotEmpty;
     final gradientColors = _gradients[cardIndex % _gradients.length];
@@ -999,7 +1031,7 @@ class _ScholarshipCard extends StatelessWidget {
                           ),
                           child: Text(
                             fundingBadge,
-                            style: GoogleFonts.poppins(
+                            style: AppTypography.product(
                               fontSize: 8.5,
                               fontWeight: FontWeight.w700,
                               letterSpacing: 0.5,
@@ -1067,7 +1099,7 @@ class _ScholarshipCard extends StatelessWidget {
                         Expanded(
                           child: Text(
                             locationText.toUpperCase(),
-                            style: GoogleFonts.poppins(
+                            style: AppTypography.product(
                               fontSize: 9.5,
                               fontWeight: FontWeight.w500,
                               letterSpacing: 0.7,
@@ -1084,8 +1116,8 @@ class _ScholarshipCard extends StatelessWidget {
 
                   // ── D. Title ──
                   Text(
-                    scholarship.title,
-                    style: GoogleFonts.poppins(
+                    displayTitle,
+                    style: AppTypography.product(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
                       height: 1.25,
@@ -1096,11 +1128,11 @@ class _ScholarshipCard extends StatelessWidget {
                   ),
 
                   // ── E. Description ──
-                  if (scholarship.description.isNotEmpty) ...[
+                  if (displayDescription.isNotEmpty) ...[
                     const SizedBox(height: 6),
                     Text(
-                      scholarship.description,
-                      style: GoogleFonts.poppins(
+                      displayDescription,
+                      style: AppTypography.product(
                         fontSize: 11.5,
                         fontWeight: FontWeight.w400,
                         height: 1.45,
@@ -1112,6 +1144,16 @@ class _ScholarshipCard extends StatelessWidget {
                   ],
 
                   // ── F. Tag pill ──
+                  if (hasTranslation || scholarship.originalLanguage.isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    ContentTranslationBadge(
+                      showingTranslated: hasTranslation && showingTranslated,
+                      originalLanguage: scholarship.originalLanguage,
+                      foregroundColor: _P.primary,
+                      backgroundColor: _P.primary.withValues(alpha: 0.08),
+                      borderColor: _P.primary.withValues(alpha: 0.12),
+                    ),
+                  ],
                   if (tagText != null) ...[
                     const SizedBox(height: 8),
                     Container(
@@ -1125,7 +1167,7 @@ class _ScholarshipCard extends StatelessWidget {
                       ),
                       child: Text(
                         tagText.toUpperCase(),
-                        style: GoogleFonts.poppins(
+                        style: AppTypography.product(
                           fontSize: 8.5,
                           fontWeight: FontWeight.w600,
                           letterSpacing: 0.45,
@@ -1155,8 +1197,8 @@ class _ScholarshipCard extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        'Explore Scholarship',
-                        style: GoogleFonts.poppins(
+                        AppLocalizations.of(context)!.scholarshipExploreLabel,
+                        style: AppTypography.product(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                           color: _P.primary,
@@ -1220,6 +1262,45 @@ class _ScholarshipCard extends StatelessWidget {
     );
   }
 
+  void _ensureTranslation(BuildContext context) {
+    final originalLanguage = scholarship.originalLanguage.trim();
+    if (originalLanguage.isEmpty) {
+      return;
+    }
+
+    final currentLocale = Localizations.localeOf(context).languageCode;
+    if (currentLocale == originalLanguage) {
+      return;
+    }
+
+    final provider = context.read<OpportunityTranslationProvider>();
+    final status = provider.statusForContent(
+      contentType: ContentTranslationType.scholarship,
+      contentId: scholarship.id,
+    );
+    if (status == TranslationStatus.loading || status == TranslationStatus.ready) {
+      return;
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!context.mounted) {
+        return;
+      }
+
+      context.read<OpportunityTranslationProvider>().ensureContentTranslation(
+        contentType: ContentTranslationType.scholarship,
+        contentId: scholarship.id,
+        fields: <String, String>{
+          'title': scholarship.title,
+          'description': scholarship.description,
+          'eligibility': scholarship.eligibility,
+        },
+        currentLocale: currentLocale,
+        originalLocale: originalLanguage,
+      );
+    });
+  }
+
   String? _locationText() {
     final parts = <String>[];
     if (scholarship.city != null && scholarship.city!.isNotEmpty) {
@@ -1271,3 +1352,5 @@ class _ScholarshipCard extends StatelessWidget {
     return _P.primary.withValues(alpha: 0.85);
   }
 }
+
+

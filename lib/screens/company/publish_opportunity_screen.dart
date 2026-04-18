@@ -6,6 +6,8 @@ import '../../l10n/generated/app_localizations.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/company_provider.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/locale_controller.dart';
+import '../../utils/content_language.dart';
 import '../../utils/company_dashboard_palette.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
@@ -53,6 +55,7 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
   String? _selectedWorkMode;
   bool? _isPaid;
   DateTime? _applicationDeadline;
+  String _originalLanguage = 'fr';
 
   bool _isLoading = false;
   bool _isSubmitting = false;
@@ -85,10 +88,26 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
   @override
   void initState() {
     super.initState();
+    _originalLanguage = _preferredPostingLanguage();
     if (widget.opportunityId != null) {
       _isEditMode = true;
       _loadOpportunity();
     }
+  }
+
+  String _preferredPostingLanguage() {
+    final auth = context.read<AuthProvider>().userModel;
+    final preferred = ContentLanguage.normalizeCode(
+      auth?.preferredPostingLanguage,
+    );
+    if (preferred.isNotEmpty) {
+      return preferred;
+    }
+
+    return ContentLanguage.normalizeCode(
+      LocaleController.activeLanguageCode,
+      fallback: 'fr',
+    );
   }
 
   Future<void> _loadOpportunity() async {
@@ -149,6 +168,10 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
       _selectedEmploymentType = opp.employmentType;
       _selectedWorkMode = opp.workMode;
       _isPaid = opp.isPaid;
+      _originalLanguage = ContentLanguage.normalizeCode(
+        opp.originalLanguage,
+        fallback: _preferredPostingLanguage(),
+      );
 
       _applyTypeDefaults(_selectedType);
     }
@@ -248,6 +271,12 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                                 label: 'Opportunity title',
                                 hint: _titleHintForType(),
                                 validator: _validateTitle,
+                              ),
+                              const SizedBox(height: 10),
+                              _CompanyLanguageSelector(
+                                value: _originalLanguage,
+                                onChanged: (v) =>
+                                    setState(() => _originalLanguage = v),
                               ),
                               const SizedBox(height: 14),
                               _buildSectionLabel('Opportunity type'),
@@ -924,6 +953,7 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
       'title': _titleController.text.trim(),
       'description': _descriptionController.text.trim(),
       'type': _selectedType,
+      'originalLanguage': _originalLanguage,
       'location': _locationController.text.trim(),
       'requirements': requirementText,
       'requirementItems': _requirementItems,
@@ -1117,5 +1147,75 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
               '${part[0].toUpperCase()}${part.substring(1).toLowerCase()}',
         )
         .join(' ');
+  }
+}
+
+class _CompanyLanguageSelector extends StatelessWidget {
+  final String value;
+  final ValueChanged<String> onChanged;
+
+  const _CompanyLanguageSelector({required this.value, required this.onChanged});
+
+  static const _options = <(String, String, String)>[
+    ('fr', '🇫🇷', 'French'),
+    ('ar', '🇩🇿', 'Arabic'),
+    ('en', '🇬🇧', 'English'),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final primary = CompanyDashboardPalette.primary;
+    return Row(
+      children: [
+        Icon(Icons.translate_rounded, size: 17,
+            color: CompanyDashboardPalette.textSecondary),
+        const SizedBox(width: 8),
+        Text(
+          l10n.postingLanguageLabel,
+          style: TextStyle(
+            fontSize: 12.5,
+            fontWeight: FontWeight.w600,
+            color: CompanyDashboardPalette.textSecondary,
+          ),
+        ),
+        const SizedBox(width: 10),
+        ..._options.map((opt) {
+          final (code, flag, name) = opt;
+          final selected = value == code;
+          return Padding(
+            padding: const EdgeInsets.only(right: 6),
+            child: GestureDetector(
+              onTap: () => onChanged(code),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 150),
+                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+                decoration: BoxDecoration(
+                  color: selected
+                      ? primary.withValues(alpha: 0.10)
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: selected
+                        ? primary
+                        : CompanyDashboardPalette.border,
+                  ),
+                ),
+                child: Text(
+                  '$flag $name',
+                  style: TextStyle(
+                    fontSize: 11.5,
+                    fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                    color: selected
+                        ? primary
+                        : CompanyDashboardPalette.textSecondary,
+                  ),
+                ),
+              ),
+            ),
+          );
+        }),
+      ],
+    );
   }
 }

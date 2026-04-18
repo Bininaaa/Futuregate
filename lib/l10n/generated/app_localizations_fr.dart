@@ -6745,4 +6745,399 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get uiCvStudioSubtitle => 'Créez, téléversez et exportez votre CV.';
+
+  @override
+  String get notifAdminTitle => 'Notifications Admin';
+
+  @override
+  String get notifCompanyTitle => 'Notifications Entreprise';
+
+  @override
+  String get notifReadAll => 'Tout lire';
+
+  @override
+  String get notifFilterAll => 'Tout';
+
+  @override
+  String get notifFilterNewContent => 'Nouveau contenu';
+
+  @override
+  String get notifFilterUnread => 'Non lus';
+
+  @override
+  String get notifFilterApplications => 'Candidatures';
+
+  @override
+  String get notifFilterMessages => 'Messages';
+
+  @override
+  String get notifContentAll => 'Tous les nouveaux';
+
+  @override
+  String get notifContentOpportunities => 'Opportunités';
+
+  @override
+  String get notifContentTrainings => 'Formations';
+
+  @override
+  String get notifContentScholarships => 'Bourses';
+
+  @override
+  String get notifContentIdeas => 'Idées';
+
+  @override
+  String get notifOppAll => 'Toutes les opps';
+
+  @override
+  String get notifOppJobs => 'Emplois';
+
+  @override
+  String get notifOppInternships => 'Stages';
+
+  @override
+  String get notifOppSponsored => 'Sponsorisé';
+
+  @override
+  String get notifAllCaughtUp => 'Tout est à jour';
+
+  @override
+  String get notifTypeMessage => 'Message';
+
+  @override
+  String get notifTypeApplication => 'Candidature';
+
+  @override
+  String get notifTypeOpportunity => 'Opportunité';
+
+  @override
+  String get notifTypeScholarship => 'Bourse';
+
+  @override
+  String get notifTypeTraining => 'Formation';
+
+  @override
+  String get notifTypeIdea => 'Idée';
+
+  @override
+  String get notifTypeCompanyReview => 'Révision entreprise';
+
+  @override
+  String get notifTypeUpdate => 'Mise à jour';
+
+  @override
+  String get notifJustNow => 'À l\'instant';
+
+  @override
+  String get postingLanguageLabel => 'Langue de publication';
+
+  @override
+  String get postingLanguageHint =>
+      'Langue dans laquelle ce contenu est rédigé';
+
+  @override
+  String get translateLabel => 'Traduire';
+
+  @override
+  String get translatingLabel => 'Traduction en cours...';
+
+  @override
+  String get translationDoneLabel => 'Traduction prête';
+
+  @override
+  String get translationFailedLabel => 'Traduction indisponible';
+
+  @override
+  String get showOriginalLabel => 'Afficher l\'original';
+
+  @override
+  String get showTranslatedLabel => 'Afficher la traduction';
+
+  @override
+  String get contentLanguageLabel => 'Langue du contenu';
+
+  @override
+  String get autoTranslatedBadge => 'Traduit automatiquement';
+
+  @override
+  String get translatedBadge => 'Traduit';
+
+  @override
+  String get originalBadge => 'Original';
+
+  @override
+  String get translationNote =>
+      'Ce contenu a été traduit automatiquement. Appuyez sur \"Afficher l\'original\" pour voir la source.';
+
+  @override
+  String get dashSectionClosingSoon => 'Fermeture imminente';
+
+  @override
+  String get dashSectionRecommended => 'Recommandé';
+
+  @override
+  String get dashSectionQuickAccess => 'Accès rapide';
+
+  @override
+  String get dashSectionLatestActivity => 'Dernières activités';
+
+  @override
+  String get dashSectionSavedShortlist => 'Liste de raccourcis sauvegardés';
+
+  @override
+  String get dashBuildCv => 'Créer un CV';
+
+  @override
+  String get dashCompleteProfile => 'Compléter le profil';
+
+  @override
+  String get dashDiscover => 'Découvrir';
+
+  @override
+  String get dashViewStatus => 'Voir le statut';
+
+  @override
+  String get dashTrackStatus => 'Suivre le statut';
+
+  @override
+  String get dashSeeOpenRoles => 'Voir les postes ouverts';
+
+  @override
+  String get dashOpenSaved => 'Ouvrir les sauvegardés';
+
+  @override
+  String get scholarshipOpportunityFallback => 'Opportunité de bourse';
+
+  @override
+  String get scholarshipPartnerFallback => 'Partenaire FutureGate';
+
+  @override
+  String get scholarshipNoDescFallback =>
+      'Cette bourse n\'inclut pas encore de description détaillée.';
+
+  @override
+  String get scholarshipNoEligFallback =>
+      'Les détails d\'éligibilité seront partagés par le fournisseur de bourse.';
+
+  @override
+  String get scholarshipDeadlineFallback => 'Délai annoncé par le fournisseur';
+
+  @override
+  String get scholarshipFundingFallback =>
+      'Financement partagé sur l\'appel officiel';
+
+  @override
+  String get scholarshipFeaturedBadge => 'EN VEDETTE';
+
+  @override
+  String get scholarshipDefaultBadge => 'BOURSE';
+
+  @override
+  String get scholarshipFundingAmount => 'Montant du financement';
+
+  @override
+  String get scholarshipFundingDetails => 'Détails du financement';
+
+  @override
+  String get scholarshipStudyLevel => 'Niveau d\'études';
+
+  @override
+  String get scholarshipProgramType => 'Type de programme';
+
+  @override
+  String get scholarshipAtAGlance => 'EN UN COUP D\'ŒIL';
+
+  @override
+  String get scholarshipNoLink =>
+      'Le fournisseur n\'a pas encore joint de lien de candidature externe.';
+
+  @override
+  String get scholarshipOfficialSource => 'Source officielle de la bourse';
+
+  @override
+  String get scholarshipOpenPage => 'Ouvrir la page officielle';
+
+  @override
+  String get scholarshipLinkUnavailable => 'Lien non disponible';
+
+  @override
+  String get ideaNotAvailable => 'Cette idée n\'est plus disponible.';
+
+  @override
+  String get ideaHubTitle => 'Hub d\'Innovation';
+
+  @override
+  String get ideaUnsaveTooltip => 'Retirer l\'idée';
+
+  @override
+  String get ideaSaveTooltip => 'Sauvegarder l\'idée';
+
+  @override
+  String get ideaEditLabel => 'Modifier l\'idée';
+
+  @override
+  String get ideaManageLabel => 'Gérer cette idée';
+
+  @override
+  String get ideaInterestedLabel => 'Intéressé';
+
+  @override
+  String get ideaImInterestedLabel => 'Je suis intéressé';
+
+  @override
+  String get ideaManageTeamLabel => 'Gérer l\'équipe';
+
+  @override
+  String get ideaContactCreator => 'Contacter le créateur';
+
+  @override
+  String get ideaSavedLabel => 'Sauvegardé';
+
+  @override
+  String get ideaSaveLabel => 'Sauvegarder l\'idée';
+
+  @override
+  String get ideaShareLabel => 'Partager l\'idée';
+
+  @override
+  String get trainingRecommendedForYou => 'Recommande pour vous';
+
+  @override
+  String trainingNoProgramsForDomain(Object domain) {
+    return 'Aucun programme de formation n\'est disponible pour le moment pour $domain.';
+  }
+
+  @override
+  String get trainingLinkMissingMessage =>
+      'Cette formation n\'a pas encore de lien.';
+
+  @override
+  String get trainingLinkInvalidMessage =>
+      'Le lien de cette formation n\'est pas valide.';
+
+  @override
+  String get trainingLinkOpenFailedMessage =>
+      'Nous n\'avons pas pu ouvrir ce lien de formation pour le moment.';
+
+  @override
+  String get trainingSaveLoginMessage =>
+      'Connectez-vous pour enregistrer des ressources de formation pour plus tard.';
+
+  @override
+  String get trainingRemovedSavedMessage =>
+      'Retire des ressources enregistrees';
+
+  @override
+  String get trainingSavedMessage => 'Ressource enregistree';
+
+  @override
+  String get trainingSavedUpdatedTitle => 'Elements enregistres mis a jour';
+
+  @override
+  String get trainingUpdateUnavailableTitle => 'Mise a jour indisponible';
+
+  @override
+  String get trainingProviderFallback => 'Fournisseur de formation';
+
+  @override
+  String get trainingFlexibleLabel => 'Flexible';
+
+  @override
+  String get trainingAllLevelsLabel => 'Tous les niveaux';
+
+  @override
+  String get trainingCareerCourseLabel => 'Cours de carriere';
+
+  @override
+  String get trainingVideoLessonLabel => 'Lecon video';
+
+  @override
+  String get trainingReadingTrackLabel => 'Parcours de lecture';
+
+  @override
+  String get trainingGuideToolkitLabel => 'Guide et outils';
+
+  @override
+  String get trainingLearningPathLabel => 'Parcours d\'apprentissage';
+
+  @override
+  String get trainingGeneralDomainLabel => 'General';
+
+  @override
+  String get opportunityFutureGatePartner => 'Partenaire FutureGate';
+
+  @override
+  String get opportunityStudentInternshipFallback =>
+      'Opportunite de stage etudiant';
+
+  @override
+  String get opportunitySponsoredFallback => 'Opportunite sponsorisee';
+
+  @override
+  String get opportunityOpenJobFallback => 'Offre d\'emploi ouverte';
+
+  @override
+  String get opportunityOpenFallback => 'Opportunite ouverte';
+
+  @override
+  String get scholarshipExploreLabel => 'Explorer la bourse';
+
+  @override
+  String get ideaCreateCta => 'Creer une idee';
+
+  @override
+  String get ideaCreateFirstCta => 'Creez votre premiere idee';
+
+  @override
+  String get ideaPublicLabel => 'Public';
+
+  @override
+  String get ideaPrivateLabel => 'Prive';
+
+  @override
+  String get ideaSharedFromHub => 'Partagee depuis le Hub d\'Innovation';
+
+  @override
+  String get ideaCategoryInnovation => 'Innovation';
+
+  @override
+  String get ideaCategoryAi => 'IA';
+
+  @override
+  String get ideaCategoryFintech => 'Fintech';
+
+  @override
+  String get ideaCategoryEdTech => 'EdTech';
+
+  @override
+  String get ideaCategorySustainability => 'Durabilite';
+
+  @override
+  String get ideaCategorySocialImpact => 'Impact social';
+
+  @override
+  String get ideaStageConcept => 'Concept';
+
+  @override
+  String get ideaStageMvp => 'MVP';
+
+  @override
+  String get ideaStagePrototype => 'Prototype';
+
+  @override
+  String get ideaStageBeta => 'Beta';
+
+  @override
+  String get scholarshipRemovedSavedMessage =>
+      'Retire des bourses enregistrees';
+
+  @override
+  String get scholarshipSavedMessage => 'Bourse enregistree';
+
+  @override
+  String get scholarshipSnapshotSubtitle =>
+      'Tout l\'essentiel est affiche ici avant d\'ouvrir l\'appel complet.';
+
+  @override
+  String get scholarshipOverviewSubtitle =>
+      'Un apercu clair pour parcourir l\'opportunite facilement.';
 }

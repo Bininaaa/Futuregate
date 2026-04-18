@@ -81,6 +81,7 @@ class TrainingService {
     required String adminId,
     required String domain,
     required String level,
+    String sourceLanguage = '',
   }) async {
     await _workerRequest(
       'POST',
@@ -100,6 +101,7 @@ class TrainingService {
         },
         'domain': domain,
         'level': level,
+        'languageOverride': sourceLanguage.trim(),
       },
     );
   }
@@ -109,6 +111,7 @@ class TrainingService {
     required String adminId,
     required String domain,
     required String level,
+    required String sourceLanguage,
   }) async {
     await _workerRequest(
       'POST',
@@ -124,6 +127,7 @@ class TrainingService {
         },
         'domain': domain,
         'level': level,
+        'language': sourceLanguage.trim(),
       },
     );
   }

@@ -37,6 +37,7 @@ class ProjectIdeaModel {
   final bool isSavedByCurrentUser;
   final bool isSparkedByCurrentUser;
   final bool isJoinedByCurrentUser;
+  final String originalLanguage;
 
   const ProjectIdeaModel({
     required this.id,
@@ -75,6 +76,7 @@ class ProjectIdeaModel {
     this.isSavedByCurrentUser = false,
     this.isSparkedByCurrentUser = false,
     this.isJoinedByCurrentUser = false,
+    this.originalLanguage = '',
   });
 
   factory ProjectIdeaModel.fromMap(Map<String, dynamic> map) {
@@ -126,6 +128,7 @@ class ProjectIdeaModel {
       isSavedByCurrentUser: _parseBool(map['isSavedByCurrentUser']),
       isSparkedByCurrentUser: _parseBool(map['isSparkedByCurrentUser']),
       isJoinedByCurrentUser: _parseBool(map['isJoinedByCurrentUser']),
+      originalLanguage: (map['originalLanguage'] ?? '').toString().trim(),
     );
   }
 
@@ -166,6 +169,7 @@ class ProjectIdeaModel {
     bool? isSavedByCurrentUser,
     bool? isSparkedByCurrentUser,
     bool? isJoinedByCurrentUser,
+    String? originalLanguage,
   }) {
     return ProjectIdeaModel(
       id: id ?? this.id,
@@ -206,6 +210,7 @@ class ProjectIdeaModel {
           isSparkedByCurrentUser ?? this.isSparkedByCurrentUser,
       isJoinedByCurrentUser:
           isJoinedByCurrentUser ?? this.isJoinedByCurrentUser,
+      originalLanguage: originalLanguage ?? this.originalLanguage,
     );
   }
 
@@ -244,6 +249,7 @@ class ProjectIdeaModel {
       if (sparksCount > 0) 'sparksCount': sparksCount,
       if (interestedCount > 0) 'interestedCount': interestedCount,
       if (viewsCount > 0) 'viewsCount': viewsCount,
+      if (originalLanguage.isNotEmpty) 'originalLanguage': originalLanguage,
     };
   }
 

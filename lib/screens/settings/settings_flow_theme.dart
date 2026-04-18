@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../theme/app_colors.dart';
+import '../../theme/app_typography.dart';
 
 class SettingsFlowPalette {
   static Color get primary => AppColors.current.primary;
@@ -39,45 +39,45 @@ class SettingsFlowPalette {
 }
 
 class SettingsFlowTheme {
-  static TextStyle appBarTitle([Color? color]) => GoogleFonts.poppins(
+  static TextStyle appBarTitle([Color? color]) => AppTypography.product(
     fontSize: 19,
     fontWeight: FontWeight.w700,
     color: color ?? SettingsFlowPalette.primary,
   );
 
-  static TextStyle heroTitle([Color? color]) => GoogleFonts.poppins(
+  static TextStyle heroTitle([Color? color]) => AppTypography.product(
     fontSize: 24,
     fontWeight: FontWeight.w700,
     color: color ?? SettingsFlowPalette.textPrimary,
     height: 1.1,
   );
 
-  static TextStyle sectionTitle([Color? color]) => GoogleFonts.poppins(
+  static TextStyle sectionTitle([Color? color]) => AppTypography.product(
     fontSize: 16,
     fontWeight: FontWeight.w700,
     color: color ?? SettingsFlowPalette.textPrimary,
   );
 
-  static TextStyle cardTitle([Color? color]) => GoogleFonts.poppins(
+  static TextStyle cardTitle([Color? color]) => AppTypography.product(
     fontSize: 14,
     fontWeight: FontWeight.w600,
     color: color ?? SettingsFlowPalette.textPrimary,
   );
 
-  static TextStyle body([Color? color]) => GoogleFonts.poppins(
+  static TextStyle body([Color? color]) => AppTypography.product(
     fontSize: 13,
     fontWeight: FontWeight.w500,
     color: color ?? SettingsFlowPalette.textPrimary,
   );
 
-  static TextStyle caption([Color? color]) => GoogleFonts.poppins(
+  static TextStyle caption([Color? color]) => AppTypography.product(
     fontSize: 11.5,
     fontWeight: FontWeight.w500,
     color: color ?? SettingsFlowPalette.textSecondary,
     height: 1.45,
   );
 
-  static TextStyle micro([Color? color]) => GoogleFonts.poppins(
+  static TextStyle micro([Color? color]) => AppTypography.product(
     fontSize: 10.5,
     fontWeight: FontWeight.w600,
     color: color ?? SettingsFlowPalette.textSecondary,

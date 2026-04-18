@@ -9,6 +9,8 @@ import '../../providers/auth_provider.dart';
 import '../../providers/project_idea_provider.dart';
 import '../../services/file_storage_service.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/locale_controller.dart';
+import '../../utils/content_language.dart';
 import '../settings/settings_flow_theme.dart';
 import '../settings/settings_flow_widgets.dart';
 import '../../widgets/app_shell_background.dart';
@@ -53,6 +55,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
   late String _selectedCategory;
   late String _selectedStage;
   late String _selectedLevel;
+  late String _originalLanguage;
   late bool _isPublic;
   late Set<String> _selectedSkills;
   late Set<String> _selectedRoles;
@@ -109,6 +112,13 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
     _selectedLevel = (idea?.level ?? '').trim().isNotEmpty
         ? idea!.level
         : 'licence';
+    _originalLanguage = ContentLanguage.normalizeCode(
+      idea?.originalLanguage,
+      fallback: ContentLanguage.normalizeCode(
+        LocaleController.activeLanguageCode,
+        fallback: 'fr',
+      ),
+    );
     _isPublic = idea?.isPublic ?? true;
     _selectedSkills = {...?idea?.displaySkills};
     _selectedRoles = {...?idea?.displayTeamNeeded};
@@ -181,6 +191,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
         'description': description,
         'domain': category,
         'level': _selectedLevel,
+        'originalLanguage': _originalLanguage,
         'category': category,
         'stage': stage,
         'tools': skills.join(', '),
@@ -214,6 +225,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
         description: description,
         domain: category,
         level: _selectedLevel,
+        originalLanguage: _originalLanguage,
         tools: skills.join(', '),
         submittedBy: currentUser.uid,
         tagline: tagline,
@@ -238,6 +250,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
         description: description,
         domain: category,
         level: _selectedLevel,
+        originalLanguage: _originalLanguage,
         tools: skills.join(', '),
         submittedBy: currentUser.uid,
         tagline: tagline,
@@ -777,6 +790,32 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                         onChanged: (value) {
                           if (value != null) {
                             setState(() => _selectedLevel = value);
+                          }
+                        },
+                      ),
+                      const SizedBox(height: 18),
+                      AppFormDropdownField<String>(
+                        theme: _theme,
+                        value: _originalLanguage,
+                        label: AppLocalizations.of(context)!.originalLanguageFieldLabel,
+                        hint: AppLocalizations.of(context)!.originalLanguageFieldHint,
+                        items: [
+                          DropdownMenuItem(
+                            value: 'fr',
+                            child: Text(AppLocalizations.of(context)!.languageFrench),
+                          ),
+                          DropdownMenuItem(
+                            value: 'en',
+                            child: Text(AppLocalizations.of(context)!.languageEnglish),
+                          ),
+                          DropdownMenuItem(
+                            value: 'ar',
+                            child: Text(AppLocalizations.of(context)!.languageArabic),
+                          ),
+                        ],
+                        onChanged: (value) {
+                          if (value != null) {
+                            setState(() => _originalLanguage = value);
                           }
                         },
                       ),

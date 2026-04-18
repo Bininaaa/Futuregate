@@ -6597,4 +6597,389 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiCvStudioSubtitle => 'أنشئ سيرتك الذاتية وحمّلها وصدّرها.';
+
+  @override
+  String get notifAdminTitle => 'إشعارات المسؤول';
+
+  @override
+  String get notifCompanyTitle => 'إشعارات الشركة';
+
+  @override
+  String get notifReadAll => 'قراءة الكل';
+
+  @override
+  String get notifFilterAll => 'الكل';
+
+  @override
+  String get notifFilterNewContent => 'محتوى جديد';
+
+  @override
+  String get notifFilterUnread => 'غير مقروء';
+
+  @override
+  String get notifFilterApplications => 'الطلبات';
+
+  @override
+  String get notifFilterMessages => 'الرسائل';
+
+  @override
+  String get notifContentAll => 'كل الجديد';
+
+  @override
+  String get notifContentOpportunities => 'الفرص';
+
+  @override
+  String get notifContentTrainings => 'التدريبات';
+
+  @override
+  String get notifContentScholarships => 'المنح';
+
+  @override
+  String get notifContentIdeas => 'الأفكار';
+
+  @override
+  String get notifOppAll => 'كل الفرص';
+
+  @override
+  String get notifOppJobs => 'وظائف';
+
+  @override
+  String get notifOppInternships => 'تدريبات';
+
+  @override
+  String get notifOppSponsored => 'مموّل';
+
+  @override
+  String get notifAllCaughtUp => 'لا شيء فائت';
+
+  @override
+  String get notifTypeMessage => 'رسالة';
+
+  @override
+  String get notifTypeApplication => 'طلب';
+
+  @override
+  String get notifTypeOpportunity => 'فرصة';
+
+  @override
+  String get notifTypeScholarship => 'منحة';
+
+  @override
+  String get notifTypeTraining => 'تدريب';
+
+  @override
+  String get notifTypeIdea => 'فكرة';
+
+  @override
+  String get notifTypeCompanyReview => 'مراجعة الشركة';
+
+  @override
+  String get notifTypeUpdate => 'تحديث';
+
+  @override
+  String get notifJustNow => 'الآن';
+
+  @override
+  String get postingLanguageLabel => 'لغة النشر';
+
+  @override
+  String get postingLanguageHint => 'اللغة التي كُتب بها هذا المحتوى';
+
+  @override
+  String get translateLabel => 'ترجمة';
+
+  @override
+  String get translatingLabel => 'جارٍ الترجمة...';
+
+  @override
+  String get translationDoneLabel => 'الترجمة جاهزة';
+
+  @override
+  String get translationFailedLabel => 'الترجمة غير متوفرة';
+
+  @override
+  String get showOriginalLabel => 'عرض الأصل';
+
+  @override
+  String get showTranslatedLabel => 'عرض الترجمة';
+
+  @override
+  String get contentLanguageLabel => 'لغة المحتوى';
+
+  @override
+  String get autoTranslatedBadge => 'مُترجم تلقائياً';
+
+  @override
+  String get translatedBadge => 'مترجم';
+
+  @override
+  String get originalBadge => 'أصلي';
+
+  @override
+  String get translationNote =>
+      'تمت ترجمة هذا المحتوى تلقائياً. اضغط على \"عرض الأصل\" لرؤية المصدر الأصلي.';
+
+  @override
+  String get dashSectionClosingSoon => 'ينتهي قريباً';
+
+  @override
+  String get dashSectionRecommended => 'موصى به';
+
+  @override
+  String get dashSectionQuickAccess => 'وصول سريع';
+
+  @override
+  String get dashSectionLatestActivity => 'آخر الأنشطة';
+
+  @override
+  String get dashSectionSavedShortlist => 'القائمة المحفوظة';
+
+  @override
+  String get dashBuildCv => 'بناء السيرة';
+
+  @override
+  String get dashCompleteProfile => 'اكمال الملف';
+
+  @override
+  String get dashDiscover => 'استكشاف';
+
+  @override
+  String get dashViewStatus => 'عرض الحالة';
+
+  @override
+  String get dashTrackStatus => 'تتبع الحالة';
+
+  @override
+  String get dashSeeOpenRoles => 'رؤية الفرص المتاحة';
+
+  @override
+  String get dashOpenSaved => 'فتح المحفوظات';
+
+  @override
+  String get scholarshipOpportunityFallback => 'فرصة منحة دراسية';
+
+  @override
+  String get scholarshipPartnerFallback => 'شريك FutureGate';
+
+  @override
+  String get scholarshipNoDescFallback =>
+      'لا تتضمن هذه المنحة وصفاً تفصيلياً بعد.';
+
+  @override
+  String get scholarshipNoEligFallback =>
+      'سيتم مشاركة تفاصيل الأهلية من قِبل مزود المنحة.';
+
+  @override
+  String get scholarshipDeadlineFallback => 'الموعد النهائي المُعلن من المزود';
+
+  @override
+  String get scholarshipFundingFallback => 'التمويل مُشارك في الإعلان الرسمي';
+
+  @override
+  String get scholarshipFeaturedBadge => 'مميّز';
+
+  @override
+  String get scholarshipDefaultBadge => 'منحة';
+
+  @override
+  String get scholarshipFundingAmount => 'مبلغ التمويل';
+
+  @override
+  String get scholarshipFundingDetails => 'تفاصيل التمويل';
+
+  @override
+  String get scholarshipStudyLevel => 'مستوى الدراسة';
+
+  @override
+  String get scholarshipProgramType => 'نوع البرنامج';
+
+  @override
+  String get scholarshipAtAGlance => 'نظرة عامة';
+
+  @override
+  String get scholarshipNoLink => 'لم يُرفق المزود بعد رابط التقديم الخارجي.';
+
+  @override
+  String get scholarshipOfficialSource => 'المصدر الرسمي للمنحة';
+
+  @override
+  String get scholarshipOpenPage => 'فتح الصفحة الرسمية';
+
+  @override
+  String get scholarshipLinkUnavailable => 'الرابط غير متوفر';
+
+  @override
+  String get ideaNotAvailable => 'هذه الفكرة لم تعد متاحة.';
+
+  @override
+  String get ideaHubTitle => 'مركز الابتكار';
+
+  @override
+  String get ideaUnsaveTooltip => 'إلغاء الحفظ';
+
+  @override
+  String get ideaSaveTooltip => 'حفظ الفكرة';
+
+  @override
+  String get ideaEditLabel => 'تعديل الفكرة';
+
+  @override
+  String get ideaManageLabel => 'إدارة هذه الفكرة';
+
+  @override
+  String get ideaInterestedLabel => 'مهتم';
+
+  @override
+  String get ideaImInterestedLabel => 'أنا مهتم';
+
+  @override
+  String get ideaManageTeamLabel => 'إدارة الفريق';
+
+  @override
+  String get ideaContactCreator => 'التواصل مع المنشئ';
+
+  @override
+  String get ideaSavedLabel => 'محفوظة';
+
+  @override
+  String get ideaSaveLabel => 'حفظ الفكرة';
+
+  @override
+  String get ideaShareLabel => 'مشاركة الفكرة';
+
+  @override
+  String get trainingRecommendedForYou => '???? ?? ??';
+
+  @override
+  String trainingNoProgramsForDomain(Object domain) {
+    return '?? ????? ????? ??????? ???? ?? $domain.';
+  }
+
+  @override
+  String get trainingLinkMissingMessage => '?? ????? ??? ??????? ??? ???? ???.';
+
+  @override
+  String get trainingLinkInvalidMessage => '???? ??? ??????? ??? ????.';
+
+  @override
+  String get trainingLinkOpenFailedMessage => '???? ??? ???? ??? ??????? ????.';
+
+  @override
+  String get trainingSaveLoginMessage =>
+      '???? ?????? ???? ????? ??????? ???? ????.';
+
+  @override
+  String get trainingRemovedSavedMessage => '??? ??????? ?? ??????? ????????';
+
+  @override
+  String get trainingSavedMessage => '?? ??? ??????';
+
+  @override
+  String get trainingSavedUpdatedTitle => '?? ????? ??????? ????????';
+
+  @override
+  String get trainingUpdateUnavailableTitle => '??????? ??? ????';
+
+  @override
+  String get trainingProviderFallback => '???? ???????';
+
+  @override
+  String get trainingFlexibleLabel => '???';
+
+  @override
+  String get trainingAllLevelsLabel => '?? ?????????';
+
+  @override
+  String get trainingCareerCourseLabel => '???? ?????';
+
+  @override
+  String get trainingVideoLessonLabel => '??? ?????';
+
+  @override
+  String get trainingReadingTrackLabel => '???? ?????';
+
+  @override
+  String get trainingGuideToolkitLabel => '???? ??????';
+
+  @override
+  String get trainingLearningPathLabel => '???? ????';
+
+  @override
+  String get trainingGeneralDomainLabel => '???';
+
+  @override
+  String get opportunityFutureGatePartner => '???? FutureGate';
+
+  @override
+  String get opportunityStudentInternshipFallback => '???? ????? ??????';
+
+  @override
+  String get opportunitySponsoredFallback => '???? ?????';
+
+  @override
+  String get opportunityOpenJobFallback => '???? ??? ??????';
+
+  @override
+  String get opportunityOpenFallback => '???? ??????';
+
+  @override
+  String get scholarshipExploreLabel => '?????? ??????';
+
+  @override
+  String get ideaCreateCta => '???? ????';
+
+  @override
+  String get ideaCreateFirstCta => '???? ????? ??????';
+
+  @override
+  String get ideaPublicLabel => '???';
+
+  @override
+  String get ideaPrivateLabel => '???';
+
+  @override
+  String get ideaSharedFromHub => '??? ???????? ?? ???? ????????';
+
+  @override
+  String get ideaCategoryInnovation => '??????';
+
+  @override
+  String get ideaCategoryAi => '?????? ?????????';
+
+  @override
+  String get ideaCategoryFintech => '??????? ???????';
+
+  @override
+  String get ideaCategoryEdTech => '??????? ?????????';
+
+  @override
+  String get ideaCategorySustainability => '?????????';
+
+  @override
+  String get ideaCategorySocialImpact => '????? ?????????';
+
+  @override
+  String get ideaStageConcept => '?????';
+
+  @override
+  String get ideaStageMvp => '???? ?????? ?? ?????? ?????? ???????';
+
+  @override
+  String get ideaStagePrototype => '????? ????';
+
+  @override
+  String get ideaStageBeta => '????';
+
+  @override
+  String get scholarshipRemovedSavedMessage => '??? ??????? ?? ????? ????????';
+
+  @override
+  String get scholarshipSavedMessage => '?? ??? ??????';
+
+  @override
+  String get scholarshipSnapshotSubtitle =>
+      '?? ?? ?? ??? ???? ??? ??? ??? ????? ??????? ??????.';
+
+  @override
+  String get scholarshipOverviewSubtitle => '???? ????? ???? ???? ?????? ????.';
 }
