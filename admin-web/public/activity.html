@@ -6,26 +6,29 @@
   <title>FutureGate Admin - Recent Activity</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/workspace-theme.css">
+  <script src="js/theme-init.js"></script>
 </head>
-<body>
+<body data-page="activity">
   <div id="auth-gate" class="auth-gate">
     <div class="spinner"></div>
     <p>Verifying session...</p>
   </div>
   <div class="layout">
+    <div class="shell-backdrop" data-shell-backdrop></div>
     <aside class="sidebar">
       <div class="sidebar-header">
         <div class="sidebar-brand">
           <div class="sidebar-brand-icon">&#x1F6E1;&#xFE0F;</div>
-          <div class="sidebar-brand-text"><h2>Admin Panel</h2><p>FutureGate Management</p></div>
+          <div class="sidebar-brand-text"><h2>FutureGate Admin</h2><p>Live view of moderation, publishing, and review activity.</p></div>
         </div>
       </div>
       <nav class="sidebar-nav">
-        <a href="index.html" class="nav-item"><span class="icon">&#x1F4CA;</span> Dashboard</a>
-        <a href="users.html" class="nav-item"><span class="icon">&#x1F465;</span> Users</a>
-        <a href="moderation.html" class="nav-item"><span class="icon">&#x2696;&#xFE0F;</span> Moderation</a>
-        <a href="activity.html" class="nav-item"><span class="icon">&#x23F1;&#xFE0F;</span> Activity</a>
-        <a href="notifications.html" class="nav-item"><span class="icon">&#x1F514;</span> Notifications <span class="nav-badge" data-notification-badge hidden>0</span></a>
+        <a href="index.html" class="nav-item"><span class="icon">DB</span> Dashboard</a>
+        <a href="users.html" class="nav-item"><span class="icon">US</span> Users</a>
+        <a href="moderation.html" class="nav-item"><span class="icon">CT</span> Content</a>
+        <a href="activity.html" class="nav-item"><span class="icon">AC</span> Activity</a>
+        <a href="notifications.html" class="nav-item"><span class="icon">NT</span> Notifications <span class="nav-badge" data-notification-badge hidden>0</span></a>
       </nav>
       <div class="sidebar-footer">
         <div class="admin-info">
@@ -35,37 +38,82 @@
         <button class="btn-logout" id="btn-logout">&#x1F6AA; Logout</button>
       </div>
     </aside>
-
-    <main class="main-content">
-      <h1 class="page-title">Recent Activity</h1>
-      <p class="page-subtitle">Review the latest platform actions across applications, opportunities, scholarships, trainings, and project ideas.</p>
-
-      <div class="page-toolbar">
-        <div class="search-bar" style="margin:0; max-width: 460px; width: 100%;">
-          <span class="search-icon">&#x1F50D;</span>
-          <input type="text" id="activity-search" placeholder="Search by title, actor, or activity type...">
+    <div class="workspace">
+      <header class="workspace-header">
+        <button class="toolbar-icon mobile-only" type="button" data-mobile-nav-toggle aria-label="Open navigation" aria-expanded="false">MN</button>
+        <div class="workspace-heading">
+          <div class="workspace-eyebrow">Live Feed</div>
+          <h1>Activity</h1>
+          <p>Follow new submissions, publishing changes, and moderation decisions in one rolling stream with direct links back into the right queue.</p>
         </div>
-        <div class="page-actions">
-          <span class="results-summary" id="activity-summary">Loading activity...</span>
+        <div class="workspace-actions">
+          <button class="toolbar-action" type="button" data-theme-toggle>
+            <span class="toolbar-action-icon">TH</span>
+            <span class="toolbar-action-copy">
+              <small>Theme</small>
+              <strong data-theme-label>Light</strong>
+            </span>
+          </button>
+          <a class="toolbar-action toolbar-action--accent" href="notifications.html">
+            <span class="toolbar-action-icon">NT</span>
+            <span class="toolbar-action-copy">
+              <small>Inbox</small>
+              <strong>Notifications</strong>
+            </span>
+            <span class="toolbar-pill-badge" data-notification-badge hidden>0</span>
+          </a>
         </div>
-      </div>
+      </header>
 
-      <div class="filter-chips" id="activity-filters">
-        <button class="chip active" data-type="all">All</button>
-        <button class="chip" data-type="application">Applications</button>
-        <button class="chip" data-type="opportunity">Opportunities</button>
-        <button class="chip" data-type="scholarship">Scholarships</button>
-        <button class="chip" data-type="training">Trainings</button>
-        <button class="chip" data-type="project_idea">Project Ideas</button>
-      </div>
+      <main class="main-content page-shell">
+        <section class="hero-panel">
+          <div class="hero-grid">
+            <div class="hero-copy">
+              <span class="hero-label">Recent Platform Activity</span>
+              <h2 class="hero-title">See what changed, who triggered it, and where to act next.</h2>
+              <p class="hero-subtitle">The feed brings together applications, opportunities, scholarships, trainings, and project ideas so admins can spot momentum and jump directly into the right moderation context.</p>
+            </div>
+            <div class="summary-grid" id="activity-overview">
+              <div class="summary-card">
+                <span class="summary-label">Loading</span>
+                <div class="summary-value">Preparing feed...</div>
+                <div class="summary-meta">Counts by activity type will appear here as soon as the first page loads.</div>
+              </div>
+            </div>
+          </div>
+        </section>
 
-      <div id="activity-list">
-        <div class="loading"><div class="spinner"></div></div>
-      </div>
-      <div class="load-more-row">
-        <button class="load-more-button" id="load-more-activity" hidden>Load More Activity</button>
-      </div>
-    </main>
+        <section class="surface-panel">
+          <div class="page-toolbar">
+            <div class="search-bar" style="margin:0; max-width: 520px; width: 100%;">
+              <span class="search-icon">&#x1F50D;</span>
+              <input type="text" id="activity-search" placeholder="Search by title, actor, or activity type...">
+            </div>
+            <div class="page-actions">
+              <span class="results-summary" id="activity-summary">Loading activity...</span>
+            </div>
+          </div>
+
+          <div class="filter-chips" id="activity-filters">
+            <button class="chip active" data-type="all">All</button>
+            <button class="chip" data-type="application">Applications</button>
+            <button class="chip" data-type="opportunity">Opportunities</button>
+            <button class="chip" data-type="scholarship">Scholarships</button>
+            <button class="chip" data-type="training">Trainings</button>
+            <button class="chip" data-type="project_idea">Project Ideas</button>
+          </div>
+        </section>
+
+        <section class="surface-panel">
+          <div id="activity-list">
+            <div class="loading"><div class="spinner"></div></div>
+          </div>
+          <div class="load-more-row">
+            <button class="load-more-button" id="load-more-activity" hidden>Load More Activity</button>
+          </div>
+        </section>
+      </main>
+    </div>
   </div>
 
   <script type="module">
@@ -139,12 +187,51 @@
       });
     }
 
+    function renderActivityOverview(filtered) {
+      const overview = document.getElementById('activity-overview');
+      if (!overview) {
+        return;
+      }
+
+      const typeCounts = activityState.items.reduce((counts, item) => {
+        counts[item.type] = (counts[item.type] || 0) + 1;
+        return counts;
+      }, {});
+      const topTypeEntry = Object.entries(typeCounts).sort((left, right) => right[1] - left[1])[0];
+      const topTypeLabel = topTypeEntry ? activityTypeLabel(topTypeEntry[0]) : 'Mixed feed';
+      const topTypeCount = topTypeEntry ? topTypeEntry[1] : 0;
+      const queryLabel = activityState.searchQuery.trim()
+        ? `"${activityState.searchQuery.trim()}"`
+        : activityState.activeType === 'all'
+        ? 'All activity'
+        : `${activityTypeLabel(activityState.activeType)} only`;
+
+      overview.innerHTML = `
+        <div class="summary-card">
+          <span class="summary-label">Loaded Feed</span>
+          <div class="summary-value">${activityState.items.length}</div>
+          <div class="summary-meta">Recent events currently available in the local feed cache.</div>
+        </div>
+        <div class="summary-card">
+          <span class="summary-label">Current View</span>
+          <div class="summary-value">${filtered.length}</div>
+          <div class="summary-meta">Items matching ${esc(queryLabel)} right now.</div>
+        </div>
+        <div class="summary-card">
+          <span class="summary-label">Leading Signal</span>
+          <div class="summary-value">${esc(topTypeLabel)}</div>
+          <div class="summary-meta">${topTypeCount} loaded item${topTypeCount === 1 ? '' : 's'} in the strongest activity category.</div>
+        </div>
+      `;
+    }
+
     function renderActivities() {
       const filtered = filteredActivities();
       const list = document.getElementById('activity-list');
       const summary = document.getElementById('activity-summary');
       const loadMoreButton = document.getElementById('load-more-activity');
 
+      renderActivityOverview(filtered);
       summary.textContent = `${filtered.length} loaded item${filtered.length === 1 ? '' : 's'} shown`;
       loadMoreButton.hidden = !activityState.hasMore;
       loadMoreButton.disabled = activityState.isLoading;

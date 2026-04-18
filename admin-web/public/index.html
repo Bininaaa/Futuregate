@@ -6,30 +6,33 @@
   <title>FutureGate Admin - Dashboard</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/workspace-theme.css">
+  <script src="js/theme-init.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 </head>
-<body>
+<body data-page="dashboard">
   <div id="auth-gate" class="auth-gate">
     <div class="spinner"></div>
     <p>Verifying session...</p>
   </div>
   <div class="layout">
+    <div class="shell-backdrop" data-shell-backdrop></div>
     <aside class="sidebar">
       <div class="sidebar-header">
         <div class="sidebar-brand">
           <div class="sidebar-brand-icon">&#x1F6E1;&#xFE0F;</div>
           <div class="sidebar-brand-text">
-            <h2>Admin Panel</h2>
-            <p>FutureGate Management</p>
+            <h2>FutureGate Admin</h2>
+            <p>Control room for content, users, and platform operations</p>
           </div>
         </div>
       </div>
       <nav class="sidebar-nav">
-        <a href="index.html" class="nav-item"><span class="icon">&#x1F4CA;</span> Dashboard</a>
-        <a href="users.html" class="nav-item"><span class="icon">&#x1F465;</span> Users</a>
-        <a href="moderation.html" class="nav-item"><span class="icon">&#x2696;&#xFE0F;</span> Moderation</a>
-        <a href="activity.html" class="nav-item"><span class="icon">&#x23F1;&#xFE0F;</span> Activity</a>
-        <a href="notifications.html" class="nav-item"><span class="icon">&#x1F514;</span> Notifications <span class="nav-badge" data-notification-badge hidden>0</span></a>
+        <a href="index.html" class="nav-item"><span class="icon">DB</span> Dashboard</a>
+        <a href="users.html" class="nav-item"><span class="icon">US</span> Users</a>
+        <a href="moderation.html" class="nav-item"><span class="icon">CT</span> Content</a>
+        <a href="activity.html" class="nav-item"><span class="icon">AC</span> Activity</a>
+        <a href="notifications.html" class="nav-item"><span class="icon">NT</span> Notifications <span class="nav-badge" data-notification-badge hidden>0</span></a>
       </nav>
       <div class="sidebar-footer">
         <div class="admin-info">
@@ -42,87 +45,220 @@
         <button class="btn-logout" id="btn-logout">&#x1F6AA; Logout</button>
       </div>
     </aside>
-
-    <main class="main-content">
-      <h1 class="page-title">Dashboard</h1>
-      <div id="loading" class="loading"><div class="spinner"></div></div>
-      <div id="content" style="display:none">
-        <h3 class="section-title" style="margin-top:0">Overview</h3>
-        <div class="stats-grid" id="overview-stats"></div>
-
-        <h3 class="section-title">Students by Level</h3>
-        <div class="stats-grid" id="level-stats"></div>
-
-        <div class="charts-grid">
-          <div class="chart-card"><h3>Users by Level</h3><canvas id="levelChart"></canvas></div>
-          <div class="chart-card"><h3>Users by Role</h3><canvas id="roleChart"></canvas></div>
+    <div class="workspace">
+      <header class="workspace-header">
+        <button class="toolbar-icon mobile-only" type="button" data-mobile-nav-toggle aria-label="Open navigation" aria-expanded="false">MN</button>
+        <div class="workspace-heading">
+          <div class="workspace-eyebrow">Admin Workspace</div>
+          <h1>Dashboard</h1>
+          <p>Track platform growth, moderation load, and the queues that need attention first without bouncing between disconnected tools.</p>
         </div>
-        <div class="chart-card" style="margin-bottom:16px"><h3>Monthly Registrations</h3><canvas id="monthlyChart"></canvas></div>
-
-        <h3 class="section-title">Content</h3>
-        <div class="stats-grid" id="content-stats"></div>
-
-        <h3 class="section-title">Quick Access</h3>
-        <div class="quick-access-grid">
-          <a class="quick-link-card" href="moderation.html?tab=applications">
-            <div class="quick-link-icon" style="background:rgba(123,31,162,0.12);color:#7B1FA2">AP</div>
-            <div class="quick-link-title">Applications</div>
-            <div class="quick-link-copy">Review submitted applications and jump straight into the related opportunity.</div>
-          </a>
-          <a class="quick-link-card" href="moderation.html?tab=opportunities">
-            <div class="quick-link-icon" style="background:rgba(255,140,0,0.12);color:#FF8C00">OP</div>
-            <div class="quick-link-title">Opportunities</div>
-            <div class="quick-link-copy">Manage opportunities, featured status, and the latest company postings.</div>
-          </a>
-          <a class="quick-link-card" href="moderation.html?tab=scholarships">
-            <div class="quick-link-icon" style="background:rgba(233,30,99,0.12);color:#E91E63">SC</div>
-            <div class="quick-link-title">Scholarships</div>
-            <div class="quick-link-copy">Create, notify, and review scholarship content from one admin flow.</div>
-          </a>
-          <a class="quick-link-card" href="moderation.html?tab=trainings">
-            <div class="quick-link-icon" style="background:rgba(0,188,212,0.12);color:#00BCD4">TR</div>
-            <div class="quick-link-title">Trainings</div>
-            <div class="quick-link-copy">Browse learning resources and keep featured training content updated.</div>
-          </a>
-          <a class="quick-link-card" href="moderation.html?tab=ideas">
-            <div class="quick-link-icon" style="background:rgba(255,193,7,0.18);color:#8A5A00">PI</div>
-            <div class="quick-link-title">Project Ideas</div>
-            <div class="quick-link-copy">Moderate student project ideas and follow pending submissions.</div>
-          </a>
-          <a class="quick-link-card" href="activity.html">
-            <div class="quick-link-icon" style="background:rgba(45,27,78,0.1);color:#2D1B4E">AC</div>
-            <div class="quick-link-title">Recent Activity</div>
-            <div class="quick-link-copy">See the newest platform activity across applications and content publishing.</div>
-          </a>
-          <a class="quick-link-card" href="notifications.html">
-            <div class="quick-link-icon" style="background:rgba(76,175,80,0.12);color:#2E7D32">NT</div>
-            <div class="quick-link-title">Notification Center</div>
-            <div class="quick-link-copy">Track admin notifications and unread counts without losing context.</div>
-            <span class="quick-link-badge" data-notification-badge hidden>0</span>
+        <div class="workspace-actions">
+          <button class="toolbar-action" type="button" data-theme-toggle>
+            <span class="toolbar-action-icon">TH</span>
+            <span class="toolbar-action-copy">
+              <small>Theme</small>
+              <strong data-theme-label>Light</strong>
+            </span>
+          </button>
+          <a class="toolbar-action toolbar-action--accent" href="notifications.html">
+            <span class="toolbar-action-icon">NT</span>
+            <span class="toolbar-action-copy">
+              <small>Inbox</small>
+              <strong>Notifications</strong>
+            </span>
+            <span class="toolbar-pill-badge" data-notification-badge hidden>0</span>
           </a>
         </div>
+      </header>
 
-        <h3 class="section-title">Engagement Analytics</h3>
-        <div id="engagement-cards"></div>
+      <main class="main-content page-shell">
+        <section class="hero-panel">
+          <div class="hero-grid">
+            <div class="hero-copy">
+              <span class="hero-label">Control Room</span>
+              <h2 class="hero-title">Run FutureGate from one sharp, mobile-ready admin workspace.</h2>
+              <p class="hero-subtitle">This dashboard is designed to keep growth metrics, moderation queues, and the learning library close enough that you can move from signal to action in a single flow.</p>
+              <div class="hero-actions">
+                <a class="toolbar-action" href="moderation.html">
+                  <span class="toolbar-action-icon">CT</span>
+                  <span class="toolbar-action-copy">
+                    <small>Workspace</small>
+                    <strong>Open Content Center</strong>
+                  </span>
+                </a>
+                <a class="toolbar-action" href="activity.html">
+                  <span class="toolbar-action-icon">AC</span>
+                  <span class="toolbar-action-copy">
+                    <small>Live Feed</small>
+                    <strong>Review Activity</strong>
+                  </span>
+                </a>
+                <a class="toolbar-action" href="users.html">
+                  <span class="toolbar-action-icon">US</span>
+                  <span class="toolbar-action-copy">
+                    <small>Accounts</small>
+                    <strong>Manage Users</strong>
+                  </span>
+                </a>
+              </div>
+            </div>
+            <div class="summary-grid">
+              <div class="summary-card">
+                <span class="summary-label">Workspace Focus</span>
+                <div class="summary-value">Growth + moderation</div>
+                <div class="summary-meta">Analytics, queue review, and publishing controls live side by side.</div>
+              </div>
+              <div class="summary-card">
+                <span class="summary-label">Library Access</span>
+                <div class="summary-value">Books + videos</div>
+                <div class="summary-meta">Jump into the content center to curate imported learning resources.</div>
+              </div>
+              <div class="summary-card">
+                <span class="summary-label">Notification Loop</span>
+                <div class="summary-value">Unread synced</div>
+                <div class="summary-meta">Inbox badges stay visible in navigation and the header action rail.</div>
+              </div>
+            </div>
+          </div>
+        </section>
 
-        <div class="charts-grid" style="margin-top:16px">
-          <div id="top-applied"></div>
-          <div id="top-saved"></div>
+        <div id="loading" class="surface-panel loading"><div class="spinner"></div></div>
+        <div id="content" class="dashboard-stack" style="display:none">
+          <section class="surface-panel">
+            <div class="surface-heading">
+              <div>
+                <div class="surface-heading-title">Platform Overview</div>
+                <p class="surface-heading-copy">The high-level account and usage picture admins usually need first.</p>
+              </div>
+            </div>
+            <div class="stats-grid" id="overview-stats"></div>
+          </section>
+
+          <section class="surface-panel">
+            <div class="surface-heading">
+              <div>
+                <div class="surface-heading-title">Academic Breakdown</div>
+                <p class="surface-heading-copy">Understand how the student population is distributed before digging into deeper trends.</p>
+              </div>
+            </div>
+            <div class="stats-grid" id="level-stats"></div>
+          </section>
+
+          <section class="charts-grid">
+            <div class="chart-card"><h3>Users by Level</h3><canvas id="levelChart"></canvas></div>
+            <div class="chart-card"><h3>Users by Role</h3><canvas id="roleChart"></canvas></div>
+          </section>
+
+          <section class="chart-card"><h3>Monthly Registrations</h3><canvas id="monthlyChart"></canvas></section>
+
+          <section class="surface-panel">
+            <div class="surface-heading">
+              <div>
+                <div class="surface-heading-title">Managed Inventory</div>
+                <p class="surface-heading-copy">A quick count of the content types handled inside the admin workspace.</p>
+              </div>
+            </div>
+            <div class="stats-grid" id="content-stats"></div>
+          </section>
+
+          <section class="surface-panel">
+            <div class="surface-heading">
+              <div>
+                <div class="surface-heading-title">Quick Access</div>
+                <p class="surface-heading-copy">Move straight into the admin areas you open most often.</p>
+              </div>
+            </div>
+            <div class="quick-access-grid">
+              <a class="quick-link-card" href="moderation.html?tab=applications">
+                <div class="quick-link-icon" style="background:rgba(124,58,237,0.14);color:#7c3aed">AP</div>
+                <div class="quick-link-title">Applications</div>
+                <div class="quick-link-copy">Review applicant pipelines, open opportunity context, and check CV access from one queue.</div>
+              </a>
+              <a class="quick-link-card" href="moderation.html?tab=opportunities">
+                <div class="quick-link-icon" style="background:rgba(245,158,11,0.14);color:#f59e0b">OP</div>
+                <div class="quick-link-title">Opportunities</div>
+                <div class="quick-link-copy">Manage featured visibility and the freshest company or admin-posted opportunities.</div>
+              </a>
+              <a class="quick-link-card" href="moderation.html?tab=scholarships">
+                <div class="quick-link-icon" style="background:rgba(226,74,74,0.14);color:#e24a4a">SC</div>
+                <div class="quick-link-title">Scholarships</div>
+                <div class="quick-link-copy">Create scholarships, trigger the worker notification flow, and keep deadlines current.</div>
+              </a>
+              <a class="quick-link-card" href="moderation.html?tab=trainings">
+                <div class="quick-link-icon" style="background:rgba(20,184,166,0.14);color:#14b8a6">TR</div>
+                <div class="quick-link-title">Trainings</div>
+                <div class="quick-link-copy">Feature, prune, and refresh the curated training inventory already live in the platform.</div>
+              </a>
+              <a class="quick-link-card" href="moderation.html?tab=library">
+                <div class="quick-link-icon" style="background:rgba(37,99,235,0.14);color:#2563eb">LB</div>
+                <div class="quick-link-title">Library</div>
+                <div class="quick-link-copy">Import Google Books and YouTube resources into the admin-managed learning catalog.</div>
+              </a>
+              <a class="quick-link-card" href="moderation.html?tab=ideas">
+                <div class="quick-link-icon" style="background:rgba(245,158,11,0.16);color:#b77909">PI</div>
+                <div class="quick-link-title">Project Ideas</div>
+                <div class="quick-link-copy">Stay on top of pending submissions and keep the innovation feed polished.</div>
+              </a>
+              <a class="quick-link-card" href="activity.html">
+                <div class="quick-link-icon" style="background:rgba(59,34,246,0.14);color:#3b22f6">AC</div>
+                <div class="quick-link-title">Recent Activity</div>
+                <div class="quick-link-copy">See the newest publishing and moderation events across the entire platform.</div>
+              </a>
+              <a class="quick-link-card" href="notifications.html">
+                <div class="quick-link-icon" style="background:rgba(23,157,108,0.14);color:#179d6c">NT</div>
+                <div class="quick-link-title">Notification Center</div>
+                <div class="quick-link-copy">Track unread admin notifications without losing the context of your current task.</div>
+                <span class="quick-link-badge" data-notification-badge hidden>0</span>
+              </a>
+            </div>
+          </section>
+
+          <section class="surface-panel">
+            <div class="surface-heading">
+              <div>
+                <div class="surface-heading-title">Engagement Analytics</div>
+                <p class="surface-heading-copy">These ratios help admins see whether users are engaging deeply or only browsing.</p>
+              </div>
+            </div>
+            <div id="engagement-cards"></div>
+          </section>
+
+          <section class="charts-grid">
+            <div id="top-applied"></div>
+            <div id="top-saved"></div>
+          </section>
+
+          <section class="surface-panel">
+            <div class="section-card-header">
+              <h3>Recent Activity</h3>
+              <a class="section-link" href="activity.html">View All Activity</a>
+            </div>
+            <div class="card" id="activity-feed"></div>
+          </section>
+
+          <section class="surface-panel">
+            <div class="surface-heading">
+              <div>
+                <div class="surface-heading-title">Recent Users</div>
+                <p class="surface-heading-copy">Fresh account creation, role mix, and activation status at a glance.</p>
+              </div>
+            </div>
+            <div id="recent-users"></div>
+          </section>
+
+          <section class="surface-panel">
+            <div class="surface-heading">
+              <div>
+                <div class="surface-heading-title">Recent Opportunities</div>
+                <p class="surface-heading-copy">The newest opportunity records published across the platform.</p>
+              </div>
+            </div>
+            <div id="recent-opps"></div>
+          </section>
         </div>
-
-        <div class="section-card-header">
-          <h3 class="section-title" style="margin:0">Recent Activity</h3>
-          <a class="section-link" href="activity.html">View All Activity</a>
-        </div>
-        <div class="card" id="activity-feed"></div>
-
-        <h3 class="section-title">Recent Users</h3>
-        <div id="recent-users"></div>
-
-        <h3 class="section-title">Recent Opportunities</h3>
-        <div id="recent-opps"></div>
-      </div>
-    </main>
+      </main>
+    </div>
   </div>
 
   <script type="module">
@@ -273,7 +409,7 @@
         await renderRecentOpps();
 
         document.getElementById('loading').style.display = 'none';
-        document.getElementById('content').style.display = 'block';
+        document.getElementById('content').style.display = 'grid';
       } catch (error) {
         console.error('Dashboard load error:', error);
         document.getElementById('loading').innerHTML = feedbackCardHtml(

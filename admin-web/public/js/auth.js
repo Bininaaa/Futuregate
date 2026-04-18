@@ -11,6 +11,122 @@ import {
 } from './firebase-config.js';
 
 let unreadNotificationsUnsubscribe = null;
+let chromeInitialized = false;
+
+const THEME_STORAGE_KEY = 'futuregate-admin-theme';
+
+function resolveInitialTheme() {
+  try {
+    const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
+    if (stored === 'dark' || stored === 'light') {
+      return stored;
+    }
+  } catch (error) {
+    console.warn('Theme preference could not be read:', error);
+  }
+
+  return window.matchMedia('(prefers-color-scheme: dark)').matches
+    ? 'dark'
+    : 'light';
+}
+
+function updateThemeControls(theme) {
+  const nextLabel = theme === 'dark' ? 'Dark' : 'Light';
+
+  document.querySelectorAll('[data-theme-toggle]').forEach((button) => {
+    button.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
+  });
+
+  document.querySelectorAll('[data-theme-label]').forEach((label) => {
+    label.textContent = nextLabel;
+  });
+}
+
+function applyTheme(theme) {
+  const safeTheme = theme === 'dark' ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', safeTheme);
+  updateThemeControls(safeTheme);
+}
+
+function persistTheme(theme) {
+  try {
+    window.localStorage.setItem(THEME_STORAGE_KEY, theme);
+  } catch (error) {
+    console.warn('Theme preference could not be saved:', error);
+  }
+}
+
+function toggleTheme() {
+  const currentTheme =
+    document.documentElement.getAttribute('data-theme') === 'dark'
+      ? 'dark'
+      : 'light';
+  const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  persistTheme(nextTheme);
+  applyTheme(nextTheme);
+}
+
+function setNavOpen(isOpen) {
+  const layout = document.querySelector('.layout');
+  if (!layout) {
+    return;
+  }
+
+  layout.classList.toggle('nav-open', Boolean(isOpen));
+  document.querySelectorAll('[data-mobile-nav-toggle]').forEach((button) => {
+    button.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+}
+
+function closeNavIfMobile() {
+  if (window.innerWidth < 1024) {
+    setNavOpen(false);
+  }
+}
+
+function initializeChrome() {
+  applyTheme(resolveInitialTheme());
+
+  if (chromeInitialized) {
+    return;
+  }
+
+  chromeInitialized = true;
+
+  document.addEventListener('click', (event) => {
+    if (event.target.closest('[data-theme-toggle]')) {
+      toggleTheme();
+      return;
+    }
+
+    if (event.target.closest('[data-mobile-nav-toggle]')) {
+      const layout = document.querySelector('.layout');
+      setNavOpen(!layout?.classList.contains('nav-open'));
+      return;
+    }
+
+    if (event.target.closest('[data-shell-backdrop]')) {
+      setNavOpen(false);
+      return;
+    }
+
+    if (event.target.closest('.nav-item')) {
+      closeNavIfMobile();
+    }
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      setNavOpen(false);
+    }
+  });
+
+  window.addEventListener('resize', () => {
+    if (window.innerWidth >= 1024) {
+      setNavOpen(false);
+    }
+  });
+}
 
 function stopUnreadNotificationsWatcher() {
   if (typeof unreadNotificationsUnsubscribe === 'function') {
@@ -22,7 +138,7 @@ function stopUnreadNotificationsWatcher() {
 function resetToGatedState() {
   const layout = document.querySelector('.layout');
   const gate = document.getElementById('auth-gate');
-  if (layout) layout.classList.remove('auth-ready');
+  if (layout) layout.classList.remove('auth-ready', 'nav-open');
   if (gate) gate.classList.remove('hidden');
 }
 
@@ -70,6 +186,7 @@ function checkAuth(callback) {
   const layout = document.querySelector('.layout');
   const gate = document.getElementById('auth-gate');
 
+  initializeChrome();
   resetToGatedState();
 
   window.addEventListener('pageshow', (e) => {

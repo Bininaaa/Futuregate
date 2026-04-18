@@ -6,26 +6,70 @@
   <title>FutureGate Admin - Login</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/workspace-theme.css">
+  <script src="js/theme-init.js"></script>
 </head>
 <body class="login-page">
-  <div class="login-container">
-    <div class="login-header">
-      <div class="login-logo">🛡️</div>
-      <h1>Admin Panel</h1>
-      <p>FutureGate Management</p>
+  <div class="login-shell">
+    <section class="login-showcase">
+      <div class="login-brand-mark">FG</div>
+      <div class="login-pill-row" style="margin-top:18px">
+        <span class="login-pill">Admin-only access</span>
+        <span class="login-pill">Firebase secured</span>
+        <span class="login-pill">Unread sync enabled</span>
+      </div>
+      <h1 class="login-showcase-title">FutureGate Admin, rebuilt as a real control room.</h1>
+      <p class="login-showcase-copy">Use this workspace to review users, moderate content, manage the learning library, and stay close to the platform signals that matter most.</p>
+      <div class="login-metrics" style="margin-top:24px">
+        <div class="login-metric">
+          <span>Workspaces</span>
+          <strong>Dashboard + Content</strong>
+        </div>
+        <div class="login-metric">
+          <span>Queues</span>
+          <strong>Ideas, applications, inbox</strong>
+        </div>
+        <div class="login-metric">
+          <span>Library</span>
+          <strong>Books + YouTube import</strong>
+        </div>
+      </div>
+      <div class="login-list">
+        <div class="login-list-item">
+          <span class="login-list-label">What you can do here</span>
+          <div class="login-list-value">Moderate ideas, review applications, manage opportunities, publish scholarships, and curate training resources.</div>
+        </div>
+        <div class="login-list-item">
+          <span class="login-list-label">Security posture</span>
+          <div class="login-list-value">Only active admin accounts can continue past sign-in. Non-admin sessions are automatically rejected.</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="login-panel">
+      <div class="login-panel-header">
+        <div class="login-badge">Secure Sign In</div>
+        <h2 class="login-panel-title">Enter the admin workspace</h2>
+        <p class="login-panel-copy">Use your FutureGate admin account credentials to continue. Sessions are checked against the <code>users</code> collection before access is granted.</p>
+      </div>
+
+      <div id="error-msg" class="error-msg"></div>
+      <form id="login-form">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="email" placeholder="admin@example.com" autocomplete="username" required>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="password" placeholder="********" required>
+        </div>
+        <button type="submit" class="btn-primary" id="login-btn">Login</button>
+      </form>
+
+      <div class="login-note">
+        If the account is not marked as an active admin in Firestore, the session is immediately signed out and access is denied.
+      </div>
     </div>
-    <div id="error-msg" class="error-msg"></div>
-    <form id="login-form">
-      <div class="form-group">
-        <label>Email</label>
-        <input type="email" id="email" placeholder="admin@example.com" autocomplete="username" required>
-      </div>
-      <div class="form-group">
-        <label>Password</label>
-        <input type="password" id="password" placeholder="••••••••" required>
-      </div>
-      <button type="submit" class="btn-primary" id="login-btn">Login</button>
-    </form>
   </div>
 
   <script type="module">

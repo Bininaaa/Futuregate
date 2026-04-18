@@ -6,26 +6,29 @@
   <title>FutureGate Admin - Users</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/workspace-theme.css">
+  <script src="js/theme-init.js"></script>
 </head>
-<body>
+<body data-page="users">
   <div id="auth-gate" class="auth-gate">
     <div class="spinner"></div>
     <p>Verifying session...</p>
   </div>
   <div class="layout">
+    <div class="shell-backdrop" data-shell-backdrop></div>
     <aside class="sidebar">
       <div class="sidebar-header">
         <div class="sidebar-brand">
           <div class="sidebar-brand-icon">&#x1F6E1;&#xFE0F;</div>
-          <div class="sidebar-brand-text"><h2>Admin Panel</h2><p>FutureGate Management</p></div>
+          <div class="sidebar-brand-text"><h2>FutureGate Admin</h2><p>Search accounts, inspect profiles, and keep access clean.</p></div>
         </div>
       </div>
       <nav class="sidebar-nav">
-        <a href="index.html" class="nav-item"><span class="icon">&#x1F4CA;</span> Dashboard</a>
-        <a href="users.html" class="nav-item"><span class="icon">&#x1F465;</span> Users</a>
-        <a href="moderation.html" class="nav-item"><span class="icon">&#x2696;&#xFE0F;</span> Moderation</a>
-        <a href="activity.html" class="nav-item"><span class="icon">&#x23F1;&#xFE0F;</span> Activity</a>
-        <a href="notifications.html" class="nav-item"><span class="icon">&#x1F514;</span> Notifications <span class="nav-badge" data-notification-badge hidden>0</span></a>
+        <a href="index.html" class="nav-item"><span class="icon">DB</span> Dashboard</a>
+        <a href="users.html" class="nav-item"><span class="icon">US</span> Users</a>
+        <a href="moderation.html" class="nav-item"><span class="icon">CT</span> Content</a>
+        <a href="activity.html" class="nav-item"><span class="icon">AC</span> Activity</a>
+        <a href="notifications.html" class="nav-item"><span class="icon">NT</span> Notifications <span class="nav-badge" data-notification-badge hidden>0</span></a>
       </nav>
       <div class="sidebar-footer">
         <div class="admin-info">
@@ -35,30 +38,95 @@
         <button class="btn-logout" id="btn-logout">&#x1F6AA; Logout</button>
       </div>
     </aside>
+    <div class="workspace">
+      <header class="workspace-header">
+        <button class="toolbar-icon mobile-only" type="button" data-mobile-nav-toggle aria-label="Open navigation" aria-expanded="false">MN</button>
+        <div class="workspace-heading">
+          <div class="workspace-eyebrow">Account Operations</div>
+          <h1>Users</h1>
+          <p>Review profiles, filter by role or status, and open richer account detail without breaking your moderation flow.</p>
+        </div>
+        <div class="workspace-actions">
+          <button class="toolbar-action" type="button" data-theme-toggle>
+            <span class="toolbar-action-icon">TH</span>
+            <span class="toolbar-action-copy">
+              <small>Theme</small>
+              <strong data-theme-label>Light</strong>
+            </span>
+          </button>
+          <a class="toolbar-action toolbar-action--accent" href="notifications.html">
+            <span class="toolbar-action-icon">NT</span>
+            <span class="toolbar-action-copy">
+              <small>Inbox</small>
+              <strong>Notifications</strong>
+            </span>
+            <span class="toolbar-pill-badge" data-notification-badge hidden>0</span>
+          </a>
+        </div>
+      </header>
 
-    <main class="main-content">
-      <h1 class="page-title">User Management</h1>
-      <div class="search-bar">
-        <span class="search-icon">&#x1F50D;</span>
-        <input type="text" id="search-input" placeholder="Search by name or email...">
-      </div>
-      <div class="filter-chips" id="role-filters">
-        <button class="chip active" data-role="all">All</button>
-        <button class="chip" data-role="student">Students</button>
-        <button class="chip" data-role="company">Companies</button>
-        <button class="chip" data-role="admin">Admins</button>
-      </div>
-      <div class="level-filters" id="level-filters" style="display:none">
-        <span>Level:</span>
-        <button class="chip chip-small active" data-level="all">All</button>
-        <button class="chip chip-small" data-level="bac">Bac</button>
-        <button class="chip chip-small" data-level="licence">Licence</button>
-        <button class="chip chip-small" data-level="master">Master</button>
-        <button class="chip chip-small" data-level="doctorat">Doctorat</button>
-      </div>
-      <div id="loading" class="loading"><div class="spinner"></div></div>
-      <div id="users-list"></div>
-    </main>
+      <main class="main-content page-shell">
+        <section class="hero-panel">
+          <div class="hero-grid">
+            <div class="hero-copy">
+              <span class="hero-label">User Command</span>
+              <h2 class="hero-title">Keep account quality high without hunting through noisy lists.</h2>
+              <p class="hero-subtitle">This workspace pulls discovery, profile review, status controls, and CV access together so admins can move from search to action in a few clicks.</p>
+            </div>
+            <div class="summary-grid" id="users-summary">
+              <div class="summary-card">
+                <span class="summary-label">Loading</span>
+                <div class="summary-value">Preparing users...</div>
+                <div class="summary-meta">Totals and role split appear here after the initial load finishes.</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="surface-panel">
+          <div class="surface-heading">
+            <div>
+              <div class="surface-heading-title">Filters</div>
+              <p class="surface-heading-copy">Search by name or email, then narrow by role, status, or student level.</p>
+            </div>
+          </div>
+          <div class="search-bar">
+            <span class="search-icon">&#x1F50D;</span>
+            <input type="text" id="search-input" placeholder="Search by name or email...">
+          </div>
+          <div class="filter-chips" id="role-filters">
+            <button class="chip active" data-role="all">All Roles</button>
+            <button class="chip" data-role="student">Students</button>
+            <button class="chip" data-role="company">Companies</button>
+            <button class="chip" data-role="admin">Admins</button>
+          </div>
+          <div class="filter-chips" id="status-filters">
+            <button class="chip active" data-status="all">All Statuses</button>
+            <button class="chip" data-status="active">Active</button>
+            <button class="chip" data-status="blocked">Blocked</button>
+          </div>
+          <div class="level-filters" id="level-filters" style="display:none">
+            <span>Level:</span>
+            <button class="chip chip-small active" data-level="all">All</button>
+            <button class="chip chip-small" data-level="bac">Bac</button>
+            <button class="chip chip-small" data-level="licence">Licence</button>
+            <button class="chip chip-small" data-level="master">Master</button>
+            <button class="chip chip-small" data-level="doctorat">Doctorat</button>
+          </div>
+        </section>
+
+        <div id="loading" class="surface-panel loading"><div class="spinner"></div></div>
+        <section class="surface-panel">
+          <div class="surface-heading">
+            <div>
+              <div class="surface-heading-title">Directory</div>
+              <p class="surface-heading-copy">Open full profile detail, review uploaded CVs for students, and update account access when needed.</p>
+            </div>
+          </div>
+          <div id="users-list"></div>
+        </section>
+      </main>
+    </div>
   </div>
 
   <div class="modal-overlay" id="user-modal">
@@ -95,6 +163,7 @@
 
     let allUsers = [];
     let roleFilter = 'all';
+    let statusFilter = 'all';
     let levelFilter = 'all';
     let searchQuery = '';
     let currentModalUid = '';
@@ -159,6 +228,8 @@
     function filterUsers() {
       return allUsers.filter((user) => {
         if (roleFilter !== 'all' && user.role !== roleFilter) return false;
+        if (statusFilter === 'active' && user.isActive === false) return false;
+        if (statusFilter === 'blocked' && user.isActive !== false) return false;
         if (levelFilter !== 'all' && (user.academicLevel || '') !== levelFilter) return false;
         if (searchQuery) {
           const normalized = searchQuery.toLowerCase();
@@ -168,8 +239,41 @@
       });
     }
 
+    function renderSummary(filteredUsers = filterUsers()) {
+      const summary = document.getElementById('users-summary');
+      if (!summary) {
+        return;
+      }
+
+      const totalUsers = allUsers.length;
+      const activeUsers = allUsers.filter((user) => user.isActive !== false).length;
+      const blockedUsers = totalUsers - activeUsers;
+      const students = allUsers.filter((user) => user.role === 'student').length;
+      const companies = allUsers.filter((user) => user.role === 'company').length;
+      const admins = allUsers.filter((user) => user.role === 'admin').length;
+
+      summary.innerHTML = `
+        <div class="summary-card">
+          <span class="summary-label">Visible Results</span>
+          <div class="summary-value">${filteredUsers.length}</div>
+          <div class="summary-meta">Accounts matching the current search and filter combination.</div>
+        </div>
+        <div class="summary-card">
+          <span class="summary-label">Active Accounts</span>
+          <div class="summary-value">${activeUsers}</div>
+          <div class="summary-meta">${blockedUsers} blocked account${blockedUsers === 1 ? '' : 's'} currently require manual review.</div>
+        </div>
+        <div class="summary-card">
+          <span class="summary-label">Role Mix</span>
+          <div class="summary-value">${students} / ${companies} / ${admins}</div>
+          <div class="summary-meta">Students, companies, and admins across the full directory.</div>
+        </div>
+      `;
+    }
+
     function renderUsers() {
       const users = filterUsers();
+      renderSummary(users);
       const el = document.getElementById('users-list');
       if (users.length === 0) {
         el.innerHTML = emptyStateHtml(
@@ -219,6 +323,15 @@
           item.classList.toggle('active', item.dataset.level === 'all');
         });
       }
+      renderUsers();
+    });
+
+    document.getElementById('status-filters').addEventListener('click', (event) => {
+      const chip = event.target.closest('.chip');
+      if (!chip) return;
+      statusFilter = chip.dataset.status || 'all';
+      document.querySelectorAll('#status-filters .chip').forEach((item) => item.classList.remove('active'));
+      chip.classList.add('active');
       renderUsers();
     });
 

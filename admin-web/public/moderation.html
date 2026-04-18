@@ -3,29 +3,32 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FutureGate Admin - Moderation</title>
+  <title>FutureGate Admin - Content Center</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/workspace-theme.css">
+  <script src="js/theme-init.js"></script>
 </head>
-<body>
+<body data-page="content">
   <div id="auth-gate" class="auth-gate">
     <div class="spinner"></div>
     <p>Verifying session...</p>
   </div>
   <div class="layout">
+    <div class="shell-backdrop" data-shell-backdrop></div>
     <aside class="sidebar">
       <div class="sidebar-header">
         <div class="sidebar-brand">
           <div class="sidebar-brand-icon">&#x1F6E1;&#xFE0F;</div>
-          <div class="sidebar-brand-text"><h2>Admin Panel</h2><p>FutureGate Management</p></div>
+          <div class="sidebar-brand-text"><h2>FutureGate Admin</h2><p>Content center for moderation, publishing, and library curation.</p></div>
         </div>
       </div>
       <nav class="sidebar-nav">
-        <a href="index.html" class="nav-item"><span class="icon">&#x1F4CA;</span> Dashboard</a>
-        <a href="users.html" class="nav-item"><span class="icon">&#x1F465;</span> Users</a>
-        <a href="moderation.html" class="nav-item"><span class="icon">&#x2696;&#xFE0F;</span> Moderation</a>
-        <a href="activity.html" class="nav-item"><span class="icon">&#x23F1;&#xFE0F;</span> Activity</a>
-        <a href="notifications.html" class="nav-item"><span class="icon">&#x1F514;</span> Notifications <span class="nav-badge" data-notification-badge hidden>0</span></a>
+        <a href="index.html" class="nav-item"><span class="icon">DB</span> Dashboard</a>
+        <a href="users.html" class="nav-item"><span class="icon">US</span> Users</a>
+        <a href="moderation.html" class="nav-item"><span class="icon">CT</span> Content</a>
+        <a href="activity.html" class="nav-item"><span class="icon">AC</span> Activity</a>
+        <a href="notifications.html" class="nav-item"><span class="icon">NT</span> Notifications <span class="nav-badge" data-notification-badge hidden>0</span></a>
       </nav>
       <div class="sidebar-footer">
         <div class="admin-info">
@@ -35,238 +38,305 @@
         <button class="btn-logout" id="btn-logout">&#x1F6AA; Logout</button>
       </div>
     </aside>
-
-    <main class="main-content">
-      <h1 class="page-title">Moderation</h1>
-      <p class="page-subtitle">Manage the main platform content types, review new submissions, and jump into linked items from activity and notifications.</p>
-      <div class="search-bar">
-        <span class="search-icon">&#x1F50D;</span>
-        <input type="text" id="content-search" placeholder="Search the current tab by title, actor, status, or provider...">
-      </div>
-      <div class="tabs" id="tabs">
-        <button class="tab active" data-tab="ideas">
-          Ideas
-          <span class="count-badge" id="pending-count" style="display:none">0</span>
-        </button>
-        <button class="tab" data-tab="applications">Applications</button>
-        <button class="tab" data-tab="opportunities">Offers</button>
-        <button class="tab" data-tab="scholarships">Scholarships</button>
-        <button class="tab" data-tab="trainings">Training</button>
-      </div>
-      <div id="loading" class="loading"><div class="spinner"></div></div>
-
-      <div id="ideas-tab" class="tab-content active">
-        <div class="filter-row">
-          <span class="filter-label" id="ideas-label">Pending Ideas (0)</span>
-          <button class="btn-toggle-filter" id="toggle-pending">Show All</button>
+    <div class="workspace">
+      <header class="workspace-header">
+        <button class="toolbar-icon mobile-only" type="button" data-mobile-nav-toggle aria-label="Open navigation" aria-expanded="false">MN</button>
+        <div class="workspace-heading">
+          <div class="workspace-eyebrow">Content Center</div>
+          <h1>Content</h1>
+          <p>Moderate submissions, manage published content, and curate the learning library from one focused admin surface.</p>
         </div>
-        <div id="ideas-list"></div>
-      </div>
-
-      <div id="applications-tab" class="tab-content">
-        <div class="filter-row">
-          <span class="filter-label" id="applications-label">Applications (0)</span>
-        </div>
-        <div id="applications-list"></div>
-      </div>
-
-      <div id="opportunities-tab" class="tab-content">
-        <div id="opps-list"></div>
-      </div>
-
-      <div id="scholarships-tab" class="tab-content">
-        <div class="card training-section-card">
-          <div class="training-toolbar">
-            <div>
-              <div class="filter-label">Create Scholarship</div>
-              <p class="training-helper">
-                Publish scholarships from the admin website so the Worker can
-                create in-app notifications and send device push right after the
-                Firestore write succeeds.
-              </p>
-            </div>
-          </div>
-          <div class="training-form-grid">
-            <div class="form-group">
-              <label for="scholarship-title">Title</label>
-              <input type="text" id="scholarship-title" placeholder="For example: Excellence Scholarship 2026">
-            </div>
-            <div class="form-group">
-              <label for="scholarship-provider">Provider</label>
-              <input type="text" id="scholarship-provider" placeholder="For example: Ministry of Higher Education">
-            </div>
-            <div class="form-group">
-              <label for="scholarship-amount">Amount (DZD)</label>
-              <input type="number" id="scholarship-amount" min="1" step="1" placeholder="For example: 50000">
-            </div>
-            <div class="form-group">
-              <label for="scholarship-deadline">Deadline</label>
-              <input type="date" id="scholarship-deadline">
-            </div>
-            <div class="form-group">
-              <label for="scholarship-link">Application Link</label>
-              <input type="url" id="scholarship-link" placeholder="https://example.org/apply">
-            </div>
-          </div>
-          <div class="training-form-grid">
-            <div class="form-group">
-              <label for="scholarship-description">Description</label>
-              <textarea id="scholarship-description" rows="4" placeholder="Summarize the scholarship, what it covers, and who it is for."></textarea>
-            </div>
-            <div class="form-group">
-              <label for="scholarship-eligibility">Eligibility</label>
-              <textarea id="scholarship-eligibility" rows="4" placeholder="List the key eligibility requirements for applicants."></textarea>
-            </div>
-          </div>
-          <div class="training-form-actions">
-            <span class="training-helper">
-              Existing scholarships can also be notified later from the list below.
+        <div class="workspace-actions">
+          <button class="toolbar-action" type="button" data-theme-toggle>
+            <span class="toolbar-action-icon">TH</span>
+            <span class="toolbar-action-copy">
+              <small>Theme</small>
+              <strong data-theme-label>Light</strong>
             </span>
-            <button class="btn-primary btn-inline" id="scholarship-create-btn">
-              Create Scholarship
-            </button>
-          </div>
-          <div id="scholarship-status" class="training-status" aria-live="polite"></div>
+          </button>
+          <a class="toolbar-action toolbar-action--accent" href="notifications.html">
+            <span class="toolbar-action-icon">NT</span>
+            <span class="toolbar-action-copy">
+              <small>Inbox</small>
+              <strong>Notifications</strong>
+            </span>
+            <span class="toolbar-pill-badge" data-notification-badge hidden>0</span>
+          </a>
         </div>
-        <div class="filter-row">
-          <span class="filter-label" id="scholarships-label">Scholarships (0)</span>
-        </div>
-        <div id="scholarships-list"></div>
-      </div>
+      </header>
 
-      <div id="trainings-tab" class="tab-content">
-        <div class="card training-section-card">
-          <div class="training-toolbar">
+      <main class="main-content page-shell">
+        <section class="hero-panel">
+          <div class="hero-grid">
+            <div class="hero-copy">
+              <span class="hero-label">Moderation + Publishing</span>
+              <h2 class="hero-title">Move between review queues, publishing tools, and library curation without losing context.</h2>
+              <p class="hero-subtitle">The content center keeps incoming ideas, application review, published inventory, scholarship creation, training management, and external resource import in a single responsive workspace.</p>
+            </div>
+            <div class="summary-grid" id="content-overview">
+              <div class="summary-card">
+                <span class="summary-label">Loading</span>
+                <div class="summary-value">Preparing queues...</div>
+                <div class="summary-meta">Moderation counts and content totals appear here after the initial data load.</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="surface-panel">
+          <div class="surface-heading">
             <div>
-              <div class="filter-label">Import Google Books</div>
-              <p class="training-helper">
-                Search Google Books directly from the admin website and import
-                selected books into the existing trainings collection.
-              </p>
+              <div class="surface-heading-title">Workspace Filters</div>
+              <p class="surface-heading-copy">Search the active moderation queue by title, actor, status, or provider. Search hides automatically while you are in the library import tab.</p>
             </div>
           </div>
-          <div class="training-form-grid">
-            <div class="form-group">
-              <label for="training-query">Search</label>
-              <input type="text" id="training-query" placeholder="For example: python, algorithms, mathematics">
-            </div>
-            <div class="form-group">
-              <label for="training-domain">Domain</label>
-              <select id="training-domain">
-                <option value="Informatique">Informatique</option>
-                <option value="Mathematiques">Mathematiques</option>
-                <option value="Medecine">Medecine</option>
-                <option value="Droit">Droit</option>
-                <option value="Commerce">Commerce</option>
-                <option value="Architecture">Architecture</option>
-                <option value="Biologie">Biologie</option>
-                <option value="Physique">Physique</option>
-                <option value="Chimie">Chimie</option>
-                <option value="Langues">Langues</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="training-level">Level</label>
-              <select id="training-level">
-                <option value="bac">bac</option>
-                <option value="licence" selected>licence</option>
-                <option value="master">master</option>
-                <option value="doctorat">doctorat</option>
-                <option value="general">general</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="training-language">Language</label>
-              <select id="training-language">
-                <option value="" selected>Any</option>
-                <option value="en">en</option>
-                <option value="fr">fr</option>
-                <option value="ar">ar</option>
-              </select>
+          <div class="search-shell" id="content-search-shell">
+            <div class="search-bar">
+              <span class="search-icon">&#x1F50D;</span>
+              <input type="text" id="content-search" placeholder="Search the current tab by title, actor, status, or provider...">
             </div>
           </div>
-          <div class="training-form-actions">
-            <label class="checkbox-row" for="training-featured">
-              <input type="checkbox" id="training-featured">
-              <span>Mark imported book as featured</span>
-            </label>
-            <button class="btn-primary btn-inline" id="training-search-btn">
-              Search Books
+          <div class="tabs" id="tabs">
+            <button class="tab active" data-tab="ideas">
+              Ideas
+              <span class="count-badge" id="pending-count" style="display:none">0</span>
             </button>
+            <button class="tab" data-tab="applications">Applications</button>
+            <button class="tab" data-tab="opportunities">Opportunities</button>
+            <button class="tab" data-tab="scholarships">Scholarships</button>
+            <button class="tab" data-tab="trainings">Trainings</button>
+            <button class="tab" data-tab="library">Library</button>
           </div>
-          <div id="training-status" class="training-status" aria-live="polite"></div>
+        </section>
+
+        <div id="loading" class="surface-panel loading"><div class="spinner"></div></div>
+
+        <div id="ideas-tab" class="tab-content active">
+          <section class="surface-panel">
+            <div class="filter-row">
+              <span class="filter-label" id="ideas-label">Pending Ideas (0)</span>
+              <button class="btn-toggle-filter" id="toggle-pending">Show All</button>
+            </div>
+            <div id="ideas-list"></div>
+          </section>
         </div>
 
-        <div class="filter-row">
-          <span class="filter-label" id="book-results-label">Google Books Results</span>
-        </div>
-        <div id="book-results"></div>
-
-        <div class="card training-section-card">
-          <div class="training-toolbar">
-            <div>
-              <div class="filter-label">Import YouTube Videos</div>
-              <p class="training-helper">
-                Search YouTube directly from the admin website and import
-                selected videos into the existing trainings collection.
-              </p>
+        <div id="applications-tab" class="tab-content">
+          <section class="surface-panel">
+            <div class="filter-row">
+              <span class="filter-label" id="applications-label">Applications (0)</span>
             </div>
-          </div>
-          <div class="training-form-grid">
-            <div class="form-group">
-              <label for="youtube-query">Search</label>
-              <input type="text" id="youtube-query" placeholder="For example: python, algorithms, mathematics">
-            </div>
-            <div class="form-group">
-              <label for="youtube-domain">Domain</label>
-              <select id="youtube-domain">
-                <option value="Informatique">Informatique</option>
-                <option value="Mathematiques">Mathematiques</option>
-                <option value="Medecine">Medecine</option>
-                <option value="Droit">Droit</option>
-                <option value="Commerce">Commerce</option>
-                <option value="Architecture">Architecture</option>
-                <option value="Biologie">Biologie</option>
-                <option value="Physique">Physique</option>
-                <option value="Chimie">Chimie</option>
-                <option value="Langues">Langues</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="youtube-level">Level</label>
-              <select id="youtube-level">
-                <option value="bac">bac</option>
-                <option value="licence" selected>licence</option>
-                <option value="master">master</option>
-                <option value="doctorat">doctorat</option>
-                <option value="general">general</option>
-              </select>
-            </div>
-          </div>
-          <div class="training-form-actions">
-            <label class="checkbox-row" for="youtube-featured">
-              <input type="checkbox" id="youtube-featured">
-              <span>Mark imported video as featured</span>
-            </label>
-            <button class="btn-primary btn-inline" id="youtube-search-btn">
-              Search Videos
-            </button>
-          </div>
-          <div id="youtube-status" class="training-status" aria-live="polite"></div>
+            <div id="applications-list"></div>
+          </section>
         </div>
 
-        <div class="filter-row">
-          <span class="filter-label" id="youtube-results-label">YouTube Results</span>
+        <div id="opportunities-tab" class="tab-content">
+          <section class="surface-panel">
+            <div id="opps-list"></div>
+          </section>
         </div>
-        <div id="youtube-results"></div>
 
-        <div class="filter-row">
-          <span class="filter-label" id="trainings-label">Training Resources (0)</span>
-          <button class="btn-toggle-filter" id="reload-trainings">Refresh</button>
+        <div id="scholarships-tab" class="tab-content">
+          <section class="training-section-card">
+            <div class="training-toolbar">
+              <div>
+                <div class="filter-label">Create Scholarship</div>
+                <p class="training-helper">
+                  Publish scholarships from the admin website so the Worker can create in-app notifications and send device push right after the Firestore write succeeds.
+                </p>
+              </div>
+            </div>
+            <div class="training-form-grid">
+              <div class="form-group">
+                <label for="scholarship-title">Title</label>
+                <input type="text" id="scholarship-title" placeholder="For example: Excellence Scholarship 2026">
+              </div>
+              <div class="form-group">
+                <label for="scholarship-provider">Provider</label>
+                <input type="text" id="scholarship-provider" placeholder="For example: Ministry of Higher Education">
+              </div>
+              <div class="form-group">
+                <label for="scholarship-amount">Amount (DZD)</label>
+                <input type="number" id="scholarship-amount" min="1" step="1" placeholder="For example: 50000">
+              </div>
+              <div class="form-group">
+                <label for="scholarship-deadline">Deadline</label>
+                <input type="date" id="scholarship-deadline">
+              </div>
+              <div class="form-group">
+                <label for="scholarship-link">Application Link</label>
+                <input type="url" id="scholarship-link" placeholder="https://example.org/apply">
+              </div>
+            </div>
+            <div class="training-form-grid">
+              <div class="form-group">
+                <label for="scholarship-description">Description</label>
+                <textarea id="scholarship-description" rows="4" placeholder="Summarize the scholarship, what it covers, and who it is for."></textarea>
+              </div>
+              <div class="form-group">
+                <label for="scholarship-eligibility">Eligibility</label>
+                <textarea id="scholarship-eligibility" rows="4" placeholder="List the key eligibility requirements for applicants."></textarea>
+              </div>
+            </div>
+            <div class="training-form-actions">
+              <span class="training-helper">
+                Existing scholarships can also be notified later from the list below.
+              </span>
+              <button class="btn-primary btn-inline" id="scholarship-create-btn">
+                Create Scholarship
+              </button>
+            </div>
+            <div id="scholarship-status" class="training-status" aria-live="polite"></div>
+          </section>
+
+          <section class="surface-panel">
+            <div class="filter-row">
+              <span class="filter-label" id="scholarships-label">Scholarships (0)</span>
+            </div>
+            <div id="scholarships-list"></div>
+          </section>
         </div>
-        <div id="trainings-list"></div>
-      </div>
-    </main>
+
+        <div id="trainings-tab" class="tab-content">
+          <section class="surface-panel">
+            <div class="filter-row">
+              <span class="filter-label" id="trainings-label">Training Resources (0)</span>
+              <button class="btn-toggle-filter" id="reload-trainings">Refresh</button>
+            </div>
+            <div id="trainings-list"></div>
+          </section>
+        </div>
+
+        <div id="library-tab" class="tab-content">
+          <section class="training-section-card">
+            <div class="training-toolbar">
+              <div>
+                <div class="filter-label">Import Google Books</div>
+                <p class="training-helper">
+                  Search Google Books directly from the admin website and import selected books into the existing trainings collection.
+                </p>
+              </div>
+            </div>
+            <div class="training-form-grid">
+              <div class="form-group">
+                <label for="training-query">Search</label>
+                <input type="text" id="training-query" placeholder="For example: python, algorithms, mathematics">
+              </div>
+              <div class="form-group">
+                <label for="training-domain">Domain</label>
+                <select id="training-domain">
+                  <option value="Informatique">Informatique</option>
+                  <option value="Mathematiques">Mathematiques</option>
+                  <option value="Medecine">Medecine</option>
+                  <option value="Droit">Droit</option>
+                  <option value="Commerce">Commerce</option>
+                  <option value="Architecture">Architecture</option>
+                  <option value="Biologie">Biologie</option>
+                  <option value="Physique">Physique</option>
+                  <option value="Chimie">Chimie</option>
+                  <option value="Langues">Langues</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="training-level">Level</label>
+                <select id="training-level">
+                  <option value="bac">bac</option>
+                  <option value="licence" selected>licence</option>
+                  <option value="master">master</option>
+                  <option value="doctorat">doctorat</option>
+                  <option value="general">general</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="training-language">Language</label>
+                <select id="training-language">
+                  <option value="" selected>Any</option>
+                  <option value="en">en</option>
+                  <option value="fr">fr</option>
+                  <option value="ar">ar</option>
+                </select>
+              </div>
+            </div>
+            <div class="training-form-actions">
+              <label class="checkbox-row" for="training-featured">
+                <input type="checkbox" id="training-featured">
+                <span>Mark imported book as featured</span>
+              </label>
+              <button class="btn-primary btn-inline" id="training-search-btn">
+                Search Books
+              </button>
+            </div>
+            <div id="training-status" class="training-status" aria-live="polite"></div>
+          </section>
+
+          <section class="surface-panel">
+            <div class="filter-row">
+              <span class="filter-label" id="book-results-label">Google Books Results</span>
+            </div>
+            <div id="book-results"></div>
+          </section>
+
+          <section class="training-section-card">
+            <div class="training-toolbar">
+              <div>
+                <div class="filter-label">Import YouTube Videos</div>
+                <p class="training-helper">
+                  Search YouTube directly from the admin website and import selected videos into the existing trainings collection.
+                </p>
+              </div>
+            </div>
+            <div class="training-form-grid">
+              <div class="form-group">
+                <label for="youtube-query">Search</label>
+                <input type="text" id="youtube-query" placeholder="For example: python, algorithms, mathematics">
+              </div>
+              <div class="form-group">
+                <label for="youtube-domain">Domain</label>
+                <select id="youtube-domain">
+                  <option value="Informatique">Informatique</option>
+                  <option value="Mathematiques">Mathematiques</option>
+                  <option value="Medecine">Medecine</option>
+                  <option value="Droit">Droit</option>
+                  <option value="Commerce">Commerce</option>
+                  <option value="Architecture">Architecture</option>
+                  <option value="Biologie">Biologie</option>
+                  <option value="Physique">Physique</option>
+                  <option value="Chimie">Chimie</option>
+                  <option value="Langues">Langues</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="youtube-level">Level</label>
+                <select id="youtube-level">
+                  <option value="bac">bac</option>
+                  <option value="licence" selected>licence</option>
+                  <option value="master">master</option>
+                  <option value="doctorat">doctorat</option>
+                  <option value="general">general</option>
+                </select>
+              </div>
+            </div>
+            <div class="training-form-actions">
+              <label class="checkbox-row" for="youtube-featured">
+                <input type="checkbox" id="youtube-featured">
+                <span>Mark imported video as featured</span>
+              </label>
+              <button class="btn-primary btn-inline" id="youtube-search-btn">
+                Search Videos
+              </button>
+            </div>
+            <div id="youtube-status" class="training-status" aria-live="polite"></div>
+          </section>
+
+          <section class="surface-panel">
+            <div class="filter-row">
+              <span class="filter-label" id="youtube-results-label">YouTube Results</span>
+            </div>
+            <div id="youtube-results"></div>
+          </section>
+        </div>
+      </main>
+    </div>
   </div>
 
   <div class="modal-overlay confirm-modal" id="confirm-modal">
@@ -388,6 +458,7 @@
       statusMessage: '',
       statusKind: 'info',
     };
+    const applicationBusyIds = new Set();
 
     function resolveFocusedTargetId(tabName) {
       const mapping = {
@@ -402,7 +473,7 @@
     }
 
     function applyTabState(nextTab, { syncUrl = true, resetFocus = false } = {}) {
-      const validTabs = new Set(['ideas', 'applications', 'opportunities', 'scholarships', 'trainings']);
+      const validTabs = new Set(['ideas', 'applications', 'opportunities', 'scholarships', 'trainings', 'library']);
       activeTab = validTabs.has(nextTab) ? nextTab : 'ideas';
       if (resetFocus) {
         focusedTargetId = '';
@@ -417,6 +488,9 @@
       document.querySelectorAll('.tab-content').forEach((item) => {
         item.classList.toggle('active', item.id === `${activeTab}-tab`);
       });
+
+      document.body.dataset.activeTab = activeTab;
+      syncSearchUi();
 
       if (syncUrl) {
         updateUrlParams({
@@ -434,8 +508,87 @@
       return focusedTargetId && id === focusedTargetId;
     }
 
+    function searchPlaceholderForTab(tabName) {
+      const mapping = {
+        ideas: 'Search ideas by title, domain, level, or status...',
+        applications: 'Search applications by student, opportunity, or status...',
+        opportunities: 'Search opportunities by title, company, location, or status...',
+        scholarships: 'Search scholarships by title, provider, deadline, or description...',
+        trainings: 'Search training resources by title, source, domain, or level...',
+      };
+
+      return mapping[tabName] || 'Search the current tab...';
+    }
+
+    function syncSearchUi() {
+      const searchShell = document.getElementById('content-search-shell');
+      const searchInput = document.getElementById('content-search');
+      if (!searchShell || !searchInput) {
+        return;
+      }
+
+      const shouldHide = activeTab === 'library';
+      searchShell.classList.toggle('is-hidden', shouldHide);
+      searchInput.placeholder = searchPlaceholderForTab(activeTab);
+
+      if (shouldHide) {
+        searchInput.blur();
+      }
+    }
+
     function currentSearch() {
       return moderationSearchQuery.trim();
+    }
+
+    function normalizeApplicationStatus(rawStatus) {
+      const normalized = String(rawStatus || '').trim().toLowerCase();
+      if (normalized === 'accepted' || normalized === 'approved') {
+        return 'accepted';
+      }
+      if (normalized === 'rejected') {
+        return 'rejected';
+      }
+      return 'pending';
+    }
+
+    function canManageApplication(application) {
+      return (
+        currentAdminUid.trim() &&
+        String(application?.opportunityCreatedByRole || '').trim().toLowerCase() === 'admin' &&
+        String(application?.companyId || '').trim() === currentAdminUid.trim()
+      );
+    }
+
+    function renderContentOverview() {
+      const overview = document.getElementById('content-overview');
+      if (!overview) {
+        return;
+      }
+
+      const pendingIdeas = allIdeas.filter((item) => (item.status || 'pending') === 'pending').length;
+      const pendingAdminApplications = allApplications.filter((item) => (
+        canManageApplication(item) && normalizeApplicationStatus(item.status) === 'pending'
+      )).length;
+      const featuredTrainings = allTrainings.filter((item) => item.isFeatured === true).length;
+      const publishedItems = allOpps.length + allScholarships.length + allTrainings.length;
+
+      overview.innerHTML = `
+        <div class="summary-card">
+          <span class="summary-label">Review Queue</span>
+          <div class="summary-value">${pendingIdeas + pendingAdminApplications}</div>
+          <div class="summary-meta">${pendingIdeas} pending idea${pendingIdeas === 1 ? '' : 's'} and ${pendingAdminApplications} admin-manageable application${pendingAdminApplications === 1 ? '' : 's'} currently need attention.</div>
+        </div>
+        <div class="summary-card">
+          <span class="summary-label">Published Inventory</span>
+          <div class="summary-value">${publishedItems}</div>
+          <div class="summary-meta">${allOpps.length} opportunities, ${allScholarships.length} scholarships, and ${allTrainings.length} training resources are currently live in the workspace.</div>
+        </div>
+        <div class="summary-card">
+          <span class="summary-label">Featured Library</span>
+          <div class="summary-value">${featuredTrainings}</div>
+          <div class="summary-meta">Training resources already flagged as featured and ready for extra visibility in the app.</div>
+        </div>
+      `;
     }
 
     attachStaticEventHandlers();
@@ -478,6 +631,9 @@
             ...data,
             opportunityTitle: relatedOpportunity.title || 'Untitled opportunity',
             companyName: relatedOpportunity.companyName || data.companyId || 'Unknown company',
+            companyId: relatedOpportunity.companyId || data.companyId || '',
+            opportunityCreatedBy: relatedOpportunity.createdBy || '',
+            opportunityCreatedByRole: relatedOpportunity.createdByRole || '',
           });
         });
 
@@ -497,6 +653,7 @@
         renderScholarships();
         renderTrainings();
         updatePendingCount();
+        renderContentOverview();
         applyTabState(activeTab, { syncUrl: true });
       } catch (error) {
         console.error('Load moderation error:', error);
@@ -540,11 +697,11 @@
         }
       });
 
-    document.getElementById('applications-list').addEventListener('click', async (event) => {
-      const button = event.target.closest('[data-action]');
-      if (!button) {
-        return;
-      }
+      document.getElementById('applications-list').addEventListener('click', async (event) => {
+        const button = event.target.closest('[data-action]');
+        if (!button) {
+          return;
+        }
 
         if (button.dataset.action === 'open-cv') {
           await openApplicationCv(button.dataset.id);
@@ -555,6 +712,16 @@
           focusedTargetId = button.dataset.opportunityId || '';
           applyTabState('opportunities', { syncUrl: true });
           renderOpps();
+          return;
+        }
+
+        if (button.dataset.action === 'approve-application') {
+          await updateApplicationStatus(button.dataset.id, 'accepted');
+          return;
+        }
+
+        if (button.dataset.action === 'reject-application') {
+          await updateApplicationStatus(button.dataset.id, 'rejected');
         }
       });
 
@@ -754,6 +921,7 @@
     }
 
     function renderIdeas() {
+      renderContentOverview();
       const ideas = (showPendingOnly
         ? allIdeas.filter((item) => (item.status || 'pending') === 'pending')
         : allIdeas)
@@ -830,6 +998,7 @@
     }
 
     function renderApplications() {
+      renderContentOverview();
       const filtered = allApplications.filter((application) => matchesSearch([
         application.studentName,
         application.opportunityTitle,
@@ -858,16 +1027,33 @@
               <div class="list-card-title">${esc(application.opportunityTitle || 'Untitled opportunity')}</div>
               <div class="list-card-subtitle">${esc(application.studentName || 'Unknown student')} applied to ${esc(application.companyName || 'Unknown company')}</div>
             </div>
-            <span class="status-badge ${String(application.status || '').trim().toLowerCase() === 'accepted' ? 'status-approved' : String(application.status || '').trim().toLowerCase() === 'rejected' ? 'status-rejected' : 'status-pending'}">${esc(application.status || 'submitted')}</span>
+            <span class="status-badge ${normalizeApplicationStatus(application.status) === 'accepted' ? 'status-approved' : normalizeApplicationStatus(application.status) === 'rejected' ? 'status-rejected' : 'status-pending'}">${esc(normalizeApplicationStatus(application.status) === 'accepted' ? 'approved' : normalizeApplicationStatus(application.status) === 'rejected' ? 'rejected' : 'pending')}</span>
           </div>
           <div class="list-card-meta">
             <span class="meta-pill meta-pill-application">Application</span>
             <span class="meta-pill">${esc(application.companyName || 'Unknown company')}</span>
             <span class="meta-pill">${esc(timestampLabel(application.appliedAt) || 'Unknown time')}</span>
+            ${
+              canManageApplication(application)
+                ? '<span class="meta-pill" style="background:rgba(23,157,108,0.14);color:#179d6c">Admin managed</span>'
+                : ''
+            }
           </div>
           <div class="list-card-actions">
             <button class="btn-open" data-action="open-opportunity" data-id="${esc(application.id)}" data-opportunity-id="${esc(application.opportunityId || '')}">Open Opportunity</button>
             <button class="btn-secondary" data-action="open-cv" data-id="${esc(application.id)}">Review CV</button>
+            ${
+              canManageApplication(application) && normalizeApplicationStatus(application.status) === 'pending'
+                ? `
+                  <button class="btn-approve" data-action="approve-application" data-id="${esc(application.id)}" ${applicationBusyIds.has(application.id) ? 'disabled' : ''}>
+                    ${applicationBusyIds.has(application.id) ? 'Working...' : 'Approve'}
+                  </button>
+                  <button class="btn-reject" data-action="reject-application" data-id="${esc(application.id)}" ${applicationBusyIds.has(application.id) ? 'disabled' : ''}>
+                    ${applicationBusyIds.has(application.id) ? 'Working...' : 'Reject'}
+                  </button>
+                `
+                : ''
+            }
             ${
               application.cvId
                 ? '<span class="inline-status">Linked CV record available</span>'
@@ -876,6 +1062,94 @@
           </div>
         </div>
       `).join('');
+    }
+
+    function syncApplicationStatusLocally(id, status) {
+      const item = allApplications.find((application) => application.id === id);
+      if (item) {
+        item.status = status;
+      }
+    }
+
+    async function updateApplicationStatus(id, status) {
+      if (!id || applicationBusyIds.has(id)) {
+        return;
+      }
+
+      const localApplication = allApplications.find((item) => item.id === id);
+      if (!localApplication) {
+        showToast('Application could not be found in the current list.', 'error');
+        return;
+      }
+
+      if (!canManageApplication(localApplication)) {
+        showToast('You can only update applications for admin-posted opportunities you own.', 'warning');
+        return;
+      }
+
+      applicationBusyIds.add(id);
+      renderApplications();
+
+      try {
+        const appRef = doc(db, 'applications', id);
+        const appSnap = await getDoc(appRef);
+        if (!appSnap.exists()) {
+          showToast('This application is no longer available.', 'error');
+          return;
+        }
+
+        const appData = appSnap.data() || {};
+        const opportunityId = String(appData.opportunityId || '').trim();
+        if (!opportunityId) {
+          showToast('This application is not linked to a valid opportunity.', 'error');
+          return;
+        }
+
+        const opportunitySnap = await getDoc(doc(db, 'opportunities', opportunityId));
+        const opportunityData = opportunitySnap.data() || {};
+        const ownerId = String(opportunityData.companyId || '').trim();
+        const ownerRole = String(opportunityData.createdByRole || '').trim().toLowerCase();
+
+        if (!opportunitySnap.exists() || ownerId !== currentAdminUid.trim() || ownerRole !== 'admin') {
+          showToast('Only applications for your own admin-posted opportunities can be updated here.', 'warning');
+          return;
+        }
+
+        const currentStatus = normalizeApplicationStatus(appData.status);
+        const nextStatus = normalizeApplicationStatus(status);
+        if (currentStatus === nextStatus) {
+          syncApplicationStatusLocally(id, currentStatus);
+          renderApplications();
+          showToast('Application was already updated.', 'success');
+          return;
+        }
+
+        await updateDoc(appRef, { status: nextStatus });
+
+        if (nextStatus === 'accepted' || nextStatus === 'rejected') {
+          await workerFetch('/api/notify/application-status-changed', {
+            method: 'POST',
+            body: JSON.stringify({ applicationId: id }),
+          }).catch((error) => {
+            console.error('Application status notification error:', error);
+          });
+        }
+
+        syncApplicationStatusLocally(id, nextStatus);
+        renderApplications();
+        showToast(nextStatus === 'accepted' ? 'Application approved' : 'Application rejected', 'success');
+      } catch (error) {
+        console.error('Update application status error:', error);
+        showToast(
+          normalizeApplicationStatus(status) === 'accepted'
+            ? 'Failed to approve application'
+            : 'Failed to reject application',
+          'error',
+        );
+      } finally {
+        applicationBusyIds.delete(id);
+        renderApplications();
+      }
     }
 
     function syncIdeaStatusLocally(id, status) {
@@ -947,6 +1221,7 @@
     }
 
     function renderOpps() {
+      renderContentOverview();
       const filteredOpps = allOpps.filter((opp) => matchesSearch([
         opp.title,
         opp.companyName,
@@ -1006,6 +1281,7 @@
     }
 
     function renderScholarships() {
+      renderContentOverview();
       const filteredScholarships = allScholarships.filter((scholarship) => matchesSearch([
         scholarship.title,
         scholarship.provider,
@@ -1392,6 +1668,7 @@
     }
 
     function renderTrainings() {
+      renderContentOverview();
       const container = document.getElementById('trainings-list');
       const label = document.getElementById('trainings-label');
       if (!container || !label) {

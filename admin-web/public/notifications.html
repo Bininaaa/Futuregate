@@ -6,26 +6,29 @@
   <title>FutureGate Admin - Notifications</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/workspace-theme.css">
+  <script src="js/theme-init.js"></script>
 </head>
-<body>
+<body data-page="notifications">
   <div id="auth-gate" class="auth-gate">
     <div class="spinner"></div>
     <p>Verifying session...</p>
   </div>
   <div class="layout">
+    <div class="shell-backdrop" data-shell-backdrop></div>
     <aside class="sidebar">
       <div class="sidebar-header">
         <div class="sidebar-brand">
           <div class="sidebar-brand-icon">&#x1F6E1;&#xFE0F;</div>
-          <div class="sidebar-brand-text"><h2>Admin Panel</h2><p>FutureGate Management</p></div>
+          <div class="sidebar-brand-text"><h2>FutureGate Admin</h2><p>Notification inbox for admin-owned actions and worker events.</p></div>
         </div>
       </div>
       <nav class="sidebar-nav">
-        <a href="index.html" class="nav-item"><span class="icon">&#x1F4CA;</span> Dashboard</a>
-        <a href="users.html" class="nav-item"><span class="icon">&#x1F465;</span> Users</a>
-        <a href="moderation.html" class="nav-item"><span class="icon">&#x2696;&#xFE0F;</span> Moderation</a>
-        <a href="activity.html" class="nav-item"><span class="icon">&#x23F1;&#xFE0F;</span> Activity</a>
-        <a href="notifications.html" class="nav-item"><span class="icon">&#x1F514;</span> Notifications <span class="nav-badge" data-notification-badge hidden>0</span></a>
+        <a href="index.html" class="nav-item"><span class="icon">DB</span> Dashboard</a>
+        <a href="users.html" class="nav-item"><span class="icon">US</span> Users</a>
+        <a href="moderation.html" class="nav-item"><span class="icon">CT</span> Content</a>
+        <a href="activity.html" class="nav-item"><span class="icon">AC</span> Activity</a>
+        <a href="notifications.html" class="nav-item"><span class="icon">NT</span> Notifications <span class="nav-badge" data-notification-badge hidden>0</span></a>
       </nav>
       <div class="sidebar-footer">
         <div class="admin-info">
@@ -36,28 +39,73 @@
       </div>
     </aside>
 
-    <main class="main-content">
-      <h1 class="page-title">Notification Center</h1>
-      <p class="page-subtitle">Review admin notifications, keep unread counts accurate, and jump directly into the related moderation item.</p>
-
-      <div class="page-toolbar">
-        <div class="filter-chips" id="notification-filters" style="margin:0">
-          <button class="chip active" data-filter="all">All</button>
-          <button class="chip" data-filter="unread">Unread</button>
+    <div class="workspace">
+      <header class="workspace-header">
+        <button class="toolbar-icon mobile-only" type="button" data-mobile-nav-toggle aria-label="Open navigation" aria-expanded="false">MN</button>
+        <div class="workspace-heading">
+          <div class="workspace-eyebrow">Inbox</div>
+          <h1>Notifications</h1>
+          <p>Keep unread counts accurate, clear handled items quickly, and jump straight into the linked moderation or activity record.</p>
         </div>
-        <div class="page-actions">
-          <span class="results-summary" id="notification-summary">Loading notifications...</span>
-          <button class="btn-secondary" id="mark-visible-read">Mark Visible as Read</button>
+        <div class="workspace-actions">
+          <button class="toolbar-action" type="button" data-theme-toggle>
+            <span class="toolbar-action-icon">TH</span>
+            <span class="toolbar-action-copy">
+              <small>Theme</small>
+              <strong data-theme-label>Light</strong>
+            </span>
+          </button>
+          <a class="toolbar-action toolbar-action--accent" href="activity.html">
+            <span class="toolbar-action-icon">AC</span>
+            <span class="toolbar-action-copy">
+              <small>Feed</small>
+              <strong>Open Activity</strong>
+            </span>
+          </a>
         </div>
-      </div>
+      </header>
 
-      <div id="notification-list">
-        <div class="loading"><div class="spinner"></div></div>
-      </div>
-      <div class="load-more-row">
-        <button class="load-more-button" id="load-more-notifications" hidden>Load More Notifications</button>
-      </div>
-    </main>
+      <main class="main-content page-shell">
+        <section class="hero-panel">
+          <div class="hero-grid">
+            <div class="hero-copy">
+              <span class="hero-label">Notification Center</span>
+              <h2 class="hero-title">Keep the admin loop tight, readable, and easy to clear.</h2>
+              <p class="hero-subtitle">Unread indicators stay synced across navigation and header actions while each notification keeps a direct path back into the related moderation target.</p>
+            </div>
+            <div class="summary-grid" id="notification-overview">
+              <div class="summary-card">
+                <span class="summary-label">Loading</span>
+                <div class="summary-value">Preparing inbox...</div>
+                <div class="summary-meta">Unread, read, and visible totals appear here after the first page arrives.</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="surface-panel">
+          <div class="page-toolbar">
+            <div class="filter-chips" id="notification-filters" style="margin:0">
+              <button class="chip active" data-filter="all">All</button>
+              <button class="chip" data-filter="unread">Unread</button>
+            </div>
+            <div class="page-actions">
+              <span class="results-summary" id="notification-summary">Loading notifications...</span>
+              <button class="btn-secondary" id="mark-visible-read">Mark Visible as Read</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="surface-panel">
+          <div id="notification-list">
+            <div class="loading"><div class="spinner"></div></div>
+          </div>
+          <div class="load-more-row">
+            <button class="load-more-button" id="load-more-notifications" hidden>Load More Notifications</button>
+          </div>
+        </section>
+      </main>
+    </div>
   </div>
 
   <script type="module">
@@ -155,6 +203,35 @@
       return notificationState.items;
     }
 
+    function renderNotificationOverview(items) {
+      const overview = document.getElementById('notification-overview');
+      if (!overview) {
+        return;
+      }
+
+      const unreadTotal = notificationState.items.filter((item) => item.isRead !== true).length;
+      const readTotal = notificationState.items.length - unreadTotal;
+      const visibleUnread = items.filter((item) => item.isRead !== true).length;
+
+      overview.innerHTML = `
+        <div class="summary-card">
+          <span class="summary-label">Loaded Inbox</span>
+          <div class="summary-value">${notificationState.items.length}</div>
+          <div class="summary-meta">${readTotal} read and ${unreadTotal} unread notifications currently loaded.</div>
+        </div>
+        <div class="summary-card">
+          <span class="summary-label">Visible Unread</span>
+          <div class="summary-value">${visibleUnread}</div>
+          <div class="summary-meta">Unread items in the current filter view that can be cleared in one action.</div>
+        </div>
+        <div class="summary-card">
+          <span class="summary-label">Current Filter</span>
+          <div class="summary-value">${notificationState.filter === 'unread' ? 'Unread only' : 'All notifications'}</div>
+          <div class="summary-meta">Switch filters to focus on only unread records or review the full inbox history.</div>
+        </div>
+      `;
+    }
+
     function renderNotifications() {
       const items = filteredNotifications();
       const list = document.getElementById('notification-list');
@@ -162,6 +239,7 @@
       const loadMoreButton = document.getElementById('load-more-notifications');
       const unreadVisible = items.filter((item) => item.isRead !== true).length;
 
+      renderNotificationOverview(items);
       summary.textContent = `${items.length} loaded item${items.length === 1 ? '' : 's'} • ${unreadVisible} unread`;
       loadMoreButton.hidden = !notificationState.hasMore;
       loadMoreButton.disabled = notificationState.isLoading;
