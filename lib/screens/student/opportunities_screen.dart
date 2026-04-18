@@ -663,20 +663,21 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
     }
   }
 
-  String _summaryText(int visibleCount, int totalCount) {
+  String _summaryText(int visibleCount, int totalCount, BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final filterLabel = switch (_activeFilter) {
-      _OpportunityDashboardFilter.all => 'opportunities',
-      _OpportunityDashboardFilter.job => 'jobs',
-      _OpportunityDashboardFilter.internship => 'internships',
-      _OpportunityDashboardFilter.sponsored => 'sponsored opportunities',
+      _OpportunityDashboardFilter.all => l10n.uiOpportunities.toLowerCase(),
+      _OpportunityDashboardFilter.job => l10n.uiJobs.toLowerCase(),
+      _OpportunityDashboardFilter.internship => l10n.uiInternships.toLowerCase(),
+      _OpportunityDashboardFilter.sponsored => l10n.uiSponsored.toLowerCase(),
     };
 
     if (_searchQuery.isEmpty &&
         _activeFilter == _OpportunityDashboardFilter.all) {
-      return '$totalCount open opportunities curated for students.';
+      return l10n.uiCountOpenOpportunitiesCuratedForStudents(totalCount);
     }
 
-    return 'Showing $visibleCount $filterLabel from $totalCount open listings.';
+    return l10n.uiShowingVisibleFilterFromTotalOpenListings(visibleCount, filterLabel, totalCount);
   }
 
   String _formatCount(int count, String singular, String plural) {
@@ -1323,11 +1324,12 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
   }
 
   Widget _buildHeaderSection(int visibleCount, int totalCount) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Find your next move.',
+          l10n.uiFindYourNextMove,
           style: GoogleFonts.poppins(
             fontSize: 27,
             fontWeight: FontWeight.w700,
@@ -1337,7 +1339,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
         ),
         const SizedBox(height: 6),
         Text(
-          'Browse jobs, internships, sponsored tracks, and training picks designed for students.',
+          l10n.uiBrowseJobsInternshipsSponsoredTracksAndTrainingPicksDesignedFor,
           style: GoogleFonts.poppins(
             fontSize: 12,
             height: 1.35,
@@ -1352,7 +1354,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
             focusNode: _searchFocusNode,
             textInputAction: TextInputAction.search,
             decoration: InputDecoration(
-              hintText: 'Search jobs, internships or sponsored roles',
+              hintText: l10n.uiSearchJobsInternshipsOrSponsoredRoles,
               hintStyle: GoogleFonts.poppins(
                 fontSize: 12,
                 color: OpportunityDashboardPalette.textSecondary,
@@ -1451,7 +1453,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
         AnimatedSwitcher(
           duration: const Duration(milliseconds: 220),
           child: Text(
-            _summaryText(visibleCount, totalCount),
+            _summaryText(visibleCount, totalCount, context),
             key: ValueKey(
               'summary-$visibleCount-$totalCount-$_activeFilter-$_searchQuery',
             ),
@@ -1572,13 +1574,13 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                         children: [
                           OpportunityHeroCard(
                             title: AppLocalizations.of(context)!.uiJobs,
-                            subtitle:
-                                'Discover premium open roles from trusted employers and remote-ready teams.',
+                            subtitle: AppLocalizations.of(context)!
+                                .uiDiscoverPremiumOpenRolesFromTrustedEmployersAndRemoteReady,
                             supportingLabel: _supportingCountText(
                               count: jobItems.length,
-                              singular: 'open position',
-                              plural: 'open positions',
-                              fallback: 'No jobs available right now',
+                              singular: AppLocalizations.of(context)!.uiOpenPosition,
+                              plural: AppLocalizations.of(context)!.uiOpenPositions,
+                              fallback: AppLocalizations.of(context)!.uiNoJobsAvailableRightNow,
                             ),
                             icon: Icons.work_outline_rounded,
                             onTap: () => Navigator.push(
@@ -1599,10 +1601,9 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                                     subtitle: AppLocalizations.of(context)!.uiInternshipsSubtitle,
                                     caption: _supportingCountText(
                                       count: internshipItems.length,
-                                      singular: 'open internship',
-                                      plural: 'open internships',
-                                      fallback:
-                                          'No internships available right now',
+                                      singular: AppLocalizations.of(context)!.uiOpenInternship,
+                                      plural: AppLocalizations.of(context)!.uiOpenInternships,
+                                      fallback: AppLocalizations.of(context)!.uiNoInternshipsAvailableRightNow,
                                     ),
                                     icon: Icons.school_outlined,
                                     color:
@@ -1626,10 +1627,9 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                                     subtitle: AppLocalizations.of(context)!.uiSponsoredSubtitle,
                                     caption: _supportingCountText(
                                       count: sponsoredItems.length,
-                                      singular: 'active track',
-                                      plural: 'active tracks',
-                                      fallback:
-                                          'No sponsored programs available right now',
+                                      singular: AppLocalizations.of(context)!.uiActiveTrack,
+                                      plural: AppLocalizations.of(context)!.uiActiveTracks,
+                                      fallback: AppLocalizations.of(context)!.uiNoSponsoredProgramsAvailableRightNow,
                                     ),
                                     icon: Icons.campaign_outlined,
                                     color: OpportunityDashboardPalette.accent,
@@ -1653,13 +1653,12 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                             title: AppLocalizations.of(context)!.uiTraining,
                             subtitle: '',
                             badgeLabel: trainingProvider.isLoading
-                                ? 'Loading...'
+                                ? AppLocalizations.of(context)!.uiLoading
                                 : _supportingCountText(
                                     count: trainingItems.length,
-                                    singular: 'resource',
-                                    plural: 'resources',
-                                    fallback:
-                                        'No training resources available right now',
+                                    singular: AppLocalizations.of(context)!.uiResource,
+                                    plural: AppLocalizations.of(context)!.uiResources,
+                                    fallback: AppLocalizations.of(context)!.uiNoTrainingResourcesAvailableRightNow,
                                   ),
                             onTap: _openTrainings,
                           ),

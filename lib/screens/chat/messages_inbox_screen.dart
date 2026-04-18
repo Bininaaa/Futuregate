@@ -104,7 +104,7 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Messages',
+                            AppLocalizations.of(context)!.uiMessages,
                             style: ChatThemeStyles.title().copyWith(
                               fontSize: 24,
                             ),
@@ -112,8 +112,8 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
                           const SizedBox(height: 2),
                           Text(
                             _selectedFilter == _InboxFilter.archived
-                                ? '${filtered.length} archived'
-                                : '${filtered.length} conversations',
+                                ? '${filtered.length} ${AppLocalizations.of(context)!.uiArchived.toLowerCase()}'
+                                : '${filtered.length} ${AppLocalizations.of(context)!.uiConversations.toLowerCase()}',
                             style:
                                 ChatThemeStyles.meta(
                                   ChatThemePalette.textSecondary,
@@ -145,21 +145,21 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
                         PopupMenuItem<String>(
                           value: 'new',
                           child: Text(
-                            'Start New Chat',
+                            AppLocalizations.of(context)!.uiStartNewChat,
                             style: ChatThemeStyles.body(),
                           ),
                         ),
                         PopupMenuItem<String>(
                           value: 'all',
                           child: Text(
-                            'Show Inbox',
+                            AppLocalizations.of(context)!.uiShowInbox,
                             style: ChatThemeStyles.body(),
                           ),
                         ),
                         PopupMenuItem<String>(
                           value: 'archived',
                           child: Text(
-                            'Show Archived',
+                            AppLocalizations.of(context)!.uiShowArchived,
                             style: ChatThemeStyles.body(),
                           ),
                         ),
@@ -195,8 +195,8 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
                       alignment: Alignment.centerLeft,
                       child: Text(
                         _selectedFilter == _InboxFilter.archived
-                            ? '${filtered.length} archived conversations'
-                            : '${filtered.length} conversations',
+                            ? '${filtered.length} ${AppLocalizations.of(context)!.uiArchived.toLowerCase()} ${AppLocalizations.of(context)!.uiConversations.toLowerCase()}'
+                            : '${filtered.length} ${AppLocalizations.of(context)!.uiConversations.toLowerCase()}',
                         style: ChatThemeStyles.meta(
                           ChatThemePalette.textSecondary,
                         ).copyWith(fontSize: 12),
@@ -205,7 +205,7 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
                   if (widget.embedded) const SizedBox(height: 10),
                   ChatSearchField(
                     controller: _searchController,
-                    hintText: 'Search conversations...',
+                    hintText: AppLocalizations.of(context)!.uiSearchConversations,
                     onChanged: (value) {
                       setState(() => _searchQuery = value.trim().toLowerCase());
                     },
@@ -228,7 +228,7 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
                       (filter) => Padding(
                         padding: const EdgeInsets.only(right: 8),
                         child: _FilterChip(
-                          label: filter.label,
+                          label: filter.label(AppLocalizations.of(context)!),
                           selected: filter == _selectedFilter,
                           onTap: () => setState(() => _selectedFilter = filter),
                         ),
@@ -290,15 +290,15 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
                                 ? Icons.search_off_rounded
                                 : Icons.chat_bubble_outline_rounded,
                             title: _selectedFilter == _InboxFilter.archived
-                                ? 'No archived conversations'
+                                ? AppLocalizations.of(context)!.uiNoArchivedConversations
                                 : _searchQuery.isNotEmpty
-                                ? 'No conversations match your search'
-                                : 'No conversations yet',
+                                ? AppLocalizations.of(context)!.uiNoConversationsMatchSearch
+                                : AppLocalizations.of(context)!.uiNoConversationsYet,
                             subtitle: _selectedFilter == _InboxFilter.archived
-                                ? 'Archived conversations are shown here when you move them out of your inbox.'
+                                ? AppLocalizations.of(context)!.uiArchivedConversationsInfo
                                 : _searchQuery.isNotEmpty
-                                ? 'Try a different name or keyword.'
-                                : 'Start a conversation to begin chatting.',
+                                ? AppLocalizations.of(context)!.uiTryDifferentNameOrKeyword
+                                : AppLocalizations.of(context)!.uiStartConversationToChat,
                           ),
                         ],
                       ),
@@ -492,6 +492,7 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
       currentUserId,
     );
 
+    final l10n = AppLocalizations.of(context)!;
     final selected = await showModalBottomSheet<String>(
       context: context,
       backgroundColor: Colors.transparent,
@@ -499,7 +500,7 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
         actions: [
           ChatActionSheetItem(
             icon: Icons.person_outline_rounded,
-            label: 'View Profile',
+            label: l10n.uiViewProfile,
             accentColor: ChatThemePalette.primary,
             onTap: () => Navigator.pop(context, 'profile'),
           ),
@@ -507,7 +508,7 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
             icon: isMuted
                 ? Icons.notifications_active_outlined
                 : Icons.notifications_off_outlined,
-            label: isMuted ? 'Unmute' : 'Mute',
+            label: isMuted ? l10n.uiUnmute : l10n.uiMute,
             accentColor: ChatThemePalette.textSecondary,
             onTap: () => Navigator.pop(context, 'mute'),
           ),
@@ -515,13 +516,13 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
             icon: isArchived
                 ? Icons.unarchive_outlined
                 : Icons.archive_outlined,
-            label: isArchived ? 'Unarchive' : 'Archive',
+            label: isArchived ? l10n.uiUnarchive : l10n.uiArchive,
             accentColor: ChatThemePalette.secondary,
             onTap: () => Navigator.pop(context, 'archive'),
           ),
           ChatActionSheetItem(
             icon: Icons.delete_outline_rounded,
-            label: 'Delete',
+            label: l10n.uiDelete,
             accentColor: ChatThemePalette.error,
             onTap: () => Navigator.pop(context, 'delete'),
           ),
@@ -571,7 +572,7 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
           message: AppLocalizations.of(
             context,
           )!.uiAreYouSureYouWantToArchiveThisConversation,
-          confirmLabel: 'Archive',
+          confirmLabel: l10n.uiArchive,
           icon: Icons.archive_outlined,
         );
         if (confirmed != true || !mounted) {
@@ -642,14 +643,23 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
 }
 
 enum _InboxFilter {
-  all('Inbox'),
-  unread('Unread'),
-  projects('Projects'),
-  archived('Archived');
+  all,
+  unread,
+  projects,
+  archived;
 
-  final String label;
-
-  const _InboxFilter(this.label);
+  String label(AppLocalizations l10n) {
+    switch (this) {
+      case _InboxFilter.all:
+        return l10n.uiInbox;
+      case _InboxFilter.unread:
+        return l10n.uiUnread;
+      case _InboxFilter.projects:
+        return l10n.uiProjects;
+      case _InboxFilter.archived:
+        return l10n.uiArchived;
+    }
+  }
 }
 
 class _FilterChip extends StatelessWidget {

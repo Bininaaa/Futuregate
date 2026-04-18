@@ -758,12 +758,12 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
         activeDomain != 'All' &&
         domainFilteredTrainings.isEmpty;
     final emptySubtitle = hasSearchQuery && searchFilteredTrainings.isEmpty
-        ? 'Try a different course, provider, topic, or skill.'
+        ? l10n.uiTryDifferentCourseProviderTopicOrSkill
         : !hasApprovedTrainings || activeDomain == 'All'
         ? l10n.uiNoTrainingProgramsAvailableRightNow
         : l10n.trainingNoProgramsForDomain(activeDomain);
     final topEmptyTitle = hasSearchQuery && searchFilteredTrainings.isEmpty
-        ? 'No training matches your search'
+        ? l10n.uiNoTrainingMatchesYourSearch
         : l10n.uiNoTrainingProgramsAvailableRightNow;
 
     Widget buildTrainingCard(

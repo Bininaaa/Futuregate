@@ -7026,4 +7026,186 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get scholarshipOverviewSubtitle =>
       'A focused overview so the opportunity feels easy to scan.';
+
+  @override
+  String get uiNoArchivedConversations => 'No archived conversations';
+
+  @override
+  String get uiNoConversationsMatchSearch =>
+      'No conversations match your search';
+
+  @override
+  String get uiNoConversationsYet => 'No conversations yet';
+
+  @override
+  String get uiArchivedConversationsInfo =>
+      'Archived conversations are shown here when you move them out of your inbox.';
+
+  @override
+  String get uiTryDifferentNameOrKeyword => 'Try a different name or keyword.';
+
+  @override
+  String get uiStartConversationToChat =>
+      'Start a conversation to begin chatting.';
+
+  @override
+  String get uiMute => 'Mute';
+
+  @override
+  String get uiUnmute => 'Unmute';
+
+  @override
+  String get uiArchive => 'Archive';
+
+  @override
+  String get uiUnarchive => 'Unarchive';
+
+  @override
+  String get uiGoodMorning => 'Good morning';
+
+  @override
+  String get uiGoodAfternoon => 'Good afternoon';
+
+  @override
+  String get uiGoodEvening => 'Good evening';
+
+  @override
+  String get uiInbox => 'Inbox';
+
+  @override
+  String get uiUnread => 'Unread';
+
+  @override
+  String get uiProjects => 'Projects';
+
+  @override
+  String get uiAllScholarships => 'All Scholarships';
+
+  @override
+  String get uiFullyFunded => 'Fully Funded';
+
+  @override
+  String get scholarshipBrowseLabel => 'BROWSE';
+
+  @override
+  String get scholarshipNoFeaturedYetTitle => 'No featured scholarships yet';
+
+  @override
+  String get scholarshipNoFeaturedNowTitle =>
+      'No featured scholarships right now';
+
+  @override
+  String get scholarshipNoFeaturedInViewTitle =>
+      'No featured scholarships in this view';
+
+  @override
+  String get scholarshipNoFeaturedYetSubtitle =>
+      'Featured picks will appear here once scholarships are published.';
+
+  @override
+  String get scholarshipNoFeaturedNowSubtitle =>
+      'The full scholarship list is still available below.';
+
+  @override
+  String get scholarshipNoFeaturedInViewSubtitle =>
+      'Try another search or filter to browse the available scholarships.';
+
+  @override
+  String get uiNoTrainingMatchesYourSearch => 'No training matches your search';
+
+  @override
+  String get uiTryDifferentCourseProviderTopicOrSkill =>
+      'Try a different course, provider, topic, or skill.';
+
+  @override
+  String get uiOpenPosition => 'open position';
+
+  @override
+  String get uiOpenPositions => 'open positions';
+
+  @override
+  String get uiNoJobsAvailableRightNow => 'No jobs available right now';
+
+  @override
+  String get uiOpenInternship => 'open internship';
+
+  @override
+  String get uiOpenInternships => 'open internships';
+
+  @override
+  String get uiNoInternshipsAvailableRightNow =>
+      'No internships available right now';
+
+  @override
+  String get uiActiveTrack => 'active track';
+
+  @override
+  String get uiActiveTracks => 'active tracks';
+
+  @override
+  String get uiNoSponsoredProgramsAvailableRightNow =>
+      'No sponsored programs available right now';
+
+  @override
+  String get uiResource => 'resource';
+
+  @override
+  String uiCountOpenOpportunitiesCuratedForStudents(Object count) {
+    return '$count open opportunities curated for students.';
+  }
+
+  @override
+  String uiShowingVisibleFilterFromTotalOpenListings(
+    Object filter,
+    Object total,
+    Object visible,
+  ) {
+    return 'Showing $visible $filter from $total open listings.';
+  }
+
+  @override
+  String get uiBadgeNextStep => 'NEXT STEP';
+
+  @override
+  String uiBadgeProfileReady(Object percent) {
+    return 'PROFILE $percent% READY';
+  }
+
+  @override
+  String get uiBadgeMomentum => 'MOMENTUM';
+
+  @override
+  String get uiBadgeInReview => 'IN REVIEW';
+
+  @override
+  String get uiBadgeSavedPicks => 'SAVED PICKS';
+
+  @override
+  String get uiBadgeDiscover => 'DISCOVER';
+
+  @override
+  String get uiActionBuildCv => 'Build CV';
+
+  @override
+  String get uiActionCompleteProfile => 'Complete Profile';
+
+  @override
+  String get uiActionViewStatus => 'View Status';
+
+  @override
+  String get uiActionTrackStatus => 'Track Status';
+
+  @override
+  String get uiActionSeeOpenRoles => 'See Open Roles';
+
+  @override
+  String get uiActionOpenSaved => 'Open Saved';
+
+  @override
+  String get uiSavedScholarshipBadge => 'Saved scholarship';
+
+  @override
+  String uiSavedTypeBadge(Object type) {
+    return 'Saved $type';
+  }
 }

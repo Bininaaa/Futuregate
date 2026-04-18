@@ -7134,4 +7134,189 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get scholarshipOverviewSubtitle =>
       'Un apercu clair pour parcourir l\'opportunite facilement.';
+
+  @override
+  String get uiNoArchivedConversations => 'Aucune conversation archivée';
+
+  @override
+  String get uiNoConversationsMatchSearch =>
+      'Aucune conversation ne correspond à votre recherche';
+
+  @override
+  String get uiNoConversationsYet => 'Aucune conversation pour l\'instant';
+
+  @override
+  String get uiArchivedConversationsInfo =>
+      'Les conversations archivées apparaissent ici lorsque vous les retirez de votre boîte de réception.';
+
+  @override
+  String get uiTryDifferentNameOrKeyword => 'Essayez un autre nom ou mot-clé.';
+
+  @override
+  String get uiStartConversationToChat =>
+      'Démarrez une conversation pour commencer à discuter.';
+
+  @override
+  String get uiMute => 'Désactiver';
+
+  @override
+  String get uiUnmute => 'Activer le son';
+
+  @override
+  String get uiArchive => 'Archiver';
+
+  @override
+  String get uiUnarchive => 'Désarchiver';
+
+  @override
+  String get uiGoodMorning => 'Bonjour';
+
+  @override
+  String get uiGoodAfternoon => 'Bon après-midi';
+
+  @override
+  String get uiGoodEvening => 'Bonsoir';
+
+  @override
+  String get uiInbox => 'Boîte de réception';
+
+  @override
+  String get uiUnread => 'Non lu';
+
+  @override
+  String get uiProjects => 'Projets';
+
+  @override
+  String get uiAllScholarships => 'Toutes les bourses';
+
+  @override
+  String get uiFullyFunded => 'Entièrement financé';
+
+  @override
+  String get scholarshipBrowseLabel => 'PARCOURIR';
+
+  @override
+  String get scholarshipNoFeaturedYetTitle =>
+      'Aucune bourse en vedette pour l\'instant';
+
+  @override
+  String get scholarshipNoFeaturedNowTitle =>
+      'Pas de bourse en vedette actuellement';
+
+  @override
+  String get scholarshipNoFeaturedInViewTitle =>
+      'Aucune bourse en vedette dans cette vue';
+
+  @override
+  String get scholarshipNoFeaturedYetSubtitle =>
+      'Les sélections en vedette apparaîtront ici une fois les bourses publiées.';
+
+  @override
+  String get scholarshipNoFeaturedNowSubtitle =>
+      'La liste complète des bourses est toujours disponible ci-dessous.';
+
+  @override
+  String get scholarshipNoFeaturedInViewSubtitle =>
+      'Essayez une autre recherche ou un filtre pour parcourir les bourses disponibles.';
+
+  @override
+  String get uiNoTrainingMatchesYourSearch =>
+      'Aucune formation ne correspond à votre recherche';
+
+  @override
+  String get uiTryDifferentCourseProviderTopicOrSkill =>
+      'Essayez un autre cours, fournisseur, sujet ou compétence.';
+
+  @override
+  String get uiOpenPosition => 'poste ouvert';
+
+  @override
+  String get uiOpenPositions => 'postes ouverts';
+
+  @override
+  String get uiNoJobsAvailableRightNow =>
+      'Aucun emploi disponible pour le moment';
+
+  @override
+  String get uiOpenInternship => 'stage ouvert';
+
+  @override
+  String get uiOpenInternships => 'stages ouverts';
+
+  @override
+  String get uiNoInternshipsAvailableRightNow =>
+      'Aucun stage disponible pour le moment';
+
+  @override
+  String get uiActiveTrack => 'parcours actif';
+
+  @override
+  String get uiActiveTracks => 'parcours actifs';
+
+  @override
+  String get uiNoSponsoredProgramsAvailableRightNow =>
+      'Aucun programme sponsorisé disponible pour le moment';
+
+  @override
+  String get uiResource => 'ressource';
+
+  @override
+  String uiCountOpenOpportunitiesCuratedForStudents(Object count) {
+    return '$count opportunités ouvertes sélectionnées pour les étudiants.';
+  }
+
+  @override
+  String uiShowingVisibleFilterFromTotalOpenListings(
+    Object filter,
+    Object total,
+    Object visible,
+  ) {
+    return 'Affichage de $visible $filter sur $total annonces ouvertes.';
+  }
+
+  @override
+  String get uiBadgeNextStep => 'PROCHAINE ÉTAPE';
+
+  @override
+  String uiBadgeProfileReady(Object percent) {
+    return 'PROFIL $percent% PRÊT';
+  }
+
+  @override
+  String get uiBadgeMomentum => 'ÉLAN';
+
+  @override
+  String get uiBadgeInReview => 'EN EXAMEN';
+
+  @override
+  String get uiBadgeSavedPicks => 'SÉLECTIONS SAUVEGARDÉES';
+
+  @override
+  String get uiBadgeDiscover => 'DÉCOUVRIR';
+
+  @override
+  String get uiActionBuildCv => 'Créer mon CV';
+
+  @override
+  String get uiActionCompleteProfile => 'Compléter le profil';
+
+  @override
+  String get uiActionViewStatus => 'Voir le statut';
+
+  @override
+  String get uiActionTrackStatus => 'Suivre le statut';
+
+  @override
+  String get uiActionSeeOpenRoles => 'Voir les offres';
+
+  @override
+  String get uiActionOpenSaved => 'Ouvrir les enregistrements';
+
+  @override
+  String get uiSavedScholarshipBadge => 'Bourse enregistrée';
+
+  @override
+  String uiSavedTypeBadge(Object type) {
+    return '$type enregistré';
+  }
 }

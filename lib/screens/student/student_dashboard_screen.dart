@@ -447,7 +447,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          _greetingForTime(_now),
+                          _greetingForTime(_now, context),
                           style: AppTypography.product(
                             fontSize: 11.2,
                             fontWeight: FontWeight.w600,
@@ -807,7 +807,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
 
     if (!hasReadyCv) {
       return _DashboardFocus(
-        badgeLabel: 'NEXT STEP',
+        badgeLabel: AppLocalizations.of(context)!.uiBadgeNextStep,
         title: AppLocalizations.of(context)!.uiBuildCvFirst,
         subtitle:
             'A ready CV makes jobs, internships, and scholarships much quicker to apply for.',
@@ -815,10 +815,10 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
             'Start with your CV, then tighten the profile details that make matching feel smarter.',
         accent: accentGold,
         insightIcon: Icons.description_outlined,
-        primaryActionLabel: 'Build CV',
+        primaryActionLabel: AppLocalizations.of(context)!.uiActionBuildCv,
         primaryActionIcon: Icons.description_outlined,
         onPrimaryAction: openCv,
-        secondaryActionLabel: 'Complete Profile',
+        secondaryActionLabel: AppLocalizations.of(context)!.uiActionCompleteProfile,
         secondaryActionIcon: Icons.person_outline_rounded,
         onSecondaryAction: openProfile,
       );
@@ -826,17 +826,17 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
 
     if (profileCompletion < 100) {
       return _DashboardFocus(
-        badgeLabel: 'PROFILE $profileCompletion% READY',
+        badgeLabel: AppLocalizations.of(context)!.uiBadgeProfileReady(profileCompletion),
         title: AppLocalizations.of(context)!.uiCompleteProfile,
         subtitle:
             '$missingCount ${_pluralizedWord(missingCount, "detail is", "details are")} still missing for better matching.',
         insight: _profileHint(user, cv),
         accent: accentGold,
         insightIcon: Icons.verified_user_outlined,
-        primaryActionLabel: 'Complete Profile',
+        primaryActionLabel: AppLocalizations.of(context)!.uiActionCompleteProfile,
         primaryActionIcon: Icons.person_outline_rounded,
         onPrimaryAction: openProfile,
-        secondaryActionLabel: 'Discover',
+        secondaryActionLabel: AppLocalizations.of(context)!.uiDiscover,
         secondaryActionIcon: Icons.explore_outlined,
         onSecondaryAction: openDiscover,
       );
@@ -846,7 +846,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
       final approved = snapshot.approvedApplicationsCount;
       final pending = snapshot.pendingApplicationsCount;
       return _DashboardFocus(
-        badgeLabel: 'MOMENTUM',
+        badgeLabel: AppLocalizations.of(context)!.uiBadgeMomentum,
         title:
             '$approved ${_pluralizedWord(approved, "application", "applications")} approved.',
         subtitle:
@@ -858,10 +858,10 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
             : 'This is a strong moment to keep exploring while your profile is landing well.',
         accent: const Color(0xFF86EFAC),
         insightIcon: Icons.verified_rounded,
-        primaryActionLabel: 'View Status',
+        primaryActionLabel: AppLocalizations.of(context)!.uiActionViewStatus,
         primaryActionIcon: Icons.assignment_turned_in_outlined,
         onPrimaryAction: openApplications,
-        secondaryActionLabel: 'Discover',
+        secondaryActionLabel: AppLocalizations.of(context)!.uiDiscover,
         secondaryActionIcon: Icons.explore_outlined,
         onSecondaryAction: openDiscover,
       );
@@ -870,7 +870,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     if (snapshot.pendingApplicationsCount > 0) {
       final pending = snapshot.pendingApplicationsCount;
       return _DashboardFocus(
-        badgeLabel: 'IN REVIEW',
+        badgeLabel: AppLocalizations.of(context)!.uiBadgeInReview,
         title:
             '$pending ${_pluralizedWord(pending, "application", "applications")} in review.',
         subtitle:
@@ -880,10 +880,10 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
             : 'A little follow-through now keeps your pipeline healthier later.',
         accent: accentTeal,
         insightIcon: Icons.hourglass_top_rounded,
-        primaryActionLabel: 'Track Status',
+        primaryActionLabel: AppLocalizations.of(context)!.uiActionTrackStatus,
         primaryActionIcon: Icons.assignment_turned_in_outlined,
         onPrimaryAction: openApplications,
-        secondaryActionLabel: 'Discover',
+        secondaryActionLabel: AppLocalizations.of(context)!.uiDiscover,
         secondaryActionIcon: Icons.explore_outlined,
         onSecondaryAction: openDiscover,
       );
@@ -903,12 +903,12 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
             '${firstUrgent.companyName} is first up, and it closes $deadlineLabel.',
         accent: accentGold,
         insightIcon: Icons.schedule_outlined,
-        primaryActionLabel: 'See Open Roles',
+        primaryActionLabel: AppLocalizations.of(context)!.uiActionSeeOpenRoles,
         primaryActionIcon: Icons.explore_outlined,
         onPrimaryAction: openDiscover,
         secondaryActionLabel: snapshot.savedCount > 0
-            ? 'Open Saved'
-            : 'Build CV',
+            ? AppLocalizations.of(context)!.uiActionOpenSaved
+            : AppLocalizations.of(context)!.uiActionBuildCv,
         secondaryActionIcon: snapshot.savedCount > 0
             ? Icons.bookmark_outline_rounded
             : Icons.description_outlined,
@@ -918,24 +918,24 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
 
     if (snapshot.savedCount > 0) {
       return _DashboardFocus(
-        badgeLabel: 'SAVED PICKS',
+        badgeLabel: AppLocalizations.of(context)!.uiBadgeSavedPicks,
         title: AppLocalizations.of(context)!.uiShortlistReady,
         subtitle: AppLocalizations.of(context)!.uiRevisitSavedPicks,
         insight:
             'Your saved list is ready for a second pass before deadlines tighten.',
         accent: primaryPurple,
         insightIcon: Icons.bookmark_added_outlined,
-        primaryActionLabel: 'Open Saved',
+        primaryActionLabel: AppLocalizations.of(context)!.uiActionOpenSaved,
         primaryActionIcon: Icons.bookmark_outline_rounded,
         onPrimaryAction: openSaved,
-        secondaryActionLabel: 'Discover',
+        secondaryActionLabel: AppLocalizations.of(context)!.uiDiscover,
         secondaryActionIcon: Icons.explore_outlined,
         onSecondaryAction: openDiscover,
       );
     }
 
     return _DashboardFocus(
-      badgeLabel: 'DISCOVER',
+      badgeLabel: AppLocalizations.of(context)!.uiBadgeDiscover,
       title: AppLocalizations.of(context)!.uiFindNextOpportunity,
       subtitle:
           'Explore open roles, internships, funding, and learning picks designed for students building momentum.',
@@ -943,10 +943,10 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
           'Use quick access below to jump into jobs, internships, scholarships, learning, or your saved shortlist.',
       accent: primaryPurple,
       insightIcon: Icons.auto_awesome_rounded,
-      primaryActionLabel: 'Discover',
+      primaryActionLabel: AppLocalizations.of(context)!.uiDiscover,
       primaryActionIcon: Icons.explore_outlined,
       onPrimaryAction: openDiscover,
-      secondaryActionLabel: 'Build CV',
+      secondaryActionLabel: AppLocalizations.of(context)!.uiActionBuildCv,
       secondaryActionIcon: Icons.description_outlined,
       onSecondaryAction: openCv,
     );
@@ -1097,7 +1097,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                       children: [
                         Expanded(
                           child: Text(
-                            'Saved shortlist',
+                            AppLocalizations.of(context)!.uiSavedShortlist,
                             style: AppTypography.product(
                               fontSize: 12.6,
                               fontWeight: FontWeight.w700,
@@ -1401,7 +1401,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Complete your profile',
+                      AppLocalizations.of(context)!.uiCompleteYourProfile,
                       style: AppTypography.product(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
@@ -1410,7 +1410,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                     ),
                     const SizedBox(height: 3),
                     Text(
-                      '$completion% ready for better student matching',
+                      AppLocalizations.of(context)!.uiCompletionReadyForBetterStudentMatching(completion),
                       style: AppTypography.product(
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
@@ -2578,14 +2578,14 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
         _DashboardActivityEntry(
           dedupeKey: key,
           sortDate: savedAt,
-          badgeLabel: isUrgent ? 'Closing soon' : 'Saved scholarship',
+          badgeLabel: isUrgent ? AppLocalizations.of(context)!.uiClosingSoon : AppLocalizations.of(context)!.uiSavedScholarshipBadge,
           accent: accent,
           icon: isUrgent
               ? Icons.schedule_outlined
               : Icons.emoji_events_outlined,
           title: item.title.trim().isNotEmpty
               ? item.title.trim()
-              : 'Saved scholarship',
+              : AppLocalizations.of(context)!.uiSavedScholarshipBadge,
           subtitle: subtitle,
           metaLabel: meta.trim().isEmpty ? null : meta,
           metaIcon: deadline != null
@@ -2625,12 +2625,12 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
           return _DashboardActivityEntry(
             dedupeKey: 'saved_training:${item.id}',
             sortDate: item.savedAt!.toDate(),
-            badgeLabel: 'Saved ${typeLabel.toLowerCase()}',
+            badgeLabel: AppLocalizations.of(context)!.uiSavedTypeBadge(typeLabel.toLowerCase()),
             accent: accentTeal,
             icon: _savedTrainingActivityIcon(item.type),
             title: item.title.trim().isNotEmpty
                 ? item.title.trim()
-                : 'Saved resource',
+                : AppLocalizations.of(context)!.uiSavedTypeBadge(AppLocalizations.of(context)!.uiResource),
             subtitle: subtitle,
             metaLabel: meta.trim().isEmpty ? null : meta,
             metaIcon: Icons.auto_stories_outlined,
@@ -3296,15 +3296,12 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     return haystack.contains(normalized);
   }
 
-  String _greetingForTime(DateTime currentTime) {
+  String _greetingForTime(DateTime currentTime, BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final hour = currentTime.hour;
-    if (hour < 12) {
-      return 'Good morning';
-    }
-    if (hour < 18) {
-      return 'Good afternoon';
-    }
-    return 'Good evening';
+    if (hour < 12) return l10n.uiGoodMorning;
+    if (hour < 18) return l10n.uiGoodAfternoon;
+    return l10n.uiGoodEvening;
   }
 
   String? _timeAgo(DateTime? dateTime) {

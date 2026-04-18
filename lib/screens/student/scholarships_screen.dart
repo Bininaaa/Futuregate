@@ -40,7 +40,7 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
   String _searchQuery = '';
   int _activeFilterIndex = 0;
 
-  static const List<String> _filters = [
+  static const List<String> _filterKeys = [
     'All Scholarships',
     'Fully Funded',
     'Europe',
@@ -89,7 +89,7 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
       }).toList();
     }
 
-    final filter = _filters[_activeFilterIndex];
+    final filter = _filterKeys[_activeFilterIndex];
     switch (filter) {
       case 'Fully Funded':
         filtered = filtered
@@ -384,13 +384,14 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
   // 2. HERO SECTION (label + title + subtitle)
   // ═══════════════════════════════════════════════════════════════════════════
   Widget _buildHeroSection() {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'AVAILABLE NOW',
+            l10n.uiAvailableNow,
             style: AppTypography.product(
               fontSize: 9,
               fontWeight: FontWeight.w600,
@@ -400,7 +401,7 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
           ),
           const SizedBox(height: 4),
           Text(
-            'Featured\nScholarship',
+            l10n.uiFeaturedScholarship,
             style: AppTypography.product(
               fontSize: 24,
               fontWeight: FontWeight.w800,
@@ -410,8 +411,7 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'A quick highlight picked from the scholarships '
-            'currently available below.',
+            l10n.uiAQuickHighlightPickedFromTheScholarships,
             style: AppTypography.product(
               fontSize: 11.5,
               fontWeight: FontWeight.w400,
@@ -534,7 +534,7 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
                           borderRadius: BorderRadius.circular(14),
                         ),
                         child: Text(
-                          'FEATURED',
+                          AppLocalizations.of(context)!.scholarshipFeaturedBadge,
                           style: AppTypography.product(
                             fontSize: 8.5,
                             fontWeight: FontWeight.w700,
@@ -620,16 +620,17 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
     required bool hasAnyVisibleScholarships,
     required bool hasFilteredScholarships,
   }) {
+    final l10n = AppLocalizations.of(context)!;
     final title = hasFilteredScholarships
-        ? 'No featured scholarships right now'
+        ? l10n.scholarshipNoFeaturedNowTitle
         : hasAnyVisibleScholarships
-        ? 'No featured scholarships in this view'
-        : 'No featured scholarships yet';
+        ? l10n.scholarshipNoFeaturedInViewTitle
+        : l10n.scholarshipNoFeaturedYetTitle;
     final subtitle = hasFilteredScholarships
-        ? 'The full scholarship list is still available below.'
+        ? l10n.scholarshipNoFeaturedNowSubtitle
         : hasAnyVisibleScholarships
-        ? 'Try another search or filter to browse the available scholarships.'
-        : 'Featured picks will appear here once scholarships are published.';
+        ? l10n.scholarshipNoFeaturedInViewSubtitle
+        : l10n.scholarshipNoFeaturedYetSubtitle;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
@@ -768,7 +769,7 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
           onChanged: (value) => setState(() => _searchQuery = value.trim()),
           style: AppTypography.product(fontSize: 12, color: _P.textPrimary),
           decoration: InputDecoration(
-            hintText: 'Search university or country...',
+            hintText: AppLocalizations.of(context)!.uiSearchUniversityOrCountry,
             hintStyle: AppTypography.product(
               fontSize: 12,
               color: _P.textSecondary.withValues(alpha: 0.6),
@@ -801,10 +802,12 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
           scrollDirection: Axis.horizontal,
           physics: const BouncingScrollPhysics(),
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          itemCount: _filters.length,
+          itemCount: _filterKeys.length,
           separatorBuilder: (_, i) => const SizedBox(width: 8),
           itemBuilder: (context, index) {
             final isActive = index == _activeFilterIndex;
+            final l10n = AppLocalizations.of(context)!;
+            final filterLabel = _localizedFilterLabel(_filterKeys[index], l10n);
             return GestureDetector(
               onTap: () => setState(() => _activeFilterIndex = index),
               child: AnimatedContainer(
@@ -826,7 +829,7 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
                         ),
                 ),
                 child: Text(
-                  _filters[index],
+                  filterLabel,
                   style: AppTypography.product(
                     fontSize: 10.5,
                     fontWeight: FontWeight.w500,
@@ -847,6 +850,7 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
   // 6. CURATION SECTION HEADER
   // ═══════════════════════════════════════════════════════════════════════════
   Widget _buildCurationHeader() {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 18, 16, 12),
       child: Row(
@@ -857,7 +861,7 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'BROWSE',
+                  l10n.scholarshipBrowseLabel,
                   style: AppTypography.product(
                     fontSize: 9,
                     fontWeight: FontWeight.w600,
@@ -867,7 +871,7 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
                 ),
                 const SizedBox(height: 3),
                 Text(
-                  'Available\nScholarships',
+                  l10n.uiAvailableScholarships,
                   style: AppTypography.product(
                     fontSize: 20,
                     fontWeight: FontWeight.w800,
@@ -885,7 +889,7 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    'View all scholarships',
+                    l10n.uiViewAllScholarships,
                     style: AppTypography.product(
                       fontSize: 10.5,
                       fontWeight: FontWeight.w500,
@@ -910,6 +914,7 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
   // EMPTY STATE
   // ═══════════════════════════════════════════════════════════════════════════
   Widget _buildEmptyState() {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 28),
       child: Column(
@@ -929,7 +934,7 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
           ),
           const SizedBox(height: 14),
           Text(
-            'No scholarships match your search',
+            l10n.uiNoScholarshipsMatchYourSearch,
             style: AppTypography.product(
               fontSize: 14,
               fontWeight: FontWeight.w600,
@@ -938,7 +943,7 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
           ),
           const SizedBox(height: 6),
           Text(
-            'Try adjusting your search or filters\nto explore more scholarships.',
+            l10n.uiTryAdjustingYourSearchOrFiltersToExploreMoreScholarships,
             textAlign: TextAlign.center,
             style: AppTypography.product(
               fontSize: 11.5,
@@ -977,6 +982,17 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
       context,
       MaterialPageRoute(builder: (_) => const ScholarshipsScreen()),
     );
+  }
+
+  String _localizedFilterLabel(String key, AppLocalizations l10n) {
+    switch (key) {
+      case 'All Scholarships':
+        return l10n.uiAllScholarships;
+      case 'Fully Funded':
+        return l10n.uiFullyFunded;
+      default:
+        return key;
+    }
   }
 }
 

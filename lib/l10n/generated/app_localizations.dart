@@ -12454,6 +12454,328 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'A focused overview so the opportunity feels easy to scan.'**
   String get scholarshipOverviewSubtitle;
+
+  /// No description provided for @uiNoArchivedConversations.
+  ///
+  /// In en, this message translates to:
+  /// **'No archived conversations'**
+  String get uiNoArchivedConversations;
+
+  /// No description provided for @uiNoConversationsMatchSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'No conversations match your search'**
+  String get uiNoConversationsMatchSearch;
+
+  /// No description provided for @uiNoConversationsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No conversations yet'**
+  String get uiNoConversationsYet;
+
+  /// No description provided for @uiArchivedConversationsInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Archived conversations are shown here when you move them out of your inbox.'**
+  String get uiArchivedConversationsInfo;
+
+  /// No description provided for @uiTryDifferentNameOrKeyword.
+  ///
+  /// In en, this message translates to:
+  /// **'Try a different name or keyword.'**
+  String get uiTryDifferentNameOrKeyword;
+
+  /// No description provided for @uiStartConversationToChat.
+  ///
+  /// In en, this message translates to:
+  /// **'Start a conversation to begin chatting.'**
+  String get uiStartConversationToChat;
+
+  /// No description provided for @uiMute.
+  ///
+  /// In en, this message translates to:
+  /// **'Mute'**
+  String get uiMute;
+
+  /// No description provided for @uiUnmute.
+  ///
+  /// In en, this message translates to:
+  /// **'Unmute'**
+  String get uiUnmute;
+
+  /// No description provided for @uiArchive.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive'**
+  String get uiArchive;
+
+  /// No description provided for @uiUnarchive.
+  ///
+  /// In en, this message translates to:
+  /// **'Unarchive'**
+  String get uiUnarchive;
+
+  /// No description provided for @uiGoodMorning.
+  ///
+  /// In en, this message translates to:
+  /// **'Good morning'**
+  String get uiGoodMorning;
+
+  /// No description provided for @uiGoodAfternoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Good afternoon'**
+  String get uiGoodAfternoon;
+
+  /// No description provided for @uiGoodEvening.
+  ///
+  /// In en, this message translates to:
+  /// **'Good evening'**
+  String get uiGoodEvening;
+
+  /// No description provided for @uiInbox.
+  ///
+  /// In en, this message translates to:
+  /// **'Inbox'**
+  String get uiInbox;
+
+  /// No description provided for @uiUnread.
+  ///
+  /// In en, this message translates to:
+  /// **'Unread'**
+  String get uiUnread;
+
+  /// No description provided for @uiProjects.
+  ///
+  /// In en, this message translates to:
+  /// **'Projects'**
+  String get uiProjects;
+
+  /// No description provided for @uiAllScholarships.
+  ///
+  /// In en, this message translates to:
+  /// **'All Scholarships'**
+  String get uiAllScholarships;
+
+  /// No description provided for @uiFullyFunded.
+  ///
+  /// In en, this message translates to:
+  /// **'Fully Funded'**
+  String get uiFullyFunded;
+
+  /// No description provided for @scholarshipBrowseLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'BROWSE'**
+  String get scholarshipBrowseLabel;
+
+  /// No description provided for @scholarshipNoFeaturedYetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No featured scholarships yet'**
+  String get scholarshipNoFeaturedYetTitle;
+
+  /// No description provided for @scholarshipNoFeaturedNowTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No featured scholarships right now'**
+  String get scholarshipNoFeaturedNowTitle;
+
+  /// No description provided for @scholarshipNoFeaturedInViewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No featured scholarships in this view'**
+  String get scholarshipNoFeaturedInViewTitle;
+
+  /// No description provided for @scholarshipNoFeaturedYetSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Featured picks will appear here once scholarships are published.'**
+  String get scholarshipNoFeaturedYetSubtitle;
+
+  /// No description provided for @scholarshipNoFeaturedNowSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The full scholarship list is still available below.'**
+  String get scholarshipNoFeaturedNowSubtitle;
+
+  /// No description provided for @scholarshipNoFeaturedInViewSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Try another search or filter to browse the available scholarships.'**
+  String get scholarshipNoFeaturedInViewSubtitle;
+
+  /// No description provided for @uiNoTrainingMatchesYourSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'No training matches your search'**
+  String get uiNoTrainingMatchesYourSearch;
+
+  /// No description provided for @uiTryDifferentCourseProviderTopicOrSkill.
+  ///
+  /// In en, this message translates to:
+  /// **'Try a different course, provider, topic, or skill.'**
+  String get uiTryDifferentCourseProviderTopicOrSkill;
+
+  /// No description provided for @uiOpenPosition.
+  ///
+  /// In en, this message translates to:
+  /// **'open position'**
+  String get uiOpenPosition;
+
+  /// No description provided for @uiOpenPositions.
+  ///
+  /// In en, this message translates to:
+  /// **'open positions'**
+  String get uiOpenPositions;
+
+  /// No description provided for @uiNoJobsAvailableRightNow.
+  ///
+  /// In en, this message translates to:
+  /// **'No jobs available right now'**
+  String get uiNoJobsAvailableRightNow;
+
+  /// No description provided for @uiOpenInternship.
+  ///
+  /// In en, this message translates to:
+  /// **'open internship'**
+  String get uiOpenInternship;
+
+  /// No description provided for @uiOpenInternships.
+  ///
+  /// In en, this message translates to:
+  /// **'open internships'**
+  String get uiOpenInternships;
+
+  /// No description provided for @uiNoInternshipsAvailableRightNow.
+  ///
+  /// In en, this message translates to:
+  /// **'No internships available right now'**
+  String get uiNoInternshipsAvailableRightNow;
+
+  /// No description provided for @uiActiveTrack.
+  ///
+  /// In en, this message translates to:
+  /// **'active track'**
+  String get uiActiveTrack;
+
+  /// No description provided for @uiActiveTracks.
+  ///
+  /// In en, this message translates to:
+  /// **'active tracks'**
+  String get uiActiveTracks;
+
+  /// No description provided for @uiNoSponsoredProgramsAvailableRightNow.
+  ///
+  /// In en, this message translates to:
+  /// **'No sponsored programs available right now'**
+  String get uiNoSponsoredProgramsAvailableRightNow;
+
+  /// No description provided for @uiResource.
+  ///
+  /// In en, this message translates to:
+  /// **'resource'**
+  String get uiResource;
+
+  /// No description provided for @uiCountOpenOpportunitiesCuratedForStudents.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} open opportunities curated for students.'**
+  String uiCountOpenOpportunitiesCuratedForStudents(Object count);
+
+  /// No description provided for @uiShowingVisibleFilterFromTotalOpenListings.
+  ///
+  /// In en, this message translates to:
+  /// **'Showing {visible} {filter} from {total} open listings.'**
+  String uiShowingVisibleFilterFromTotalOpenListings(
+    Object filter,
+    Object total,
+    Object visible,
+  );
+
+  /// No description provided for @uiBadgeNextStep.
+  ///
+  /// In en, this message translates to:
+  /// **'NEXT STEP'**
+  String get uiBadgeNextStep;
+
+  /// No description provided for @uiBadgeProfileReady.
+  ///
+  /// In en, this message translates to:
+  /// **'PROFILE {percent}% READY'**
+  String uiBadgeProfileReady(Object percent);
+
+  /// No description provided for @uiBadgeMomentum.
+  ///
+  /// In en, this message translates to:
+  /// **'MOMENTUM'**
+  String get uiBadgeMomentum;
+
+  /// No description provided for @uiBadgeInReview.
+  ///
+  /// In en, this message translates to:
+  /// **'IN REVIEW'**
+  String get uiBadgeInReview;
+
+  /// No description provided for @uiBadgeSavedPicks.
+  ///
+  /// In en, this message translates to:
+  /// **'SAVED PICKS'**
+  String get uiBadgeSavedPicks;
+
+  /// No description provided for @uiBadgeDiscover.
+  ///
+  /// In en, this message translates to:
+  /// **'DISCOVER'**
+  String get uiBadgeDiscover;
+
+  /// No description provided for @uiActionBuildCv.
+  ///
+  /// In en, this message translates to:
+  /// **'Build CV'**
+  String get uiActionBuildCv;
+
+  /// No description provided for @uiActionCompleteProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete Profile'**
+  String get uiActionCompleteProfile;
+
+  /// No description provided for @uiActionViewStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'View Status'**
+  String get uiActionViewStatus;
+
+  /// No description provided for @uiActionTrackStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Track Status'**
+  String get uiActionTrackStatus;
+
+  /// No description provided for @uiActionSeeOpenRoles.
+  ///
+  /// In en, this message translates to:
+  /// **'See Open Roles'**
+  String get uiActionSeeOpenRoles;
+
+  /// No description provided for @uiActionOpenSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Saved'**
+  String get uiActionOpenSaved;
+
+  /// No description provided for @uiSavedScholarshipBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved scholarship'**
+  String get uiSavedScholarshipBadge;
+
+  /// No description provided for @uiSavedTypeBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved {type}'**
+  String uiSavedTypeBadge(Object type);
 }
 
 class _AppLocalizationsDelegate

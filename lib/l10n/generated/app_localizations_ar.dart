@@ -6842,138 +6842,319 @@ class AppLocalizationsAr extends AppLocalizations {
   String get ideaShareLabel => 'مشاركة الفكرة';
 
   @override
-  String get trainingRecommendedForYou => '???? ?? ??';
+  String get trainingRecommendedForYou => 'مُوصى به لك';
 
   @override
   String trainingNoProgramsForDomain(Object domain) {
-    return '?? ????? ????? ??????? ???? ?? $domain.';
+    return 'لا توجد برامج تدريبية متاحة الآن في مجال $domain.';
   }
 
   @override
-  String get trainingLinkMissingMessage => '?? ????? ??? ??????? ??? ???? ???.';
+  String get trainingLinkMissingMessage => 'لا يحتوي هذا التدريب على رابط بعد.';
 
   @override
-  String get trainingLinkInvalidMessage => '???? ??? ??????? ??? ????.';
+  String get trainingLinkInvalidMessage => 'رابط هذا التدريب غير صالح.';
 
   @override
-  String get trainingLinkOpenFailedMessage => '???? ??? ???? ??? ??????? ????.';
+  String get trainingLinkOpenFailedMessage =>
+      'لم نتمكن من فتح رابط هذا التدريب الآن.';
 
   @override
   String get trainingSaveLoginMessage =>
-      '???? ?????? ???? ????? ??????? ???? ????.';
+      'سجّل الدخول لحفظ موارد التدريب لاحقًا.';
 
   @override
-  String get trainingRemovedSavedMessage => '??? ??????? ?? ??????? ????????';
+  String get trainingRemovedSavedMessage => 'تمت الإزالة من الموارد المحفوظة';
 
   @override
-  String get trainingSavedMessage => '?? ??? ??????';
+  String get trainingSavedMessage => 'تم حفظ المورد';
 
   @override
-  String get trainingSavedUpdatedTitle => '?? ????? ??????? ????????';
+  String get trainingSavedUpdatedTitle => 'تم تحديث العناصر المحفوظة';
 
   @override
-  String get trainingUpdateUnavailableTitle => '??????? ??? ????';
+  String get trainingUpdateUnavailableTitle => 'التحديث غير متاح';
 
   @override
-  String get trainingProviderFallback => '???? ???????';
+  String get trainingProviderFallback => 'مزود التدريب';
 
   @override
-  String get trainingFlexibleLabel => '???';
+  String get trainingFlexibleLabel => 'مرن';
 
   @override
-  String get trainingAllLevelsLabel => '?? ?????????';
+  String get trainingAllLevelsLabel => 'جميع المستويات';
 
   @override
-  String get trainingCareerCourseLabel => '???? ?????';
+  String get trainingCareerCourseLabel => 'دورة مهنية';
 
   @override
-  String get trainingVideoLessonLabel => '??? ?????';
+  String get trainingVideoLessonLabel => 'درس فيديو';
 
   @override
-  String get trainingReadingTrackLabel => '???? ?????';
+  String get trainingReadingTrackLabel => 'مسار القراءة';
 
   @override
-  String get trainingGuideToolkitLabel => '???? ??????';
+  String get trainingGuideToolkitLabel => 'دليل وأدوات';
 
   @override
-  String get trainingLearningPathLabel => '???? ????';
+  String get trainingLearningPathLabel => 'مسار التعلم';
 
   @override
-  String get trainingGeneralDomainLabel => '???';
+  String get trainingGeneralDomainLabel => 'عام';
 
   @override
-  String get opportunityFutureGatePartner => '???? FutureGate';
+  String get opportunityFutureGatePartner => 'شريك FutureGate';
 
   @override
-  String get opportunityStudentInternshipFallback => '???? ????? ??????';
+  String get opportunityStudentInternshipFallback => 'فرصة تدريب طلابية';
 
   @override
-  String get opportunitySponsoredFallback => '???? ?????';
+  String get opportunitySponsoredFallback => 'فرصة برعاية';
 
   @override
-  String get opportunityOpenJobFallback => '???? ??? ??????';
+  String get opportunityOpenJobFallback => 'فرصة عمل مفتوحة';
 
   @override
-  String get opportunityOpenFallback => '???? ??????';
+  String get opportunityOpenFallback => 'فرصة مفتوحة';
 
   @override
-  String get scholarshipExploreLabel => '?????? ??????';
+  String get scholarshipExploreLabel => 'استكشف المنحة';
 
   @override
-  String get ideaCreateCta => '???? ????';
+  String get ideaCreateCta => 'أنشئ فكرة';
 
   @override
-  String get ideaCreateFirstCta => '???? ????? ??????';
+  String get ideaCreateFirstCta => 'أنشئ فكرتك الأولى';
 
   @override
-  String get ideaPublicLabel => '???';
+  String get ideaPublicLabel => 'عام';
 
   @override
-  String get ideaPrivateLabel => '???';
+  String get ideaPrivateLabel => 'خاص';
 
   @override
-  String get ideaSharedFromHub => '??? ???????? ?? ???? ????????';
+  String get ideaSharedFromHub => 'مشترك من مركز الابتكار';
 
   @override
-  String get ideaCategoryInnovation => '??????';
+  String get ideaCategoryInnovation => 'ابتكار';
 
   @override
-  String get ideaCategoryAi => '?????? ?????????';
+  String get ideaCategoryAi => 'الذكاء الاصطناعي';
 
   @override
-  String get ideaCategoryFintech => '??????? ???????';
+  String get ideaCategoryFintech => 'التكنولوجيا المالية';
 
   @override
-  String get ideaCategoryEdTech => '??????? ?????????';
+  String get ideaCategoryEdTech => 'تكنولوجيا التعليم';
 
   @override
-  String get ideaCategorySustainability => '?????????';
+  String get ideaCategorySustainability => 'الاستدامة';
 
   @override
-  String get ideaCategorySocialImpact => '????? ?????????';
+  String get ideaCategorySocialImpact => 'التأثير الاجتماعي';
 
   @override
-  String get ideaStageConcept => '?????';
+  String get ideaStageConcept => 'فكرة أولية';
 
   @override
-  String get ideaStageMvp => '???? ?????? ?? ?????? ?????? ???????';
+  String get ideaStageMvp => 'نموذج أعمال أولي';
 
   @override
-  String get ideaStagePrototype => '????? ????';
+  String get ideaStagePrototype => 'نموذج أولي';
 
   @override
-  String get ideaStageBeta => '????';
+  String get ideaStageBeta => 'نسخة تجريبية';
 
   @override
-  String get scholarshipRemovedSavedMessage => '??? ??????? ?? ????? ????????';
+  String get scholarshipRemovedSavedMessage => 'تمت إزالته من المنح المحفوظة';
 
   @override
-  String get scholarshipSavedMessage => '?? ??? ??????';
+  String get scholarshipSavedMessage => 'تم حفظ المنحة';
 
   @override
   String get scholarshipSnapshotSubtitle =>
-      '?? ?? ?? ??? ???? ??? ??? ??? ????? ??????? ??????.';
+      'كل شيء مهم يظهر هنا قبل فتح طلب التقديم الكامل.';
 
   @override
-  String get scholarshipOverviewSubtitle => '???? ????? ???? ???? ?????? ????.';
+  String get scholarshipOverviewSubtitle =>
+      'نظرة عامة مركزة بحيث تبدو الفرصة سهلة الفحص.';
+
+  @override
+  String get uiNoArchivedConversations => 'لا توجد محادثات مؤرشفة';
+
+  @override
+  String get uiNoConversationsMatchSearch => 'لا توجد محادثات تطابق بحثك';
+
+  @override
+  String get uiNoConversationsYet => 'لا توجد محادثات بعد';
+
+  @override
+  String get uiArchivedConversationsInfo =>
+      'تظهر المحادثات المؤرشفة هنا عند نقلها خارج بريدك الوارد.';
+
+  @override
+  String get uiTryDifferentNameOrKeyword =>
+      'جرّب اسمًا أو كلمة مفتاحية مختلفة.';
+
+  @override
+  String get uiStartConversationToChat => 'ابدأ محادثة للتواصل.';
+
+  @override
+  String get uiMute => 'كتم';
+
+  @override
+  String get uiUnmute => 'إلغاء الكتم';
+
+  @override
+  String get uiArchive => 'أرشفة';
+
+  @override
+  String get uiUnarchive => 'إلغاء الأرشفة';
+
+  @override
+  String get uiGoodMorning => 'صباح الخير';
+
+  @override
+  String get uiGoodAfternoon => 'مساء الخير';
+
+  @override
+  String get uiGoodEvening => 'مساء النور';
+
+  @override
+  String get uiInbox => 'البريد الوارد';
+
+  @override
+  String get uiUnread => 'غير مقروء';
+
+  @override
+  String get uiProjects => 'المشاريع';
+
+  @override
+  String get uiAllScholarships => 'جميع المنح';
+
+  @override
+  String get uiFullyFunded => 'ممول بالكامل';
+
+  @override
+  String get scholarshipBrowseLabel => 'استعرض';
+
+  @override
+  String get scholarshipNoFeaturedYetTitle => 'لا توجد منح مميزة بعد';
+
+  @override
+  String get scholarshipNoFeaturedNowTitle => 'لا توجد منح مميزة حاليًا';
+
+  @override
+  String get scholarshipNoFeaturedInViewTitle =>
+      'لا توجد منح مميزة في هذا العرض';
+
+  @override
+  String get scholarshipNoFeaturedYetSubtitle =>
+      'ستظهر الاختيارات المميزة هنا بمجرد نشر المنح.';
+
+  @override
+  String get scholarshipNoFeaturedNowSubtitle =>
+      'قائمة المنح الكاملة لا تزال متاحة أدناه.';
+
+  @override
+  String get scholarshipNoFeaturedInViewSubtitle =>
+      'جرّب بحثًا أو فلترًا آخر لاستعراض المنح المتاحة.';
+
+  @override
+  String get uiNoTrainingMatchesYourSearch => 'لا يوجد تدريب يطابق بحثك';
+
+  @override
+  String get uiTryDifferentCourseProviderTopicOrSkill =>
+      'جرّب دورة أو مزودًا أو موضوعًا أو مهارة مختلفة.';
+
+  @override
+  String get uiOpenPosition => 'وظيفة مفتوحة';
+
+  @override
+  String get uiOpenPositions => 'وظائف مفتوحة';
+
+  @override
+  String get uiNoJobsAvailableRightNow => 'لا توجد وظائف متاحة الآن';
+
+  @override
+  String get uiOpenInternship => 'تدريب مفتوح';
+
+  @override
+  String get uiOpenInternships => 'تدريبات مفتوحة';
+
+  @override
+  String get uiNoInternshipsAvailableRightNow => 'لا توجد تدريبات متاحة الآن';
+
+  @override
+  String get uiActiveTrack => 'مسار نشط';
+
+  @override
+  String get uiActiveTracks => 'مسارات نشطة';
+
+  @override
+  String get uiNoSponsoredProgramsAvailableRightNow =>
+      'لا توجد برامج برعاية متاحة الآن';
+
+  @override
+  String get uiResource => 'مورد';
+
+  @override
+  String uiCountOpenOpportunitiesCuratedForStudents(Object count) {
+    return '$count فرصة مفتوحة مختارة للطلاب.';
+  }
+
+  @override
+  String uiShowingVisibleFilterFromTotalOpenListings(
+    Object filter,
+    Object total,
+    Object visible,
+  ) {
+    return 'عرض $visible من $filter من أصل $total إعلانات مفتوحة.';
+  }
+
+  @override
+  String get uiBadgeNextStep => 'الخطوة التالية';
+
+  @override
+  String uiBadgeProfileReady(Object percent) {
+    return 'ملفك $percent% جاهز';
+  }
+
+  @override
+  String get uiBadgeMomentum => 'زخم';
+
+  @override
+  String get uiBadgeInReview => 'قيد المراجعة';
+
+  @override
+  String get uiBadgeSavedPicks => 'اختيارات محفوظة';
+
+  @override
+  String get uiBadgeDiscover => 'اكتشف';
+
+  @override
+  String get uiActionBuildCv => 'أنشئ سيرتك الذاتية';
+
+  @override
+  String get uiActionCompleteProfile => 'أكمل الملف الشخصي';
+
+  @override
+  String get uiActionViewStatus => 'عرض الحالة';
+
+  @override
+  String get uiActionTrackStatus => 'تتبع الحالة';
+
+  @override
+  String get uiActionSeeOpenRoles => 'استعرض الأدوار المفتوحة';
+
+  @override
+  String get uiActionOpenSaved => 'فتح المحفوظات';
+
+  @override
+  String get uiSavedScholarshipBadge => 'منحة محفوظة';
+
+  @override
+  String uiSavedTypeBadge(Object type) {
+    return '$type محفوظ';
+  }
 }
