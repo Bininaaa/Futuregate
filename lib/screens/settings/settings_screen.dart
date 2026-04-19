@@ -9,6 +9,7 @@ import '../../theme/locale_controller.dart';
 import '../../theme/theme_controller.dart';
 import '../../utils/content_language.dart';
 import '../../widgets/shared/app_restart_scope.dart';
+import '../company/profile_screen.dart';
 import '../notifications_screen.dart';
 import '../student/edit_profile_screen.dart';
 import 'about_futuregate_screen.dart';
@@ -39,7 +40,7 @@ class SettingsScreen extends StatelessWidget {
 
     if (isCompany) {
       return SettingsPageScaffold(
-        title: l10n.uiWorkspace,
+        title: l10n.moreTitle,
         embedded: embedded,
         showAppBar: !embedded,
         child: Column(
@@ -79,6 +80,43 @@ class SettingsScreen extends StatelessWidget {
                         color: SettingsFlowPalette.accent,
                       ),
                     ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 18),
+            SettingsSectionHeading(
+              title: l10n.workspaceTitle,
+              subtitle: l10n.workspaceSubtitle,
+            ),
+            const SizedBox(height: 10),
+            SettingsPanel(
+              child: Column(
+                children: [
+                  SettingsListRow(
+                    icon: Icons.business_outlined,
+                    iconColor: SettingsFlowPalette.primary,
+                    title: l10n.companyProfileTitle,
+                    subtitle: l10n.companyProfileSubtitle,
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const CompanyProfileScreen(),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  SettingsListRow(
+                    icon: Icons.edit_outlined,
+                    iconColor: SettingsFlowPalette.accent,
+                    title: l10n.editCompanyProfileTitle,
+                    subtitle: l10n.editCompanyProfileSubtitle,
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const EditCompanyProfileScreen(),
+                      ),
+                    ),
                   ),
                 ],
               ),

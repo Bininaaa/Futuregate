@@ -16,6 +16,7 @@ import '../../widgets/opportunity_type_selector.dart';
 import '../../widgets/shared/app_content_system.dart';
 import '../../widgets/shared/app_feedback.dart';
 import '../../widgets/shared/app_loading.dart';
+import '../../widgets/shared/posting_language_selector.dart';
 
 class PublishOpportunityScreen extends StatefulWidget {
   final String? opportunityId;
@@ -273,10 +274,16 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                                 validator: _validateTitle,
                               ),
                               const SizedBox(height: 10),
-                              _CompanyLanguageSelector(
+                              PostingLanguageSelector(
                                 value: _originalLanguage,
                                 onChanged: (v) =>
                                     setState(() => _originalLanguage = v),
+                                activeColor: CompanyDashboardPalette.primary,
+                                borderColor: CompanyDashboardPalette.border,
+                                textColor:
+                                    CompanyDashboardPalette.textSecondary,
+                                iconColor:
+                                    CompanyDashboardPalette.textSecondary,
                               ),
                               const SizedBox(height: 14),
                               _buildSectionLabel('Opportunity type'),
@@ -344,15 +351,14 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                         ),
                         const SizedBox(height: 12),
                         _buildSectionCard(
-                          title: 'Requirements And Eligibility',
-                          subtitle:
-                              'Add each point separately so students see a clean checklist.',
+                          title: OpportunityType.requirementsLabel(
+                            _selectedType,
+                            l10n,
+                          ),
+                          subtitle: _requirementsSectionSubtitle(),
                           child: AppEditableListField(
                             theme: _theme,
-                            label: OpportunityType.requirementsLabel(
-                              _selectedType,
-                              l10n,
-                            ),
+                            label: 'Checklist',
                             hint: _isSponsoring
                                 ? 'Type one eligibility rule, then press Enter'
                                 : 'Type one requirement, then press Enter',
@@ -361,7 +367,6 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                                 setState(() => _requirementItems = items),
                             listController: _requirementsListController,
                             validator: _validateRequirementItems,
-                            examples: _requirementExamples(),
                             emptyText: _isSponsoring
                                 ? 'Add eligibility rules, documents, or selection criteria.'
                                 : 'Add the skills, background, or tools students need.',
@@ -555,13 +560,15 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                     value: _selectedEmploymentType,
                     label: 'Employment type',
                     hint: 'Employment type',
-                    items: OpportunityMetadata.employmentTypes
+                    items: _employmentTypeOptions
                         .map(
                           (type) => DropdownMenuItem<String>(
                             value: type,
                             child: Text(
-                              OpportunityMetadata.formatEmploymentType(type) ??
-                                  _titleCaseLabel(type),
+                              _employmentTypeLabel(
+                                type,
+                                AppLocalizations.of(context)!,
+                              ),
                             ),
                           ),
                         )
@@ -601,8 +608,14 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
               label: 'Paid status',
               hint: 'Paid status',
               items: [
-                DropdownMenuItem<bool>(value: true, child: Text(AppLocalizations.of(context)!.paidLabel)),
-                DropdownMenuItem<bool>(value: false, child: Text(AppLocalizations.of(context)!.unpaidLabel)),
+                DropdownMenuItem<bool>(
+                  value: true,
+                  child: Text(AppLocalizations.of(context)!.paidLabel),
+                ),
+                DropdownMenuItem<bool>(
+                  value: false,
+                  child: Text(AppLocalizations.of(context)!.unpaidLabel),
+                ),
               ],
               onChanged: (value) {
                 setState(() => _isPaid = value);
@@ -891,6 +904,12 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
     return null;
   }
 
+  String _requirementsSectionSubtitle() {
+    return _isSponsoring
+        ? 'Add each eligibility point separately so students see a clean checklist.'
+        : 'Add each requirement separately so students see a clean checklist.';
+  }
+
   Future<void> _pickDate() async {
     final now = DateTime.now();
     final initialDate =
@@ -1092,38 +1111,32 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
 
     _selectedSalaryCurrency ??= OpportunityMetadata.supportedCurrencies.first;
 
-    if (type == OpportunityType.internship) {
-      _selectedEmploymentType ??= 'internship';
+    final employmentOptions =
+        OpportunityMetadata.employmentTypesForOpportunityType(type);
+
+    if (OpportunityType.parse(type) == OpportunityType.internship) {
+      _selectedEmploymentType = OpportunityType.internship;
       return;
     }
 
-    if (_selectedEmploymentType == 'internship') {
+    if (!employmentOptions.contains(_selectedEmploymentType)) {
       _selectedEmploymentType = null;
     }
   }
 
-  List<String> _requirementExamples() {
-    if (_isSponsoring) {
-      return const <String>[
-        'Student team with a working prototype',
-        'Clear project budget',
-        'Available for sponsor check-ins',
-      ];
-    }
+  List<String> get _employmentTypeOptions =>
+      OpportunityMetadata.employmentTypesForOpportunityType(_selectedType);
 
-    if (_isInternship) {
-      return const <String>[
-        'Basic Flutter knowledge',
-        'Available for 3 months',
-        'Good communication skills',
-      ];
-    }
-
-    return const <String>[
-      'Experience with Flutter',
-      'Strong problem-solving skills',
-      'Comfortable working in a team',
-    ];
+  String _employmentTypeLabel(String type, AppLocalizations l10n) {
+    return switch (type) {
+      'full_time' => l10n.employmentTypeFullTime,
+      'part_time' => l10n.employmentTypePartTime,
+      'internship' => l10n.employmentTypeInternship,
+      'contract' => l10n.employmentTypeContract,
+      'temporary' => l10n.employmentTypeTemporary,
+      'freelance' => l10n.employmentTypeFreelance,
+      _ => _titleCaseLabel(type),
+    };
   }
 
   String _formatNumberForInput(num? value) {
@@ -1147,75 +1160,5 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
               '${part[0].toUpperCase()}${part.substring(1).toLowerCase()}',
         )
         .join(' ');
-  }
-}
-
-class _CompanyLanguageSelector extends StatelessWidget {
-  final String value;
-  final ValueChanged<String> onChanged;
-
-  const _CompanyLanguageSelector({required this.value, required this.onChanged});
-
-  static const _options = <(String, String, String)>[
-    ('fr', '🇫🇷', 'French'),
-    ('ar', '🇩🇿', 'Arabic'),
-    ('en', '🇬🇧', 'English'),
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final primary = CompanyDashboardPalette.primary;
-    return Row(
-      children: [
-        Icon(Icons.translate_rounded, size: 17,
-            color: CompanyDashboardPalette.textSecondary),
-        const SizedBox(width: 8),
-        Text(
-          l10n.postingLanguageLabel,
-          style: TextStyle(
-            fontSize: 12.5,
-            fontWeight: FontWeight.w600,
-            color: CompanyDashboardPalette.textSecondary,
-          ),
-        ),
-        const SizedBox(width: 10),
-        ..._options.map((opt) {
-          final (code, flag, name) = opt;
-          final selected = value == code;
-          return Padding(
-            padding: const EdgeInsets.only(right: 6),
-            child: GestureDetector(
-              onTap: () => onChanged(code),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 150),
-                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
-                decoration: BoxDecoration(
-                  color: selected
-                      ? primary.withValues(alpha: 0.10)
-                      : Colors.transparent,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: selected
-                        ? primary
-                        : CompanyDashboardPalette.border,
-                  ),
-                ),
-                child: Text(
-                  '$flag $name',
-                  style: TextStyle(
-                    fontSize: 11.5,
-                    fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-                    color: selected
-                        ? primary
-                        : CompanyDashboardPalette.textSecondary,
-                  ),
-                ),
-              ),
-            ),
-          );
-        }),
-      ],
-    );
   }
 }

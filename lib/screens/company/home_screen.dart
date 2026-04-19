@@ -69,10 +69,10 @@ class _HomeScreenState extends State<HomeScreen> {
         activeIcon: Icons.chat_bubble_rounded,
       ),
       CompanyWorkspaceDestination(
-        label: l10n.uiSettings,
+        label: l10n.moreTitle,
         subtitle: l10n.companyWorkspaceSubtitle,
-        icon: Icons.tune_rounded,
-        activeIcon: Icons.tune_rounded,
+        icon: Icons.widgets_outlined,
+        activeIcon: Icons.widgets_rounded,
       ),
     ];
     final destination = destinations[_currentIndex];

@@ -88,6 +88,17 @@ void main() {
     );
   });
 
+  test('Employment type options follow selected opportunity type', () {
+    expect(
+      OpportunityMetadata.employmentTypesForOpportunityType('job'),
+      isNot(contains('internship')),
+    );
+    expect(
+      OpportunityMetadata.employmentTypesForOpportunityType('internship'),
+      <String>['internship'],
+    );
+  });
+
   test('Sponsored opportunity funding is parsed and formatted separately', () {
     final opportunity = OpportunityModel.fromMap({
       'id': 'opp_funding',

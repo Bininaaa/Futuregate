@@ -15,6 +15,16 @@ class OpportunityMetadata {
     'freelance',
   ];
 
+  static const List<String> jobEmploymentTypes = [
+    'full_time',
+    'part_time',
+    'contract',
+    'temporary',
+    'freelance',
+  ];
+
+  static const List<String> internshipEmploymentTypes = ['internship'];
+
   static const List<String> workModes = ['onsite', 'remote', 'hybrid'];
 
   static const List<String> salaryPeriods = [
@@ -35,6 +45,15 @@ class OpportunityMetadata {
 
   static bool usesFundingFields(String? type) {
     return OpportunityType.parse(type) == OpportunityType.sponsoring;
+  }
+
+  static List<String> employmentTypesForOpportunityType(String? type) {
+    return switch (OpportunityType.parse(type)) {
+      OpportunityType.internship => internshipEmploymentTypes,
+      OpportunityType.job => jobEmploymentTypes,
+      OpportunityType.sponsoring => const <String>[],
+      _ => employmentTypes,
+    };
   }
 
   static dynamic firstValue(Map<String, dynamic> data, List<String> keys) {

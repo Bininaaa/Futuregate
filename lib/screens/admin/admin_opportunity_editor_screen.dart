@@ -13,6 +13,7 @@ import '../../utils/opportunity_type.dart';
 import '../../widgets/opportunity_type_selector.dart';
 import '../../widgets/shared/app_content_system.dart';
 import '../../widgets/shared/app_feedback.dart';
+import '../../widgets/shared/posting_language_selector.dart';
 import 'admin_editor_widgets.dart';
 
 class AdminOpportunityEditorScreen extends StatefulWidget {
@@ -129,6 +130,7 @@ class _AdminOpportunityEditorScreenState
     _employmentType = opportunity.employmentType;
     _workMode = opportunity.workMode;
     _isPaid = opportunity.isPaid;
+    _applyTypeDefaults();
   }
 
   String _preferredPostingLanguage() {
@@ -228,9 +230,15 @@ class _AdminOpportunityEditorScreenState
                     validator: adminRequiredMin('Title', min: 4),
                   ),
                   const SizedBox(height: 12),
-                  _LanguageSelector(
+                  PostingLanguageSelector(
                     value: _originalLanguage,
                     onChanged: (v) => setState(() => _originalLanguage = v),
+                    activeColor: AdminPalette.primary,
+                    borderColor: AdminPalette.border,
+                    textColor: AdminPalette.textSecondary,
+                    iconColor: AdminPalette.textMuted,
+                    labelFontSize: 13,
+                    optionFontSize: 12,
                   ),
                   const SizedBox(height: 12),
                   OpportunityTypeSelector(
@@ -266,13 +274,10 @@ class _AdminOpportunityEditorScreenState
             ),
             const SizedBox(height: 12),
             AdminEditorSection(
-              title: l10n.uiRequirementsAndEligibility,
-              subtitle:
-                  'Add one clear item at a time so students see a clean checklist.',
+              title: OpportunityType.requirementsLabel(_type, l10n),
+              subtitle: _requirementsSectionSubtitle(),
               child: AdminEditorListField(
-                label: _type == OpportunityType.sponsoring
-                    ? 'Eligibility'
-                    : 'Requirements',
+                label: 'Checklist',
                 hint: _type == OpportunityType.sponsoring
                     ? 'Type one eligibility rule, then press Enter'
                     : 'Type one requirement, then press Enter',
@@ -280,7 +285,6 @@ class _AdminOpportunityEditorScreenState
                 onChanged: (items) => setState(() => _requirementItems = items),
                 listController: _requirementsListController,
                 validator: _validateRequirementItems,
-                examples: _requirementExamples(),
                 emptyText: _type == OpportunityType.sponsoring
                     ? 'Add eligibility rules, documents, or selection criteria.'
                     : 'Add the skills, background, or tools students need.',
@@ -413,15 +417,12 @@ class _AdminOpportunityEditorScreenState
                           child: AdminEditorDropdown<String>(
                             value: _employmentType,
                             label: 'Employment type',
-                            items: OpportunityMetadata.employmentTypes
+                            items: _employmentTypeOptions
                                 .map(
                                   (item) => DropdownMenuItem(
                                     value: item,
                                     child: Text(
-                                      OpportunityMetadata.formatEmploymentType(
-                                            item,
-                                          ) ??
-                                          adminTitleCase(item),
+                                      _employmentTypeLabel(item, l10n),
                                     ),
                                   ),
                                 )
@@ -459,8 +460,14 @@ class _AdminOpportunityEditorScreenState
                       value: _isPaid,
                       label: 'Paid status',
                       items: [
-                        DropdownMenuItem(value: true, child: Text(l10n.paidLabel)),
-                        DropdownMenuItem(value: false, child: Text(l10n.unpaidLabel)),
+                        DropdownMenuItem(
+                          value: true,
+                          child: Text(l10n.paidLabel),
+                        ),
+                        DropdownMenuItem(
+                          value: false,
+                          child: Text(l10n.unpaidLabel),
+                        ),
                       ],
                       onChanged: (value) => setState(() => _isPaid = value),
                     ),
@@ -639,36 +646,33 @@ class _AdminOpportunityEditorScreenState
 
     _salaryCurrency ??= OpportunityMetadata.supportedCurrencies.first;
     if (_isInternship) {
-      _employmentType ??= 'internship';
+      _employmentType = OpportunityType.internship;
       return;
     }
-    if (_employmentType == 'internship') {
+    if (!_employmentTypeOptions.contains(_employmentType)) {
       _employmentType = null;
     }
   }
 
-  List<String> _requirementExamples() {
-    if (_isSponsoring) {
-      return const <String>[
-        'Student team with a working prototype',
-        'Clear project budget',
-        'Available for sponsor check-ins',
-      ];
-    }
+  String _requirementsSectionSubtitle() {
+    return _isSponsoring
+        ? 'Add each eligibility point separately so students see a clean checklist.'
+        : 'Add each requirement separately so students see a clean checklist.';
+  }
 
-    if (_isInternship) {
-      return const <String>[
-        'Basic Flutter knowledge',
-        'Available for 3 months',
-        'Good communication skills',
-      ];
-    }
+  List<String> get _employmentTypeOptions =>
+      OpportunityMetadata.employmentTypesForOpportunityType(_type);
 
-    return const <String>[
-      'Experience with Flutter',
-      'Strong problem-solving skills',
-      'Comfortable working in a team',
-    ];
+  String _employmentTypeLabel(String type, AppLocalizations l10n) {
+    return switch (type) {
+      'full_time' => l10n.employmentTypeFullTime,
+      'part_time' => l10n.employmentTypePartTime,
+      'internship' => l10n.employmentTypeInternship,
+      'contract' => l10n.employmentTypeContract,
+      'temporary' => l10n.employmentTypeTemporary,
+      'freelance' => l10n.employmentTypeFreelance,
+      _ => adminTitleCase(type),
+    };
   }
 
   String? _validateRequirementItems(List<String> items) {
@@ -763,73 +767,5 @@ class _AdminOpportunityEditorScreenState
   String _formatNum(num? value) {
     if (value == null) return '';
     return value % 1 == 0 ? value.toStringAsFixed(0) : value.toString();
-  }
-}
-
-class _LanguageSelector extends StatelessWidget {
-  final String value;
-  final ValueChanged<String> onChanged;
-
-  const _LanguageSelector({required this.value, required this.onChanged});
-
-  static const _options = <(String, String, String)>[
-    ('fr', '🇫🇷', 'French'),
-    ('ar', '🇩🇿', 'Arabic'),
-    ('en', '🇬🇧', 'English'),
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    return Row(
-      children: [
-        Icon(Icons.translate_rounded, size: 18, color: AdminPalette.textMuted),
-        const SizedBox(width: 8),
-        Text(
-          l10n.postingLanguageLabel,
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-            color: AdminPalette.textSecondary,
-          ),
-        ),
-        const SizedBox(width: 12),
-        ..._options.map((opt) {
-          final (code, flag, name) = opt;
-          final selected = value == code;
-          return Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: GestureDetector(
-              onTap: () => onChanged(code),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 150),
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                decoration: BoxDecoration(
-                  color: selected
-                      ? AdminPalette.primary.withValues(alpha: 0.12)
-                      : Colors.transparent,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: selected
-                        ? AdminPalette.primary
-                        : AdminPalette.border,
-                  ),
-                ),
-                child: Text(
-                  '$flag $name',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-                    color: selected
-                        ? AdminPalette.primary
-                        : AdminPalette.textSecondary,
-                  ),
-                ),
-              ),
-            ),
-          );
-        }),
-      ],
-    );
   }
 }
