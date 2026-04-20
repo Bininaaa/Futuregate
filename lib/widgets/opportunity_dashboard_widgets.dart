@@ -17,6 +17,8 @@ IconData _applicationStatusIcon(String status) {
       return Icons.check_circle_rounded;
     case ApplicationStatus.rejected:
       return Icons.cancel_rounded;
+    case ApplicationStatus.withdrawn:
+      return Icons.undo_rounded;
     case ApplicationStatus.pending:
     default:
       return Icons.hourglass_top_rounded;
@@ -580,6 +582,8 @@ class TrainingProgramsCard extends StatelessWidget {
                         fontWeight: FontWeight.w700,
                         color: OpportunityDashboardPalette.textPrimary,
                       ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                     if (subtitle.trim().isNotEmpty) ...[
                       const SizedBox(height: 3),
@@ -589,6 +593,8 @@ class TrainingProgramsCard extends StatelessWidget {
                           fontSize: 11.5,
                           color: OpportunityDashboardPalette.textSecondary,
                         ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ],
@@ -596,21 +602,30 @@ class TrainingProgramsCard extends StatelessWidget {
               ),
               if (badgeLabel != null && badgeLabel!.isNotEmpty) ...[
                 const SizedBox(width: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 9,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: OpportunityDashboardPalette.background,
-                    borderRadius: BorderRadius.circular(999),
-                  ),
-                  child: Text(
-                    badgeLabel!,
-                    style: AppTypography.product(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w600,
-                      color: OpportunityDashboardPalette.textSecondary,
+                Flexible(
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: Container(
+                      constraints: const BoxConstraints(maxWidth: 144),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 9,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: OpportunityDashboardPalette.background,
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                      child: Text(
+                        badgeLabel!,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        softWrap: false,
+                        style: AppTypography.product(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                          color: OpportunityDashboardPalette.textSecondary,
+                        ),
+                      ),
                     ),
                   ),
                 ),

@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/app.css?v=2026042010">
+  <link rel="stylesheet" href="css/app.css?v=2026042012">
   <script src="js/theme-init.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
 </head>
@@ -73,13 +73,18 @@
         { v: 'hidden',   l: 'Hidden',   i: 'eye-off' },
       ],
       opportunities: [
-        { v: 'all',         l: 'All',          i: 'list' },
-        { v: 'latest',      l: 'Latest',       i: 'sparkles' },
-        { v: 'admin',       l: 'Admin',        i: 'shield' },
-        { v: 'pendingApps', l: 'Pending apps', i: 'hourglass' },
-        { v: 'closed',      l: 'Closed',       i: 'lock' },
-        { v: 'featured',    l: 'Featured',     i: 'star' },
-        { v: 'hidden',      l: 'Hidden',       i: 'eye-off' },
+        { v: 'all',         l: 'All opportunities', i: 'list' },
+        { v: 'open',        l: 'Open',              i: 'check-circle' },
+        { v: 'closed',      l: 'Closed',            i: 'lock' },
+        { v: 'admin',       l: 'Posted by admin',   i: 'shield' },
+        { v: 'pendingApps', l: 'Has pending apps',  i: 'hourglass' },
+        { v: 'hidden',      l: 'Hidden',            i: 'eye-off' },
+      ],
+      opportunityTypes: [
+        { v: 'all',         l: 'Any type',    i: 'layers' },
+        { v: 'job',         l: 'Jobs',        i: 'briefcase' },
+        { v: 'internship',  l: 'Internships', i: 'backpack' },
+        { v: 'sponsoring',  l: 'Sponsoring',  i: 'gift' },
       ],
       scholarships: [
         { v: 'all',      l: 'All',      i: 'list' },
@@ -110,6 +115,7 @@
       booksResults: [], youtubeResults: [],
       librarySource: 'overview', // overview | books | youtube
       filter: 'all',
+      oppType: 'all',
       search: '',
     };
     if (!TABS.find((t) => t.id === state.activeTab)) state.activeTab = 'ideas';
@@ -132,6 +138,7 @@
           document.querySelectorAll('#tab-bar .tab').forEach((b) => b.classList.toggle('active', b === btn));
           updateUrlParams({ tab: state.activeTab });
           state.filter = 'all';
+          state.oppType = 'all';
           state.search = '';
           renderTab();
         });
@@ -145,7 +152,7 @@
 
     function handleDeepLink() {
       const targets = {
-        ideas:         { p: 'ideaId',         list: state.ideas,         open: (it) => openIdeaEditor(it) },
+        ideas:         { p: 'ideaId',         list: state.ideas,         open: (it) => { window.location.href = 'idea-editor.html?id=' + encodeURIComponent(it.id); } },
         applications:  { p: 'applicationId',  list: state.applications,  open: (it) => openCvViewer(it.id) },
         opportunities: { p: 'opportunityId',  list: state.opportunities, open: (it) => openOppEditor(it) },
         scholarships:  { p: 'scholarshipId',  list: state.scholarships,  open: (it) => openScholarEditor(it) },
@@ -288,7 +295,7 @@
         <div class="list-grid" id="list">${items.length ? items.map(renderIdeaRow).join('') : emptyStateHtml('Try a different filter.', { title: 'No project ideas', icon: 'lightbulb' })}</div>
       `;
       bindCommon();
-      document.getElementById('new-idea').addEventListener('click', () => openIdeaEditor(null));
+      document.getElementById('new-idea').addEventListener('click', () => { window.location.href = 'idea-editor.html'; });
       bindRowActions((id, action) => handleIdeaAction(id, action));
       if (window.lucide) window.lucide.createIcons();
     }
@@ -327,7 +334,7 @@
         if (action === 'approve') { await updateDoc(ref, { status: 'approved' }); it.status = 'approved'; showToast('Idea approved.', 'success'); }
         else if (action === 'reject') { await updateDoc(ref, { status: 'rejected' }); it.status = 'rejected'; showToast('Idea rejected.', 'success'); }
         else if (action === 'toggle-hide') { const next = !it.isHidden; await updateDoc(ref, { isHidden: next }); it.isHidden = next; showToast(next ? 'Idea hidden.' : 'Idea visible again.', 'success'); }
-        else if (action === 'edit') return openIdeaEditor(it);
+        else if (action === 'edit') { window.location.href = 'idea-editor.html?id=' + encodeURIComponent(id); return; }
         else if (action === 'delete') {
           if (!confirm('Delete this idea?')) return;
           await deleteDoc(ref);
@@ -438,24 +445,36 @@
 
     function renderOppsTab(panel) {
       let items = state.opportunities.slice();
-      if (state.filter === 'latest')     items = items.filter(isLatest);
+      if (state.filter === 'open')       items = items.filter((x) => (x.status || 'open') === 'open');
       if (state.filter === 'admin')      items = items.filter((x) => x.createdByRole === 'admin' || x.postedBy === 'admin');
       if (state.filter === 'pendingApps')items = items.filter((x) => oppPendingAppsCount(x.id) > 0);
       if (state.filter === 'closed')     items = items.filter((x) => x.status === 'closed');
-      if (state.filter === 'featured')   items = items.filter((x) => x.isFeatured === true);
       if (state.filter === 'hidden')     items = items.filter((x) => x.isHidden === true);
+      if (state.oppType && state.oppType !== 'all') {
+        items = items.filter((x) => (x.type || x.opportunityType) === state.oppType);
+      }
       items = items.filter((x) => matchesQuery(x, [x.title, x.companyName, x.location, x.type, x.description]));
+
+      const typeChips = FILTERS.opportunityTypes || [];
 
       panel.innerHTML = `
         ${chipFilterBar('opportunities')}
-        ${searchBar('Search opportunities...')}
+        <div class="chip-row" style="margin-top:-4px;">
+          <div class="chip-group">
+            ${typeChips.map((c) => `<button class="chip${state.oppType===c.v?' active':''}" data-opptype="${c.v}"><i data-lucide="${c.i}"></i>${esc(c.l)}</button>`).join('')}
+          </div>
+        </div>
+        ${searchBar('Search by title, company, location...')}
         <div style="display:flex; justify-content:flex-end; margin-bottom:12px;">
           <button class="btn btn-primary" id="new-opp"><i data-lucide="plus"></i>New opportunity</button>
         </div>
         <div class="list-grid" id="list">${items.length ? items.map(renderOppRow).join('') : emptyStateHtml('Nothing to show here yet.', { title: 'No opportunities', icon: 'briefcase' })}</div>
       `;
       bindCommon();
-      document.getElementById('new-opp').addEventListener('click', () => openOppEditor(null));
+      document.querySelectorAll('[data-opptype]').forEach((b) => {
+        b.addEventListener('click', () => { state.oppType = b.getAttribute('data-opptype'); renderTab(); });
+      });
+      document.getElementById('new-opp').addEventListener('click', () => { window.location.href = 'opp-editor.html'; });
       bindRowActions((id, action) => handleOppAction(id, action));
       if (window.lucide) window.lucide.createIcons();
     }
@@ -470,14 +489,13 @@
           <div class="row-sub">${esc(it.companyName || '—')} · ${esc(it.location || '—')} · ${esc(type)}</div>
           <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">
             ${it.status ? `<span class="badge">${esc(it.status)}</span>` : ''}
-            ${it.isFeatured ? '<span class="badge badge-warning"><i data-lucide="star"></i>Featured</span>' : ''}
             ${it.isHidden ? '<span class="badge badge-danger"><i data-lucide="eye-off"></i>Hidden</span>' : ''}
             ${pendingCount ? `<span class="badge badge-info"><i data-lucide="hourglass"></i>${pendingCount} pending</span>` : ''}
             <span class="badge"><i data-lucide="calendar"></i>${esc(formatTimestamp(it.createdAt) || '—')}</span>
           </div>
         </div>
         <div class="row-actions">
-          <button class="btn btn-sm" data-id="${it.id}" data-action="toggle-feature" title="${it.isFeatured ? 'Unfeature' : 'Feature'}"><i data-lucide="star"></i></button>
+          <button class="btn btn-sm" data-id="${it.id}" data-action="details" title="View details & applications"><i data-lucide="eye"></i></button>
           <button class="btn btn-sm" data-id="${it.id}" data-action="toggle-hide" title="${it.isHidden ? 'Unhide' : 'Hide'}"><i data-lucide="${it.isHidden ? 'eye' : 'eye-off'}"></i></button>
           <button class="btn btn-sm" data-id="${it.id}" data-action="edit" title="Edit"><i data-lucide="pencil"></i></button>
           <button class="btn btn-sm btn-danger" data-id="${it.id}" data-action="delete" title="Delete"><i data-lucide="trash-2"></i></button>
@@ -485,13 +503,78 @@
       </div>`;
     }
 
+    function openOppDetails(it) {
+      document.getElementById('editor-title').textContent = it.title || 'Opportunity details';
+      const apps = state.applications.filter((a) => a.opportunityId === it.id);
+      const pending = apps.filter((a) => (a.status || 'pending') === 'pending').length;
+      const accepted = apps.filter((a) => a.status === 'accepted').length;
+      const rejected = apps.filter((a) => a.status === 'rejected').length;
+      const meta = [];
+      if (it.type) meta.push(`<span class="badge"><i data-lucide="layers"></i>${esc(it.type)}</span>`);
+      if (it.status) meta.push(`<span class="badge">${esc(it.status)}</span>`);
+      if (it.isHidden) meta.push('<span class="badge badge-danger"><i data-lucide="eye-off"></i>Hidden</span>');
+
+      const applyLine = (a) => {
+        const s = a.status || 'pending';
+        const sClass = s === 'accepted' ? 'success' : s === 'rejected' ? 'danger' : 'warning';
+        return `<div class="item-row">
+          <div class="activity-icon" style="background:rgba(59,34,246,0.14);color:#3B22F6"><i data-lucide="user"></i></div>
+          <div class="row-body">
+            <div class="row-title">${esc(a.studentName || a.studentId || 'Applicant')}</div>
+            <div class="row-sub">Applied ${esc(formatTimestamp(a.appliedAt) || '—')}</div>
+            <div style="margin-top:6px;"><span class="badge badge-${sClass}">${esc(s)}</span></div>
+          </div>
+          <div class="row-actions">
+            ${s !== 'accepted' ? `<button class="btn btn-sm btn-success" data-app="${a.id}" data-app-action="accept"><i data-lucide="check"></i>Accept</button>` : ''}
+            ${s !== 'rejected' ? `<button class="btn btn-sm btn-danger" data-app="${a.id}" data-app-action="reject"><i data-lucide="x"></i>Reject</button>` : ''}
+            ${a.cvId ? `<button class="btn btn-sm" data-app="${a.cvId}" data-app-action="cv"><i data-lucide="file-text"></i>CV</button>` : ''}
+          </div>
+        </div>`;
+      };
+
+      document.getElementById('editor-body').innerHTML = `
+        ${section('Summary', 'info', `
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;">${meta.join('')}</div>
+          <div class="row-sub">${esc(it.companyName || '—')} · ${esc(it.location || '—')}</div>
+          <div style="margin-top:10px;display:flex;gap:14px;flex-wrap:wrap;">
+            <span class="badge badge-info"><i data-lucide="users"></i>${apps.length} total</span>
+            <span class="badge badge-warning"><i data-lucide="hourglass"></i>${pending} pending</span>
+            <span class="badge badge-success"><i data-lucide="check"></i>${accepted} accepted</span>
+            <span class="badge badge-danger"><i data-lucide="x"></i>${rejected} rejected</span>
+          </div>
+        `)}
+        ${section('Description', 'file-text', `<p style="white-space:pre-wrap;margin:0;">${esc(it.description || '—')}</p>`)}
+        ${Array.isArray(it.requirements) && it.requirements.length ? section('Requirements', 'list-checks', `<ul style="margin:0;padding-left:18px;">${it.requirements.map((r) => `<li>${esc(r)}</li>`).join('')}</ul>`) : ''}
+        ${section('Applications (' + apps.length + ')', 'file-text', apps.length ? `<div class="list-grid">${apps.map(applyLine).join('')}</div>` : '<p class="row-sub" style="margin:0;">No applications yet.</p>')}
+      `;
+      const saveBtn = document.getElementById('editor-save');
+      if (saveBtn) saveBtn.style.display = 'none';
+      openModal('editor-modal');
+
+      document.querySelectorAll('[data-app-action]').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const appId = btn.getAttribute('data-app');
+          const act = btn.getAttribute('data-app-action');
+          if (act === 'cv') { window.location.href = 'cv-viewer.html?cvId=' + encodeURIComponent(appId); return; }
+          try {
+            await updateDoc(doc(db, 'applications', appId), { status: act === 'accept' ? 'accepted' : 'rejected' });
+            const appObj = state.applications.find((x) => x.id === appId);
+            if (appObj) appObj.status = act === 'accept' ? 'accepted' : 'rejected';
+            showToast('Application ' + (act === 'accept' ? 'accepted' : 'rejected') + '.', 'success');
+            openOppDetails(it);
+          } catch (e) { console.error(e); showToast('Action failed: ' + (e?.message || e), 'error'); }
+        });
+      });
+      if (window.lucide) window.lucide.createIcons();
+    }
+
     async function handleOppAction(id, action) {
       const ref = doc(db, 'opportunities', id);
       const it = state.opportunities.find((x) => x.id === id);
       try {
-        if (action === 'toggle-feature') { const next = !it.isFeatured; await updateDoc(ref, { isFeatured: next }); it.isFeatured = next; showToast(next ? 'Featured.' : 'Unfeatured.', 'success'); }
-        else if (action === 'toggle-hide') { const next = !it.isHidden; await updateDoc(ref, { isHidden: next }); it.isHidden = next; showToast(next ? 'Opportunity hidden.' : 'Opportunity visible.', 'success'); }
+        if (action === 'toggle-hide') { const next = !it.isHidden; await updateDoc(ref, { isHidden: next, updatedAt: serverTimestamp() }); it.isHidden = next; showToast(next ? 'Opportunity hidden.' : 'Opportunity visible.', 'success'); }
         else if (action === 'edit') return openOppEditor(it);
+        else if (action === 'details') return openOppDetails(it);
         else if (action === 'delete') {
           if (!confirm('Delete this opportunity?')) return;
           await deleteDoc(ref);
@@ -503,7 +586,12 @@
     }
 
     function openOppEditor(it) {
+      window.location.href = 'opp-editor.html' + (it?.id ? ('?id=' + encodeURIComponent(it.id)) : '');
+    }
+    function _legacyOppEditor_unused(it) {
       document.getElementById('editor-title').textContent = it ? 'Edit opportunity' : 'New opportunity';
+      const saveBtn0 = document.getElementById('editor-save');
+      if (saveBtn0) saveBtn0.style.display = '';
       const deadline = toDateInput(it?.applicationDeadline || it?.deadline);
       const opType = it?.type || it?.opportunityType || 'job';
 
@@ -515,7 +603,7 @@
             <div class="form-row"><label>Location *</label><input id="f-location" type="text" value="${esc(it?.location || '')}"/></div>
             <div class="form-row"><label>Type</label>
               <select id="f-type">
-                ${[['job','Job'],['internship','Internship'],['sponsoring','Sponsoring / Funding'],['contract','Contract'],['volunteer','Volunteer'],['freelance','Freelance']].map(([v,l]) => `<option value="${v}" ${opType===v?'selected':''}>${l}</option>`).join('')}
+                ${[['job','Job'],['internship','Internship'],['sponsoring','Sponsoring / Funding']].map(([v,l]) => `<option value="${v}" ${opType===v?'selected':''}>${l}</option>`).join('')}
               </select>
             </div>
             <div class="form-row"><label>Language</label>
@@ -525,9 +613,8 @@
             </div>
             <div class="form-row"><label>Status</label>
               <select id="f-status">
-                <option value="active" ${(it?.status||'active')==='active'?'selected':''}>Open</option>
+                <option value="open"   ${(it?.status||'open')==='open'?'selected':''}>Open</option>
                 <option value="closed" ${it?.status==='closed'?'selected':''}>Closed</option>
-                <option value="draft"  ${it?.status==='draft'?'selected':''}>Draft</option>
               </select>
             </div>
           </div>
@@ -539,7 +626,6 @@
         ${section('Logistics', 'calendar', `
           <div class="form-grid-2">
             <div class="form-row"><label>Application deadline</label><input id="f-deadline" type="date" value="${esc(deadline)}"/></div>
-            <div class="form-row"><label>Application URL</label><input id="f-applyUrl" type="url" value="${esc(it?.applyUrl || '')}"/></div>
           </div>
           <div id="opp-type-fields"></div>
         `)}
@@ -623,12 +709,12 @@
           type: t, originalLanguage: v('f-lang'), status: v('f-status'),
           description: v('f-description'),
           requirements: splitLines(v('f-requirements')),
-          applyUrl: v('f-applyUrl'),
           applicationDeadline: dl ? new Date(dl + 'T00:00:00') : null,
           isFeatured: document.getElementById('f-featured').checked,
           isHidden: document.getElementById('f-hidden').checked,
+          updatedAt: serverTimestamp(),
         };
-        if (t === 'job' || t === 'contract' || t === 'freelance') {
+        if (t === 'job') {
           Object.assign(payload, {
             salaryMin: numOrNull('f-salaryMin'), salaryMax: numOrNull('f-salaryMax'),
             salaryCurrency: v('f-currency'), salaryPeriod: v('f-salaryPeriod'),
@@ -637,7 +723,7 @@
         } else if (t === 'internship') {
           Object.assign(payload, {
             duration: v('f-duration'), workMode: v('f-workmode'),
-            isPaid: v('f-paid') === 'true', compensationNote: v('f-compNote'),
+            isPaid: v('f-paid') === 'true', compensationText: v('f-compNote'),
           });
         } else if (t === 'sponsoring') {
           Object.assign(payload, {
@@ -655,13 +741,21 @@
             showToast('Opportunity updated.', 'success');
           } else {
             const ref = doc(collection(db, 'opportunities'));
-            const created = { ...payload, createdAt: serverTimestamp(), createdByRole: 'admin', createdBy: auth.currentUser?.uid || '' };
+            const uid = auth.currentUser?.uid || '';
+            const created = {
+              ...payload,
+              id: ref.id,
+              companyId: uid,
+              createdBy: uid,
+              createdByRole: 'admin',
+              createdAt: serverTimestamp(),
+            };
             await setDoc(ref, created);
-            state.opportunities.unshift({ id: ref.id, ...created, createdAt: { toDate: () => new Date() } });
+            state.opportunities.unshift({ ...created, createdAt: { toDate: () => new Date() } });
             showToast('Opportunity created.', 'success');
           }
           closeModal('editor-modal'); renderStats(); renderTab();
-        } catch (e) { console.error(e); showToast('Save failed.', 'error'); }
+        } catch (e) { console.error(e); showToast('Save failed: ' + (e?.message || e), 'error'); }
       };
       if (window.lucide) window.lucide.createIcons();
     }
@@ -682,7 +776,7 @@
         <div class="list-grid" id="list">${items.length ? items.map(renderScholarRow).join('') : emptyStateHtml('No scholarships yet.', { title: 'Empty', icon: 'graduation-cap' })}</div>
       `;
       bindCommon();
-      document.getElementById('new-scholar').addEventListener('click', () => openScholarEditor(null));
+      document.getElementById('new-scholar').addEventListener('click', () => { window.location.href = 'scholarship-editor.html'; });
       bindRowActions((id, action) => handleScholarAction(id, action));
       if (window.lucide) window.lucide.createIcons();
     }
@@ -731,6 +825,9 @@
     }
 
     function openScholarEditor(it) {
+      window.location.href = 'scholarship-editor.html' + (it?.id ? ('?id=' + encodeURIComponent(it.id)) : '');
+    }
+    function _legacyScholarEditor_unused(it) {
       document.getElementById('editor-title').textContent = it ? 'Edit scholarship' : 'New scholarship';
       const deadline = toDateInput(it?.deadline);
       // Flutter supports multiple legacy eligibility keys

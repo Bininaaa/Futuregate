@@ -1092,6 +1092,7 @@ service cloud.firestore {
           (
             isAdmin() &&
             resource.data.companyId == request.auth.uid &&
+            resource.data.status != 'withdrawn' &&
             exists(opportunityPath(resource.data.opportunityId)) &&
             get(opportunityPath(resource.data.opportunityId)).data.companyId ==
                 request.auth.uid &&
@@ -1112,6 +1113,7 @@ service cloud.firestore {
           (
             isCompany() &&
             resource.data.companyId == request.auth.uid &&
+            resource.data.status != 'withdrawn' &&
             request.resource.data.diff(resource.data).changedKeys().hasOnly([
               'status'
             ]) &&
@@ -1123,6 +1125,53 @@ service cloud.firestore {
             request.resource.data.cvId == resource.data.cvId &&
             request.resource.data.appliedAt == resource.data.appliedAt &&
             isApplicationStatus(request.resource.data.status)
+          ) ||
+          (
+            isStudent() &&
+            resource.data.studentId == request.auth.uid &&
+            resource.data.status == 'pending' &&
+            request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+              'status',
+              'withdrawnAt'
+            ]) &&
+            request.resource.data.id == resource.data.id &&
+            request.resource.data.studentId == resource.data.studentId &&
+            request.resource.data.studentName == resource.data.studentName &&
+            request.resource.data.opportunityId == resource.data.opportunityId &&
+            request.resource.data.companyId == resource.data.companyId &&
+            request.resource.data.cvId == resource.data.cvId &&
+            request.resource.data.appliedAt == resource.data.appliedAt &&
+            request.resource.data.status == 'withdrawn' &&
+            request.resource.data.withdrawnAt == request.time
+          ) ||
+          (
+            isStudent() &&
+            resource.data.studentId == request.auth.uid &&
+            resource.data.status == 'withdrawn' &&
+            request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+              'studentName',
+              'companyId',
+              'cvId',
+              'status',
+              'appliedAt',
+              'withdrawnAt'
+            ]) &&
+            request.resource.data.id == resource.data.id &&
+            request.resource.data.studentId == resource.data.studentId &&
+            request.resource.data.opportunityId == resource.data.opportunityId &&
+            request.resource.data.status == 'pending' &&
+            canStudentUseOpportunity(resource.data.opportunityId) &&
+            get(opportunityPath(resource.data.opportunityId)).data.companyId ==
+                request.resource.data.companyId &&
+            (
+              request.resource.data.cvId == '' ||
+              (
+                exists(cvPath(request.resource.data.cvId)) &&
+                get(cvPath(request.resource.data.cvId)).data.studentId == request.auth.uid
+              )
+            ) &&
+            request.resource.data.appliedAt == request.time &&
+            !request.resource.data.keys().hasAny(['withdrawnAt'])
           )
         );
 

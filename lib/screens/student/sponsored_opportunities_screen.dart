@@ -354,7 +354,9 @@ class _SponsoredOpportunitiesScreenState
     Map<String, String> appliedStatuses,
   ) {
     final applicationStatus = appliedStatuses[opportunity.id];
-    if (applicationStatus != null) {
+    if (applicationStatus != null &&
+        ApplicationStatus.parse(applicationStatus) !=
+            ApplicationStatus.withdrawn) {
       return _SponsoredActionState(
         label: ApplicationStatus.label(
           applicationStatus,
@@ -2553,6 +2555,8 @@ IconData _sponsoredApplicationStatusIcon(String status) {
       return Icons.check_circle_rounded;
     case ApplicationStatus.rejected:
       return Icons.cancel_rounded;
+    case ApplicationStatus.withdrawn:
+      return Icons.undo_rounded;
     case ApplicationStatus.pending:
     default:
       return Icons.hourglass_top_rounded;

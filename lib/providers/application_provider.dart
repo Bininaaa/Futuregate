@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../models/student_application_item_model.dart';
 import '../services/application_service.dart';
+import '../utils/application_status.dart';
 
 class ApplicationProvider extends ChangeNotifier {
   final ApplicationService _service = ApplicationService();
@@ -75,7 +76,12 @@ class ApplicationProvider extends ChangeNotifier {
   Map<String, String> get appliedStatusMap {
     final map = <String, String>{};
     for (final item in _submittedApplications) {
-      map[item.opportunityId] = item.status;
+      final status = ApplicationStatus.parse(item.status);
+      if (status == ApplicationStatus.withdrawn) {
+        continue;
+      }
+
+      map[item.opportunityId] = status;
     }
     return map;
   }

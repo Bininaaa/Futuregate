@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Opportunity editor · FutureGate Admin</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/app.css?v=2026042012">
+  <script src="js/theme-init.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body data-page="opp-editor">
+  <div id="auth-gate" class="auth-gate"><div class="spinner"></div><p>Verifying session...</p></div>
+  <div id="shell"></div>
+
+  <script type="module">
+    import { mountShell, showPage } from './js/shell.js';
+    import { checkAuth, esc, showToast } from './js/auth.js';
+    import {
+      auth, db, collection, doc, getDoc, setDoc, updateDoc, serverTimestamp,
+    } from './js/firebase-config.js';
+    import { getQueryParam } from './js/admin-utils.js';
+
+    mountShell({ page: 'content' });
+    checkAuth(async () => { await initPage(); });
+
+    const id = getQueryParam('id') || '';
+    const isNew = !id;
+    let opp = null;
+
+    async function initPage() {
+      if (!isNew) {
+        try {
+          const snap = await getDoc(doc(db, 'opportunities', id));
+          if (snap.exists()) opp = { id: snap.id, ...snap.data() };
+        } catch (e) { console.error(e); }
+      }
+      render();
+      showPage();
+    }
+
+    const TYPES   = [['job','Job'],['internship','Internship'],['sponsoring','Sponsoring / Funding']];
+    const LANGS   = [['fr','French'],['en','English'],['ar','Arabic']];
+    const PERIODS = [['monthly','Monthly'],['yearly','Yearly'],['hourly','Hourly'],['daily','Daily']];
+    const EMP     = [['full_time','Full-time'],['part_time','Part-time'],['contract','Contract'],['internship','Internship']];
+    const MODES   = [['onsite','On-site'],['remote','Remote'],['hybrid','Hybrid']];
+    const CURR    = ['DZD','EUR','USD'];
+
+    function val(k) { return (document.getElementById(k)?.value || '').trim(); }
+    function numOrNull(k) { const v = val(k); return v === '' ? null : Number(v); }
+    function splitLines(s) { return String(s || '').split(/\r?\n/).map((x) => x.trim()).filter(Boolean); }
+    function joinLines(a) { return Array.isArray(a) ? a.join('\n') : ''; }
+    function toDateInput(value) {
+      const d = value?.toDate ? value.toDate() : (value?.seconds ? new Date(value.seconds * 1000) : (value instanceof Date ? value : null));
+      if (!d) return '';
+      return d.toISOString().slice(0, 10);
+    }
+
+    function sectionBlock(title, icon, html) {
+      return `<section class="editor-section">
+        <header class="editor-section__head">
+          <div class="editor-section__icon"><i data-lucide="${icon}"></i></div>
+          <h3>${esc(title)}</h3>
+        </header>
+        <div class="editor-section__body">${html}</div>
+      </section>`;
+    }
+
+    function render() {
+      const root = document.getElementById('page-content');
+      const opType = opp?.type || 'job';
+      const deadline = toDateInput(opp?.applicationDeadline || opp?.deadline);
+      const currency = opp?.salaryCurrency || opp?.fundingCurrency || 'DZD';
+
+      root.innerHTML = `
+        <div class="page-breadcrumb">
+          <a href="moderation.html?tab=opportunities" class="btn btn-ghost"><i data-lucide="arrow-left"></i>Back to content</a>
+        </div>
+        <header class="page-hero">
+          <div>
+            <h1 class="page-hero__title">${isNew ? 'Post an opportunity' : 'Edit opportunity'}</h1>
+            <p class="page-hero__subtitle">${isNew ? 'Share a job, internship or sponsoring program with students.' : 'Update the listing details, logistics and visibility.'}</p>
+          </div>
+          <div class="page-hero__actions">
+            <button class="btn" id="cancel-btn"><i data-lucide="x"></i>Cancel</button>
+            <button class="btn btn-primary" id="save-btn"><i data-lucide="save"></i>${isNew ? 'Publish' : 'Save changes'}</button>
+          </div>
+        </header>
+
+        <div class="editor-grid">
+          ${sectionBlock('Basics', 'info', `
+            <div class="form-grid-2">
+              <div class="form-row"><label>Title *</label><input id="f-title" type="text" placeholder="Frontend Developer Internship" value="${esc(opp?.title || '')}"/></div>
+              <div class="form-row"><label>Publisher / company *</label><input id="f-company" type="text" placeholder="FutureGate" value="${esc(opp?.companyName || '')}"/></div>
+              <div class="form-row"><label>Location *</label><input id="f-location" type="text" placeholder="Algiers · Remote · Hybrid" value="${esc(opp?.location || '')}"/></div>
+              <div class="form-row"><label>Type *</label>
+                <select id="f-type">${TYPES.map(([v,l]) => `<option value="${v}" ${opType===v?'selected':''}>${l}</option>`).join('')}</select>
+              </div>
+              <div class="form-row"><label>Language</label>
+                <select id="f-lang">${LANGS.map(([v,l]) => `<option value="${v}" ${((opp?.originalLanguage||'fr')===v)?'selected':''}>${l}</option>`).join('')}</select>
+              </div>
+              <div class="form-row"><label>Status</label>
+                <select id="f-status">
+                  <option value="open"   ${(opp?.status||'open')==='open'?'selected':''}>Open for applications</option>
+                  <option value="closed" ${opp?.status==='closed'?'selected':''}>Closed</option>
+                </select>
+              </div>
+            </div>
+          `)}
+
+          ${sectionBlock('Description & requirements', 'file-text', `
+            <div class="form-row"><label>Description *</label><textarea id="f-description" rows="6" placeholder="Describe the role, mission and impact.">${esc(opp?.description || '')}</textarea></div>
+            <div class="form-row"><label>Requirements (one per line)</label><textarea id="f-requirements" rows="4" placeholder="Bachelor degree in computer science\nFrench or English\nKnowledge of React">${esc(joinLines(opp?.requirements || opp?.requirementItems))}</textarea></div>
+          `)}
+
+          ${sectionBlock('Logistics', 'calendar', `
+            <div class="form-grid-2">
+              <div class="form-row"><label>Application deadline</label><input id="f-deadline" type="date" value="${esc(deadline)}"/></div>
+            </div>
+            <div id="opp-type-fields" data-currency="${esc(currency)}"></div>
+          `)}
+
+          ${sectionBlock('Visibility', 'eye', `
+            <label style="display:flex;align-items:center;gap:8px;"><input id="f-hidden" type="checkbox" ${opp?.isHidden?'checked':''}/> Hide this opportunity from students</label>
+          `)}
+        </div>
+
+        <div class="page-hero__actions" style="justify-content:flex-end;margin-top:18px;">
+          <button class="btn" id="cancel-btn-2"><i data-lucide="x"></i>Cancel</button>
+          <button class="btn btn-primary" id="save-btn-2"><i data-lucide="save"></i>${isNew ? 'Publish' : 'Save changes'}</button>
+        </div>
+      `;
+      document.getElementById('cancel-btn').onclick = back;
+      document.getElementById('cancel-btn-2').onclick = back;
+      document.getElementById('save-btn').onclick = save;
+      document.getElementById('save-btn-2').onclick = save;
+      document.getElementById('f-type').addEventListener('change', renderTypeFields);
+      renderTypeFields();
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function back() { window.location.href = 'moderation.html?tab=opportunities'; }
+
+    function renderTypeFields() {
+      const t = val('f-type');
+      const el = document.getElementById('opp-type-fields');
+      const currency = el.getAttribute('data-currency') || 'DZD';
+      const o = opp || {};
+      if (t === 'job') {
+        el.innerHTML = `
+          <div class="form-grid-2" style="margin-top:12px;">
+            <div class="form-row"><label>Salary min</label><input id="f-salaryMin" type="number" value="${esc(o.salaryMin ?? '')}"/></div>
+            <div class="form-row"><label>Salary max</label><input id="f-salaryMax" type="number" value="${esc(o.salaryMax ?? '')}"/></div>
+            <div class="form-row"><label>Currency</label>
+              <select id="f-currency">${CURR.map((c) => `<option value="${c}" ${currency===c?'selected':''}>${c}</option>`).join('')}</select>
+            </div>
+            <div class="form-row"><label>Salary period</label>
+              <select id="f-salaryPeriod">${PERIODS.map(([v,l]) => `<option value="${v}" ${(o.salaryPeriod||'monthly')===v?'selected':''}>${l}</option>`).join('')}</select>
+            </div>
+            <div class="form-row"><label>Employment type</label>
+              <select id="f-employment">${EMP.map(([v,l]) => `<option value="${v}" ${(o.employmentType||'full_time')===v?'selected':''}>${l}</option>`).join('')}</select>
+            </div>
+            <div class="form-row"><label>Work mode</label>
+              <select id="f-workmode">${MODES.map(([v,l]) => `<option value="${v}" ${(o.workMode||'onsite')===v?'selected':''}>${l}</option>`).join('')}</select>
+            </div>
+          </div>`;
+      } else if (t === 'internship') {
+        el.innerHTML = `
+          <div class="form-grid-2" style="margin-top:12px;">
+            <div class="form-row"><label>Duration (e.g. 3 months)</label><input id="f-duration" type="text" value="${esc(o.duration || '')}"/></div>
+            <div class="form-row"><label>Work mode</label>
+              <select id="f-workmode">${MODES.map(([v,l]) => `<option value="${v}" ${(o.workMode||'onsite')===v?'selected':''}>${l}</option>`).join('')}</select>
+            </div>
+            <div class="form-row"><label>Paid?</label>
+              <select id="f-paid"><option value="true" ${o.isPaid?'selected':''}>Paid</option><option value="false" ${o.isPaid===false?'selected':''}>Unpaid</option></select>
+            </div>
+            <div class="form-row"><label>Compensation note</label><input id="f-compNote" type="text" value="${esc(o.compensationText || '')}"/></div>
+          </div>`;
+      } else if (t === 'sponsoring') {
+        el.innerHTML = `
+          <div class="form-grid-2" style="margin-top:12px;">
+            <div class="form-row"><label>Funding amount</label><input id="f-fundAmount" type="number" value="${esc(o.fundingAmount ?? '')}"/></div>
+            <div class="form-row"><label>Currency</label>
+              <select id="f-currency">${CURR.map((c) => `<option value="${c}" ${currency===c?'selected':''}>${c}</option>`).join('')}</select>
+            </div>
+            <div class="form-row" style="grid-column:1/-1;"><label>Funding note</label><input id="f-fundNote" type="text" value="${esc(o.fundingNote || '')}"/></div>
+          </div>`;
+      } else {
+        el.innerHTML = '';
+      }
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    async function save() {
+      const t = val('f-type');
+      const dl = val('f-deadline');
+      const payload = {
+        title: val('f-title'), companyName: val('f-company'), location: val('f-location'),
+        type: t, originalLanguage: val('f-lang'), status: val('f-status'),
+        description: val('f-description'),
+        requirements: splitLines(val('f-requirements')),
+        applicationDeadline: dl ? new Date(dl + 'T00:00:00') : null,
+        isHidden: document.getElementById('f-hidden').checked,
+        updatedAt: serverTimestamp(),
+      };
+      if (t === 'job') {
+        Object.assign(payload, {
+          salaryMin: numOrNull('f-salaryMin'), salaryMax: numOrNull('f-salaryMax'),
+          salaryCurrency: val('f-currency'), salaryPeriod: val('f-salaryPeriod'),
+          employmentType: val('f-employment'), workMode: val('f-workmode'),
+        });
+      } else if (t === 'internship') {
+        Object.assign(payload, {
+          duration: val('f-duration'), workMode: val('f-workmode'),
+          isPaid: val('f-paid') === 'true', compensationText: val('f-compNote'),
+        });
+      } else if (t === 'sponsoring') {
+        Object.assign(payload, {
+          fundingAmount: numOrNull('f-fundAmount'),
+          fundingCurrency: val('f-currency'), fundingNote: val('f-fundNote'),
+        });
+      }
+      if (!payload.title || !payload.companyName || !payload.location || !payload.description) {
+        showToast('Title, company, location and description are required.', 'warning'); return;
+      }
+
+      const saveBtn = document.getElementById('save-btn');
+      const saveBtn2 = document.getElementById('save-btn-2');
+      [saveBtn, saveBtn2].forEach((b) => b && (b.disabled = true));
+
+      try {
+        if (isNew) {
+          const ref = doc(collection(db, 'opportunities'));
+          const uid = auth.currentUser?.uid || '';
+          const created = {
+            ...payload,
+            id: ref.id,
+            companyId: uid,
+            createdBy: uid,
+            createdByRole: 'admin',
+            createdAt: serverTimestamp(),
+          };
+          await setDoc(ref, created);
+          showToast('Opportunity published.', 'success');
+        } else {
+          await updateDoc(doc(db, 'opportunities', id), payload);
+          showToast('Opportunity updated.', 'success');
+        }
+        back();
+      } catch (e) {
+        console.error(e);
+        showToast('Save failed: ' + (e?.message || e), 'error');
+        [saveBtn, saveBtn2].forEach((b) => b && (b.disabled = false));
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 
 import '../models/training_model.dart';
 import 'worker_api_service.dart';
@@ -42,12 +43,8 @@ class TrainingService {
     final snapshot = await _trainingsCollection.get();
 
     final items = snapshot.docs
-        .map(
-          (doc) => TrainingModel.fromMap({
-            ...doc.data(),
-            'id': (doc.data()['id'] ?? doc.id).toString(),
-          }),
-        )
+        .map(_parseTrainingDoc)
+        .whereType<TrainingModel>()
         .where((training) => !training.isHidden)
         .toList();
 
@@ -67,10 +64,10 @@ class TrainingService {
       return null;
     }
 
-    final training = TrainingModel.fromMap({
-      ...doc.data()!,
-      'id': (doc.data()!['id'] ?? doc.id).toString(),
-    });
+    final training = _parseTrainingDoc(doc);
+    if (training == null) {
+      return null;
+    }
     return training.isHidden ? null : training;
   }
 
@@ -211,12 +208,8 @@ class TrainingService {
     }
 
     final savedItems = snapshot.docs
-        .map(
-          (doc) => TrainingModel.fromMap({
-            ...doc.data(),
-            'id': (doc.data()['id'] ?? doc.id).toString(),
-          }),
-        )
+        .map(_parseTrainingDoc)
+        .whereType<TrainingModel>()
         .toList();
 
     final visibleTrainingIds = await _resolveVisibleTrainingIds(
@@ -267,5 +260,22 @@ class TrainingService {
     }
 
     return visibleIds;
+  }
+
+  TrainingModel? _parseTrainingDoc(DocumentSnapshot<Map<String, dynamic>> doc) {
+    final data = doc.data();
+    if (data == null) {
+      return null;
+    }
+
+    try {
+      return TrainingModel.fromMap({
+        ...data,
+        'id': (data['id'] ?? doc.id).toString(),
+      });
+    } catch (error) {
+      debugPrint('Skipping malformed training document ${doc.id}: $error');
+      return null;
+    }
   }
 }

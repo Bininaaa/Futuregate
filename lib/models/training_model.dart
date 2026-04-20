@@ -72,29 +72,37 @@ class TrainingModel {
       title: (map['title'] ?? '').toString(),
       description: (map['description'] ?? '').toString(),
       provider: (map['provider'] ?? '').toString(),
-      providerLogo: (map['providerLogo'] ?? map['providerLogoUrl'] ?? '')
-          .toString(),
+      providerLogo:
+          (map['providerLogo'] ??
+                  map['providerLogoUrl'] ??
+                  map['logoUrl'] ??
+                  map['logo'] ??
+                  '')
+              .toString(),
       duration: (map['duration'] ?? '').toString(),
       level: (map['level'] ?? '').toString(),
-      link: (map['link'] ?? '').toString(),
+      link: (map['link'] ?? map['url'] ?? map['infoLink'] ?? '').toString(),
       createdBy: (map['createdBy'] ?? '').toString(),
       createdByRole: (map['createdByRole'] ?? '').toString(),
-      createdAt: map['createdAt'] as Timestamp?,
-      savedAt: map['savedAt'] as Timestamp?,
+      createdAt: _parseTimestamp(map['createdAt']),
+      savedAt: _parseTimestamp(map['savedAt']),
       type: (map['type'] ?? 'training').toString(),
       source: (map['source'] ?? 'internal').toString(),
-      authors:
-          (map['authors'] as List<dynamic>?)
-              ?.map((e) => e.toString())
-              .toList() ??
-          const [],
-      thumbnail: (map['thumbnail'] ?? '').toString(),
+      authors: _parseStringList(map['authors']),
+      thumbnail:
+          (map['thumbnail'] ??
+                  map['thumbnailUrl'] ??
+                  map['coverImage'] ??
+                  map['image'] ??
+                  '')
+              .toString(),
       domain: (map['domain'] ?? '').toString(),
       language: (map['language'] ?? '').toString(),
-      previewLink: (map['previewLink'] ?? '').toString(),
-      isApproved: map['isApproved'] is bool ? map['isApproved'] as bool : true,
-      isFeatured: map['isFeatured'] is bool ? map['isFeatured'] as bool : false,
-      isHidden: map['isHidden'] is bool ? map['isHidden'] as bool : false,
+      previewLink: (map['previewLink'] ?? map['previewUrl'] ?? map['url'] ?? '')
+          .toString(),
+      isApproved: _parseBool(map['isApproved']) ?? true,
+      isFeatured: _parseBool(map['isFeatured']) ?? false,
+      isHidden: _parseBool(map['isHidden']) ?? false,
       rating: _parseDouble(map['rating']),
       learnerCount: parsedLearnerCount,
       learnerCountLabel: _parseLearnerCountLabel(
@@ -204,6 +212,71 @@ class TrainingModel {
       isFree: isFree ?? this.isFree,
       hasCertificate: hasCertificate ?? this.hasCertificate,
     );
+  }
+
+  static List<String> _parseStringList(dynamic value) {
+    if (value is List) {
+      return value
+          .map((item) => item.toString().trim())
+          .where((item) => item.isNotEmpty)
+          .toList(growable: false);
+    }
+
+    final direct = value?.toString().trim() ?? '';
+    if (direct.isEmpty) {
+      return const <String>[];
+    }
+
+    return direct
+        .split(RegExp(r'[,;\n]'))
+        .map((item) => item.trim())
+        .where((item) => item.isNotEmpty)
+        .toList(growable: false);
+  }
+
+  static Timestamp? _parseTimestamp(dynamic value) {
+    if (value == null) {
+      return null;
+    }
+    if (value is Timestamp) {
+      return value;
+    }
+    if (value is DateTime) {
+      return Timestamp.fromDate(value);
+    }
+    if (value is int) {
+      return Timestamp.fromMillisecondsSinceEpoch(value);
+    }
+    if (value is num) {
+      return Timestamp.fromMillisecondsSinceEpoch(value.toInt());
+    }
+    if (value is Map) {
+      final seconds = value['seconds'] ?? value['_seconds'];
+      final nanoseconds = value['nanoseconds'] ?? value['_nanoseconds'] ?? 0;
+      if (seconds is int && nanoseconds is int) {
+        return Timestamp(seconds, nanoseconds);
+      }
+      if (seconds is num && nanoseconds is num) {
+        return Timestamp(seconds.toInt(), nanoseconds.toInt());
+      }
+    }
+
+    final direct = value.toString().trim();
+    if (direct.isEmpty) {
+      return null;
+    }
+
+    final millis = int.tryParse(direct);
+    if (millis != null) {
+      return Timestamp.fromMillisecondsSinceEpoch(millis);
+    }
+
+    final parsedDate = DateTime.tryParse(direct);
+    if (parsedDate != null) {
+      return Timestamp.fromDate(parsedDate);
+    }
+
+    return null;
   }
 
   static double? _parseDouble(dynamic value) {

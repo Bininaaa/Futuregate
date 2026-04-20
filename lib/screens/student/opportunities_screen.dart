@@ -1530,6 +1530,17 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
     final trainingItems = trainingProvider.trainings
         .where((training) => training.isApproved)
         .toList();
+    final trainingBadgeLabel = trainingProvider.isLoading
+        ? AppLocalizations.of(context)!.uiLoading
+        : trainingProvider.errorMessage != null && trainingItems.isEmpty
+        ? AppLocalizations.of(context)!.uiUnavailable
+        : trainingItems.isEmpty
+        ? AppLocalizations.of(context)!.uiResources
+        : _formatCount(
+            trainingItems.length,
+            AppLocalizations.of(context)!.uiResource,
+            AppLocalizations.of(context)!.uiResources,
+          );
     final showcaseOpportunities = visibleOpportunities
         .where(_isShowcaseReadyOpportunity)
         .toList(growable: false);
@@ -1704,20 +1715,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                           TrainingProgramsCard(
                             title: AppLocalizations.of(context)!.uiTraining,
                             subtitle: '',
-                            badgeLabel: trainingProvider.isLoading
-                                ? AppLocalizations.of(context)!.uiLoading
-                                : _supportingCountText(
-                                    count: trainingItems.length,
-                                    singular: AppLocalizations.of(
-                                      context,
-                                    )!.uiResource,
-                                    plural: AppLocalizations.of(
-                                      context,
-                                    )!.uiResources,
-                                    fallback: AppLocalizations.of(
-                                      context,
-                                    )!.uiNoTrainingResourcesAvailableRightNow,
-                                  ),
+                            badgeLabel: trainingBadgeLabel,
                             onTap: _openTrainings,
                           ),
                         ],
