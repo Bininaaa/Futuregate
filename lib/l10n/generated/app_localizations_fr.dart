@@ -86,7 +86,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'La langue de l\'application a été mise à jour avec succès.';
 
   @override
-  String get originalLanguageLabel => 'Langue originale';
+  String get originalLanguageLabel => 'Langue de publication';
 
   @override
   String get translatedFromLabel => 'Traduit de';

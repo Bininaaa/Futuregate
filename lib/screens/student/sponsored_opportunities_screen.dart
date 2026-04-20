@@ -12,6 +12,7 @@ import '../../providers/saved_opportunity_provider.dart';
 import '../../services/application_service.dart';
 import '../../theme/app_colors.dart';
 import '../../utils/application_status.dart';
+import '../../utils/display_text.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
@@ -218,7 +219,10 @@ class _SponsoredOpportunitiesScreenState
         error = await savedProvider.saveOpportunity(
           studentId: userId,
           opportunityId: opportunity.id,
-          title: opportunity.title,
+          title: DisplayText.opportunityTitle(
+            opportunity.title,
+            fallback: 'Sponsored Opportunity',
+          ),
           companyName: opportunity.companyName.trim(),
           type: opportunity.type,
           location: opportunity.location,
@@ -470,7 +474,10 @@ class _SponsoredOpportunitiesScreenState
   }
 
   _SponsoredCardModel _mapOpportunityToCardModel(OpportunityModel opportunity) {
-    final title = opportunity.title.trim();
+    final title = DisplayText.opportunityTitle(
+      opportunity.title,
+      fallback: 'Sponsored Opportunity',
+    );
     final description = opportunity.description.trim();
     final filters = _filtersForOpportunity(opportunity);
     final theme = _themeFor(filters);

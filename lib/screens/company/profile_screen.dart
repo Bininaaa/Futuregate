@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../l10n/generated/app_localizations.dart';
 import '../../models/user_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/company_provider.dart';
@@ -16,6 +15,7 @@ import '../../utils/document_upload_validator.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/profile_avatar.dart';
 import '../../widgets/shared/app_feedback.dart';
+import '../../widgets/shared/app_loading.dart';
 import '../settings/about_futuregate_screen.dart';
 import '../settings/help_center_screen.dart';
 import '../settings/logout_confirmation_sheet.dart';
@@ -30,10 +30,10 @@ class CompanyProfileScreen extends StatelessWidget {
     final authProvider = context.watch<AuthProvider>();
     final user = authProvider.userModel;
     if (user == null) {
-      return AppShellBackground(
+      return const AppShellBackground(
         child: Scaffold(
           backgroundColor: Colors.transparent,
-          body: Center(child: Text(AppLocalizations.of(context)!.notLoggedIn)),
+          body: SafeArea(child: AppLoadingView(showBottomBar: true)),
         ),
       );
     }
@@ -839,10 +839,10 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
   Widget build(BuildContext context) {
     final user = context.watch<AuthProvider>().userModel;
     if (user == null) {
-      return AppShellBackground(
+      return const AppShellBackground(
         child: Scaffold(
           backgroundColor: Colors.transparent,
-          body: Center(child: Text(AppLocalizations.of(context)!.notLoggedIn)),
+          body: SafeArea(child: AppLoadingView(showBottomBar: true)),
         ),
       );
     }

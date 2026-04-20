@@ -11,12 +11,12 @@ import '../../providers/application_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/chat_provider.dart';
 import '../../providers/cv_provider.dart';
-import '../../providers/opportunity_translation_provider.dart';
 import '../../providers/saved_opportunity_provider.dart';
 import '../../services/application_service.dart';
-import '../../theme/locale_controller.dart';
 import '../../theme/app_colors.dart';
 import '../../utils/application_status.dart';
+import '../../utils/content_language.dart';
+import '../../utils/display_text.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/app_shell_background.dart';
@@ -133,7 +133,6 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
       if (!mounted) return;
       _ensureSavedStateLoaded();
       _ensureApplicationsLoaded();
-      _ensureTranslation();
     });
   }
 
@@ -177,27 +176,6 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
     setState(() {
       _eligibilityFuture = _loadEligibility();
     });
-  }
-
-  void _ensureTranslation() {
-    final opp = widget.opportunity;
-    final originalLang = opp.originalLanguage;
-    if (originalLang == null || originalLang.isEmpty) return;
-
-    final localeController = context.read<LocaleController>();
-    final currentLocale = localeController.locale?.languageCode ??
-        Localizations.localeOf(context).languageCode;
-
-    if (currentLocale == originalLang) return;
-
-    context.read<OpportunityTranslationProvider>().ensureTranslation(
-      opportunityId: opp.id,
-      title: opp.title,
-      description: opp.description,
-      requirements: opp.requirements,
-      currentLocale: currentLocale,
-      originalLocale: originalLang,
-    );
   }
 
   Future<void> _apply() async {
@@ -311,10 +289,14 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
         );
         message = 'Removed from saved opportunities';
       } else {
+        final savedTitle = DisplayText.opportunityTitle(
+          widget.opportunity.title,
+          fallback: 'Opportunity',
+        );
         error = await savedProvider.saveOpportunity(
           studentId: currentUser.uid,
           opportunityId: widget.opportunity.id,
-          title: widget.opportunity.title,
+          title: savedTitle,
           companyName: _companyName,
           type: _effectiveType,
           location: _locationValue,
@@ -342,10 +324,12 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
   }
 
   Future<void> _shareOpportunity() async {
+    final shareTitle = DisplayText.opportunityTitle(
+      widget.opportunity.title,
+      fallback: 'Opportunity on FutureGate',
+    );
     final lines = <String>[
-      widget.opportunity.title.trim().isEmpty
-          ? 'Opportunity on FutureGate'
-          : widget.opportunity.title.trim(),
+      shareTitle,
       'Company: $_companyName',
       'Type: ${OpportunityType.label(_effectiveType, AppLocalizations.of(context)!)}',
       if (_locationValue.isNotEmpty) 'Location: $_locationValue',
@@ -357,12 +341,7 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
     ];
 
     await SharePlus.instance.share(
-      ShareParams(
-        text: lines.join('\n'),
-        subject: widget.opportunity.title.trim().isEmpty
-            ? 'Opportunity from FutureGate'
-            : widget.opportunity.title.trim(),
-      ),
+      ShareParams(text: lines.join('\n'), subject: shareTitle),
     );
   }
 
@@ -776,19 +755,14 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final translationProvider = context.watch<OpportunityTranslationProvider>();
-    final translation = translationProvider.translationFor(widget.opportunity.id);
-    final showingTranslated = translationProvider.isShowingTranslated(widget.opportunity.id);
-    final hasTranslation = translation != null &&
-        translationProvider.statusFor(widget.opportunity.id) == TranslationStatus.ready;
-    final isTranslating = translationProvider.statusFor(widget.opportunity.id) == TranslationStatus.loading;
-
-    final displayTitle = (hasTranslation && showingTranslated)
-        ? translation.title
-        : widget.opportunity.title;
-    final displayDescription = (hasTranslation && showingTranslated)
-        ? translation.description
-        : widget.opportunity.description;
+    final displayTitle = DisplayText.opportunityTitle(
+      widget.opportunity.title,
+      fallback: l10n.notifTypeOpportunity,
+    );
+    final displayDescription = widget.opportunity.description.trim();
+    final postedLanguage = ContentLanguage.normalizeCode(
+      widget.opportunity.originalLanguage,
+    );
 
     final savedProvider = context.watch<SavedOpportunityProvider>();
     final applicationProvider = context.watch<ApplicationProvider>();
@@ -911,12 +885,15 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
           AppDetailHeroCard(
             theme: _theme,
             icon: OpportunityType.icon(_effectiveType),
-            title: displayTitle.trim().isEmpty ? l10n.notifTypeOpportunity : displayTitle.trim(),
+            title: displayTitle,
             subtitle: _companyName,
-            summary: displayDescription.trim(),
+            summary: displayDescription,
             badges: <AppBadgeData>[
               AppBadgeData(
-                label: OpportunityType.label(_effectiveType, AppLocalizations.of(context)!),
+                label: OpportunityType.label(
+                  _effectiveType,
+                  AppLocalizations.of(context)!,
+                ),
                 icon: OpportunityType.icon(_effectiveType),
               ),
               if (widget.opportunity.status.trim().isNotEmpty)
@@ -955,15 +932,11 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
               ],
             ),
           ),
-          if (isTranslating || hasTranslation) ...[
+          if (postedLanguage.isNotEmpty) ...<Widget>[
             const SizedBox(height: 10),
-            _TranslationBanner(
+            _PostedLanguageBanner(
               theme: _theme,
-              isTranslating: isTranslating,
-              hasTranslation: hasTranslation,
-              showingTranslated: showingTranslated,
-              originalLanguage: widget.opportunity.originalLanguage ?? '',
-              onToggle: () => translationProvider.toggleTranslated(widget.opportunity.id),
+              languageCode: postedLanguage,
               l10n: l10n,
             ),
           ],
@@ -977,7 +950,10 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
             items: <AppInfoTileData>[
               AppInfoTileData(
                 label: AppLocalizations.of(context)!.uiType,
-                value: OpportunityType.label(_effectiveType, AppLocalizations.of(context)!),
+                value: OpportunityType.label(
+                  _effectiveType,
+                  AppLocalizations.of(context)!,
+                ),
                 icon: OpportunityType.icon(_effectiveType),
               ),
               AppInfoTileData(
@@ -1039,7 +1015,7 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
             title: _overviewTitle,
             icon: Icons.description_outlined,
             child: Text(
-              widget.opportunity.description.trim(),
+              displayDescription,
               style: _theme.body(color: _theme.textPrimary),
             ),
           ),
@@ -1559,67 +1535,21 @@ class _OpportunityChipWrap extends StatelessWidget {
   }
 }
 
-class _TranslationBanner extends StatelessWidget {
+class _PostedLanguageBanner extends StatelessWidget {
   final AppContentTheme theme;
-  final bool isTranslating;
-  final bool hasTranslation;
-  final bool showingTranslated;
-  final String originalLanguage;
-  final VoidCallback onToggle;
+  final String languageCode;
   final AppLocalizations l10n;
 
-  const _TranslationBanner({
+  const _PostedLanguageBanner({
     required this.theme,
-    required this.isTranslating,
-    required this.hasTranslation,
-    required this.showingTranslated,
-    required this.originalLanguage,
-    required this.onToggle,
+    required this.languageCode,
     required this.l10n,
   });
-
-  String _langName() => switch (originalLanguage) {
-    'ar' => l10n.languageArabic,
-    'fr' => l10n.languageFrench,
-    'en' => l10n.languageEnglish,
-    _ => l10n.unknownLanguage,
-  };
 
   @override
   Widget build(BuildContext context) {
     final accent = theme.accent;
-
-    if (isTranslating) {
-      return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-        decoration: BoxDecoration(
-          color: accent.withValues(alpha: 0.07),
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: accent.withValues(alpha: 0.18)),
-        ),
-        child: Row(
-          children: [
-            SizedBox(
-              width: 14,
-              height: 14,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                color: accent.withValues(alpha: 0.7),
-              ),
-            ),
-            const SizedBox(width: 10),
-            Text(
-              l10n.translatingLabel,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: accent,
-              ),
-            ),
-          ],
-        ),
-      );
-    }
+    final languageName = ContentLanguage.localizedName(context, languageCode);
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
@@ -1630,29 +1560,15 @@ class _TranslationBanner extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(Icons.translate_rounded, size: 15, color: accent),
+          Icon(Icons.language_rounded, size: 15, color: accent),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
-              showingTranslated
-                  ? '${l10n.translatedFromLabel} ${_langName()}'
-                  : l10n.viewingOriginalVersionLabel,
+              '${l10n.originalLanguageLabel}: $languageName',
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
                 color: accent,
-              ),
-            ),
-          ),
-          GestureDetector(
-            onTap: onToggle,
-            child: Text(
-              showingTranslated ? l10n.showOriginalLabel : l10n.showTranslatedLabel,
-              style: TextStyle(
-                fontSize: 11.5,
-                fontWeight: FontWeight.w700,
-                color: accent,
-                decoration: TextDecoration.underline,
               ),
             ),
           ),

@@ -86,7 +86,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'The app language was updated successfully.';
 
   @override
-  String get originalLanguageLabel => 'Original language';
+  String get originalLanguageLabel => 'Posted language';
 
   @override
   String get translatedFromLabel => 'Translated from';

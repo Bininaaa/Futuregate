@@ -23,6 +23,7 @@ import '../../widgets/app_shell_background.dart';
 import '../../widgets/application_status_badge.dart';
 import '../../widgets/profile_avatar.dart';
 import '../../widgets/shared/app_feedback.dart';
+import '../../widgets/shared/app_loading.dart';
 import '../chat/user_profile_preview_screen.dart';
 import '../notifications_screen.dart';
 import 'chat_screen.dart';
@@ -272,7 +273,9 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
     }
 
     if (user == null) {
-      return wrapScaffold(Center(child: Text(AppLocalizations.of(context)!.notLoggedIn)));
+      return wrapScaffold(
+        const SafeArea(child: AppLoadingView(showBottomBar: true)),
+      );
     }
 
     final items = _filteredItems(provider);
@@ -664,7 +667,10 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
       children: [
         Row(
           children: [
-            Text(AppLocalizations.of(context)!.uiFilters.toUpperCase(), style: sectionLabelStyle),
+            Text(
+              AppLocalizations.of(context)!.uiFilters.toUpperCase(),
+              style: sectionLabelStyle,
+            ),
             const Spacer(),
             if (_activeFilterCount > 0)
               _CounterBadge(count: _activeFilterCount, label: 'Active'),
@@ -676,7 +682,10 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
           hintText: 'Search by candidate, opportunity, location, or type...',
         ),
         const SizedBox(height: 12),
-        Text(AppLocalizations.of(context)!.uiStatus.toUpperCase(), style: sectionLabelStyle),
+        Text(
+          AppLocalizations.of(context)!.uiStatus.toUpperCase(),
+          style: sectionLabelStyle,
+        ),
         const SizedBox(height: 8),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
@@ -718,7 +727,10 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
           ),
         ),
         const SizedBox(height: 12),
-        Text(AppLocalizations.of(context)!.uiType.toUpperCase(), style: sectionLabelStyle),
+        Text(
+          AppLocalizations.of(context)!.uiType.toUpperCase(),
+          style: sectionLabelStyle,
+        ),
         const SizedBox(height: 8),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
@@ -767,7 +779,10 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
         ),
         if (provider.opportunities.isNotEmpty) ...[
           const SizedBox(height: 12),
-          Text(AppLocalizations.of(context)!.uiRoles.toUpperCase(), style: sectionLabelStyle),
+          Text(
+            AppLocalizations.of(context)!.uiRoles.toUpperCase(),
+            style: sectionLabelStyle,
+          ),
           const SizedBox(height: 8),
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -1430,7 +1445,11 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                     ),
                     icon: Icons.checklist_rounded,
                     child: requirements.isEmpty
-                        ? _DetailBodyText(AppLocalizations.of(context)!.uiNoRequirementsProvided)
+                        ? _DetailBodyText(
+                            AppLocalizations.of(
+                              context,
+                            )!.uiNoRequirementsProvided,
+                          )
                         : _DetailBulletList(items: requirements),
                   ),
                   if (benefits.isNotEmpty) ...[

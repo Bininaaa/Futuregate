@@ -7,6 +7,7 @@ import '../../models/student_application_item_model.dart';
 import '../../providers/application_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../utils/application_status.dart';
+import '../../utils/display_text.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/shared/app_feedback.dart';
@@ -222,7 +223,9 @@ class _AppliedOpportunitiesScreenState
                 actions: [
                   StudentWorkspaceUtilityHeaderAction(
                     icon: Icons.refresh_rounded,
-                    tooltip: AppLocalizations.of(context)!.uiRefreshApplications,
+                    tooltip: AppLocalizations.of(
+                      context,
+                    )!.uiRefreshApplications,
                     onTap: _loadApplications,
                   ),
                 ],
@@ -330,7 +333,9 @@ class _AppliedOpportunitiesScreenState
                         SliverFillRemaining(
                           hasScrollBody: false,
                           child: StudentOpportunityLoadingState(
-                            title: AppLocalizations.of(context)!.uiLoadingApplications,
+                            title: AppLocalizations.of(
+                              context,
+                            )!.uiLoadingApplications,
                             message:
                                 'Pulling together your submitted opportunities and their latest statuses.',
                           ),
@@ -660,7 +665,7 @@ class _AppliedHistoryCard extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        item.title,
+                        DisplayText.capitalizeLeadingLabel(item.title),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: _AppliedCardText.title,
@@ -668,7 +673,10 @@ class _AppliedHistoryCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 8),
                     _AppliedLabelChip(
-                      label: ApplicationStatus.label(item.status, AppLocalizations.of(context)!),
+                      label: ApplicationStatus.label(
+                        item.status,
+                        AppLocalizations.of(context)!,
+                      ),
                       tone: statusTone,
                       filled: true,
                     ),
@@ -692,7 +700,10 @@ class _AppliedHistoryCard extends StatelessWidget {
                       ),
                       TextSpan(
                         text: item.hasOpportunity
-                            ? OpportunityType.label(item.type, AppLocalizations.of(context)!)
+                            ? OpportunityType.label(
+                                item.type,
+                                AppLocalizations.of(context)!,
+                              )
                             : 'Archived',
                         style: GoogleFonts.poppins(
                           fontSize: 11.2,

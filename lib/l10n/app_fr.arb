@@ -25,7 +25,7 @@
   "languagePickerSubtitle": "Appliquez instantanément l'anglais, le français ou l'arabe dans l'application.",
   "languageUpdatedTitle": "Langue mise à jour",
   "languageUpdatedMessage": "La langue de l'application a été mise à jour avec succès.",
-  "originalLanguageLabel": "Langue originale",
+  "originalLanguageLabel": "Langue de publication",
   "translatedFromLabel": "Traduit de",
   "viewingTranslatedVersionLabel": "Affichage de la version traduite",
   "viewingOriginalVersionLabel": "Affichage de la version originale",

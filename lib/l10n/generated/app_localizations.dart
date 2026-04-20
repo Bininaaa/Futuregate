@@ -253,7 +253,7 @@ abstract class AppLocalizations {
   /// No description provided for @originalLanguageLabel.
   ///
   /// In en, this message translates to:
-  /// **'Original language'**
+  /// **'Posted language'**
   String get originalLanguageLabel;
 
   /// No description provided for @translatedFromLabel.

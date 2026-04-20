@@ -10,6 +10,7 @@ import '../../providers/opportunity_provider.dart';
 import '../../providers/saved_opportunity_provider.dart';
 import '../../theme/app_colors.dart';
 import '../../utils/application_status.dart';
+import '../../utils/display_text.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
@@ -258,7 +259,10 @@ class _JobsScreenState extends State<JobsScreen> {
       error = await savedProvider.saveOpportunity(
         studentId: userId,
         opportunityId: opportunity.id,
-        title: opportunity.title,
+        title: DisplayText.opportunityTitle(
+          opportunity.title,
+          fallback: 'Open Role',
+        ),
         companyName: opportunity.companyName,
         type: opportunity.type,
         location: opportunity.location,
@@ -397,9 +401,10 @@ class _JobsScreenState extends State<JobsScreen> {
     required bool isFeaturedPreferred,
   }) {
     final category = _categoryFor(opportunity);
-    final title = opportunity.title.trim().isEmpty
-        ? 'Open Role'
-        : opportunity.title.trim();
+    final title = DisplayText.opportunityTitle(
+      opportunity.title,
+      fallback: 'Open Role',
+    );
     final company = _companyName(opportunity);
     final subtitle = _subtitleLabel(opportunity, company: company);
     final location = _locationLabel(opportunity);

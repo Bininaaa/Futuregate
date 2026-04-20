@@ -1,13 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import '../l10n/generated/app_localizations.dart';
 import '../models/opportunity_model.dart';
-import '../providers/opportunity_translation_provider.dart';
-import '../services/opportunity_translation_service.dart';
 import '../theme/app_typography.dart';
 import '../utils/application_status.dart';
+import '../utils/display_text.dart';
 import '../utils/opportunity_dashboard_palette.dart';
 import '../utils/opportunity_type.dart';
 import 'shared/app_feedback.dart';
@@ -30,90 +28,14 @@ String _opportunityBaseTitle(
   BuildContext context,
   OpportunityModel opportunity,
 ) {
-  final title = opportunity.title.trim();
-  if (title.isNotEmpty) {
-    return title;
-  }
-
   final l10n = AppLocalizations.of(context)!;
-  return switch (OpportunityType.parse(opportunity.type)) {
+  final fallback = switch (OpportunityType.parse(opportunity.type)) {
     OpportunityType.internship => l10n.opportunityStudentInternshipFallback,
     OpportunityType.sponsoring => l10n.opportunitySponsoredFallback,
     OpportunityType.job => l10n.opportunityOpenJobFallback,
     _ => l10n.opportunityOpenFallback,
   };
-}
-
-String _opportunityDisplayTitle(
-  BuildContext context,
-  OpportunityModel opportunity,
-  OpportunityTranslationProvider provider,
-) {
-  return provider.resolvedField(
-    contentType: ContentTranslationType.opportunity,
-    contentId: opportunity.id,
-    field: 'title',
-    originalValue: _opportunityBaseTitle(context, opportunity),
-  );
-}
-
-void _ensureOpportunityTranslation(
-  BuildContext context,
-  OpportunityModel opportunity,
-) {
-  final originalLanguage = opportunity.originalLanguage?.trim() ?? '';
-  if (originalLanguage.isEmpty) {
-    return;
-  }
-
-  final currentLocale = Localizations.localeOf(context).languageCode;
-  if (currentLocale == originalLanguage) {
-    return;
-  }
-
-  final provider = context.read<OpportunityTranslationProvider>();
-  final status = provider.statusForContent(
-    contentType: ContentTranslationType.opportunity,
-    contentId: opportunity.id,
-  );
-  if (status == TranslationStatus.loading ||
-      status == TranslationStatus.ready) {
-    return;
-  }
-
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    if (!context.mounted) {
-      return;
-    }
-
-    context.read<OpportunityTranslationProvider>().ensureContentTranslation(
-      contentType: ContentTranslationType.opportunity,
-      contentId: opportunity.id,
-      fields: <String, String>{
-        'title': _opportunityBaseTitle(context, opportunity),
-        'description': opportunity.description,
-        'requirements': opportunity.requirements,
-      },
-      currentLocale: currentLocale,
-      originalLocale: originalLanguage,
-    );
-  });
-}
-
-bool _hasOpportunityTranslation(
-  OpportunityModel opportunity,
-  OpportunityTranslationProvider provider,
-) {
-  return provider.statusForContent(
-            contentType: ContentTranslationType.opportunity,
-            contentId: opportunity.id,
-          ) ==
-          TranslationStatus.ready &&
-      provider.translationForContent(
-            contentType: ContentTranslationType.opportunity,
-            contentId: opportunity.id,
-          ) !=
-          null;
+  return DisplayText.opportunityTitle(opportunity.title, fallback: fallback);
 }
 
 class OpportunitySectionHeader extends StatelessWidget {
@@ -811,21 +733,7 @@ class TrendingOpportunityCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final translationProvider = context.watch<OpportunityTranslationProvider>();
-    _ensureOpportunityTranslation(context, opportunity);
-    final hasTranslation = _hasOpportunityTranslation(
-      opportunity,
-      translationProvider,
-    );
-    final showingTranslated = translationProvider.isShowingTranslatedContent(
-      contentType: ContentTranslationType.opportunity,
-      contentId: opportunity.id,
-    );
-    final displayTitle = _opportunityDisplayTitle(
-      context,
-      opportunity,
-      translationProvider,
-    );
+    final displayTitle = _opportunityBaseTitle(context, opportunity);
     final tone = _toneForOpportunityType(opportunity.type);
     final textScale = MediaQuery.textScalerOf(context).scale(1);
     final isCompactLayout =
@@ -969,12 +877,10 @@ class TrendingOpportunityCard extends StatelessWidget {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
-              if (hasTranslation ||
-                  (opportunity.originalLanguage?.trim().isNotEmpty ??
-                      false)) ...[
+              if (opportunity.originalLanguage?.trim().isNotEmpty ?? false) ...[
                 const SizedBox(height: 7),
                 ContentTranslationBadge(
-                  showingTranslated: hasTranslation && showingTranslated,
+                  showingTranslated: false,
                   originalLanguage: opportunity.originalLanguage ?? '',
                   foregroundColor: tone.strongAccent,
                   backgroundColor: tone.accent.withValues(alpha: 0.08),
@@ -1069,21 +975,7 @@ class OpportunityListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final translationProvider = context.watch<OpportunityTranslationProvider>();
-    _ensureOpportunityTranslation(context, opportunity);
-    final hasTranslation = _hasOpportunityTranslation(
-      opportunity,
-      translationProvider,
-    );
-    final showingTranslated = translationProvider.isShowingTranslatedContent(
-      contentType: ContentTranslationType.opportunity,
-      contentId: opportunity.id,
-    );
-    final displayTitle = _opportunityDisplayTitle(
-      context,
-      opportunity,
-      translationProvider,
-    );
+    final displayTitle = _opportunityBaseTitle(context, opportunity);
     final tone = _toneForOpportunityType(opportunity.type);
     final effectiveBadgeColor =
         badgeColor ?? OpportunityDashboardPalette.primary;
@@ -1201,15 +1093,11 @@ class OpportunityListTile extends StatelessWidget {
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
-                          if (hasTranslation ||
-                              (opportunity.originalLanguage
-                                      ?.trim()
-                                      .isNotEmpty ??
-                                  false)) ...[
+                          if (opportunity.originalLanguage?.trim().isNotEmpty ??
+                              false) ...[
                             const SizedBox(height: 6),
                             ContentTranslationBadge(
-                              showingTranslated:
-                                  hasTranslation && showingTranslated,
+                              showingTranslated: false,
                               originalLanguage:
                                   opportunity.originalLanguage ?? '',
                               foregroundColor: tone.strongAccent,

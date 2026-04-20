@@ -15,6 +15,7 @@ import '../../utils/opportunity_type.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/profile_avatar.dart';
 import '../../widgets/shared/app_feedback.dart';
+import '../../widgets/shared/app_loading.dart';
 import '../notifications_screen.dart';
 import 'profile_screen.dart';
 import 'publish_opportunity_screen.dart';
@@ -784,7 +785,9 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
     }
 
     if (user == null) {
-      return wrapScaffold(Center(child: Text(_l10n.notLoggedIn)));
+      return wrapScaffold(
+        const SafeArea(child: AppLoadingView(showBottomBar: true)),
+      );
     }
 
     final applicationCounts = _applicationCounts(provider);

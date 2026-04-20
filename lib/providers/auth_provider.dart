@@ -625,14 +625,13 @@ class AuthProvider extends ChangeNotifier {
 
     _stopUserDocListener();
     _isBlockedOnLogin = false;
-    _userModel = null;
-    notifyListeners();
-
-    await WidgetsBinding.instance.endOfFrame;
-    appNavigatorKey.currentState?.popUntil((route) => route.isFirst);
 
     try {
       await _authService.logout();
+      _userModel = null;
+      await WidgetsBinding.instance.endOfFrame;
+      appNavigatorKey.currentState?.popUntil((route) => route.isFirst);
+      notifyListeners();
     } catch (_) {
       if (previousUser != null) {
         _userModel = previousUser;

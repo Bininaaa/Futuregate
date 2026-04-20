@@ -1,6 +1,11 @@
 class DisplayText {
   DisplayText._();
 
+  static String opportunityTitle(String value, {required String fallback}) {
+    final text = value.trim().isEmpty ? fallback.trim() : value.trim();
+    return capitalizeLeadingLabel(text);
+  }
+
   /// Capitalizes the first alphabetic character in a label.
   ///
   /// Examples:

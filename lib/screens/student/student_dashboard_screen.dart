@@ -31,6 +31,7 @@ import '../../l10n/generated/app_localizations.dart';
 import '../../theme/app_typography.dart';
 import '../../theme/app_colors.dart';
 import '../../utils/application_status.dart';
+import '../../utils/display_text.dart';
 import '../../utils/student_profile_completion.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/application_status_badge.dart';
@@ -1339,7 +1340,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                     child: FittedBox(
                       fit: BoxFit.scaleDown,
                       child: Text(
-                        item.title,
+                        DisplayText.capitalizeLeadingLabel(item.title),
                         textAlign: TextAlign.center,
                         maxLines: 1,
                         softWrap: false,
@@ -1667,7 +1668,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
               ),
               const SizedBox(height: 12),
               Text(
-                item.title,
+                DisplayText.capitalizeLeadingLabel(item.title),
                 style: AppTypography.product(
                   fontSize: 14.2,
                   fontWeight: FontWeight.w700,
@@ -2060,7 +2061,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
               ),
               const SizedBox(height: 10),
               Text(
-                item.title,
+                DisplayText.capitalizeLeadingLabel(item.title),
                 style: AppTypography.product(
                   fontSize: 15.2,
                   fontWeight: FontWeight.w700,
@@ -2383,7 +2384,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      item.title,
+                      DisplayText.capitalizeLeadingLabel(item.title),
                       style: AppTypography.product(
                         fontSize: 13.6,
                         fontWeight: FontWeight.w700,
@@ -2451,7 +2452,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
             badgeLabel: _applicationActivityBadge(item.status),
             accent: accent,
             icon: _applicationActivityIcon(item.status),
-            title: item.title,
+            title: DisplayText.capitalizeLeadingLabel(item.title),
             subtitle: item.companyName,
             metaLabel: meta.trim().isEmpty ? null : meta,
             metaIcon: hasUpcomingDeadline
@@ -2531,9 +2532,10 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
           icon: isUrgent
               ? Icons.schedule_outlined
               : OpportunityType.icon(item.type),
-          title: item.title.trim().isNotEmpty
-              ? item.title.trim()
-              : 'Saved opportunity',
+          title: DisplayText.opportunityTitle(
+            item.title,
+            fallback: 'Saved opportunity',
+          ),
           subtitle: subtitle,
           metaLabel: meta.trim().isEmpty ? null : meta,
           metaIcon: deadline != null
@@ -2597,7 +2599,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
               ? Icons.schedule_outlined
               : Icons.emoji_events_outlined,
           title: item.title.trim().isNotEmpty
-              ? item.title.trim()
+              ? DisplayText.capitalizeLeadingLabel(item.title)
               : AppLocalizations.of(context)!.uiSavedScholarshipBadge,
           subtitle: subtitle,
           metaLabel: meta.trim().isEmpty ? null : meta,

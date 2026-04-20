@@ -8,6 +8,8 @@ import '../../services/app_intro_preferences_service.dart';
 import '../../theme/locale_controller.dart';
 import '../../theme/theme_controller.dart';
 import '../../utils/content_language.dart';
+import '../../widgets/app_shell_background.dart';
+import '../../widgets/shared/app_loading.dart';
 import '../../widgets/shared/app_restart_scope.dart';
 import '../company/profile_screen.dart';
 import '../notifications_screen.dart';
@@ -31,7 +33,12 @@ class SettingsScreen extends StatelessWidget {
     final user = authProvider.userModel;
 
     if (user == null) {
-      return Scaffold(body: Center(child: Text(l10n.notLoggedIn)));
+      return const AppShellBackground(
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          body: SafeArea(child: AppLoadingView(showBottomBar: true)),
+        ),
+      );
     }
 
     final providerLabel = authProvider.linkedProviderLabel;
@@ -756,14 +763,17 @@ class _ThemeSettingsPanel extends StatelessWidget {
         trailing: _ThemeInlineSelect(
           selected: selected,
           onChanged: (option) async {
-            final wasDark = _isEffectiveDarkTheme(selected);
-            final willBeDark = _isEffectiveDarkTheme(option);
+            final didChange = option != selected;
 
             await controller.setPreference(option);
-            if (!context.mounted || wasDark || !willBeDark) {
+            if (!context.mounted || !didChange) {
               return;
             }
 
+            await WidgetsBinding.instance.endOfFrame;
+            if (!context.mounted) {
+              return;
+            }
             AppRestartScope.restart(context);
           },
         ),
@@ -877,16 +887,6 @@ String _themeSubtitle(AppThemePreference option, AppLocalizations l10n) {
     AppThemePreference.system => l10n.themeSystemSubtitle,
     AppThemePreference.light => l10n.themeLightSubtitle,
     AppThemePreference.dark => l10n.themeDarkSubtitle,
-  };
-}
-
-bool _isEffectiveDarkTheme(AppThemePreference option) {
-  return switch (option) {
-    AppThemePreference.system =>
-      WidgetsBinding.instance.platformDispatcher.platformBrightness ==
-          Brightness.dark,
-    AppThemePreference.light => false,
-    AppThemePreference.dark => true,
   };
 }
 

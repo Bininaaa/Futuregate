@@ -721,6 +721,25 @@ class IdeaDetailsScreen extends StatelessWidget {
   }
 
   void _openCreatorProfile(BuildContext context, ProjectIdeaModel idea) {
+    final auth = context.read<AuthProvider>().userModel;
+    if (auth == null) {
+      context.showAppSnackBar(
+        'Sign in to contact the creator.',
+        title: AppLocalizations.of(context)!.uiLoginRequired,
+        type: AppFeedbackType.warning,
+      );
+      return;
+    }
+
+    if (idea.submittedBy.trim().isEmpty) {
+      context.showAppSnackBar(
+        AppLocalizations.of(context)!.ideaNotAvailable,
+        title: 'Contact unavailable',
+        type: AppFeedbackType.warning,
+      );
+      return;
+    }
+
     Navigator.push(
       context,
       MaterialPageRoute(

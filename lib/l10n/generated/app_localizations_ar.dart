@@ -85,7 +85,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get languageUpdatedMessage => 'تم تحديث لغة التطبيق بنجاح.';
 
   @override
-  String get originalLanguageLabel => 'اللغة الأصلية';
+  String get originalLanguageLabel => 'لغة النشر';
 
   @override
   String get translatedFromLabel => 'مترجم من';

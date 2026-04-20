@@ -18,6 +18,7 @@ import '../../providers/saved_scholarship_provider.dart';
 import '../../providers/training_provider.dart';
 import '../../services/opportunity_service.dart';
 import '../../services/scholarship_service.dart';
+import '../../utils/display_text.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/app_shell_background.dart';
@@ -1141,7 +1142,10 @@ class _SavedOpportunityCard extends StatelessWidget {
         AppLocalizations.of(context)!,
       ),
       savedLabel: _relativeSavedLabel(item.savedAt?.toDate()),
-      title: item.title,
+      title: DisplayText.opportunityTitle(
+        item.title,
+        fallback: AppLocalizations.of(context)!.opportunityOpenFallback,
+      ),
       subtitle: item.companyName,
       meta: [
         _SavedMetaChip(

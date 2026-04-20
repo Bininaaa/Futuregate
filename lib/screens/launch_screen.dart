@@ -12,8 +12,8 @@ import 'post_launch_gate_screen.dart';
 
 /// Full-screen immersive launch animation.
 ///
-/// Hides system UI and plays the branding video cover-scaled to the full
-/// screen. The animation can be skipped from Settings for faster launches.
+/// Hides system UI and plays the branding video inside the full screen.
+/// The animation can be skipped from Settings for faster launches.
 class LaunchScreen extends StatefulWidget {
   final AppIntroPreferencesService? introPreferencesService;
 
@@ -166,7 +166,7 @@ class _LaunchScreenState extends State<LaunchScreen>
       children: [
         if (hasSize)
           FittedBox(
-            fit: BoxFit.cover,
+            fit: BoxFit.contain,
             child: SizedBox(
               width: videoSize.width,
               height: videoSize.height,

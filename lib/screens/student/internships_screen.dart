@@ -10,6 +10,7 @@ import '../../providers/opportunity_provider.dart';
 import '../../providers/saved_opportunity_provider.dart';
 import '../../theme/app_colors.dart';
 import '../../utils/application_status.dart';
+import '../../utils/display_text.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
@@ -183,7 +184,10 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
       error = await savedProvider.saveOpportunity(
         studentId: userId,
         opportunityId: opportunity.id,
-        title: opportunity.title,
+        title: DisplayText.opportunityTitle(
+          opportunity.title,
+          fallback: 'Open Internship',
+        ),
         companyName: opportunity.companyName,
         type: opportunity.type,
         location: opportunity.location,
@@ -370,9 +374,10 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
 
     return _InternshipCardModel(
       id: opportunity.id,
-      title: opportunity.title.trim().isEmpty
-          ? 'Open Internship'
-          : opportunity.title.trim(),
+      title: DisplayText.opportunityTitle(
+        opportunity.title,
+        fallback: 'Open Internship',
+      ),
       companyName: companyName,
       companyLabel: companyLabel,
       secondaryText: secondaryText,
