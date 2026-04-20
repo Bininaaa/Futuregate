@@ -15,9 +15,26 @@ class AuthProvider extends ChangeNotifier {
   bool _isLoading = false;
   bool _isInitialLoadDone = false;
   bool _isBlockedOnLogin = false;
+  bool _hasReceivedAuthState = false;
   StreamSubscription<DocumentSnapshot>? _userDocSubscription;
+  StreamSubscription<User?>? _authStateSubscription;
   Future<void>? _loadCurrentUserFuture;
+  String? _loadCurrentUserUid;
   String? _listeningUserUid;
+  String? _lastFirebaseUid;
+
+  AuthProvider() {
+    _authStateSubscription = _authService.authStateChanges.listen(
+      _handleFirebaseAuthStateChanged,
+      onError: (error, stackTrace) {
+        if (_isIgnorableFirebaseCancellation(error)) {
+          return;
+        }
+
+        debugPrint('Firebase auth state listener error: $error');
+      },
+    );
+  }
 
   UserModel? get userModel => _userModel;
   bool get isLoading => _isLoading;
@@ -34,32 +51,48 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> loadCurrentUser() async {
+    final requestedUid = _authService.currentFirebaseUser?.uid;
     final existingRequest = _loadCurrentUserFuture;
-    if (existingRequest != null) {
+    if (existingRequest != null && _loadCurrentUserUid == requestedUid) {
       return existingRequest;
     }
 
-    final request = _loadCurrentUserInternal();
+    final request = _loadCurrentUserInternal(requestedUid);
     _loadCurrentUserFuture = request;
+    _loadCurrentUserUid = requestedUid;
 
     try {
       await request;
     } finally {
       if (identical(_loadCurrentUserFuture, request)) {
         _loadCurrentUserFuture = null;
+        _loadCurrentUserUid = null;
       }
     }
   }
 
-  Future<void> _loadCurrentUserInternal() async {
+  Future<void> _loadCurrentUserInternal(String? expectedUid) async {
     try {
       _isLoading = true;
       notifyListeners();
 
-      _userModel = await _authService.getCurrentUserProfile();
+      if (expectedUid == null) {
+        _stopUserDocListener();
+        _userModel = null;
+        return;
+      }
 
-      if (_userModel != null) {
-        _startUserDocListener(_userModel!.uid);
+      final userModel = await _authService.getCurrentUserProfile();
+      if (_authService.currentFirebaseUser?.uid != expectedUid) {
+        return;
+      }
+
+      _userModel = userModel;
+
+      if (userModel != null) {
+        _startUserDocListener(userModel.uid);
+      } else {
+        _stopUserDocListener();
       }
     } catch (e) {
       if (_isIgnorableFirebaseCancellation(e)) {
@@ -70,8 +103,42 @@ class AuthProvider extends ChangeNotifier {
       }
       debugPrint('loadCurrentUser error: $e');
     } finally {
-      _isLoading = false;
-      _isInitialLoadDone = true;
+      if (expectedUid == null ||
+          _authService.currentFirebaseUser?.uid == expectedUid) {
+        _isLoading = false;
+        _isInitialLoadDone = true;
+        notifyListeners();
+      }
+    }
+  }
+
+  void _handleFirebaseAuthStateChanged(User? firebaseUser) {
+    final uid = firebaseUser?.uid;
+    if (_hasReceivedAuthState && _lastFirebaseUid == uid) {
+      return;
+    }
+
+    _hasReceivedAuthState = true;
+    _lastFirebaseUid = uid;
+
+    if (uid == null) {
+      _handleSignedOutAuthState();
+      return;
+    }
+
+    unawaited(loadCurrentUser());
+  }
+
+  void _handleSignedOutAuthState() {
+    final shouldNotify =
+        _userModel != null || _isLoading || !_isInitialLoadDone;
+
+    _stopUserDocListener();
+    _userModel = null;
+    _isLoading = false;
+    _isInitialLoadDone = true;
+
+    if (shouldNotify) {
       notifyListeners();
     }
   }
@@ -140,22 +207,15 @@ class AuthProvider extends ChangeNotifier {
 
       await _authService.login(email: email, password: password);
 
-      _userModel = await _authService.getCurrentUserProfile();
-
-      if (_userModel != null && !_userModel!.isActive) {
-        await _authService.logout();
-        _userModel = null;
-        _isBlockedOnLogin = true;
-        return null;
-      }
-
-      if (_userModel != null) {
-        _startUserDocListener(_userModel!.uid);
-      }
-
-      return null;
+      final signedInUid = _authService.currentFirebaseUser?.uid;
+      return await _finishSignIn(
+        signedInUid,
+        incompleteMessage: 'Login did not finish. Please try again.',
+      );
     } on FirebaseAuthException catch (e) {
       return _mapAuthError(e.code);
+    } on TimeoutException {
+      return 'Sign in is taking too long. Please check your connection and try again.';
     } catch (e) {
       return 'An unexpected error occurred. Please try again.';
     } finally {
@@ -179,6 +239,9 @@ class AuthProvider extends ChangeNotifier {
         return 'Too many attempts. Please try again later.';
       case 'network-request-failed':
         return 'Network error. Please check your connection.';
+      case 'auth-timeout':
+      case 'profile-load-timeout':
+        return 'Sign in is taking too long. Please check your connection and try again.';
       default:
         return 'Login failed. Please try again.';
     }
@@ -282,20 +345,11 @@ class AuthProvider extends ChangeNotifier {
 
       await _authService.signInWithGoogle();
 
-      _userModel = await _authService.getCurrentUserProfile();
-
-      if (_userModel != null && !_userModel!.isActive) {
-        await _authService.logout();
-        _userModel = null;
-        _isBlockedOnLogin = true;
-        return null;
-      }
-
-      if (_userModel != null) {
-        _startUserDocListener(_userModel!.uid);
-      }
-
-      return null;
+      final signedInUid = _authService.currentFirebaseUser?.uid;
+      return await _finishSignIn(
+        signedInUid,
+        incompleteMessage: 'Google sign-in did not finish. Please try again.',
+      );
     } on GoogleSignInException catch (e) {
       return _mapGoogleSignInError(e);
     } on FirebaseAuthException catch (e) {
@@ -333,6 +387,11 @@ class AuthProvider extends ChangeNotifier {
 
     if (error is FirebaseAuthException) {
       switch (error.code) {
+        case 'auth-timeout':
+        case 'google-init-timeout':
+        case 'profile-load-timeout':
+          return error.message ??
+              'Google sign-in is taking too long. Please try again.';
         case 'missing-google-id-token':
           return 'Google sign-in did not return the required token. Check the Google/Firebase setup.';
         case 'account-exists-with-different-credential':
@@ -346,6 +405,10 @@ class AuthProvider extends ChangeNotifier {
       }
     }
 
+    if (error is TimeoutException) {
+      return 'The request is taking too long. Please check your connection and try again.';
+    }
+
     final message = error.toString().trim();
     if (message.isEmpty) {
       return 'Google sign-in failed. Please try again.';
@@ -354,6 +417,37 @@ class AuthProvider extends ChangeNotifier {
     return message.startsWith('Exception: ')
         ? message.substring('Exception: '.length)
         : message;
+  }
+
+  Future<String?> _finishSignIn(
+    String? signedInUid, {
+    required String incompleteMessage,
+  }) async {
+    if (signedInUid == null) {
+      return incompleteMessage;
+    }
+
+    await loadCurrentUser();
+
+    if (_authService.currentFirebaseUser?.uid != signedInUid) {
+      return incompleteMessage;
+    }
+
+    final user = _userModel;
+    if (user == null) {
+      await _authService.logout();
+      return 'Account profile could not be loaded. Please try again.';
+    }
+
+    if (!user.isActive) {
+      await _authService.logout();
+      _userModel = null;
+      _isBlockedOnLogin = true;
+      return null;
+    }
+
+    _startUserDocListener(user.uid);
+    return null;
   }
 
   Future<String?> updateAcademicLevel(String academicLevel) async {
@@ -625,25 +719,29 @@ class AuthProvider extends ChangeNotifier {
 
     _stopUserDocListener();
     _isBlockedOnLogin = false;
+    _userModel = null;
+    _isLoading = false;
+    _isInitialLoadDone = true;
+    notifyListeners();
 
     try {
-      await _authService.logout();
-      _userModel = null;
+      final logoutFuture = _authService.logout();
       await WidgetsBinding.instance.endOfFrame;
       appNavigatorKey.currentState?.popUntil((route) => route.isFirst);
-      notifyListeners();
+      await logoutFuture;
     } catch (_) {
-      if (previousUser != null) {
+      if (_authService.currentFirebaseUser != null && previousUser != null) {
         _userModel = previousUser;
         _startUserDocListener(previousUser.uid);
+        notifyListeners();
+        rethrow;
       }
-      notifyListeners();
-      rethrow;
     }
   }
 
   @override
   void dispose() {
+    _authStateSubscription?.cancel();
     _stopUserDocListener();
     super.dispose();
   }

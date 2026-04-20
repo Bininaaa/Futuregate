@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -14,6 +15,10 @@ class AuthService {
       '620923930909-fjgicjfe2ftr5khlslq0fj2m3e3s6bh5.apps.googleusercontent.com';
   static const String _googleProviderId = 'google.com';
   static const String _passwordProviderId = 'password';
+  static const Duration _authOperationTimeout = Duration(seconds: 30);
+  static const Duration _profileOperationTimeout = Duration(seconds: 30);
+  static const Duration _googleInteractiveTimeout = Duration(minutes: 2);
+  static const Duration _googleCleanupTimeout = Duration(seconds: 8);
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -23,7 +28,8 @@ class AuthService {
   final StorageService _storageService = StorageService();
   final WorkerApiService _workerApi = WorkerApiService();
 
-  bool _googleInitialized = false;
+  static bool _googleInitialized = false;
+  static Future<void>? _googleInitializationFuture;
 
   User? get currentFirebaseUser => _auth.currentUser;
 
@@ -76,21 +82,51 @@ class AuthService {
   Future<void> _initGoogleSignIn() async {
     if (_googleInitialized) return;
 
-    await _googleSignIn.initialize(
-      clientId: kIsWeb ? _googleClientId : null,
-      serverClientId: _googleClientId,
-    );
-    _googleInitialized = true;
+    final existingInitialization = _googleInitializationFuture;
+    if (existingInitialization != null) {
+      await existingInitialization;
+      return;
+    }
+
+    final initialization = _googleSignIn
+        .initialize(
+          clientId: kIsWeb ? _googleClientId : null,
+          serverClientId: _googleClientId,
+        )
+        .timeout(
+          _authOperationTimeout,
+          onTimeout: () => throw FirebaseAuthException(
+            code: 'google-init-timeout',
+            message:
+                'Google sign-in is taking too long to start. Please try again.',
+          ),
+        );
+    _googleInitializationFuture = initialization;
+
+    try {
+      await initialization;
+      _googleInitialized = true;
+    } finally {
+      if (!_googleInitialized) {
+        _googleInitializationFuture = null;
+      }
+    }
   }
 
   Future<UserCredential> login({
     required String email,
     required String password,
   }) async {
-    return await _auth.signInWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
+    return await _auth
+        .signInWithEmailAndPassword(email: email, password: password)
+        .timeout(
+          _authOperationTimeout,
+          onTimeout: () => throw FirebaseAuthException(
+            code: 'auth-timeout',
+            message:
+                'Sign in is taking too long. Please check your connection and try again.',
+          ),
+        );
   }
 
   Future<UserCredential> register({
@@ -251,7 +287,16 @@ class AuthService {
     await _initGoogleSignIn();
 
     try {
-      final GoogleSignInAccount googleUser = await _googleSignIn.authenticate();
+      final GoogleSignInAccount googleUser = await _googleSignIn
+          .authenticate()
+          .timeout(
+            _googleInteractiveTimeout,
+            onTimeout: () => throw const GoogleSignInException(
+              code: GoogleSignInExceptionCode.interrupted,
+              description:
+                  'Google sign-in is taking too long. Please try again.',
+            ),
+          );
 
       final GoogleSignInAuthentication googleAuth = googleUser.authentication;
       final idToken = googleAuth.idToken?.trim() ?? '';
@@ -268,9 +313,16 @@ class AuthService {
         idToken: idToken,
       );
 
-      final UserCredential userCredential = await _auth.signInWithCredential(
-        credential,
-      );
+      final UserCredential userCredential = await _auth
+          .signInWithCredential(credential)
+          .timeout(
+            _authOperationTimeout,
+            onTimeout: () => throw FirebaseAuthException(
+              code: 'auth-timeout',
+              message:
+                  'Google sign-in is taking too long. Please check your connection and try again.',
+            ),
+          );
 
       final User? user = userCredential.user;
 
@@ -282,7 +334,7 @@ class AuthService {
       }
 
       final docRef = _firestore.collection('users').doc(user.uid);
-      final doc = await docRef.get();
+      final doc = await docRef.get().timeout(_profileOperationTimeout);
 
       if (!doc.exists) {
         final userData = {
@@ -316,9 +368,9 @@ class AuthService {
           'studentOnboardingPending': true,
         };
 
-        await docRef.set(userData);
+        await docRef.set(userData).timeout(_profileOperationTimeout);
       } else {
-        await _repairLegacyUserProfile(
+        _scheduleLegacyUserProfileRepair(
           user: user,
           docRef: docRef,
           existingData: doc.data() ?? const <String, dynamic>{},
@@ -533,10 +585,17 @@ class AuthService {
 
   Future<void> logout() async {
     final shouldSignOutGoogle = hasGoogleProvider;
-    await _auth.signOut();
+    await _auth.signOut().timeout(
+      _authOperationTimeout,
+      onTimeout: () => throw FirebaseAuthException(
+        code: 'sign-out-timeout',
+        message:
+            'Sign out is taking too long. Please check your connection and try again.',
+      ),
+    );
 
     if (shouldSignOutGoogle) {
-      await _cleanupGoogleSignInSession();
+      await _cleanupGoogleSignInSession(signOutFirebase: false);
     }
   }
 
@@ -545,25 +604,30 @@ class AuthService {
     if (user == null) return null;
 
     final docRef = _firestore.collection('users').doc(user.uid);
-    final doc = await docRef.get();
+    final doc = await docRef.get().timeout(_profileOperationTimeout);
 
     if (!doc.exists) return null;
 
     final data = doc.data()!;
-    final patchedData = await _repairLegacyUserProfile(
-      user: user,
-      docRef: docRef,
-      existingData: data,
-    );
+    final patch = _buildLegacyUserProfilePatch(user: user, existingData: data);
+    if (patch.isNotEmpty) {
+      _scheduleLegacyUserProfileRepair(
+        user: user,
+        docRef: docRef,
+        existingData: data,
+        precomputedPatch: patch,
+      );
+    }
 
-    return UserModel.fromMap(patchedData ?? data);
+    return UserModel.fromMap(
+      patch.isEmpty ? data : <String, dynamic>{...data, ...patch},
+    );
   }
 
-  Future<Map<String, dynamic>?> _repairLegacyUserProfile({
+  Map<String, dynamic> _buildLegacyUserProfilePatch({
     required User user,
-    required DocumentReference<Map<String, dynamic>> docRef,
     required Map<String, dynamic> existingData,
-  }) async {
+  }) {
     final patch = <String, dynamic>{};
     final detectedProvider = _detectProviderForUser(user);
 
@@ -621,13 +685,29 @@ class AuthService {
       patch['provider'] = detectedProvider;
     }
 
+    return patch;
+  }
+
+  void _scheduleLegacyUserProfileRepair({
+    required User user,
+    required DocumentReference<Map<String, dynamic>> docRef,
+    required Map<String, dynamic> existingData,
+    Map<String, dynamic>? precomputedPatch,
+  }) {
+    final patch =
+        precomputedPatch ??
+        _buildLegacyUserProfilePatch(user: user, existingData: existingData);
+
     if (patch.isEmpty) {
-      return null;
+      return;
     }
 
-    await docRef.set(patch, SetOptions(merge: true));
-
-    return {...existingData, ...patch};
+    unawaited(
+      docRef
+          .set(patch, SetOptions(merge: true))
+          .timeout(_profileOperationTimeout)
+          .catchError((_) {}),
+    );
   }
 
   String _detectProviderForUser(User user) {
@@ -655,16 +735,20 @@ class AuthService {
     }, SetOptions(merge: true));
   }
 
-  Future<void> _cleanupGoogleSignInSession() async {
-    try {
-      await _auth.signOut();
-    } catch (_) {
-      // Ignore cleanup failures after auth exceptions.
+  Future<void> _cleanupGoogleSignInSession({
+    bool signOutFirebase = true,
+  }) async {
+    if (signOutFirebase) {
+      try {
+        await _auth.signOut().timeout(_googleCleanupTimeout);
+      } catch (_) {
+        // Ignore cleanup failures after auth exceptions.
+      }
     }
 
     try {
       await _initGoogleSignIn();
-      await _googleSignIn.signOut();
+      await _googleSignIn.signOut().timeout(_googleCleanupTimeout);
     } catch (_) {
       // Ignore cleanup failures after auth exceptions.
     }

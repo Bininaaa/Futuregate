@@ -335,7 +335,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   crossAxisCount: isNarrow ? 1 : 2,
                   mainAxisSpacing: 10,
                   crossAxisSpacing: 10,
-                  mainAxisExtent: 76,
+                  mainAxisExtent: 68,
                 ),
                 itemBuilder: (context, index) {
                   final option = levels[index];
@@ -349,8 +349,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 180),
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 12,
+                          horizontal: 10,
+                          vertical: 10,
                         ),
                         decoration: BoxDecoration(
                           color: isSelected
@@ -367,38 +367,38 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         child: Row(
                           children: <Widget>[
                             Container(
-                              width: 36,
-                              height: 36,
+                              width: 32,
+                              height: 32,
                               decoration: BoxDecoration(
                                 color: isSelected
                                     ? authFlowTheme.accent.withValues(
                                         alpha: 0.12,
                                       )
                                     : Colors.white,
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(11),
                               ),
                               child: Icon(
                                 option.icon,
                                 color: isSelected
                                     ? authFlowTheme.accent
                                     : authFlowTheme.textMuted,
-                                size: 18,
+                                size: 17,
                               ),
                             ),
-                            const SizedBox(width: 10),
+                            const SizedBox(width: 8),
                             Expanded(
                               child: Text(
                                 option.label,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: authFlowTheme.section(
-                                  size: 13.3,
+                                  size: 12.8,
                                   weight: FontWeight.w700,
                                   color: authFlowTheme.textPrimary,
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 8),
+                            const SizedBox(width: 6),
                             Icon(
                               isSelected
                                   ? Icons.check_circle_rounded
@@ -406,7 +406,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               color: isSelected
                                   ? authFlowTheme.accent
                                   : authFlowTheme.textMuted,
-                              size: 18,
+                              size: 17,
                             ),
                           ],
                         ),

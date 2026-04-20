@@ -206,7 +206,7 @@ class _LevelPicker extends StatelessWidget {
               crossAxisCount: isWide ? 2 : 1,
               mainAxisSpacing: 10,
               crossAxisSpacing: 10,
-              mainAxisExtent: 76,
+              mainAxisExtent: 68,
             ),
             itemBuilder: (context, index) {
               final option = levels[index];
@@ -221,8 +221,8 @@ class _LevelPicker extends StatelessWidget {
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 180),
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 12,
+                      horizontal: 10,
+                      vertical: 10,
                     ),
                     decoration: BoxDecoration(
                       color: isSelected
@@ -237,8 +237,8 @@ class _LevelPicker extends StatelessWidget {
                     child: Row(
                       children: <Widget>[
                         Container(
-                          width: 38,
-                          height: 38,
+                          width: 34,
+                          height: 34,
                           decoration: BoxDecoration(
                             color: isSelected
                                 ? accent.withValues(alpha: 0.14)
@@ -250,29 +250,29 @@ class _LevelPicker extends StatelessWidget {
                             color: isSelected
                                 ? accent
                                 : authFlowTheme.textMuted,
-                            size: 19,
+                            size: 18,
                           ),
                         ),
-                        const SizedBox(width: 10),
+                        const SizedBox(width: 8),
                         Expanded(
                           child: Text(
                             option.label,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: authFlowTheme.section(
-                              size: 13.5,
+                              size: 13,
                               weight: FontWeight.w700,
                               color: authFlowTheme.textPrimary,
                             ),
                           ),
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: 6),
                         Icon(
                           isSelected
                               ? Icons.check_circle_rounded
                               : Icons.radio_button_unchecked_rounded,
                           color: isSelected ? accent : authFlowTheme.textMuted,
-                          size: 18,
+                          size: 17,
                         ),
                       ],
                     ),
