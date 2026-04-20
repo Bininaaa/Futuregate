@@ -42,39 +42,12 @@ class CompanyProfileScreen extends StatelessWidget {
     final description = _companyDescription(user);
     final websiteUri = _websiteUri(user.website ?? '');
     final providerLabel = authProvider.linkedProviderLabel;
+    final missingItems = _missingProfileItems(user);
 
     return AppShellBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          surfaceTintColor: Colors.transparent,
-          scrolledUnderElevation: 0,
-          elevation: 0,
-          iconTheme: IconThemeData(color: CompanyDashboardPalette.textPrimary),
-          title: Text(
-            'Company Profile',
-            style: SettingsFlowTheme.appBarTitle(
-              CompanyDashboardPalette.textPrimary,
-            ),
-          ),
-          actions: [
-            Padding(
-              padding: const EdgeInsets.only(right: 16),
-              child: _HeaderIconButton(
-                icon: Icons.edit_outlined,
-                filled: true,
-                color: CompanyDashboardPalette.accent,
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const EditCompanyProfileScreen(),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
+        appBar: const _CompanySettingsAppBar(title: 'Company Profile'),
         body: Stack(
           children: [
             const Positioned(
@@ -100,6 +73,10 @@ class CompanyProfileScreen extends StatelessWidget {
                       companyName: companyName,
                       websiteUri: websiteUri,
                     ),
+                    if (missingItems.isNotEmpty) ...[
+                      const SizedBox(height: 18),
+                      _buildIncompleteProfileCard(context, missingItems),
+                    ],
                     const SizedBox(height: 18),
                     const SettingsSectionHeading(
                       title: 'Brand Story',
@@ -187,17 +164,86 @@ class CompanyProfileScreen extends StatelessWidget {
   }
 
   int _profileCompletion(UserModel user) {
-    final values = [
-      _companyName(user).isNotEmpty,
-      (user.sector ?? '').trim().isNotEmpty,
-      (user.description ?? '').trim().isNotEmpty,
-      user.phone.trim().isNotEmpty,
-      user.location.trim().isNotEmpty,
-      (user.website ?? '').trim().isNotEmpty,
-      (user.logo ?? '').trim().isNotEmpty,
-      user.hasCommercialRegister,
-    ];
-    return ((values.where((v) => v).length / values.length) * 100).round();
+    const totalChecks = 8;
+    final completedChecks = totalChecks - _missingProfileItems(user).length;
+    return ((completedChecks / totalChecks) * 100).round();
+  }
+
+  List<_CompanyMissingItem> _missingProfileItems(UserModel user) {
+    final items = <_CompanyMissingItem>[];
+    if ((user.companyName ?? '').trim().isEmpty) {
+      items.add(
+        _CompanyMissingItem(
+          label: 'Company name',
+          icon: Icons.business_rounded,
+          color: CompanyDashboardPalette.primary,
+        ),
+      );
+    }
+    if ((user.sector ?? '').trim().isEmpty) {
+      items.add(
+        _CompanyMissingItem(
+          label: 'Sector',
+          icon: Icons.factory_outlined,
+          color: CompanyDashboardPalette.primaryDark,
+        ),
+      );
+    }
+    if ((user.description ?? '').trim().isEmpty) {
+      items.add(
+        _CompanyMissingItem(
+          label: 'Brand story',
+          icon: Icons.notes_rounded,
+          color: CompanyDashboardPalette.accent,
+        ),
+      );
+    }
+    if (user.phone.trim().isEmpty) {
+      items.add(
+        _CompanyMissingItem(
+          label: 'Phone',
+          icon: Icons.phone_outlined,
+          color: CompanyDashboardPalette.secondary,
+        ),
+      );
+    }
+    if (user.location.trim().isEmpty) {
+      items.add(
+        _CompanyMissingItem(
+          label: 'Location',
+          icon: Icons.location_on_outlined,
+          color: CompanyDashboardPalette.info,
+        ),
+      );
+    }
+    if ((user.website ?? '').trim().isEmpty) {
+      items.add(
+        _CompanyMissingItem(
+          label: 'Website',
+          icon: Icons.language_rounded,
+          color: CompanyDashboardPalette.accent,
+        ),
+      );
+    }
+    if ((user.logo ?? '').trim().isEmpty) {
+      items.add(
+        _CompanyMissingItem(
+          label: 'Logo',
+          icon: Icons.image_outlined,
+          color: CompanyDashboardPalette.secondaryDark,
+        ),
+      );
+    }
+    if (!user.hasCommercialRegister) {
+      items.add(
+        _CompanyMissingItem(
+          label: 'Commercial register',
+          icon: Icons.verified_user_outlined,
+          color: CompanyDashboardPalette.warning,
+        ),
+      );
+    }
+    return items;
   }
 
   int _contactCount(UserModel user) {
@@ -215,17 +261,19 @@ class CompanyProfileScreen extends StatelessWidget {
     required String companyName,
     required Uri? websiteUri,
   }) {
-    final approvalLabel = switch (user.normalizedApprovalStatus) {
+    final approvalStatus = user.normalizedApprovalStatus;
+    final isApproved = approvalStatus == 'approved';
+    final approvalLabel = switch (approvalStatus) {
       'pending' => 'Pending review',
       'rejected' => 'Rejected',
-      _ => 'Approved',
+      _ => '',
     };
-    final approvalIcon = switch (user.normalizedApprovalStatus) {
+    final approvalIcon = switch (approvalStatus) {
       'pending' => Icons.pending_actions_rounded,
       'rejected' => Icons.gpp_bad_outlined,
       _ => Icons.verified_rounded,
     };
-    final approvalForegroundColor = switch (user.normalizedApprovalStatus) {
+    final approvalForegroundColor = switch (approvalStatus) {
       'pending' => CompanyDashboardPalette.accent,
       'rejected' => CompanyDashboardPalette.error,
       _ => CompanyDashboardPalette.success,
@@ -281,16 +329,27 @@ class CompanyProfileScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          companyName,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.poppins(
-                            fontSize: compact ? 19 : 21,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white,
-                            height: 1.08,
-                          ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Flexible(
+                              child: Text(
+                                companyName,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.poppins(
+                                  fontSize: compact ? 19 : 21,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white,
+                                  height: 1.08,
+                                ),
+                              ),
+                            ),
+                            if (isApproved) ...[
+                              const SizedBox(width: 7),
+                              const _VerifiedNameBadge(),
+                            ],
+                          ],
                         ),
                         if ((user.sector ?? '').trim().isNotEmpty) ...[
                           const SizedBox(height: 5),
@@ -308,7 +367,7 @@ class CompanyProfileScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-                  if (!compact) ...[
+                  if (!compact && !isApproved) ...[
                     const SizedBox(width: 10),
                     _StatusBadge(
                       label: approvalLabel,
@@ -319,7 +378,7 @@ class CompanyProfileScreen extends StatelessWidget {
                   ],
                 ],
               ),
-              if (compact) ...[
+              if (compact && !isApproved) ...[
                 const SizedBox(height: 12),
                 _StatusBadge(
                   label: approvalLabel,
@@ -375,6 +434,70 @@ class CompanyProfileScreen extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+
+  Widget _buildIncompleteProfileCard(
+    BuildContext context,
+    List<_CompanyMissingItem> missingItems,
+  ) {
+    final missingCount = missingItems.length;
+    final message = missingCount == 1
+        ? '1 detail is still missing from the company profile.'
+        : '$missingCount details are still missing from the company profile.';
+
+    return SettingsPanel(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SettingsIconBox(
+                icon: Icons.fact_check_outlined,
+                color: CompanyDashboardPalette.accent,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Profile incomplete',
+                      style: SettingsFlowTheme.sectionTitle(),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '$message Add what is missing so students see a clearer, more trusted company page.',
+                      style: SettingsFlowTheme.caption(),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              for (final item in missingItems) _CompanyMissingChip(item: item),
+            ],
+          ),
+          const SizedBox(height: 16),
+          SettingsPrimaryButton(
+            label: 'Complete profile',
+            icon: Icons.edit_outlined,
+            backgroundColor: CompanyDashboardPalette.accent,
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const EditCompanyProfileScreen(),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -850,19 +973,7 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
     return AppShellBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          surfaceTintColor: Colors.transparent,
-          scrolledUnderElevation: 0,
-          elevation: 0,
-          iconTheme: IconThemeData(color: CompanyDashboardPalette.textPrimary),
-          title: Text(
-            'Edit Company Profile',
-            style: SettingsFlowTheme.appBarTitle(
-              CompanyDashboardPalette.textPrimary,
-            ),
-          ),
-        ),
+        appBar: const _CompanySettingsAppBar(title: 'Edit profile'),
         bottomNavigationBar: SafeArea(
           top: false,
           child: Container(
@@ -1629,6 +1740,40 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
   }
 }
 
+class _CompanySettingsAppBar extends StatelessWidget
+    implements PreferredSizeWidget {
+  final String title;
+
+  const _CompanySettingsAppBar({required this.title});
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+
+  @override
+  Widget build(BuildContext context) {
+    final canPop = Navigator.of(context).canPop();
+
+    return AppBar(
+      automaticallyImplyLeading: false,
+      centerTitle: false,
+      backgroundColor: Colors.transparent,
+      surfaceTintColor: Colors.transparent,
+      scrolledUnderElevation: 0,
+      elevation: 0,
+      leading: canPop
+          ? IconButton(
+              onPressed: () => Navigator.maybePop(context),
+              icon: Icon(
+                Icons.arrow_back_ios_new_rounded,
+                color: SettingsFlowPalette.textPrimary,
+              ),
+            )
+          : null,
+      title: Text(title, style: SettingsFlowTheme.appBarTitle()),
+    );
+  }
+}
+
 class _BackdropOrb extends StatelessWidget {
   final double size;
   final Color color;
@@ -1647,41 +1792,28 @@ class _BackdropOrb extends StatelessWidget {
   }
 }
 
-class _HeaderIconButton extends StatelessWidget {
-  final IconData icon;
-  final VoidCallback onTap;
-  final bool filled;
-  final Color? color;
-
-  const _HeaderIconButton({
-    required this.icon,
-    required this.onTap,
-    this.filled = false,
-    this.color,
-  });
+class _VerifiedNameBadge extends StatelessWidget {
+  const _VerifiedNameBadge();
 
   @override
   Widget build(BuildContext context) {
-    final resolvedColor = color ?? CompanyDashboardPalette.primary;
-
-    return InkWell(
-      onTap: onTap,
-      borderRadius: SettingsFlowTheme.radius(16),
-      child: Ink(
-        width: 42,
-        height: 42,
-        decoration: BoxDecoration(
-          color: filled ? resolvedColor : SettingsFlowPalette.surface,
-          borderRadius: SettingsFlowTheme.radius(16),
-          border: Border.all(
-            color: filled ? resolvedColor : SettingsFlowPalette.border,
+    return Tooltip(
+      message: 'Approved company',
+      child: Semantics(
+        label: 'Approved company',
+        child: Container(
+          width: 23,
+          height: 23,
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.18),
+            borderRadius: SettingsFlowTheme.radius(999),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.24)),
           ),
-          boxShadow: SettingsFlowTheme.softShadow(0.06),
-        ),
-        child: Icon(
-          icon,
-          size: 20,
-          color: filled ? Colors.white : resolvedColor,
+          child: Icon(
+            Icons.verified_rounded,
+            size: 16,
+            color: CompanyDashboardPalette.success,
+          ),
         ),
       ),
     );
@@ -1800,6 +1932,41 @@ class _DetailTile extends StatelessWidget {
   }
 }
 
+class _CompanyMissingChip extends StatelessWidget {
+  final _CompanyMissingItem item;
+
+  const _CompanyMissingChip({required this.item});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 8),
+      decoration: BoxDecoration(
+        color: item.color.withValues(alpha: AppColors.isDark ? 0.18 : 0.10),
+        borderRadius: SettingsFlowTheme.radius(999),
+        border: Border.all(
+          color: item.color.withValues(alpha: AppColors.isDark ? 0.30 : 0.18),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(item.icon, size: 14, color: item.color),
+          const SizedBox(width: 7),
+          Text(
+            item.label,
+            style: GoogleFonts.poppins(
+              fontSize: 11.5,
+              fontWeight: FontWeight.w700,
+              color: item.color,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _StatusBadge extends StatelessWidget {
   final String label;
   final IconData icon;
@@ -1838,4 +2005,16 @@ class _StatusBadge extends StatelessWidget {
       ),
     );
   }
+}
+
+class _CompanyMissingItem {
+  final String label;
+  final IconData icon;
+  final Color color;
+
+  const _CompanyMissingItem({
+    required this.label,
+    required this.icon,
+    required this.color,
+  });
 }

@@ -43,6 +43,7 @@ class _AdminProjectIdeaEditorScreenState
 
   bool _isSubmitting = false;
   bool _isPublic = true;
+  bool _isHidden = false;
   String _level = 'licence';
   String _status = 'approved';
   String _originalLanguage = 'fr';
@@ -76,8 +77,9 @@ class _AdminProjectIdeaEditorScreenState
     _resourcesController.text = idea.resourcesNeeded;
     _benefitsController.text = idea.benefits;
     _isPublic = idea.isPublic;
+    _isHidden = idea.isHidden || idea.status == 'rejected';
     _level = idea.level.trim().isEmpty ? 'licence' : idea.level;
-    _status = idea.status == 'rejected' ? 'rejected' : 'approved';
+    _status = idea.status == 'pending' ? 'pending' : 'approved';
     _originalLanguage = ContentLanguage.normalizeCode(
       idea.originalLanguage,
       fallback: _originalLanguage,
@@ -113,8 +115,7 @@ class _AdminProjectIdeaEditorScreenState
       submitLabel: _isEditing ? l10n.saveIdeaChangesLabel : l10n.publishLabel,
       icon: Icons.lightbulb_outline_rounded,
       accentColor: AdminPalette.warning,
-      subtitle:
-          l10n.uiAddAPlatformCuratedIdeaWithAStrongStoryClear,
+      subtitle: l10n.uiAddAPlatformCuratedIdeaWithAStrongStoryClear,
       isSubmitting: _isSubmitting,
       onSubmit: _submit,
       child: Form(
@@ -133,10 +134,13 @@ class _AdminProjectIdeaEditorScreenState
                         child: AdminEditorChoiceCard(
                           label: 'Visible',
                           subtitle: 'Show this idea to users',
-                          selected: _status == 'approved',
+                          selected: !_isHidden,
                           color: AdminPalette.success,
                           icon: Icons.visibility_outlined,
-                          onTap: () => setState(() => _status = 'approved'),
+                          onTap: () => setState(() {
+                            _isHidden = false;
+                            _status = 'approved';
+                          }),
                         ),
                       ),
                       const SizedBox(width: 10),
@@ -144,10 +148,13 @@ class _AdminProjectIdeaEditorScreenState
                         child: AdminEditorChoiceCard(
                           label: 'Hidden',
                           subtitle: 'Keep it out of discovery',
-                          selected: _status == 'rejected',
+                          selected: _isHidden,
                           color: AdminPalette.danger,
                           icon: Icons.visibility_off_outlined,
-                          onTap: () => setState(() => _status = 'rejected'),
+                          onTap: () => setState(() {
+                            _isHidden = true;
+                            _status = 'approved';
+                          }),
                         ),
                       ),
                     ],
@@ -166,8 +173,7 @@ class _AdminProjectIdeaEditorScreenState
             const SizedBox(height: 16),
             AdminEditorSection(
               title: l10n.uiCoreStory,
-              subtitle:
-                  l10n.uiKeepTheHeadlineAndOverviewCrispSoTheIdeaReads,
+              subtitle: l10n.uiKeepTheHeadlineAndOverviewCrispSoTheIdeaReads,
               child: Column(
                 children: [
                   AdminEditorField(
@@ -203,9 +209,8 @@ class _AdminProjectIdeaEditorScreenState
             const SizedBox(height: 16),
             AdminEditorSection(
               title: l10n.uiMetadataAndCollaboration,
-              subtitle:
-                  l10n
-                      .uiTheseFieldsShapeTheFiltersBadgesAndCollaborationFramingUsed,
+              subtitle: l10n
+                  .uiTheseFieldsShapeTheFiltersBadgesAndCollaborationFramingUsed,
               child: Column(
                 children: [
                   AdminEditorField(
@@ -220,9 +225,18 @@ class _AdminProjectIdeaEditorScreenState
                     label: 'Academic level',
                     items: [
                       DropdownMenuItem(value: 'bac', child: Text(l10n.uiBac)),
-                      DropdownMenuItem(value: 'licence', child: Text(l10n.academicLevelLicence)),
-                      DropdownMenuItem(value: 'master', child: Text(l10n.academicLevelMaster)),
-                      DropdownMenuItem(value: 'doctorat', child: Text(l10n.academicLevelDoctorat)),
+                      DropdownMenuItem(
+                        value: 'licence',
+                        child: Text(l10n.academicLevelLicence),
+                      ),
+                      DropdownMenuItem(
+                        value: 'master',
+                        child: Text(l10n.academicLevelMaster),
+                      ),
+                      DropdownMenuItem(
+                        value: 'doctorat',
+                        child: Text(l10n.academicLevelDoctorat),
+                      ),
                     ],
                     onChanged: (value) {
                       if (value != null) setState(() => _level = value);
@@ -362,6 +376,7 @@ class _AdminProjectIdeaEditorScreenState
       'resourcesNeeded': _resourcesController.text.trim(),
       'benefits': _benefitsController.text.trim(),
       'isPublic': _isPublic,
+      'isHidden': _isHidden,
       'status': _status,
       'submittedBy': auth.uid,
       'submittedByName': auth.fullName.trim(),

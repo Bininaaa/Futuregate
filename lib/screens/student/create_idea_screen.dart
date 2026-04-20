@@ -57,6 +57,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
   late String _selectedLevel;
   late String _originalLanguage;
   late bool _isPublic;
+  late bool _adminIsHidden;
   late Set<String> _selectedSkills;
   late Set<String> _selectedRoles;
   late String _imageUrl;
@@ -120,15 +121,16 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
       ),
     );
     _isPublic = idea?.isPublic ?? true;
+    _adminIsHidden =
+        (idea?.isHidden ?? false) ||
+        (widget.isAdmin && idea?.status == 'rejected');
     _selectedSkills = {...?idea?.displaySkills};
     _selectedRoles = {...?idea?.displayTeamNeeded};
     _categoryController = TextEditingController(text: _selectedCategory);
     _stageController = TextEditingController(text: _selectedStage);
     _imageUrl = (idea?.imageUrl ?? '').trim();
     _uploadedImageName = _deriveImageLabel(_imageUrl);
-    _adminStatus = idea != null
-        ? (idea.status == 'rejected' ? 'rejected' : 'approved')
-        : 'approved';
+    _adminStatus = idea?.status == 'pending' ? 'pending' : 'approved';
   }
 
   @override
@@ -206,6 +208,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
         'imageUrl': _imageUrl.trim(),
         'attachmentUrl': _attachmentUrlController.text.trim(),
         'isPublic': _isPublic,
+        'isHidden': _adminIsHidden,
         'status': _adminStatus,
         'submittedBy': currentUser.uid,
         'submittedByName': currentUser.fullName.trim(),
@@ -718,10 +721,12 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                                 subtitle: AppLocalizations.of(
                                   context,
                                 )!.uiShowInDiscovery,
-                                selected: _adminStatus == 'approved',
+                                selected: !_adminIsHidden,
                                 icon: Icons.visibility_outlined,
-                                onTap: () =>
-                                    setState(() => _adminStatus = 'approved'),
+                                onTap: () => setState(() {
+                                  _adminIsHidden = false;
+                                  _adminStatus = 'approved';
+                                }),
                               ),
                             ),
                             const SizedBox(width: 10),
@@ -733,10 +738,12 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                                 subtitle: AppLocalizations.of(
                                   context,
                                 )!.uiKeepOutOfDiscovery,
-                                selected: _adminStatus == 'rejected',
+                                selected: _adminIsHidden,
                                 icon: Icons.visibility_off_outlined,
-                                onTap: () =>
-                                    setState(() => _adminStatus = 'rejected'),
+                                onTap: () => setState(() {
+                                  _adminIsHidden = true;
+                                  _adminStatus = 'approved';
+                                }),
                               ),
                             ),
                           ],

@@ -1332,6 +1332,7 @@ service cloud.firestore {
             'domain',
             'level',
             'tools',
+            'originalLanguage',
             'tagline',
             'shortDescription',
             'category',
@@ -1347,6 +1348,7 @@ service cloud.firestore {
             'imageUrl',
             'attachmentUrl',
             'isPublic',
+            'isHidden',
             'submittedByName',
             'authorAvatar',
             'authorPhotoType',
@@ -1365,7 +1367,10 @@ service cloud.firestore {
             ) ||
             (
               isAdmin() &&
-              request.resource.data.status == 'approved'
+              (
+                request.resource.data.status == 'approved' ||
+                request.resource.data.status == 'rejected'
+              )
             )
           ) &&
           isAcademicLevel(request.resource.data.level);
@@ -1411,6 +1416,7 @@ service cloud.firestore {
             'domain',
             'level',
             'tools',
+            'originalLanguage',
             'tagline',
             'shortDescription',
             'category',
@@ -1426,6 +1432,7 @@ service cloud.firestore {
             'imageUrl',
             'attachmentUrl',
             'isPublic',
+            'isHidden',
             'status',
             'updatedAt'
           ]) &&
@@ -1445,6 +1452,7 @@ service cloud.firestore {
             'domain',
             'level',
             'tools',
+            'originalLanguage',
             'tagline',
             'shortDescription',
             'category',

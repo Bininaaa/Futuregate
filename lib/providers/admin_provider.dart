@@ -504,7 +504,7 @@ class AdminProvider extends ChangeNotifier {
       return null;
     } catch (e) {
       debugPrint('createAdminProjectIdea error: $e');
-      return 'Failed to create project idea';
+      return _friendlyMutationError(e, 'Failed to create project idea');
     }
   }
 
@@ -522,7 +522,7 @@ class AdminProvider extends ChangeNotifier {
       return null;
     } catch (e) {
       debugPrint('updateAdminProjectIdea error: $e');
-      return 'Failed to update project idea';
+      return _friendlyMutationError(e, 'Failed to update project idea');
     }
   }
 

@@ -281,14 +281,57 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
   Future<void> _openApplicationsForOpportunity(
     OpportunityModel opportunity,
   ) async {
-    await Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => ApplicationsScreen(
-          initialOpportunityId: opportunity.id,
-          initialOpportunityTitle: opportunity.title,
-          showBackButton: true,
-        ),
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      backgroundColor: Colors.transparent,
+      barrierColor: Colors.black.withValues(
+        alpha: AppColors.isDark ? 0.62 : 0.38,
       ),
+      builder: (sheetContext) {
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            final sheetHeight =
+                constraints.maxHeight *
+                (constraints.maxHeight < 720 ? 0.96 : 0.92);
+
+            return Align(
+              alignment: Alignment.bottomCenter,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: 720,
+                  maxHeight: sheetHeight,
+                ),
+                child: Container(
+                  width: double.infinity,
+                  height: sheetHeight,
+                  clipBehavior: Clip.antiAlias,
+                  decoration: BoxDecoration(
+                    color: _OpportunityPalette.surface,
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(24),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.16),
+                        blurRadius: 30,
+                        offset: const Offset(0, -8),
+                      ),
+                    ],
+                  ),
+                  child: ApplicationsScreen(
+                    initialOpportunityId: opportunity.id,
+                    initialOpportunityTitle: opportunity.title,
+                    showBackButton: true,
+                    embedded: true,
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
     if (!mounted) {
       return;

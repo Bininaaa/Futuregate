@@ -2449,7 +2449,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
           return _DashboardActivityEntry(
             dedupeKey: 'application:${item.id}',
             sortDate: item.appliedAt!,
-            badgeLabel: _applicationActivityBadge(item.status),
+            badgeLabel: _applicationActivityBadge(context, item.status),
             accent: accent,
             icon: _applicationActivityIcon(item.status),
             title: DisplayText.capitalizeLeadingLabel(item.title),
@@ -2872,15 +2872,17 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     }
   }
 
-  String _applicationActivityBadge(String status) {
+  String _applicationActivityBadge(BuildContext context, String status) {
+    final l10n = AppLocalizations.of(context)!;
+
     switch (ApplicationStatus.parse(status)) {
       case ApplicationStatus.accepted:
-        return 'Approved';
+        return l10n.uiApproved;
       case ApplicationStatus.rejected:
-        return 'Update';
+        return l10n.uiRejected;
       case ApplicationStatus.pending:
       default:
-        return 'Applied';
+        return l10n.uiApplied;
     }
   }
 
