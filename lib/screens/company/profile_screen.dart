@@ -98,7 +98,6 @@ class CompanyProfileScreen extends StatelessWidget {
                       context,
                       user: user,
                       companyName: companyName,
-                      description: description,
                       websiteUri: websiteUri,
                     ),
                     const SizedBox(height: 18),
@@ -214,7 +213,6 @@ class CompanyProfileScreen extends StatelessWidget {
     BuildContext context, {
     required UserModel user,
     required String companyName,
-    required String description,
     required Uri? websiteUri,
   }) {
     final approvalLabel = switch (user.normalizedApprovalStatus) {
@@ -331,18 +329,6 @@ class CompanyProfileScreen extends StatelessWidget {
                 ),
               ],
               const SizedBox(height: 14),
-              Text(
-                description,
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
-                style: GoogleFonts.poppins(
-                  fontSize: 12.6,
-                  height: 1.55,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.white.withValues(alpha: 0.88),
-                ),
-              ),
-              const SizedBox(height: 14),
               SettingsButtonGroup(
                 spacing: 8,
                 breakpoint: 380,
@@ -383,8 +369,6 @@ class CompanyProfileScreen extends StatelessWidget {
                   Expanded(
                     child: _heroMetric('${_contactCount(user)}/4', 'Contact'),
                   ),
-                  const SizedBox(width: 8),
-                  Expanded(child: _heroMetric(approvalLabel, 'Approval')),
                 ],
               ),
             ],

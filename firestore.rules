@@ -183,6 +183,10 @@ service cloud.firestore {
           isNullableList(data.requirementItems)
         ) &&
         (
+          !data.keys().hasAny(['originalLanguage']) ||
+          isNullableString(data.originalLanguage)
+        ) &&
+        (
           !data.keys().hasAny(['fundingAmount']) ||
           isNullableNumber(data.fundingAmount)
         ) &&
@@ -921,6 +925,7 @@ service cloud.firestore {
             'location',
             'requirements',
             'requirementItems',
+            'originalLanguage',
             'status',
             'deadline',
             'createdBy',
@@ -975,6 +980,7 @@ service cloud.firestore {
               'location',
               'requirements',
               'requirementItems',
+              'originalLanguage',
               'status',
               'deadline',
               'createdBy',
@@ -1015,6 +1021,7 @@ service cloud.firestore {
               'location',
               'requirements',
               'requirementItems',
+              'originalLanguage',
               'status',
               'deadline',
               'createdBy',

@@ -4,7 +4,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:provider/provider.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../providers/auth_provider.dart';
-import '../../theme/app_colors.dart';
 import '../../utils/document_upload_validator.dart';
 import '../../utils/validators.dart';
 import '../../widgets/shared/app_feedback.dart';
@@ -35,9 +34,9 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
   bool _obscureConfirm = true;
   String _passwordText = '';
 
-  static Color get _navyBlue => AppColors.current.primary;
-  static Color get _mediumBlue => AppColors.current.secondary;
-  static Color get _accentOrange => AppColors.current.accent;
+  static const Color _navyBlue = Color(0xFF004E98);
+  static const Color _mediumBlue = Color(0xFF3A6EA5);
+  static const Color _accentOrange = Color(0xFFFF8C00);
 
   @override
   void initState() {
@@ -128,13 +127,17 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppColors.of(context);
     final authProvider = context.watch<AuthProvider>();
 
     return Scaffold(
-      backgroundColor: colors.background,
       body: Container(
-        decoration: BoxDecoration(gradient: colors.shellGradient),
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFFE8EFF7), Color(0xFFF0F4F8), Color(0xFFF8FAFC)],
+          ),
+        ),
         child: SafeArea(
           child: SingleChildScrollView(
             child: Column(
@@ -157,22 +160,18 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
         children: [
           Container(
             decoration: BoxDecoration(
-              color: AppColors.current.surface.withValues(
-                alpha: AppColors.isDark ? 0.96 : 0.9,
-              ),
+              color: Colors.white.withValues(alpha: 0.9),
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.current.shadow.withValues(
-                    alpha: AppColors.isDark ? 0.24 : 0.08,
-                  ),
+                  color: Colors.black.withValues(alpha: 0.08),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
               ],
             ),
             child: IconButton(
-              icon: Icon(Icons.arrow_back, color: _navyBlue),
+              icon: const Icon(Icons.arrow_back, color: _navyBlue),
               onPressed: () => Navigator.pop(context),
             ),
           ),
@@ -193,7 +192,7 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
             width: 70,
             height: 70,
             decoration: BoxDecoration(
-              gradient: LinearGradient(colors: [_navyBlue, _mediumBlue]),
+              gradient: const LinearGradient(colors: [_navyBlue, _mediumBlue]),
               borderRadius: BorderRadius.circular(18),
               boxShadow: [
                 BoxShadow(
@@ -224,7 +223,7 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 13,
-              color: AppColors.current.textSecondary,
+              color: Colors.grey.shade600,
               height: 1.5,
             ),
           ),
@@ -239,13 +238,11 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
       margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
       decoration: BoxDecoration(
-        color: AppColors.current.surface,
+        color: Colors.white,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
         boxShadow: [
           BoxShadow(
-            color: AppColors.current.shadow.withValues(
-              alpha: AppColors.isDark ? 0.24 : 0.06,
-            ),
+            color: Colors.black.withValues(alpha: 0.06),
             blurRadius: 20,
             offset: const Offset(0, -4),
           ),
@@ -308,7 +305,7 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
                       ? Icons.visibility_off_outlined
                       : Icons.visibility_outlined,
                   size: 20,
-                  color: AppColors.current.textMuted,
+                  color: Colors.grey,
                 ),
                 onPressed: () =>
                     setState(() => _obscurePassword = !_obscurePassword),
@@ -329,12 +326,15 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
                       ? Icons.visibility_off_outlined
                       : Icons.visibility_outlined,
                   size: 20,
-                  color: AppColors.current.textMuted,
+                  color: Colors.grey,
                 ),
                 onPressed: () =>
                     setState(() => _obscureConfirm = !_obscureConfirm),
               ),
-              validator: Validators.confirmPassword(l10n, _passwordController.text),
+              validator: Validators.confirmPassword(
+                l10n,
+                _passwordController.text,
+              ),
             ),
             const SizedBox(height: 24),
             _buildSectionLabel(l10n.uiContactOptional),
@@ -420,44 +420,37 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
           obscureText: obscureText,
           validator: validator,
           maxLines: maxLines,
-          cursorColor: _navyBlue,
-          style: TextStyle(fontSize: 14, color: AppColors.current.textPrimary),
+          style: const TextStyle(fontSize: 14),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: TextStyle(
-              color: AppColors.current.textMuted,
-              fontSize: 13,
-            ),
+            hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 13),
             prefixIcon: Icon(icon, size: 20, color: _mediumBlue),
             suffixIcon: suffixIcon,
             filled: true,
-            fillColor: AppColors.current.surfaceMuted,
+            fillColor: const Color(0xFFF8FAFC),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
               vertical: 14,
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: BorderSide(color: AppColors.current.border),
+              borderSide: BorderSide(color: Colors.grey.shade200),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: BorderSide(color: AppColors.current.border),
+              borderSide: BorderSide(color: Colors.grey.shade200),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: BorderSide(color: _navyBlue, width: 1.5),
+              borderSide: const BorderSide(color: _navyBlue, width: 1.5),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: BorderSide(color: AppColors.current.danger, width: 1),
+              borderSide: const BorderSide(color: Colors.red, width: 1),
             ),
             focusedErrorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: BorderSide(
-                color: AppColors.current.danger,
-                width: 1.5,
-              ),
+              borderSide: const BorderSide(color: Colors.red, width: 1.5),
             ),
           ),
         ),
@@ -472,14 +465,11 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.current.surfaceMuted,
+        color: const Color(0xFFF8FAFC),
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color:
-              (_commercialRegisterError == null
-                      ? _mediumBlue
-                      : AppColors.current.danger)
-                  .withValues(alpha: 0.28),
+          color: (_commercialRegisterError == null ? _mediumBlue : Colors.red)
+              .withValues(alpha: 0.22),
         ),
       ),
       child: Column(
@@ -493,7 +483,7 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
                   color: _navyBlue.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(
+                child: const Icon(
                   Icons.verified_outlined,
                   color: _navyBlue,
                   size: 20,
@@ -528,7 +518,7 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
             style: TextStyle(
               fontSize: 12,
               height: 1.5,
-              color: AppColors.current.textSecondary,
+              color: Colors.grey.shade700,
             ),
           ),
           const SizedBox(height: 14),
@@ -537,13 +527,13 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
               width: double.infinity,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppColors.current.surfaceElevated,
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(color: _mediumBlue.withValues(alpha: 0.16)),
               ),
               child: Row(
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.insert_drive_file_outlined,
                     color: _navyBlue,
                     size: 20,
@@ -566,7 +556,7 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
                           '${(selectedFile.size / (1024 * 1024)).toStringAsFixed(2)} MB',
                           style: TextStyle(
                             fontSize: 11,
-                            color: AppColors.current.textSecondary,
+                            color: Colors.grey.shade600,
                           ),
                         ),
                       ],
@@ -613,7 +603,7 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
     return SizedBox(
       height: 52,
       child: authProvider.isLoading
-          ? Center(child: CircularProgressIndicator(color: _navyBlue))
+          ? const Center(child: CircularProgressIndicator(color: _navyBlue))
           : ElevatedButton(
               onPressed: _register,
               style: ElevatedButton.styleFrom(
@@ -643,14 +633,11 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
       child: RichText(
         text: TextSpan(
           text: l10n.uiAlreadyHaveAccountPrompt,
-          style: TextStyle(
-            fontSize: 14,
-            color: AppColors.current.textSecondary,
-          ),
+          style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
           children: [
             TextSpan(
               text: l10n.uiLogIn,
-              style: TextStyle(
+              style: const TextStyle(
                 color: _accentOrange,
                 fontWeight: FontWeight.bold,
               ),
@@ -670,24 +657,22 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
       child: RichText(
         textAlign: TextAlign.center,
         text: TextSpan(
-          style: TextStyle(fontSize: 11, color: AppColors.current.textMuted),
+          style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
           children: [
             TextSpan(text: l10n.uiByRegisteringAgreePrefix),
             TextSpan(
               text: l10n.uiTermsOfUse,
-              style: TextStyle(
+              style: const TextStyle(
                 decoration: TextDecoration.underline,
                 fontWeight: FontWeight.w500,
-                color: AppColors.current.textSecondary,
               ),
             ),
             TextSpan(text: l10n.uiAndOur),
             TextSpan(
               text: l10n.uiPrivacyPolicy,
-              style: TextStyle(
+              style: const TextStyle(
                 decoration: TextDecoration.underline,
                 fontWeight: FontWeight.w500,
-                color: AppColors.current.textSecondary,
               ),
             ),
             TextSpan(text: l10n.uiBySigningUpAgreeSuffix),
