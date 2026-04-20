@@ -252,6 +252,7 @@ class AdminEditorListField extends StatelessWidget {
   final String? Function(List<String>)? validator;
   final List<String> examples;
   final String emptyText;
+  final bool splitOnCommas;
 
   const AdminEditorListField({
     super.key,
@@ -263,6 +264,7 @@ class AdminEditorListField extends StatelessWidget {
     this.validator,
     this.examples = const <String>[],
     this.emptyText = 'Add each item one by one.',
+    this.splitOnCommas = true,
   });
 
   @override
@@ -277,6 +279,7 @@ class AdminEditorListField extends StatelessWidget {
       validator: validator,
       examples: examples,
       emptyText: emptyText,
+      splitOnCommas: splitOnCommas,
     );
   }
 }

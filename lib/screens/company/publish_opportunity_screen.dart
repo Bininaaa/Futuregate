@@ -367,6 +367,7 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                                 setState(() => _requirementItems = items),
                             listController: _requirementsListController,
                             validator: _validateRequirementItems,
+                            splitOnCommas: false,
                             emptyText: _isSponsoring
                                 ? 'Add eligibility rules, documents, or selection criteria.'
                                 : 'Add the skills, background, or tools students need.',

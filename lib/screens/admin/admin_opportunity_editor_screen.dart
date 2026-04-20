@@ -285,6 +285,7 @@ class _AdminOpportunityEditorScreenState
                 onChanged: (items) => setState(() => _requirementItems = items),
                 listController: _requirementsListController,
                 validator: _validateRequirementItems,
+                splitOnCommas: false,
                 emptyText: _type == OpportunityType.sponsoring
                     ? 'Add eligibility rules, documents, or selection criteria.'
                     : 'Add the skills, background, or tools students need.',

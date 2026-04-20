@@ -549,6 +549,7 @@ class AppEditableListField extends StatefulWidget {
   final List<String> examples;
   final String emptyText;
   final IconData addIcon;
+  final bool splitOnCommas;
 
   const AppEditableListField({
     super.key,
@@ -562,6 +563,7 @@ class AppEditableListField extends StatefulWidget {
     this.examples = const <String>[],
     this.emptyText = 'Add each item one by one.',
     this.addIcon = Icons.add_circle_outline_rounded,
+    this.splitOnCommas = true,
   });
 
   @override
@@ -653,18 +655,23 @@ class _AppEditableListFieldState extends State<AppEditableListField> {
                 ),
               )
             else
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: widget.values
-                    .map(
-                      (item) => _AppEditableListChip(
-                        theme: widget.theme,
-                        label: item,
-                        onRemove: () => removeItem(item),
-                      ),
-                    )
-                    .toList(growable: false),
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  return Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: widget.values
+                        .map(
+                          (item) => _AppEditableListChip(
+                            theme: widget.theme,
+                            label: item,
+                            maxWidth: constraints.maxWidth,
+                            onRemove: () => removeItem(item),
+                          ),
+                        )
+                        .toList(growable: false),
+                  );
+                },
               ),
             const SizedBox(height: AppContentSpacing.sm),
             TextFormField(
@@ -747,7 +754,11 @@ class _AppEditableListFieldState extends State<AppEditableListField> {
     }
 
     return normalized
-        .split(RegExp(r'\n+|;|(?<!\d),(?!\d)'))
+        .split(
+          widget.splitOnCommas
+              ? RegExp(r'\n+|;|(?<!\d),(?!\d)')
+              : RegExp(r'\n+|;'),
+        )
         .map(_cleanListItem)
         .whereType<String>()
         .toList(growable: false);
@@ -784,54 +795,58 @@ class _AppEditableListFieldState extends State<AppEditableListField> {
 class _AppEditableListChip extends StatelessWidget {
   final AppContentTheme theme;
   final String label;
+  final double maxWidth;
   final VoidCallback onRemove;
 
   const _AppEditableListChip({
     required this.theme,
     required this.label,
+    required this.maxWidth,
     required this.onRemove,
   });
 
   @override
   Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: theme.accent.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: theme.accent.withValues(alpha: 0.16)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.only(left: 10, right: 4, top: 5, bottom: 5),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            ConstrainedBox(
-              constraints: BoxConstraints(
-                maxWidth: MediaQuery.sizeOf(context).width - 96,
-              ),
-              child: Text(
-                label,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: theme.body(
-                  size: 11.6,
-                  color: theme.accentDark,
-                  weight: FontWeight.w600,
-                  height: 1.35,
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxWidth: maxWidth),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: theme.accent.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: theme.accent.withValues(alpha: 0.16)),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.only(left: 10, right: 4, top: 5, bottom: 5),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Flexible(
+                child: Text(
+                  label,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  softWrap: true,
+                  style: theme.body(
+                    size: 11.6,
+                    color: theme.accentDark,
+                    weight: FontWeight.w600,
+                    height: 1.35,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(width: 4),
-            InkWell(
-              onTap: onRemove,
-              borderRadius: BorderRadius.circular(8),
-              child: Icon(
-                Icons.close_rounded,
-                size: 16,
-                color: theme.accentDark.withValues(alpha: 0.58),
+              const SizedBox(width: 4),
+              InkWell(
+                onTap: onRemove,
+                borderRadius: BorderRadius.circular(8),
+                child: Icon(
+                  Icons.close_rounded,
+                  size: 16,
+                  color: theme.accentDark.withValues(alpha: 0.58),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

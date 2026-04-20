@@ -5002,7 +5002,11 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
   }
 
   Color _statusColor(String status) {
-    switch (status) {
+    if (ApplicationStatus.parse(status) == ApplicationStatus.withdrawn) {
+      return AdminPalette.textMuted;
+    }
+
+    switch (status.trim().toLowerCase()) {
       case 'approved':
       case 'accepted':
       case 'open':

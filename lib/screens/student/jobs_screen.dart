@@ -2358,10 +2358,6 @@ class FeaturedJobCard extends StatelessWidget {
             ? (isTight ? 12.2 : 13.4)
             : (isTight ? 13.0 : 15.0);
         final hasFooterSalary = footerSalary != null && footerSalary.isNotEmpty;
-        final useStackedFooter =
-            constraints.maxWidth < 254 ||
-            ((footerSalary?.length ?? 0) > (isTight ? 16 : 18) &&
-                constraints.maxWidth < 304);
         final borderRadiusValue = isTight ? 24.0 : 30.0;
         final cardRadius = BorderRadius.circular(borderRadiusValue);
         final footerButtonCompact = compact || denseLayout;
@@ -2395,49 +2391,26 @@ class FeaturedJobCard extends StatelessWidget {
                 ],
               );
 
-        final footer = useStackedFooter
-            ? Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ...?salaryLabel == null
-                      ? null
-                      : <Widget>[salaryLabel, const SizedBox(height: 9)],
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: _ApplyNowButton(
-                      onTap: onApply,
-                      label: actionLabel,
-                      icon: statusData?.icon,
-                      accentColor: statusData?.color,
-                      backgroundColors: style.buttonGradientColors,
-                      textColor: style.buttonTextColor,
-                      compact: footerButtonCompact,
-                    ),
-                  ),
-                ],
-              )
-            : Row(
-                children: [
-                  Expanded(
-                    child: salaryLabel == null
-                        ? const SizedBox.shrink()
-                        : Align(
-                            alignment: Alignment.centerLeft,
-                            child: salaryLabel,
-                          ),
-                  ),
-                  SizedBox(width: isTight ? 10 : 12),
-                  _ApplyNowButton(
-                    onTap: onApply,
-                    label: actionLabel,
-                    icon: statusData?.icon,
-                    accentColor: statusData?.color,
-                    backgroundColors: style.buttonGradientColors,
-                    textColor: style.buttonTextColor,
-                    compact: footerButtonCompact,
-                  ),
-                ],
-              );
+        final footer = Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ...?salaryLabel == null
+                ? null
+                : <Widget>[salaryLabel, const SizedBox(height: 9)],
+            Align(
+              alignment: Alignment.centerRight,
+              child: _ApplyNowButton(
+                onTap: onApply,
+                label: actionLabel,
+                icon: statusData?.icon,
+                accentColor: statusData?.color,
+                backgroundColors: style.buttonGradientColors,
+                textColor: style.buttonTextColor,
+                compact: footerButtonCompact,
+              ),
+            ),
+          ],
+        );
 
         return Material(
           color: Colors.transparent,
@@ -2629,7 +2602,9 @@ class FeaturedJobCard extends StatelessWidget {
                                     style: GoogleFonts.poppins(
                                       fontSize: metadataFontSize,
                                       fontWeight: FontWeight.w600,
-                                      color: Colors.white.withValues(alpha: 0.80),
+                                      color: Colors.white.withValues(
+                                        alpha: 0.80,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -3445,8 +3420,9 @@ class _AvailableRoleCard extends StatelessWidget {
                             ),
                             SizedBox(height: isTight ? 4 : 5),
                           ],
+                          const Spacer(),
                           if (job.salary != null &&
-                              job.salary!.trim().isNotEmpty)
+                              job.salary!.trim().isNotEmpty) ...[
                             _AvailableRoleMetaLine(
                               icon: Icons.payments_rounded,
                               text: job.salary!,
@@ -3455,7 +3431,8 @@ class _AvailableRoleCard extends StatelessWidget {
                               iconColor: palette.chipTextColor,
                               textColor: palette.chipTextColor,
                             ),
-                          const Spacer(),
+                            SizedBox(height: isTight ? 6 : 7),
+                          ],
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [

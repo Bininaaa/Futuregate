@@ -1530,17 +1530,16 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
     final trainingItems = trainingProvider.trainings
         .where((training) => training.isApproved)
         .toList();
+    final trainingBadgeCount =
+        trainingProvider.isLoading ||
+            (trainingProvider.errorMessage != null && trainingItems.isEmpty)
+        ? null
+        : trainingItems.length;
     final trainingBadgeLabel = trainingProvider.isLoading
         ? AppLocalizations.of(context)!.uiLoading
         : trainingProvider.errorMessage != null && trainingItems.isEmpty
         ? AppLocalizations.of(context)!.uiUnavailable
-        : trainingItems.isEmpty
-        ? AppLocalizations.of(context)!.uiResources
-        : _formatCount(
-            trainingItems.length,
-            AppLocalizations.of(context)!.uiResource,
-            AppLocalizations.of(context)!.uiResources,
-          );
+        : null;
     final showcaseOpportunities = visibleOpportunities
         .where(_isShowcaseReadyOpportunity)
         .toList(growable: false);
@@ -1715,6 +1714,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                           TrainingProgramsCard(
                             title: AppLocalizations.of(context)!.uiTraining,
                             subtitle: '',
+                            badgeCount: trainingBadgeCount,
                             badgeLabel: trainingBadgeLabel,
                             onTap: _openTrainings,
                           ),

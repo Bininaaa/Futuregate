@@ -450,16 +450,12 @@ class CompanyService {
     }
 
     if (nextData.containsKey('requirementItems') || isCreate) {
-      final items = OpportunityMetadata.stringListFromValue(
-        nextData['requirementItems'],
-        maxItems: 12,
-      );
-      nextData['requirementItems'] = items.isNotEmpty
-          ? items
-          : OpportunityMetadata.stringListFromValue(
-              nextData['requirements'],
-              maxItems: 12,
-            );
+      nextData['requirementItems'] =
+          OpportunityMetadata.extractRequirementItems(
+            nextData,
+            fallbackText: nextData['requirements']?.toString(),
+            maxItems: 12,
+          );
     }
 
     if (nextData.containsKey('salaryMin')) {

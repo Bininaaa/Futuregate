@@ -121,7 +121,11 @@ class OpportunityMetadata {
     return null;
   }
 
-  static List<String> stringListFromValue(dynamic value, {int maxItems = 12}) {
+  static List<String> stringListFromValue(
+    dynamic value, {
+    int maxItems = 12,
+    bool splitOnCommas = true,
+  }) {
     if (value == null) {
       return const [];
     }
@@ -166,16 +170,16 @@ class OpportunityMetadata {
         return;
       }
 
-      final normalized = text
-          .replaceAll('\r', '\n')
-          .replaceAll(RegExp(r'\s*\|\s*'), ', ')
-          .trim();
+      final normalized = text.replaceAll('\r', '\n').trim();
       if (normalized.isEmpty) {
         return;
       }
 
+      final separatorPattern = splitOnCommas
+          ? RegExp('\\n+|;|\\||(?<!\\d),(?!\\d)|\\u2022')
+          : RegExp('\\n+|;|\\||\\u2022');
       final splitCandidates = normalized
-          .split(RegExp(r'\n+|(?<!\d),(?!\d)|;|•'))
+          .split(separatorPattern)
           .map(_normalizeListItem)
           .whereType<String>()
           .toList();
@@ -267,6 +271,7 @@ class OpportunityMetadata {
   static List<String> extractRequirementItems(
     Map<String, dynamic> data, {
     String? fallbackText,
+    int maxItems = 8,
   }) {
     final explicitItems = stringListFromValue(
       firstValue(data, [
@@ -282,13 +287,18 @@ class OpportunityMetadata {
         'must_haves',
         'criteria',
       ]),
-      maxItems: 8,
+      maxItems: maxItems,
+      splitOnCommas: false,
     );
     if (explicitItems.isNotEmpty) {
       return explicitItems;
     }
 
-    return stringListFromValue(fallbackText, maxItems: 8);
+    return stringListFromValue(
+      fallbackText,
+      maxItems: maxItems,
+      splitOnCommas: false,
+    );
   }
 
   static List<String> extractBenefits(

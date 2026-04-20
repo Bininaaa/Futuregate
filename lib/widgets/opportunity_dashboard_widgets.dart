@@ -525,6 +525,7 @@ class OpportunityCategoryCard extends StatelessWidget {
 class TrainingProgramsCard extends StatelessWidget {
   final String title;
   final String subtitle;
+  final int? badgeCount;
   final String? badgeLabel;
   final VoidCallback onTap;
 
@@ -532,6 +533,7 @@ class TrainingProgramsCard extends StatelessWidget {
     super.key,
     required this.title,
     required this.subtitle,
+    this.badgeCount,
     this.badgeLabel,
     required this.onTap,
   });
@@ -575,15 +577,25 @@ class TrainingProgramsCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      title,
-                      style: AppTypography.product(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: OpportunityDashboardPalette.textPrimary,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            title,
+                            style: AppTypography.product(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              color: OpportunityDashboardPalette.textPrimary,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        if (badgeCount != null) ...[
+                          const SizedBox(width: 8),
+                          _TrainingProgramsCountBadge(count: badgeCount!),
+                        ],
+                      ],
                     ),
                     if (subtitle.trim().isNotEmpty) ...[
                       const SizedBox(height: 3),
@@ -638,6 +650,39 @@ class TrainingProgramsCard extends StatelessWidget {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _TrainingProgramsCountBadge extends StatelessWidget {
+  final int count;
+
+  const _TrainingProgramsCountBadge({required this.count});
+
+  @override
+  Widget build(BuildContext context) {
+    final label = count > 99 ? '99+' : '$count';
+
+    return Container(
+      constraints: const BoxConstraints(minWidth: 24, minHeight: 22),
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
+      decoration: BoxDecoration(
+        color: OpportunityDashboardPalette.secondary.withValues(alpha: 0.14),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(
+          color: OpportunityDashboardPalette.secondary.withValues(alpha: 0.22),
+        ),
+      ),
+      child: Text(
+        label,
+        textAlign: TextAlign.center,
+        style: AppTypography.product(
+          fontSize: 10.5,
+          fontWeight: FontWeight.w700,
+          color: OpportunityDashboardPalette.secondary,
+          letterSpacing: 0.1,
         ),
       ),
     );

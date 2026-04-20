@@ -43,6 +43,7 @@ void main() {
     expect(opportunity.workMode, 'onsite');
     expect(opportunity.isPaid, isTrue);
     expect(opportunity.deadlineLabel, '2026-04-30');
+    expect(opportunity.requirementItems, <String>['Flutter, Firebase']);
   });
 
   test(
@@ -164,6 +165,27 @@ void main() {
       expect(normalized['requirementItems'], <String>[
         'Student team',
         'Clear budget',
+      ]);
+    },
+  );
+
+  test(
+    'Company opportunity payload keeps commas inside a requirement item',
+    () {
+      final normalized = CompanyService.normalizeOpportunityPayload({
+        'title': 'Junior Frontend Developer',
+        'description': 'Build product experiences.',
+        'type': 'job',
+        'location': 'Algiers',
+        'requirements': 'Flutter, Firebase\nTeam communication',
+        'requirementItems': <String>['Flutter, Firebase', 'Team communication'],
+        'status': 'open',
+        'deadline': '2026-06-01',
+      }, isCreate: true);
+
+      expect(normalized['requirementItems'], <String>[
+        'Flutter, Firebase',
+        'Team communication',
       ]);
     },
   );

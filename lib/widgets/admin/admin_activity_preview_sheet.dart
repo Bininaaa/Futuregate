@@ -155,13 +155,27 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
     final companyName = DisplayText.capitalizeLeadingLabel(
       (relatedOpportunity['companyName'] ?? '').toString(),
     );
+    final normalizedStatus = ApplicationStatus.parse(application.status);
     final statusLabel = ApplicationStatus.label(
       application.status,
       AppLocalizations.of(context)!,
     );
-    final description = opportunityTitle.isNotEmpty
-        ? 'Applied to $opportunityTitle.'
-        : 'Application details';
+    final statusIcon = switch (normalizedStatus) {
+      ApplicationStatus.accepted => Icons.verified_outlined,
+      ApplicationStatus.rejected => Icons.block_outlined,
+      ApplicationStatus.withdrawn => Icons.undo_outlined,
+      _ => Icons.assignment_outlined,
+    };
+    final description = switch (normalizedStatus) {
+      ApplicationStatus.withdrawn =>
+        opportunityTitle.isNotEmpty
+            ? 'This application was withdrawn from $opportunityTitle.'
+            : 'This application was withdrawn.',
+      _ =>
+        opportunityTitle.isNotEmpty
+            ? 'Applied to $opportunityTitle.'
+            : 'Application details',
+    };
 
     return [
       _buildDetailHeroCard(
@@ -170,7 +184,7 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
         icon: Icons.assignment_outlined,
         accentColor: AdminPalette.activity,
         chips: [
-          _buildHeroChip(statusLabel, Icons.verified_outlined),
+          _buildHeroChip(statusLabel, statusIcon),
           if (application.appliedAt != null)
             _buildHeroChip(
               _formatShortDate(application.appliedAt),

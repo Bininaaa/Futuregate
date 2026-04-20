@@ -3386,16 +3386,19 @@ class _DecisionPanel extends StatelessWidget {
     final tone = switch (normalizedStatus) {
       ApplicationStatus.accepted => _ApplicationsPalette.success,
       ApplicationStatus.rejected => _ApplicationsPalette.error,
+      ApplicationStatus.withdrawn => _ApplicationsPalette.textMuted,
       _ => _ApplicationsPalette.accent,
     };
     final icon = switch (normalizedStatus) {
       ApplicationStatus.accepted => Icons.verified_outlined,
       ApplicationStatus.rejected => Icons.block_outlined,
+      ApplicationStatus.withdrawn => Icons.undo_outlined,
       _ => Icons.rate_review_outlined,
     };
     final title = switch (normalizedStatus) {
       ApplicationStatus.accepted => 'Candidate approved',
       ApplicationStatus.rejected => 'Candidate rejected',
+      ApplicationStatus.withdrawn => 'Application withdrawn',
       _ => 'Ready for decision',
     };
     final message = switch (normalizedStatus) {
@@ -3403,6 +3406,8 @@ class _DecisionPanel extends StatelessWidget {
         'This application is approved. Use message or CV review for next steps.',
       ApplicationStatus.rejected =>
         'This application is rejected. The profile and CV remain available for reference.',
+      ApplicationStatus.withdrawn =>
+        'This application has been withdrawn by the candidate.',
       _ =>
         'Approve the candidate to move them forward, or reject if the fit is not right.',
     };

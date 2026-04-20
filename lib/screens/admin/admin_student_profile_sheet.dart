@@ -103,8 +103,8 @@ class _AdminStudentProfileSheetState extends State<_AdminStudentProfileSheet> {
                 AdminSectionHeader(
                   eyebrow: l10n.uiProfile,
                   title: l10n.uiStudentDetails,
-                  subtitle:
-                      l10n.uiReviewIdentityAcademicDetailsCvDocumentsAndVisibleSubmittedApplicationsInOnePlace,
+                  subtitle: l10n
+                      .uiReviewIdentityAcademicDetailsCvDocumentsAndVisibleSubmittedApplicationsInOnePlace,
                 ),
                 const SizedBox(height: 12),
                 _DetailRow(
@@ -218,8 +218,8 @@ class _AdminStudentProfileSheetState extends State<_AdminStudentProfileSheet> {
           AdminSectionHeader(
             eyebrow: l10n.uiDocuments,
             title: l10n.uiStudentCv,
-            subtitle:
-                l10n.uiReviewTheUploadedCvAndTheBuiltCvExportWithoutLeavingTheStudentProfile,
+            subtitle: l10n
+                .uiReviewTheUploadedCvAndTheBuiltCvExportWithoutLeavingTheStudentProfile,
           ),
           const SizedBox(height: 14),
           _SectionCopy(
@@ -340,8 +340,8 @@ class _AdminStudentProfileSheetState extends State<_AdminStudentProfileSheet> {
           AdminSectionHeader(
             eyebrow: l10n.uiApplications,
             title: l10n.uiStudentApplications,
-            subtitle:
-                l10n.uiReviewTheStudentApplicationHistoryUsingTheSameVisibleOpportunityRuleShownInTheApp,
+            subtitle: l10n
+                .uiReviewTheStudentApplicationHistoryUsingTheSameVisibleOpportunityRuleShownInTheApp,
           ),
           const SizedBox(height: 14),
           _SectionCopy(title: l10n.uiVisibleSubmissions, value: countLabel),
@@ -533,7 +533,9 @@ class _AdminStudentApplicationsSheetState
                           Text(
                             widget.studentName.trim().isEmpty
                                 ? l10n.uiStudentApplications
-                                : l10n.uiApplicationsForValue(widget.studentName),
+                                : l10n.uiApplicationsForValue(
+                                    widget.studentName,
+                                  ),
                             style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w700,
@@ -544,7 +546,9 @@ class _AdminStudentApplicationsSheetState
                           Text(
                             snapshot.connectionState == ConnectionState.waiting
                                 ? l10n.uiLoadingVisibleOpportunityApplications
-                                : l10n.uiVisibleApplicationsAvailableForReviewCount(items.length),
+                                : l10n.uiVisibleApplicationsAvailableForReviewCount(
+                                    items.length,
+                                  ),
                             style: const TextStyle(
                               fontSize: 12.5,
                               color: Colors.white70,
@@ -563,8 +567,8 @@ class _AdminStudentApplicationsSheetState
                       AdminEmptyState(
                         icon: Icons.assignment_late_outlined,
                         title: l10n.uiApplicationHistoryUnavailable,
-                        message:
-                            l10n.uiCouldNotLoadThisStudentsVisibleApplicationsRightNow,
+                        message: l10n
+                            .uiCouldNotLoadThisStudentsVisibleApplicationsRightNow,
                         action: FilledButton.icon(
                           onPressed: _retry,
                           icon: const Icon(Icons.refresh_rounded),
@@ -575,8 +579,8 @@ class _AdminStudentApplicationsSheetState
                       AdminEmptyState(
                         icon: Icons.assignment_turned_in_outlined,
                         title: l10n.uiNoVisibleApplications,
-                        message:
-                            l10n.uiThisStudentHasNoApplicationsLinkedToOpenAndVisibleOpportunitiesRightNow,
+                        message: l10n
+                            .uiThisStudentHasNoApplicationsLinkedToOpenAndVisibleOpportunitiesRightNow,
                       )
                     else
                       ...items.map(_buildApplicationCard),
@@ -595,7 +599,9 @@ class _AdminStudentApplicationsSheetState
     final statusColor = _statusColor(item.status);
     final appliedLabel = item.appliedAt == null
         ? l10n.uiAppliedDateUnavailable
-        : l10n.uiAppliedValue(DateFormat('MMM d, yyyy').format(item.appliedAt!));
+        : l10n.uiAppliedValue(
+            DateFormat('MMM d, yyyy').format(item.appliedAt!),
+          );
 
     return AdminSurface(
       margin: const EdgeInsets.only(bottom: 10),
@@ -1027,6 +1033,8 @@ Color _statusColor(String status) {
       return AdminPalette.success;
     case ApplicationStatus.rejected:
       return AdminPalette.danger;
+    case ApplicationStatus.withdrawn:
+      return AdminPalette.textMuted;
     case ApplicationStatus.pending:
     default:
       return AdminPalette.warning;
