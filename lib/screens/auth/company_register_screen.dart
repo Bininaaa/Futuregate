@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:provider/provider.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../providers/auth_provider.dart';
+import '../../theme/app_colors.dart';
 import '../../utils/document_upload_validator.dart';
 import '../../utils/validators.dart';
 import '../../widgets/shared/app_feedback.dart';
@@ -33,10 +34,6 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
   String _passwordText = '';
-
-  static const Color _navyBlue = Color(0xFF004E98);
-  static const Color _mediumBlue = Color(0xFF3A6EA5);
-  static const Color _accentOrange = Color(0xFFFF8C00);
 
   @override
   void initState() {
@@ -128,16 +125,11 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
   @override
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
+    final colors = AppColors.of(context);
 
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFFE8EFF7), Color(0xFFF0F4F8), Color(0xFFF8FAFC)],
-          ),
-        ),
+        decoration: BoxDecoration(gradient: colors.shellGradient),
         child: SafeArea(
           child: SingleChildScrollView(
             child: Column(
@@ -154,24 +146,30 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
   }
 
   Widget _buildTopBar() {
+    final colors = AppColors.of(context);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         children: [
           Container(
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.9),
+              color: colors.surfaceElevated.withValues(
+                alpha: colors.isDarkMode ? 0.88 : 0.94,
+              ),
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.08),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
+                  color: colors.shadow.withValues(
+                    alpha: colors.isDarkMode ? 0.28 : 0.08,
+                  ),
+                  blurRadius: 14,
+                  offset: const Offset(0, 6),
                 ),
               ],
             ),
             child: IconButton(
-              icon: const Icon(Icons.arrow_back, color: _navyBlue),
+              icon: Icon(Icons.arrow_back, color: colors.primary),
               onPressed: () => Navigator.pop(context),
             ),
           ),
@@ -184,6 +182,8 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
 
   Widget _buildBrandingArea() {
     final l10n = AppLocalizations.of(context)!;
+    final colors = AppColors.of(context);
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: Column(
@@ -192,11 +192,13 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
             width: 70,
             height: 70,
             decoration: BoxDecoration(
-              gradient: const LinearGradient(colors: [_navyBlue, _mediumBlue]),
+              gradient: colors.primaryGradient,
               borderRadius: BorderRadius.circular(18),
               boxShadow: [
                 BoxShadow(
-                  color: _navyBlue.withValues(alpha: 0.3),
+                  color: colors.primary.withValues(
+                    alpha: colors.isDarkMode ? 0.34 : 0.26,
+                  ),
                   blurRadius: 14,
                   offset: const Offset(0, 5),
                 ),
@@ -214,7 +216,7 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
-              color: _navyBlue,
+              color: colors.textPrimary,
             ),
           ),
           const SizedBox(height: 6),
@@ -223,7 +225,7 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 13,
-              color: Colors.grey.shade600,
+              color: colors.textSecondary,
               height: 1.5,
             ),
           ),
@@ -234,17 +236,26 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
 
   Widget _buildFormCard(AuthProvider authProvider) {
     final l10n = AppLocalizations.of(context)!;
+    final colors = AppColors.of(context);
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: colors.surfaceElevated,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
+        border: Border.all(
+          color: colors.border.withValues(
+            alpha: colors.isDarkMode ? 0.88 : 0.5,
+          ),
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
-            blurRadius: 20,
-            offset: const Offset(0, -4),
+            color: colors.shadow.withValues(
+              alpha: colors.isDarkMode ? 0.34 : 0.08,
+            ),
+            blurRadius: 24,
+            offset: const Offset(0, -6),
           ),
         ],
       ),
@@ -305,7 +316,7 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
                       ? Icons.visibility_off_outlined
                       : Icons.visibility_outlined,
                   size: 20,
-                  color: Colors.grey,
+                  color: colors.textMuted,
                 ),
                 onPressed: () =>
                     setState(() => _obscurePassword = !_obscurePassword),
@@ -326,7 +337,7 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
                       ? Icons.visibility_off_outlined
                       : Icons.visibility_outlined,
                   size: 20,
-                  color: Colors.grey,
+                  color: colors.textMuted,
                 ),
                 onPressed: () =>
                     setState(() => _obscureConfirm = !_obscureConfirm),
@@ -368,13 +379,15 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
   }
 
   Widget _buildSectionLabel(String text) {
+    final colors = AppColors.of(context);
+
     return Row(
       children: [
         Container(
           width: 4,
           height: 18,
           decoration: BoxDecoration(
-            color: _navyBlue,
+            color: colors.primary,
             borderRadius: BorderRadius.circular(2),
           ),
         ),
@@ -384,7 +397,7 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
           style: TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w700,
-            color: _navyBlue,
+            color: colors.textPrimary,
           ),
         ),
       ],
@@ -402,6 +415,8 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
     String? Function(String?)? validator,
     int maxLines = 1,
   }) {
+    final colors = AppColors.of(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -410,7 +425,7 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
           style: TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w600,
-            color: _navyBlue,
+            color: colors.textPrimary,
           ),
         ),
         const SizedBox(height: 6),
@@ -420,37 +435,37 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
           obscureText: obscureText,
           validator: validator,
           maxLines: maxLines,
-          style: const TextStyle(fontSize: 14),
+          style: TextStyle(fontSize: 14, color: colors.textPrimary),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 13),
-            prefixIcon: Icon(icon, size: 20, color: _mediumBlue),
+            hintStyle: TextStyle(color: colors.textMuted, fontSize: 13),
+            prefixIcon: Icon(icon, size: 20, color: colors.primary),
             suffixIcon: suffixIcon,
             filled: true,
-            fillColor: const Color(0xFFF8FAFC),
+            fillColor: colors.surfaceMuted,
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
               vertical: 14,
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: BorderSide(color: Colors.grey.shade200),
+              borderSide: BorderSide(color: colors.border),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: BorderSide(color: Colors.grey.shade200),
+              borderSide: BorderSide(color: colors.border),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: _navyBlue, width: 1.5),
+              borderSide: BorderSide(color: colors.primary, width: 1.5),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: Colors.red, width: 1),
+              borderSide: BorderSide(color: colors.danger, width: 1),
             ),
             focusedErrorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: Colors.red, width: 1.5),
+              borderSide: BorderSide(color: colors.danger, width: 1.5),
             ),
           ),
         ),
@@ -460,16 +475,20 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
 
   Widget _buildCommercialRegisterSection() {
     final l10n = AppLocalizations.of(context)!;
+    final colors = AppColors.of(context);
     final selectedFile = _commercialRegisterFile;
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFFF8FAFC),
+        color: colors.surfaceMuted,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: (_commercialRegisterError == null ? _mediumBlue : Colors.red)
-              .withValues(alpha: 0.22),
+          color:
+              (_commercialRegisterError == null
+                      ? colors.primary
+                      : colors.danger)
+                  .withValues(alpha: 0.22),
         ),
       ),
       child: Column(
@@ -480,12 +499,14 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: _navyBlue.withValues(alpha: 0.08),
+                  color: colors.primary.withValues(
+                    alpha: colors.isDarkMode ? 0.18 : 0.08,
+                  ),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.verified_outlined,
-                  color: _navyBlue,
+                  color: colors.primary,
                   size: 20,
                 ),
               ),
@@ -499,13 +520,13 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
-                        color: _navyBlue,
+                        color: colors.textPrimary,
                       ),
                     ),
-                    SizedBox(height: 2),
+                    const SizedBox(height: 2),
                     Text(
                       l10n.uiCommercialRegister,
-                      style: TextStyle(fontSize: 12, color: _mediumBlue),
+                      style: TextStyle(fontSize: 12, color: colors.primary),
                     ),
                   ],
                 ),
@@ -518,7 +539,7 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
             style: TextStyle(
               fontSize: 12,
               height: 1.5,
-              color: Colors.grey.shade700,
+              color: colors.textSecondary,
             ),
           ),
           const SizedBox(height: 14),
@@ -527,15 +548,17 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
               width: double.infinity,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: colors.surfaceElevated,
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: _mediumBlue.withValues(alpha: 0.16)),
+                border: Border.all(
+                  color: colors.primary.withValues(alpha: 0.16),
+                ),
               ),
               child: Row(
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.insert_drive_file_outlined,
-                    color: _navyBlue,
+                    color: colors.primary,
                     size: 20,
                   ),
                   const SizedBox(width: 10),
@@ -548,7 +571,7 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
-                            color: _navyBlue,
+                            color: colors.textPrimary,
                           ),
                         ),
                         const SizedBox(height: 2),
@@ -556,7 +579,7 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
                           '${(selectedFile.size / (1024 * 1024)).toStringAsFixed(2)} MB',
                           style: TextStyle(
                             fontSize: 11,
-                            color: Colors.grey.shade600,
+                            color: colors.textMuted,
                           ),
                         ),
                       ],
@@ -575,8 +598,8 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
               icon: const Icon(Icons.upload_file_outlined),
               label: Text(l10n.uiUploadCommercialRegister),
               style: OutlinedButton.styleFrom(
-                foregroundColor: _navyBlue,
-                side: BorderSide(color: _navyBlue.withValues(alpha: 0.3)),
+                foregroundColor: colors.primary,
+                side: BorderSide(color: colors.primary.withValues(alpha: 0.3)),
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
                   vertical: 14,
@@ -590,7 +613,7 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
             const SizedBox(height: 10),
             AppFieldErrorText(
               message: _commercialRegisterError!,
-              accentColor: _accentOrange,
+              accentColor: colors.accent,
             ),
           ],
         ],
@@ -600,20 +623,22 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
 
   Widget _buildRegisterButton(AuthProvider authProvider) {
     final l10n = AppLocalizations.of(context)!;
+    final colors = AppColors.of(context);
+
     return SizedBox(
       height: 52,
       child: authProvider.isLoading
-          ? const Center(child: CircularProgressIndicator(color: _navyBlue))
+          ? Center(child: CircularProgressIndicator(color: colors.primary))
           : ElevatedButton(
               onPressed: _register,
               style: ElevatedButton.styleFrom(
-                backgroundColor: _navyBlue,
+                backgroundColor: colors.brandPrimary,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30),
                 ),
-                elevation: 3,
-                shadowColor: _navyBlue.withValues(alpha: 0.4),
+                elevation: colors.isDarkMode ? 0 : 3,
+                shadowColor: colors.primary.withValues(alpha: 0.32),
               ),
               child: Text(
                 l10n.uiRegisterCompany,
@@ -629,16 +654,18 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
 
   Widget _buildLoginLink() {
     final l10n = AppLocalizations.of(context)!;
+    final colors = AppColors.of(context);
+
     return Center(
       child: RichText(
         text: TextSpan(
           text: l10n.uiAlreadyHaveAccountPrompt,
-          style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+          style: TextStyle(fontSize: 14, color: colors.textSecondary),
           children: [
             TextSpan(
               text: l10n.uiLogIn,
-              style: const TextStyle(
-                color: _accentOrange,
+              style: TextStyle(
+                color: colors.accent,
                 fontWeight: FontWeight.bold,
               ),
               recognizer: TapGestureRecognizer()
@@ -653,11 +680,13 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
 
   Widget _buildTermsText() {
     final l10n = AppLocalizations.of(context)!;
+    final colors = AppColors.of(context);
+
     return Center(
       child: RichText(
         textAlign: TextAlign.center,
         text: TextSpan(
-          style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
+          style: TextStyle(fontSize: 11, color: colors.textMuted),
           children: [
             TextSpan(text: l10n.uiByRegisteringAgreePrefix),
             TextSpan(

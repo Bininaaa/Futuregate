@@ -1219,7 +1219,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get uiAppliedOpportunities => 'Opportunités appliquées';
+  String get uiAppliedOpportunities => 'Opportunités postulées';
 
   @override
   String uiAppliedRelativeappliedlabel(Object relativeAppliedLabel) {
@@ -1300,7 +1300,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiAvailableNow => 'DISPONIBLE MAINTENANT';
 
   @override
-  String get uiAvailableScholarships => 'Disponible\nBourses';
+  String get uiAvailableScholarships => 'Bourses\ndisponibles';
 
   @override
   String get uiAvatarUnavailable => 'Avatar indisponible';
@@ -6780,7 +6780,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get notifContentIdeas => 'Idées';
 
   @override
-  String get notifOppAll => 'Toutes les opps';
+  String get notifOppAll => 'Toutes les opportunités';
 
   @override
   String get notifOppJobs => 'Emplois';

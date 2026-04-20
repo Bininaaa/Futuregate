@@ -2096,7 +2096,7 @@ abstract class AppLocalizations {
   /// No description provided for @uiAllOppsValue1.
   ///
   /// In en, this message translates to:
-  /// **'All opps ({value1})'**
+  /// **'All Opportunities ({value1})'**
   String uiAllOppsValue1(Object value1);
 
   /// No description provided for @uiAllRoles.
@@ -2270,7 +2270,7 @@ abstract class AppLocalizations {
   /// No description provided for @uiAppliedOpportunities.
   ///
   /// In en, this message translates to:
-  /// **'Applied opportunities'**
+  /// **'Applied Opportunities'**
   String get uiAppliedOpportunities;
 
   /// No description provided for @uiAppliedRelativeappliedlabel.
@@ -4927,7 +4927,7 @@ abstract class AppLocalizations {
   /// No description provided for @uiOpps.
   ///
   /// In en, this message translates to:
-  /// **'Opps'**
+  /// **'Opportunities'**
   String get uiOpps;
 
   /// No description provided for @uiOptional.
@@ -5419,7 +5419,7 @@ abstract class AppLocalizations {
   /// No description provided for @uiPublishOpportunities.
   ///
   /// In en, this message translates to:
-  /// **'Publish opportunities'**
+  /// **'Publish Opportunities'**
   String get uiPublishOpportunities;
 
   /// No description provided for @uiPublishTheFirstOpportunityToStartPopulatingTheStudentDiscovery.
@@ -5967,7 +5967,7 @@ abstract class AppLocalizations {
   /// No description provided for @uiSavedIdeas.
   ///
   /// In en, this message translates to:
-  /// **'Saved ideas'**
+  /// **'Saved Ideas'**
   String get uiSavedIdeas;
 
   /// No description provided for @uiSavedItems.
@@ -5991,7 +5991,7 @@ abstract class AppLocalizations {
   /// No description provided for @uiSavedScholarships.
   ///
   /// In en, this message translates to:
-  /// **'Saved scholarships'**
+  /// **'Saved Scholarships'**
   String get uiSavedScholarships;
 
   /// No description provided for @uiSavedShortlist.
@@ -6112,7 +6112,7 @@ abstract class AppLocalizations {
   /// No description provided for @uiSearchIdeas.
   ///
   /// In en, this message translates to:
-  /// **'Search ideas...'**
+  /// **'Search Ideas...'**
   String get uiSearchIdeas;
 
   /// No description provided for @uiSearchInternships.
@@ -8687,7 +8687,7 @@ abstract class AppLocalizations {
   /// No description provided for @uiAllOppsValue.
   ///
   /// In en, this message translates to:
-  /// **'All opps ({value1})'**
+  /// **'All Opportunities ({value1})'**
   String uiAllOppsValue(Object value1);
 
   /// No description provided for @uiFundingValue.
@@ -11780,7 +11780,7 @@ abstract class AppLocalizations {
   /// notifOppAll
   ///
   /// In en, this message translates to:
-  /// **'All opps'**
+  /// **'All Opportunities'**
   String get notifOppAll;
 
   /// notifOppJobs

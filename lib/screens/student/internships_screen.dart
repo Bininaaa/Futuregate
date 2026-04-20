@@ -48,11 +48,26 @@ class _InternshipVisualPalette {
 
 class _InternshipsScreenState extends State<InternshipsScreen> {
   List<_QuickFilterDefinition> _buildQuickFilters(AppLocalizations l10n) => [
-    _QuickFilterDefinition(value: _InternshipQuickFilter.remote, label: l10n.uiRemote),
-    _QuickFilterDefinition(value: _InternshipQuickFilter.paid, label: l10n.uiPaid),
-    _QuickFilterDefinition(value: _InternshipQuickFilter.summer, label: l10n.uiSummer),
-    _QuickFilterDefinition(value: _InternshipQuickFilter.tech, label: l10n.uiTech),
-    _QuickFilterDefinition(value: _InternshipQuickFilter.marketing, label: l10n.uiMarketing),
+    _QuickFilterDefinition(
+      value: _InternshipQuickFilter.remote,
+      label: l10n.uiRemote,
+    ),
+    _QuickFilterDefinition(
+      value: _InternshipQuickFilter.paid,
+      label: l10n.uiPaid,
+    ),
+    _QuickFilterDefinition(
+      value: _InternshipQuickFilter.summer,
+      label: l10n.uiSummer,
+    ),
+    _QuickFilterDefinition(
+      value: _InternshipQuickFilter.tech,
+      label: l10n.uiTech,
+    ),
+    _QuickFilterDefinition(
+      value: _InternshipQuickFilter.marketing,
+      label: l10n.uiMarketing,
+    ),
   ];
 
   final TextEditingController _searchController = TextEditingController();
@@ -735,7 +750,9 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
                     const SizedBox(height: 10),
                     _InternshipFilterChipRow(
                       activeFilter: _selectedQuickFilter,
-                      filters: _buildQuickFilters(AppLocalizations.of(context)!),
+                      filters: _buildQuickFilters(
+                        AppLocalizations.of(context)!,
+                      ),
                       onSelected: (filter) {
                         setState(() {
                           _selectedQuickFilter = _selectedQuickFilter == filter
@@ -746,7 +763,9 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
                     ),
                     const SizedBox(height: 18),
                     _InternshipSectionHeader(
-                      title: AppLocalizations.of(context)!.uiFeaturedInternships,
+                      title: AppLocalizations.of(
+                        context,
+                      )!.uiFeaturedInternships,
                       actionLabel: 'Browse all',
                       onAction: _scrollToAvailableSection,
                     ),
@@ -780,7 +799,9 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
                     Container(
                       key: _availableSectionKey,
                       child: _InternshipSectionHeader(
-                        title: AppLocalizations.of(context)!.uiAvailableInternships,
+                        title: AppLocalizations.of(
+                          context,
+                        )!.uiAvailableInternships,
                         countLabel: availableCountLabel,
                         trailing: _InternshipViewToggle(
                           viewMode: _viewMode,
@@ -833,7 +854,11 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
                                 itemBuilder: (context, index) {
                                   final item = availableInternships[index];
                                   final statusData =
-                                      _internshipStatusDataForOpportunity(item.opportunity, appliedStatuses, AppLocalizations.of(context)!);
+                                      _internshipStatusDataForOpportunity(
+                                        item.opportunity,
+                                        appliedStatuses,
+                                        AppLocalizations.of(context)!,
+                                      );
                                   return _AvailableInternshipCard(
                                     item: item,
                                     statusData: statusData,
@@ -870,7 +895,12 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
                                       child: _AvailableInternshipListTile(
                                         item: availableInternships[index],
                                         statusData:
-                                            _internshipStatusDataForOpportunity(availableInternships[index].opportunity, appliedStatuses, AppLocalizations.of(context)!),
+                                            _internshipStatusDataForOpportunity(
+                                              availableInternships[index]
+                                                  .opportunity,
+                                              appliedStatuses,
+                                              AppLocalizations.of(context)!,
+                                            ),
                                         onTap:
                                             availableInternships[index]
                                                     .opportunity ==
@@ -1358,7 +1388,11 @@ class _ApplyThisWeekSection extends StatelessWidget {
         separatorBuilder: (context, index) => SizedBox(width: cardSpacing),
         itemBuilder: (context, index) {
           final item = items[index];
-          final statusData = _internshipStatusDataForOpportunity(item.opportunity, appliedStatuses, AppLocalizations.of(context)!);
+          final statusData = _internshipStatusDataForOpportunity(
+            item.opportunity,
+            appliedStatuses,
+            AppLocalizations.of(context)!,
+          );
 
           return SizedBox(
             width: cardWidth,
@@ -3228,6 +3262,7 @@ class _CompanyLogoTile extends StatelessWidget {
     return Container(
       width: size,
       height: size,
+      padding: logoUrl.isEmpty ? EdgeInsets.zero : EdgeInsets.all(size * 0.12),
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(borderRadius),
@@ -3246,7 +3281,7 @@ class _CompanyLogoTile extends StatelessWidget {
             )
           : CachedNetworkImage(
               imageUrl: logoUrl,
-              fit: BoxFit.cover,
+              fit: BoxFit.contain,
               errorWidget: (context, url, error) => Center(
                 child: Text(
                   fallbackLabel,

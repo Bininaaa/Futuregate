@@ -66,11 +66,26 @@ class _SponsoredOpportunitiesScreenState
     extends State<SponsoredOpportunitiesScreen> {
   List<_SponsoredFilterDefinition> _buildFilters(AppLocalizations l10n) => [
     _SponsoredFilterDefinition(value: _SponsoredFilter.all, label: l10n.uiAll),
-    _SponsoredFilterDefinition(value: _SponsoredFilter.funding, label: l10n.uiFunding),
-    _SponsoredFilterDefinition(value: _SponsoredFilter.startup, label: l10n.uiStartup),
-    _SponsoredFilterDefinition(value: _SponsoredFilter.competition, label: l10n.uiCompetition),
-    _SponsoredFilterDefinition(value: _SponsoredFilter.grants, label: l10n.uiGrants),
-    _SponsoredFilterDefinition(value: _SponsoredFilter.internships, label: l10n.uiInternships),
+    _SponsoredFilterDefinition(
+      value: _SponsoredFilter.funding,
+      label: l10n.uiFunding,
+    ),
+    _SponsoredFilterDefinition(
+      value: _SponsoredFilter.startup,
+      label: l10n.uiStartup,
+    ),
+    _SponsoredFilterDefinition(
+      value: _SponsoredFilter.competition,
+      label: l10n.uiCompetition,
+    ),
+    _SponsoredFilterDefinition(
+      value: _SponsoredFilter.grants,
+      label: l10n.uiGrants,
+    ),
+    _SponsoredFilterDefinition(
+      value: _SponsoredFilter.internships,
+      label: l10n.uiInternships,
+    ),
   ];
 
   final TextEditingController _searchController = TextEditingController();
@@ -337,7 +352,10 @@ class _SponsoredOpportunitiesScreenState
     final applicationStatus = appliedStatuses[opportunity.id];
     if (applicationStatus != null) {
       return _SponsoredActionState(
-        label: ApplicationStatus.label(applicationStatus, AppLocalizations.of(context)!),
+        label: ApplicationStatus.label(
+          applicationStatus,
+          AppLocalizations.of(context)!,
+        ),
         color: ApplicationStatus.color(applicationStatus),
         icon: _sponsoredApplicationStatusIcon(applicationStatus),
       );
@@ -1003,7 +1021,9 @@ class _SponsoredOpportunitiesScreenState
                               horizontal: horizontalPadding,
                             ),
                             child: _SponsoredSectionHeader(
-                              title: AppLocalizations.of(context)!.uiAllSponsoredPrograms,
+                              title: AppLocalizations.of(
+                                context,
+                              )!.uiAllSponsoredPrograms,
                               countLabel: hasActiveFilters
                                   ? '$countLabel matched in ${activeFilterLabel.toLowerCase()}'
                                   : countLabel,
@@ -1822,7 +1842,9 @@ class _SponsoredGridCard extends StatelessWidget {
                                 children: [
                                   _SponsoredMetaChip(
                                     icon: Icons.workspace_premium_rounded,
-                                    label: AppLocalizations.of(context)!.uiSponsored,
+                                    label: AppLocalizations.of(
+                                      context,
+                                    )!.uiSponsored,
                                     foregroundColor: Colors.white,
                                     backgroundColor: Colors.white.withValues(
                                       alpha: 0.14,
@@ -2280,6 +2302,7 @@ class _CompanyIcon extends StatelessWidget {
     return Container(
       width: size,
       height: size,
+      padding: logoUrl.isEmpty ? EdgeInsets.zero : EdgeInsets.all(size * 0.12),
       decoration: BoxDecoration(
         color: iconBgColor,
         borderRadius: BorderRadius.circular(size * 0.3),
@@ -2289,7 +2312,7 @@ class _CompanyIcon extends StatelessWidget {
           ? Icon(iconData, color: iconColor, size: size * 0.5)
           : CachedNetworkImage(
               imageUrl: logoUrl,
-              fit: BoxFit.cover,
+              fit: BoxFit.contain,
               errorWidget: (context, url, error) =>
                   Icon(iconData, color: iconColor, size: size * 0.5),
             ),

@@ -1190,7 +1190,7 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get uiAppliedOpportunities => 'الفرص التطبيقية';
+  String get uiAppliedOpportunities => 'الفرص التي تم التقديم لها';
 
   @override
   String uiAppliedRelativeappliedlabel(Object relativeAppliedLabel) {
@@ -1271,7 +1271,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiAvailableNow => 'متوفر الآن';
 
   @override
-  String get uiAvailableScholarships => 'متاح\nالمنح الدراسية';
+  String get uiAvailableScholarships => 'المنح الدراسية\nالمتاحة';
 
   @override
   String get uiAvatarUnavailable => 'الصورة الرمزية غير متاحة';
@@ -2633,7 +2633,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiOpportunityUnavailable => 'الفرصة غير متاحة';
 
   @override
-  String get uiOpps => 'انتبه';
+  String get uiOpps => 'الفرص';
 
   @override
   String get uiOptional => 'خياري';
@@ -3288,7 +3288,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiSearchHelpTopics => 'ابحث في مواضيع المساعدة';
 
   @override
-  String get uiSearchIdeas => 'أفكار البحث...';
+  String get uiSearchIdeas => 'البحث في الأفكار...';
 
   @override
   String get uiSearchInternships => 'بحث عن التدريب العملي...';

@@ -76,7 +76,8 @@ void _ensureOpportunityTranslation(
     contentType: ContentTranslationType.opportunity,
     contentId: opportunity.id,
   );
-  if (status == TranslationStatus.loading || status == TranslationStatus.ready) {
+  if (status == TranslationStatus.loading ||
+      status == TranslationStatus.ready) {
     return;
   }
 
@@ -969,7 +970,8 @@ class TrendingOpportunityCard extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
               if (hasTranslation ||
-                  (opportunity.originalLanguage?.trim().isNotEmpty ?? false)) ...[
+                  (opportunity.originalLanguage?.trim().isNotEmpty ??
+                      false)) ...[
                 const SizedBox(height: 7),
                 ContentTranslationBadge(
                   showingTranslated: hasTranslation && showingTranslated,
@@ -1200,7 +1202,9 @@ class OpportunityListTile extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                           ),
                           if (hasTranslation ||
-                              (opportunity.originalLanguage?.trim().isNotEmpty ??
+                              (opportunity.originalLanguage
+                                      ?.trim()
+                                      .isNotEmpty ??
                                   false)) ...[
                             const SizedBox(height: 6),
                             ContentTranslationBadge(
@@ -1209,10 +1213,10 @@ class OpportunityListTile extends StatelessWidget {
                               originalLanguage:
                                   opportunity.originalLanguage ?? '',
                               foregroundColor: tone.strongAccent,
-                              backgroundColor:
-                                  tone.accent.withValues(alpha: 0.08),
-                              borderColor:
-                                  tone.accent.withValues(alpha: 0.12),
+                              backgroundColor: tone.accent.withValues(
+                                alpha: 0.08,
+                              ),
+                              borderColor: tone.accent.withValues(alpha: 0.12),
                             ),
                           ],
                           const SizedBox(height: 4),
@@ -1462,6 +1466,9 @@ class _OpportunityCompanyAvatar extends StatelessWidget {
     return Container(
       width: size,
       height: size,
+      padding: logoUrl.trim().isEmpty
+          ? EdgeInsets.zero
+          : EdgeInsets.all(size * 0.12),
       decoration: BoxDecoration(
         color: resolvedBackground,
         shape: BoxShape.circle,
@@ -1480,7 +1487,7 @@ class _OpportunityCompanyAvatar extends StatelessWidget {
             )
           : CachedNetworkImage(
               imageUrl: logoUrl,
-              fit: BoxFit.cover,
+              fit: BoxFit.contain,
               errorWidget: (context, url, error) => Center(
                 child: Text(
                   label,
@@ -1603,4 +1610,3 @@ class _OpportunityAccentChip extends StatelessWidget {
     );
   }
 }
-

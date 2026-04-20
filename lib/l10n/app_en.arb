@@ -358,7 +358,7 @@
   "uiAlexFromTechcorp": "Alex from TechCorp",
   "uiAll": "All",
   "uiAllIdeas": "All Ideas",
-  "uiAllOppsValue1": "All opps ({value1})",
+  "uiAllOppsValue1": "All Opportunities ({value1})",
   "@uiAllOppsValue1": {
     "placeholders": {
       "value1": {}
@@ -412,7 +412,7 @@
       "appliedText": {}
     }
   },
-  "uiAppliedOpportunities": "Applied opportunities",
+  "uiAppliedOpportunities": "Applied Opportunities",
   "uiAppliedRelativeappliedlabel": "Applied {relativeAppliedLabel}",
   "@uiAppliedRelativeappliedlabel": {
     "placeholders": {
@@ -943,7 +943,7 @@
   "uiOpportunityDetails": "Opportunity details",
   "uiOpportunityPostingHelp": "Opportunity Posting Help",
   "uiOpportunityUnavailable": "Opportunity unavailable",
-  "uiOpps": "Opps",
+  "uiOpps": "Opportunities",
   "uiOptional": "Optional",
   "uiOptionalExtras": "Optional Extras",
   "uiOrUploadYourOwn": "or upload your own",
@@ -1051,7 +1051,7 @@
   "uiPublicCollaborationAllowed": "Public collaboration allowed",
   "uiPublicLinksAreAddedHereAsTheyGoLive": "Public links are added here as they go live",
   "uiPublicSpeaking": "Public Speaking",
-  "uiPublishOpportunities": "Publish opportunities",
+  "uiPublishOpportunities": "Publish Opportunities",
   "uiPublishTheFirstOpportunityToStartPopulatingTheStudentDiscovery": "Publish the first opportunity to start populating the student discovery experience.",
   "uiPublishTheFirstScholarshipToStartShapingTheStudentDiscovery": "Publish the first scholarship to start shaping the student discovery catalog.",
   "uiPublisherName": "Publisher name",
@@ -1142,11 +1142,11 @@
   "uiSaveUnavailable": "Save unavailable",
   "uiSaved": "Saved",
   "uiSavedCollection": "Saved collection",
-  "uiSavedIdeas": "Saved ideas",
+  "uiSavedIdeas": "Saved Ideas",
   "uiSavedItems": "Saved Items",
   "uiSavedItems1D9C": "Saved items",
   "uiSavedResources": "Saved resources",
-  "uiSavedScholarships": "Saved scholarships",
+  "uiSavedScholarships": "Saved Scholarships",
   "uiSavedShortlist": "Saved shortlist",
   "uiSavedTraining": "Saved training",
   "uiSayHelloToOthername": "Say hello to {otherName}",
@@ -1171,7 +1171,7 @@
   "uiSearchFailed": "Search failed",
   "uiSearchForCourses": "Search for courses...",
   "uiSearchHelpTopics": "Search help topics",
-  "uiSearchIdeas": "Search ideas...",
+  "uiSearchIdeas": "Search Ideas...",
   "uiSearchInternships": "Search internships...",
   "uiSearchJobsInternshipsOrSponsoredRoles": "Search jobs, internships or sponsored roles",
   "uiSearchProgramsPartners": "Search programs, partners...",
@@ -2059,7 +2059,7 @@
   },
   "uiThisOpportunityIsNoLongerAvailable": "This Opportunity Is No Longer Available To Open",
   "uiThisScholarshipIsNoLongerAvailable": "This Scholarship Is No Longer Available",
-  "uiAllOppsValue": "All opps ({value1})",
+  "uiAllOppsValue": "All Opportunities ({value1})",
   "@uiAllOppsValue": {
     "placeholders": {
       "value1": {}
@@ -3286,7 +3286,7 @@
   "@notifContentIdeas": {
     "description": "notifContentIdeas"
   },
-  "notifOppAll": "All opps",
+  "notifOppAll": "All Opportunities",
   "@notifOppAll": {
     "description": "notifOppAll"
   },

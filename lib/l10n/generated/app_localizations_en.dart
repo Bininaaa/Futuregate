@@ -1098,7 +1098,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String uiAllOppsValue1(Object value1) {
-    return 'All opps ($value1)';
+    return 'All Opportunities ($value1)';
   }
 
   @override
@@ -1196,7 +1196,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get uiAppliedOpportunities => 'Applied opportunities';
+  String get uiAppliedOpportunities => 'Applied Opportunities';
 
   @override
   String uiAppliedRelativeappliedlabel(Object relativeAppliedLabel) {
@@ -2639,7 +2639,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get uiOpportunityUnavailable => 'Opportunity unavailable';
 
   @override
-  String get uiOpps => 'Opps';
+  String get uiOpps => 'Opportunities';
 
   @override
   String get uiOptional => 'Optional';
@@ -2908,7 +2908,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get uiPublicSpeaking => 'Public Speaking';
 
   @override
-  String get uiPublishOpportunities => 'Publish opportunities';
+  String get uiPublishOpportunities => 'Publish Opportunities';
 
   @override
   String get uiPublishTheFirstOpportunityToStartPopulatingTheStudentDiscovery =>
@@ -3210,7 +3210,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get uiSavedCollection => 'Saved collection';
 
   @override
-  String get uiSavedIdeas => 'Saved ideas';
+  String get uiSavedIdeas => 'Saved Ideas';
 
   @override
   String get uiSavedItems => 'Saved Items';
@@ -3222,7 +3222,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get uiSavedResources => 'Saved resources';
 
   @override
-  String get uiSavedScholarships => 'Saved scholarships';
+  String get uiSavedScholarships => 'Saved Scholarships';
 
   @override
   String get uiSavedShortlist => 'Saved shortlist';
@@ -3297,7 +3297,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get uiSearchHelpTopics => 'Search help topics';
 
   @override
-  String get uiSearchIdeas => 'Search ideas...';
+  String get uiSearchIdeas => 'Search Ideas...';
 
   @override
   String get uiSearchInternships => 'Search internships...';
@@ -4888,7 +4888,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String uiAllOppsValue(Object value1) {
-    return 'All opps ($value1)';
+    return 'All Opportunities ($value1)';
   }
 
   @override
@@ -6675,7 +6675,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notifContentIdeas => 'Ideas';
 
   @override
-  String get notifOppAll => 'All opps';
+  String get notifOppAll => 'All Opportunities';
 
   @override
   String get notifOppJobs => 'Jobs';

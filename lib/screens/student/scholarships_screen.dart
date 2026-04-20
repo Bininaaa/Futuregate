@@ -534,7 +534,9 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
                           borderRadius: BorderRadius.circular(14),
                         ),
                         child: Text(
-                          AppLocalizations.of(context)!.scholarshipFeaturedBadge,
+                          AppLocalizations.of(
+                            context,
+                          )!.scholarshipFeaturedBadge,
                           style: AppTypography.product(
                             fontSize: 8.5,
                             fontWeight: FontWeight.w700,
@@ -882,29 +884,6 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
               ],
             ),
           ),
-          if (widget.embedded)
-            GestureDetector(
-              onTap: _openScholarshipCatalog,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    l10n.uiViewAllScholarships,
-                    style: AppTypography.product(
-                      fontSize: 10.5,
-                      fontWeight: FontWeight.w500,
-                      color: _P.primary,
-                    ),
-                  ),
-                  const SizedBox(width: 3),
-                  Icon(
-                    Icons.arrow_forward_rounded,
-                    size: 13,
-                    color: _P.primary,
-                  ),
-                ],
-              ),
-            ),
         ],
       ),
     );
@@ -974,13 +953,6 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
       MaterialPageRoute(
         builder: (_) => ScholarshipDetailScreen(scholarship: scholarship),
       ),
-    );
-  }
-
-  void _openScholarshipCatalog() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const ScholarshipsScreen()),
     );
   }
 

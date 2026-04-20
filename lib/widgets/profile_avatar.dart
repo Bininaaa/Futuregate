@@ -177,6 +177,37 @@ class _ProfileAvatarState extends State<ProfileAvatar> {
   }
 
   Widget _buildNetworkAvatar(String url, String name, String role) {
+    if (role == 'company') {
+      final diameter = widget.radius * 2;
+
+      return Container(
+        width: diameter,
+        height: diameter,
+        padding: EdgeInsets.all(widget.radius * 0.18),
+        decoration: BoxDecoration(
+          color: _fallbackColor(role),
+          shape: BoxShape.circle,
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: CachedNetworkImage(
+          imageUrl: url,
+          fit: BoxFit.contain,
+          placeholder: (context, url) => Center(
+            child: SizedBox(
+              width: widget.radius,
+              height: widget.radius,
+              child: const CircularProgressIndicator(strokeWidth: 2),
+            ),
+          ),
+          errorWidget: (context, url, error) => Icon(
+            Icons.business,
+            color: const Color(0xFF004E98),
+            size: widget.radius,
+          ),
+        ),
+      );
+    }
+
     return CachedNetworkImage(
       imageUrl: url,
       imageBuilder: (context, imageProvider) =>

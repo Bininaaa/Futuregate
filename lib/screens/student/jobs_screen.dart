@@ -288,7 +288,10 @@ class _JobsScreenState extends State<JobsScreen> {
     final applicationStatus = appliedStatuses[opportunity.id];
     if (applicationStatus != null) {
       return JobStatusData(
-        label: ApplicationStatus.label(applicationStatus, AppLocalizations.of(context)!),
+        label: ApplicationStatus.label(
+          applicationStatus,
+          AppLocalizations.of(context)!,
+        ),
         color: ApplicationStatus.color(applicationStatus),
         icon: _jobApplicationStatusIcon(applicationStatus),
       );
@@ -3797,6 +3800,7 @@ class _CompanyLogoTile extends StatelessWidget {
     return Container(
       width: size,
       height: size,
+      padding: logoUrl.isEmpty ? EdgeInsets.zero : EdgeInsets.all(size * 0.12),
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(16),
@@ -3815,7 +3819,7 @@ class _CompanyLogoTile extends StatelessWidget {
             )
           : CachedNetworkImage(
               imageUrl: logoUrl,
-              fit: BoxFit.cover,
+              fit: BoxFit.contain,
               placeholder: (context, url) => Center(
                 child: SizedBox(
                   width: size * 0.34,

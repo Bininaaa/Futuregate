@@ -818,7 +818,9 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
         primaryActionLabel: AppLocalizations.of(context)!.uiActionBuildCv,
         primaryActionIcon: Icons.description_outlined,
         onPrimaryAction: openCv,
-        secondaryActionLabel: AppLocalizations.of(context)!.uiActionCompleteProfile,
+        secondaryActionLabel: AppLocalizations.of(
+          context,
+        )!.uiActionCompleteProfile,
         secondaryActionIcon: Icons.person_outline_rounded,
         onSecondaryAction: openProfile,
       );
@@ -826,14 +828,18 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
 
     if (profileCompletion < 100) {
       return _DashboardFocus(
-        badgeLabel: AppLocalizations.of(context)!.uiBadgeProfileReady(profileCompletion),
+        badgeLabel: AppLocalizations.of(
+          context,
+        )!.uiBadgeProfileReady(profileCompletion),
         title: AppLocalizations.of(context)!.uiCompleteProfile,
         subtitle:
             '$missingCount ${_pluralizedWord(missingCount, "detail is", "details are")} still missing for better matching.',
         insight: _profileHint(user, cv),
         accent: accentGold,
         insightIcon: Icons.verified_user_outlined,
-        primaryActionLabel: AppLocalizations.of(context)!.uiActionCompleteProfile,
+        primaryActionLabel: AppLocalizations.of(
+          context,
+        )!.uiActionCompleteProfile,
         primaryActionIcon: Icons.person_outline_rounded,
         onPrimaryAction: openProfile,
         secondaryActionLabel: AppLocalizations.of(context)!.uiDiscover,
@@ -1410,7 +1416,9 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                     ),
                     const SizedBox(height: 3),
                     Text(
-                      AppLocalizations.of(context)!.uiCompletionReadyForBetterStudentMatching(completion),
+                      AppLocalizations.of(
+                        context,
+                      )!.uiCompletionReadyForBetterStudentMatching(completion),
                       style: AppTypography.product(
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
@@ -2189,6 +2197,9 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     return Container(
       width: size,
       height: size,
+      padding: logoUrl.isNotEmpty
+          ? EdgeInsets.all(size * 0.12)
+          : EdgeInsets.zero,
       decoration: BoxDecoration(
         color: softLavender,
         borderRadius: BorderRadius.circular(borderRadius),
@@ -2197,7 +2208,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
       child: logoUrl.isNotEmpty
           ? CachedNetworkImage(
               imageUrl: logoUrl,
-              fit: BoxFit.cover,
+              fit: BoxFit.contain,
               placeholder: (_, _) => Center(
                 child: Text(
                   companyName.isNotEmpty ? companyName[0].toUpperCase() : 'C',
@@ -2578,7 +2589,9 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
         _DashboardActivityEntry(
           dedupeKey: key,
           sortDate: savedAt,
-          badgeLabel: isUrgent ? AppLocalizations.of(context)!.uiClosingSoon : AppLocalizations.of(context)!.uiSavedScholarshipBadge,
+          badgeLabel: isUrgent
+              ? AppLocalizations.of(context)!.uiClosingSoon
+              : AppLocalizations.of(context)!.uiSavedScholarshipBadge,
           accent: accent,
           icon: isUrgent
               ? Icons.schedule_outlined
@@ -2625,12 +2638,16 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
           return _DashboardActivityEntry(
             dedupeKey: 'saved_training:${item.id}',
             sortDate: item.savedAt!.toDate(),
-            badgeLabel: AppLocalizations.of(context)!.uiSavedTypeBadge(typeLabel.toLowerCase()),
+            badgeLabel: AppLocalizations.of(
+              context,
+            )!.uiSavedTypeBadge(typeLabel.toLowerCase()),
             accent: accentTeal,
             icon: _savedTrainingActivityIcon(item.type),
             title: item.title.trim().isNotEmpty
                 ? item.title.trim()
-                : AppLocalizations.of(context)!.uiSavedTypeBadge(AppLocalizations.of(context)!.uiResource),
+                : AppLocalizations.of(
+                    context,
+                  )!.uiSavedTypeBadge(AppLocalizations.of(context)!.uiResource),
             subtitle: subtitle,
             metaLabel: meta.trim().isEmpty ? null : meta,
             metaIcon: Icons.auto_stories_outlined,

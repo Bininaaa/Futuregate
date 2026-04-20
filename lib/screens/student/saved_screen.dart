@@ -606,7 +606,7 @@ class _SavedScreenState extends State<SavedScreen> {
                                               CrossAxisAlignment.start,
                                           children: [
                                             Text(
-                                              'Opportunity type',
+                                              l10n.opportunityTypeLabel,
                                               style: GoogleFonts.poppins(
                                                 fontSize: 11.2,
                                                 fontWeight: FontWeight.w600,
@@ -626,8 +626,12 @@ class _SavedScreenState extends State<SavedScreen> {
                                                           right: 8,
                                                         ),
                                                     child: StudentOpportunityFilterChip(
-                                                      label:
-                                                          'All opps (${_countForOpportunityTypeFilter(visibleSavedOpportunities, null)})',
+                                                      label: l10n.uiAllOppsValue(
+                                                        _countForOpportunityTypeFilter(
+                                                          visibleSavedOpportunities,
+                                                          null,
+                                                        ),
+                                                      ),
                                                       selected:
                                                           _selectedOpportunityType ==
                                                           null,
@@ -712,7 +716,9 @@ class _SavedScreenState extends State<SavedScreen> {
                         SliverFillRemaining(
                           hasScrollBody: false,
                           child: StudentOpportunityLoadingState(
-                            title: AppLocalizations.of(context)!.uiLoadingSavedItems,
+                            title: AppLocalizations.of(
+                              context,
+                            )!.uiLoadingSavedItems,
                             message:
                                 'Pulling together your saved opportunities, scholarships, trainings, and ideas.',
                           ),
@@ -1130,7 +1136,10 @@ class _SavedOpportunityCard extends StatelessWidget {
     return _SavedListCard(
       accent: accent,
       leadingIcon: OpportunityType.icon(item.type),
-      typeLabel: OpportunityType.label(item.type, AppLocalizations.of(context)!),
+      typeLabel: OpportunityType.label(
+        item.type,
+        AppLocalizations.of(context)!,
+      ),
       savedLabel: _relativeSavedLabel(item.savedAt?.toDate()),
       title: item.title,
       subtitle: item.companyName,
