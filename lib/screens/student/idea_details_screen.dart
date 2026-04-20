@@ -13,6 +13,7 @@ import '../../services/opportunity_translation_service.dart';
 import '../../services/project_idea_service.dart';
 import '../../utils/display_text.dart';
 import '../../widgets/app_shell_background.dart';
+import '../../widgets/ideas/project_idea_cover_image.dart';
 import '../../widgets/ideas/idea_metrics_row.dart';
 import '../../widgets/ideas/innovation_hub_theme.dart';
 import '../../widgets/profile_avatar.dart';
@@ -242,6 +243,15 @@ class IdeaDetailsScreen extends StatelessWidget {
                   : idea.creatorHeadline,
               summary: idea.overviewText,
               imageUrl: idea.imageUrl,
+              media: ProjectIdeaCoverImage(
+                imageUrl: idea.imageUrl,
+                ideaId: idea.id,
+                height: 168,
+                width: double.infinity,
+                fit: BoxFit.cover,
+                placeholderColor: _theme.surfaceMuted,
+                iconColor: _theme.textMuted,
+              ),
               leading: ProfileAvatar(
                 userId: idea.submittedBy,
                 photoType: idea.authorPhotoType,

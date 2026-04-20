@@ -14,6 +14,7 @@ import '../../utils/content_language.dart';
 import '../settings/settings_flow_theme.dart';
 import '../settings/settings_flow_widgets.dart';
 import '../../widgets/app_shell_background.dart';
+import '../../widgets/ideas/project_idea_cover_image.dart';
 import '../../widgets/ideas/innovation_hub_theme.dart';
 import '../../widgets/shared/app_content_system.dart';
 import '../../widgets/shared/app_feedback.dart';
@@ -1052,20 +1053,14 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
           if (hasImage) ...[
             ClipRRect(
               borderRadius: BorderRadius.circular(20),
-              child: Image.network(
-                _imageUrl,
+              child: ProjectIdeaCoverImage(
+                imageUrl: _imageUrl,
+                ideaId: widget.idea?.id ?? '',
                 height: 170,
                 width: double.infinity,
                 fit: BoxFit.cover,
-                errorBuilder: (_, _, _) => Container(
-                  height: 170,
-                  alignment: Alignment.center,
-                  color: AppColors.current.surfaceMuted,
-                  child: Icon(
-                    Icons.image_not_supported_outlined,
-                    color: InnovationHubPalette.textSecondary,
-                  ),
-                ),
+                placeholderColor: AppColors.current.surfaceMuted,
+                iconColor: InnovationHubPalette.textSecondary,
               ),
             ),
             const SizedBox(height: 12),

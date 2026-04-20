@@ -7523,7 +7523,7 @@ abstract class AppLocalizations {
   /// No description provided for @uiView.
   ///
   /// In en, this message translates to:
-  /// **'View Ø³Ø¬Ù ØªØ¬Ø§Ø±Ù'**
+  /// **'View'**
   String get uiView;
 
   /// No description provided for @uiView69Bd.
@@ -7913,7 +7913,7 @@ abstract class AppLocalizations {
   /// No description provided for @uiView69bd4e.
   ///
   /// In en, this message translates to:
-  /// **'View Ø³Ø¬Ù ØªØ¬Ø§Ø±Ù'**
+  /// **'View'**
   String get uiView69bd4e;
 
   /// No description provided for @uiValueInterested27bcc0.

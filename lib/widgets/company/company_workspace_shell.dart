@@ -27,7 +27,7 @@ class CompanyWorkspaceHeaderCard extends StatelessWidget {
   final int unreadCount;
   final VoidCallback onNotificationsTap;
   final VoidCallback onProfileTap;
-  final VoidCallback onSettingsTap;
+  final VoidCallback? onSettingsTap;
 
   const CompanyWorkspaceHeaderCard({
     super.key,
@@ -36,7 +36,7 @@ class CompanyWorkspaceHeaderCard extends StatelessWidget {
     required this.unreadCount,
     required this.onNotificationsTap,
     required this.onProfileTap,
-    required this.onSettingsTap,
+    this.onSettingsTap,
   });
 
   String _companyLabel(UserModel? user) {
@@ -139,12 +139,14 @@ class CompanyWorkspaceHeaderCard extends StatelessWidget {
                     badgeCount: unreadCount,
                     onTap: onNotificationsTap,
                   ),
-                  const SizedBox(width: 8),
-                  CompanyWorkspaceActionButton(
-                    icon: Icons.settings_outlined,
-                    tooltip: AppLocalizations.of(context)!.uiSettings,
-                    onTap: onSettingsTap,
-                  ),
+                  if (onSettingsTap != null) ...[
+                    const SizedBox(width: 8),
+                    CompanyWorkspaceActionButton(
+                      icon: Icons.settings_outlined,
+                      tooltip: AppLocalizations.of(context)!.uiSettings,
+                      onTap: onSettingsTap,
+                    ),
+                  ],
                 ],
               ),
             ],
@@ -166,7 +168,7 @@ class CompanyWorkspaceTopBar extends StatelessWidget {
   final int unreadCount;
   final VoidCallback onNotificationsTap;
   final VoidCallback onProfileTap;
-  final VoidCallback onSettingsTap;
+  final VoidCallback? onSettingsTap;
   final EdgeInsetsGeometry margin;
   final double radius;
 
@@ -177,7 +179,7 @@ class CompanyWorkspaceTopBar extends StatelessWidget {
     required this.unreadCount,
     required this.onNotificationsTap,
     required this.onProfileTap,
-    required this.onSettingsTap,
+    this.onSettingsTap,
     this.margin = const EdgeInsets.fromLTRB(16, 16, 16, 10),
     this.radius = 22,
   });
@@ -271,12 +273,14 @@ class CompanyWorkspaceTopBar extends StatelessWidget {
                     badgeCount: unreadCount,
                     onTap: onNotificationsTap,
                   ),
-                  const SizedBox(width: 8),
-                  CompanyWorkspaceActionButton(
-                    icon: Icons.settings_outlined,
-                    tooltip: AppLocalizations.of(context)!.uiSettings,
-                    onTap: onSettingsTap,
-                  ),
+                  if (onSettingsTap != null) ...[
+                    const SizedBox(width: 8),
+                    CompanyWorkspaceActionButton(
+                      icon: Icons.settings_outlined,
+                      tooltip: AppLocalizations.of(context)!.uiSettings,
+                      onTap: onSettingsTap,
+                    ),
+                  ],
                 ],
               ),
             ],

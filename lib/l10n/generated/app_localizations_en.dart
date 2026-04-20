@@ -4134,7 +4134,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get uiVideos => 'Videos';
 
   @override
-  String get uiView => 'View Ø³Ø¬Ù ØªØ¬Ø§Ø±Ù';
+  String get uiView => 'View';
 
   @override
   String get uiView69Bd => 'View';
@@ -4361,7 +4361,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'We Couldn T Open This Attachment';
 
   @override
-  String get uiView69bd4e => 'View Ø³Ø¬Ù ØªØ¬Ø§Ø±Ù';
+  String get uiView69bd4e => 'View';
 
   @override
   String uiValueInterested27bcc0(Object value1) {

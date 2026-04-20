@@ -47,6 +47,16 @@ class DocumentAccessService {
     return _parseDocument(result);
   }
 
+  Future<SecureDocumentLink> getProjectIdeaImageDocument({
+    required String ideaId,
+  }) async {
+    final result = await _workerApi.get(
+      '/api/project-ideas/${Uri.encodeComponent(ideaId)}/image/access',
+    );
+
+    return _parseDocument(result);
+  }
+
   SecureDocumentLink _parseDocument(Map<String, dynamic> payload) {
     final document = payload['document'];
     if (document is! Map<String, dynamic>) {

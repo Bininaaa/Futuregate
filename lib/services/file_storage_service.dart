@@ -165,7 +165,7 @@ class FileStorageService {
       fileBytes: fileBytes,
       fileName: sanitizedFileName,
       mimeType: mimeType,
-      fileType: 'chat_image',
+      fileType: 'project_idea_image',
     );
   }
 

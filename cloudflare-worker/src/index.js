@@ -3361,6 +3361,69 @@ async function handleGetSavedProjectIdeas(request, env) {
   return json({ savedItems });
 }
 
+function resolveProjectIdeaImageMetadata(ideaData) {
+  const safeIdeaData =
+    ideaData && typeof ideaData === "object" ? ideaData : {};
+  const storagePath = resolveStoredObjectKey(
+    safeIdeaData.imageStoragePath,
+    safeIdeaData.imageObjectKey,
+    safeIdeaData.imageAccessPath,
+    safeIdeaData.imageUrl,
+  );
+  const fallbackUrl = resolveDocumentFallbackUrl(
+    safeIdeaData.imageSignedUrl,
+    safeIdeaData.imageAccessUrl,
+    safeIdeaData.imageUrl,
+  );
+  const objectKeyFromUrl = extractObjectKeyFromUrl(safeIdeaData.imageUrl);
+  const fileName =
+    trim(safeIdeaData.imageFileName) ||
+    trim(storagePath).split("/").filter(Boolean).pop() ||
+    trim(objectKeyFromUrl).split("/").filter(Boolean).pop() ||
+    "idea_cover.jpg";
+
+  return {
+    storagePath,
+    fallbackUrl,
+    fileName,
+    mimeType: normalizeDocumentMimeType(safeIdeaData.imageMimeType, fileName),
+  };
+}
+
+async function handleGetProjectIdeaImageAccess(request, env, ideaId) {
+  const auth = await requireUser(request, env, {
+    roles: ["student", "company", "admin"],
+  });
+  if (auth.error) {
+    return auth.error;
+  }
+
+  if (!ideaId) {
+    return err("A project idea ID is required.");
+  }
+
+  const ideaDoc = await firestoreGet(env, "projectIdeas", ideaId);
+  if (!ideaDoc) {
+    return err("Project idea not found.", 404);
+  }
+
+  if (
+    !canAccessProjectIdea(ideaDoc.data || {}, auth.user.uid, auth.profile?.role)
+  ) {
+    return err("You do not have permission to access this idea image.", 403);
+  }
+
+  const document = await buildSecureDocumentResponse(
+    env,
+    resolveProjectIdeaImageMetadata(ideaDoc.data || {}),
+  );
+  if (!document || !trim(document.viewUrl)) {
+    return err("Project idea image not found.", 404);
+  }
+
+  return json({ document });
+}
+
 async function handleSetProjectIdeaInteraction(request, env) {
   const auth = await requireUser(request, env, {
     roles: ["student", "admin"],
@@ -3671,6 +3734,15 @@ function matchRoute(method, path) {
   if (method === "GET" && path === "/api/project-ideas/saved") {
     return { handler: "getSavedProjectIdeas" };
   }
+  const projectIdeaImageAccessRoute = path.match(
+    /^\/api\/project-ideas\/([^/]+)\/image\/access$/,
+  );
+  if (method === "GET" && projectIdeaImageAccessRoute) {
+    return {
+      handler: "getProjectIdeaImageAccess",
+      id: decodeURIComponent(projectIdeaImageAccessRoute[1]),
+    };
+  }
   if (method === "POST" && path === "/api/project-ideas/interactions") {
     return { handler: "setProjectIdeaInteraction" };
   }
@@ -3838,6 +3910,13 @@ export default {
           break;
         case "getSavedProjectIdeas":
           response = await handleGetSavedProjectIdeas(request, env);
+          break;
+        case "getProjectIdeaImageAccess":
+          response = await handleGetProjectIdeaImageAccess(
+            request,
+            env,
+            route.id,
+          );
           break;
         case "setProjectIdeaInteraction":
           response = await handleSetProjectIdeaInteraction(request, env);

@@ -7,6 +7,7 @@ const FIREBASE_ISSUER = `https://securetoken.google.com/${FIREBASE_PROJECT_ID}`;
 const MAX_CV_BYTES = 10 * 1024 * 1024;
 const MAX_COMMERCIAL_REGISTER_BYTES = 10 * 1024 * 1024;
 const MAX_PROFILE_PHOTO_BYTES = 5 * 1024 * 1024;
+const MAX_PROJECT_IDEA_IMAGE_BYTES = 5 * 1024 * 1024;
 const MAX_CHAT_IMAGE_BYTES = 10 * 1024 * 1024;
 const MAX_CHAT_FILE_BYTES = 20 * 1024 * 1024;
 
@@ -368,10 +369,12 @@ async function handleGetFile(request, env, objectKey) {
 
   const url = new URL(request.url);
 
-  // Profile photos are publicly accessible so other users can view them
-  const isProfilePhoto = objectKey.startsWith("profiles/");
+  // Public-facing assets can be served directly so they render in feeds and
+  // detail pages without an authenticated fetch.
+  const isPublicAsset =
+    objectKey.startsWith("profiles/") || objectKey.startsWith("ideas/");
 
-  if (!isProfilePhoto) {
+  if (!isPublicAsset) {
     const ownerId = resolveOwnerId(objectKey, object.customMetadata);
     const signedAccessAllowed = await verifySignedAccess({
       env,
@@ -411,7 +414,7 @@ async function handleGetFile(request, env, objectKey) {
   headers.set("ETag", object.httpEtag);
   headers.set(
     "Cache-Control",
-    isProfilePhoto ? "public, max-age=3600" : "private, max-age=60",
+    isPublicAsset ? "public, max-age=3600" : "private, max-age=60",
   );
 
   const fileName =
@@ -485,6 +488,10 @@ function buildObjectKey({ userId, fileType, fileName }) {
     return `profiles/${safeUserId}/${Date.now()}_${safeFileName}`;
   }
 
+  if (fileType === "project_idea_image") {
+    return `ideas/${safeUserId}/covers/${Date.now()}_${safeFileName}`;
+  }
+
   if (fileType === "chat_image") {
     return `chat/${safeUserId}/images/${Date.now()}_${safeFileName}`;
   }
@@ -508,6 +515,10 @@ function buildDefaultFileName(fileType, templateId) {
 
   if (fileType === "profile_photo") {
     return "profile_photo.jpg";
+  }
+
+  if (fileType === "project_idea_image") {
+    return "idea_cover.jpg";
   }
 
   if (fileType === "chat_image") {
@@ -685,6 +696,19 @@ function validateUploadRequest({ fileType, fileName, mimeType, fileSize }) {
     }
   }
 
+  if (normalizedFileType === "project_idea_image") {
+    if (fileSize > MAX_PROJECT_IDEA_IMAGE_BYTES) {
+      return "Project idea images must be smaller than 5 MB.";
+    }
+    if (
+      normalizedMimeType !== "image/png" &&
+      normalizedMimeType !== "image/jpeg" &&
+      normalizedMimeType !== "image/webp"
+    ) {
+      return "Project idea images must be JPG, PNG, or WebP files.";
+    }
+  }
+
   if (normalizedFileType === "chat_image") {
     if (fileSize > MAX_CHAT_IMAGE_BYTES) {
       return "Chat images must be smaller than 10 MB.";
@@ -717,7 +741,8 @@ function resolveOwnerId(objectKey, customMetadata) {
   if (
     (segments[0] === "cvs" ||
       segments[0] === "companies" ||
-      segments[0] === "profiles") &&
+      segments[0] === "profiles" ||
+      segments[0] === "ideas") &&
     segments[1]
   ) {
     return sanitizeSegment(segments[1]);

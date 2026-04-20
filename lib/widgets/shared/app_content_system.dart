@@ -1309,6 +1309,7 @@ class AppDetailHeroCard extends StatelessWidget {
   final Widget? leading;
   final Widget? footer;
   final String? imageUrl;
+  final Widget? media;
 
   const AppDetailHeroCard({
     super.key,
@@ -1321,6 +1322,7 @@ class AppDetailHeroCard extends StatelessWidget {
     this.leading,
     this.footer,
     this.imageUrl,
+    this.media,
   });
 
   @override
@@ -1401,26 +1403,29 @@ class AppDetailHeroCard extends StatelessWidget {
                   .toList(growable: false),
             ),
           ],
-          if (hasImage) ...<Widget>[
+          if (media != null || hasImage) ...<Widget>[
             const SizedBox(height: AppContentSpacing.md),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(18),
-              child: Image.network(
-                image,
-                height: 168,
-                width: double.infinity,
-                fit: BoxFit.cover,
-                errorBuilder: (_, _, _) => Container(
+            if (media != null)
+              ClipRRect(borderRadius: BorderRadius.circular(18), child: media!)
+            else
+              ClipRRect(
+                borderRadius: BorderRadius.circular(18),
+                child: Image.network(
+                  image,
                   height: 168,
-                  color: theme.surfaceMuted,
-                  alignment: Alignment.center,
-                  child: Icon(
-                    Icons.image_not_supported_outlined,
-                    color: theme.textMuted,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, _, _) => Container(
+                    height: 168,
+                    color: theme.surfaceMuted,
+                    alignment: Alignment.center,
+                    child: Icon(
+                      Icons.image_not_supported_outlined,
+                      color: theme.textMuted,
+                    ),
                   ),
                 ),
               ),
-            ),
           ],
           if (footer != null) ...<Widget>[
             const SizedBox(height: AppContentSpacing.md),
