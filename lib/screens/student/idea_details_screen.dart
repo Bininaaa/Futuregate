@@ -462,7 +462,6 @@ class IdeaDetailsScreen extends StatelessWidget {
             ],
             if (idea.displayTeamNeeded.isNotEmpty ||
                 idea.displaySkills.isNotEmpty ||
-                idea.tools.trim().isNotEmpty ||
                 idea.resourcesNeeded.trim().isNotEmpty) ...<Widget>[
               const SizedBox(height: 16),
               AppDetailSection(
@@ -485,14 +484,6 @@ class IdeaDetailsScreen extends StatelessWidget {
                         theme: _theme,
                         title: AppLocalizations.of(context)!.uiSkillsNeeded,
                         values: idea.displaySkills,
-                      ),
-                    ],
-                    if (idea.tools.trim().isNotEmpty) ...<Widget>[
-                      const SizedBox(height: 14),
-                      AppMetaRow(
-                        theme: _theme,
-                        label: AppLocalizations.of(context)!.uiToolsAndStack,
-                        value: idea.tools,
                       ),
                     ],
                     if (idea.resourcesNeeded.trim().isNotEmpty) ...<Widget>[

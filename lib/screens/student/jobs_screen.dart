@@ -2364,7 +2364,7 @@ class FeaturedJobCard extends StatelessWidget {
         final actionLabel =
             statusData?.label ??
             (job.opportunity == null ? 'Preview' : 'Apply Now');
-        final salaryLabel = !hasFooterSalary
+        final Widget? salaryLabel = !hasFooterSalary
             ? null
             : Row(
                 mainAxisSize: MainAxisSize.max,
@@ -2391,26 +2391,37 @@ class FeaturedJobCard extends StatelessWidget {
                 ],
               );
 
-        final footer = Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ...?salaryLabel == null
-                ? null
-                : <Widget>[salaryLabel, const SizedBox(height: 9)],
-            Align(
-              alignment: Alignment.centerRight,
-              child: _ApplyNowButton(
-                onTap: onApply,
-                label: actionLabel,
-                icon: statusData?.icon,
-                accentColor: statusData?.color,
-                backgroundColors: style.buttonGradientColors,
-                textColor: style.buttonTextColor,
-                compact: footerButtonCompact,
-              ),
-            ),
-          ],
+        final footerButton = _ApplyNowButton(
+          onTap: onApply,
+          label: actionLabel,
+          icon: statusData?.icon,
+          accentColor: statusData?.color,
+          backgroundColors: style.buttonGradientColors,
+          textColor: style.buttonTextColor,
+          compact: footerButtonCompact,
         );
+        late final Widget footer;
+        if (salaryLabel == null) {
+          footer = Align(alignment: Alignment.centerRight, child: footerButton);
+        } else if (denseLayout) {
+          footer = Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(child: salaryLabel),
+              SizedBox(width: isTight ? 8 : 10),
+              footerButton,
+            ],
+          );
+        } else {
+          footer = Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              salaryLabel,
+              const SizedBox(height: 9),
+              Align(alignment: Alignment.centerRight, child: footerButton),
+            ],
+          );
+        }
 
         return Material(
           color: Colors.transparent,

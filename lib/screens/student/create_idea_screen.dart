@@ -762,15 +762,18 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                       _StyledField(
                         controller: _titleController,
                         label: AppLocalizations.of(context)!.uiIdeaTitle,
-                        hint: 'AI-powered campus wellbeing assistant',
+                        hint: 'Example: Campus mental health assistant',
+                        helper:
+                            'Use a clear name: what it is and who it helps.',
                         validator: _requiredValidator,
                       ),
                       const SizedBox(height: 14),
                       _StyledField(
                         controller: _taglineController,
                         label: AppLocalizations.of(context)!.uiShortTagline,
-                        hint:
-                            'A smarter way for students to find support fast.',
+                        hint: 'Example: Find support before stress builds.',
+                        helper:
+                            'Write one short sentence about the main benefit.',
                       ),
                       const SizedBox(height: 18),
                       _CvSingleSelectField(
@@ -934,7 +937,9 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                         selectedValues: _selectedRoles,
                         controller: _customRolesController,
                         fieldLabel: 'Add a role',
-                        hint: 'Developer, Designer, Researcher',
+                        hint: 'Example: Developer, Designer, Researcher',
+                        helper:
+                            'Add the people you need on the team, one by one or separated by commas.',
                         prefixIcon: Icons.groups_2_outlined,
                         onSubmitted: _addCustomRoles,
                         onDelete: (value) {
@@ -947,7 +952,9 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                         selectedValues: _selectedSkills,
                         controller: _customSkillsController,
                         fieldLabel: 'Add a skill',
-                        hint: 'Flutter, Firebase, UX Research',
+                        hint: 'Example: Flutter, Firebase, UX Research',
+                        helper:
+                            'Add technologies, design skills, research skills, or domain knowledge.',
                         prefixIcon: Icons.auto_awesome_outlined,
                         onSubmitted: _addCustomSkills,
                         onDelete: (value) {
@@ -959,7 +966,9 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                         controller: _resourcesController,
                         label: AppLocalizations.of(context)!.uiResourcesNeeds,
                         hint:
-                            'Prototype support, mentor feedback, pilot testers...',
+                            'Example: Mentor feedback, test users, survey data',
+                        helper:
+                            'List the support you need: people, tools, access, funding, or feedback.',
                         minLines: 3,
                         maxLines: 4,
                       ),
@@ -1308,6 +1317,7 @@ class _StyledField extends StatelessWidget {
   final TextEditingController controller;
   final String label;
   final String hint;
+  final String? helper;
   final int minLines;
   final int maxLines;
   final String? Function(String?)? validator;
@@ -1316,6 +1326,7 @@ class _StyledField extends StatelessWidget {
     required this.controller,
     required this.label,
     required this.hint,
+    this.helper,
     this.minLines = 1,
     this.maxLines = 1,
     this.validator,
@@ -1324,14 +1335,32 @@ class _StyledField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = context.findAncestorStateOfType<_CreateIdeaScreenState>();
-    return AppFormField(
-      theme: state!._theme,
-      controller: controller,
-      label: label,
-      hint: hint,
-      minLines: minLines,
-      maxLines: maxLines,
-      validator: validator,
+    final helperText = helper?.trim();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        AppFormField(
+          theme: state!._theme,
+          controller: controller,
+          label: label,
+          hint: hint,
+          minLines: minLines,
+          maxLines: maxLines,
+          validator: validator,
+        ),
+        if (helperText != null && helperText.isNotEmpty) ...[
+          const SizedBox(height: 6),
+          Text(
+            helperText,
+            style: state._theme.body(
+              size: 11.8,
+              color: state._theme.textSecondary,
+              height: 1.35,
+            ),
+          ),
+        ],
+      ],
     );
   }
 }
@@ -1393,6 +1422,7 @@ class _SelectionWrap extends StatelessWidget {
   final TextEditingController controller;
   final String fieldLabel;
   final String hint;
+  final String? helper;
   final IconData prefixIcon;
   final VoidCallback onSubmitted;
   final ValueChanged<String> onDelete;
@@ -1403,6 +1433,7 @@ class _SelectionWrap extends StatelessWidget {
     required this.controller,
     required this.fieldLabel,
     required this.hint,
+    this.helper,
     required this.prefixIcon,
     required this.onSubmitted,
     required this.onDelete,
@@ -1411,6 +1442,7 @@ class _SelectionWrap extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = context.findAncestorStateOfType<_CreateIdeaScreenState>()!;
+    final helperText = helper?.trim();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1461,6 +1493,13 @@ class _SelectionWrap extends StatelessWidget {
             ],
           ),
         ),
+        if (helperText != null && helperText.isNotEmpty) ...[
+          const SizedBox(height: 6),
+          Text(
+            helperText,
+            style: SettingsFlowTheme.caption(SettingsFlowPalette.textSecondary),
+          ),
+        ],
       ],
     );
   }

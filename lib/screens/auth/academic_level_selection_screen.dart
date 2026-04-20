@@ -185,6 +185,8 @@ class _LevelPicker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final levels = authAcademicLevels(l10n);
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -199,15 +201,15 @@ class _LevelPicker extends StatelessWidget {
           return GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: authAcademicLevels(l10n).length,
+            itemCount: levels.length,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: isWide ? 2 : 1,
               mainAxisSpacing: 10,
               crossAxisSpacing: 10,
-              childAspectRatio: isWide ? 2.15 : 3.1,
+              mainAxisExtent: 76,
             ),
             itemBuilder: (context, index) {
-              final option = authAcademicLevels(l10n)[index];
+              final option = levels[index];
               final isSelected = selectedLevel == option.value;
               final accent = _levelAccent(option.value);
 

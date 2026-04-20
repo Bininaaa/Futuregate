@@ -846,6 +846,8 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
                         child: _viewMode == _InternshipsViewMode.grid
                             ? GridView.builder(
                                 key: const ValueKey('internships-grid'),
+                                padding: EdgeInsets.zero,
+                                primary: false,
                                 shrinkWrap: true,
                                 physics: const NeverScrollableScrollPhysics(),
                                 itemCount: availableInternships.length,
