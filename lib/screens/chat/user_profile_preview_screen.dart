@@ -8,6 +8,66 @@ import '../../widgets/chat/chat_formatters.dart';
 import '../../widgets/chat/chat_theme.dart';
 import '../../widgets/profile_avatar.dart';
 
+Future<void> showFloatingUserProfilePreview(
+  BuildContext context, {
+  required String userId,
+  String fallbackName = '',
+  String fallbackRole = '',
+  String fallbackHeadline = '',
+  String fallbackAbout = '',
+  String fallbackLocation = '',
+  String fallbackWebsite = '',
+  String contextLabel = '',
+}) {
+  final size = MediaQuery.sizeOf(context);
+  final horizontalInset = size.width < 480 ? 12.0 : 24.0;
+  final verticalInset = size.height < 720 ? 16.0 : 24.0;
+
+  return showDialog<void>(
+    context: context,
+    barrierColor: Colors.black.withValues(alpha: 0.34),
+    builder: (dialogContext) {
+      return Dialog(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        insetPadding: EdgeInsets.symmetric(
+          horizontal: horizontalInset,
+          vertical: verticalInset,
+        ),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 620),
+          child: Container(
+            height: size.height * 0.88,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(32),
+              border: Border.all(
+                color: ChatThemePalette.border.withValues(alpha: 0.92),
+              ),
+              boxShadow: ChatThemeStyles.softShadow(0.16),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: MediaQuery.removePadding(
+              context: dialogContext,
+              removeTop: true,
+              removeBottom: true,
+              child: UserProfilePreviewScreen(
+                userId: userId,
+                fallbackName: fallbackName,
+                fallbackRole: fallbackRole,
+                fallbackHeadline: fallbackHeadline,
+                fallbackAbout: fallbackAbout,
+                fallbackLocation: fallbackLocation,
+                fallbackWebsite: fallbackWebsite,
+                contextLabel: contextLabel,
+              ),
+            ),
+          ),
+        ),
+      );
+    },
+  );
+}
+
 class UserProfilePreviewScreen extends StatefulWidget {
   final String userId;
   final String fallbackName;

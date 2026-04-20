@@ -27,6 +27,7 @@ class CompanyWorkspaceHeaderCard extends StatelessWidget {
   final int unreadCount;
   final VoidCallback onNotificationsTap;
   final VoidCallback onProfileTap;
+  final VoidCallback onSettingsTap;
 
   const CompanyWorkspaceHeaderCard({
     super.key,
@@ -35,6 +36,7 @@ class CompanyWorkspaceHeaderCard extends StatelessWidget {
     required this.unreadCount,
     required this.onNotificationsTap,
     required this.onProfileTap,
+    required this.onSettingsTap,
   });
 
   String _companyLabel(UserModel? user) {
@@ -91,35 +93,12 @@ class CompanyWorkspaceHeaderCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: 50,
-                height: 50,
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [
-                      Color(0xFF0E7490),
-                      Color(0xFF0891B2),
-                      Color(0xFF2563EB),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: CompanyDashboardPalette.primary.withValues(
-                        alpha: 0.24,
-                      ),
-                      blurRadius: 18,
-                      offset: const Offset(0, 10),
-                    ),
-                  ],
-                ),
-                child: Icon(
-                  destination.activeIcon,
-                  color: Colors.white,
-                  size: 24,
-                ),
+              CompanyWorkspaceProfileButton(
+                user: user,
+                onTap: onProfileTap,
+                size: 50,
+                borderRadius: 20,
+                avatarRadius: 19,
               ),
               const SizedBox(width: 14),
               Expanded(
@@ -161,9 +140,10 @@ class CompanyWorkspaceHeaderCard extends StatelessWidget {
                     onTap: onNotificationsTap,
                   ),
                   const SizedBox(width: 8),
-                  CompanyWorkspaceProfileButton(
-                    user: user,
-                    onTap: onProfileTap,
+                  CompanyWorkspaceActionButton(
+                    icon: Icons.settings_outlined,
+                    tooltip: AppLocalizations.of(context)!.uiSettings,
+                    onTap: onSettingsTap,
                   ),
                 ],
               ),
@@ -186,6 +166,7 @@ class CompanyWorkspaceTopBar extends StatelessWidget {
   final int unreadCount;
   final VoidCallback onNotificationsTap;
   final VoidCallback onProfileTap;
+  final VoidCallback onSettingsTap;
   final EdgeInsetsGeometry margin;
   final double radius;
 
@@ -196,6 +177,7 @@ class CompanyWorkspaceTopBar extends StatelessWidget {
     required this.unreadCount,
     required this.onNotificationsTap,
     required this.onProfileTap,
+    required this.onSettingsTap,
     this.margin = const EdgeInsets.fromLTRB(16, 16, 16, 10),
     this.radius = 22,
   });
@@ -239,26 +221,12 @@ class CompanyWorkspaceTopBar extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
           child: Row(
             children: [
-              Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      CompanyDashboardPalette.primaryDark,
-                      CompanyDashboardPalette.primary,
-                      CompanyDashboardPalette.secondary,
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Icon(
-                  destination.activeIcon,
-                  color: Colors.white,
-                  size: 22,
-                ),
+              CompanyWorkspaceProfileButton(
+                user: user,
+                onTap: onProfileTap,
+                size: 44,
+                borderRadius: 18,
+                avatarRadius: 16,
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -304,9 +272,10 @@ class CompanyWorkspaceTopBar extends StatelessWidget {
                     onTap: onNotificationsTap,
                   ),
                   const SizedBox(width: 8),
-                  CompanyWorkspaceProfileButton(
-                    user: user,
-                    onTap: onProfileTap,
+                  CompanyWorkspaceActionButton(
+                    icon: Icons.settings_outlined,
+                    tooltip: AppLocalizations.of(context)!.uiSettings,
+                    onTap: onSettingsTap,
                   ),
                 ],
               ),
@@ -702,11 +671,19 @@ class _CompanyPillNavItem extends StatelessWidget {
 class CompanyWorkspaceProfileButton extends StatelessWidget {
   final UserModel? user;
   final VoidCallback onTap;
+  final double size;
+  final double borderRadius;
+  final double avatarRadius;
+  final EdgeInsetsGeometry padding;
 
   const CompanyWorkspaceProfileButton({
     super.key,
     required this.user,
     required this.onTap,
+    this.size = 48,
+    this.borderRadius = 18,
+    this.avatarRadius = 18,
+    this.padding = const EdgeInsets.all(2),
   });
 
   @override
@@ -717,17 +694,19 @@ class CompanyWorkspaceProfileButton extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(borderRadius),
           child: Container(
-            width: 48,
-            height: 48,
-            padding: const EdgeInsets.all(2),
+            width: size,
+            height: size,
+            padding: padding,
             decoration: BoxDecoration(
               color: CompanyDashboardPalette.surfaceMuted,
-              borderRadius: BorderRadius.circular(18),
+              borderRadius: BorderRadius.circular(borderRadius),
               border: Border.all(color: CompanyDashboardPalette.border),
             ),
-            child: Center(child: ProfileAvatar(user: user, radius: 18)),
+            child: Center(
+              child: ProfileAvatar(user: user, radius: avatarRadius),
+            ),
           ),
         ),
       ),

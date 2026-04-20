@@ -31,12 +31,16 @@ import 'profile_screen.dart';
 
 class ApplicationsScreen extends StatefulWidget {
   final String? initialApplicationId;
+  final String? initialOpportunityId;
+  final String? initialOpportunityTitle;
   final bool showBackButton;
   final bool embedded;
 
   const ApplicationsScreen({
     super.key,
     this.initialApplicationId,
+    this.initialOpportunityId,
+    this.initialOpportunityTitle,
     this.showBackButton = false,
     this.embedded = false,
   });
@@ -68,6 +72,12 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
   void initState() {
     super.initState();
     _searchController.addListener(_handleSearchChanged);
+    if ((widget.initialApplicationId ?? '').trim().isEmpty) {
+      final initialOpportunityId = (widget.initialOpportunityId ?? '').trim();
+      if (initialOpportunityId.isNotEmpty) {
+        _selectedOpportunityFilter = initialOpportunityId;
+      }
+    }
     Future.microtask(_loadApplicationsData);
   }
 
@@ -123,6 +133,32 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
   }
 
   bool get _hasActiveFilters => _activeFilterCount > 0;
+
+  String _prefilledOpportunityId() {
+    if ((widget.initialApplicationId ?? '').trim().isNotEmpty) {
+      return '';
+    }
+    return (widget.initialOpportunityId ?? '').trim();
+  }
+
+  String _prefilledOpportunityTitle(CompanyProvider provider) {
+    final directTitle = (widget.initialOpportunityTitle ?? '').trim();
+    if (directTitle.isNotEmpty) {
+      return directTitle;
+    }
+
+    final opportunityId = _prefilledOpportunityId();
+    if (opportunityId.isEmpty) {
+      return '';
+    }
+
+    return provider.opportunities
+            .where((item) => item.id == opportunityId)
+            .firstOrNull
+            ?.title
+            .trim() ??
+        '';
+  }
 
   List<_ApplicationListItem> _filteredItems(CompanyProvider provider) {
     final baseItems =
@@ -280,6 +316,11 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
 
     final items = _filteredItems(provider);
     final isFocusedView = (widget.initialApplicationId ?? '').trim().isNotEmpty;
+    final prefilledOpportunityId = _prefilledOpportunityId();
+    final isOpportunityPrefiltered =
+        prefilledOpportunityId.isNotEmpty &&
+        _selectedOpportunityFilter == prefilledOpportunityId;
+    final prefilledOpportunityTitle = _prefilledOpportunityTitle(provider);
     final resultsCount = items.length;
     final totalApplications = provider.applications.length;
     final pendingCount = _statusCount(
@@ -338,6 +379,25 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                           onAction: isFocusedView
                               ? null
                               : _showPendingApplications,
+                        ),
+                      ],
+                      if (isOpportunityPrefiltered && !isFocusedView) ...[
+                        const SizedBox(height: 12),
+                        _InlineBanner(
+                          icon: Icons.groups_rounded,
+                          title: prefilledOpportunityTitle.isNotEmpty
+                              ? _l10n.uiApplicationsForOpportunitytitle(
+                                  prefilledOpportunityTitle,
+                                )
+                              : _l10n.uiApplications,
+                          message: resultsCount == 0
+                              ? _l10n
+                                    .uiThereAreNoSubmittedApplicationsForThisOpportunityRightNow
+                              : 'Showing only the candidates who applied to this role.',
+                          tone: _ApplicationsPalette.primary,
+                          background: _ApplicationsPalette.primarySoft,
+                          actionLabel: _l10n.uiViewAllApps,
+                          onAction: _clearFilters,
                         ),
                       ],
                       if ((provider.applicationsError ?? '')
@@ -1515,15 +1575,12 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
   }
 
   void _openStudentProfile(ApplicationModel application) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => UserProfilePreviewScreen(
-          userId: application.studentId,
-          fallbackName: application.studentName,
-          fallbackRole: 'student',
-          contextLabel: 'Application',
-        ),
-      ),
+    showFloatingUserProfilePreview(
+      context,
+      userId: application.studentId,
+      fallbackName: application.studentName,
+      fallbackRole: 'student',
+      contextLabel: 'Application',
     );
   }
 

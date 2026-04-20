@@ -101,6 +101,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   );
                 },
+                onSettingsTap: () => _selectIndex(4),
               ),
               Expanded(
                 child: Padding(

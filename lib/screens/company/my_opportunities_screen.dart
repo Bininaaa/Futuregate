@@ -17,6 +17,7 @@ import '../../widgets/profile_avatar.dart';
 import '../../widgets/shared/app_feedback.dart';
 import '../../widgets/shared/app_loading.dart';
 import '../notifications_screen.dart';
+import 'applications_screen.dart';
 import 'profile_screen.dart';
 import 'publish_opportunity_screen.dart';
 
@@ -274,6 +275,24 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
         builder: (_) => PublishOpportunityScreen(opportunityId: opportunityId),
       ),
     );
+    await _loadCompanyData();
+  }
+
+  Future<void> _openApplicationsForOpportunity(
+    OpportunityModel opportunity,
+  ) async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => ApplicationsScreen(
+          initialOpportunityId: opportunity.id,
+          initialOpportunityTitle: opportunity.title,
+          showBackButton: true,
+        ),
+      ),
+    );
+    if (!mounted) {
+      return;
+    }
     await _loadCompanyData();
   }
 
@@ -575,12 +594,25 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
                       ),
                     ),
                     const SizedBox(height: 14),
+                    SizedBox(
+                      width: double.infinity,
+                      child: _PrimaryActionButton(
+                        label: _l10n.uiViewApplicationsCount(applicantCount),
+                        icon: Icons.groups_rounded,
+                        onTap: () {
+                          Navigator.pop(sheetContext);
+                          _openApplicationsForOpportunity(opportunity);
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 10),
                     Row(
                       children: [
                         Expanded(
-                          child: _PrimaryActionButton(
+                          child: _GhostActionButton(
                             label: 'Edit',
                             icon: Icons.edit_outlined,
+                            foreground: _OpportunityPalette.primary,
                             onTap: () {
                               Navigator.pop(sheetContext);
                               _openEdit(opportunity.id);

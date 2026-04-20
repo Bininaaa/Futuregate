@@ -60,7 +60,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     final visibleNotifications = provider.notifications
         .where(_matchesFilter)
         .toList();
-    final summaryTitle = _summaryTitle(l10n, provider, visibleNotifications.length);
+    final summaryTitle = _summaryTitle(
+      l10n,
+      provider,
+      visibleNotifications.length,
+    );
     final summaryMessage = _summaryMessage(
       l10n,
       role,
@@ -358,10 +362,14 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       case _NotificationFilter.unread:
         return !notification.isRead;
       case _NotificationFilter.applications:
-        return notification.type == 'application';
+        return _isApplicationNotificationType(notification.type);
       case _NotificationFilter.messages:
         return notification.type == 'chat';
     }
+  }
+
+  bool _isApplicationNotificationType(String type) {
+    return type == 'application' || type == 'rejected';
   }
 
   List<_NotificationFilter> _availableFilters(String role) {
@@ -418,10 +426,14 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     }
   }
 
-  String _contentFilterLabel(AppLocalizations l10n, _NotificationContentFilter filter) {
+  String _contentFilterLabel(
+    AppLocalizations l10n,
+    _NotificationContentFilter filter,
+  ) {
     return switch (filter) {
       _NotificationContentFilter.all => l10n.notifContentAll,
-      _NotificationContentFilter.opportunities => l10n.notifContentOpportunities,
+      _NotificationContentFilter.opportunities =>
+        l10n.notifContentOpportunities,
       _NotificationContentFilter.trainings => l10n.notifContentTrainings,
       _NotificationContentFilter.scholarships => l10n.notifContentScholarships,
       _NotificationContentFilter.ideas => l10n.notifContentIdeas,
@@ -443,7 +455,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     }
   }
 
-  String _opportunityFilterLabel(AppLocalizations l10n, _OpportunityNotificationFilter filter) {
+  String _opportunityFilterLabel(
+    AppLocalizations l10n,
+    _OpportunityNotificationFilter filter,
+  ) {
     return switch (filter) {
       _OpportunityNotificationFilter.all => l10n.notifOppAll,
       _OpportunityNotificationFilter.jobs => l10n.notifOppJobs,
@@ -575,7 +590,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     }
   }
 
-  String _summaryTitle(AppLocalizations l10n, NotificationProvider provider, int visibleCount) {
+  String _summaryTitle(
+    AppLocalizations l10n,
+    NotificationProvider provider,
+    int visibleCount,
+  ) {
     if (provider.notifications.isEmpty) {
       return l10n.notifAllCaughtUp;
     }
@@ -868,6 +887,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       if (role == 'admin' &&
           const {
             'application',
+            'rejected',
             'opportunity',
             'scholarship',
             'training',
@@ -875,6 +895,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           }.contains(notif.type)) {
         final adminTab = switch (notif.type) {
           'application' => AdminContentCenterScreen.opportunitiesTab,
+          'rejected' => AdminContentCenterScreen.opportunitiesTab,
           'opportunity' => AdminContentCenterScreen.opportunitiesTab,
           'scholarship' => AdminContentCenterScreen.scholarshipsTab,
           'training' => AdminContentCenterScreen.libraryTab,
@@ -970,6 +991,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           return;
 
         case 'application':
+        case 'rejected':
           if (role == 'company') {
             final applicationId = _extractApplicationId(notif);
             if (applicationId.isNotEmpty) {
@@ -1278,6 +1300,7 @@ class _NotificationCard extends StatelessWidget {
       case 'training':
         return Icons.model_training_outlined;
       case 'application':
+      case 'rejected':
         return Icons.assignment_outlined;
       case 'project_idea':
         return Icons.lightbulb_outline_rounded;
@@ -1294,6 +1317,8 @@ class _NotificationCard extends StatelessWidget {
         return SettingsFlowPalette.secondary;
       case 'application':
         return SettingsFlowPalette.primary;
+      case 'rejected':
+        return SettingsFlowPalette.error;
       case 'opportunity':
         return opportunityType.trim().isNotEmpty
             ? OpportunityType.color(opportunityType)
@@ -1323,6 +1348,8 @@ class _NotificationCard extends StatelessWidget {
         return l10n.notifTypeMessage;
       case 'application':
         return l10n.notifTypeApplication;
+      case 'rejected':
+        return l10n.uiRejected;
       case 'opportunity':
         return opportunityType.trim().isNotEmpty
             ? OpportunityType.label(opportunityType, l10n)

@@ -3014,6 +3014,7 @@ async function handleNotifyApplicationStatusChanged(request, env) {
             ?.data || {},
         );
   const statusLabel = status === "accepted" ? "Approved" : "Rejected";
+  const notificationType = status === "rejected" ? "rejected" : "application";
   const actorTokens = collectRecipientTokens(auth.profile);
 
   const result = await notifyRecipients(env, [studentDoc], {
@@ -3021,8 +3022,9 @@ async function handleNotifyApplicationStatusChanged(request, env) {
     message: opportunityTitle
       ? `Your application to ${opportunityTitle} was ${status === "accepted" ? "approved" : "rejected"} by ${companyName}.`
       : `Your application was ${status === "accepted" ? "approved" : "rejected"} by ${companyName}.`,
-    type: "application",
+    type: notificationType,
     targetId: applicationId,
+    route: `/notifications/application/${encodeURIComponent(applicationId)}`,
     eventKey: `application-status:${applicationId}:${status}`,
     actorUserId: auth.user.uid,
     excludeTokens: actorTokens,

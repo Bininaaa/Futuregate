@@ -1420,17 +1420,22 @@ class _SelectionWrap extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (selectedValues.isNotEmpty) ...[
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: selectedValues
-                      .map(
-                        (value) => _CvValueChip(
-                          label: value,
-                          onDelete: () => onDelete(value),
-                        ),
-                      )
-                      .toList(growable: false),
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    return Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: selectedValues
+                          .map(
+                            (value) => _CvValueChip(
+                              label: value,
+                              maxWidth: constraints.maxWidth,
+                              onDelete: () => onDelete(value),
+                            ),
+                          )
+                          .toList(growable: false),
+                    );
+                  },
                 ),
                 const SizedBox(height: 12),
               ],
@@ -1461,38 +1466,52 @@ class _SelectionWrap extends StatelessWidget {
 
 class _CvValueChip extends StatelessWidget {
   final String label;
+  final double maxWidth;
   final VoidCallback onDelete;
 
-  const _CvValueChip({required this.label, required this.onDelete});
+  const _CvValueChip({
+    required this.label,
+    required this.maxWidth,
+    required this.onDelete,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.only(left: 12, right: 6, top: 6, bottom: 6),
-      decoration: BoxDecoration(
-        color: SettingsFlowPalette.primary.withValues(alpha: 0.08),
-        borderRadius: SettingsFlowTheme.radius(10),
-        border: Border.all(
-          color: SettingsFlowPalette.primary.withValues(alpha: 0.15),
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxWidth: maxWidth),
+      child: Container(
+        padding: const EdgeInsets.only(left: 12, right: 6, top: 6, bottom: 6),
+        decoration: BoxDecoration(
+          color: SettingsFlowPalette.primary.withValues(alpha: 0.08),
+          borderRadius: SettingsFlowTheme.radius(10),
+          border: Border.all(
+            color: SettingsFlowPalette.primary.withValues(alpha: 0.15),
+          ),
         ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            label,
-            style: SettingsFlowTheme.caption(SettingsFlowPalette.primary),
-          ),
-          const SizedBox(width: 4),
-          GestureDetector(
-            onTap: onDelete,
-            child: Icon(
-              Icons.close_rounded,
-              size: 16,
-              color: SettingsFlowPalette.primary.withValues(alpha: 0.5),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Flexible(
+              child: Text(
+                label,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                softWrap: true,
+                style: SettingsFlowTheme.caption(SettingsFlowPalette.primary),
+              ),
             ),
-          ),
-        ],
+            const SizedBox(width: 4),
+            GestureDetector(
+              onTap: onDelete,
+              child: Icon(
+                Icons.close_rounded,
+                size: 16,
+                color: SettingsFlowPalette.primary.withValues(alpha: 0.5),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
