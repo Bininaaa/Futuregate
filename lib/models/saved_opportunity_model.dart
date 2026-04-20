@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../utils/admin_identity.dart';
 import '../utils/opportunity_metadata.dart';
 import '../utils/opportunity_type.dart';
 
@@ -34,7 +35,9 @@ class SavedOpportunityModel {
       opportunityId: map['opportunityId'] ?? '',
       studentId: map['studentId'] ?? '',
       title: map['title'] ?? '',
-      companyName: map['companyName'] ?? '',
+      companyName: AdminIdentity.sanitizeLegacyAdminLabel(
+        (map['companyName'] ?? '').toString(),
+      ),
       type: OpportunityType.parse(map['type']),
       location: map['location'] ?? '',
       deadline: map['deadline'] ?? '',

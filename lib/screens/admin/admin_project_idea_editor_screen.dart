@@ -6,6 +6,7 @@ import '../../l10n/generated/app_localizations.dart';
 import '../../providers/admin_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../theme/locale_controller.dart';
+import '../../utils/admin_identity.dart';
 import '../../utils/admin_palette.dart';
 import '../../utils/content_language.dart';
 import '../../widgets/shared/app_feedback.dart';
@@ -379,7 +380,7 @@ class _AdminProjectIdeaEditorScreenState
       'isHidden': _isHidden,
       'status': _status,
       'submittedBy': auth.uid,
-      'submittedByName': auth.fullName.trim(),
+      'submittedByName': AdminIdentity.publicName,
       'authorAvatar': auth.profileImage.trim(),
       'authorPhotoType': (auth.photoType ?? '').trim(),
       'authorAvatarId': (auth.avatarId ?? '').trim(),

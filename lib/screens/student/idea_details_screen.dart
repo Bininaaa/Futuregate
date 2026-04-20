@@ -11,6 +11,7 @@ import '../../providers/opportunity_translation_provider.dart';
 import '../../providers/project_idea_provider.dart';
 import '../../services/opportunity_translation_service.dart';
 import '../../services/project_idea_service.dart';
+import '../../utils/admin_identity.dart';
 import '../../utils/display_text.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/ideas/project_idea_cover_image.dart';
@@ -757,7 +758,9 @@ class IdeaDetailsScreen extends StatelessWidget {
         builder: (_) => UserProfilePreviewScreen(
           userId: idea.submittedBy,
           fallbackName: idea.creatorName,
-          fallbackRole: 'student',
+          fallbackRole: idea.creatorName == AdminIdentity.publicName
+              ? 'admin'
+              : 'student',
           fallbackHeadline: idea.creatorHeadline,
           fallbackAbout: idea.overviewText,
           contextLabel: idea.title,

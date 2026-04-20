@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../models/user_model.dart';
 import '../../services/public_profile_service.dart';
+import '../../utils/admin_identity.dart';
 import '../../utils/display_text.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/chat/chat_formatters.dart';
@@ -255,6 +256,7 @@ class _UserProfilePreviewScreenState extends State<UserProfilePreviewScreen> {
 
   List<Widget> _buildDetails(UserModel? user) {
     final items = <Widget>[];
+    final role = _resolvedRole(user);
 
     void addItem({
       required String title,
@@ -286,27 +288,33 @@ class _UserProfilePreviewScreenState extends State<UserProfilePreviewScreen> {
       value: _roleLabel(user),
       icon: Icons.verified_user_outlined,
     );
-    addItem(
-      title: user?.role == 'company' ? 'Sector' : 'Academic Level',
-      value: user?.role == 'company'
-          ? (user?.sector ?? '').trim().isNotEmpty
-                ? (user?.sector ?? '').trim()
-                : widget.fallbackHeadline.trim()
-          : (user?.academicLevel ?? '').trim(),
-      icon: user?.role == 'company'
-          ? Icons.business_center_outlined
-          : Icons.school_outlined,
-    );
-    addItem(
-      title: 'University',
-      value: (user?.university ?? '').trim(),
-      icon: Icons.apartment_outlined,
-    );
-    addItem(
-      title: 'Field Of Study',
-      value: (user?.fieldOfStudy ?? '').trim(),
-      icon: Icons.menu_book_outlined,
-    );
+
+    if (role == 'company') {
+      addItem(
+        title: 'Sector',
+        value: (user?.sector ?? '').trim().isNotEmpty
+            ? (user?.sector ?? '').trim()
+            : widget.fallbackHeadline.trim(),
+        icon: Icons.business_center_outlined,
+      );
+    } else if (role == 'student') {
+      addItem(
+        title: 'Academic Level',
+        value: (user?.academicLevel ?? '').trim(),
+        icon: Icons.school_outlined,
+      );
+      addItem(
+        title: 'University',
+        value: (user?.university ?? '').trim(),
+        icon: Icons.apartment_outlined,
+      );
+      addItem(
+        title: 'Field Of Study',
+        value: (user?.fieldOfStudy ?? '').trim(),
+        icon: Icons.menu_book_outlined,
+      );
+    }
+
     addItem(
       title: 'Location',
       value: (user?.location ?? '').trim().isNotEmpty
@@ -320,11 +328,6 @@ class _UserProfilePreviewScreenState extends State<UserProfilePreviewScreen> {
           ? (user?.website ?? '').trim()
           : widget.fallbackWebsite.trim(),
       icon: Icons.language_outlined,
-    );
-    addItem(
-      title: 'Conversation Context',
-      value: widget.contextLabel.trim(),
-      icon: Icons.forum_outlined,
     );
 
     if (items.isEmpty) {
@@ -350,6 +353,10 @@ class _UserProfilePreviewScreenState extends State<UserProfilePreviewScreen> {
   }
 
   String _displayName(UserModel? user) {
+    if (_resolvedRole(user) == 'admin') {
+      return AdminIdentity.publicName;
+    }
+
     final companyName = (user?.companyName ?? '').trim();
     if (companyName.isNotEmpty) {
       return companyName;
@@ -368,7 +375,12 @@ class _UserProfilePreviewScreenState extends State<UserProfilePreviewScreen> {
   }
 
   String _headline(UserModel? user) {
-    if (_resolvedRole(user) == 'company') {
+    final role = _resolvedRole(user);
+    if (role == 'admin') {
+      return '';
+    }
+
+    if (role == 'company') {
       final sector = (user?.sector ?? '').trim();
       if (sector.isNotEmpty) {
         return sector;
@@ -395,7 +407,12 @@ class _UserProfilePreviewScreenState extends State<UserProfilePreviewScreen> {
   }
 
   String _about(UserModel? user) {
-    if (_resolvedRole(user) == 'company') {
+    final role = _resolvedRole(user);
+    if (role == 'admin') {
+      return (user?.bio ?? '').trim();
+    }
+
+    if (role == 'company') {
       final description = (user?.description ?? '').trim();
       if (description.isNotEmpty) {
         return description;

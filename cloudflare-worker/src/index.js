@@ -17,6 +17,7 @@ const MAX_CHAT_PREVIEW_LENGTH = 100;
 const PASSWORD_SIGN_IN_METHOD = "password";
 const GOOGLE_PROVIDER_ID = "google.com";
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PUBLIC_ADMIN_NAME = "FutureGate Admin";
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -76,6 +77,9 @@ function truncateMessage(text, maxLength = MAX_CHAT_PREVIEW_LENGTH) {
 function displayNameForUser(userData) {
   if (!userData || typeof userData !== "object") {
     return "Someone";
+  }
+  if (trim(userData.role).toLowerCase() === "admin") {
+    return PUBLIC_ADMIN_NAME;
   }
   return (
     trim(userData.companyName) ||
@@ -2138,11 +2142,13 @@ function buildPublicUserProfile(userId, userData) {
     userData && typeof userData === "object" ? userData : {};
   const photoType = trim(safeUserData.photoType);
   const avatarId = trim(safeUserData.avatarId);
+  const role = trim(safeUserData.role);
+  const isAdmin = role.toLowerCase() === "admin";
 
   return {
     uid: trim(userId),
-    role: trim(safeUserData.role),
-    fullName: trim(safeUserData.fullName),
+    role,
+    fullName: isAdmin ? PUBLIC_ADMIN_NAME : trim(safeUserData.fullName),
     companyName: trim(safeUserData.companyName),
     profileImage: trim(safeUserData.profileImage),
     logo: trim(safeUserData.logo),

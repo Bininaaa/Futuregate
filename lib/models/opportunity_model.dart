@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../utils/admin_identity.dart';
 import '../utils/opportunity_metadata.dart';
 import '../utils/opportunity_type.dart';
 
@@ -76,11 +77,18 @@ class OpportunityModel {
 
   factory OpportunityModel.fromMap(Map<String, dynamic> map) {
     final data = Map<String, dynamic>.from(map);
+    final createdByRole = (data['createdByRole'] ?? '')
+        .toString()
+        .trim()
+        .toLowerCase();
+    final rawCompanyName = (data['companyName'] ?? '').toString();
 
     return OpportunityModel(
       id: (data['id'] ?? '').toString(),
       companyId: (data['companyId'] ?? '').toString(),
-      companyName: (data['companyName'] ?? '').toString(),
+      companyName: createdByRole == 'admin'
+          ? AdminIdentity.publisherLabel(rawCompanyName)
+          : rawCompanyName,
       companyLogo: (data['companyLogo'] ?? '').toString(),
       title: (data['title'] ?? '').toString(),
       description: (data['description'] ?? '').toString(),

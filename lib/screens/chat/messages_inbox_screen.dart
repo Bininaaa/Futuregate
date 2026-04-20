@@ -205,7 +205,9 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
                   if (widget.embedded) const SizedBox(height: 10),
                   ChatSearchField(
                     controller: _searchController,
-                    hintText: AppLocalizations.of(context)!.uiSearchConversations,
+                    hintText: AppLocalizations.of(
+                      context,
+                    )!.uiSearchConversations,
                     onChanged: (value) {
                       setState(() => _searchQuery = value.trim().toLowerCase());
                     },
@@ -290,15 +292,27 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
                                 ? Icons.search_off_rounded
                                 : Icons.chat_bubble_outline_rounded,
                             title: _selectedFilter == _InboxFilter.archived
-                                ? AppLocalizations.of(context)!.uiNoArchivedConversations
+                                ? AppLocalizations.of(
+                                    context,
+                                  )!.uiNoArchivedConversations
                                 : _searchQuery.isNotEmpty
-                                ? AppLocalizations.of(context)!.uiNoConversationsMatchSearch
-                                : AppLocalizations.of(context)!.uiNoConversationsYet,
+                                ? AppLocalizations.of(
+                                    context,
+                                  )!.uiNoConversationsMatchSearch
+                                : AppLocalizations.of(
+                                    context,
+                                  )!.uiNoConversationsYet,
                             subtitle: _selectedFilter == _InboxFilter.archived
-                                ? AppLocalizations.of(context)!.uiArchivedConversationsInfo
+                                ? AppLocalizations.of(
+                                    context,
+                                  )!.uiArchivedConversationsInfo
                                 : _searchQuery.isNotEmpty
-                                ? AppLocalizations.of(context)!.uiTryDifferentNameOrKeyword
-                                : AppLocalizations.of(context)!.uiStartConversationToChat,
+                                ? AppLocalizations.of(
+                                    context,
+                                  )!.uiTryDifferentNameOrKeyword
+                                : AppLocalizations.of(
+                                    context,
+                                  )!.uiStartConversationToChat,
                           ),
                         ],
                       ),
@@ -444,11 +458,6 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
           userId: conversation.otherParticipantId(currentUserId),
           fallbackName: conversation.displayNameFor(currentUserId),
           fallbackRole: conversation.otherParticipantRole(currentUserId),
-          fallbackHeadline: conversation.contextLabel,
-          fallbackAbout: conversation.contextLabel.trim().isEmpty
-              ? ''
-              : 'Conversation started around ${conversation.contextLabel.trim()}.',
-          contextLabel: conversation.contextLabel,
         ),
       ),
     );

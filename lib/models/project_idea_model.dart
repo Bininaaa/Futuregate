@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../utils/admin_identity.dart';
+
 class ProjectIdeaModel {
   final String id;
   final String title;
@@ -90,7 +92,9 @@ class ProjectIdeaModel {
       tools: toolsText,
       status: (map['status'] ?? 'pending').toString().trim(),
       submittedBy: (map['submittedBy'] ?? '').toString().trim(),
-      submittedByName: (map['submittedByName'] ?? '').toString().trim(),
+      submittedByName: AdminIdentity.sanitizeLegacyAdminLabel(
+        (map['submittedByName'] ?? '').toString(),
+      ),
       createdAt: _parseTimestamp(map['createdAt']),
       updatedAt: _parseTimestamp(map['updatedAt']),
       tagline: (map['tagline'] ?? '').toString().trim(),
@@ -246,8 +250,9 @@ class ProjectIdeaModel {
   }
 
   String get creatorName {
-    if (submittedByName.trim().isNotEmpty) {
-      return submittedByName.trim();
+    final name = AdminIdentity.sanitizeLegacyAdminLabel(submittedByName);
+    if (name.isNotEmpty) {
+      return name;
     }
     return 'Student Innovator';
   }

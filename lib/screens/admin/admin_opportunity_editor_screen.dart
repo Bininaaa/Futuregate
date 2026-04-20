@@ -8,6 +8,7 @@ import '../../utils/admin_palette.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../theme/locale_controller.dart';
+import '../../utils/admin_identity.dart';
 import '../../utils/content_language.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/opportunity_type_selector.dart';
@@ -66,10 +67,7 @@ class _AdminOpportunityEditorScreenState
   @override
   void initState() {
     super.initState();
-    final auth = context.read<AuthProvider>().userModel;
-    _publisherController.text = auth?.fullName.trim().isNotEmpty == true
-        ? auth!.fullName.trim()
-        : 'FutureGate Admin';
+    _publisherController.text = AdminIdentity.publicName;
     _originalLanguage = _preferredPostingLanguage();
 
     final raw = widget.initialOpportunity;
@@ -78,7 +76,7 @@ class _AdminOpportunityEditorScreenState
     final opportunity = OpportunityModel.fromMap(raw);
     _publisherController.text =
         raw['companyName']?.toString().trim().isNotEmpty == true
-        ? raw['companyName'].toString().trim()
+        ? AdminIdentity.sanitizeLegacyAdminLabel(raw['companyName'].toString())
         : _publisherController.text;
     _originalLanguage = ContentLanguage.normalizeCode(
       opportunity.originalLanguage,
@@ -541,7 +539,7 @@ class _AdminOpportunityEditorScreenState
     final requirementText = _requirementItems.join('\n');
     final payload = <String, dynamic>{
       'companyId': auth.uid,
-      'companyName': _publisherController.text.trim(),
+      'companyName': AdminIdentity.publisherLabel(_publisherController.text),
       'companyLogo': companyLogo,
       'createdBy': auth.uid,
       'createdByRole': 'admin',
