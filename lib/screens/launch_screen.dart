@@ -16,8 +16,13 @@ import 'post_launch_gate_screen.dart';
 /// The animation can be skipped from Settings for faster launches.
 class LaunchScreen extends StatefulWidget {
   final AppIntroPreferencesService? introPreferencesService;
+  final bool forceAnimation;
 
-  const LaunchScreen({super.key, this.introPreferencesService});
+  const LaunchScreen({
+    super.key,
+    this.introPreferencesService,
+    this.forceAnimation = false,
+  });
 
   @override
   State<LaunchScreen> createState() => _LaunchScreenState();
@@ -55,7 +60,7 @@ class _LaunchScreenState extends State<LaunchScreen>
         .shouldSkipLaunchAnimation();
     if (!mounted) return;
 
-    if (skipAnimation) {
+    if (skipAnimation && !widget.forceAnimation) {
       await _navigateToApp(skipFade: true, waitForAuth: false);
       return;
     }
@@ -165,14 +170,7 @@ class _LaunchScreenState extends State<LaunchScreen>
       fit: StackFit.expand,
       children: [
         if (hasSize)
-          FittedBox(
-            fit: BoxFit.contain,
-            child: SizedBox(
-              width: videoSize.width,
-              height: videoSize.height,
-              child: VideoPlayer(controller),
-            ),
-          )
+          _CoverVideo(controller: controller, videoSize: videoSize)
         else
           VideoPlayer(controller),
         const SafeArea(
@@ -183,6 +181,43 @@ class _LaunchScreenState extends State<LaunchScreen>
           ),
         ),
       ],
+    );
+  }
+}
+
+class _CoverVideo extends StatelessWidget {
+  final VideoPlayerController controller;
+  final Size videoSize;
+
+  const _CoverVideo({required this.controller, required this.videoSize});
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth <= 0 || constraints.maxHeight <= 0) {
+          return VideoPlayer(controller);
+        }
+
+        final videoAspect = videoSize.width / videoSize.height;
+        final viewportAspect = constraints.maxWidth / constraints.maxHeight;
+        final width = viewportAspect > videoAspect
+            ? constraints.maxWidth
+            : constraints.maxHeight * videoAspect;
+        final height = viewportAspect > videoAspect
+            ? constraints.maxWidth / videoAspect
+            : constraints.maxHeight;
+
+        return ClipRect(
+          child: Center(
+            child: SizedBox(
+              width: width,
+              height: height,
+              child: VideoPlayer(controller),
+            ),
+          ),
+        );
+      },
     );
   }
 }

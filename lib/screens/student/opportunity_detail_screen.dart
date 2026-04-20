@@ -68,6 +68,7 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
   late Future<ApplicationEligibilityStatus> _eligibilityFuture;
   bool _isBookmarkBusy = false;
   bool _isApplying = false;
+  bool _isWithdrawing = false;
   bool _isChatOpening = false;
 
   String get _effectiveType =>
@@ -255,6 +256,58 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
       if (mounted) {
         setState(() => _isApplying = false);
       }
+    }
+  }
+
+  Future<void> _withdraw() async {
+    if (_isWithdrawing) return;
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Withdraw Application'),
+        content: const Text(
+          'Are you sure you want to withdraw your application? You can re-apply later while the opportunity is still open.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            style: TextButton.styleFrom(
+              foregroundColor: AppColors.current.danger,
+            ),
+            child: const Text('Withdraw'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    final currentUser = context.read<AuthProvider>().userModel;
+    if (currentUser == null) return;
+
+    setState(() => _isWithdrawing = true);
+    try {
+      final error = await context.read<ApplicationProvider>().withdrawApplication(
+        studentId: currentUser.uid,
+        opportunityId: widget.opportunity.id,
+      );
+
+      if (!mounted) return;
+
+      context.showAppSnackBar(
+        error ?? 'Your application has been withdrawn.',
+        title: error == null ? 'Application withdrawn' : 'Withdrawal failed',
+        type: error == null ? AppFeedbackType.success : AppFeedbackType.error,
+      );
+
+      if (error == null) _refreshEligibility();
+    } finally {
+      if (mounted) setState(() => _isWithdrawing = false);
     }
   }
 
@@ -844,6 +897,43 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
                       ),
                     ],
                   ),
+                  if (_appliedStatusFor(applicationProvider) ==
+                      ApplicationStatus.pending) ...[
+                    const SizedBox(height: 6),
+                    SizedBox(
+                      width: double.infinity,
+                      child: TextButton.icon(
+                        onPressed: _isWithdrawing ? null : _withdraw,
+                        icon: _isWithdrawing
+                            ? SizedBox(
+                                width: 14,
+                                height: 14,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: AppColors.current.danger,
+                                ),
+                              )
+                            : Icon(
+                                Icons.undo_rounded,
+                                size: 16,
+                                color: AppColors.current.danger,
+                              ),
+                        label: Text(
+                          _isWithdrawing
+                              ? 'Withdrawing...'
+                              : 'Withdraw application',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: AppColors.current.danger,
+                          ),
+                        ),
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -1015,7 +1105,7 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
             title: _overviewTitle,
             icon: Icons.description_outlined,
             child: Text(
-              displayDescription,
+              DisplayText.capitalizeDisplayValue(displayDescription),
               style: _theme.body(color: _theme.textPrimary),
             ),
           ),
@@ -1429,7 +1519,7 @@ class _OpportunityCompensationNote extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  title,
+                  DisplayText.capitalizeDisplayValue(title),
                   style: theme.label(
                     size: 11.3,
                     color: theme.accentDark,
@@ -1438,7 +1528,7 @@ class _OpportunityCompensationNote extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  trimmedNote,
+                  DisplayText.capitalizeDisplayValue(trimmedNote),
                   style: theme.body(
                     size: 12.1,
                     color: theme.textSecondary,
@@ -1495,7 +1585,7 @@ class _OpportunityTextOrList extends StatelessWidget {
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
-                        item,
+                        DisplayText.capitalizeDisplayValue(item),
                         style: theme.body(color: theme.textPrimary),
                       ),
                     ),
@@ -1507,7 +1597,10 @@ class _OpportunityTextOrList extends StatelessWidget {
       );
     }
 
-    return Text(text, style: theme.body(color: theme.textPrimary));
+    return Text(
+      DisplayText.capitalizeDisplayValue(text),
+      style: theme.body(color: theme.textPrimary),
+    );
   }
 }
 

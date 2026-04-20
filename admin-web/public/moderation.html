@@ -3,2599 +3,1162 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FutureGate Admin - Content Center</title>
+  <title>Content · FutureGate Admin</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/styles.css">
-  <link rel="stylesheet" href="css/workspace-theme.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/app.css?v=2026042010">
   <script src="js/theme-init.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body data-page="content">
-  <div id="auth-gate" class="auth-gate">
-    <div class="spinner"></div>
-    <p>Verifying session...</p>
-  </div>
-  <div class="layout">
-    <div class="shell-backdrop" data-shell-backdrop></div>
-    <aside class="sidebar">
-      <div class="sidebar-header">
-        <div class="sidebar-brand">
-          <div class="sidebar-brand-icon">&#x1F6E1;&#xFE0F;</div>
-          <div class="sidebar-brand-text"><h2>FutureGate Admin</h2><p>Content center for moderation, publishing, and library curation.</p></div>
-        </div>
+<body data-page="moderation">
+  <div id="auth-gate" class="auth-gate"><div class="spinner"></div><p>Verifying session...</p></div>
+  <div id="shell"></div>
+
+  <!-- Editor modal -->
+  <div class="modal-backdrop" id="editor-modal">
+    <div class="modal modal-lg">
+      <div class="modal-header">
+        <h3 id="editor-title">Edit</h3>
+        <button class="modal-close" data-close-modal="editor-modal" aria-label="Close"><i data-lucide="x"></i></button>
       </div>
-      <nav class="sidebar-nav">
-        <a href="index.html" class="nav-item"><span class="icon">DB</span> Dashboard</a>
-        <a href="users.html" class="nav-item"><span class="icon">US</span> Users</a>
-        <a href="moderation.html" class="nav-item"><span class="icon">CT</span> Content</a>
-        <a href="activity.html" class="nav-item"><span class="icon">AC</span> Activity</a>
-        <a href="notifications.html" class="nav-item"><span class="icon">NT</span> Notifications <span class="nav-badge" data-notification-badge hidden>0</span></a>
-      </nav>
-      <div class="sidebar-footer">
-        <div class="admin-info">
-          <div class="admin-avatar" id="admin-avatar">A</div>
-          <div><div class="admin-name" id="admin-name">Admin</div><div class="admin-email" id="admin-email"></div></div>
-        </div>
-        <button class="btn-logout" id="btn-logout">&#x1F6AA; Logout</button>
-      </div>
-    </aside>
-    <div class="workspace">
-      <header class="workspace-header">
-        <button class="toolbar-icon mobile-only" type="button" data-mobile-nav-toggle aria-label="Open navigation" aria-expanded="false">MN</button>
-        <div class="workspace-heading">
-          <div class="workspace-eyebrow">Content Center</div>
-          <h1>Content</h1>
-          <p>Moderate submissions, manage published content, and curate the learning library from one focused admin surface.</p>
-        </div>
-        <div class="workspace-actions">
-          <button class="toolbar-action" type="button" data-theme-toggle>
-            <span class="toolbar-action-icon">TH</span>
-            <span class="toolbar-action-copy">
-              <small>Theme</small>
-              <strong data-theme-label>Light</strong>
-            </span>
-          </button>
-          <a class="toolbar-action toolbar-action--accent" href="notifications.html">
-            <span class="toolbar-action-icon">NT</span>
-            <span class="toolbar-action-copy">
-              <small>Inbox</small>
-              <strong>Notifications</strong>
-            </span>
-            <span class="toolbar-pill-badge" data-notification-badge hidden>0</span>
-          </a>
-        </div>
-      </header>
-
-      <main class="main-content page-shell">
-        <section class="hero-panel">
-          <div class="hero-grid">
-            <div class="hero-copy">
-              <span class="hero-label">Moderation + Publishing</span>
-              <h2 class="hero-title">Move between review queues, publishing tools, and library curation without losing context.</h2>
-              <p class="hero-subtitle">The content center keeps incoming ideas, application review, published inventory, scholarship creation, training management, and external resource import in a single responsive workspace.</p>
-            </div>
-            <div class="summary-grid" id="content-overview">
-              <div class="summary-card">
-                <span class="summary-label">Loading</span>
-                <div class="summary-value">Preparing queues...</div>
-                <div class="summary-meta">Moderation counts and content totals appear here after the initial data load.</div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section class="surface-panel">
-          <div class="surface-heading">
-            <div>
-              <div class="surface-heading-title">Workspace Filters</div>
-              <p class="surface-heading-copy">Search the active moderation queue by title, actor, status, or provider. Search hides automatically while you are in the library import tab.</p>
-            </div>
-          </div>
-          <div class="search-shell" id="content-search-shell">
-            <div class="search-bar">
-              <span class="search-icon">&#x1F50D;</span>
-              <input type="text" id="content-search" placeholder="Search the current tab by title, actor, status, or provider...">
-            </div>
-          </div>
-          <div class="tabs" id="tabs">
-            <button class="tab active" data-tab="ideas">
-              Ideas
-              <span class="count-badge" id="pending-count" style="display:none">0</span>
-            </button>
-            <button class="tab" data-tab="applications">Applications</button>
-            <button class="tab" data-tab="opportunities">Opportunities</button>
-            <button class="tab" data-tab="scholarships">Scholarships</button>
-            <button class="tab" data-tab="trainings">Trainings</button>
-            <button class="tab" data-tab="library">Library</button>
-          </div>
-        </section>
-
-        <div id="loading" class="surface-panel loading"><div class="spinner"></div></div>
-
-        <div id="ideas-tab" class="tab-content active">
-          <section class="surface-panel">
-            <div class="filter-row">
-              <span class="filter-label" id="ideas-label">Pending Ideas (0)</span>
-              <button class="btn-toggle-filter" id="toggle-pending">Show All</button>
-            </div>
-            <div id="ideas-list"></div>
-          </section>
-        </div>
-
-        <div id="applications-tab" class="tab-content">
-          <section class="surface-panel">
-            <div class="filter-row">
-              <span class="filter-label" id="applications-label">Applications (0)</span>
-            </div>
-            <div id="applications-list"></div>
-          </section>
-        </div>
-
-        <div id="opportunities-tab" class="tab-content">
-          <section class="surface-panel">
-            <div id="opps-list"></div>
-          </section>
-        </div>
-
-        <div id="scholarships-tab" class="tab-content">
-          <section class="training-section-card">
-            <div class="training-toolbar">
-              <div>
-                <div class="filter-label">Create Scholarship</div>
-                <p class="training-helper">
-                  Publish scholarships from the admin website so the Worker can create in-app notifications and send device push right after the Firestore write succeeds.
-                </p>
-              </div>
-            </div>
-            <div class="training-form-grid">
-              <div class="form-group">
-                <label for="scholarship-title">Title</label>
-                <input type="text" id="scholarship-title" placeholder="For example: Excellence Scholarship 2026">
-              </div>
-              <div class="form-group">
-                <label for="scholarship-provider">Provider</label>
-                <input type="text" id="scholarship-provider" placeholder="For example: Ministry of Higher Education">
-              </div>
-              <div class="form-group">
-                <label for="scholarship-amount">Amount (DZD)</label>
-                <input type="number" id="scholarship-amount" min="1" step="1" placeholder="For example: 50000">
-              </div>
-              <div class="form-group">
-                <label for="scholarship-deadline">Deadline</label>
-                <input type="date" id="scholarship-deadline">
-              </div>
-              <div class="form-group">
-                <label for="scholarship-link">Application Link</label>
-                <input type="url" id="scholarship-link" placeholder="https://example.org/apply">
-              </div>
-            </div>
-            <div class="training-form-grid">
-              <div class="form-group">
-                <label for="scholarship-description">Description</label>
-                <textarea id="scholarship-description" rows="4" placeholder="Summarize the scholarship, what it covers, and who it is for."></textarea>
-              </div>
-              <div class="form-group">
-                <label for="scholarship-eligibility">Eligibility</label>
-                <textarea id="scholarship-eligibility" rows="4" placeholder="List the key eligibility requirements for applicants."></textarea>
-              </div>
-            </div>
-            <div class="training-form-actions">
-              <span class="training-helper">
-                Existing scholarships can also be notified later from the list below.
-              </span>
-              <button class="btn-primary btn-inline" id="scholarship-create-btn">
-                Create Scholarship
-              </button>
-            </div>
-            <div id="scholarship-status" class="training-status" aria-live="polite"></div>
-          </section>
-
-          <section class="surface-panel">
-            <div class="filter-row">
-              <span class="filter-label" id="scholarships-label">Scholarships (0)</span>
-            </div>
-            <div id="scholarships-list"></div>
-          </section>
-        </div>
-
-        <div id="trainings-tab" class="tab-content">
-          <section class="surface-panel">
-            <div class="filter-row">
-              <span class="filter-label" id="trainings-label">Training Resources (0)</span>
-              <button class="btn-toggle-filter" id="reload-trainings">Refresh</button>
-            </div>
-            <div id="trainings-list"></div>
-          </section>
-        </div>
-
-        <div id="library-tab" class="tab-content">
-          <section class="training-section-card">
-            <div class="training-toolbar">
-              <div>
-                <div class="filter-label">Import Google Books</div>
-                <p class="training-helper">
-                  Search Google Books directly from the admin website and import selected books into the existing trainings collection.
-                </p>
-              </div>
-            </div>
-            <div class="training-form-grid">
-              <div class="form-group">
-                <label for="training-query">Search</label>
-                <input type="text" id="training-query" placeholder="For example: python, algorithms, mathematics">
-              </div>
-              <div class="form-group">
-                <label for="training-domain">Domain</label>
-                <select id="training-domain">
-                  <option value="Informatique">Informatique</option>
-                  <option value="Mathematiques">Mathematiques</option>
-                  <option value="Medecine">Medecine</option>
-                  <option value="Droit">Droit</option>
-                  <option value="Commerce">Commerce</option>
-                  <option value="Architecture">Architecture</option>
-                  <option value="Biologie">Biologie</option>
-                  <option value="Physique">Physique</option>
-                  <option value="Chimie">Chimie</option>
-                  <option value="Langues">Langues</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label for="training-level">Level</label>
-                <select id="training-level">
-                  <option value="bac">bac</option>
-                  <option value="licence" selected>licence</option>
-                  <option value="master">master</option>
-                  <option value="doctorat">doctorat</option>
-                  <option value="general">general</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label for="training-language">Language</label>
-                <select id="training-language">
-                  <option value="" selected>Any</option>
-                  <option value="en">en</option>
-                  <option value="fr">fr</option>
-                  <option value="ar">ar</option>
-                </select>
-              </div>
-            </div>
-            <div class="training-form-actions">
-              <label class="checkbox-row" for="training-featured">
-                <input type="checkbox" id="training-featured">
-                <span>Mark imported book as featured</span>
-              </label>
-              <button class="btn-primary btn-inline" id="training-search-btn">
-                Search Books
-              </button>
-            </div>
-            <div id="training-status" class="training-status" aria-live="polite"></div>
-          </section>
-
-          <section class="surface-panel">
-            <div class="filter-row">
-              <span class="filter-label" id="book-results-label">Google Books Results</span>
-            </div>
-            <div id="book-results"></div>
-          </section>
-
-          <section class="training-section-card">
-            <div class="training-toolbar">
-              <div>
-                <div class="filter-label">Import YouTube Videos</div>
-                <p class="training-helper">
-                  Search YouTube directly from the admin website and import selected videos into the existing trainings collection.
-                </p>
-              </div>
-            </div>
-            <div class="training-form-grid">
-              <div class="form-group">
-                <label for="youtube-query">Search</label>
-                <input type="text" id="youtube-query" placeholder="For example: python, algorithms, mathematics">
-              </div>
-              <div class="form-group">
-                <label for="youtube-domain">Domain</label>
-                <select id="youtube-domain">
-                  <option value="Informatique">Informatique</option>
-                  <option value="Mathematiques">Mathematiques</option>
-                  <option value="Medecine">Medecine</option>
-                  <option value="Droit">Droit</option>
-                  <option value="Commerce">Commerce</option>
-                  <option value="Architecture">Architecture</option>
-                  <option value="Biologie">Biologie</option>
-                  <option value="Physique">Physique</option>
-                  <option value="Chimie">Chimie</option>
-                  <option value="Langues">Langues</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label for="youtube-level">Level</label>
-                <select id="youtube-level">
-                  <option value="bac">bac</option>
-                  <option value="licence" selected>licence</option>
-                  <option value="master">master</option>
-                  <option value="doctorat">doctorat</option>
-                  <option value="general">general</option>
-                </select>
-              </div>
-            </div>
-            <div class="training-form-actions">
-              <label class="checkbox-row" for="youtube-featured">
-                <input type="checkbox" id="youtube-featured">
-                <span>Mark imported video as featured</span>
-              </label>
-              <button class="btn-primary btn-inline" id="youtube-search-btn">
-                Search Videos
-              </button>
-            </div>
-            <div id="youtube-status" class="training-status" aria-live="polite"></div>
-          </section>
-
-          <section class="surface-panel">
-            <div class="filter-row">
-              <span class="filter-label" id="youtube-results-label">YouTube Results</span>
-            </div>
-            <div id="youtube-results"></div>
-          </section>
-        </div>
-      </main>
-    </div>
-  </div>
-
-  <div class="modal-overlay confirm-modal" id="confirm-modal">
-    <div class="modal">
-      <h3 id="confirm-title"></h3>
-      <p id="confirm-msg"></p>
-      <div class="confirm-actions">
-        <button class="btn-cancel" id="confirm-cancel">Cancel</button>
-        <button class="btn-confirm" id="confirm-ok"></button>
+      <div class="modal-body" id="editor-body"></div>
+      <div class="modal-footer">
+        <button class="btn" data-close-modal="editor-modal">Cancel</button>
+        <button class="btn btn-primary" id="editor-save"><i data-lucide="save"></i>Save</button>
       </div>
     </div>
   </div>
 
-  <div class="modal-overlay" id="cv-review-modal">
-    <div class="modal modal-large">
-      <button class="modal-close" id="cv-review-close">&times;</button>
-      <div id="cv-review-content"></div>
+  <!-- CV viewer -->
+  <div class="modal-backdrop" id="cv-modal">
+    <div class="modal modal-lg">
+      <div class="modal-header">
+        <h3>Application CV</h3>
+        <button class="modal-close" data-close-modal="cv-modal" aria-label="Close"><i data-lucide="x"></i></button>
+      </div>
+      <div class="modal-body" id="cv-body"></div>
     </div>
   </div>
 
   <script type="module">
-    import { checkAuth, emptyStateHtml, esc, feedbackCardHtml, showToast } from './js/auth.js';
+    import { mountShell, showPage } from './js/shell.js';
+    import { checkAuth, emptyStateHtml, esc, feedbackCardHtml, showToast, formatTimestamp } from './js/auth.js';
     import {
-      auth,
-      db,
-      collection,
-      collectionGroup,
-      getDocs,
-      getDoc,
-      setDoc,
-      doc,
-      updateDoc,
-      deleteDoc,
-      query,
-      orderBy,
-      where,
-      writeBatch,
-      serverTimestamp
+      auth, db, collection, doc, getDoc, getDocs, query, orderBy, limit, where,
+      setDoc, updateDoc, deleteDoc, serverTimestamp,
     } from './js/firebase-config.js';
-    import {
-      getQueryParam,
-      matchesSearch,
-      updateUrlParams,
-    } from './js/admin-utils.js';
-    import { WORKER_BASE_URL } from './js/google-books-config.js';
-    import {
-      friendlyDocumentErrorMessage,
-      getApplicationCv,
-      getApplicationCvDocument,
-      hasBuilderContent,
-      openDocumentUrl,
-      parseTimestampMs,
-      resolveBuiltDocumentFields,
-      resolvePrimaryDocumentFields,
-    } from './js/document-access.js';
-    import {
-      searchBooksViaWorker as searchBooksRequest
-    } from './js/google-books-service.js';
-    import {
-      searchYoutubeVideos as searchYoutubeVideosRequest
-    } from './js/youtube-service.js';
+    import { matchesSearch, getQueryParam, updateUrlParams } from './js/admin-utils.js';
+    import { searchBooksViaWorker } from './js/google-books-service.js';
+    import { searchYoutubeVideos } from './js/youtube-service.js';
+    import { getApplicationCv, getApplicationCvDocument, openDocumentUrl, friendlyDocumentErrorMessage } from './js/document-access.js';
+    import { openModal, closeModal } from './js/ui.js';
 
-    async function getAuthToken() {
-      const user = auth.currentUser;
-      if (!user) throw new Error('Not authenticated');
-      return user.getIdToken();
-    }
+    const TABS = [
+      { id: 'ideas',        label: 'Project ideas', icon: 'lightbulb' },
+      { id: 'opportunities',label: 'Opportunities', icon: 'briefcase' },
+      { id: 'scholarships', label: 'Scholarships',  icon: 'graduation-cap' },
+      { id: 'trainings',    label: 'Library',       icon: 'book-open' },
+      { id: 'applications', label: 'Applications',  icon: 'file-text' },
+    ];
 
-    async function workerFetch(path, options = {}) {
-      const token = await getAuthToken();
-      const response = await fetch(`${WORKER_BASE_URL}${path}`, {
-        ...options,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-          ...(options.headers || {}),
-        },
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.error || `Request failed: ${response.status}`);
-      }
-      return data;
-    }
-
-    let allIdeas = [];
-    let allApplications = [];
-    let allOpps = [];
-    let allScholarships = [];
-    let allTrainings = [];
-    let showPendingOnly = true;
-    let currentAdminUid = '';
-    let moderationSearchQuery = '';
-    let activeTab = getQueryParam('tab') || 'ideas';
-    let focusedTargetId = '';
-    let activeApplicationCvId = '';
-    const ideaBusyIds = new Set();
-
-    const trainingState = {
-      results: [],
-      hasSearched: false,
-      isSearching: false,
-      importingBookId: '',
-      busyTrainingIds: new Set(),
-      searchError: '',
+    // Per-tab chip filter definitions (mirrors Flutter content center)
+    const FILTERS = {
+      ideas: [
+        { v: 'all',      l: 'All',      i: 'list' },
+        { v: 'pending',  l: 'Pending',  i: 'clock' },
+        { v: 'approved', l: 'Approved', i: 'check' },
+        { v: 'rejected', l: 'Rejected', i: 'x-circle' },
+        { v: 'hidden',   l: 'Hidden',   i: 'eye-off' },
+      ],
+      opportunities: [
+        { v: 'all',         l: 'All',          i: 'list' },
+        { v: 'latest',      l: 'Latest',       i: 'sparkles' },
+        { v: 'admin',       l: 'Admin',        i: 'shield' },
+        { v: 'pendingApps', l: 'Pending apps', i: 'hourglass' },
+        { v: 'closed',      l: 'Closed',       i: 'lock' },
+        { v: 'featured',    l: 'Featured',     i: 'star' },
+        { v: 'hidden',      l: 'Hidden',       i: 'eye-off' },
+      ],
+      scholarships: [
+        { v: 'all',      l: 'All',      i: 'list' },
+        { v: 'featured', l: 'Featured', i: 'star' },
+        { v: 'hidden',   l: 'Hidden',   i: 'eye-off' },
+      ],
+      trainings: [
+        { v: 'all',      l: 'All',      i: 'list' },
+        { v: 'featured', l: 'Featured', i: 'star' },
+        { v: 'hidden',   l: 'Hidden',   i: 'eye-off' },
+        { v: 'books',    l: 'Books',    i: 'book' },
+        { v: 'videos',   l: 'Videos',   i: 'video' },
+      ],
+      applications: [
+        { v: 'all',      l: 'All',      i: 'list' },
+        { v: 'pending',  l: 'Pending',  i: 'clock' },
+        { v: 'reviewed', l: 'Reviewed', i: 'eye' },
+        { v: 'accepted', l: 'Accepted', i: 'check' },
+        { v: 'rejected', l: 'Rejected', i: 'x-circle' },
+      ],
     };
 
-    const youtubeState = {
-      results: [],
-      hasSearched: false,
-      isSearching: false,
-      importingVideoId: '',
-      searchError: '',
+    mountShell({ page: 'content' });
+
+    const state = {
+      activeTab: getQueryParam('tab') || 'ideas',
+      ideas: [], applications: [], opportunities: [], scholarships: [], trainings: [],
+      booksResults: [], youtubeResults: [],
+      librarySource: 'overview', // overview | books | youtube
+      filter: 'all',
+      search: '',
     };
+    if (!TABS.find((t) => t.id === state.activeTab)) state.activeTab = 'ideas';
 
-    const scholarshipState = {
-      isSaving: false,
-      busyScholarshipIds: new Set(),
-      statusMessage: '',
-      statusKind: 'info',
-    };
-    const applicationBusyIds = new Set();
+    checkAuth(async () => { await initPage(); });
 
-    function resolveFocusedTargetId(tabName) {
-      const mapping = {
-        ideas: 'ideaId',
-        applications: 'applicationId',
-        opportunities: 'opportunityId',
-        scholarships: 'scholarshipId',
-        trainings: 'trainingId',
-      };
-
-      return getQueryParam(mapping[tabName] || '');
-    }
-
-    function applyTabState(nextTab, { syncUrl = true, resetFocus = false } = {}) {
-      const validTabs = new Set(['ideas', 'applications', 'opportunities', 'scholarships', 'trainings', 'library']);
-      activeTab = validTabs.has(nextTab) ? nextTab : 'ideas';
-      if (resetFocus) {
-        focusedTargetId = '';
-      } else {
-        focusedTargetId = resolveFocusedTargetId(activeTab);
-      }
-
-      document.querySelectorAll('.tab').forEach((item) => {
-        item.classList.toggle('active', item.dataset.tab === activeTab);
-      });
-
-      document.querySelectorAll('.tab-content').forEach((item) => {
-        item.classList.toggle('active', item.id === `${activeTab}-tab`);
-      });
-
-      document.body.dataset.activeTab = activeTab;
-      syncSearchUi();
-
-      if (syncUrl) {
-        updateUrlParams({
-          tab: activeTab,
-          ideaId: activeTab === 'ideas' ? focusedTargetId : '',
-          applicationId: activeTab === 'applications' ? focusedTargetId : '',
-          opportunityId: activeTab === 'opportunities' ? focusedTargetId : '',
-          scholarshipId: activeTab === 'scholarships' ? focusedTargetId : '',
-          trainingId: activeTab === 'trainings' ? focusedTargetId : '',
-        });
-      }
-    }
-
-    function itemMatchesFocus(id) {
-      return focusedTargetId && id === focusedTargetId;
-    }
-
-    function searchPlaceholderForTab(tabName) {
-      const mapping = {
-        ideas: 'Search ideas by title, domain, level, or status...',
-        applications: 'Search applications by student, opportunity, or status...',
-        opportunities: 'Search opportunities by title, company, location, or status...',
-        scholarships: 'Search scholarships by title, provider, deadline, or description...',
-        trainings: 'Search training resources by title, source, domain, or level...',
-      };
-
-      return mapping[tabName] || 'Search the current tab...';
-    }
-
-    function syncSearchUi() {
-      const searchShell = document.getElementById('content-search-shell');
-      const searchInput = document.getElementById('content-search');
-      if (!searchShell || !searchInput) {
-        return;
-      }
-
-      const shouldHide = activeTab === 'library';
-      searchShell.classList.toggle('is-hidden', shouldHide);
-      searchInput.placeholder = searchPlaceholderForTab(activeTab);
-
-      if (shouldHide) {
-        searchInput.blur();
-      }
-    }
-
-    function currentSearch() {
-      return moderationSearchQuery.trim();
-    }
-
-    function normalizeApplicationStatus(rawStatus) {
-      const normalized = String(rawStatus || '').trim().toLowerCase();
-      if (normalized === 'accepted' || normalized === 'approved') {
-        return 'accepted';
-      }
-      if (normalized === 'rejected') {
-        return 'rejected';
-      }
-      return 'pending';
-    }
-
-    function canManageApplication(application) {
-      return (
-        currentAdminUid.trim() &&
-        String(application?.opportunityCreatedByRole || '').trim().toLowerCase() === 'admin' &&
-        String(application?.companyId || '').trim() === currentAdminUid.trim()
-      );
-    }
-
-    function renderContentOverview() {
-      const overview = document.getElementById('content-overview');
-      if (!overview) {
-        return;
-      }
-
-      const pendingIdeas = allIdeas.filter((item) => (item.status || 'pending') === 'pending').length;
-      const pendingAdminApplications = allApplications.filter((item) => (
-        canManageApplication(item) && normalizeApplicationStatus(item.status) === 'pending'
-      )).length;
-      const featuredTrainings = allTrainings.filter((item) => item.isFeatured === true).length;
-      const publishedItems = allOpps.length + allScholarships.length + allTrainings.length;
-
-      overview.innerHTML = `
-        <div class="summary-card">
-          <span class="summary-label">Review Queue</span>
-          <div class="summary-value">${pendingIdeas + pendingAdminApplications}</div>
-          <div class="summary-meta">${pendingIdeas} pending idea${pendingIdeas === 1 ? '' : 's'} and ${pendingAdminApplications} admin-manageable application${pendingAdminApplications === 1 ? '' : 's'} currently need attention.</div>
+    // ---------- Shell ----------
+    async function initPage() {
+      const root = document.getElementById('page-content');
+      root.innerHTML = `
+        <div id="stats-pills" class="summary-pills"></div>
+        <div class="tabs" id="tab-bar">
+          ${TABS.map((t) => `<button class="tab${t.id === state.activeTab ? ' active' : ''}" data-tab="${t.id}"><i data-lucide="${t.icon}"></i><span>${esc(t.label)}</span></button>`).join('')}
         </div>
-        <div class="summary-card">
-          <span class="summary-label">Published Inventory</span>
-          <div class="summary-value">${publishedItems}</div>
-          <div class="summary-meta">${allOpps.length} opportunities, ${allScholarships.length} scholarships, and ${allTrainings.length} training resources are currently live in the workspace.</div>
-        </div>
-        <div class="summary-card">
-          <span class="summary-label">Featured Library</span>
-          <div class="summary-value">${featuredTrainings}</div>
-          <div class="summary-meta">Training resources already flagged as featured and ready for extra visibility in the app.</div>
-        </div>
+        <section class="surface-panel" id="tab-panel"></section>
       `;
+      document.querySelectorAll('#tab-bar .tab').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          state.activeTab = btn.getAttribute('data-tab');
+          document.querySelectorAll('#tab-bar .tab').forEach((b) => b.classList.toggle('active', b === btn));
+          updateUrlParams({ tab: state.activeTab });
+          state.filter = 'all';
+          state.search = '';
+          renderTab();
+        });
+      });
+      await loadAll();
+      renderStats();
+      renderTab();
+      showPage();
+      handleDeepLink();
     }
 
-    attachStaticEventHandlers();
-    renderBookResults();
-    renderYoutubeResults();
-    renderScholarshipStatus();
-    renderTrainings();
+    function handleDeepLink() {
+      const targets = {
+        ideas:         { p: 'ideaId',         list: state.ideas,         open: (it) => openIdeaEditor(it) },
+        applications:  { p: 'applicationId',  list: state.applications,  open: (it) => openCvViewer(it.id) },
+        opportunities: { p: 'opportunityId',  list: state.opportunities, open: (it) => openOppEditor(it) },
+        scholarships:  { p: 'scholarshipId',  list: state.scholarships,  open: (it) => openScholarEditor(it) },
+        trainings:     { p: 'trainingId',     list: state.trainings,     open: null },
+      };
+      const t = targets[state.activeTab];
+      if (!t) return;
+      const id = getQueryParam(t.p);
+      if (!id) return;
+      const item = t.list.find((x) => x.id === id);
+      if (!item) return;
+      requestAnimationFrame(() => {
+        const row = document.querySelector(`#list [data-row-id="${CSS.escape(id)}"]`);
+        if (row) {
+          row.style.outline = '2px solid var(--c-primary)';
+          row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          setTimeout(() => { row.style.outline = ''; }, 2400);
+        }
+      });
+      if (t.open) t.open(item);
+    }
 
-    checkAuth(async (user) => {
-      currentAdminUid = user?.uid || '';
-      applyTabState(activeTab, { syncUrl: false });
-      await loadData();
-    });
-
-    async function loadData() {
+    async function loadAll() {
       try {
-        const [ideasSnap, appsSnap, oppsSnap, scholSnap, trainingsSnap] = await Promise.all([
+        const [ideasS, appsS, oppsS, scholarS, trainS] = await Promise.all([
           getDocs(query(collection(db, 'projectIdeas'), orderBy('createdAt', 'desc'))),
           getDocs(query(collection(db, 'applications'), orderBy('appliedAt', 'desc'))),
           getDocs(query(collection(db, 'opportunities'), orderBy('createdAt', 'desc'))),
           getDocs(query(collection(db, 'scholarships'), orderBy('createdAt', 'desc'))),
           getDocs(collection(db, 'trainings')),
         ]);
-
-        allIdeas = [];
-        ideasSnap.forEach((item) => allIdeas.push({ ...item.data(), id: item.id }));
-
-        allOpps = [];
-        oppsSnap.forEach((item) => allOpps.push({ ...item.data(), id: item.id }));
-
-        const opportunitiesById = new Map(
-          allOpps.map((item) => [item.id, item]),
-        );
-
-        allApplications = [];
-        appsSnap.forEach((item) => {
-          const data = { ...item.data(), id: item.id };
-          const relatedOpportunity = opportunitiesById.get(data.opportunityId) || {};
-          allApplications.push({
-            ...data,
-            opportunityTitle: relatedOpportunity.title || 'Untitled opportunity',
-            companyName: relatedOpportunity.companyName || data.companyId || 'Unknown company',
-            companyId: relatedOpportunity.companyId || data.companyId || '',
-            opportunityCreatedBy: relatedOpportunity.createdBy || '',
-            opportunityCreatedByRole: relatedOpportunity.createdByRole || '',
-          });
-        });
-
-        allScholarships = [];
-        scholSnap.forEach((item) => allScholarships.push({ ...item.data(), id: item.id }));
-
-        allTrainings = [];
-        trainingsSnap.forEach((item) =>
-          allTrainings.push({ ...item.data(), id: item.id }),
-        );
-        sortByTimestampDesc(allTrainings, 'createdAt');
-
-        document.getElementById('loading').style.display = 'none';
-        renderIdeas();
-        renderApplications();
-        renderOpps();
-        renderScholarships();
-        renderTrainings();
-        updatePendingCount();
-        renderContentOverview();
-        applyTabState(activeTab, { syncUrl: true });
-      } catch (error) {
-        console.error('Load moderation error:', error);
-        document.getElementById('loading').innerHTML =
-          feedbackCardHtml(
-            'Moderation data could not be loaded right now. Please refresh and try again.',
-            { type: 'error', title: 'Unable to load moderation data', icon: '!' },
-          );
+        state.ideas         = ideasS.docs.map((s) => ({ id: s.id, ...s.data() }));
+        state.applications  = appsS.docs.map((s) => ({ id: s.id, ...s.data() }));
+        state.opportunities = oppsS.docs.map((s) => ({ id: s.id, ...s.data() }));
+        state.scholarships  = scholarS.docs.map((s) => ({ id: s.id, ...s.data() }));
+        state.trainings     = trainS.docs.map((s) => ({ id: s.id, ...s.data() }));
+      } catch (e) {
+        console.error(e);
+        const panel = document.getElementById('tab-panel');
+        if (panel) panel.innerHTML = feedbackCardHtml('Could not load content.', { type: 'error' });
       }
     }
 
-    function attachStaticEventHandlers() {
-      document.getElementById('content-search').addEventListener('input', (event) => {
-        moderationSearchQuery = event.target.value || '';
-        renderIdeas();
-        renderApplications();
-        renderOpps();
-        renderScholarships();
-        renderTrainings();
-      });
-
-      document.getElementById('toggle-pending').addEventListener('click', () => {
-        showPendingOnly = !showPendingOnly;
-        document.getElementById('toggle-pending').textContent = showPendingOnly
-          ? 'Show All'
-          : 'Pending Only';
-        renderIdeas();
-      });
-
-      document.getElementById('ideas-list').addEventListener('click', (event) => {
-        const button = event.target.closest('[data-action]');
-        if (!button) {
-          return;
-        }
-
-        const id = button.dataset.id;
-        if (button.dataset.action === 'approve') {
-          approveIdea(id);
-        } else if (button.dataset.action === 'reject') {
-          rejectIdea(id);
-        }
-      });
-
-      document.getElementById('applications-list').addEventListener('click', async (event) => {
-        const button = event.target.closest('[data-action]');
-        if (!button) {
-          return;
-        }
-
-        if (button.dataset.action === 'open-cv') {
-          await openApplicationCv(button.dataset.id);
-          return;
-        }
-
-        if (button.dataset.action === 'open-opportunity') {
-          focusedTargetId = button.dataset.opportunityId || '';
-          applyTabState('opportunities', { syncUrl: true });
-          renderOpps();
-          return;
-        }
-
-        if (button.dataset.action === 'approve-application') {
-          await updateApplicationStatus(button.dataset.id, 'accepted');
-          return;
-        }
-
-        if (button.dataset.action === 'reject-application') {
-          await updateApplicationStatus(button.dataset.id, 'rejected');
-        }
-      });
-
-      document.getElementById('cv-review-content').addEventListener('click', async (event) => {
-        const button = event.target.closest('[data-document-action="application-cv"]');
-        if (!button) {
-          return;
-        }
-
-        await handleApplicationCvAction(button);
-      });
-
-      document.getElementById('cv-review-close').onclick = closeApplicationCvModal;
-      document.getElementById('cv-review-modal').onclick = (event) => {
-        if (event.target === event.currentTarget) {
-          closeApplicationCvModal();
-        }
-      };
-
-      document.getElementById('opps-list').addEventListener('click', async (event) => {
-        const featureButton = event.target.closest('[data-action="toggle-featured"]');
-        if (featureButton) {
-          const id = featureButton.dataset.id;
-          const opp = allOpps.find((item) => item.id === id);
-          if (!opp) {
-            return;
-          }
-
-          const nextValue = !(opp.isFeatured === true);
-          try {
-            await updateDoc(doc(db, 'opportunities', id), { isFeatured: nextValue });
-            opp.isFeatured = nextValue;
-            renderOpps();
-            showToast(
-              nextValue ? 'Added to featured opportunities' : 'Removed from featured opportunities',
-              'success',
-            );
-          } catch (error) {
-            console.error('Toggle opportunity featured error:', error);
-            showToast('Failed to update featured status', 'error');
-          }
-          return;
-        }
-
-        const deleteButton = event.target.closest('[data-action="delete-opp"]');
-        if (!deleteButton) {
-          return;
-        }
-
-        const id = deleteButton.dataset.id;
-        const opp = allOpps.find((item) => item.id === id);
-        const title = opp ? opp.title : 'this opportunity';
-
-        showConfirm(
-          'Delete Opportunity',
-          `Are you sure you want to delete "${title}"?`,
-          'Delete',
-          'danger',
-          async () => {
-            try {
-              await deleteDoc(doc(db, 'opportunities', id));
-              allOpps = allOpps.filter((item) => item.id !== id);
-              renderOpps();
-              showToast('Opportunity deleted', 'success');
-            } catch (error) {
-              console.error('Delete opportunity error:', error);
-              showToast('Failed to delete opportunity', 'error');
-            }
-          },
-        );
-      });
-
-      document
-        .getElementById('scholarships-list')
-        .addEventListener('click', (event) => {
-          const notifyButton = event.target.closest('[data-action="notify-scholarship"]');
-          if (notifyButton) {
-            notifyScholarship(notifyButton.dataset.id);
-            return;
-          }
-
-          const deleteButton = event.target.closest('[data-action="delete-schol"]');
-          if (!deleteButton) {
-            return;
-          }
-
-          const id = deleteButton.dataset.id;
-          const scholarship = allScholarships.find((item) => item.id === id);
-          const title = scholarship ? scholarship.title : 'this scholarship';
-
-          showConfirm(
-            'Delete Scholarship',
-            `Are you sure you want to delete "${title}"?`,
-            'Delete',
-            'danger',
-            async () => {
-              try {
-                await deleteDoc(doc(db, 'scholarships', id));
-                allScholarships = allScholarships.filter((item) => item.id !== id);
-                renderScholarships();
-                showToast('Scholarship deleted', 'success');
-              } catch (error) {
-                console.error('Delete scholarship error:', error);
-                showToast('Failed to delete scholarship', 'error');
-              }
-            },
-          );
-        });
-
-      document.getElementById('tabs').addEventListener('click', (event) => {
-        const tab = event.target.closest('.tab');
-        if (!tab) {
-          return;
-        }
-
-        applyTabState(tab.dataset.tab, { syncUrl: true, resetFocus: true });
-      });
-
-      document.getElementById('confirm-modal').addEventListener('click', (event) => {
-        if (event.target === event.currentTarget) {
-          event.currentTarget.classList.remove('show');
-        }
-      });
-
-      document.getElementById('training-search-btn').addEventListener('click', () => {
-        runGoogleBooksSearch();
-      });
-
-      document.getElementById('training-query').addEventListener('keydown', (event) => {
-        if (event.key === 'Enter') {
-          event.preventDefault();
-          runGoogleBooksSearch();
-        }
-      });
-
-      document.getElementById('scholarship-create-btn').addEventListener('click', () => {
-        createScholarship();
-      });
-
-      document.getElementById('youtube-search-btn').addEventListener('click', () => {
-        searchYoutubeVideos();
-      });
-
-      document.getElementById('youtube-query').addEventListener('keydown', (event) => {
-        if (event.key === 'Enter') {
-          event.preventDefault();
-          searchYoutubeVideos();
-        }
-      });
-
-      document.getElementById('reload-trainings').addEventListener('click', async () => {
-        await refreshTrainings(true);
-      });
-
-      document.getElementById('book-results').addEventListener('click', async (event) => {
-        const button = event.target.closest('[data-action="import-book"]');
-        if (!button) {
-          return;
-        }
-
-        await importSelectedBook(button.dataset.bookId);
-      });
-
-      document.getElementById('youtube-results').addEventListener('click', async (event) => {
-        const button = event.target.closest('[data-action="import-video"]');
-        if (!button) {
-          return;
-        }
-
-        await importSelectedYoutubeVideo(button.dataset.videoId);
-      });
-
-      document.getElementById('trainings-list').addEventListener('click', async (event) => {
-        const featureButton = event.target.closest('[data-action="toggle-training-featured"]');
-        if (featureButton) {
-          await updateTrainingFeaturedState(featureButton.dataset.id);
-          return;
-        }
-
-        const deleteButton = event.target.closest('[data-action="delete-training"]');
-        if (deleteButton) {
-          await confirmDeleteTraining(deleteButton.dataset.id);
-        }
-      });
-    }
-
-    function updatePendingCount() {
-      const count = allIdeas.filter((item) => (item.status || 'pending') === 'pending').length;
-      const badge = document.getElementById('pending-count');
-
-      if (count > 0) {
-        badge.textContent = count;
-        badge.style.display = 'inline';
-      } else {
-        badge.style.display = 'none';
-      }
-    }
-
-    function renderIdeas() {
-      renderContentOverview();
-      const ideas = (showPendingOnly
-        ? allIdeas.filter((item) => (item.status || 'pending') === 'pending')
-        : allIdeas)
-        .filter((idea) => matchesSearch([
-          idea.title,
-          idea.description,
-          idea.domain,
-          idea.level,
-          idea.tools,
-          idea.submittedByName,
-          idea.submittedBy,
-          idea.status,
-        ], currentSearch()));
-      const label = document.getElementById('ideas-label');
-      label.textContent = showPendingOnly
-        ? `Pending Ideas (${ideas.length})`
-        : `All Ideas (${ideas.length})`;
-
-      const container = document.getElementById('ideas-list');
-      if (ideas.length === 0) {
-        container.innerHTML =
-          showPendingOnly
-            ? emptyStateHtml(
-              'New submissions will appear here as soon as students send project ideas for review.',
-              { title: 'No pending ideas to review', icon: 'PI' },
-            )
-            : emptyStateHtml(
-              'Project ideas will appear here once students begin submitting them.',
-              { title: 'No project ideas to review yet', icon: 'PI' },
-            );
-        return;
-      }
-
-      container.innerHTML = ideas
-        .map((idea) => {
-          const status = idea.status || 'pending';
-          const isBusy = ideaBusyIds.has(idea.id);
-          const statusClass =
-            status === 'approved'
-              ? 'status-approved'
-              : status === 'rejected'
-              ? 'status-rejected'
-              : 'status-pending';
-
-          return `
-            <div class="idea-card ${itemMatchesFocus(idea.id) ? 'card-highlight' : ''}">
-              <div class="idea-header">
-                <div class="idea-title">${esc(idea.title || 'Untitled')}</div>
-                <div class="status-badge ${statusClass}">${esc(status)}</div>
-              </div>
-              <div class="idea-desc">${esc(idea.description || '')}</div>
-              <div class="idea-tags">
-                ${idea.domain ? `<span class="tag tag-domain">${esc(idea.domain)}</span>` : ''}
-                ${idea.level ? `<span class="tag tag-level">${esc(idea.level)}</span>` : ''}
-                ${idea.tools ? `<span class="tag tag-tools">${esc(idea.tools)}</span>` : ''}
-              </div>
-              <div class="idea-submitter">Submitted by: ${esc(idea.submittedByName || idea.submittedBy || 'Unknown')}</div>
-              ${
-                status === 'pending'
-                  ? `<div class="idea-actions">
-                      <button class="btn-approve" data-action="approve" data-id="${esc(idea.id)}" ${isBusy ? 'disabled' : ''}>
-                        ${isBusy ? 'Working...' : 'Approve'}
-                      </button>
-                      <button class="btn-reject" data-action="reject" data-id="${esc(idea.id)}" ${isBusy ? 'disabled' : ''}>
-                        ${isBusy ? 'Working...' : 'Reject'}
-                      </button>
-                    </div>`
-                  : ''
-              }
-            </div>
-          `;
-        })
-        .join('');
-    }
-
-    function renderApplications() {
-      renderContentOverview();
-      const filtered = allApplications.filter((application) => matchesSearch([
-        application.studentName,
-        application.opportunityTitle,
-        application.companyName,
-        application.status,
-        application.cvId,
-      ], currentSearch()));
-
-      document.getElementById('applications-label').textContent =
-        `Applications (${filtered.length})`;
-
-      const container = document.getElementById('applications-list');
-      if (filtered.length === 0) {
-        container.innerHTML =
-          emptyStateHtml(
-            'Try adjusting the current filters or search terms to see more applications.',
-            { title: 'No applications match these filters', icon: 'AP' },
-          );
-        return;
-      }
-
-      container.innerHTML = filtered.map((application) => `
-        <div class="list-card ${itemMatchesFocus(application.id) ? 'card-highlight' : ''}">
-          <div class="list-card-header">
-            <div>
-              <div class="list-card-title">${esc(application.opportunityTitle || 'Untitled opportunity')}</div>
-              <div class="list-card-subtitle">${esc(application.studentName || 'Unknown student')} applied to ${esc(application.companyName || 'Unknown company')}</div>
-            </div>
-            <span class="status-badge ${normalizeApplicationStatus(application.status) === 'accepted' ? 'status-approved' : normalizeApplicationStatus(application.status) === 'rejected' ? 'status-rejected' : 'status-pending'}">${esc(normalizeApplicationStatus(application.status) === 'accepted' ? 'approved' : normalizeApplicationStatus(application.status) === 'rejected' ? 'rejected' : 'pending')}</span>
-          </div>
-          <div class="list-card-meta">
-            <span class="meta-pill meta-pill-application">Application</span>
-            <span class="meta-pill">${esc(application.companyName || 'Unknown company')}</span>
-            <span class="meta-pill">${esc(timestampLabel(application.appliedAt) || 'Unknown time')}</span>
-            ${
-              canManageApplication(application)
-                ? '<span class="meta-pill" style="background:rgba(23,157,108,0.14);color:#179d6c">Admin managed</span>'
-                : ''
-            }
-          </div>
-          <div class="list-card-actions">
-            <button class="btn-open" data-action="open-opportunity" data-id="${esc(application.id)}" data-opportunity-id="${esc(application.opportunityId || '')}">Open Opportunity</button>
-            <button class="btn-secondary" data-action="open-cv" data-id="${esc(application.id)}">Review CV</button>
-            ${
-              canManageApplication(application) && normalizeApplicationStatus(application.status) === 'pending'
-                ? `
-                  <button class="btn-approve" data-action="approve-application" data-id="${esc(application.id)}" ${applicationBusyIds.has(application.id) ? 'disabled' : ''}>
-                    ${applicationBusyIds.has(application.id) ? 'Working...' : 'Approve'}
-                  </button>
-                  <button class="btn-reject" data-action="reject-application" data-id="${esc(application.id)}" ${applicationBusyIds.has(application.id) ? 'disabled' : ''}>
-                    ${applicationBusyIds.has(application.id) ? 'Working...' : 'Reject'}
-                  </button>
-                `
-                : ''
-            }
-            ${
-              application.cvId
-                ? '<span class="inline-status">Linked CV record available</span>'
-                : '<span class="inline-status">Checking the latest student CV if no linked record exists</span>'
-            }
-          </div>
-        </div>
-      `).join('');
-    }
-
-    function syncApplicationStatusLocally(id, status) {
-      const item = allApplications.find((application) => application.id === id);
-      if (item) {
-        item.status = status;
-      }
-    }
-
-    async function updateApplicationStatus(id, status) {
-      if (!id || applicationBusyIds.has(id)) {
-        return;
-      }
-
-      const localApplication = allApplications.find((item) => item.id === id);
-      if (!localApplication) {
-        showToast('Application could not be found in the current list.', 'error');
-        return;
-      }
-
-      if (!canManageApplication(localApplication)) {
-        showToast('You can only update applications for admin-posted opportunities you own.', 'warning');
-        return;
-      }
-
-      applicationBusyIds.add(id);
-      renderApplications();
-
-      try {
-        const appRef = doc(db, 'applications', id);
-        const appSnap = await getDoc(appRef);
-        if (!appSnap.exists()) {
-          showToast('This application is no longer available.', 'error');
-          return;
-        }
-
-        const appData = appSnap.data() || {};
-        const opportunityId = String(appData.opportunityId || '').trim();
-        if (!opportunityId) {
-          showToast('This application is not linked to a valid opportunity.', 'error');
-          return;
-        }
-
-        const opportunitySnap = await getDoc(doc(db, 'opportunities', opportunityId));
-        const opportunityData = opportunitySnap.data() || {};
-        const ownerId = String(opportunityData.companyId || '').trim();
-        const ownerRole = String(opportunityData.createdByRole || '').trim().toLowerCase();
-
-        if (!opportunitySnap.exists() || ownerId !== currentAdminUid.trim() || ownerRole !== 'admin') {
-          showToast('Only applications for your own admin-posted opportunities can be updated here.', 'warning');
-          return;
-        }
-
-        const currentStatus = normalizeApplicationStatus(appData.status);
-        const nextStatus = normalizeApplicationStatus(status);
-        if (currentStatus === nextStatus) {
-          syncApplicationStatusLocally(id, currentStatus);
-          renderApplications();
-          showToast('Application was already updated.', 'success');
-          return;
-        }
-
-        await updateDoc(appRef, { status: nextStatus });
-
-        if (nextStatus === 'accepted' || nextStatus === 'rejected') {
-          await workerFetch('/api/notify/application-status-changed', {
-            method: 'POST',
-            body: JSON.stringify({ applicationId: id }),
-          }).catch((error) => {
-            console.error('Application status notification error:', error);
-          });
-        }
-
-        syncApplicationStatusLocally(id, nextStatus);
-        renderApplications();
-        showToast(nextStatus === 'accepted' ? 'Application approved' : 'Application rejected', 'success');
-      } catch (error) {
-        console.error('Update application status error:', error);
-        showToast(
-          normalizeApplicationStatus(status) === 'accepted'
-            ? 'Failed to approve application'
-            : 'Failed to reject application',
-          'error',
-        );
-      } finally {
-        applicationBusyIds.delete(id);
-        renderApplications();
-      }
-    }
-
-    function syncIdeaStatusLocally(id, status) {
-      const item = allIdeas.find((idea) => idea.id === id);
-      if (item) {
-        item.status = status;
-      }
-    }
-
-    async function updateIdeaStatus(id, status) {
-      if (!id || ideaBusyIds.has(id)) {
-        return;
-      }
-
-      ideaBusyIds.add(id);
-      renderIdeas();
-
-      try {
-        const ideaRef = doc(db, 'projectIdeas', id);
-        const ideaSnap = await getDoc(ideaRef);
-        if (!ideaSnap.exists()) {
-          showToast('This idea is no longer available.', 'error');
-          return;
-        }
-
-        const currentStatus = ideaSnap.data()?.status || 'pending';
-        if (currentStatus !== 'pending') {
-          syncIdeaStatusLocally(id, currentStatus);
-          renderIdeas();
-          updatePendingCount();
-          showToast('Idea was already reviewed', 'success');
-          return;
-        }
-
-        await updateDoc(ideaRef, { status });
-        await workerFetch('/api/notify/idea-status-changed', {
-          method: 'POST',
-          body: JSON.stringify({ ideaId: id }),
-        }).catch((error) => {
-          console.error('Idea status notification error:', error);
-        });
-        syncIdeaStatusLocally(id, status);
-        renderIdeas();
-        updatePendingCount();
-        showToast(
-          status === 'approved' ? 'Idea approved' : 'Idea rejected',
-          'success',
-        );
-      } catch (error) {
-        console.error('Update idea status error:', error);
-        showToast(
-          status === 'approved'
-            ? 'Failed to approve idea'
-            : 'Failed to reject idea',
-          'error',
-        );
-      } finally {
-        ideaBusyIds.delete(id);
-        renderIdeas();
-      }
-    }
-
-    async function approveIdea(id) {
-      await updateIdeaStatus(id, 'approved');
-    }
-
-    async function rejectIdea(id) {
-      await updateIdeaStatus(id, 'rejected');
-    }
-
-    function renderOpps() {
-      renderContentOverview();
-      const filteredOpps = allOpps.filter((opp) => matchesSearch([
-        opp.title,
-        opp.companyName,
-        opp.type,
-        opp.status,
-        opp.location,
-      ], currentSearch()));
-      const container = document.getElementById('opps-list');
-      if (filteredOpps.length === 0) {
-        container.innerHTML =
-          emptyStateHtml(
-            'Published opportunities will appear here once companies start posting.',
-            { title: 'No opportunities published yet', icon: 'OP' },
-          );
-        return;
-      }
-
-      container.innerHTML = filteredOpps
-        .map((opp) => {
-          const isFeatured = opp.isFeatured === true;
-          const rawType = String(opp.type || '').trim().toLowerCase();
-          const normalizedType = ['job', 'internship', 'sponsoring'].includes(rawType)
-            ? rawType
-            : 'job';
-          const typeLabel = normalizedType === 'internship'
-            ? 'Internship'
-            : normalizedType === 'sponsoring'
-            ? 'Sponsoring'
-            : 'Job';
-          return `
-            <div class="opp-card ${itemMatchesFocus(opp.id) ? 'card-highlight' : ''}">
-              <div class="opp-icon" style="background:rgba(255,140,0,0.12);color:#FF8C00">OF</div>
-              <div class="opp-info">
-                <div class="opp-title">${esc(opp.title || 'Untitled opportunity')}</div>
-                <div class="opp-company">${esc(opp.companyName || 'Unknown company')}</div>
-                <div class="opp-badges">
-                  <span class="badge badge-${normalizedType}">${esc(typeLabel)}</span>
-                  <span class="badge badge-${opp.status === 'open' ? 'open' : 'closed'}">${esc(opp.status || '')}</span>
-                  ${isFeatured ? '<span class="badge training-badge training-badge-featured">Featured</span>' : ''}
-                </div>
-              </div>
-              <button
-                class="btn-feature"
-                data-action="toggle-featured"
-                data-id="${esc(opp.id)}"
-                title="${isFeatured ? 'Remove from featured' : 'Add to featured'}"
-              >
-                ${isFeatured ? 'On' : 'Off'}
-              </button>
-              <button class="btn-delete" data-action="delete-opp" data-id="${esc(opp.id)}">
-                Delete
-              </button>
-            </div>
-          `;
-        })
-        .join('');
-    }
-
-    function renderScholarships() {
-      renderContentOverview();
-      const filteredScholarships = allScholarships.filter((scholarship) => matchesSearch([
-        scholarship.title,
-        scholarship.provider,
-        scholarship.description,
-        scholarship.eligibility,
-        scholarship.deadline,
-      ], currentSearch()));
-      document.getElementById('scholarships-label').textContent =
-        `Scholarships (${filteredScholarships.length})`;
-      const container = document.getElementById('scholarships-list');
-      if (filteredScholarships.length === 0) {
-        container.innerHTML =
-          emptyStateHtml(
-            'Scholarships will appear here once they have been created and published.',
-            { title: 'No scholarships published yet', icon: 'SC' },
-          );
-        return;
-      }
-
-      container.innerHTML = filteredScholarships
-        .map((scholarship) => {
-          const isBusy = scholarshipState.busyScholarshipIds.has(scholarship.id);
-          return `
-            <div class="opp-card ${itemMatchesFocus(scholarship.id) ? 'card-highlight' : ''}">
-              <div class="opp-icon" style="background:rgba(233,30,99,0.12);color:#E91E63">SC</div>
-              <div class="opp-info">
-                <div class="opp-title">${esc(scholarship.title || 'Untitled scholarship')}</div>
-                <div class="opp-company">${esc(scholarship.provider || 'Unknown provider')}</div>
-                <div class="opp-badges">
-                  ${
-                    scholarship.amount
-                      ? `<span class="badge badge-job">${esc(scholarship.amount)} DZD</span>`
-                      : ''
-                  }
-                  ${
-                    scholarship.deadline
-                      ? `<span class="badge badge-level">Due: ${esc(scholarship.deadline)}</span>`
-                      : ''
-                  }
-                </div>
-              </div>
-              <button
-                class="btn-feature"
-                data-action="notify-scholarship"
-                data-id="${esc(scholarship.id)}"
-                ${isBusy ? 'disabled' : ''}
-              >
-                ${isBusy ? 'Notifying...' : 'Notify'}
-              </button>
-              <button
-                class="btn-delete"
-                data-action="delete-schol"
-                data-id="${esc(scholarship.id)}"
-                ${isBusy ? 'disabled' : ''}
-              >
-                ${isBusy ? 'Working...' : 'Delete'}
-              </button>
-            </div>
-          `;
-        })
-        .join('');
-    }
-
-    function scholarshipFormValues() {
-      return {
-        title: document.getElementById('scholarship-title').value.trim(),
-        provider: document.getElementById('scholarship-provider').value.trim(),
-        amount: document.getElementById('scholarship-amount').value.trim(),
-        deadline: document.getElementById('scholarship-deadline').value,
-        link: document.getElementById('scholarship-link').value.trim(),
-        description: document.getElementById('scholarship-description').value.trim(),
-        eligibility: document.getElementById('scholarship-eligibility').value.trim(),
-      };
-    }
-
-    function resetScholarshipForm() {
-      document.getElementById('scholarship-title').value = '';
-      document.getElementById('scholarship-provider').value = '';
-      document.getElementById('scholarship-amount').value = '';
-      document.getElementById('scholarship-deadline').value = '';
-      document.getElementById('scholarship-link').value = '';
-      document.getElementById('scholarship-description').value = '';
-      document.getElementById('scholarship-eligibility').value = '';
-    }
-
-    function setScholarshipStatus(message, kind = 'info') {
-      scholarshipState.statusMessage = String(message || '').trim();
-      scholarshipState.statusKind = kind;
-      renderScholarshipStatus();
-    }
-
-    function renderScholarshipStatus() {
-      const element = document.getElementById('scholarship-status');
-      if (!element) {
-        return;
-      }
-
-      element.textContent = scholarshipState.statusMessage
-        || 'Creating a scholarship here writes it to Firestore first, then triggers the Cloudflare Worker notification flow.';
-      element.classList.toggle('training-status-error', scholarshipState.statusKind === 'error');
-    }
-
-    function trainingOptions() {
-      return {
-        query: document.getElementById('training-query').value.trim(),
-        domain: document.getElementById('training-domain').value,
-        level: document.getElementById('training-level').value,
-        language: document.getElementById('training-language').value,
-        isFeatured: document.getElementById('training-featured').checked,
-      };
-    }
-
-    function youtubeTrainingOptions() {
-      return {
-        query: document.getElementById('youtube-query').value.trim(),
-        domain: document.getElementById('youtube-domain').value,
-        level: document.getElementById('youtube-level').value,
-        isFeatured: document.getElementById('youtube-featured').checked,
-      };
-    }
-
-    function renderTrainingThumb({
-      thumbnail,
-      title,
-      placeholderLabel,
-      isVideo = false,
-    }) {
-      const safeTitle = esc(title || placeholderLabel || 'Training');
-      const className = `training-thumb${isVideo ? ' training-thumb-video' : ''}`;
-
-      if (thumbnail) {
-        return `<img class="${className}" src="${esc(thumbnail)}" alt="${safeTitle}">`;
-      }
-
-      return `<div class="${className} training-thumb-placeholder">${esc(placeholderLabel || 'Training')}</div>`;
-    }
-
-    function renderBookResults() {
-      const container = document.getElementById('book-results');
-      const label = document.getElementById('book-results-label');
-      const status = document.getElementById('training-status');
-      if (!container || !label || !status) {
-        return;
-      }
-
-      if (trainingState.isSearching) {
-        label.textContent = 'Google Books Results (searching...)';
-      } else if (trainingState.hasSearched) {
-        label.textContent = `Google Books Results (${trainingState.results.length})`;
-      } else {
-        label.textContent = 'Google Books Results';
-      }
-
-      if (trainingState.isSearching) {
-        status.className = 'training-status';
-        status.textContent = 'Searching Google Books directly from the admin website...';
-      } else if (trainingState.searchError) {
-        status.className = 'training-status training-status-error';
-        status.textContent = trainingState.searchError;
-      } else if (trainingState.hasSearched) {
-        status.className = 'training-status';
-        status.textContent =
-          trainingState.results.length > 0
-            ? `${trainingState.results.length} Google Books result${trainingState.results.length === 1 ? '' : 's'} found.`
-            : 'No Google Books results match this search.';
-      } else {
-        status.className = 'training-status';
-        status.textContent =
-          'Search runs directly against Google Books from the admin website for now.';
-      }
-
-      if (trainingState.isSearching && trainingState.results.length === 0) {
-        container.innerHTML =
-          '<div class="card"><div class="loading"><div class="spinner"></div></div></div>';
-        return;
-      }
-
-      if (!trainingState.hasSearched) {
-        container.innerHTML =
-          emptyStateHtml(
-            'Start with a search to preview matching Google Books titles before importing.',
-            { title: 'Search Google Books to begin', icon: 'GB' },
-          );
-        return;
-      }
-
-      if (trainingState.searchError) {
-        container.innerHTML =
-          emptyStateHtml(
-            'Review the status message above, then adjust the query and try again.',
-            { title: 'Google Books search could not be completed', icon: '!' },
-          );
-        return;
-      }
-
-      if (trainingState.results.length === 0) {
-        container.innerHTML =
-          emptyStateHtml(
-            'Try a broader search term or a different title, author, or keyword.',
-            { title: 'No Google Books results found', icon: '0' },
-          );
-        return;
-      }
-
-      container.innerHTML = trainingState.results
-        .map((book) => {
-          const isImporting = trainingState.importingBookId === book.googleBookId;
-          const subtitle = book.authors && book.authors.length > 0
-            ? esc(book.authors.join(', '))
-            : esc(book.provider || 'Google Books');
-          const description = truncateText(book.description || '', 220);
-          const thumb = book.thumbnail
-            ? `<img class="training-thumb" src="${esc(book.thumbnail)}" alt="${esc(book.title)}">`
-            : '<div class="training-thumb training-thumb-placeholder">Book</div>';
-
-          return `
-            <div class="training-item-card">
-              ${thumb}
-              <div class="training-item-content">
-                <div class="training-item-title">${esc(book.title || 'Untitled Book')}</div>
-                <div class="training-item-subtitle">${subtitle}</div>
-                ${
-                  description
-                    ? `<div class="training-item-description">${esc(description)}</div>`
-                    : ''
-                }
-                <div class="training-item-tags">
-                  ${
-                    book.language
-                      ? `<span class="training-badge training-badge-language">${esc(book.language.toUpperCase())}</span>`
-                      : ''
-                  }
-                  ${
-                    book.pageCount
-                      ? `<span class="training-badge training-badge-pages">${esc(String(book.pageCount))} pages</span>`
-                      : ''
-                  }
-                  ${
-                    book.publishedDate
-                      ? `<span class="training-badge training-badge-source">${esc(book.publishedDate)}</span>`
-                      : ''
-                  }
-                </div>
-                <div class="training-item-actions">
-                  ${
-                    book.infoLink || book.previewLink
-                      ? `<a class="resource-link" href="${esc(book.infoLink || book.previewLink)}" target="_blank" rel="noreferrer">Open</a>`
-                      : ''
-                  }
-                  <button
-                    class="btn-action btn-import-book"
-                    data-action="import-book"
-                    data-book-id="${esc(book.googleBookId)}"
-                    ${isImporting ? 'disabled' : ''}
-                  >
-                    ${isImporting ? 'Importing...' : 'Import'}
-                  </button>
-                </div>
-              </div>
-            </div>
-          `;
-        })
-        .join('');
-    }
-
-    function renderYoutubeResults() {
-      const container = document.getElementById('youtube-results');
-      const label = document.getElementById('youtube-results-label');
-      const status = document.getElementById('youtube-status');
-      if (!container || !label || !status) {
-        return;
-      }
-
-      if (youtubeState.isSearching) {
-        label.textContent = 'YouTube Results (searching...)';
-      } else if (youtubeState.hasSearched) {
-        label.textContent = `YouTube Results (${youtubeState.results.length})`;
-      } else {
-        label.textContent = 'YouTube Results';
-      }
-
-      if (youtubeState.isSearching) {
-        status.className = 'training-status';
-        status.textContent = 'Searching YouTube directly from the admin website...';
-      } else if (youtubeState.searchError) {
-        status.className = 'training-status training-status-error';
-        status.textContent = youtubeState.searchError;
-      } else if (youtubeState.hasSearched) {
-        status.className = 'training-status';
-        status.textContent =
-          youtubeState.results.length > 0
-            ? `${youtubeState.results.length} YouTube result${youtubeState.results.length === 1 ? '' : 's'} found.`
-            : 'No YouTube results match this search.';
-      } else {
-        status.className = 'training-status';
-        status.textContent =
-          'Search runs directly against YouTube from the admin website for now.';
-      }
-
-      if (youtubeState.isSearching && youtubeState.results.length === 0) {
-        container.innerHTML =
-          '<div class="card"><div class="loading"><div class="spinner"></div></div></div>';
-        return;
-      }
-
-      if (!youtubeState.hasSearched) {
-        container.innerHTML =
-          emptyStateHtml(
-            'Start with a search to preview YouTube videos before importing them.',
-            { title: 'Search YouTube to begin', icon: 'YT' },
-          );
-        return;
-      }
-
-      if (youtubeState.searchError) {
-        container.innerHTML =
-          emptyStateHtml(
-            'Review the status message above, then adjust the query and try again.',
-            { title: 'YouTube search could not be completed', icon: '!' },
-          );
-        return;
-      }
-
-      if (youtubeState.results.length === 0) {
-        container.innerHTML =
-          emptyStateHtml(
-            'Try a broader search term or a different title, topic, or keyword.',
-            { title: 'No YouTube results found', icon: '0' },
-          );
-        return;
-      }
-
-      container.innerHTML = youtubeState.results
-        .map((video) => {
-          const isImporting = youtubeState.importingVideoId === video.youtubeVideoId;
-          const description = truncateText(video.description || '', 220);
-          const thumb = renderTrainingThumb({
-            thumbnail: video.thumbnail,
-            title: video.title,
-            placeholderLabel: 'Video',
-            isVideo: true,
-          });
-
-          return `
-            <div class="training-item-card training-item-card-video">
-              ${thumb}
-              <div class="training-item-content">
-                <div class="training-item-title">${esc(video.title || 'Untitled Video')}</div>
-                <div class="training-item-subtitle">${esc(video.provider || 'YouTube')}</div>
-                ${
-                  description
-                    ? `<div class="training-item-description">${esc(description)}</div>`
-                    : ''
-                }
-                <div class="training-item-tags">
-                  <span class="training-badge training-badge-type">VIDEO</span>
-                  <span class="training-badge training-badge-source">youtube</span>
-                  ${
-                    video.publishedAtSource
-                      ? `<span class="training-badge training-badge-source">${esc(video.publishedAtSource.slice(0, 10))}</span>`
-                      : ''
-                  }
-                </div>
-                <div class="training-item-actions">
-                  ${
-                    video.link
-                      ? `<a class="resource-link" href="${esc(video.link)}" target="_blank" rel="noreferrer">Open</a>`
-                      : ''
-                  }
-                  <button
-                    class="btn-action btn-import-book"
-                    data-action="import-video"
-                    data-video-id="${esc(video.youtubeVideoId)}"
-                    ${isImporting ? 'disabled' : ''}
-                  >
-                    ${isImporting ? 'Importing...' : 'Import'}
-                  </button>
-                </div>
-              </div>
-            </div>
-          `;
-        })
-        .join('');
-    }
-
-    function renderTrainings() {
-      renderContentOverview();
-      const container = document.getElementById('trainings-list');
-      const label = document.getElementById('trainings-label');
-      if (!container || !label) {
-        return;
-      }
-
-      const filteredTrainings = allTrainings.filter((training) => matchesSearch([
-        training.title,
-        training.provider,
-        training.description,
-        training.domain,
-        training.level,
-        training.source,
-        training.type,
-      ], currentSearch()));
-
-      label.textContent = `Training Resources (${filteredTrainings.length})`;
-
-      if (filteredTrainings.length === 0) {
-        container.innerHTML =
-          emptyStateHtml(
-            'Training resources will appear here once books or videos have been imported.',
-            { title: 'No training resources yet', icon: 'TR' },
-          );
-        return;
-      }
-
-      container.innerHTML = filteredTrainings
-        .map((training) => {
-          const isBusy = trainingState.busyTrainingIds.has(training.id);
-          const isVideo = (training.type || '').toLowerCase() === 'video';
-          const subtitle =
-            Array.isArray(training.authors) && training.authors.length > 0
-              ? esc(training.authors.join(', '))
-              : esc(training.provider || 'Unknown provider');
-          const link = training.link || training.previewLink || '';
-          const thumb = renderTrainingThumb({
-            thumbnail: training.thumbnail,
-            title: training.title,
-            placeholderLabel: isVideo ? 'Video' : 'Training',
-            isVideo,
-          });
-
-          return `
-            <div class="training-item-card${isVideo ? ' training-item-card-video' : ''} ${itemMatchesFocus(training.id) ? 'card-highlight' : ''}">
-              ${thumb}
-              <div class="training-item-content">
-                <div class="training-item-title">${esc(training.title || 'Untitled')}</div>
-                <div class="training-item-subtitle">${subtitle}</div>
-                ${
-                  training.description
-                    ? `<div class="training-item-description">${esc(truncateText(training.description, 220))}</div>`
-                    : ''
-                }
-                <div class="training-item-tags">
-                  <span class="training-badge training-badge-type">${esc((training.type || 'training').toUpperCase())}</span>
-                  ${
-                    training.source
-                      ? `<span class="training-badge training-badge-source">${esc(String(training.source).replaceAll('_', ' '))}</span>`
-                      : ''
-                  }
-                  ${
-                    training.domain
-                      ? `<span class="training-badge training-badge-domain">${esc(training.domain)}</span>`
-                      : ''
-                  }
-                  ${
-                    training.level
-                      ? `<span class="training-badge training-badge-level">${esc(training.level)}</span>`
-                      : ''
-                  }
-                  ${
-                    training.isFeatured === true
-                      ? '<span class="training-badge training-badge-featured">Featured</span>'
-                      : ''
-                  }
-                </div>
-                <div class="training-item-actions">
-                  ${
-                    link
-                      ? `<a class="resource-link" href="${esc(link)}" target="_blank" rel="noreferrer">Open</a>`
-                      : ''
-                  }
-                  <button
-                    class="btn-action btn-feature-training"
-                    data-action="toggle-training-featured"
-                    data-id="${esc(training.id)}"
-                    ${isBusy ? 'disabled' : ''}
-                  >
-                    ${training.isFeatured === true ? 'Unfeature' : 'Feature'}
-                  </button>
-                  <button
-                    class="btn-action btn-delete-training"
-                    data-action="delete-training"
-                    data-id="${esc(training.id)}"
-                    ${isBusy ? 'disabled' : ''}
-                  >
-                    ${isBusy ? 'Working...' : 'Delete'}
-                  </button>
-                </div>
-              </div>
-            </div>
-          `;
-        })
-        .join('');
-    }
-
-    function documentDateLabel(value) {
-      const timestampMs = parseTimestampMs(value);
-      if (!timestampMs) {
-        return 'Not available';
-      }
-
-      return new Date(timestampMs).toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-      });
-    }
-
-    function renderCvTagRow(label, items) {
-      if (!Array.isArray(items) || items.length === 0) {
-        return '';
-      }
-
-      return `
-        <div class="document-info-block">
-          <div class="document-info-label">${esc(label)}</div>
-          <div class="document-tag-row">
-            ${items.map((item) => `<span class="document-tag">${esc(item)}</span>`).join('')}
-          </div>
-        </div>
+    // ---------- Stats ----------
+    function renderStats() {
+      const el = document.getElementById('stats-pills');
+      if (!el) return;
+      const pendingIdeas = state.ideas.filter((x) => (x.status || 'pending') === 'pending').length;
+      const pendingApps = state.applications.filter((x) => (x.status || 'pending') === 'pending').length;
+      const opps = state.opportunities.length;
+      const scholarships = state.scholarships.length;
+      const resources = state.trainings.length;
+      el.innerHTML = `
+        <span class="summary-pill is-primary"><i data-lucide="lightbulb"></i><strong>${state.ideas.length}</strong> ideas</span>
+        ${pendingIdeas ? `<span class="summary-pill is-warning"><i data-lucide="clock"></i><strong>${pendingIdeas}</strong> pending ideas</span>` : ''}
+        ${pendingApps ? `<span class="summary-pill is-danger"><i data-lucide="hourglass"></i><strong>${pendingApps}</strong> pending apps</span>` : ''}
+        <span class="summary-pill is-info"><i data-lucide="briefcase"></i><strong>${opps}</strong> opportunities</span>
+        <span class="summary-pill"><i data-lucide="graduation-cap"></i><strong>${scholarships}</strong> scholarships</span>
+        <span class="summary-pill is-success"><i data-lucide="book-open"></i><strong>${resources}</strong> resources</span>
       `;
+      if (window.lucide) window.lucide.createIcons();
     }
 
-    function renderApplicationCvModal(application, cv, { loading = false, error = '' } = {}) {
-      const applicantName = cv?.fullName || application?.studentName || 'Applicant';
-      const primary = resolvePrimaryDocumentFields(cv);
-      const built = resolveBuiltDocumentFields(cv);
-      const builtInfoAvailable = hasBuilderContent(cv);
-      const contactParts = [cv?.email, cv?.phone].filter(Boolean);
-
-      if (loading) {
-        return `
-          <div class="modal-loading-state">
-            <div class="spinner"></div>
-            <p>Loading CV details...</p>
-          </div>
-        `;
+    // ---------- Tabs ----------
+    function renderTab() {
+      const panel = document.getElementById('tab-panel');
+      switch (state.activeTab) {
+        case 'ideas':         return renderIdeasTab(panel);
+        case 'applications':  return renderApplicationsTab(panel);
+        case 'opportunities': return renderOppsTab(panel);
+        case 'scholarships':  return renderScholarsTab(panel);
+        case 'trainings':     return renderTrainingsTab(panel);
       }
+    }
 
-      if (error) {
-        return `
-          <div class="empty-card">
-            <div class="document-section-title">CV unavailable</div>
-            <p>${esc(error)}</p>
-          </div>
-        `;
-      }
-
-      if (!cv) {
-        return `
-          <div class="empty-card">
-            <div class="document-section-title">CV file unavailable</div>
-            <p>No uploaded or generated CV file is available for this application.</p>
-          </div>
-        `;
-      }
-
+    // ---------- Shared bits ----------
+    function chipFilterBar(tab) {
+      const chips = FILTERS[tab] || [];
       return `
-        <div class="document-section">
-          <div class="document-section-header">
-            <div>
-              <div class="document-section-title">${esc(applicantName)}</div>
-              <div class="document-section-subtitle">
-                ${esc(application?.opportunityTitle || 'Application review')}
-              </div>
-            </div>
+        <div class="chip-row">
+          <div class="chip-group">
+            ${chips.map((c) => `<button class="chip${state.filter===c.v?' active':''}" data-filter-value="${c.v}">${c.i?`<i data-lucide="${c.i}"></i>`:''}${esc(c.l)}</button>`).join('')}
           </div>
-          <div class="list-card-meta">
-            <span class="meta-pill meta-pill-application">${esc(application?.status || 'submitted')}</span>
-            <span class="meta-pill">${esc(application?.companyName || 'Unknown company')}</span>
-            <span class="meta-pill">${esc(timestampLabel(application?.appliedAt) || 'Unknown time')}</span>
-          </div>
-          ${
-            contactParts.length
-              ? `<div class="document-card-copy">${esc(contactParts.join(' | '))}</div>`
-              : ''
-          }
-          <div class="document-card document-card-accent">
-            <div class="document-card-head">
-              <div class="document-card-title">Uploaded CV</div>
-              <span class="document-badge ${primary.isAvailable ? 'is-success' : 'is-muted'}">
-                ${primary.isAvailable ? 'Available' : 'Not uploaded'}
-              </span>
-            </div>
-            ${
-              primary.isAvailable
-                ? `
-                  <div class="document-card-meta">Uploaded CV: ${esc(primary.fileName || 'primary_cv.pdf')}</div>
-                  <div class="document-card-meta">Uploaded: ${esc(documentDateLabel(primary.uploadedAt))}</div>
-                  <div class="document-actions">
-                    <button
-                      class="btn-open"
-                      data-document-action="application-cv"
-                      data-application-id="${esc(application.id)}"
-                      data-variant="primary"
-                      data-mode="view"
-                    >
-                      View CV
-                    </button>
-                    <button
-                      class="btn-secondary"
-                      data-document-action="application-cv"
-                      data-application-id="${esc(application.id)}"
-                      data-variant="primary"
-                      data-mode="download"
-                    >
-                      Download CV
-                    </button>
-                  </div>
-                  ${
-                    primary.isPdf
-                      ? ''
-                      : '<div class="document-feedback is-warning">This file is not a PDF. Viewing may download the file instead of previewing it.</div>'
-                  }
-                `
-                : '<div class="document-card-meta">Primary CV file is not available for this applicant.</div>'
-            }
-          </div>
-          <div class="document-card">
-            <div class="document-card-head">
-              <div class="document-card-title">Built CV</div>
-              <span class="document-badge ${built.isAvailable ? 'is-success' : builtInfoAvailable ? 'is-warning' : 'is-muted'}">
-                ${built.isAvailable ? 'PDF available' : builtInfoAvailable ? 'Info only' : 'Not available'}
-              </span>
-            </div>
-            ${
-              built.isAvailable
-                ? `
-                  <div class="document-card-meta">Built CV PDF: ${esc(built.fileName || 'cv_builder.pdf')}</div>
-                  <div class="document-actions">
-                    <button
-                      class="btn-open"
-                      data-document-action="application-cv"
-                      data-application-id="${esc(application.id)}"
-                      data-variant="built"
-                      data-mode="view"
-                    >
-                      View Built CV
-                    </button>
-                    <button
-                      class="btn-secondary"
-                      data-document-action="application-cv"
-                      data-application-id="${esc(application.id)}"
-                      data-variant="built"
-                      data-mode="download"
-                    >
-                      Download Built CV
-                    </button>
-                  </div>
-                `
-                : builtInfoAvailable
-                ? '<div class="document-card-meta">Built CV details are available, but the PDF has not been generated yet.</div>'
-                : '<div class="document-card-meta">Built CV details are not available for this applicant.</div>'
-            }
-            ${
-              builtInfoAvailable && cv.summary
-                ? `<div class="document-card-copy">${esc(cv.summary)}</div>`
-                : ''
-            }
-            ${renderCvTagRow('Skills', Array.isArray(cv.skills) ? cv.skills.filter(Boolean) : [])}
-            ${renderCvTagRow('Languages', Array.isArray(cv.languages) ? cv.languages.filter(Boolean) : [])}
-          </div>
-          <div class="document-feedback" id="application-cv-feedback" aria-live="polite"></div>
+        </div>`;
+    }
+    function searchBar(placeholder) {
+      return `<div class="filter-bar">
+        <div class="search-bar" style="flex:1;"><i data-lucide="search"></i><input id="search" type="search" placeholder="${esc(placeholder)}" value="${esc(state.search)}"/></div>
+      </div>`;
+    }
+    function bindCommon() {
+      document.querySelectorAll('[data-filter-value]').forEach((b) => {
+        b.addEventListener('click', () => { state.filter = b.getAttribute('data-filter-value'); renderTab(); });
+      });
+      const s = document.getElementById('search');
+      if (s) s.addEventListener('input', (e) => { state.search = e.target.value; renderTab(); });
+    }
+    function matchesQuery(x, fields) {
+      const q = state.search.trim();
+      if (!q) return true;
+      return matchesSearch(fields, q);
+    }
+    function bindRowActions(handler) {
+      document.getElementById('list')?.querySelectorAll('[data-action]').forEach((btn) => {
+        btn.addEventListener('click', () => handler(btn.getAttribute('data-id'), btn.getAttribute('data-action')));
+      });
+    }
+    function truncate(s, n) { return s && s.length > n ? s.slice(0, n - 1) + '…' : s; }
+    function toDateInput(value) {
+      const d = value?.toDate ? value.toDate() : (value?.seconds ? new Date(value.seconds * 1000) : (value instanceof Date ? value : null));
+      if (!d) return '';
+      return d.toISOString().slice(0, 10);
+    }
+    function splitLines(s) { return String(s || '').split(/\r?\n/).map((x) => x.trim()).filter(Boolean); }
+    function splitCsv(s) { return String(s || '').split(',').map((x) => x.trim()).filter(Boolean); }
+    function joinLines(arr) { return Array.isArray(arr) ? arr.join('\n') : ''; }
+    function joinCsv(arr) { return Array.isArray(arr) ? arr.join(', ') : ''; }
+    function section(title, icon, innerHtml) {
+      return `<div class="profile-section">
+        <div class="profile-section__title"><i data-lucide="${icon}"></i>${esc(title)}</div>
+        ${innerHtml}
+      </div>`;
+    }
+
+    // =============== IDEAS ===============
+    function renderIdeasTab(panel) {
+      let items = state.ideas.slice();
+      if (state.filter === 'pending')  items = items.filter((x) => (x.status || 'pending') === 'pending');
+      if (state.filter === 'approved') items = items.filter((x) => x.status === 'approved');
+      if (state.filter === 'rejected') items = items.filter((x) => x.status === 'rejected');
+      if (state.filter === 'hidden')   items = items.filter((x) => x.isHidden === true);
+      items = items.filter((x) => matchesQuery(x, [x.title, x.tagline, x.shortDescription, x.description, x.domain, x.submittedByName]));
+
+      panel.innerHTML = `
+        ${chipFilterBar('ideas')}
+        ${searchBar('Search ideas...')}
+        <div style="display:flex; justify-content:flex-end; margin-bottom:12px;">
+          <button class="btn btn-primary" id="new-idea"><i data-lucide="plus"></i>New idea</button>
         </div>
+        <div class="list-grid" id="list">${items.length ? items.map(renderIdeaRow).join('') : emptyStateHtml('Try a different filter.', { title: 'No project ideas', icon: 'lightbulb' })}</div>
       `;
+      bindCommon();
+      document.getElementById('new-idea').addEventListener('click', () => openIdeaEditor(null));
+      bindRowActions((id, action) => handleIdeaAction(id, action));
+      if (window.lucide) window.lucide.createIcons();
     }
 
-    function setApplicationCvFeedback(message, type = '') {
-      const feedback = document.getElementById('application-cv-feedback');
-      if (!feedback) {
-        return;
-      }
-
-      feedback.className = type ? `document-feedback is-${type}` : 'document-feedback';
-      feedback.textContent = message || '';
+    function renderIdeaRow(it) {
+      const status = it.status || 'pending';
+      const badgeClass = status === 'approved' ? 'success' : status === 'rejected' ? 'danger' : 'warning';
+      return `<div class="item-row" data-row-id="${it.id}">
+        <div class="activity-icon" style="background:rgba(245,158,11,0.14);color:#F59E0B"><i data-lucide="lightbulb"></i></div>
+        <div class="row-body">
+          <div class="row-title">${esc(it.title || 'Untitled idea')}</div>
+          <div class="row-sub">${esc(truncate(it.tagline || it.shortDescription || it.description || '', 140))}</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">
+            <span class="badge badge-${badgeClass}">${esc(status)}</span>
+            ${it.isHidden ? '<span class="badge badge-danger"><i data-lucide="eye-off"></i>Hidden</span>' : ''}
+            ${it.domain ? `<span class="badge"><i data-lucide="tag"></i>${esc(it.domain)}</span>` : ''}
+            ${it.academicLevel ? `<span class="badge">${esc(it.academicLevel)}</span>` : ''}
+            ${it.submittedByName ? `<span class="badge"><i data-lucide="user"></i>${esc(it.submittedByName)}</span>` : ''}
+            <span class="badge"><i data-lucide="calendar"></i>${esc(formatTimestamp(it.createdAt) || '—')}</span>
+          </div>
+        </div>
+        <div class="row-actions">
+          ${status !== 'approved' ? `<button class="btn btn-sm btn-success" data-id="${it.id}" data-action="approve" title="Approve"><i data-lucide="check"></i></button>` : ''}
+          ${status !== 'rejected' ? `<button class="btn btn-sm btn-danger" data-id="${it.id}" data-action="reject" title="Reject"><i data-lucide="x"></i></button>` : ''}
+          <button class="btn btn-sm" data-id="${it.id}" data-action="toggle-hide" title="${it.isHidden ? 'Unhide' : 'Hide'}"><i data-lucide="${it.isHidden ? 'eye' : 'eye-off'}"></i></button>
+          <button class="btn btn-sm" data-id="${it.id}" data-action="edit" title="Edit"><i data-lucide="pencil"></i></button>
+          <button class="btn btn-sm btn-danger" data-id="${it.id}" data-action="delete" title="Delete"><i data-lucide="trash-2"></i></button>
+        </div>
+      </div>`;
     }
 
-    function closeApplicationCvModal() {
-      activeApplicationCvId = '';
-      document.getElementById('cv-review-modal').classList.remove('show');
-    }
-
-    async function handleApplicationCvAction(button) {
-      const applicationId = button.dataset.applicationId || '';
-      const variant = button.dataset.variant || 'primary';
-      const mode = button.dataset.mode || 'view';
-      const isDownload = mode === 'download';
-      const originalLabel = button.textContent;
-
-      button.disabled = true;
-      button.textContent = isDownload ? 'Preparing...' : 'Opening...';
-      setApplicationCvFeedback('Preparing a secure CV link...', 'loading');
-
+    async function handleIdeaAction(id, action) {
+      const ref = doc(db, 'projectIdeas', id);
+      const it = state.ideas.find((x) => x.id === id);
       try {
-        const documentLink = await getApplicationCvDocument(applicationId, { variant });
-        openDocumentUrl(
-          isDownload ? documentLink?.downloadUrl : documentLink?.viewUrl,
-          {
-            download: isDownload,
-            fileName: documentLink?.fileName || '',
-          },
-        );
-        setApplicationCvFeedback(
-          isDownload ? 'Download started.' : 'Opening document in a new tab...',
-          'success',
-        );
-      } catch (error) {
-        const message = friendlyDocumentErrorMessage(error);
-        setApplicationCvFeedback(message, 'error');
-        showToast(message, 'error');
-      } finally {
-        button.disabled = false;
-        button.textContent = originalLabel;
+        if (action === 'approve') { await updateDoc(ref, { status: 'approved' }); it.status = 'approved'; showToast('Idea approved.', 'success'); }
+        else if (action === 'reject') { await updateDoc(ref, { status: 'rejected' }); it.status = 'rejected'; showToast('Idea rejected.', 'success'); }
+        else if (action === 'toggle-hide') { const next = !it.isHidden; await updateDoc(ref, { isHidden: next }); it.isHidden = next; showToast(next ? 'Idea hidden.' : 'Idea visible again.', 'success'); }
+        else if (action === 'edit') return openIdeaEditor(it);
+        else if (action === 'delete') {
+          if (!confirm('Delete this idea?')) return;
+          await deleteDoc(ref);
+          state.ideas = state.ideas.filter((x) => x.id !== id);
+          showToast('Idea deleted.', 'success');
+        }
+        renderStats(); renderTab();
+      } catch (e) { console.error(e); showToast('Action failed.', 'error'); }
+    }
+
+    function openIdeaEditor(it) {
+      document.getElementById('editor-title').textContent = it ? 'Edit idea' : 'New idea';
+      document.getElementById('editor-body').innerHTML = `
+        ${section('Core story', 'book-open', `
+          <div class="form-row"><label>Title *</label><input id="f-title" type="text" value="${esc(it?.title || '')}"/></div>
+          <div class="form-row"><label>Tagline</label><input id="f-tagline" type="text" value="${esc(it?.tagline || '')}"/></div>
+          <div class="form-row"><label>Short description</label><textarea id="f-short" rows="2">${esc(it?.shortDescription || '')}</textarea></div>
+          <div class="form-row"><label>Full description</label><textarea id="f-description" rows="6">${esc(it?.description || '')}</textarea></div>
+        `)}
+        ${section('Metadata', 'tag', `
+          <div class="form-grid-2">
+            <div class="form-row"><label>Domain</label><input id="f-domain" type="text" value="${esc(it?.domain || '')}"/></div>
+            <div class="form-row"><label>Academic level</label>
+              <select id="f-level">
+                <option value="">—</option>
+                ${['Bac','Licence','Master','Doctorat'].map((lv) => `<option value="${lv}" ${it?.academicLevel===lv?'selected':''}>${lv}</option>`).join('')}
+              </select>
+            </div>
+            <div class="form-row"><label>Category</label><input id="f-category" type="text" value="${esc(it?.category || '')}"/></div>
+            <div class="form-row"><label>Stage</label>
+              <select id="f-stage">
+                <option value="">—</option>
+                ${['Concept','Prototype','MVP','Launched'].map((lv) => `<option value="${lv}" ${it?.stage===lv?'selected':''}>${lv}</option>`).join('')}
+              </select>
+            </div>
+            <div class="form-row"><label>Language</label>
+              <select id="f-lang">
+                ${[['fr','French'],['en','English'],['ar','Arabic']].map(([v,l]) => `<option value="${v}" ${((it?.originalLanguage||'fr')===v)?'selected':''}>${l}</option>`).join('')}
+              </select>
+            </div>
+            <div class="form-row"><label>Status</label>
+              <select id="f-status">
+                ${['pending','approved','rejected'].map((s) => `<option value="${s}" ${(it?.status||'pending')===s?'selected':''}>${s}</option>`).join('')}
+              </select>
+            </div>
+          </div>
+        `)}
+        ${section('Collaboration', 'users', `
+          <div class="form-row"><label>Tools / stack (comma separated)</label><input id="f-tools" type="text" value="${esc(joinCsv(it?.tools))}"/></div>
+          <div class="form-row"><label>Tags (comma separated)</label><input id="f-tags" type="text" value="${esc(joinCsv(it?.tags))}"/></div>
+          <div class="form-row"><label>Skills needed (comma separated)</label><input id="f-skills" type="text" value="${esc(joinCsv(it?.skillsNeeded))}"/></div>
+          <div class="form-row"><label>Team roles needed (comma separated)</label><input id="f-roles" type="text" value="${esc(joinCsv(it?.teamRoles))}"/></div>
+          <div class="form-row"><label>Target audience</label><input id="f-audience" type="text" value="${esc(it?.targetAudience || '')}"/></div>
+          <div class="form-row"><label>Problem statement</label><textarea id="f-problem" rows="3">${esc(it?.problemStatement || '')}</textarea></div>
+          <div class="form-row"><label>Solution</label><textarea id="f-solution" rows="3">${esc(it?.solution || '')}</textarea></div>
+          <div class="form-row"><label>Resources needed</label><textarea id="f-resources" rows="2">${esc(it?.resourcesNeeded || '')}</textarea></div>
+          <div class="form-row"><label>Benefits / impact</label><textarea id="f-benefits" rows="2">${esc(it?.benefits || '')}</textarea></div>
+          <div style="display:flex;gap:18px;flex-wrap:wrap;margin-top:10px;">
+            <label style="display:flex;align-items:center;gap:8px;"><input id="f-hidden" type="checkbox" ${it?.isHidden?'checked':''}/> Hidden</label>
+            <label style="display:flex;align-items:center;gap:8px;"><input id="f-open" type="checkbox" ${it?.openForCollab?'checked':''}/> Open to collaboration</label>
+          </div>
+        `)}
+      `;
+      openModal('editor-modal');
+      document.getElementById('editor-save').onclick = async () => {
+        const payload = {
+          title: v('f-title'), tagline: v('f-tagline'),
+          shortDescription: v('f-short'), description: v('f-description'),
+          domain: v('f-domain'), academicLevel: v('f-level'),
+          category: v('f-category'), stage: v('f-stage'),
+          originalLanguage: v('f-lang'), status: v('f-status'),
+          tools: splitCsv(v('f-tools')), tags: splitCsv(v('f-tags')),
+          skillsNeeded: splitCsv(v('f-skills')), teamRoles: splitCsv(v('f-roles')),
+          targetAudience: v('f-audience'), problemStatement: v('f-problem'),
+          solution: v('f-solution'), resourcesNeeded: v('f-resources'),
+          benefits: v('f-benefits'),
+          isHidden: document.getElementById('f-hidden').checked,
+          openForCollab: document.getElementById('f-open').checked,
+        };
+        if (!payload.title) { showToast('Title is required.', 'warning'); return; }
+        try {
+          if (it) {
+            await updateDoc(doc(db, 'projectIdeas', it.id), payload);
+            Object.assign(it, payload);
+            showToast('Idea updated.', 'success');
+          } else {
+            const ref = doc(collection(db, 'projectIdeas'));
+            const created = { ...payload, createdAt: serverTimestamp(), submittedBy: auth.currentUser?.uid || '', submittedByName: 'Admin' };
+            await setDoc(ref, created);
+            state.ideas.unshift({ id: ref.id, ...created, createdAt: { toDate: () => new Date() } });
+            showToast('Idea created.', 'success');
+          }
+          closeModal('editor-modal'); renderStats(); renderTab();
+        } catch (e) { console.error(e); showToast('Save failed.', 'error'); }
+      };
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    // =============== OPPORTUNITIES ===============
+    function isLatest(it) {
+      const d = it.createdAt?.toDate ? it.createdAt.toDate() : (it.createdAt?.seconds ? new Date(it.createdAt.seconds * 1000) : null);
+      if (!d) return false;
+      return (Date.now() - d.getTime()) < 30 * 24 * 3600 * 1000;
+    }
+    function oppPendingAppsCount(oppId) {
+      return state.applications.filter((a) => a.opportunityId === oppId && (a.status || 'pending') === 'pending').length;
+    }
+
+    function renderOppsTab(panel) {
+      let items = state.opportunities.slice();
+      if (state.filter === 'latest')     items = items.filter(isLatest);
+      if (state.filter === 'admin')      items = items.filter((x) => x.createdByRole === 'admin' || x.postedBy === 'admin');
+      if (state.filter === 'pendingApps')items = items.filter((x) => oppPendingAppsCount(x.id) > 0);
+      if (state.filter === 'closed')     items = items.filter((x) => x.status === 'closed');
+      if (state.filter === 'featured')   items = items.filter((x) => x.isFeatured === true);
+      if (state.filter === 'hidden')     items = items.filter((x) => x.isHidden === true);
+      items = items.filter((x) => matchesQuery(x, [x.title, x.companyName, x.location, x.type, x.description]));
+
+      panel.innerHTML = `
+        ${chipFilterBar('opportunities')}
+        ${searchBar('Search opportunities...')}
+        <div style="display:flex; justify-content:flex-end; margin-bottom:12px;">
+          <button class="btn btn-primary" id="new-opp"><i data-lucide="plus"></i>New opportunity</button>
+        </div>
+        <div class="list-grid" id="list">${items.length ? items.map(renderOppRow).join('') : emptyStateHtml('Nothing to show here yet.', { title: 'No opportunities', icon: 'briefcase' })}</div>
+      `;
+      bindCommon();
+      document.getElementById('new-opp').addEventListener('click', () => openOppEditor(null));
+      bindRowActions((id, action) => handleOppAction(id, action));
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function renderOppRow(it) {
+      const pendingCount = oppPendingAppsCount(it.id);
+      const type = it.type || it.opportunityType || '—';
+      return `<div class="item-row" data-row-id="${it.id}">
+        <div class="activity-icon" style="background:rgba(245,158,11,0.14);color:#F59E0B"><i data-lucide="briefcase"></i></div>
+        <div class="row-body">
+          <div class="row-title">${esc(it.title || 'Untitled')}</div>
+          <div class="row-sub">${esc(it.companyName || '—')} · ${esc(it.location || '—')} · ${esc(type)}</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">
+            ${it.status ? `<span class="badge">${esc(it.status)}</span>` : ''}
+            ${it.isFeatured ? '<span class="badge badge-warning"><i data-lucide="star"></i>Featured</span>' : ''}
+            ${it.isHidden ? '<span class="badge badge-danger"><i data-lucide="eye-off"></i>Hidden</span>' : ''}
+            ${pendingCount ? `<span class="badge badge-info"><i data-lucide="hourglass"></i>${pendingCount} pending</span>` : ''}
+            <span class="badge"><i data-lucide="calendar"></i>${esc(formatTimestamp(it.createdAt) || '—')}</span>
+          </div>
+        </div>
+        <div class="row-actions">
+          <button class="btn btn-sm" data-id="${it.id}" data-action="toggle-feature" title="${it.isFeatured ? 'Unfeature' : 'Feature'}"><i data-lucide="star"></i></button>
+          <button class="btn btn-sm" data-id="${it.id}" data-action="toggle-hide" title="${it.isHidden ? 'Unhide' : 'Hide'}"><i data-lucide="${it.isHidden ? 'eye' : 'eye-off'}"></i></button>
+          <button class="btn btn-sm" data-id="${it.id}" data-action="edit" title="Edit"><i data-lucide="pencil"></i></button>
+          <button class="btn btn-sm btn-danger" data-id="${it.id}" data-action="delete" title="Delete"><i data-lucide="trash-2"></i></button>
+        </div>
+      </div>`;
+    }
+
+    async function handleOppAction(id, action) {
+      const ref = doc(db, 'opportunities', id);
+      const it = state.opportunities.find((x) => x.id === id);
+      try {
+        if (action === 'toggle-feature') { const next = !it.isFeatured; await updateDoc(ref, { isFeatured: next }); it.isFeatured = next; showToast(next ? 'Featured.' : 'Unfeatured.', 'success'); }
+        else if (action === 'toggle-hide') { const next = !it.isHidden; await updateDoc(ref, { isHidden: next }); it.isHidden = next; showToast(next ? 'Opportunity hidden.' : 'Opportunity visible.', 'success'); }
+        else if (action === 'edit') return openOppEditor(it);
+        else if (action === 'delete') {
+          if (!confirm('Delete this opportunity?')) return;
+          await deleteDoc(ref);
+          state.opportunities = state.opportunities.filter((x) => x.id !== id);
+          showToast('Opportunity deleted.', 'success');
+        }
+        renderStats(); renderTab();
+      } catch (e) { console.error(e); showToast('Action failed.', 'error'); }
+    }
+
+    function openOppEditor(it) {
+      document.getElementById('editor-title').textContent = it ? 'Edit opportunity' : 'New opportunity';
+      const deadline = toDateInput(it?.applicationDeadline || it?.deadline);
+      const opType = it?.type || it?.opportunityType || 'job';
+
+      document.getElementById('editor-body').innerHTML = `
+        ${section('Basic information', 'info', `
+          <div class="form-grid-2">
+            <div class="form-row"><label>Title *</label><input id="f-title" type="text" value="${esc(it?.title || '')}"/></div>
+            <div class="form-row"><label>Publisher / company *</label><input id="f-company" type="text" value="${esc(it?.companyName || '')}"/></div>
+            <div class="form-row"><label>Location *</label><input id="f-location" type="text" value="${esc(it?.location || '')}"/></div>
+            <div class="form-row"><label>Type</label>
+              <select id="f-type">
+                ${[['job','Job'],['internship','Internship'],['sponsoring','Sponsoring / Funding'],['contract','Contract'],['volunteer','Volunteer'],['freelance','Freelance']].map(([v,l]) => `<option value="${v}" ${opType===v?'selected':''}>${l}</option>`).join('')}
+              </select>
+            </div>
+            <div class="form-row"><label>Language</label>
+              <select id="f-lang">
+                ${[['fr','French'],['en','English'],['ar','Arabic']].map(([v,l]) => `<option value="${v}" ${((it?.originalLanguage||'fr')===v)?'selected':''}>${l}</option>`).join('')}
+              </select>
+            </div>
+            <div class="form-row"><label>Status</label>
+              <select id="f-status">
+                <option value="active" ${(it?.status||'active')==='active'?'selected':''}>Open</option>
+                <option value="closed" ${it?.status==='closed'?'selected':''}>Closed</option>
+                <option value="draft"  ${it?.status==='draft'?'selected':''}>Draft</option>
+              </select>
+            </div>
+          </div>
+        `)}
+        ${section('Description', 'file-text', `
+          <div class="form-row"><label>Description *</label><textarea id="f-description" rows="6">${esc(it?.description || '')}</textarea></div>
+          <div class="form-row"><label>Requirements / eligibility (one per line)</label><textarea id="f-requirements" rows="4">${esc(joinLines(it?.requirements || it?.eligibilityItems))}</textarea></div>
+        `)}
+        ${section('Logistics', 'calendar', `
+          <div class="form-grid-2">
+            <div class="form-row"><label>Application deadline</label><input id="f-deadline" type="date" value="${esc(deadline)}"/></div>
+            <div class="form-row"><label>Application URL</label><input id="f-applyUrl" type="url" value="${esc(it?.applyUrl || '')}"/></div>
+          </div>
+          <div id="opp-type-fields"></div>
+        `)}
+        ${section('Visibility', 'eye', `
+          <div style="display:flex;gap:18px;flex-wrap:wrap;">
+            <label style="display:flex;align-items:center;gap:8px;"><input id="f-featured" type="checkbox" ${it?.isFeatured?'checked':''}/> Featured</label>
+            <label style="display:flex;align-items:center;gap:8px;"><input id="f-hidden" type="checkbox" ${it?.isHidden?'checked':''}/> Hidden</label>
+          </div>
+        `)}
+      `;
+
+      function renderOppTypeFields() {
+        const t = document.getElementById('f-type').value;
+        const el = document.getElementById('opp-type-fields');
+        const currency = it?.salaryCurrency || it?.fundingCurrency || 'DZD';
+        if (t === 'job' || t === 'contract' || t === 'freelance') {
+          el.innerHTML = `
+            <div class="form-grid-2" style="margin-top:12px;">
+              <div class="form-row"><label>Salary min</label><input id="f-salaryMin" type="number" value="${esc(it?.salaryMin ?? '')}"/></div>
+              <div class="form-row"><label>Salary max</label><input id="f-salaryMax" type="number" value="${esc(it?.salaryMax ?? '')}"/></div>
+              <div class="form-row"><label>Currency</label>
+                <select id="f-currency">
+                  ${['DZD','EUR','USD'].map((c) => `<option value="${c}" ${currency===c?'selected':''}>${c}</option>`).join('')}
+                </select>
+              </div>
+              <div class="form-row"><label>Salary period</label>
+                <select id="f-salaryPeriod">
+                  ${[['monthly','Monthly'],['yearly','Yearly'],['hourly','Hourly'],['daily','Daily']].map(([v,l]) => `<option value="${v}" ${(it?.salaryPeriod||'monthly')===v?'selected':''}>${l}</option>`).join('')}
+                </select>
+              </div>
+              <div class="form-row"><label>Employment type</label>
+                <select id="f-employment">
+                  ${[['full_time','Full-time'],['part_time','Part-time'],['contract','Contract'],['internship','Internship']].map(([v,l]) => `<option value="${v}" ${(it?.employmentType||'full_time')===v?'selected':''}>${l}</option>`).join('')}
+                </select>
+              </div>
+              <div class="form-row"><label>Work mode</label>
+                <select id="f-workmode">
+                  ${[['onsite','On-site'],['remote','Remote'],['hybrid','Hybrid']].map(([v,l]) => `<option value="${v}" ${(it?.workMode||'onsite')===v?'selected':''}>${l}</option>`).join('')}
+                </select>
+              </div>
+            </div>`;
+        } else if (t === 'internship') {
+          el.innerHTML = `
+            <div class="form-grid-2" style="margin-top:12px;">
+              <div class="form-row"><label>Duration (e.g. 3 months)</label><input id="f-duration" type="text" value="${esc(it?.duration || '')}"/></div>
+              <div class="form-row"><label>Work mode</label>
+                <select id="f-workmode">
+                  ${[['onsite','On-site'],['remote','Remote'],['hybrid','Hybrid']].map(([v,l]) => `<option value="${v}" ${(it?.workMode||'onsite')===v?'selected':''}>${l}</option>`).join('')}
+                </select>
+              </div>
+              <div class="form-row"><label>Paid?</label>
+                <select id="f-paid"><option value="true" ${it?.isPaid?'selected':''}>Paid</option><option value="false" ${it?.isPaid===false?'selected':''}>Unpaid</option></select>
+              </div>
+              <div class="form-row"><label>Compensation note</label><input id="f-compNote" type="text" value="${esc(it?.compensationNote || '')}"/></div>
+            </div>`;
+        } else if (t === 'sponsoring') {
+          el.innerHTML = `
+            <div class="form-grid-2" style="margin-top:12px;">
+              <div class="form-row"><label>Funding amount</label><input id="f-fundAmount" type="number" value="${esc(it?.fundingAmount ?? '')}"/></div>
+              <div class="form-row"><label>Currency</label>
+                <select id="f-currency">
+                  ${['DZD','EUR','USD'].map((c) => `<option value="${c}" ${currency===c?'selected':''}>${c}</option>`).join('')}
+                </select>
+              </div>
+              <div class="form-row" style="grid-column:1/-1;"><label>Funding note</label><input id="f-fundNote" type="text" value="${esc(it?.fundingNote || '')}"/></div>
+            </div>`;
+        } else {
+          el.innerHTML = '';
+        }
+        if (window.lucide) window.lucide.createIcons();
+      }
+      document.getElementById('f-type').addEventListener('change', renderOppTypeFields);
+      renderOppTypeFields();
+
+      openModal('editor-modal');
+      document.getElementById('editor-save').onclick = async () => {
+        const t = v('f-type');
+        const dl = v('f-deadline');
+        const payload = {
+          title: v('f-title'), companyName: v('f-company'), location: v('f-location'),
+          type: t, originalLanguage: v('f-lang'), status: v('f-status'),
+          description: v('f-description'),
+          requirements: splitLines(v('f-requirements')),
+          applyUrl: v('f-applyUrl'),
+          applicationDeadline: dl ? new Date(dl + 'T00:00:00') : null,
+          isFeatured: document.getElementById('f-featured').checked,
+          isHidden: document.getElementById('f-hidden').checked,
+        };
+        if (t === 'job' || t === 'contract' || t === 'freelance') {
+          Object.assign(payload, {
+            salaryMin: numOrNull('f-salaryMin'), salaryMax: numOrNull('f-salaryMax'),
+            salaryCurrency: v('f-currency'), salaryPeriod: v('f-salaryPeriod'),
+            employmentType: v('f-employment'), workMode: v('f-workmode'),
+          });
+        } else if (t === 'internship') {
+          Object.assign(payload, {
+            duration: v('f-duration'), workMode: v('f-workmode'),
+            isPaid: v('f-paid') === 'true', compensationNote: v('f-compNote'),
+          });
+        } else if (t === 'sponsoring') {
+          Object.assign(payload, {
+            fundingAmount: numOrNull('f-fundAmount'),
+            fundingCurrency: v('f-currency'), fundingNote: v('f-fundNote'),
+          });
+        }
+        if (!payload.title || !payload.companyName || !payload.location || !payload.description) {
+          showToast('Title, company, location and description are required.', 'warning'); return;
+        }
+        try {
+          if (it) {
+            await updateDoc(doc(db, 'opportunities', it.id), payload);
+            Object.assign(it, payload);
+            showToast('Opportunity updated.', 'success');
+          } else {
+            const ref = doc(collection(db, 'opportunities'));
+            const created = { ...payload, createdAt: serverTimestamp(), createdByRole: 'admin', createdBy: auth.currentUser?.uid || '' };
+            await setDoc(ref, created);
+            state.opportunities.unshift({ id: ref.id, ...created, createdAt: { toDate: () => new Date() } });
+            showToast('Opportunity created.', 'success');
+          }
+          closeModal('editor-modal'); renderStats(); renderTab();
+        } catch (e) { console.error(e); showToast('Save failed.', 'error'); }
+      };
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    // =============== SCHOLARSHIPS ===============
+    function renderScholarsTab(panel) {
+      let items = state.scholarships.slice();
+      if (state.filter === 'featured') items = items.filter((x) => x.isFeatured === true);
+      if (state.filter === 'hidden')   items = items.filter((x) => x.isHidden === true);
+      items = items.filter((x) => matchesQuery(x, [x.title, x.provider, x.country, x.city, x.description, x.category]));
+
+      panel.innerHTML = `
+        ${chipFilterBar('scholarships')}
+        ${searchBar('Search scholarships...')}
+        <div style="display:flex; justify-content:flex-end; margin-bottom:12px;">
+          <button class="btn btn-primary" id="new-scholar"><i data-lucide="plus"></i>New scholarship</button>
+        </div>
+        <div class="list-grid" id="list">${items.length ? items.map(renderScholarRow).join('') : emptyStateHtml('No scholarships yet.', { title: 'Empty', icon: 'graduation-cap' })}</div>
+      `;
+      bindCommon();
+      document.getElementById('new-scholar').addEventListener('click', () => openScholarEditor(null));
+      bindRowActions((id, action) => handleScholarAction(id, action));
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function renderScholarRow(it) {
+      const thumb = it.image || it.coverImage || '';
+      return `<div class="item-row" data-row-id="${it.id}">
+        <div class="user-avatar" style="border-radius:10px;width:56px;height:56px;background:#FFFFFF;border:1px solid var(--c-border);${thumb ? `background-image:url(${esc(thumb)});background-size:contain;background-repeat:no-repeat;background-position:center;` : ''}">
+          ${!thumb ? '<i data-lucide="graduation-cap" style="color:#E24A4A"></i>' : ''}
+        </div>
+        <div class="row-body">
+          <div class="row-title">${esc(it.title || 'Untitled')}</div>
+          <div class="row-sub">${esc(it.provider || '—')}${it.country ? ' · ' + esc(it.country) : ''}${it.deadline ? ' · Deadline ' + esc(formatTimestamp(it.deadline)) : ''}</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">
+            ${it.fundingType ? `<span class="badge"><i data-lucide="wallet"></i>${esc(it.fundingType)}</span>` : ''}
+            ${it.amount ? `<span class="badge"><i data-lucide="coins"></i>${esc(it.amount)}</span>` : ''}
+            ${it.level ? `<span class="badge">${esc(it.level)}</span>` : ''}
+            ${it.isFeatured ? '<span class="badge badge-warning"><i data-lucide="star"></i>Featured</span>' : ''}
+            ${it.isHidden ? '<span class="badge badge-danger"><i data-lucide="eye-off"></i>Hidden</span>' : ''}
+          </div>
+        </div>
+        <div class="row-actions">
+          <button class="btn btn-sm" data-id="${it.id}" data-action="toggle-feature" title="${it.isFeatured ? 'Unfeature' : 'Feature'}"><i data-lucide="star"></i></button>
+          <button class="btn btn-sm" data-id="${it.id}" data-action="toggle-hide" title="${it.isHidden ? 'Unhide' : 'Hide'}"><i data-lucide="${it.isHidden ? 'eye' : 'eye-off'}"></i></button>
+          <button class="btn btn-sm" data-id="${it.id}" data-action="edit" title="Edit"><i data-lucide="pencil"></i></button>
+          <button class="btn btn-sm btn-danger" data-id="${it.id}" data-action="delete" title="Delete"><i data-lucide="trash-2"></i></button>
+        </div>
+      </div>`;
+    }
+
+    async function handleScholarAction(id, action) {
+      const ref = doc(db, 'scholarships', id);
+      const it = state.scholarships.find((x) => x.id === id);
+      try {
+        if (action === 'toggle-feature') { const next = !it.isFeatured; await updateDoc(ref, { isFeatured: next }); it.isFeatured = next; showToast(next ? 'Featured.' : 'Unfeatured.', 'success'); }
+        else if (action === 'toggle-hide') { const next = !it.isHidden; await updateDoc(ref, { isHidden: next }); it.isHidden = next; showToast(next ? 'Hidden.' : 'Visible.', 'success'); }
+        else if (action === 'edit') return openScholarEditor(it);
+        else if (action === 'delete') {
+          if (!confirm('Delete this scholarship?')) return;
+          await deleteDoc(ref);
+          state.scholarships = state.scholarships.filter((x) => x.id !== id);
+          showToast('Scholarship deleted.', 'success');
+        }
+        renderStats(); renderTab();
+      } catch (e) { console.error(e); showToast('Action failed.', 'error'); }
+    }
+
+    function openScholarEditor(it) {
+      document.getElementById('editor-title').textContent = it ? 'Edit scholarship' : 'New scholarship';
+      const deadline = toDateInput(it?.deadline);
+      // Flutter supports multiple legacy eligibility keys
+      const eligibility = it?.eligibilityItems || it?.eligibility_items || it?.eligibility || [];
+
+      document.getElementById('editor-body').innerHTML = `
+        ${section('Basic info', 'info', `
+          <div class="form-grid-2">
+            <div class="form-row"><label>Title *</label><input id="f-title" type="text" value="${esc(it?.title || '')}"/></div>
+            <div class="form-row"><label>Provider</label><input id="f-provider" type="text" value="${esc(it?.provider || '')}"/></div>
+            <div class="form-row"><label>Language</label>
+              <select id="f-lang">
+                ${[['fr','French'],['en','English'],['ar','Arabic']].map(([v,l]) => `<option value="${v}" ${((it?.originalLanguage||'fr')===v)?'selected':''}>${l}</option>`).join('')}
+              </select>
+            </div>
+            <div class="form-row"><label>Category</label><input id="f-category" type="text" value="${esc(it?.category || '')}"/></div>
+            <div class="form-row"><label>Level</label>
+              <select id="f-level">
+                <option value="">—</option>
+                ${['Bac','Licence','Master','Doctorat'].map((l) => `<option value="${l}" ${it?.level===l?'selected':''}>${l}</option>`).join('')}
+              </select>
+            </div>
+            <div class="form-row"><label>Funding type</label>
+              <select id="f-fundingType">
+                <option value="">—</option>
+                ${[['fully_funded','Fully funded'],['partial','Partial'],['merit','Merit-based'],['needs','Needs-based']].map(([v,l]) => `<option value="${v}" ${it?.fundingType===v?'selected':''}>${l}</option>`).join('')}
+              </select>
+            </div>
+          </div>
+        `)}
+        ${section('Description', 'file-text', `
+          <div class="form-row"><label>Description</label><textarea id="f-description" rows="5">${esc(it?.description || '')}</textarea></div>
+          <div class="form-row"><label>Eligibility items (one per line)</label><textarea id="f-eligibility" rows="4">${esc(joinLines(eligibility))}</textarea></div>
+        `)}
+        ${section('Logistics', 'map-pin', `
+          <div class="form-grid-2">
+            <div class="form-row"><label>Amount</label><input id="f-amount" type="text" value="${esc(it?.amount ?? '')}"/></div>
+            <div class="form-row"><label>Deadline</label><input id="f-deadline" type="date" value="${esc(deadline)}"/></div>
+            <div class="form-row"><label>Country</label><input id="f-country" type="text" value="${esc(it?.country || '')}"/></div>
+            <div class="form-row"><label>City</label><input id="f-city" type="text" value="${esc(it?.city || '')}"/></div>
+            <div class="form-row"><label>Location label</label><input id="f-loclabel" type="text" value="${esc(it?.locationLabel || '')}"/></div>
+            <div class="form-row"><label>Application link</label><input id="f-applyUrl" type="url" value="${esc(it?.applyUrl || '')}"/></div>
+          </div>
+        `)}
+        ${section('Media & tags', 'image', `
+          <div class="form-row"><label>Image URL</label><input id="f-image" type="url" value="${esc(it?.image || '')}"/></div>
+          <div class="form-row"><label>Tags (comma separated)</label><input id="f-tags" type="text" value="${esc(joinCsv(it?.tags))}"/></div>
+          <div style="display:flex;gap:18px;flex-wrap:wrap;margin-top:10px;">
+            <label style="display:flex;align-items:center;gap:8px;"><input id="f-featured" type="checkbox" ${it?.isFeatured?'checked':''}/> Feature this scholarship</label>
+            <label style="display:flex;align-items:center;gap:8px;"><input id="f-hidden" type="checkbox" ${it?.isHidden?'checked':''}/> Hidden</label>
+          </div>
+        `)}
+      `;
+      openModal('editor-modal');
+      document.getElementById('editor-save').onclick = async () => {
+        const dl = v('f-deadline');
+        const payload = {
+          title: v('f-title'), provider: v('f-provider'),
+          originalLanguage: v('f-lang'), category: v('f-category'),
+          level: v('f-level'), fundingType: v('f-fundingType'),
+          description: v('f-description'),
+          eligibilityItems: splitLines(v('f-eligibility')),
+          amount: v('f-amount'),
+          deadline: dl ? new Date(dl + 'T00:00:00') : null,
+          country: v('f-country'), city: v('f-city'),
+          locationLabel: v('f-loclabel'), applyUrl: v('f-applyUrl'),
+          image: v('f-image'), tags: splitCsv(v('f-tags')),
+          isFeatured: document.getElementById('f-featured').checked,
+          isHidden: document.getElementById('f-hidden').checked,
+        };
+        if (!payload.title) { showToast('Title is required.', 'warning'); return; }
+        try {
+          if (it) {
+            await updateDoc(doc(db, 'scholarships', it.id), payload);
+            Object.assign(it, payload);
+            showToast('Scholarship updated.', 'success');
+          } else {
+            const ref = doc(collection(db, 'scholarships'));
+            const created = { ...payload, createdAt: serverTimestamp(), createdBy: auth.currentUser?.uid || '' };
+            await setDoc(ref, created);
+            state.scholarships.unshift({ id: ref.id, ...created, createdAt: { toDate: () => new Date() } });
+            showToast('Scholarship created.', 'success');
+          }
+          closeModal('editor-modal'); renderStats(); renderTab();
+        } catch (e) { console.error(e); showToast('Save failed.', 'error'); }
+      };
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    // =============== TRAININGS / LIBRARY ===============
+    function trainingSort(a, b) {
+      // Hidden last, approved middle, featured top, then date desc
+      const hiddenDelta = (a.isHidden ? 1 : 0) - (b.isHidden ? 1 : 0);
+      if (hiddenDelta) return hiddenDelta;
+      const featuredDelta = (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0);
+      if (featuredDelta) return featuredDelta;
+      const approvedDelta = ((b.isApproved !== false) ? 1 : 0) - ((a.isApproved !== false) ? 1 : 0);
+      if (approvedDelta) return approvedDelta;
+      const da = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 0;
+      const db_ = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 0;
+      return db_ - da;
+    }
+
+    function renderTrainingsTab(panel) {
+      panel.innerHTML = `
+        <div class="chip-row">
+          <div class="chip-group">
+            <button class="chip${state.librarySource==='overview'?' active':''}" data-lib-source="overview"><i data-lucide="layout-dashboard"></i>Overview</button>
+            <button class="chip${state.librarySource==='books'?' active':''}" data-lib-source="books"><i data-lucide="book"></i>Google Books</button>
+            <button class="chip${state.librarySource==='youtube'?' active':''}" data-lib-source="youtube"><i data-lucide="video"></i>YouTube</button>
+          </div>
+        </div>
+        <div id="lib-panel"></div>
+      `;
+      document.querySelectorAll('[data-lib-source]').forEach((b) => {
+        b.addEventListener('click', () => {
+          state.librarySource = b.getAttribute('data-lib-source');
+          renderTab();
+        });
+      });
+      if (state.librarySource === 'overview') renderLibraryOverview();
+      else renderImportPanel(state.librarySource);
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function renderLibraryOverview() {
+      const container = document.getElementById('lib-panel');
+      let items = state.trainings.slice().sort(trainingSort);
+      if (state.filter === 'featured') items = items.filter((x) => x.isFeatured === true);
+      if (state.filter === 'hidden')   items = items.filter((x) => x.isHidden === true);
+      if (state.filter === 'books')    items = items.filter((x) => (x.type || '').toLowerCase() === 'book' || (x.source || '').toLowerCase() === 'google_books');
+      if (state.filter === 'videos')   items = items.filter((x) => (x.type || '').toLowerCase() === 'video' || (x.source || '').toLowerCase() === 'youtube');
+      items = items.filter((x) => matchesQuery(x, [x.title, x.provider, x.source, x.description, x.domain]));
+
+      container.innerHTML = `
+        ${chipFilterBar('trainings')}
+        ${searchBar('Search library...')}
+        <div class="list-grid" id="list">${items.length ? items.map(renderTrainingRow).join('') : emptyStateHtml('Use Google Books or YouTube to import resources.', { title: 'Library is empty', icon: 'book-open' })}</div>
+      `;
+      bindCommon();
+      bindRowActions((id, action) => handleTrainingAction(id, action));
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function renderTrainingRow(it) {
+      const isVideo = (it.type || '').toLowerCase() === 'video' || (it.source || '').toLowerCase() === 'youtube';
+      const thumb = it.thumbnailUrl || it.coverImage || it.image || '';
+      const sourceLabel = it.source === 'google_books' ? 'Google Books' : it.source === 'youtube' ? 'YouTube' : (it.source || '');
+      return `<div class="item-row" data-row-id="${it.id}">
+        <div class="user-avatar" style="border-radius:8px;width:72px;height:54px;background:#F8FAFF;${thumb ? `background-image:url(${esc(thumb)});background-size:cover;background-position:center;` : ''}">
+          ${!thumb ? `<i data-lucide="${isVideo ? 'video' : 'book'}"></i>` : ''}
+        </div>
+        <div class="row-body">
+          <div class="row-title">${esc(it.title || 'Untitled')}</div>
+          <div class="row-sub">${esc(it.provider || '—')}${sourceLabel ? ' · ' + esc(sourceLabel) : ''}${it.duration ? ' · ' + esc(it.duration) : ''}</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">
+            <span class="badge ${isVideo?'badge-info':'badge-success'}"><i data-lucide="${isVideo?'video':'book'}"></i>${isVideo ? 'Video' : 'Book'}</span>
+            ${it.domain ? `<span class="badge"><i data-lucide="tag"></i>${esc(it.domain)}</span>` : ''}
+            ${it.level ? `<span class="badge">${esc(it.level)}</span>` : ''}
+            ${it.language ? `<span class="badge"><i data-lucide="languages"></i>${esc(it.language)}</span>` : ''}
+            ${it.rating ? `<span class="badge"><i data-lucide="star"></i>${esc(it.rating)}</span>` : ''}
+            ${it.learnerCount ? `<span class="badge"><i data-lucide="users"></i>${esc(it.learnerCount)}</span>` : ''}
+            ${it.hasCertificate ? `<span class="badge"><i data-lucide="award"></i>Certificate</span>` : ''}
+            ${it.isFeatured ? '<span class="badge badge-warning"><i data-lucide="star"></i>Featured</span>' : ''}
+            ${it.isHidden ? '<span class="badge badge-danger"><i data-lucide="eye-off"></i>Hidden</span>' : ''}
+            ${it.isApproved === false ? '<span class="badge badge-warning"><i data-lucide="clock"></i>Pending review</span>' : ''}
+          </div>
+        </div>
+        <div class="row-actions">
+          ${it.url ? `<a class="btn btn-sm" href="${esc(it.url)}" target="_blank" rel="noopener" title="Open source"><i data-lucide="external-link"></i></a>` : ''}
+          <button class="btn btn-sm" data-id="${it.id}" data-action="toggle-feature" title="${it.isFeatured ? 'Unfeature' : 'Feature'}"><i data-lucide="star"></i></button>
+          <button class="btn btn-sm" data-id="${it.id}" data-action="toggle-hide" title="${it.isHidden ? 'Unhide' : 'Hide'}"><i data-lucide="${it.isHidden ? 'eye' : 'eye-off'}"></i></button>
+          <button class="btn btn-sm btn-danger" data-id="${it.id}" data-action="delete" title="Delete"><i data-lucide="trash-2"></i></button>
+        </div>
+      </div>`;
+    }
+
+    async function handleTrainingAction(id, action) {
+      const ref = doc(db, 'trainings', id);
+      const it = state.trainings.find((x) => x.id === id);
+      try {
+        if (action === 'toggle-feature') { const next = !it.isFeatured; await updateDoc(ref, { isFeatured: next }); it.isFeatured = next; showToast(next ? 'Featured.' : 'Unfeatured.', 'success'); }
+        else if (action === 'toggle-hide') { const next = !it.isHidden; await updateDoc(ref, { isHidden: next }); it.isHidden = next; showToast(next ? 'Hidden.' : 'Visible.', 'success'); }
+        else if (action === 'delete') {
+          if (!confirm('Delete this resource?')) return;
+          await deleteDoc(ref);
+          state.trainings = state.trainings.filter((x) => x.id !== id);
+          showToast('Resource deleted.', 'success');
+        }
+        renderStats(); renderTab();
+      } catch (e) { console.error(e); showToast('Action failed.', 'error'); }
+    }
+
+    function renderImportPanel(kind) {
+      const container = document.getElementById('lib-panel');
+      const domains = ['Informatique','Medecine','Droit','Economie','Ingenierie','Sciences','Langues','Arts'];
+      const levels = ['Bac','Licence','Master','Doctorat','General'];
+      container.innerHTML = `
+        <div class="filter-bar">
+          <div class="search-bar" style="flex:1;"><i data-lucide="search"></i><input id="lib-q" type="search" placeholder="Search ${kind==='books'?'Google Books':'YouTube'}..."/></div>
+          <select id="lib-domain"><option value="">Any domain</option>${domains.map((d) => `<option>${d}</option>`).join('')}</select>
+          <select id="lib-level"><option value="">Any level</option>${levels.map((l) => `<option>${l}</option>`).join('')}</select>
+          <select id="lib-lang"><option value="any">Any language</option><option value="fr">FR</option><option value="en">EN</option><option value="ar">AR</option></select>
+          <button class="btn btn-primary" id="lib-search-btn"><i data-lucide="search"></i>Search</button>
+        </div>
+        <div id="lib-results" class="import-grid"></div>
+      `;
+      const run = () => (kind === 'books' ? runBooks() : runYoutube());
+      document.getElementById('lib-search-btn').addEventListener('click', run);
+      document.getElementById('lib-q').addEventListener('keydown', (e) => { if (e.key === 'Enter') run(); });
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    async function getToken() { return auth.currentUser ? auth.currentUser.getIdToken() : ''; }
+    function importMeta() {
+      return {
+        domain: document.getElementById('lib-domain')?.value || '',
+        level: document.getElementById('lib-level')?.value || '',
+        language: document.getElementById('lib-lang')?.value || 'any',
+      };
+    }
+
+    async function runBooks() {
+      const q = document.getElementById('lib-q').value.trim();
+      const results = document.getElementById('lib-results');
+      if (!q) { results.innerHTML = ''; return; }
+      results.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+      try {
+        const token = await getToken();
+        const items = await searchBooksViaWorker({ query: q, maxResults: 12, authToken: token });
+        if (!items.length) { results.innerHTML = emptyStateHtml('Try different keywords.', { title: 'No books found', icon: 'book' }); if (window.lucide) window.lucide.createIcons(); return; }
+        state.booksResults = items;
+        results.innerHTML = items.map((b, i) => `
+          <div class="import-card">
+            <div class="import-card-thumb">${b.thumbnail ? `<img src="${esc(b.thumbnail)}" alt=""/>` : `<i data-lucide="book" class="placeholder"></i>`}</div>
+            <div class="import-card-body">
+              <div class="import-card-title">${esc(b.title || 'Untitled')}</div>
+              <div class="import-card-meta">${esc((b.authors || []).join(', ') || '—')}</div>
+            </div>
+            <div class="import-card-footer">
+              ${b.previewLink ? `<a class="btn btn-sm" href="${esc(b.previewLink)}" target="_blank" rel="noopener"><i data-lucide="external-link"></i></a>` : ''}
+              <button class="btn btn-sm btn-primary" data-import-book="${i}" style="margin-left:auto;"><i data-lucide="download"></i>Import</button>
+            </div>
+          </div>`).join('');
+        results.querySelectorAll('[data-import-book]').forEach((btn) => {
+          btn.addEventListener('click', () => importBook(state.booksResults[Number(btn.getAttribute('data-import-book'))]));
+        });
+        if (window.lucide) window.lucide.createIcons();
+      } catch (e) {
+        console.error(e);
+        results.innerHTML = feedbackCardHtml('Search failed. Try again later.', { type: 'error' });
+        if (window.lucide) window.lucide.createIcons();
       }
     }
 
-    async function openApplicationCv(applicationId) {
-      const application = allApplications.find((item) => item.id === applicationId);
-      if (!application) {
-        showToast('This application is no longer available.', 'error');
-        return;
+    async function importBook(book) {
+      try {
+        const meta = importMeta();
+        const ref = doc(collection(db, 'trainings'));
+        const payload = {
+          title: book.title || 'Untitled', description: book.description || '',
+          provider: (book.authors || []).join(', '),
+          source: 'google_books', type: 'book',
+          url: book.previewLink || book.infoLink || '',
+          thumbnailUrl: book.thumbnail || '',
+          domain: meta.domain, level: meta.level, language: meta.language === 'any' ? '' : meta.language,
+          isFeatured: false, isHidden: false, isApproved: true,
+          createdAt: serverTimestamp(),
+          createdBy: auth.currentUser?.uid || '',
+        };
+        await setDoc(ref, payload);
+        state.trainings.push({ id: ref.id, ...payload, createdAt: { toDate: () => new Date() } });
+        renderStats();
+        showToast('Book imported to library.', 'success');
+      } catch (e) { console.error(e); showToast('Import failed.', 'error'); }
+    }
+
+    async function runYoutube() {
+      const q = document.getElementById('lib-q').value.trim();
+      const results = document.getElementById('lib-results');
+      if (!q) { results.innerHTML = ''; return; }
+      results.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+      try {
+        const token = await getToken();
+        const items = await searchYoutubeVideos({ query: q, maxResults: 12, authToken: token });
+        if (!items.length) { results.innerHTML = emptyStateHtml('Try different keywords.', { title: 'No videos found', icon: 'video-off' }); if (window.lucide) window.lucide.createIcons(); return; }
+        state.youtubeResults = items;
+        results.innerHTML = items.map((v_, i) => `
+          <div class="import-card">
+            <div class="import-card-thumb">${v_.thumbnail ? `<img src="${esc(v_.thumbnail)}" alt=""/>` : `<i data-lucide="video" class="placeholder"></i>`}</div>
+            <div class="import-card-body">
+              <div class="import-card-title">${esc(v_.title || 'Untitled')}</div>
+              <div class="import-card-meta">${esc(v_.channelTitle || '—')}</div>
+            </div>
+            <div class="import-card-footer">
+              ${v_.url ? `<a class="btn btn-sm" href="${esc(v_.url)}" target="_blank" rel="noopener"><i data-lucide="play"></i></a>` : ''}
+              <button class="btn btn-sm btn-primary" data-import-vid="${i}" style="margin-left:auto;"><i data-lucide="download"></i>Import</button>
+            </div>
+          </div>`).join('');
+        results.querySelectorAll('[data-import-vid]').forEach((btn) => {
+          btn.addEventListener('click', () => importVideo(state.youtubeResults[Number(btn.getAttribute('data-import-vid'))]));
+        });
+        if (window.lucide) window.lucide.createIcons();
+      } catch (e) {
+        console.error(e);
+        results.innerHTML = feedbackCardHtml('Search failed. Try again later.', { type: 'error' });
+        if (window.lucide) window.lucide.createIcons();
       }
+    }
 
-      activeApplicationCvId = applicationId;
-      const modal = document.getElementById('cv-review-modal');
-      const content = document.getElementById('cv-review-content');
-      content.innerHTML = renderApplicationCvModal(application, null, { loading: true });
-      modal.classList.add('show');
+    async function importVideo(video) {
+      try {
+        const meta = importMeta();
+        const ref = doc(collection(db, 'trainings'));
+        const payload = {
+          title: video.title || 'Untitled', description: video.description || '',
+          provider: video.channelTitle || '',
+          source: 'youtube', type: 'video',
+          url: video.url || '', thumbnailUrl: video.thumbnail || '',
+          domain: meta.domain, level: meta.level, language: meta.language === 'any' ? '' : meta.language,
+          isFeatured: false, isHidden: false, isApproved: true,
+          createdAt: serverTimestamp(),
+          createdBy: auth.currentUser?.uid || '',
+        };
+        await setDoc(ref, payload);
+        state.trainings.push({ id: ref.id, ...payload, createdAt: { toDate: () => new Date() } });
+        renderStats();
+        showToast('Video imported to library.', 'success');
+      } catch (e) { console.error(e); showToast('Import failed.', 'error'); }
+    }
 
+    // =============== APPLICATIONS ===============
+    function renderApplicationsTab(panel) {
+      let items = state.applications.slice();
+      if (state.filter !== 'all') items = items.filter((x) => (x.status || 'pending') === state.filter);
+      const oppMap = new Map(state.opportunities.map((o) => [o.id, o]));
+      items = items.filter((x) => {
+        const o = oppMap.get(x.opportunityId);
+        return matchesQuery(x, [x.studentName, o?.title, o?.companyName]);
+      });
+      panel.innerHTML = `
+        ${chipFilterBar('applications')}
+        ${searchBar('Search applications...')}
+        <div class="list-grid" id="list">${items.length ? items.map((it) => renderAppRow(it, oppMap.get(it.opportunityId))).join('') : emptyStateHtml('No applications match.', { title: 'No applications', icon: 'file-text' })}</div>
+      `;
+      bindCommon();
+      document.getElementById('list').querySelectorAll('[data-action]').forEach((btn) => {
+        btn.addEventListener('click', () => handleAppAction(btn.getAttribute('data-id'), btn.getAttribute('data-action')));
+      });
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function renderAppRow(it, opp) {
+      const status = it.status || 'pending';
+      const badgeClass = status === 'accepted' ? 'success' : status === 'rejected' ? 'danger' : status === 'reviewed' ? 'info' : 'warning';
+      return `<div class="item-row" data-row-id="${it.id}">
+        <div class="activity-icon" style="background:rgba(124,58,237,0.14);color:#7C3AED"><i data-lucide="file-text"></i></div>
+        <div class="row-body">
+          <div class="row-title">${esc(it.studentName || 'Student')} → ${esc(opp?.title || 'Opportunity')}</div>
+          <div class="row-sub">${esc(opp?.companyName || '—')} · ${esc(formatTimestamp(it.appliedAt) || '')}</div>
+          <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
+            <span class="badge badge-${badgeClass}">${esc(status)}</span>
+            ${it.coverLetter ? '<span class="badge"><i data-lucide="message-square"></i>Cover letter</span>' : ''}
+          </div>
+        </div>
+        <div class="row-actions">
+          <button class="btn btn-sm" data-id="${it.id}" data-action="cv"><i data-lucide="file"></i>CV</button>
+          ${status !== 'accepted' ? `<button class="btn btn-sm btn-success" data-id="${it.id}" data-action="accept"><i data-lucide="check"></i></button>` : ''}
+          ${status !== 'rejected' ? `<button class="btn btn-sm btn-danger" data-id="${it.id}" data-action="reject"><i data-lucide="x"></i></button>` : ''}
+          ${status === 'pending' ? `<button class="btn btn-sm" data-id="${it.id}" data-action="reviewed"><i data-lucide="eye"></i></button>` : ''}
+        </div>
+      </div>`;
+    }
+
+    async function handleAppAction(id, action) {
+      const ref = doc(db, 'applications', id);
+      const it = state.applications.find((x) => x.id === id);
+      try {
+        if (action === 'cv') return openCvViewer(id);
+        const map = { accept: 'accepted', reject: 'rejected', reviewed: 'reviewed' };
+        const next = map[action]; if (!next) return;
+        await updateDoc(ref, { status: next }); it.status = next;
+        showToast(`Application ${next}.`, 'success');
+        renderStats(); renderTab();
+      } catch (e) { console.error(e); showToast('Action failed.', 'error'); }
+    }
+
+    async function openCvViewer(applicationId) {
+      openModal('cv-modal');
+      const body = document.getElementById('cv-body');
+      body.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
       try {
         const cv = await getApplicationCv(applicationId);
-        if (activeApplicationCvId !== applicationId) {
-          return;
-        }
-
-        content.innerHTML = renderApplicationCvModal(application, cv);
-      } catch (error) {
-        console.error('Open application CV error:', error);
-        if (activeApplicationCvId !== applicationId) {
-          return;
-        }
-
-        const status = Number(error?.status);
-        const message = String(error?.message || error || '').toLowerCase();
-        if (status === 404 || message.includes('404') || message.includes('not found')) {
-          content.innerHTML = renderApplicationCvModal(application, null);
-          return;
-        }
-
-        content.innerHTML = renderApplicationCvModal(application, null, {
-          error: friendlyDocumentErrorMessage(
-            error,
-            'Could not load CV details for this application.',
-          ),
-        });
+        if (!cv) { body.innerHTML = emptyStateHtml('No CV is attached to this application.', { title: 'No CV', icon: 'file-x' }); if (window.lucide) window.lucide.createIcons(); return; }
+        body.innerHTML = `
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
+            <button class="btn" id="open-uploaded"><i data-lucide="file"></i>Open uploaded CV</button>
+            <button class="btn" id="open-built"><i data-lucide="file-text"></i>Open built CV</button>
+          </div>
+          <div class="profile-grid">
+            <div class="profile-block"><div class="profile-block-label">Full name</div><div class="profile-block-value">${esc(cv.fullName || '—')}</div></div>
+            <div class="profile-block"><div class="profile-block-label">Email</div><div class="profile-block-value">${esc(cv.email || '—')}</div></div>
+            <div class="profile-block"><div class="profile-block-label">Phone</div><div class="profile-block-value">${esc(cv.phone || '—')}</div></div>
+            <div class="profile-block"><div class="profile-block-label">Address</div><div class="profile-block-value">${esc(cv.address || '—')}</div></div>
+            ${cv.summary ? `<div class="profile-block" style="grid-column:1/-1;"><div class="profile-block-label">Summary</div><div class="profile-block-value">${esc(cv.summary)}</div></div>` : ''}
+            ${Array.isArray(cv.skills) && cv.skills.length ? `<div class="profile-block" style="grid-column:1/-1;"><div class="profile-block-label">Skills</div><div class="tag-list">${cv.skills.map((s)=>`<span class="badge">${esc(s)}</span>`).join('')}</div></div>` : ''}
+            ${Array.isArray(cv.languages) && cv.languages.length ? `<div class="profile-block" style="grid-column:1/-1;"><div class="profile-block-label">Languages</div><div class="tag-list">${cv.languages.map((s)=>`<span class="badge">${esc(s)}</span>`).join('')}</div></div>` : ''}
+          </div>
+        `;
+        body.querySelector('#open-uploaded')?.addEventListener('click', () => fetchAndOpenCv(applicationId, 'primary'));
+        body.querySelector('#open-built')?.addEventListener('click', () => fetchAndOpenCv(applicationId, 'built'));
+        if (window.lucide) window.lucide.createIcons();
+      } catch (e) {
+        body.innerHTML = feedbackCardHtml(friendlyDocumentErrorMessage(e), { type: 'error' });
+        if (window.lucide) window.lucide.createIcons();
       }
     }
-
-    function timestampLabel(value) {
-      if (!value) {
-        return '';
-      }
-
-      if (typeof value.toDate === 'function') {
-        return value.toDate().toLocaleString('en-US', {
-          month: 'short',
-          day: 'numeric',
-          year: 'numeric',
-          hour: 'numeric',
-          minute: '2-digit',
-        });
-      }
-
-      if (typeof value.seconds === 'number') {
-        return new Date(value.seconds * 1000).toLocaleString('en-US', {
-          month: 'short',
-          day: 'numeric',
-          year: 'numeric',
-          hour: 'numeric',
-          minute: '2-digit',
-        });
-      }
-
-      return String(value);
-    }
-
-    async function runGoogleBooksSearch() {
-      const { query: searchQuery, language } = trainingOptions();
-      if (!searchQuery) {
-        showToast('Please enter a search query', 'error');
-        return;
-      }
-
-      const searchButton = document.getElementById('training-search-btn');
-      trainingState.isSearching = true;
-      trainingState.hasSearched = true;
-      trainingState.searchError = '';
-      trainingState.results = [];
-      searchButton.disabled = true;
-      searchButton.textContent = 'Searching...';
-      renderBookResults();
-
+    async function fetchAndOpenCv(applicationId, variant) {
       try {
-        const authToken = await getAuthToken();
-        trainingState.results = await searchBooksRequest({
-          query: searchQuery,
-          langRestrict: language,
-          maxResults: 12,
-          authToken,
-        });
-        trainingState.searchError = '';
-      } catch (error) {
-        console.error('Search Google Books error:', {
-          status: error?.status,
-          message: error?.message,
-          payload: error?.payload,
-          error,
-        });
-        trainingState.results = [];
-        trainingState.searchError = friendlyErrorMessage(
-          error,
-          'Google Books search failed.',
-        );
-        showToast(
-          trainingState.searchError,
-          'error',
-        );
-      } finally {
-        trainingState.isSearching = false;
-        searchButton.disabled = false;
-        searchButton.textContent = 'Search Books';
-        renderBookResults();
-      }
+        const docResp = await getApplicationCvDocument(applicationId, { variant });
+        if (!docResp?.url) throw new Error('Document unavailable');
+        openDocumentUrl(docResp.url, { fileName: docResp.fileName });
+      } catch (e) { showToast(friendlyDocumentErrorMessage(e), 'error'); }
     }
 
-    async function importSelectedBook(bookId) {
-      const selectedBook = trainingState.results.find(
-        (item) => item.googleBookId === bookId,
-      );
-      if (!selectedBook) {
-        showToast('The selected Google Book is no longer available.', 'error');
-        return;
-      }
-
-      const { domain, level, language, isFeatured } = trainingOptions();
-      trainingState.importingBookId = bookId;
-      renderBookResults();
-
-      try {
-        const result = await workerFetch('/api/trainings/import/google-book', {
-          method: 'POST',
-          body: JSON.stringify({
-            selectedBook,
-            domain,
-            level,
-            languageOverride: language,
-            isFeatured,
-          }),
-        });
-
-        await refreshTrainings(false);
-
-        showToast(
-          result.alreadyExisted
-            ? 'Book already existed and was updated in trainings'
-            : 'Book imported into trainings',
-          'success',
-        );
-      } catch (error) {
-        console.error('Import Google Book error:', error);
-        showToast(
-          friendlyErrorMessage(error, 'Failed to import Google Book.'),
-          'error',
-        );
-      } finally {
-        trainingState.importingBookId = '';
-        renderBookResults();
-      }
-    }
-
-    async function searchYoutubeVideos() {
-      const { query: searchQuery } = youtubeTrainingOptions();
-      if (!searchQuery) {
-        showToast('Please enter a search query', 'error');
-        return;
-      }
-
-      const searchButton = document.getElementById('youtube-search-btn');
-      youtubeState.isSearching = true;
-      youtubeState.hasSearched = true;
-      youtubeState.searchError = '';
-      youtubeState.results = [];
-      searchButton.disabled = true;
-      searchButton.textContent = 'Searching...';
-      renderYoutubeResults();
-
-      try {
-        const authToken = await getAuthToken();
-        youtubeState.results = await searchYoutubeVideosRequest({
-          query: searchQuery,
-          maxResults: 12,
-          authToken,
-        });
-        youtubeState.searchError = '';
-      } catch (error) {
-        console.error('Search YouTube error:', {
-          status: error?.status,
-          message: error?.message,
-          payload: error?.payload,
-          error,
-        });
-        youtubeState.results = [];
-        youtubeState.searchError = friendlyErrorMessage(
-          error,
-          'YouTube search failed.',
-        );
-        showToast(youtubeState.searchError, 'error');
-      } finally {
-        youtubeState.isSearching = false;
-        searchButton.disabled = false;
-        searchButton.textContent = 'Search Videos';
-        renderYoutubeResults();
-      }
-    }
-
-    async function importSelectedYoutubeVideo(videoId) {
-      const selectedVideo = youtubeState.results.find(
-        (item) => item.youtubeVideoId === videoId,
-      );
-      if (!selectedVideo) {
-        showToast('The selected YouTube video is no longer available.', 'error');
-        return;
-      }
-
-      const { domain, level, isFeatured } = youtubeTrainingOptions();
-      youtubeState.importingVideoId = videoId;
-      renderYoutubeResults();
-
-      try {
-        const result = await workerFetch('/api/trainings/import/youtube-video', {
-          method: 'POST',
-          body: JSON.stringify({
-            selectedVideo,
-            domain,
-            level,
-            isFeatured,
-          }),
-        });
-
-        await refreshTrainings(false);
-
-        showToast(
-          result.alreadyExisted
-            ? 'Video already existed and was updated in trainings'
-            : 'Video imported into trainings',
-          'success',
-        );
-      } catch (error) {
-        console.error('Import YouTube video error:', error);
-        showToast(
-          friendlyErrorMessage(error, 'Failed to import YouTube video.'),
-          'error',
-        );
-      } finally {
-        youtubeState.importingVideoId = '';
-        renderYoutubeResults();
-      }
-    }
-
-    async function refreshTrainings(showSuccessToast) {
-      try {
-        const snapshot = await getDocs(collection(db, 'trainings'));
-        allTrainings = [];
-        snapshot.forEach((item) =>
-          allTrainings.push({ ...item.data(), id: item.id }),
-        );
-        sortByTimestampDesc(allTrainings, 'createdAt');
-        renderTrainings();
-
-        if (showSuccessToast) {
-          showToast('Training resources refreshed', 'success');
-        }
-      } catch (error) {
-        console.error('Refresh trainings error:', error);
-        showToast('Failed to refresh training resources', 'error');
-      }
-    }
-
-    async function createScholarship() {
-      if (scholarshipState.isSaving) {
-        return;
-      }
-
-      const values = scholarshipFormValues();
-      if (!values.title || !values.provider || !values.description || !values.eligibility) {
-        const message = 'Title, provider, description, and eligibility are required.';
-        setScholarshipStatus(message, 'error');
-        showToast(message, 'error');
-        return;
-      }
-
-      const amountValue = Number.parseFloat(values.amount);
-      if (!Number.isFinite(amountValue) || amountValue <= 0) {
-        const message = 'Please enter a valid scholarship amount in DZD.';
-        setScholarshipStatus(message, 'error');
-        showToast(message, 'error');
-        return;
-      }
-
-      if (!values.deadline) {
-        const message = 'Please choose a scholarship deadline.';
-        setScholarshipStatus(message, 'error');
-        showToast(message, 'error');
-        return;
-      }
-
-      let normalizedLink = '';
-      try {
-        normalizedLink = normalizeOptionalUrl(values.link);
-      } catch (error) {
-        const message = friendlyErrorMessage(error, 'Please enter a valid application link.');
-        setScholarshipStatus(message, 'error');
-        showToast(message, 'error');
-        return;
-      }
-
-      const createButton = document.getElementById('scholarship-create-btn');
-      scholarshipState.isSaving = true;
-      createButton.disabled = true;
-      createButton.textContent = 'Creating...';
-      setScholarshipStatus('Saving scholarship to Firestore...', 'info');
-
-      try {
-        const scholarshipRef = doc(collection(db, 'scholarships'));
-        const payload = {
-          id: scholarshipRef.id,
-          title: values.title,
-          description: values.description,
-          provider: values.provider,
-          eligibility: values.eligibility,
-          amount: amountValue,
-          deadline: values.deadline,
-          link: normalizedLink,
-          createdBy: currentAdminUid,
-          createdByRole: 'admin',
-          createdAt: serverTimestamp(),
-        };
-
-        await setDoc(scholarshipRef, payload);
-
-        const savedDoc = await getDoc(scholarshipRef);
-        allScholarships.unshift({
-          ...(savedDoc.exists() ? savedDoc.data() : payload),
-          id: scholarshipRef.id,
-          createdAt: savedDoc.exists() ? savedDoc.data().createdAt : new Date(),
-        });
-        sortByTimestampDesc(allScholarships, 'createdAt');
-        renderScholarships();
-        resetScholarshipForm();
-
-        setScholarshipStatus('Scholarship saved. Triggering notifications...', 'info');
-        showToast('Scholarship created', 'success');
-
-        try {
-          await notifyScholarship(scholarshipRef.id, { showSuccessToast: false });
-        } catch (error) {
-          console.error('Scholarship notify after create error:', error);
-          showToast(
-            'Scholarship was created, but notifications need to be retried from the list below.',
-            'error',
-          );
-        }
-      } catch (error) {
-        console.error('Create scholarship error:', error);
-        const message = friendlyErrorMessage(error, 'Failed to create scholarship.');
-        setScholarshipStatus(message, 'error');
-        showToast(message, 'error');
-      } finally {
-        scholarshipState.isSaving = false;
-        createButton.disabled = false;
-        createButton.textContent = 'Create Scholarship';
-      }
-    }
-
-    async function notifyScholarship(scholarshipId, options = {}) {
-      const scholarship = allScholarships.find((item) => item.id === scholarshipId);
-      if (!scholarshipId || !scholarship) {
-        return;
-      }
-
-      if (scholarshipState.busyScholarshipIds.has(scholarshipId)) {
-        return;
-      }
-
-      scholarshipState.busyScholarshipIds.add(scholarshipId);
-      renderScholarships();
-      setScholarshipStatus(
-        `Sending scholarship notifications for "${scholarship.title || 'Untitled scholarship'}"...`,
-        'info',
-      );
-
-      try {
-        const result = await workerFetch('/api/notify/scholarship', {
-          method: 'POST',
-          body: JSON.stringify({ scholarshipId }),
-        });
-
-        const statusMessage = formatScholarshipNotifyResult(result);
-        setScholarshipStatus(statusMessage, 'info');
-
-        if (options.showSuccessToast !== false) {
-          showToast(statusMessage, 'success');
-        }
-
-        return result;
-      } catch (error) {
-        console.error('Scholarship notification error:', error);
-        const message = friendlyErrorMessage(error, 'Failed to notify students about this scholarship.');
-        setScholarshipStatus(message, 'error');
-        showToast(message, 'error');
-        throw error;
-      } finally {
-        scholarshipState.busyScholarshipIds.delete(scholarshipId);
-        renderScholarships();
-      }
-    }
-
-    function formatScholarshipNotifyResult(result) {
-      const recipientsFound = Number(result?.uniqueRecipients ?? result?.recipientsFound ?? 0);
-      const created = Number(result?.notificationDocsCreated ?? result?.created ?? 0);
-      const pushSent = Number(result?.pushesSent ?? result?.pushSent ?? 0);
-      const duplicatesSkipped = Number(result?.duplicatesSkipped || 0);
-      const duplicateTokensSkipped = Number(result?.duplicateTokensSkipped || 0);
-      const missingTokens = Number(result?.missingTokens || 0);
-      const invalidTokens = Number(result?.invalidTokens || 0);
-      const errors = Array.isArray(result?.errors) ? result.errors.length : 0;
-
-      if (recipientsFound === 0) {
-        return 'No active student recipients are currently available for this scholarship.';
-      }
-
-      if (result?.alreadyNotified || (created === 0 && duplicatesSkipped > 0)) {
-        return `Scholarship notifications were already created earlier. ${duplicatesSkipped} recipient${duplicatesSkipped === 1 ? '' : 's'} skipped by event dedup.`;
-      }
-
-      const recipientSuffix = created === 1 ? '' : 's';
-      const pushSuffix = pushSent === 1 ? '' : 's';
-      const missingTokenSuffix = missingTokens === 1 ? '' : 's';
-      const invalidTokenSuffix = invalidTokens === 1 ? '' : 's';
-      const duplicateRecipientText =
-        duplicatesSkipped > 0
-          ? ` ${duplicatesSkipped} already-notified recipient${duplicatesSkipped === 1 ? '' : 's'} skipped.`
-          : '';
-      const duplicateTokenText =
-        duplicateTokensSkipped > 0
-          ? ` ${duplicateTokensSkipped} duplicate token${duplicateTokensSkipped === 1 ? '' : 's'} skipped.`
-          : '';
-      const errorText =
-        errors > 0
-          ? ` ${errors} push error${errors === 1 ? '' : 's'} recorded for follow-up.`
-          : '';
-
-      return `Scholarship notifications created for ${created} recipient${recipientSuffix}, with ${pushSent} unique push send${pushSuffix}, ${missingTokens} missing token${missingTokenSuffix}, and ${invalidTokens} invalid token${invalidTokenSuffix} cleaned up.${duplicateRecipientText}${duplicateTokenText}${errorText}`;
-    }
-
-    async function updateTrainingFeaturedState(trainingId) {
-      const training = allTrainings.find((item) => item.id === trainingId);
-      if (!training) {
-        return;
-      }
-
-      const nextValue = !(training.isFeatured === true);
-      trainingState.busyTrainingIds.add(trainingId);
-      renderTrainings();
-
-      try {
-        await workerFetch(`/api/trainings/${encodeURIComponent(trainingId)}/featured`, {
-          method: 'POST',
-          body: JSON.stringify({ isFeatured: nextValue }),
-        });
-
-        training.isFeatured = nextValue;
-        renderTrainings();
-        showToast(
-          nextValue ? 'Training marked as featured' : 'Training removed from featured',
-          'success',
-        );
-      } catch (error) {
-        console.error('Toggle training featured error:', error);
-        showToast(
-          friendlyErrorMessage(error, 'Failed to update featured status.'),
-          'error',
-        );
-      } finally {
-        trainingState.busyTrainingIds.delete(trainingId);
-        renderTrainings();
-      }
-    }
-
-    async function confirmDeleteTraining(trainingId) {
-      const training = allTrainings.find((item) => item.id === trainingId);
-      if (!training) {
-        return;
-      }
-
-      showConfirm(
-        'Delete Training Resource',
-        `Are you sure you want to delete "${training.title || 'this training resource'}"?`,
-        'Delete',
-        'danger',
-        async () => {
-          trainingState.busyTrainingIds.add(trainingId);
-          renderTrainings();
-
-          try {
-            await workerFetch(`/api/trainings/${encodeURIComponent(trainingId)}`, {
-              method: 'DELETE',
-            });
-            allTrainings = allTrainings.filter((item) => item.id !== trainingId);
-            renderTrainings();
-            showToast('Training resource deleted', 'success');
-          } catch (error) {
-            console.error('Delete training error:', error);
-            showToast(
-              friendlyErrorMessage(error, 'Failed to delete training resource.'),
-              'error',
-            );
-          } finally {
-            trainingState.busyTrainingIds.delete(trainingId);
-            renderTrainings();
-          }
-        },
-      );
-    }
-
-    function showConfirm(title, message, buttonText, buttonClass, onConfirm) {
-      document.getElementById('confirm-title').textContent = title;
-      document.getElementById('confirm-msg').textContent = message;
-
-      const confirmButton = document.getElementById('confirm-ok');
-      confirmButton.textContent = buttonText;
-      confirmButton.className = `btn-confirm ${buttonClass}`;
-      confirmButton.onclick = async () => {
-        document.getElementById('confirm-modal').classList.remove('show');
-        await onConfirm();
-      };
-
-      document.getElementById('confirm-cancel').onclick = () => {
-        document.getElementById('confirm-modal').classList.remove('show');
-      };
-
-      document.getElementById('confirm-modal').classList.add('show');
-    }
-
-    function timestampToMs(value) {
-      if (!value) {
-        return 0;
-      }
-
-      if (typeof value.toDate === 'function') {
-        return value.toDate().getTime();
-      }
-
-      if (value instanceof Date) {
-        return value.getTime();
-      }
-
-      if (typeof value.seconds === 'number') {
-        return value.seconds * 1000;
-      }
-
-      const parsed = Date.parse(value);
-      return Number.isNaN(parsed) ? 0 : parsed;
-    }
-
-    function sortByTimestampDesc(items, fieldName) {
-      items.sort((left, right) => timestampToMs(right[fieldName]) - timestampToMs(left[fieldName]));
-    }
-
-    function truncateText(value, maxLength) {
-      const safeValue = String(value || '').trim();
-      if (safeValue.length <= maxLength) {
-        return safeValue;
-      }
-
-      return `${safeValue.slice(0, maxLength - 1)}...`;
-    }
-
-    function friendlyErrorMessage(error, fallback) {
-      const errorMessage = String(error?.message || '').trim();
-
-      if (errorMessage.length > 0) {
-        return errorMessage.replace(/^FirebaseError:\s*/i, '');
-      }
-
-      if (typeof error?.code === 'string' && error.code.trim().length > 0) {
-        return error.code.trim();
-      }
-
-      return fallback;
-    }
-
-    function normalizeOptionalUrl(rawValue) {
-      const value = String(rawValue || '').trim();
-      if (!value) {
-        return '';
-      }
-
-      const candidate = /^https?:\/\//i.test(value) ? value : `https://${value}`;
-      try {
-        return new URL(candidate).toString();
-      } catch (_) {
-        throw new Error('Please enter a valid application link.');
-      }
-    }
+    // ---------- small helpers ----------
+    function v(id) { return (document.getElementById(id)?.value || '').trim(); }
+    function numOrNull(id) { const x = document.getElementById(id)?.value; return x === '' || x == null ? null : Number(x); }
   </script>
 </body>
 </html>

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../models/user_model.dart';
 import '../../services/public_profile_service.dart';
+import '../../utils/display_text.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/chat/chat_formatters.dart';
 import '../../widgets/chat/chat_theme.dart';
@@ -107,7 +108,9 @@ class _UserProfilePreviewScreenState extends State<UserProfilePreviewScreen> {
                         ),
                         const SizedBox(height: 14),
                         Text(
-                          _displayName(user),
+                          DisplayText.capitalizeDisplayValue(
+                            _displayName(user),
+                          ),
                           textAlign: TextAlign.center,
                           style: ChatThemeStyles.title().copyWith(fontSize: 25),
                         ),
@@ -143,7 +146,7 @@ class _UserProfilePreviewScreenState extends State<UserProfilePreviewScreen> {
                         if (headline.isNotEmpty) ...[
                           const SizedBox(height: 14),
                           Text(
-                            headline,
+                            DisplayText.capitalizeDisplayValue(headline),
                             textAlign: TextAlign.center,
                             style: ChatThemeStyles.body(
                               ChatThemePalette.textSecondary,
@@ -172,7 +175,7 @@ class _UserProfilePreviewScreenState extends State<UserProfilePreviewScreen> {
                       title: 'About',
                       icon: Icons.notes_rounded,
                       child: Text(
-                        about,
+                        DisplayText.capitalizeDisplayValue(about),
                         style: ChatThemeStyles.body(
                           ChatThemePalette.textSecondary,
                         ),
@@ -211,7 +214,7 @@ class _UserProfilePreviewScreenState extends State<UserProfilePreviewScreen> {
           title: title,
           icon: icon,
           child: Text(
-            value,
+            DisplayText.capitalizeDisplayValue(value),
             style: ChatThemeStyles.cardTitle().copyWith(fontSize: 14),
           ),
         ),

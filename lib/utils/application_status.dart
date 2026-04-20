@@ -14,8 +14,9 @@ class ApplicationStatus {
   static const String pending = 'pending';
   static const String accepted = 'accepted';
   static const String rejected = 'rejected';
+  static const String withdrawn = 'withdrawn';
 
-  static const List<String> values = [pending, accepted, rejected];
+  static const List<String> values = [pending, accepted, rejected, withdrawn];
 
   static String parse(String? raw) {
     final normalized = (raw ?? '').trim().toLowerCase();
@@ -25,6 +26,8 @@ class ApplicationStatus {
         return accepted;
       case rejected:
         return rejected;
+      case withdrawn:
+        return withdrawn;
       case pending:
       default:
         return pending;
@@ -37,6 +40,8 @@ class ApplicationStatus {
         return l10n.uiApproved;
       case rejected:
         return l10n.uiRejected;
+      case withdrawn:
+        return 'Withdrawn';
       case pending:
       default:
         return l10n.uiPending;
@@ -49,6 +54,8 @@ class ApplicationStatus {
         return l10n.applicationStatusApprovedSentence;
       case rejected:
         return l10n.applicationStatusRejectedSentence;
+      case withdrawn:
+        return 'You withdrew this application.';
       case pending:
       default:
         return l10n.applicationStatusPendingSentence;
@@ -61,13 +68,18 @@ class ApplicationStatus {
         return AppColors.current.success;
       case rejected:
         return AppColors.current.danger;
+      case withdrawn:
+        return const Color(0xFF64748B);
       case pending:
       default:
         return AppColors.current.warning;
     }
   }
 
-  static bool isNotifiable(String? raw) => parse(raw) != pending;
+  static bool isNotifiable(String? raw) {
+    final s = parse(raw);
+    return s != pending && s != withdrawn;
+  }
 
   static bool shouldNotifyTransition(String? previous, String? next) {
     final normalizedPrevious = parse(previous);

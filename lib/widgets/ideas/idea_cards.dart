@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import '../../models/project_idea_model.dart';
 import '../../providers/opportunity_translation_provider.dart';
 import '../../services/opportunity_translation_service.dart';
-import '../shared/content_translation_widgets.dart';
+import '../../utils/display_text.dart';
 import 'innovation_hub_theme.dart';
 
 void _ensureIdeaTranslation(BuildContext context, ProjectIdeaModel idea) {
@@ -24,7 +24,8 @@ void _ensureIdeaTranslation(BuildContext context, ProjectIdeaModel idea) {
     contentType: ContentTranslationType.idea,
     contentId: idea.id,
   );
-  if (status == TranslationStatus.loading || status == TranslationStatus.ready) {
+  if (status == TranslationStatus.loading ||
+      status == TranslationStatus.ready) {
     return;
   }
 
@@ -90,22 +91,6 @@ String _ideaDisplaySummary(
   return idea.cardSummary;
 }
 
-bool _hasIdeaTranslation(
-  ProjectIdeaModel idea,
-  OpportunityTranslationProvider provider,
-) {
-  return provider.statusForContent(
-            contentType: ContentTranslationType.idea,
-            contentId: idea.id,
-          ) ==
-          TranslationStatus.ready &&
-      provider.translationForContent(
-            contentType: ContentTranslationType.idea,
-            contentId: idea.id,
-          ) !=
-          null;
-}
-
 String _truncateIdeaText(String value, int maxLength) {
   final trimmed = value.trim();
   if (trimmed.length <= maxLength) {
@@ -132,13 +117,12 @@ class IdeaCard extends StatelessWidget {
   Widget build(BuildContext context) {
     _ensureIdeaTranslation(context, idea);
     final translationProvider = context.watch<OpportunityTranslationProvider>();
-    final hasTranslation = _hasIdeaTranslation(idea, translationProvider);
-    final showingTranslated = translationProvider.isShowingTranslatedContent(
-      contentType: ContentTranslationType.idea,
-      contentId: idea.id,
+    final displayTitle = DisplayText.capitalizeDisplayValue(
+      _ideaDisplayTitle(idea, translationProvider),
     );
-    final displayTitle = _ideaDisplayTitle(idea, translationProvider);
-    final displaySummary = _ideaDisplaySummary(idea, translationProvider);
+    final displaySummary = DisplayText.capitalizeDisplayValue(
+      _ideaDisplaySummary(idea, translationProvider),
+    );
     final categoryColor = innovationCategoryColor(idea.displayCategory);
 
     return Material(
@@ -189,15 +173,6 @@ class IdeaCard extends StatelessWidget {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: InnovationHubTypography.body(size: 12),
-              ),
-              const SizedBox(height: 8),
-              ContentTranslationBadge(
-                showingTranslated: hasTranslation && showingTranslated,
-                originalLanguage: idea.originalLanguage,
-                foregroundColor: InnovationHubPalette.primary,
-                backgroundColor:
-                    InnovationHubPalette.primary.withValues(alpha: 0.08),
-                borderColor: InnovationHubPalette.primary.withValues(alpha: 0.12),
               ),
               const SizedBox(height: 10),
               _MiniBadge(
@@ -255,13 +230,12 @@ class IdeaListCard extends StatelessWidget {
   Widget build(BuildContext context) {
     _ensureIdeaTranslation(context, idea);
     final translationProvider = context.watch<OpportunityTranslationProvider>();
-    final hasTranslation = _hasIdeaTranslation(idea, translationProvider);
-    final showingTranslated = translationProvider.isShowingTranslatedContent(
-      contentType: ContentTranslationType.idea,
-      contentId: idea.id,
+    final displayTitle = DisplayText.capitalizeDisplayValue(
+      _ideaDisplayTitle(idea, translationProvider),
     );
-    final displayTitle = _ideaDisplayTitle(idea, translationProvider);
-    final displaySummary = _ideaDisplaySummary(idea, translationProvider);
+    final displaySummary = DisplayText.capitalizeDisplayValue(
+      _ideaDisplaySummary(idea, translationProvider),
+    );
     final categoryColor = innovationCategoryColor(idea.displayCategory);
 
     return Material(
@@ -312,20 +286,13 @@ class IdeaListCard extends StatelessWidget {
                       style: InnovationHubTypography.body(size: 12.5),
                     ),
                     const SizedBox(height: 8),
-                    ContentTranslationBadge(
-                      showingTranslated: hasTranslation && showingTranslated,
-                      originalLanguage: idea.originalLanguage,
-                      foregroundColor: InnovationHubPalette.primary,
-                      backgroundColor:
-                          InnovationHubPalette.primary.withValues(alpha: 0.08),
-                      borderColor:
-                          InnovationHubPalette.primary.withValues(alpha: 0.12),
-                    ),
-                    const SizedBox(height: 8),
                     Row(
                       children: [
                         _MiniBadge(
-                          label: innovationStageLabel(context, idea.displayStage),
+                          label: innovationStageLabel(
+                            context,
+                            idea.displayStage,
+                          ),
                           color: innovationStageColor(idea.displayStage),
                         ),
                         if (showStatus) ...[
@@ -384,13 +351,12 @@ class IdeaWorkspaceCard extends StatelessWidget {
   Widget build(BuildContext context) {
     _ensureIdeaTranslation(context, idea);
     final translationProvider = context.watch<OpportunityTranslationProvider>();
-    final hasTranslation = _hasIdeaTranslation(idea, translationProvider);
-    final showingTranslated = translationProvider.isShowingTranslatedContent(
-      contentType: ContentTranslationType.idea,
-      contentId: idea.id,
+    final displayTitle = DisplayText.capitalizeDisplayValue(
+      _ideaDisplayTitle(idea, translationProvider),
     );
-    final displayTitle = _ideaDisplayTitle(idea, translationProvider);
-    final displaySummary = _ideaDisplaySummary(idea, translationProvider);
+    final displaySummary = DisplayText.capitalizeDisplayValue(
+      _ideaDisplaySummary(idea, translationProvider),
+    );
     final categoryColor = innovationCategoryColor(idea.displayCategory);
 
     return Container(
@@ -451,15 +417,6 @@ class IdeaWorkspaceCard extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             style: InnovationHubTypography.body(size: 13),
           ),
-          const SizedBox(height: 8),
-          ContentTranslationBadge(
-            showingTranslated: hasTranslation && showingTranslated,
-            originalLanguage: idea.originalLanguage,
-            foregroundColor: InnovationHubPalette.primary,
-            backgroundColor:
-                InnovationHubPalette.primary.withValues(alpha: 0.08),
-            borderColor: InnovationHubPalette.primary.withValues(alpha: 0.12),
-          ),
           const SizedBox(height: 10),
           Row(
             children: [
@@ -500,11 +457,17 @@ class IdeaWorkspaceCard extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Expanded(
-                child: _ActionChipButton(label: AppLocalizations.of(context)!.uiEdit, onTap: onEdit),
+                child: _ActionChipButton(
+                  label: AppLocalizations.of(context)!.uiEdit,
+                  onTap: onEdit,
+                ),
               ),
               const SizedBox(width: 8),
               Expanded(
-                child: _ActionChipButton(label: AppLocalizations.of(context)!.uiTeam, onTap: onManageTeam),
+                child: _ActionChipButton(
+                  label: AppLocalizations.of(context)!.uiTeam,
+                  onTap: onManageTeam,
+                ),
               ),
             ],
           ),
@@ -551,7 +514,7 @@ class _ActionChipButton extends StatelessWidget {
                 : Border.all(color: InnovationHubPalette.border),
           ),
           child: Text(
-            label,
+            DisplayText.capitalizeDisplayValue(label),
             textAlign: TextAlign.center,
             style: InnovationHubTypography.label(
               color: onTap == null
@@ -581,7 +544,7 @@ class _MiniBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(999),
       ),
       child: Text(
-        label,
+        DisplayText.capitalizeDisplayValue(label),
         style: InnovationHubTypography.label(color: color, size: 10.5),
       ),
     );

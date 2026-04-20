@@ -290,16 +290,16 @@ function normalizeFeedbackType(type) {
 function feedbackMeta(type) {
   switch (normalizeFeedbackType(type)) {
     case 'success':
-      return { icon: 'OK', title: 'Success' };
+      return { icon: '<i data-lucide="check-circle-2"></i>', title: 'Success', html: true };
     case 'error':
-      return { icon: '!', title: 'Something went wrong' };
+      return { icon: '<i data-lucide="alert-octagon"></i>', title: 'Something went wrong', html: true };
     case 'warning':
-      return { icon: '!', title: 'Attention needed' };
+      return { icon: '<i data-lucide="alert-triangle"></i>', title: 'Attention needed', html: true };
     case 'neutral':
-      return { icon: '...', title: 'Update' };
+      return { icon: '<i data-lucide="info"></i>', title: 'Update', html: true };
     case 'info':
     default:
-      return { icon: 'i', title: 'Notice' };
+      return { icon: '<i data-lucide="info"></i>', title: 'Notice', html: true };
   }
 }
 
@@ -307,11 +307,13 @@ function feedbackCardHtml(message, options = {}) {
   const normalizedType = normalizeFeedbackType(options.type);
   const meta = feedbackMeta(normalizedType);
   const title = String(options.title || meta.title || '').trim();
-  const icon = String(options.icon || meta.icon || '').trim();
+  const iconHtml = options.icon
+    ? `<i data-lucide="${esc(options.icon)}"></i>`
+    : meta.icon;
 
   return `
     <div class="feedback-card is-${normalizedType}">
-      <div class="feedback-card-icon" aria-hidden="true">${esc(icon)}</div>
+      <div class="feedback-card-icon" aria-hidden="true">${iconHtml}</div>
       <div class="feedback-card-copy">
         ${title ? `<div class="feedback-card-title">${esc(title)}</div>` : ''}
         <p>${esc(message)}</p>
@@ -323,11 +325,12 @@ function feedbackCardHtml(message, options = {}) {
 function emptyStateHtml(message, options = {}) {
   const normalizedType = normalizeFeedbackType(options.type || 'neutral');
   const title = String(options.title || '').trim();
-  const icon = String(options.icon || feedbackMeta(normalizedType).icon || '...').trim();
+  const iconName = options.icon || 'inbox';
+  const iconHtml = `<i data-lucide="${esc(iconName)}"></i>`;
 
   return `
     <div class="empty-state">
-      <div class="icon" aria-hidden="true">${esc(icon)}</div>
+      <div class="icon" aria-hidden="true">${iconHtml}</div>
       <div class="title">${esc(title || 'Nothing to show yet')}</div>
       <p>${esc(message)}</p>
     </div>
@@ -354,13 +357,14 @@ function showToast(message, type) {
   toast.className = `toast is-${normalizedType}`;
   toast.innerHTML = `
     <div class="toast-content">
-      <div class="toast-icon" aria-hidden="true">${esc(meta.icon)}</div>
+      <div class="toast-icon" aria-hidden="true">${meta.icon}</div>
       <div class="toast-copy">
         <div class="toast-title">${esc(meta.title)}</div>
         <div class="toast-message">${esc(message)}</div>
       </div>
     </div>
   `;
+  if (window.lucide) window.lucide.createIcons();
 
   toast._showTimer = window.setTimeout(() => {
     toast.classList.add('show');
@@ -372,7 +376,20 @@ function showToast(message, type) {
 
 function formatTimestamp(ts) {
   if (!ts) return '';
-  const date = ts.toDate ? ts.toDate() : new Date(ts.seconds * 1000);
+  let date = null;
+  if (ts instanceof Date) {
+    date = ts;
+  } else if (typeof ts.toDate === 'function') {
+    date = ts.toDate();
+  } else if (typeof ts.seconds === 'number') {
+    date = new Date(ts.seconds * 1000);
+  } else if (typeof ts === 'number') {
+    date = new Date(ts);
+  } else if (typeof ts === 'string') {
+    const parsed = Date.parse(ts);
+    if (!Number.isNaN(parsed)) date = new Date(parsed);
+  }
+  if (!date || Number.isNaN(date.getTime())) return '';
   const now = new Date();
   const diff = now - date;
   if (diff < 60000) return 'Just now';
@@ -383,10 +400,10 @@ function formatTimestamp(ts) {
 
 function roleColor(role) {
   switch (role) {
-    case 'student': return '#2196F3';
-    case 'company': return '#009688';
-    case 'admin': return '#FF8C00';
-    default: return '#777';
+    case 'student': return '#2563EB';
+    case 'company': return '#14B8A6';
+    case 'admin': return '#F59E0B';
+    default: return '#64748B';
   }
 }
 

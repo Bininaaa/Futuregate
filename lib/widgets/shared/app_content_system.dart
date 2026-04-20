@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../theme/app_typography.dart';
 import '../../theme/app_colors.dart';
+import '../../utils/display_text.dart';
 import 'app_feedback.dart';
 
 enum AppContentTypography { product, innovation }
@@ -1250,17 +1251,34 @@ class AppSecondaryButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       height: 46,
-      child: OutlinedButton.icon(
+      child: OutlinedButton(
         onPressed: onPressed,
         style: OutlinedButton.styleFrom(
           foregroundColor: theme.textPrimary,
           side: BorderSide(color: theme.border),
+          padding: const EdgeInsets.symmetric(horizontal: 10),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
         ),
-        icon: icon == null ? const SizedBox.shrink() : Icon(icon, size: 17),
-        label: Text(label, style: theme.label(size: 12)),
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              if (icon != null) ...<Widget>[
+                Icon(icon, size: 17),
+                const SizedBox(width: 6),
+              ],
+              Text(
+                label,
+                maxLines: 1,
+                softWrap: false,
+                style: theme.label(size: 12),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -1333,9 +1351,15 @@ class AppDetailHeroCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text(title, style: theme.headline(size: 21.5)),
+                    Text(
+                      DisplayText.capitalizeDisplayValue(title),
+                      style: theme.headline(size: 21.5),
+                    ),
                     const SizedBox(height: 6),
-                    Text(subtitle, style: theme.body(size: 12.4)),
+                    Text(
+                      DisplayText.capitalizeDisplayValue(subtitle),
+                      style: theme.body(size: 12.4),
+                    ),
                   ],
                 ),
               ),
@@ -1344,7 +1368,7 @@ class AppDetailHeroCard extends StatelessWidget {
           if ((summary ?? '').trim().isNotEmpty) ...<Widget>[
             const SizedBox(height: AppContentSpacing.md),
             Text(
-              summary!,
+              DisplayText.capitalizeDisplayValue(summary!),
               style: theme.body(
                 size: 12.6,
                 color: theme.textPrimary,
@@ -1474,7 +1498,7 @@ class AppInfoTile extends StatelessWidget {
               const SizedBox(width: 7),
               Expanded(
                 child: Text(
-                  item.label,
+                  DisplayText.capitalizeDisplayValue(item.label),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: theme.label(
@@ -1488,7 +1512,7 @@ class AppInfoTile extends StatelessWidget {
           ),
           const SizedBox(height: 7),
           Text(
-            item.value,
+            DisplayText.capitalizeDisplayValue(item.value),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: theme.body(
@@ -1546,12 +1570,20 @@ class AppDetailSection extends StatelessWidget {
                 child: Icon(icon, size: 16, color: theme.accent),
               ),
               const SizedBox(width: AppContentSpacing.sm),
-              Expanded(child: Text(title, style: theme.section(size: 14.2))),
+              Expanded(
+                child: Text(
+                  DisplayText.capitalizeDisplayValue(title),
+                  style: theme.section(size: 14.2),
+                ),
+              ),
             ],
           ),
           if ((subtitle ?? '').trim().isNotEmpty) ...<Widget>[
             const SizedBox(height: AppContentSpacing.xs),
-            Text(subtitle!, style: theme.body(size: 11.8)),
+            Text(
+              DisplayText.capitalizeDisplayValue(subtitle!),
+              style: theme.body(size: 11.8),
+            ),
           ],
           const SizedBox(height: AppContentSpacing.md),
           child,
@@ -1587,7 +1619,7 @@ class AppTagChip extends StatelessWidget {
             const SizedBox(width: 6),
           ],
           Text(
-            badge.label,
+            DisplayText.capitalizeDisplayValue(badge.label),
             style: theme.label(size: 10.8, color: foregroundColor),
           ),
         ],
@@ -1637,11 +1669,11 @@ class AppMetaRow extends StatelessWidget {
                 style: theme.body(size: 12.2, color: theme.textSecondary),
                 children: <InlineSpan>[
                   TextSpan(
-                    text: '$label: ',
+                    text: '${DisplayText.capitalizeDisplayValue(label)}: ',
                     style: theme.label(size: 11.5, color: theme.textMuted),
                   ),
                   TextSpan(
-                    text: value,
+                    text: DisplayText.capitalizeDisplayValue(value),
                     style: theme.body(
                       size: 12.2,
                       color: theme.textPrimary,

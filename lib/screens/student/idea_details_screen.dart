@@ -11,6 +11,7 @@ import '../../providers/opportunity_translation_provider.dart';
 import '../../providers/project_idea_provider.dart';
 import '../../services/opportunity_translation_service.dart';
 import '../../services/project_idea_service.dart';
+import '../../utils/display_text.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/ideas/idea_metrics_row.dart';
 import '../../widgets/ideas/innovation_hub_theme.dart';
@@ -378,7 +379,7 @@ class IdeaDetailsScreen extends StatelessWidget {
               title: AppLocalizations.of(context)!.uiOverview,
               icon: Icons.auto_awesome_rounded,
               child: Text(
-                idea.overviewText,
+                DisplayText.capitalizeDisplayValue(idea.overviewText),
                 style: _theme.body(color: _theme.textPrimary),
               ),
             ),
@@ -391,7 +392,7 @@ class IdeaDetailsScreen extends StatelessWidget {
                 title: AppLocalizations.of(context)!.uiFullDescription,
                 icon: Icons.description_outlined,
                 child: Text(
-                  idea.description,
+                  DisplayText.capitalizeDisplayValue(idea.description),
                   style: _theme.body(color: _theme.textPrimary),
                 ),
               ),
@@ -403,7 +404,7 @@ class IdeaDetailsScreen extends StatelessWidget {
                 title: AppLocalizations.of(context)!.uiProblemStatement,
                 icon: Icons.help_outline_rounded,
                 child: Text(
-                  idea.problemText,
+                  DisplayText.capitalizeDisplayValue(idea.problemText),
                   style: _theme.body(color: _theme.textPrimary),
                 ),
               ),
@@ -415,7 +416,7 @@ class IdeaDetailsScreen extends StatelessWidget {
                 title: AppLocalizations.of(context)!.uiProposedSolution,
                 icon: Icons.rocket_launch_outlined,
                 child: Text(
-                  idea.solutionText,
+                  DisplayText.capitalizeDisplayValue(idea.solutionText),
                   style: _theme.body(color: _theme.textPrimary),
                 ),
               ),

@@ -127,6 +127,35 @@ class ApplicationProvider extends ChangeNotifier {
     }
   }
 
+  Future<String?> withdrawApplication({
+    required String studentId,
+    required String opportunityId,
+  }) async {
+    try {
+      _isLoading = true;
+      notifyListeners();
+
+      await _service.withdrawApplication(
+        studentId: studentId,
+        opportunityId: opportunityId,
+      );
+
+      _submittedApplications = await _service.getSubmittedApplications(
+        studentId,
+      );
+      _submittedApplicationsCount = _submittedApplications.length;
+
+      return null;
+    } on FirebaseException catch (e) {
+      return e.message ?? e.toString();
+    } catch (e) {
+      return e.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
   void clearSession() {
     _isLoading = false;
     _submittedApplicationsCount = 0;

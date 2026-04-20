@@ -24,6 +24,7 @@ import '../../screens/settings/security_privacy_screen.dart';
 import '../../screens/settings/settings_flow_theme.dart';
 import '../../screens/settings/settings_screen.dart';
 import '../../theme/app_colors.dart';
+import '../../utils/display_text.dart';
 import '../../utils/student_profile_completion.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/profile_avatar.dart';
@@ -253,9 +254,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   String _resolveHeadline(UserModel? user, CvModel? cv) {
-    final fieldOfStudy = (user?.fieldOfStudy ?? '').trim();
-    final university = (user?.university ?? '').trim();
-    final academicLevel = (user?.academicLevel ?? '').trim();
+    final fieldOfStudy = _displayProfileValue(user?.fieldOfStudy);
+    final university = _displayProfileValue(user?.university);
+    final academicLevel = _displayProfileValue(user?.academicLevel);
 
     if (fieldOfStudy.isNotEmpty && university.isNotEmpty) {
       return '$fieldOfStudy at $university';
@@ -267,6 +268,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (university.isNotEmpty) return university;
     if (academicLevel.isNotEmpty) return academicLevel;
     return 'Shape a profile that feels ready for the next opportunity.';
+  }
+
+  String _displayProfileValue(String? value) {
+    return DisplayText.capitalizeDisplayValue(value?.trim() ?? '');
   }
 
   String _cvStatus(CvModel? cv) {
@@ -362,10 +367,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   List<_FactData> _buildFacts(UserModel? user) {
     final email = (user?.email ?? '').trim();
     final phone = (user?.phone ?? '').trim();
-    final location = (user?.location ?? '').trim();
-    final academicLevel = (user?.academicLevel ?? '').trim();
-    final university = (user?.university ?? '').trim();
-    final fieldOfStudy = (user?.fieldOfStudy ?? '').trim();
+    final location = _displayProfileValue(user?.location);
+    final academicLevel = _displayProfileValue(user?.academicLevel);
+    final university = _displayProfileValue(user?.university);
+    final fieldOfStudy = _displayProfileValue(user?.fieldOfStudy);
 
     return [
       _FactData(
@@ -1192,14 +1197,31 @@ class _HeroMetricTile extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: 30,
-                height: 30,
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(icon, size: 15, color: color),
+              Row(
+                children: [
+                  Container(
+                    width: 30,
+                    height: 30,
+                    decoration: BoxDecoration(
+                      color: color.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(icon, size: 15, color: color),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.poppins(
+                        fontSize: 10.8,
+                        fontWeight: FontWeight.w600,
+                        color: SettingsFlowPalette.textSecondary,
+                      ),
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 10),
               Text(
@@ -1210,15 +1232,6 @@ class _HeroMetricTile extends StatelessWidget {
                   fontSize: compactValue ? 11.5 : 16,
                   fontWeight: FontWeight.w700,
                   color: SettingsFlowPalette.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                label,
-                style: GoogleFonts.poppins(
-                  fontSize: 10.2,
-                  fontWeight: FontWeight.w500,
-                  color: SettingsFlowPalette.textSecondary,
                 ),
               ),
             ],
@@ -1717,7 +1730,9 @@ class _FactRow extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  filled ? data.value! : 'Not added yet',
+                  filled
+                      ? DisplayText.capitalizeDisplayValue(data.value!)
+                      : 'Not added yet',
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.poppins(

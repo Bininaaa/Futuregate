@@ -6,6 +6,15 @@ class DisplayText {
     return capitalizeLeadingLabel(text);
   }
 
+  static String capitalizeDisplayValue(String input) {
+    final text = input.trim();
+    if (text.isEmpty || _looksLikeAddress(text)) {
+      return text;
+    }
+
+    return capitalizeLeadingLabel(text);
+  }
+
   /// Capitalizes the first alphabetic character in a label.
   ///
   /// Examples:
@@ -21,7 +30,7 @@ class DisplayText {
     final chars = text.split('');
     for (var i = 0; i < chars.length; i++) {
       final char = chars[i];
-      if (RegExp(r'[A-Za-z]').hasMatch(char)) {
+      if (_isCasedLetter(char)) {
         chars[i] = char.toUpperCase();
         break;
       }
@@ -49,12 +58,30 @@ class DisplayText {
     final chars = word.split('');
     for (var i = 0; i < chars.length; i++) {
       final char = chars[i];
-      if (RegExp(r'[A-Za-z]').hasMatch(char)) {
+      if (_isCasedLetter(char)) {
         chars[i] = char.toUpperCase();
         break;
       }
     }
 
     return chars.join();
+  }
+
+  static bool _isCasedLetter(String char) {
+    if (char.isEmpty) {
+      return false;
+    }
+
+    return char.toLowerCase() != char.toUpperCase();
+  }
+
+  static bool _looksLikeAddress(String text) {
+    final lower = text.toLowerCase();
+    return lower.startsWith('http://') ||
+        lower.startsWith('https://') ||
+        lower.startsWith('www.') ||
+        lower.startsWith('mailto:') ||
+        lower.startsWith('tel:') ||
+        text.contains('@');
   }
 }

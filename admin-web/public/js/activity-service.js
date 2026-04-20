@@ -69,26 +69,33 @@ async function enrichApplicationActivities(docs) {
   );
   const opportunities = new Map(opportunityEntries);
 
-  return docs.map((snapshot) => {
-    const data = snapshot.data() || {};
-    const opportunity = opportunities.get(String(data.opportunityId || '').trim()) || {};
-    const opportunityTitle = String(opportunity?.title || 'Untitled opportunity').trim();
-    const companyName = String(opportunity?.companyName || 'Unknown company').trim();
-    const studentName = String(data.studentName || 'Student').trim();
-    const status = String(data.status || '').trim();
+  return docs
+    .map((snapshot) => {
+      const data = snapshot.data() || {};
+      const oppId = String(data.opportunityId || '').trim();
+      const opportunity = opportunities.get(oppId);
+      // Skip applications whose opportunity no longer exists / isn't available
+      if (!opportunity) return null;
+      const opportunityTitle = String(opportunity.title || data.opportunityTitle || '').trim();
+      if (!opportunityTitle) return null;
+      const companyName = String(opportunity.companyName || data.companyName || '').trim();
+      const studentName = String(data.studentName || data.applicantName || 'A student').trim();
+      const status = String(data.status || '').trim();
+      const companyPart = companyName ? ` at ${companyName}` : '';
 
-    return {
-      id: snapshot.id,
-      type: 'application',
-      typeLabel: activityTypeLabel('application'),
-      targetId: snapshot.id,
-      timestamp: data.appliedAt || null,
-      title: opportunityTitle,
-      actorName: studentName,
-      status,
-      description: `${studentName} applied to ${opportunityTitle} at ${companyName}.`,
-    };
-  });
+      return {
+        id: snapshot.id,
+        type: 'application',
+        typeLabel: activityTypeLabel('application'),
+        targetId: snapshot.id,
+        timestamp: data.appliedAt || null,
+        title: opportunityTitle,
+        actorName: studentName,
+        status,
+        description: `${studentName} applied to ${opportunityTitle}${companyPart}.`,
+      };
+    })
+    .filter(Boolean);
 }
 
 async function enrichProjectIdeaActivities(docs) {
@@ -115,8 +122,8 @@ async function enrichProjectIdeaActivities(docs) {
 async function enrichOpportunityActivities(docs) {
   return docs.map((snapshot) => {
     const data = snapshot.data() || {};
-    const title = String(data.title || 'Untitled opportunity').trim();
-    const actorName = String(data.companyName || 'Unknown company').trim();
+    const title = String(data.title || 'New opportunity').trim();
+    const actorName = String(data.companyName || '').trim();
     const status = String(data.status || '').trim();
 
     return {
@@ -128,7 +135,7 @@ async function enrichOpportunityActivities(docs) {
       title,
       actorName,
       status,
-      description: `${actorName} published "${title}".`,
+      description: actorName ? `${actorName} published "${title}".` : `New opportunity: "${title}".`,
     };
   });
 }
@@ -136,8 +143,8 @@ async function enrichOpportunityActivities(docs) {
 async function enrichScholarshipActivities(docs) {
   return docs.map((snapshot) => {
     const data = snapshot.data() || {};
-    const title = String(data.title || 'Untitled scholarship').trim();
-    const actorName = String(data.provider || 'Unknown provider').trim();
+    const title = String(data.title || 'New scholarship').trim();
+    const actorName = String(data.provider || data.organization || '').trim();
 
     return {
       id: snapshot.id,
@@ -148,7 +155,7 @@ async function enrichScholarshipActivities(docs) {
       title,
       actorName,
       status: '',
-      description: `${actorName} published "${title}".`,
+      description: actorName ? `${actorName} published "${title}".` : `New scholarship: "${title}".`,
     };
   });
 }
@@ -156,8 +163,8 @@ async function enrichScholarshipActivities(docs) {
 async function enrichTrainingActivities(docs) {
   return docs.map((snapshot) => {
     const data = snapshot.data() || {};
-    const title = String(data.title || 'Untitled training').trim();
-    const actorName = String(data.provider || data.source || 'Training source').trim();
+    const title = String(data.title || 'New training').trim();
+    const actorName = String(data.provider || data.source || data.author || '').trim();
 
     return {
       id: snapshot.id,
@@ -168,7 +175,7 @@ async function enrichTrainingActivities(docs) {
       title,
       actorName,
       status: data.isFeatured === true ? 'featured' : '',
-      description: `${actorName} added "${title}".`,
+      description: actorName ? `${actorName} added "${title}".` : `New training: "${title}".`,
     };
   });
 }

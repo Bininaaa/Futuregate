@@ -3,344 +3,136 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FutureGate Admin - Notifications</title>
+  <title>Notifications · FutureGate Admin</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/styles.css">
-  <link rel="stylesheet" href="css/workspace-theme.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/app.css">
   <script src="js/theme-init.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body data-page="notifications">
-  <div id="auth-gate" class="auth-gate">
-    <div class="spinner"></div>
-    <p>Verifying session...</p>
-  </div>
-  <div class="layout">
-    <div class="shell-backdrop" data-shell-backdrop></div>
-    <aside class="sidebar">
-      <div class="sidebar-header">
-        <div class="sidebar-brand">
-          <div class="sidebar-brand-icon">&#x1F6E1;&#xFE0F;</div>
-          <div class="sidebar-brand-text"><h2>FutureGate Admin</h2><p>Notification inbox for admin-owned actions and worker events.</p></div>
-        </div>
-      </div>
-      <nav class="sidebar-nav">
-        <a href="index.html" class="nav-item"><span class="icon">DB</span> Dashboard</a>
-        <a href="users.html" class="nav-item"><span class="icon">US</span> Users</a>
-        <a href="moderation.html" class="nav-item"><span class="icon">CT</span> Content</a>
-        <a href="activity.html" class="nav-item"><span class="icon">AC</span> Activity</a>
-        <a href="notifications.html" class="nav-item"><span class="icon">NT</span> Notifications <span class="nav-badge" data-notification-badge hidden>0</span></a>
-      </nav>
-      <div class="sidebar-footer">
-        <div class="admin-info">
-          <div class="admin-avatar" id="admin-avatar">A</div>
-          <div><div class="admin-name" id="admin-name">Admin</div><div class="admin-email" id="admin-email"></div></div>
-        </div>
-        <button class="btn-logout" id="btn-logout">&#x1F6AA; Logout</button>
-      </div>
-    </aside>
-
-    <div class="workspace">
-      <header class="workspace-header">
-        <button class="toolbar-icon mobile-only" type="button" data-mobile-nav-toggle aria-label="Open navigation" aria-expanded="false">MN</button>
-        <div class="workspace-heading">
-          <div class="workspace-eyebrow">Inbox</div>
-          <h1>Notifications</h1>
-          <p>Keep unread counts accurate, clear handled items quickly, and jump straight into the linked moderation or activity record.</p>
-        </div>
-        <div class="workspace-actions">
-          <button class="toolbar-action" type="button" data-theme-toggle>
-            <span class="toolbar-action-icon">TH</span>
-            <span class="toolbar-action-copy">
-              <small>Theme</small>
-              <strong data-theme-label>Light</strong>
-            </span>
-          </button>
-          <a class="toolbar-action toolbar-action--accent" href="activity.html">
-            <span class="toolbar-action-icon">AC</span>
-            <span class="toolbar-action-copy">
-              <small>Feed</small>
-              <strong>Open Activity</strong>
-            </span>
-          </a>
-        </div>
-      </header>
-
-      <main class="main-content page-shell">
-        <section class="hero-panel">
-          <div class="hero-grid">
-            <div class="hero-copy">
-              <span class="hero-label">Notification Center</span>
-              <h2 class="hero-title">Keep the admin loop tight, readable, and easy to clear.</h2>
-              <p class="hero-subtitle">Unread indicators stay synced across navigation and header actions while each notification keeps a direct path back into the related moderation target.</p>
-            </div>
-            <div class="summary-grid" id="notification-overview">
-              <div class="summary-card">
-                <span class="summary-label">Loading</span>
-                <div class="summary-value">Preparing inbox...</div>
-                <div class="summary-meta">Unread, read, and visible totals appear here after the first page arrives.</div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section class="surface-panel">
-          <div class="page-toolbar">
-            <div class="filter-chips" id="notification-filters" style="margin:0">
-              <button class="chip active" data-filter="all">All</button>
-              <button class="chip" data-filter="unread">Unread</button>
-            </div>
-            <div class="page-actions">
-              <span class="results-summary" id="notification-summary">Loading notifications...</span>
-              <button class="btn-secondary" id="mark-visible-read">Mark Visible as Read</button>
-            </div>
-          </div>
-        </section>
-
-        <section class="surface-panel">
-          <div id="notification-list">
-            <div class="loading"><div class="spinner"></div></div>
-          </div>
-          <div class="load-more-row">
-            <button class="load-more-button" id="load-more-notifications" hidden>Load More Notifications</button>
-          </div>
-        </section>
-      </main>
-    </div>
-  </div>
+  <div id="auth-gate" class="auth-gate"><div class="spinner"></div><p>Verifying session...</p></div>
+  <div id="shell"></div>
 
   <script type="module">
-    import { checkAuth, emptyStateHtml, esc, showToast } from './js/auth.js';
-    import { adminTargetUrl, formatFullTimestamp, typeColor, typeIcon } from './js/admin-utils.js';
-    import {
-      loadNotificationsPage,
-      markNotificationRead,
-      markNotificationsRead,
-    } from './js/notification-service.js';
+    import { mountShell, showPage } from './js/shell.js';
+    import { checkAuth, emptyStateHtml, esc, feedbackCardHtml, showToast, formatTimestamp } from './js/auth.js';
+    import { loadNotificationsPage, markNotificationRead, markNotificationsRead } from './js/notification-service.js';
+    import { adminTargetUrl } from './js/admin-utils.js';
+    import './js/ui.js';
 
-    const notificationState = {
-      userId: '',
-      items: [],
-      cursor: null,
-      hasMore: true,
-      filter: 'all',
-      isLoading: false,
-      busyIds: new Set(),
-    };
+    function resolveNotificationTarget(n) {
+      const route = (n.route || '').toLowerCase();
+      const map = {
+        application: 'application', applications: 'application',
+        opportunity: 'opportunity', opportunities: 'opportunity',
+        scholarship: 'scholarship', scholarships: 'scholarship',
+        training: 'training', trainings: 'training',
+        idea: 'project_idea', project_idea: 'project_idea', ideas: 'project_idea',
+      };
+      const key = map[n.type?.toLowerCase()] || map[route];
+      if (key) return adminTargetUrl(key, n.targetId);
+      if (n.conversationId) return null;
+      return null;
+    }
 
-    document.getElementById('notification-filters').addEventListener('click', (event) => {
-      const chip = event.target.closest('.chip');
-      if (!chip) {
-        return;
-      }
+    mountShell({ page: 'notifications' });
 
-      notificationState.filter = chip.dataset.filter || 'all';
-      document.querySelectorAll('#notification-filters .chip').forEach((item) => {
-        item.classList.toggle('active', item === chip);
-      });
-      renderNotifications();
-    });
-
-    document.getElementById('load-more-notifications').addEventListener('click', async () => {
-      await loadMoreNotifications();
-    });
-
-    document.getElementById('mark-visible-read').addEventListener('click', async () => {
-      const visibleUnreadIds = filteredNotifications()
-        .filter((item) => item.isRead !== true)
-        .map((item) => item.id);
-
-      if (visibleUnreadIds.length === 0) {
-        showToast('There are no unread notifications in the current view', 'success');
-        return;
-      }
-
-      try {
-        await markNotificationsRead(visibleUnreadIds);
-        notificationState.items = notificationState.items.map((item) => (
-          visibleUnreadIds.includes(item.id)
-            ? { ...item, isRead: true }
-            : item
-        ));
-        renderNotifications();
-        showToast('Visible notifications marked as read', 'success');
-      } catch (error) {
-        console.error('Failed to mark visible notifications as read:', error);
-        showToast('Failed to update notification state', 'error');
-      }
-    });
-
-    document.getElementById('notification-list').addEventListener('click', async (event) => {
-      const actionButton = event.target.closest('[data-action]');
-      if (!actionButton) {
-        return;
-      }
-
-      const notificationId = actionButton.dataset.id || '';
-      const type = actionButton.dataset.type || '';
-      const targetId = actionButton.dataset.targetId || '';
-
-      if (actionButton.dataset.action === 'read') {
-        await markSingleNotificationRead(notificationId);
-        return;
-      }
-
-      if (actionButton.dataset.action === 'open') {
-        await markSingleNotificationRead(notificationId);
-        window.location.href = adminTargetUrl(type, targetId);
-      }
-    });
+    const state = { items: [], cursor: null, hasMore: true, userId: null, filter: 'all' };
 
     checkAuth(async (user) => {
-      notificationState.userId = user?.uid || '';
-      await loadMoreNotifications();
+      state.userId = user.uid;
+      await initNotifs();
     });
 
-    function filteredNotifications() {
-      if (notificationState.filter === 'unread') {
-        return notificationState.items.filter((item) => item.isRead !== true);
-      }
-
-      return notificationState.items;
-    }
-
-    function renderNotificationOverview(items) {
-      const overview = document.getElementById('notification-overview');
-      if (!overview) {
-        return;
-      }
-
-      const unreadTotal = notificationState.items.filter((item) => item.isRead !== true).length;
-      const readTotal = notificationState.items.length - unreadTotal;
-      const visibleUnread = items.filter((item) => item.isRead !== true).length;
-
-      overview.innerHTML = `
-        <div class="summary-card">
-          <span class="summary-label">Loaded Inbox</span>
-          <div class="summary-value">${notificationState.items.length}</div>
-          <div class="summary-meta">${readTotal} read and ${unreadTotal} unread notifications currently loaded.</div>
-        </div>
-        <div class="summary-card">
-          <span class="summary-label">Visible Unread</span>
-          <div class="summary-value">${visibleUnread}</div>
-          <div class="summary-meta">Unread items in the current filter view that can be cleared in one action.</div>
-        </div>
-        <div class="summary-card">
-          <span class="summary-label">Current Filter</span>
-          <div class="summary-value">${notificationState.filter === 'unread' ? 'Unread only' : 'All notifications'}</div>
-          <div class="summary-meta">Switch filters to focus on only unread records or review the full inbox history.</div>
-        </div>
+    async function initNotifs() {
+      const root = document.getElementById('page-content');
+      root.innerHTML = `
+        <section class="surface-panel">
+          <div class="filter-bar">
+            <select id="notif-filter">
+              <option value="all">All</option>
+              <option value="unread">Unread</option>
+              <option value="read">Read</option>
+            </select>
+            <button id="mark-all" class="btn" style="margin-left:auto;"><i data-lucide="check-check"></i>Mark all as read</button>
+          </div>
+          <div id="notif-list" class="list-grid"></div>
+          <div class="load-more-wrap">
+            <button id="notif-load" class="btn"><i data-lucide="plus"></i>Load more</button>
+          </div>
+        </section>
       `;
+
+      document.getElementById('notif-filter').addEventListener('change', (e) => { state.filter = e.target.value; render(); });
+      document.getElementById('mark-all').addEventListener('click', markAll);
+      document.getElementById('notif-load').addEventListener('click', loadMore);
+      await loadMore();
+      showPage();
     }
 
-    function renderNotifications() {
-      const items = filteredNotifications();
-      const list = document.getElementById('notification-list');
-      const summary = document.getElementById('notification-summary');
-      const loadMoreButton = document.getElementById('load-more-notifications');
-      const unreadVisible = items.filter((item) => item.isRead !== true).length;
-
-      renderNotificationOverview(items);
-      summary.textContent = `${items.length} loaded item${items.length === 1 ? '' : 's'} • ${unreadVisible} unread`;
-      loadMoreButton.hidden = !notificationState.hasMore;
-      loadMoreButton.disabled = notificationState.isLoading;
-      loadMoreButton.textContent = notificationState.isLoading ? 'Loading...' : 'Load More Notifications';
-
-      if (notificationState.isLoading && notificationState.items.length === 0) {
-        list.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
-        return;
+    async function loadMore() {
+      try {
+        const result = await loadNotificationsPage({ userId: state.userId, pageSize: 20, cursor: state.cursor });
+        state.items = state.items.concat(result.items);
+        state.cursor = result.cursor;
+        state.hasMore = result.hasMore;
+        document.getElementById('notif-load').style.display = state.hasMore ? '' : 'none';
+        render();
+      } catch (e) {
+        console.error(e);
+        document.getElementById('notif-list').innerHTML = feedbackCardHtml('Could not load notifications.', { type: 'error' });
+        if (window.lucide) window.lucide.createIcons();
       }
+    }
 
-      if (items.length === 0) {
-        list.innerHTML = emptyStateHtml(
-          'Admin notifications will appear here as new moderation activity is created.',
-          { title: 'No notifications right now', icon: 'NT' },
-        );
-        return;
-      }
+    async function markAll() {
+      const ids = state.items.filter((n) => !n.isRead).map((n) => n.id);
+      if (!ids.length) return;
+      try {
+        await markNotificationsRead(ids);
+        state.items.forEach((n) => { if (ids.includes(n.id)) n.isRead = true; });
+        render();
+        showToast('All notifications marked as read.', 'success');
+      } catch (e) { showToast('Could not mark all as read.', 'error'); }
+    }
 
-      list.innerHTML = items.map((item) => {
-        const accent = typeColor(item.type);
-        const isBusy = notificationState.busyIds.has(item.id);
+    function render() {
+      const list = document.getElementById('notif-list');
+      let items = state.items.slice();
+      if (state.filter === 'unread') items = items.filter((n) => !n.isRead);
+      else if (state.filter === 'read') items = items.filter((n) => n.isRead);
 
-        return `
-          <div class="notification-card ${item.isRead === true ? '' : 'is-unread'}">
-            <div class="notification-card-header">
-              <div class="notification-card-main">
-                <div class="notification-type-icon" style="background:${accent}22;color:${accent}">${esc(typeIcon(item.type || 'project_idea'))}</div>
-                <div>
-                  <div class="notification-title">${esc(item.title || 'Notification')}</div>
-                  <div class="notification-body">${esc(item.body || item.message || '')}</div>
-                  <div class="notification-meta">
-                    <span class="meta-pill" style="background:${accent}1f;color:${accent}">${esc(item.type || 'notification')}</span>
-                    <span class="meta-pill ${item.isRead === true ? 'meta-pill-read' : 'meta-pill-unread'}">${item.isRead === true ? 'Read' : 'Unread'}</span>
-                    <span class="meta-pill">${esc(formatFullTimestamp(item.createdAt) || 'Unknown time')}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="notification-actions">
-              <button class="btn-open" data-action="open" data-id="${esc(item.id)}" data-type="${esc(item.type)}" data-target-id="${esc(item.targetId)}" ${isBusy ? 'disabled' : ''}>Open Item</button>
-              ${
-                item.isRead === true
-                  ? '<span class="inline-status">Already read</span>'
-                  : `<button class="btn-secondary" data-action="read" data-id="${esc(item.id)}" ${isBusy ? 'disabled' : ''}>${isBusy ? 'Saving...' : 'Mark Read'}</button>`
-              }
+      if (!items.length) {
+        list.innerHTML = emptyStateHtml('You are all caught up.', { title: 'Inbox empty', icon: 'bell-off' });
+      } else {
+        list.innerHTML = items.map((n) => `
+          <div class="notif-row${n.isRead ? '' : ' unread'}" data-id="${n.id}">
+            <div class="notif-icon"><i data-lucide="${n.isRead ? 'bell' : 'bell-ring'}"></i></div>
+            <div class="notif-body">
+              <div class="notif-title">${esc(n.title)}</div>
+              <div class="notif-message">${esc(n.message)}</div>
+              <div class="notif-time">${esc(formatTimestamp(n.createdAt))}</div>
             </div>
           </div>
-        `;
-      }).join('');
-    }
+        `).join('');
 
-    async function markSingleNotificationRead(notificationId) {
-      if (!notificationId || notificationState.busyIds.has(notificationId)) {
-        return;
-      }
-
-      const target = notificationState.items.find((item) => item.id === notificationId);
-      if (!target || target.isRead === true) {
-        return;
-      }
-
-      notificationState.busyIds.add(notificationId);
-      renderNotifications();
-
-      try {
-        await markNotificationRead(notificationId);
-        target.isRead = true;
-      } catch (error) {
-        console.error('Failed to mark notification as read:', error);
-        showToast('Failed to update notification state', 'error');
-      } finally {
-        notificationState.busyIds.delete(notificationId);
-        renderNotifications();
-      }
-    }
-
-    async function loadMoreNotifications() {
-      if (!notificationState.userId || notificationState.isLoading || notificationState.hasMore === false) {
-        return;
-      }
-
-      notificationState.isLoading = true;
-      renderNotifications();
-
-      try {
-        const result = await loadNotificationsPage({
-          userId: notificationState.userId,
-          pageSize: 20,
-          cursor: notificationState.cursor,
+        list.querySelectorAll('.notif-row').forEach((row) => {
+          row.addEventListener('click', async () => {
+            const id = row.getAttribute('data-id');
+            const item = state.items.find((x) => x.id === id);
+            if (!item) return;
+            if (!item.isRead) {
+              try { await markNotificationRead(id); item.isRead = true; render(); } catch {}
+            }
+            const target = resolveNotificationTarget(item);
+            if (target) window.location.href = target;
+          });
         });
-
-        notificationState.items.push(...result.items);
-        notificationState.cursor = result.cursor;
-        notificationState.hasMore = result.hasMore;
-      } catch (error) {
-        console.error('Failed to load notifications:', error);
-        showToast('Failed to load notifications', 'error');
-      } finally {
-        notificationState.isLoading = false;
-        renderNotifications();
       }
+      if (window.lucide) window.lucide.createIcons();
     }
   </script>
 </body>

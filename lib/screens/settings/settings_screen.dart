@@ -10,8 +10,8 @@ import '../../theme/theme_controller.dart';
 import '../../utils/content_language.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/shared/app_loading.dart';
-import '../../widgets/shared/app_restart_scope.dart';
 import '../company/profile_screen.dart';
+import '../launch_screen.dart';
 import '../notifications_screen.dart';
 import '../student/edit_profile_screen.dart';
 import 'about_futuregate_screen.dart';
@@ -770,11 +770,14 @@ class _ThemeSettingsPanel extends StatelessWidget {
               return;
             }
 
-            await WidgetsBinding.instance.endOfFrame;
-            if (!context.mounted) {
-              return;
-            }
-            AppRestartScope.restart(context);
+            Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+              PageRouteBuilder(
+                pageBuilder: (_, _, _) => const LaunchScreen(),
+                transitionDuration: Duration.zero,
+                reverseTransitionDuration: Duration.zero,
+              ),
+              (_) => false,
+            );
           },
         ),
       ),

@@ -10,7 +10,6 @@ import '../utils/opportunity_dashboard_palette.dart';
 import '../utils/opportunity_type.dart';
 import 'shared/app_feedback.dart';
 import 'shared/app_loading.dart';
-import 'shared/content_translation_widgets.dart';
 
 IconData _applicationStatusIcon(String status) {
   switch (ApplicationStatus.parse(status)) {
@@ -838,7 +837,7 @@ class TrendingOpportunityCard extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          companyLabel,
+                          DisplayText.capitalizeDisplayValue(companyLabel),
                           style: AppTypography.product(
                             fontSize: 11.2,
                             fontWeight: FontWeight.w600,
@@ -851,7 +850,7 @@ class TrendingOpportunityCard extends StatelessWidget {
                             locationLabel.isNotEmpty) ...[
                           const SizedBox(height: 2),
                           Text(
-                            locationLabel,
+                            DisplayText.capitalizeDisplayValue(locationLabel),
                             style: AppTypography.product(
                               fontSize: 10.1,
                               color: OpportunityDashboardPalette.textSecondary,
@@ -877,21 +876,11 @@ class TrendingOpportunityCard extends StatelessWidget {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
-              if (opportunity.originalLanguage?.trim().isNotEmpty ?? false) ...[
-                const SizedBox(height: 7),
-                ContentTranslationBadge(
-                  showingTranslated: false,
-                  originalLanguage: opportunity.originalLanguage ?? '',
-                  foregroundColor: tone.strongAccent,
-                  backgroundColor: tone.accent.withValues(alpha: 0.08),
-                  borderColor: tone.accent.withValues(alpha: 0.12),
-                ),
-              ],
               if (compensationText != null &&
                   compensationText!.trim().isNotEmpty) ...[
                 const SizedBox(height: 7),
                 Text(
-                  compensationText!,
+                  DisplayText.capitalizeDisplayValue(compensationText!),
                   style: AppTypography.product(
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
@@ -1093,20 +1082,6 @@ class OpportunityListTile extends StatelessWidget {
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
-                          if (opportunity.originalLanguage?.trim().isNotEmpty ??
-                              false) ...[
-                            const SizedBox(height: 6),
-                            ContentTranslationBadge(
-                              showingTranslated: false,
-                              originalLanguage:
-                                  opportunity.originalLanguage ?? '',
-                              foregroundColor: tone.strongAccent,
-                              backgroundColor: tone.accent.withValues(
-                                alpha: 0.08,
-                              ),
-                              borderColor: tone.accent.withValues(alpha: 0.12),
-                            ),
-                          ],
                           const SizedBox(height: 4),
                           Row(
                             children: [
@@ -1119,7 +1094,9 @@ class OpportunityListTile extends StatelessWidget {
                               const SizedBox(width: 4),
                               Expanded(
                                 child: Text(
-                                  companyLocationText,
+                                  DisplayText.capitalizeDisplayValue(
+                                    companyLocationText,
+                                  ),
                                   style: AppTypography.product(
                                     fontSize: 11,
                                     color: OpportunityDashboardPalette
@@ -1155,7 +1132,9 @@ class OpportunityListTile extends StatelessWidget {
                                   const SizedBox(width: 4),
                                   Flexible(
                                     child: Text(
-                                      compensationText!,
+                                      DisplayText.capitalizeDisplayValue(
+                                        compensationText!,
+                                      ),
                                       style: AppTypography.product(
                                         fontSize: 12,
                                         fontWeight: FontWeight.w700,
@@ -1253,7 +1232,7 @@ class _OpportunityMetadataText extends StatelessWidget {
     final separator = ' ${String.fromCharCode(8226)} ';
 
     return Text(
-      visibleItems.join(separator),
+      visibleItems.map(DisplayText.capitalizeDisplayValue).join(separator),
       style: AppTypography.product(
         fontSize: fontSize,
         fontWeight: FontWeight.w500,
@@ -1483,7 +1462,7 @@ class _OpportunityAccentChip extends StatelessWidget {
             const SizedBox(width: 5),
           ],
           Text(
-            label,
+            DisplayText.capitalizeDisplayValue(label),
             style: AppTypography.product(
               fontSize: 9.5,
               fontWeight: FontWeight.w700,

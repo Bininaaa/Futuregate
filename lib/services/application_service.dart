@@ -139,7 +139,11 @@ class ApplicationService {
         .get();
 
     if (existingApplication.docs.isNotEmpty) {
-      return ApplicationEligibilityStatus.alreadyApplied;
+      final existingStatus =
+          existingApplication.docs.first.data()['status'] as String? ?? '';
+      if (ApplicationStatus.parse(existingStatus) != ApplicationStatus.withdrawn) {
+        return ApplicationEligibilityStatus.alreadyApplied;
+      }
     }
 
     return ApplicationEligibilityStatus.available;
@@ -258,5 +262,36 @@ class ApplicationService {
     }
 
     await _notificationWorker.notifyApplicationSubmitted(applicationRef.id);
+  }
+
+  Future<void> withdrawApplication({
+    required String studentId,
+    required String opportunityId,
+  }) async {
+    if (studentId.isEmpty || opportunityId.isEmpty) {
+      throw Exception('Invalid application reference.');
+    }
+
+    final applicationRef = _firestore
+        .collection('applications')
+        .doc('${studentId}_$opportunityId');
+
+    final snapshot = await applicationRef.get();
+    if (!snapshot.exists) {
+      throw Exception('Application not found.');
+    }
+
+    final currentStatus =
+        ApplicationStatus.parse(snapshot.data()?['status'] as String? ?? '');
+    if (currentStatus != ApplicationStatus.pending) {
+      throw Exception(
+        'Only pending applications can be withdrawn.',
+      );
+    }
+
+    await applicationRef.update({
+      'status': ApplicationStatus.withdrawn,
+      'withdrawnAt': FieldValue.serverTimestamp(),
+    });
   }
 }

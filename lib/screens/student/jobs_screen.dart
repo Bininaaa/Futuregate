@@ -290,7 +290,9 @@ class _JobsScreenState extends State<JobsScreen> {
     }
 
     final applicationStatus = appliedStatuses[opportunity.id];
-    if (applicationStatus != null) {
+    if (applicationStatus != null &&
+        ApplicationStatus.parse(applicationStatus) !=
+            ApplicationStatus.withdrawn) {
       return JobStatusData(
         label: ApplicationStatus.label(
           applicationStatus,
@@ -2380,7 +2382,7 @@ class FeaturedJobCard extends StatelessWidget {
                   Flexible(
                     child: Text(
                       footerSalary,
-                      maxLines: 2,
+                      maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.poppins(
                         fontSize: salaryFontSize,
@@ -2582,57 +2584,60 @@ class FeaturedJobCard extends StatelessWidget {
                               ],
                             ],
                           ),
-                          const Spacer(),
-                          Text(
-                            job.title,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.poppins(
-                              fontSize: titleFontSize,
-                              fontWeight: FontWeight.w700,
-                              height: denseLayout ? 1.04 : 1.1,
-                              color: Colors.white,
+                          SizedBox(height: isTight ? 8 : 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  job.title,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: titleFontSize,
+                                    fontWeight: FontWeight.w700,
+                                    height: denseLayout ? 1.04 : 1.1,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: denseLayout
+                                      ? (isTight ? 6 : 8)
+                                      : (isTight ? 8 : 10),
+                                ),
+                                Text(
+                                  locationText,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: locationFontSize,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.white.withValues(alpha: 0.88),
+                                  ),
+                                ),
+                                if (displayMetadataLine != null &&
+                                    displayMetadataLine.trim().isNotEmpty) ...[
+                                  SizedBox(
+                                    height: denseLayout
+                                        ? (isTight ? 3 : 4)
+                                        : (isTight ? 4 : 6),
+                                  ),
+                                  Text(
+                                    displayMetadataLine,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: GoogleFonts.poppins(
+                                      fontSize: metadataFontSize,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.white.withValues(alpha: 0.80),
+                                    ),
+                                  ),
+                                ],
+                                const Spacer(),
+                                footer,
+                              ],
                             ),
                           ),
-                          SizedBox(
-                            height: denseLayout
-                                ? (isTight ? 6 : 8)
-                                : (isTight ? 8 : 10),
-                          ),
-                          Text(
-                            locationText,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.poppins(
-                              fontSize: locationFontSize,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.white.withValues(alpha: 0.88),
-                            ),
-                          ),
-                          if (displayMetadataLine != null &&
-                              displayMetadataLine.trim().isNotEmpty) ...[
-                            SizedBox(
-                              height: denseLayout
-                                  ? (isTight ? 3 : 4)
-                                  : (isTight ? 4 : 6),
-                            ),
-                            Text(
-                              displayMetadataLine,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: GoogleFonts.poppins(
-                                fontSize: metadataFontSize,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white.withValues(alpha: 0.80),
-                              ),
-                            ),
-                          ],
-                          SizedBox(
-                            height: denseLayout
-                                ? (isTight ? 10 : 14)
-                                : (isTight ? 12 : 18),
-                          ),
-                          footer,
                         ],
                       ),
                     ),
@@ -2747,6 +2752,8 @@ IconData _jobApplicationStatusIcon(String status) {
       return Icons.check_circle_rounded;
     case ApplicationStatus.rejected:
       return Icons.cancel_rounded;
+    case ApplicationStatus.withdrawn:
+      return Icons.undo_rounded;
     case ApplicationStatus.pending:
     default:
       return Icons.hourglass_top_rounded;

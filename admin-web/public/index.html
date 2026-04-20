@@ -3,300 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FutureGate Admin - Dashboard</title>
+  <title>Dashboard · FutureGate Admin</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/styles.css">
-  <link rel="stylesheet" href="css/workspace-theme.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/app.css?v=2026042007">
   <script src="js/theme-init.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 </head>
 <body data-page="dashboard">
-  <div id="auth-gate" class="auth-gate">
-    <div class="spinner"></div>
-    <p>Verifying session...</p>
-  </div>
-  <div class="layout">
-    <div class="shell-backdrop" data-shell-backdrop></div>
-    <aside class="sidebar">
-      <div class="sidebar-header">
-        <div class="sidebar-brand">
-          <div class="sidebar-brand-icon">&#x1F6E1;&#xFE0F;</div>
-          <div class="sidebar-brand-text">
-            <h2>FutureGate Admin</h2>
-            <p>Control room for content, users, and platform operations</p>
-          </div>
-        </div>
-      </div>
-      <nav class="sidebar-nav">
-        <a href="index.html" class="nav-item"><span class="icon">DB</span> Dashboard</a>
-        <a href="users.html" class="nav-item"><span class="icon">US</span> Users</a>
-        <a href="moderation.html" class="nav-item"><span class="icon">CT</span> Content</a>
-        <a href="activity.html" class="nav-item"><span class="icon">AC</span> Activity</a>
-        <a href="notifications.html" class="nav-item"><span class="icon">NT</span> Notifications <span class="nav-badge" data-notification-badge hidden>0</span></a>
-      </nav>
-      <div class="sidebar-footer">
-        <div class="admin-info">
-          <div class="admin-avatar" id="admin-avatar">A</div>
-          <div>
-            <div class="admin-name" id="admin-name">Admin</div>
-            <div class="admin-email" id="admin-email"></div>
-          </div>
-        </div>
-        <button class="btn-logout" id="btn-logout">&#x1F6AA; Logout</button>
-      </div>
-    </aside>
-    <div class="workspace">
-      <header class="workspace-header">
-        <button class="toolbar-icon mobile-only" type="button" data-mobile-nav-toggle aria-label="Open navigation" aria-expanded="false">MN</button>
-        <div class="workspace-heading">
-          <div class="workspace-eyebrow">Admin Workspace</div>
-          <h1>Dashboard</h1>
-          <p>Track platform growth, moderation load, and the queues that need attention first without bouncing between disconnected tools.</p>
-        </div>
-        <div class="workspace-actions">
-          <button class="toolbar-action" type="button" data-theme-toggle>
-            <span class="toolbar-action-icon">TH</span>
-            <span class="toolbar-action-copy">
-              <small>Theme</small>
-              <strong data-theme-label>Light</strong>
-            </span>
-          </button>
-          <a class="toolbar-action toolbar-action--accent" href="notifications.html">
-            <span class="toolbar-action-icon">NT</span>
-            <span class="toolbar-action-copy">
-              <small>Inbox</small>
-              <strong>Notifications</strong>
-            </span>
-            <span class="toolbar-pill-badge" data-notification-badge hidden>0</span>
-          </a>
-        </div>
-      </header>
-
-      <main class="main-content page-shell">
-        <section class="hero-panel">
-          <div class="hero-grid">
-            <div class="hero-copy">
-              <span class="hero-label">Control Room</span>
-              <h2 class="hero-title">Run FutureGate from one sharp, mobile-ready admin workspace.</h2>
-              <p class="hero-subtitle">This dashboard is designed to keep growth metrics, moderation queues, and the learning library close enough that you can move from signal to action in a single flow.</p>
-              <div class="hero-actions">
-                <a class="toolbar-action" href="moderation.html">
-                  <span class="toolbar-action-icon">CT</span>
-                  <span class="toolbar-action-copy">
-                    <small>Workspace</small>
-                    <strong>Open Content Center</strong>
-                  </span>
-                </a>
-                <a class="toolbar-action" href="activity.html">
-                  <span class="toolbar-action-icon">AC</span>
-                  <span class="toolbar-action-copy">
-                    <small>Live Feed</small>
-                    <strong>Review Activity</strong>
-                  </span>
-                </a>
-                <a class="toolbar-action" href="users.html">
-                  <span class="toolbar-action-icon">US</span>
-                  <span class="toolbar-action-copy">
-                    <small>Accounts</small>
-                    <strong>Manage Users</strong>
-                  </span>
-                </a>
-              </div>
-            </div>
-            <div class="summary-grid">
-              <div class="summary-card">
-                <span class="summary-label">Workspace Focus</span>
-                <div class="summary-value">Growth + moderation</div>
-                <div class="summary-meta">Analytics, queue review, and publishing controls live side by side.</div>
-              </div>
-              <div class="summary-card">
-                <span class="summary-label">Library Access</span>
-                <div class="summary-value">Books + videos</div>
-                <div class="summary-meta">Jump into the content center to curate imported learning resources.</div>
-              </div>
-              <div class="summary-card">
-                <span class="summary-label">Notification Loop</span>
-                <div class="summary-value">Unread synced</div>
-                <div class="summary-meta">Inbox badges stay visible in navigation and the header action rail.</div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <div id="loading" class="surface-panel loading"><div class="spinner"></div></div>
-        <div id="content" class="dashboard-stack" style="display:none">
-          <section class="surface-panel">
-            <div class="surface-heading">
-              <div>
-                <div class="surface-heading-title">Platform Overview</div>
-                <p class="surface-heading-copy">The high-level account and usage picture admins usually need first.</p>
-              </div>
-            </div>
-            <div class="stats-grid" id="overview-stats"></div>
-          </section>
-
-          <section class="surface-panel">
-            <div class="surface-heading">
-              <div>
-                <div class="surface-heading-title">Academic Breakdown</div>
-                <p class="surface-heading-copy">Understand how the student population is distributed before digging into deeper trends.</p>
-              </div>
-            </div>
-            <div class="stats-grid" id="level-stats"></div>
-          </section>
-
-          <section class="charts-grid">
-            <div class="chart-card"><h3>Users by Level</h3><canvas id="levelChart"></canvas></div>
-            <div class="chart-card"><h3>Users by Role</h3><canvas id="roleChart"></canvas></div>
-          </section>
-
-          <section class="chart-card"><h3>Monthly Registrations</h3><canvas id="monthlyChart"></canvas></section>
-
-          <section class="surface-panel">
-            <div class="surface-heading">
-              <div>
-                <div class="surface-heading-title">Managed Inventory</div>
-                <p class="surface-heading-copy">A quick count of the content types handled inside the admin workspace.</p>
-              </div>
-            </div>
-            <div class="stats-grid" id="content-stats"></div>
-          </section>
-
-          <section class="surface-panel">
-            <div class="surface-heading">
-              <div>
-                <div class="surface-heading-title">Quick Access</div>
-                <p class="surface-heading-copy">Move straight into the admin areas you open most often.</p>
-              </div>
-            </div>
-            <div class="quick-access-grid">
-              <a class="quick-link-card" href="moderation.html?tab=applications">
-                <div class="quick-link-icon" style="background:rgba(124,58,237,0.14);color:#7c3aed">AP</div>
-                <div class="quick-link-title">Applications</div>
-                <div class="quick-link-copy">Review applicant pipelines, open opportunity context, and check CV access from one queue.</div>
-              </a>
-              <a class="quick-link-card" href="moderation.html?tab=opportunities">
-                <div class="quick-link-icon" style="background:rgba(245,158,11,0.14);color:#f59e0b">OP</div>
-                <div class="quick-link-title">Opportunities</div>
-                <div class="quick-link-copy">Manage featured visibility and the freshest company or admin-posted opportunities.</div>
-              </a>
-              <a class="quick-link-card" href="moderation.html?tab=scholarships">
-                <div class="quick-link-icon" style="background:rgba(226,74,74,0.14);color:#e24a4a">SC</div>
-                <div class="quick-link-title">Scholarships</div>
-                <div class="quick-link-copy">Create scholarships, trigger the worker notification flow, and keep deadlines current.</div>
-              </a>
-              <a class="quick-link-card" href="moderation.html?tab=trainings">
-                <div class="quick-link-icon" style="background:rgba(20,184,166,0.14);color:#14b8a6">TR</div>
-                <div class="quick-link-title">Trainings</div>
-                <div class="quick-link-copy">Feature, prune, and refresh the curated training inventory already live in the platform.</div>
-              </a>
-              <a class="quick-link-card" href="moderation.html?tab=library">
-                <div class="quick-link-icon" style="background:rgba(37,99,235,0.14);color:#2563eb">LB</div>
-                <div class="quick-link-title">Library</div>
-                <div class="quick-link-copy">Import Google Books and YouTube resources into the admin-managed learning catalog.</div>
-              </a>
-              <a class="quick-link-card" href="moderation.html?tab=ideas">
-                <div class="quick-link-icon" style="background:rgba(245,158,11,0.16);color:#b77909">PI</div>
-                <div class="quick-link-title">Project Ideas</div>
-                <div class="quick-link-copy">Stay on top of pending submissions and keep the innovation feed polished.</div>
-              </a>
-              <a class="quick-link-card" href="activity.html">
-                <div class="quick-link-icon" style="background:rgba(59,34,246,0.14);color:#3b22f6">AC</div>
-                <div class="quick-link-title">Recent Activity</div>
-                <div class="quick-link-copy">See the newest publishing and moderation events across the entire platform.</div>
-              </a>
-              <a class="quick-link-card" href="notifications.html">
-                <div class="quick-link-icon" style="background:rgba(23,157,108,0.14);color:#179d6c">NT</div>
-                <div class="quick-link-title">Notification Center</div>
-                <div class="quick-link-copy">Track unread admin notifications without losing the context of your current task.</div>
-                <span class="quick-link-badge" data-notification-badge hidden>0</span>
-              </a>
-            </div>
-          </section>
-
-          <section class="surface-panel">
-            <div class="surface-heading">
-              <div>
-                <div class="surface-heading-title">Engagement Analytics</div>
-                <p class="surface-heading-copy">These ratios help admins see whether users are engaging deeply or only browsing.</p>
-              </div>
-            </div>
-            <div id="engagement-cards"></div>
-          </section>
-
-          <section class="charts-grid">
-            <div id="top-applied"></div>
-            <div id="top-saved"></div>
-          </section>
-
-          <section class="surface-panel">
-            <div class="section-card-header">
-              <h3>Recent Activity</h3>
-              <a class="section-link" href="activity.html">View All Activity</a>
-            </div>
-            <div class="card" id="activity-feed"></div>
-          </section>
-
-          <section class="surface-panel">
-            <div class="surface-heading">
-              <div>
-                <div class="surface-heading-title">Recent Users</div>
-                <p class="surface-heading-copy">Fresh account creation, role mix, and activation status at a glance.</p>
-              </div>
-            </div>
-            <div id="recent-users"></div>
-          </section>
-
-          <section class="surface-panel">
-            <div class="surface-heading">
-              <div>
-                <div class="surface-heading-title">Recent Opportunities</div>
-                <p class="surface-heading-copy">The newest opportunity records published across the platform.</p>
-              </div>
-            </div>
-            <div id="recent-opps"></div>
-          </section>
-        </div>
-      </main>
-    </div>
-  </div>
+  <div id="auth-gate" class="auth-gate"><div class="spinner"></div><p>Verifying session...</p></div>
+  <div id="shell"></div>
 
   <script type="module">
-    import { checkAuth, emptyStateHtml, esc, feedbackCardHtml, formatTimestamp, roleColor } from './js/auth.js';
+    import { mountShell, showPage } from './js/shell.js';
+    import { checkAuth, emptyStateHtml, esc, feedbackCardHtml, formatTimestamp } from './js/auth.js';
     import { db, collection, getDocs, query, orderBy, limit, where } from './js/firebase-config.js';
     import { createActivityState, loadRecentActivitiesPage } from './js/activity-service.js';
     import { activityTypeLabel, adminTargetUrl, typeColor, typeIcon } from './js/admin-utils.js';
+    import { openDetailsModal } from './js/details.js';
+    import './js/ui.js';
 
-    const dashboardActivityState = createActivityState();
+    mountShell({ page: 'dashboard' });
 
-    const avatarEmojis = {
-      avatar_1: '🙂', avatar_2: '😊', avatar_3: '😀', avatar_4: '😄',
-      avatar_5: '😎', avatar_6: '🤗', avatar_7: '😃', avatar_8: '😁',
-    };
-    const avatarColors = {
-      avatar_1: '#1565C0', avatar_2: '#AD1457', avatar_3: '#2E7D32', avatar_4: '#E65100',
-      avatar_5: '#6A1B9A', avatar_6: '#00838F', avatar_7: '#FF8F00', avatar_8: '#4E342E',
-    };
+    const dashState = createActivityState();
 
-    function buildDashAvatarHtml(user) {
-      const color = roleColor(user.role);
-      const photoUrl = user.role === 'company' ? user.logo : user.profileImage;
-      const initial = esc((user.fullName || '?')[0].toUpperCase());
-      if (user.photoType === 'upload' && photoUrl) {
-        return `<div class="user-avatar" style="background:${color}22;color:${color}"><img src="${esc(photoUrl)}" alt="${initial}" onerror="this.remove();this.parentNode.textContent='${initial}'"></div>`;
-      }
-      if (user.photoType === 'avatar' && user.avatarId && avatarEmojis[user.avatarId]) {
-        return `<div class="user-avatar" style="background:${avatarColors[user.avatarId]}22">${avatarEmojis[user.avatarId]}</div>`;
-      }
-      if (photoUrl) {
-        return `<div class="user-avatar" style="background:${color}22;color:${color}"><img src="${esc(photoUrl)}" alt="${initial}" onerror="this.remove();this.parentNode.textContent='${initial}'"></div>`;
-      }
-      return `<div class="user-avatar" style="background:${color}22;color:${color}">${initial}</div>`;
-    }
-
-    checkAuth(async () => {
-      await loadDashboard();
-    });
+    checkAuth(async () => { await loadDashboard(); });
 
     async function loadDashboard() {
       try {
@@ -312,341 +46,373 @@
           getDocs(query(collection(db, 'conversations'), where('status', '==', 'active'))),
         ]);
 
-        let total = 0;
-        let students = 0;
-        let companies = 0;
-        let admins = 0;
-        let active = 0;
-        let inactive = 0;
-        let bac = 0;
-        let licence = 0;
-        let master = 0;
-        let doctorat = 0;
-        const monthlyMap = { Jan: 0, Feb: 0, Mar: 0, Apr: 0, May: 0, Jun: 0, Jul: 0, Aug: 0, Sep: 0, Oct: 0, Nov: 0, Dec: 0 };
-        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        let total = 0, students = 0, companies = 0, admins = 0, active = 0, inactive = 0;
+        let bac = 0, licence = 0, master = 0, doctorat = 0;
+        const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        const monthlyMap = Object.fromEntries(months.map((m) => [m, 0]));
 
-        usersSnap.forEach((snapshot) => {
-          const data = snapshot.data();
-          total += 1;
-
-          if (data.role === 'student') {
+        usersSnap.forEach((s) => {
+          const d = s.data(); total += 1;
+          if (d.role === 'student') {
             students += 1;
-            if (data.academicLevel === 'bac') bac += 1;
-            else if (data.academicLevel === 'licence') licence += 1;
-            else if (data.academicLevel === 'master') master += 1;
-            else if (data.academicLevel === 'doctorat') doctorat += 1;
-          } else if (data.role === 'company') {
-            companies += 1;
-          } else if (data.role === 'admin') {
-            admins += 1;
-          }
-
-          if (data.isActive !== false) active += 1;
-          else inactive += 1;
-
-          if (data.createdAt) {
-            const date = data.createdAt.toDate ? data.createdAt.toDate() : new Date(data.createdAt.seconds * 1000);
+            if (d.academicLevel === 'bac') bac += 1;
+            else if (d.academicLevel === 'licence') licence += 1;
+            else if (d.academicLevel === 'master') master += 1;
+            else if (d.academicLevel === 'doctorat') doctorat += 1;
+          } else if (d.role === 'company') companies += 1;
+          else if (d.role === 'admin') admins += 1;
+          if (d.isActive !== false) active += 1; else inactive += 1;
+          if (d.createdAt) {
+            const date = d.createdAt.toDate ? d.createdAt.toDate() : new Date(d.createdAt.seconds * 1000);
             monthlyMap[months[date.getMonth()]] = (monthlyMap[months[date.getMonth()]] || 0) + 1;
           }
         });
 
-        const totalApps = appsSnap.size;
-        const totalOpps = oppsSnap.size;
+        const totalApps = appsSnap.size, totalOpps = oppsSnap.size;
         const appRate = totalOpps > 0 ? totalApps / totalOpps : 0;
         const totalCvs = cvsSnap.size;
         const cvRate = students > 0 ? (totalCvs / students) * 100 : 0;
 
-        let pendingIdeas = 0;
-        let approvedIdeas = 0;
-        ideasSnap.forEach((snapshot) => {
-          const status = snapshot.data().status || 'pending';
-          if (status === 'pending') pendingIdeas += 1;
-          else if (status === 'approved') approvedIdeas += 1;
+        let pendingIdeas = 0, approvedIdeas = 0;
+        ideasSnap.forEach((s) => {
+          const st = s.data().status || 'pending';
+          if (st === 'pending') pendingIdeas += 1; else if (st === 'approved') approvedIdeas += 1;
         });
 
-        const oppTitles = {};
-        oppsSnap.forEach((snapshot) => {
-          oppTitles[snapshot.id] = snapshot.data().title || 'Untitled';
+        const oppMeta = {};
+        oppsSnap.forEach((s) => {
+          const d = s.data();
+          oppMeta[s.id] = {
+            id: s.id,
+            title: d.title || 'Untitled',
+            type: d.type || d.opportunityType || 'opportunity',
+            status: (d.status || 'active').toLowerCase(),
+            companyName: d.companyName || '',
+            companyLogo: d.companyLogo || d.logo || '',
+            isFeatured: !!d.isFeatured,
+          };
         });
-
-        const appCounts = {};
-        appsSnap.forEach((snapshot) => {
-          const id = snapshot.data().opportunityId || '';
-          appCounts[id] = (appCounts[id] || 0) + 1;
-        });
-
-        const saveCounts = {};
-        savedSnap.forEach((snapshot) => {
-          const id = snapshot.data().opportunityId || '';
-          saveCounts[id] = (saveCounts[id] || 0) + 1;
-        });
-
-        const topApplied = Object.entries(appCounts)
-          .sort((left, right) => right[1] - left[1])
+        const appCounts = {}; appsSnap.forEach((s) => { const id = s.data().opportunityId || ''; appCounts[id] = (appCounts[id] || 0) + 1; });
+        const saveCounts = {}; savedSnap.forEach((s) => { const id = s.data().opportunityId || ''; saveCounts[id] = (saveCounts[id] || 0) + 1; });
+        const buildTop = (counts) => Object.entries(counts)
+          .filter(([id]) => id && oppMeta[id] && oppMeta[id].status !== 'closed')
+          .sort((a,b) => b[1] - a[1])
           .slice(0, 3)
-          .map(([id, count]) => ({ title: oppTitles[id] || 'Unknown', count }));
-        const topSaved = Object.entries(saveCounts)
-          .sort((left, right) => right[1] - left[1])
-          .slice(0, 3)
-          .map(([id, count]) => ({ title: oppTitles[id] || 'Unknown', count }));
+          .map(([id, count]) => ({ ...oppMeta[id], count }));
+        const topApplied = buildTop(appCounts);
+        const topSaved = buildTop(saveCounts);
 
-        renderOverview({ total, active, inactive, students, companies });
-        renderLevels({ bac, licence, master, doctorat });
-        renderContentStats({
-          opps: totalOpps,
-          apps: totalApps,
-          scholarships: scholarSnap.size,
-          trainings: trainSnap.size,
-          ideas: ideasSnap.size,
-          convos: convosSnap.size,
+        /* Control room: what needs admin attention right now */
+        let pendingCompanies = 0, blockedUsers = 0;
+        usersSnap.forEach((s) => {
+          const d = s.data();
+          if (d.role === 'company' && (d.approvalStatus === 'pending' || d.isApproved === false)) pendingCompanies += 1;
+          if (d.isActive === false) blockedUsers += 1;
         });
-        renderEngagement({ appRate, cvRate, totalCvs, students, pendingIdeas, approvedIdeas });
-        renderTopList('top-applied', 'Most Applied Opportunities', topApplied, 'applications', '#7B1FA2');
-        renderTopList('top-saved', 'Most Saved Opportunities', topSaved, 'saves', '#FF8C00');
+        let pendingApps = 0;
+        appsSnap.forEach((s) => { if ((s.data().status || 'pending') === 'pending') pendingApps += 1; });
+        let hiddenOpps = 0;
+        oppsSnap.forEach((s) => { if (s.data().isHidden) hiddenOpps += 1; });
+
+        const root = document.getElementById('page-content');
+        root.innerHTML = `
+          <section class="surface-panel">
+            <div class="surface-heading">
+              <div>
+                <div class="surface-heading-title">Control room</div>
+                <div class="surface-heading-copy">What needs your attention right now.</div>
+              </div>
+            </div>
+            <div class="control-room">
+              ${controlCard({ count: pendingIdeas, label: 'Project ideas awaiting review', icon: 'lightbulb', color: '#F59E0B', href: 'moderation.html?tab=ideas', cta: 'Review ideas' })}
+              ${controlCard({ count: pendingApps, label: 'Pending applications', icon: 'file-text', color: '#7C3AED', href: 'moderation.html?tab=applications', cta: 'Review applications' })}
+              ${controlCard({ count: pendingCompanies, label: 'Companies awaiting approval', icon: 'building-2', color: '#14B8A6', href: 'users.html?role=company&status=pending', cta: 'Review companies' })}
+              ${controlCard({ count: blockedUsers, label: 'Blocked users', icon: 'shield-alert', color: '#E24A4A', href: 'users.html?status=blocked', cta: 'Manage blocked' })}
+              ${controlCard({ count: hiddenOpps, label: 'Hidden opportunities', icon: 'eye-off', color: '#64748B', href: 'moderation.html?tab=opportunities', cta: 'Review hidden' })}
+            </div>
+          </section>
+
+          <section class="surface-panel">
+            <div class="surface-heading"><div><div class="surface-heading-title">Overview</div></div></div>
+            <div class="stats-grid">
+              ${stat('Total users', total, 'users', 'var(--c-primary)')}
+              ${stat('Active', active, 'check-circle-2', 'var(--c-success)')}
+              ${stat('Inactive', inactive, 'x-circle', 'var(--c-danger)')}
+              ${stat('Students', students, 'graduation-cap', 'var(--c-info)')}
+              ${stat('Companies', companies, 'building-2', 'var(--c-secondary)')}
+            </div>
+          </section>
+
+          <section class="surface-panel">
+            <div class="surface-heading"><div><div class="surface-heading-title">Academic levels</div></div></div>
+            <div class="stats-grid">
+              ${stat('Bac', bac, 'book', 'var(--c-warning)')}
+              ${stat('Licence', licence, 'book-marked', 'var(--c-info)')}
+              ${stat('Master', master, 'award', 'var(--c-activity)')}
+              ${stat('Doctorat', doctorat, 'medal', 'var(--c-secondary)')}
+            </div>
+          </section>
+
+          <section class="charts-grid">
+            <div class="chart-card"><h3>Users by level</h3><canvas id="levelChart"></canvas></div>
+            <div class="chart-card"><h3>Roles</h3><canvas id="roleChart"></canvas></div>
+          </section>
+
+          <section class="chart-card"><h3>Monthly registrations</h3><canvas id="monthlyChart"></canvas></section>
+
+          <section class="surface-panel">
+            <div class="surface-heading"><div><div class="surface-heading-title">Content</div></div></div>
+            <div class="stats-grid">
+              ${stat('Opportunities', totalOpps, 'briefcase', 'var(--c-accent)')}
+              ${stat('Applications', totalApps, 'file-text', 'var(--c-activity)')}
+              ${stat('Scholarships', scholarSnap.size, 'graduation-cap', 'var(--c-danger)')}
+              ${stat('Trainings', trainSnap.size, 'book-open', 'var(--c-secondary)')}
+              ${stat('Project ideas', ideasSnap.size, 'lightbulb', 'var(--c-warning)')}
+              ${stat('Conversations', convosSnap.size, 'message-square', 'var(--c-success)')}
+            </div>
+          </section>
+
+          <section class="surface-panel">
+            <div class="surface-heading"><div><div class="surface-heading-title">Quick actions</div></div></div>
+            <div class="quick-access-grid">
+              ${quick('briefcase','Opportunities','moderation.html?tab=opportunities','var(--c-accent)','Review and feature listings.')}
+              ${quick('file-text','Applications','moderation.html?tab=applications','var(--c-activity)','Manage student applications.')}
+              ${quick('graduation-cap','Scholarships','moderation.html?tab=scholarships','var(--c-danger)','Publish and curate scholarships.')}
+              ${quick('book-open','Trainings','moderation.html?tab=trainings','var(--c-secondary)','Curate the training catalog.')}
+              ${quick('library','Library','moderation.html?tab=library','var(--c-info)','Import books and videos.')}
+              ${quick('lightbulb','Project ideas','moderation.html?tab=ideas','var(--c-warning)','Approve student submissions.')}
+              ${quick('users','Users','users.html','var(--c-primary)','Approve companies, manage accounts.')}
+              ${quick('activity','Activity','activity.html','var(--c-success)','See the latest events.')}
+            </div>
+          </section>
+
+          <section class="surface-panel">
+            <div class="surface-heading"><div><div class="surface-heading-title">Engagement</div></div></div>
+            <div>
+              ${engagement('Application rate', appRate.toFixed(1) + ' apps / opportunity', 'trending-up', 'var(--c-info)')}
+              ${engagement('CV completion', `${cvRate.toFixed(0)}% (${totalCvs} of ${students} students)`, 'file-check-2', 'var(--c-success)')}
+              ${engagement('Project ideas pipeline', `${pendingIdeas} pending · ${approvedIdeas} approved`, 'lightbulb', 'var(--c-warning)')}
+            </div>
+          </section>
+
+          <section class="charts-grid">
+            <div class="surface-panel" id="top-applied"></div>
+            <div class="surface-panel" id="top-saved"></div>
+          </section>
+
+          <section class="surface-panel">
+            <div class="section-card-header">
+              <h3>Recent activity</h3>
+              <a class="section-link" href="activity.html">View all <i data-lucide="arrow-right" class="sm"></i></a>
+            </div>
+            <div id="activity-feed" class="list-grid"></div>
+          </section>
+
+          <section class="surface-panel">
+            <div class="section-card-header"><h3>Recent users</h3><a class="section-link" href="users.html">All users <i data-lucide="arrow-right" class="sm"></i></a></div>
+            <div id="recent-users" class="list-grid"></div>
+          </section>
+
+          <section class="surface-panel">
+            <div class="section-card-header"><h3>Recent opportunities</h3><a class="section-link" href="moderation.html?tab=opportunities">All <i data-lucide="arrow-right" class="sm"></i></a></div>
+            <div id="recent-opps" class="list-grid"></div>
+          </section>
+        `;
+
+        renderTopList('top-applied', 'Most applied', topApplied, 'apps', 'var(--c-activity)');
+        renderTopList('top-saved', 'Most saved', topSaved, 'saves', 'var(--c-accent)');
         renderCharts({ bac, licence, master, doctorat, students, companies, admins, monthlyMap, months });
         await renderActivity();
         await renderRecentUsers();
         await renderRecentOpps();
 
-        document.getElementById('loading').style.display = 'none';
-        document.getElementById('content').style.display = 'grid';
+        showPage();
+        if (window.lucide) window.lucide.createIcons();
       } catch (error) {
         console.error('Dashboard load error:', error);
         document.getElementById('loading').innerHTML = feedbackCardHtml(
-          'Dashboard data could not be loaded right now. Please try again in a moment.',
-          { type: 'error', title: 'Unable to load the dashboard', icon: '!' },
+          'Could not load the dashboard. Please try again.',
+          { type: 'error', title: 'Unable to load' },
         );
+        if (window.lucide) window.lucide.createIcons();
       }
     }
 
-    function statCard(title, value, label, color) {
+    function stat(title, value, icon, color) {
       return `<div class="stat-card">
-        <div class="stat-icon" style="background:${color}22;color:${color}">${label}</div>
-        <div class="stat-info"><h4>${title}</h4><div class="value">${value}</div></div>
+        <div class="stat-icon" style="background:${color}1a;color:${color}"><i data-lucide="${icon}"></i></div>
+        <div class="stat-info"><h4>${esc(title)}</h4><div class="value">${value}</div></div>
       </div>`;
     }
-
-    function renderOverview(stats) {
-      document.getElementById('overview-stats').innerHTML =
-        statCard('Total Users', stats.total, 'US', '#2D1B4E') +
-        statCard('Active Users', stats.active, 'OK', '#4CAF50') +
-        statCard('Inactive Users', stats.inactive, 'NO', '#f44336') +
-        statCard('Students', stats.students, 'ST', '#2196F3') +
-        statCard('Companies', stats.companies, 'CO', '#009688');
+    function quick(icon, title, href, color, copy) {
+      return `<a class="quick-link-card" href="${href}">
+        <div class="quick-link-icon" style="background:${color}1a;color:${color}"><i data-lucide="${icon}"></i></div>
+        <div class="quick-link-title">${esc(title)}</div>
+        <div class="quick-link-copy">${esc(copy)}</div>
+      </a>`;
     }
-
-    function renderLevels(stats) {
-      document.getElementById('level-stats').innerHTML =
-        statCard('Bac', stats.bac, 'BA', '#FF9800') +
-        statCard('Licence', stats.licence, 'LI', '#3F51B5') +
-        statCard('Master', stats.master, 'MA', '#9C27B0') +
-        statCard('Doctorat', stats.doctorat, 'DR', '#009688');
+    function engagement(title, value, icon, color) {
+      return `<div class="engagement-card">
+        <div class="engagement-icon" style="background:${color}1a;color:${color}"><i data-lucide="${icon}"></i></div>
+        <div class="engagement-info"><h4>${esc(title)}</h4><div class="value">${esc(value)}</div></div>
+      </div>`;
     }
-
-    function renderContentStats(stats) {
-      document.getElementById('content-stats').innerHTML =
-        statCard('Opportunities', stats.opps, 'OP', '#FF8C00') +
-        statCard('Applications', stats.apps, 'AP', '#7B1FA2') +
-        statCard('Scholarships', stats.scholarships, 'SC', '#E91E63') +
-        statCard('Trainings', stats.trainings, 'TR', '#00BCD4') +
-        statCard('Project Ideas', stats.ideas, 'PI', '#FFC107') +
-        statCard('Conversations', stats.convos, 'CH', '#4CAF50');
+    function controlCard({ count, label, icon, color, href }) {
+      const empty = count === 0;
+      return `<a class="control-card ${empty ? 'control-empty' : ''}" href="${href}" style="--control-accent:${color}">
+        <div class="control-card-icon"><i data-lucide="${empty ? 'check' : icon}"></i></div>
+        <div class="control-card-count">${empty ? 'All clear' : count}</div>
+        <div class="control-card-label">${esc(label)}</div>
+      </a>`;
     }
-
-    function renderEngagement(stats) {
-      document.getElementById('engagement-cards').innerHTML = `
-        <div class="engagement-card">
-          <div class="engagement-icon" style="background:rgba(33,150,243,0.12);color:#2196F3">AR</div>
-          <div class="engagement-info"><h4>Application Rate</h4><div class="value">${stats.appRate.toFixed(1)} apps/opportunity</div></div>
-        </div>
-        <div class="engagement-card">
-          <div class="engagement-icon" style="background:rgba(76,175,80,0.12);color:#4CAF50">CV</div>
-          <div class="engagement-info"><h4>CV Completion Rate</h4><div class="value">${stats.cvRate.toFixed(0)}% (${stats.totalCvs} of ${stats.students} students)</div></div>
-        </div>
-        <div class="engagement-card">
-          <div class="engagement-icon" style="background:rgba(255,152,0,0.12);color:#FF9800">PI</div>
-          <div class="engagement-info"><h4>Pending Project Ideas</h4><div class="value">${stats.pendingIdeas} pending, ${stats.approvedIdeas} approved</div></div>
-        </div>`;
+    function typeLabel(t) {
+      const map = { job: 'Job', internship: 'Internship', contract: 'Contract', volunteer: 'Volunteer', freelance: 'Freelance' };
+      return map[t] || (t ? t.charAt(0).toUpperCase() + t.slice(1) : 'Opportunity');
     }
-
-    function renderTopList(containerId, title, items, label, color) {
-      const el = document.getElementById(containerId);
-      let html = `<div class="top-list"><h3>${title}</h3>`;
+    function renderTopList(id, title, items, label, color) {
+      const el = document.getElementById(id);
+      let html = `<div class="surface-heading"><div><div class="surface-heading-title">${esc(title)}</div></div></div>`;
       if (items.length === 0) {
-        html += emptyStateHtml(
-          'Highlights will appear here once enough activity is available to surface trends.',
-          { title: 'No highlights yet', icon: 'HL' },
-        );
+        html += emptyStateHtml('Highlights appear here once activity grows.', { title: 'No highlights yet', icon: 'sparkles' });
+      } else {
+        html += '<div class="list-grid">' + items.map((item, i) => `
+          <div class="top-item" data-opp-id="${esc(item.id)}">
+            <div class="top-rank" style="background:${color}1a;color:${color}">#${i + 1}</div>
+            <div class="top-body">
+              <div class="top-title">${esc(item.title)}</div>
+              <div class="top-sub">
+                <span class="mini-badge"><i data-lucide="${typeIcon('opportunity', item.type)}"></i>${esc(typeLabel(item.type))}</span>
+                ${item.companyName ? `<span class="mini-badge"><i data-lucide="building-2"></i>${esc(item.companyName)}</span>` : ''}
+                ${item.isFeatured ? '<span class="mini-badge" style="background:rgba(245,158,11,0.15);color:#F59E0B;"><i data-lucide="star"></i>Featured</span>' : ''}
+              </div>
+            </div>
+            <div class="top-count" style="background:${color}1a;color:${color}">${item.count} ${label}</div>
+          </div>`).join('') + '</div>';
       }
-      items.forEach((item, index) => {
-        html += `<div class="top-item">
-          <div class="top-rank" style="background:${color}22;color:${color}">#${index + 1}</div>
-          <div class="top-title">${esc(item.title)}</div>
-          <div class="top-count" style="background:${color}1a;color:${color}">${item.count} ${label}</div>
-        </div>`;
-      });
-      html += '</div>';
       el.innerHTML = html;
+      el.querySelectorAll('.top-item').forEach((row) => {
+        row.addEventListener('click', () => {
+          const oid = row.getAttribute('data-opp-id');
+          if (oid) openDetailsModal('opportunity', oid);
+        });
+      });
     }
-
-    function renderCharts(stats) {
+    function renderCharts({ bac, licence, master, doctorat, students, companies, admins, monthlyMap, months }) {
+      const opts = (label) => ({
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: !!label, position: 'bottom', labels: { boxWidth: 10, font: { size: 11 } } } },
+        scales: label ? {} : { y: { beginAtZero: true, ticks: { stepSize: 1 } } },
+      });
       new Chart(document.getElementById('levelChart'), {
         type: 'bar',
-        data: {
-          labels: ['Bac', 'Licence', 'Master', 'Doctorat'],
-          datasets: [{
-            label: 'Students',
-            data: [stats.bac, stats.licence, stats.master, stats.doctorat],
-            backgroundColor: ['#FF9800', '#3F51B5', '#9C27B0', '#009688'],
-            borderRadius: 8,
-          }],
-        },
-        options: {
-          responsive: true,
-          plugins: { legend: { display: false } },
-          scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } },
-        },
+        data: { labels: ['Bac','Licence','Master','Doctorat'],
+          datasets: [{ data: [bac,licence,master,doctorat], backgroundColor: ['#F59E0B','#2563EB','#7C3AED','#14B8A6'], borderRadius: 6 }] },
+        options: opts(),
       });
-
       new Chart(document.getElementById('roleChart'), {
         type: 'doughnut',
-        data: {
-          labels: ['Students', 'Companies', 'Admins'],
-          datasets: [{
-            data: [stats.students, stats.companies, stats.admins],
-            backgroundColor: ['#2196F3', '#009688', '#FF8C00'],
-          }],
-        },
-        options: { responsive: true, plugins: { legend: { position: 'bottom' } } },
+        data: { labels: ['Students','Companies','Admins'],
+          datasets: [{ data: [students, companies, admins], backgroundColor: ['#2563EB','#14B8A6','#F59E0B'], borderWidth: 0 }] },
+        options: opts(true),
       });
-
       new Chart(document.getElementById('monthlyChart'), {
         type: 'line',
-        data: {
-          labels: stats.months,
-          datasets: [{
-            label: 'Registrations',
-            data: stats.months.map((month) => stats.monthlyMap[month] || 0),
-            borderColor: '#FF8C00',
-            backgroundColor: 'rgba(255,140,0,0.1)',
-            fill: true,
-            tension: 0.3,
-            pointRadius: 4,
-          }],
-        },
-        options: {
-          responsive: true,
-          scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } },
-        },
+        data: { labels: months, datasets: [{ data: months.map((m)=>monthlyMap[m]||0), borderColor: '#3B22F6', backgroundColor: 'rgba(59,34,246,0.12)', tension: 0.35, fill: true, pointRadius: 3 }] },
+        options: opts(),
       });
     }
 
     async function renderActivity() {
+      const result = await loadRecentActivitiesPage(dashState, { pageSize: 5, maxItems: 5 });
       const el = document.getElementById('activity-feed');
-
-      try {
-        const result = await loadRecentActivitiesPage(dashboardActivityState, {
-          pageSize: 3,
-          maxItems: 8,
-        });
-        const activities = result.items.slice(0, 8);
-
-        if (activities.length === 0) {
-          el.innerHTML = emptyStateHtml(
-            'Platform activity will appear here once users begin interacting with content.',
-            { title: 'No recent activity yet', icon: 'AC' },
-          );
-          return;
-        }
-
-        el.innerHTML = activities.map((item) => `
-          <div class="activity-item">
-            <div class="activity-icon" style="background:${typeColor(item.type)}22;color:${typeColor(item.type)}">${esc(typeIcon(item.type))}</div>
-            <div style="flex:1">
-              <div class="activity-text"><strong>${esc(item.title || 'Untitled')}</strong> • ${esc(item.description || '')}</div>
-              <div class="activity-time">${esc(item.actorName || 'Unknown actor')} • ${esc(activityTypeLabel(item.type))} • ${formatTimestamp(item.timestamp)}</div>
-            </div>
-            <a class="btn-open" href="${adminTargetUrl(item.type, item.targetId)}">Open</a>
-          </div>`).join('');
-      } catch (error) {
-        console.error('Failed to load dashboard activity:', error);
-        el.innerHTML = feedbackCardHtml(
-          'Recent activity could not be loaded right now.',
-          { type: 'error', title: 'Activity unavailable', icon: '!' },
-        );
+      if (!result.items.length) {
+        el.innerHTML = emptyStateHtml('Nothing happened recently.', { title: 'No activity', icon: 'activity' });
+        return;
       }
+      el.innerHTML = result.items.map((it) => `
+        <div class="activity-row" data-type="${esc(it.type)}" data-id="${esc(it.targetId || '')}" role="button" tabindex="0">
+          <div class="activity-icon" style="background:${typeColor(it.type)}1a;color:${typeColor(it.type)}"><i data-lucide="${typeIcon(it.type)}"></i></div>
+          <div class="row-body">
+            <div class="row-title">${esc(it.title)}</div>
+            <div class="row-sub"><span class="mini-badge"><i data-lucide="${typeIcon(it.type)}"></i>${esc(activityTypeLabel(it.type))}</span> ${esc(it.description)}</div>
+          </div>
+          <div class="activity-time">${esc(formatTimestamp(it.timestamp))}</div>
+        </div>
+      `).join('');
+      el.querySelectorAll('.activity-row').forEach((row) => {
+        const go = () => {
+          const type = row.getAttribute('data-type');
+          const id = row.getAttribute('data-id');
+          if (type && id) openDetailsModal(type, id);
+        };
+        row.addEventListener('click', go);
+        row.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+      });
     }
 
     async function renderRecentUsers() {
-      try {
-        const snap = await getDocs(query(collection(db, 'users'), orderBy('createdAt', 'desc'), limit(5)));
-        const el = document.getElementById('recent-users');
-        let html = '';
-        snap.forEach((snapshot) => {
-          const user = snapshot.data();
-          html += `<div class="user-card" style="cursor:default">
-            ${buildDashAvatarHtml(user)}
-            <div class="user-info">
-              <div class="user-name">${esc(user.fullName || 'Unknown')}</div>
-              <div class="user-email">${esc(user.email || '')}</div>
-              <div class="user-badges"><span class="badge badge-${esc(user.role)}">${esc(user.role)}</span></div>
-            </div>
-            <div class="user-actions"><span class="status-dot ${user.isActive !== false ? 'active' : 'inactive'}"></span></div>
-          </div>`;
-        });
-        el.innerHTML = html || emptyStateHtml(
-          'Users will appear here as soon as accounts are created.',
-          { title: 'No users yet', icon: 'US' },
-        );
-      } catch (error) {
-        console.error('Failed to load recent users:', error);
-        document.getElementById('recent-users').innerHTML = feedbackCardHtml(
-          'Recent user accounts could not be loaded right now.',
-          { type: 'error', title: 'Users unavailable', icon: '!' },
-        );
+      const snap = await getDocs(query(collection(db, 'users'), orderBy('createdAt', 'desc'), limit(5)));
+      const el = document.getElementById('recent-users');
+      if (snap.empty) {
+        el.innerHTML = emptyStateHtml('No users yet.', { title: 'Empty', icon: 'users' });
+        return;
       }
+      el.innerHTML = snap.docs.map((s) => {
+        const d = s.data();
+        const name = d.fullName || d.companyName || 'Unknown';
+        const initial = (name[0] || '?').toUpperCase();
+        const role = d.role || 'user';
+        const photoUrl = role === 'company' ? (d.logo || d.companyLogo) : (d.profileImage || d.photoURL);
+        const isCompany = role === 'company';
+        const avatarClass = isCompany ? 'user-avatar logo-contain' : 'user-avatar';
+        const avatar = photoUrl
+          ? `<div class="${avatarClass}"><img src="${esc(photoUrl)}" alt="${esc(initial)}" onerror="this.parentNode.innerHTML='${esc(initial)}';this.parentNode.style.background='${roleBg(role)}';this.parentNode.style.color='${roleColor(role)}';"></div>`
+          : `<div class="${avatarClass}" style="background:${roleBg(role)};color:${roleColor(role)}">${esc(initial)}</div>`;
+        return `<div class="user-row" data-user-id="${esc(s.id)}" role="button" tabindex="0" style="cursor:pointer;">
+          ${avatar}
+          <div class="row-body">
+            <div class="row-title">${esc(name)}</div>
+            <div class="row-sub">${esc(d.email || '')}</div>
+          </div>
+          <div class="badge badge-${roleBadge(role)}">${esc(role)}</div>
+        </div>`;
+      }).join('');
+      el.querySelectorAll('.user-row').forEach((row) => {
+        const id = row.getAttribute('data-user-id');
+        row.addEventListener('click', () => openDetailsModal('user', id));
+      });
     }
-
     async function renderRecentOpps() {
-      try {
-        const snap = await getDocs(query(collection(db, 'opportunities'), orderBy('createdAt', 'desc'), limit(5)));
-        const el = document.getElementById('recent-opps');
-        let html = '';
-        snap.forEach((snapshot) => {
-          const opportunity = snapshot.data();
-          const rawType = String(opportunity.type || '').trim().toLowerCase();
-          const normalizedType = ['job', 'internship', 'sponsoring'].includes(rawType)
-            ? rawType
-            : 'job';
-          const typeLabel = normalizedType === 'internship'
-            ? 'Internship'
-            : normalizedType === 'sponsoring'
-            ? 'Sponsoring'
-            : 'Job';
-          html += `<div class="opp-card">
-            <div class="opp-icon" style="background:rgba(255,140,0,0.12);color:#FF8C00">OP</div>
-            <div class="opp-info">
-              <div class="opp-title">${esc(opportunity.title || 'Untitled opportunity')}</div>
-              <div class="opp-company">${esc(opportunity.companyName || 'Unknown')}</div>
-              <div class="opp-badges">
-                <span class="badge badge-${normalizedType}">${esc(typeLabel)}</span>
-                <span class="badge badge-${opportunity.status === 'open' ? 'open' : 'closed'}">${esc(opportunity.status || '')}</span>
-              </div>
-            </div>
-          </div>`;
-        });
-        el.innerHTML = html || emptyStateHtml(
-          'Published opportunities will appear here once companies start posting.',
-          { title: 'No opportunities yet', icon: 'OP' },
-        );
-      } catch (error) {
-        console.error('Failed to load recent opportunities:', error);
-        document.getElementById('recent-opps').innerHTML = feedbackCardHtml(
-          'Recent opportunities could not be loaded right now.',
-          { type: 'error', title: 'Opportunities unavailable', icon: '!' },
-        );
+      const snap = await getDocs(query(collection(db, 'opportunities'), orderBy('createdAt', 'desc'), limit(5)));
+      const el = document.getElementById('recent-opps');
+      if (snap.empty) {
+        el.innerHTML = emptyStateHtml('No opportunities yet.', { title: 'Empty', icon: 'briefcase' });
+        return;
       }
+      el.innerHTML = snap.docs.map((s) => {
+        const d = s.data();
+        const subType = d.type || d.opportunityType || 'opportunity';
+        const logo = d.companyLogo || d.logo || '';
+        const avatar = logo
+          ? `<div class="user-avatar" style="border-radius:10px;background:#F8FAFF;"><img src="${esc(logo)}" alt="" onerror="this.parentNode.innerHTML='<i data-lucide=\\'${typeIcon('opportunity', subType)}\\'></i>';this.parentNode.style.background='rgba(245,158,11,0.12)';this.parentNode.style.color='#F59E0B';window.lucide&&window.lucide.createIcons();"></div>`
+          : `<div class="activity-icon" style="background:rgba(245,158,11,0.12);color:#F59E0B"><i data-lucide="${typeIcon('opportunity', subType)}"></i></div>`;
+        return `<div class="item-row" data-opp-id="${esc(s.id)}" role="button" tabindex="0" style="cursor:pointer;">
+          ${avatar}
+          <div class="row-body">
+            <div class="row-title">${esc(d.title || 'Untitled')}</div>
+            <div class="row-sub">${esc(d.companyName || '—')} · ${esc(d.location || '—')} · ${esc(typeLabel(subType))}</div>
+          </div>
+          <div class="activity-time">${esc(formatTimestamp(d.createdAt))}</div>
+        </div>`;
+      }).join('');
+      el.querySelectorAll('.item-row').forEach((row) => {
+        const id = row.getAttribute('data-opp-id');
+        row.addEventListener('click', () => openDetailsModal('opportunity', id));
+      });
     }
+    function roleColor(r) { return r==='student'?'#2563EB':r==='company'?'#14B8A6':r==='admin'?'#F59E0B':'#64748B'; }
+    function roleBg(r) { return roleColor(r) + '1a'; }
+    function roleBadge(r) { return r==='student'?'info':r==='company'?'success':r==='admin'?'warning':'primary'; }
   </script>
 </body>
 </html>

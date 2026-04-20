@@ -3,136 +3,91 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FutureGate Admin - Login</title>
+  <title>Sign in · FutureGate Admin</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/styles.css">
-  <link rel="stylesheet" href="css/workspace-theme.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/app.css">
   <script src="js/theme-init.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body class="login-page">
+<body>
   <div class="login-shell">
-    <section class="login-showcase">
-      <div class="login-brand-mark">FG</div>
-      <div class="login-pill-row" style="margin-top:18px">
-        <span class="login-pill">Admin-only access</span>
-        <span class="login-pill">Firebase secured</span>
-        <span class="login-pill">Unread sync enabled</span>
-      </div>
-      <h1 class="login-showcase-title">FutureGate Admin, rebuilt as a real control room.</h1>
-      <p class="login-showcase-copy">Use this workspace to review users, moderate content, manage the learning library, and stay close to the platform signals that matter most.</p>
-      <div class="login-metrics" style="margin-top:24px">
-        <div class="login-metric">
-          <span>Workspaces</span>
-          <strong>Dashboard + Content</strong>
-        </div>
-        <div class="login-metric">
-          <span>Queues</span>
-          <strong>Ideas, applications, inbox</strong>
-        </div>
-        <div class="login-metric">
-          <span>Library</span>
-          <strong>Books + YouTube import</strong>
-        </div>
-      </div>
-      <div class="login-list">
-        <div class="login-list-item">
-          <span class="login-list-label">What you can do here</span>
-          <div class="login-list-value">Moderate ideas, review applications, manage opportunities, publish scholarships, and curate training resources.</div>
-        </div>
-        <div class="login-list-item">
-          <span class="login-list-label">Security posture</span>
-          <div class="login-list-value">Only active admin accounts can continue past sign-in. Non-admin sessions are automatically rejected.</div>
-        </div>
-      </div>
-    </section>
-
-    <div class="login-panel">
-      <div class="login-panel-header">
-        <div class="login-badge">Secure Sign In</div>
-        <h2 class="login-panel-title">Enter the admin workspace</h2>
-        <p class="login-panel-copy">Use your FutureGate admin account credentials to continue. Sessions are checked against the <code>users</code> collection before access is granted.</p>
+    <form class="login-card" id="login-form" autocomplete="on">
+      <div class="login-brand">
+        <div class="login-brand-icon"><i data-lucide="shield-check"></i></div>
+        <h1>FutureGate Admin</h1>
+        <p>Sign in with your admin account.</p>
       </div>
 
-      <div id="error-msg" class="error-msg"></div>
-      <form id="login-form">
-        <div class="form-group">
-          <label>Email</label>
-          <input type="email" id="email" placeholder="admin@example.com" autocomplete="username" required>
-        </div>
-        <div class="form-group">
-          <label>Password</label>
-          <input type="password" id="password" placeholder="********" required>
-        </div>
-        <button type="submit" class="btn-primary" id="login-btn">Login</button>
-      </form>
-
-      <div class="login-note">
-        If the account is not marked as an active admin in Firestore, the session is immediately signed out and access is denied.
+      <div class="form-row">
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" required autocomplete="email" placeholder="you@futuregate.com">
       </div>
-    </div>
+      <div class="form-row">
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" required autocomplete="current-password" placeholder="••••••••">
+      </div>
+
+      <div id="error" style="display:none; margin-bottom: 14px;"></div>
+
+      <button type="submit" class="btn btn-primary" id="submit-btn" style="width: 100%; justify-content: center;">
+        <i data-lucide="log-in"></i>
+        <span>Sign in</span>
+      </button>
+    </form>
   </div>
 
   <script type="module">
-    import { auth, db, signInWithEmailAndPassword, onAuthStateChanged, doc, getDoc } from './js/firebase-config.js';
-
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        try {
-          const userDoc = await getDoc(doc(db, 'users', user.uid));
-          if (
-            userDoc.exists() &&
-            userDoc.data().role === 'admin' &&
-            userDoc.data().isActive !== false
-          ) {
-            window.location.href = '/index.html';
-            return;
-          }
-        } catch (e) {
-          console.warn('Auto-login check failed:', e);
-        }
-      }
-    });
+    import { auth, db, signInWithEmailAndPassword, doc, getDoc } from './js/firebase-config.js';
+    import { feedbackCardHtml } from './js/auth.js';
+    import './js/ui.js';
 
     const form = document.getElementById('login-form');
-    const errorMsg = document.getElementById('error-msg');
-    const loginBtn = document.getElementById('login-btn');
+    const errorBox = document.getElementById('error');
+    const submitBtn = document.getElementById('submit-btn');
+
+    function showError(message) {
+      errorBox.style.display = 'block';
+      errorBox.innerHTML = feedbackCardHtml(message, { type: 'error', title: 'Sign-in failed' });
+      if (window.lucide) window.lucide.createIcons();
+    }
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
+      errorBox.style.display = 'none';
+      submitBtn.disabled = true;
+      submitBtn.querySelector('span').textContent = 'Signing in...';
 
-      loginBtn.disabled = true;
-      loginBtn.textContent = 'Logging in...';
-      errorMsg.classList.remove('show');
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
 
       try {
         const cred = await signInWithEmailAndPassword(auth, email, password);
         const userDoc = await getDoc(doc(db, 'users', cred.user.uid));
-        if (
-          !userDoc.exists() ||
-          userDoc.data().role !== 'admin' ||
-          userDoc.data().isActive === false
-        ) {
+        if (!userDoc.exists() || userDoc.data().role !== 'admin') {
           await auth.signOut();
-          errorMsg.textContent = 'Access denied. Active admin accounts only.';
-          errorMsg.classList.add('show');
-          loginBtn.disabled = false;
-          loginBtn.textContent = 'Login';
-          return;
+          throw new Error('This account is not an admin.');
+        }
+        if (userDoc.data().isActive === false) {
+          await auth.signOut();
+          throw new Error('Your admin account is inactive.');
         }
         window.location.href = '/index.html';
       } catch (err) {
-        let msg = 'Login failed. Please try again.';
-        if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
-          msg = 'Invalid email or password.';
-        } else if (err.code === 'auth/too-many-requests') {
-          msg = 'Too many attempts. Please try later.';
+        const code = err?.code || '';
+        let msg = err?.message || 'Could not sign in.';
+        if (code === 'auth/invalid-credential' || code === 'auth/wrong-password' || code === 'auth/user-not-found') {
+          msg = 'Wrong email or password.';
+        } else if (code === 'auth/too-many-requests') {
+          msg = 'Too many attempts. Try again later.';
+        } else if (code === 'auth/network-request-failed') {
+          msg = 'Network error. Check your connection.';
         }
-        errorMsg.textContent = msg;
-        errorMsg.classList.add('show');
-        loginBtn.disabled = false;
-        loginBtn.textContent = 'Login';
+        showError(msg);
+        submitBtn.disabled = false;
+        submitBtn.querySelector('span').textContent = 'Sign in';
       }
     });
   </script>

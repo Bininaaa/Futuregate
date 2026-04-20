@@ -3,707 +3,642 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FutureGate Admin - Users</title>
+  <title>Users · FutureGate Admin</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/styles.css">
-  <link rel="stylesheet" href="css/workspace-theme.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/app.css?v=2026042009">
   <script src="js/theme-init.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body data-page="users">
-  <div id="auth-gate" class="auth-gate">
-    <div class="spinner"></div>
-    <p>Verifying session...</p>
-  </div>
-  <div class="layout">
-    <div class="shell-backdrop" data-shell-backdrop></div>
-    <aside class="sidebar">
-      <div class="sidebar-header">
-        <div class="sidebar-brand">
-          <div class="sidebar-brand-icon">&#x1F6E1;&#xFE0F;</div>
-          <div class="sidebar-brand-text"><h2>FutureGate Admin</h2><p>Search accounts, inspect profiles, and keep access clean.</p></div>
-        </div>
+  <div id="auth-gate" class="auth-gate"><div class="spinner"></div><p>Verifying session...</p></div>
+  <div id="shell"></div>
+
+  <!-- Profile sheet -->
+  <div class="modal-backdrop" id="profile-modal">
+    <div class="modal modal-lg">
+      <div class="modal-header">
+        <h3 id="profile-title">User profile</h3>
+        <button class="modal-close" data-close-modal="profile-modal" aria-label="Close"><i data-lucide="x"></i></button>
       </div>
-      <nav class="sidebar-nav">
-        <a href="index.html" class="nav-item"><span class="icon">DB</span> Dashboard</a>
-        <a href="users.html" class="nav-item"><span class="icon">US</span> Users</a>
-        <a href="moderation.html" class="nav-item"><span class="icon">CT</span> Content</a>
-        <a href="activity.html" class="nav-item"><span class="icon">AC</span> Activity</a>
-        <a href="notifications.html" class="nav-item"><span class="icon">NT</span> Notifications <span class="nav-badge" data-notification-badge hidden>0</span></a>
-      </nav>
-      <div class="sidebar-footer">
-        <div class="admin-info">
-          <div class="admin-avatar" id="admin-avatar">A</div>
-          <div><div class="admin-name" id="admin-name">Admin</div><div class="admin-email" id="admin-email"></div></div>
-        </div>
-        <button class="btn-logout" id="btn-logout">&#x1F6AA; Logout</button>
-      </div>
-    </aside>
-    <div class="workspace">
-      <header class="workspace-header">
-        <button class="toolbar-icon mobile-only" type="button" data-mobile-nav-toggle aria-label="Open navigation" aria-expanded="false">MN</button>
-        <div class="workspace-heading">
-          <div class="workspace-eyebrow">Account Operations</div>
-          <h1>Users</h1>
-          <p>Review profiles, filter by role or status, and open richer account detail without breaking your moderation flow.</p>
-        </div>
-        <div class="workspace-actions">
-          <button class="toolbar-action" type="button" data-theme-toggle>
-            <span class="toolbar-action-icon">TH</span>
-            <span class="toolbar-action-copy">
-              <small>Theme</small>
-              <strong data-theme-label>Light</strong>
-            </span>
-          </button>
-          <a class="toolbar-action toolbar-action--accent" href="notifications.html">
-            <span class="toolbar-action-icon">NT</span>
-            <span class="toolbar-action-copy">
-              <small>Inbox</small>
-              <strong>Notifications</strong>
-            </span>
-            <span class="toolbar-pill-badge" data-notification-badge hidden>0</span>
-          </a>
-        </div>
-      </header>
-
-      <main class="main-content page-shell">
-        <section class="hero-panel">
-          <div class="hero-grid">
-            <div class="hero-copy">
-              <span class="hero-label">User Command</span>
-              <h2 class="hero-title">Keep account quality high without hunting through noisy lists.</h2>
-              <p class="hero-subtitle">This workspace pulls discovery, profile review, status controls, and CV access together so admins can move from search to action in a few clicks.</p>
-            </div>
-            <div class="summary-grid" id="users-summary">
-              <div class="summary-card">
-                <span class="summary-label">Loading</span>
-                <div class="summary-value">Preparing users...</div>
-                <div class="summary-meta">Totals and role split appear here after the initial load finishes.</div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section class="surface-panel">
-          <div class="surface-heading">
-            <div>
-              <div class="surface-heading-title">Filters</div>
-              <p class="surface-heading-copy">Search by name or email, then narrow by role, status, or student level.</p>
-            </div>
-          </div>
-          <div class="search-bar">
-            <span class="search-icon">&#x1F50D;</span>
-            <input type="text" id="search-input" placeholder="Search by name or email...">
-          </div>
-          <div class="filter-chips" id="role-filters">
-            <button class="chip active" data-role="all">All Roles</button>
-            <button class="chip" data-role="student">Students</button>
-            <button class="chip" data-role="company">Companies</button>
-            <button class="chip" data-role="admin">Admins</button>
-          </div>
-          <div class="filter-chips" id="status-filters">
-            <button class="chip active" data-status="all">All Statuses</button>
-            <button class="chip" data-status="active">Active</button>
-            <button class="chip" data-status="blocked">Blocked</button>
-          </div>
-          <div class="level-filters" id="level-filters" style="display:none">
-            <span>Level:</span>
-            <button class="chip chip-small active" data-level="all">All</button>
-            <button class="chip chip-small" data-level="bac">Bac</button>
-            <button class="chip chip-small" data-level="licence">Licence</button>
-            <button class="chip chip-small" data-level="master">Master</button>
-            <button class="chip chip-small" data-level="doctorat">Doctorat</button>
-          </div>
-        </section>
-
-        <div id="loading" class="surface-panel loading"><div class="spinner"></div></div>
-        <section class="surface-panel">
-          <div class="surface-heading">
-            <div>
-              <div class="surface-heading-title">Directory</div>
-              <p class="surface-heading-copy">Open full profile detail, review uploaded CVs for students, and update account access when needed.</p>
-            </div>
-          </div>
-          <div id="users-list"></div>
-        </section>
-      </main>
+      <div class="modal-body" id="profile-body"><div class="loading"><div class="spinner"></div></div></div>
     </div>
   </div>
 
-  <div class="modal-overlay" id="user-modal">
+  <!-- Applications sub-sheet -->
+  <div class="modal-backdrop" id="apps-modal">
     <div class="modal">
-      <button class="modal-close" id="modal-close">&times;</button>
-      <div class="modal-avatar" id="modal-avatar"></div>
-      <div class="modal-name" id="modal-name"></div>
-      <div class="modal-badges" id="modal-badges"></div>
-      <div id="modal-details"></div>
-    </div>
-  </div>
-
-  <div class="modal-overlay confirm-modal" id="confirm-modal">
-    <div class="modal">
-      <h3 id="confirm-title"></h3>
-      <p id="confirm-msg"></p>
-      <div class="confirm-actions">
-        <button class="btn-cancel" id="confirm-cancel">Cancel</button>
-        <button class="btn-confirm" id="confirm-ok"></button>
+      <div class="modal-header">
+        <h3 id="apps-title">Applications</h3>
+        <button class="modal-close" data-close-modal="apps-modal" aria-label="Close"><i data-lucide="x"></i></button>
       </div>
+      <div class="modal-body" id="apps-body"><div class="loading"><div class="spinner"></div></div></div>
     </div>
   </div>
 
   <script type="module">
-    import { checkAuth, emptyStateHtml, esc, feedbackCardHtml, roleColor, showToast } from './js/auth.js';
-    import { db, collection, getDocs, doc, updateDoc, query, orderBy } from './js/firebase-config.js';
-    import {
-      friendlyDocumentErrorMessage,
-      getUserCvDocument,
-      loadStudentCvSummary,
-      openDocumentUrl,
-      parseTimestampMs,
-    } from './js/document-access.js';
+    import { mountShell, showPage } from './js/shell.js';
+    import { checkAuth, emptyStateHtml, esc, feedbackCardHtml, showToast, formatTimestamp } from './js/auth.js';
+    import { db, collection, getDocs, query, orderBy, doc, updateDoc, where, getDoc } from './js/firebase-config.js';
+    import { loadStudentCvSummary, getUserCvDocument, openDocumentUrl, friendlyDocumentErrorMessage } from './js/document-access.js';
+    import { matchesSearch } from './js/admin-utils.js';
+    import { openModal, closeModal } from './js/ui.js';
 
-    let allUsers = [];
-    let roleFilter = 'all';
-    let statusFilter = 'all';
-    let levelFilter = 'all';
-    let searchQuery = '';
-    let currentModalUid = '';
-    const userCvSummaryCache = new Map();
+    mountShell({ page: 'users' });
 
-    const avatarEmojis = {
-      avatar_1: '🙂', avatar_2: '😊', avatar_3: '😀', avatar_4: '😄',
-      avatar_5: '😎', avatar_6: '🤗', avatar_7: '😃', avatar_8: '😁',
-    };
-    const avatarColors = {
-      avatar_1: '#1565C0', avatar_2: '#AD1457', avatar_3: '#2E7D32', avatar_4: '#E65100',
-      avatar_5: '#6A1B9A', avatar_6: '#00838F', avatar_7: '#FF8F00', avatar_8: '#4E342E',
-    };
+    const state = { all: [], filtered: [], role: 'all', level: 'all', approval: 'all', status: 'all', search: '' };
 
-    function buildAvatarContent(user) {
-      const photoUrl = user.role === 'company' ? user.logo : user.profileImage;
-      if (user.photoType === 'upload' && photoUrl) {
-        return { type: 'img', url: photoUrl };
-      }
-      if (user.photoType === 'avatar' && user.avatarId && avatarEmojis[user.avatarId]) {
-        return { type: 'emoji', emoji: avatarEmojis[user.avatarId], color: avatarColors[user.avatarId] };
-      }
-      if (photoUrl) {
-        return { type: 'img', url: photoUrl };
-      }
-      return { type: 'initial' };
-    }
-
-    function renderAvatarHtml(user, { color: roleCol }) {
-      const content = buildAvatarContent(user);
-      if (content.type === 'img') {
-        const initial = esc((user.fullName || '?')[0].toUpperCase());
-        return `style="background:${roleCol}22;color:${roleCol}"><img src="${esc(content.url)}" alt="${initial}" onerror="this.remove();this.parentNode.textContent='${initial}'">`;
-      }
-      if (content.type === 'emoji') {
-        return `style="background:${content.color}22;font-size:inherit">${content.emoji}`;
-      }
-      const initial = esc((user.fullName || '?')[0].toUpperCase());
-      return `style="background:${roleCol}22;color:${roleCol}">${initial}`;
-    }
-
-    checkAuth(async () => {
-      await loadUsers();
-    });
+    checkAuth(async () => { await loadUsers(); });
 
     async function loadUsers() {
       try {
         const snap = await getDocs(query(collection(db, 'users'), orderBy('createdAt', 'desc')));
-        allUsers = [];
-        snap.forEach((item) => allUsers.push({ ...item.data(), uid: item.id }));
-        document.getElementById('loading').style.display = 'none';
-        renderUsers();
-      } catch (error) {
-        console.error('Load users error:', error);
-        document.getElementById('loading').innerHTML = feedbackCardHtml(
-          'User records could not be loaded right now. Please refresh and try again.',
-          { type: 'error', title: 'Unable to load users', icon: '!' },
-        );
+        state.all = snap.docs.map((s) => ({ id: s.id, ...s.data() }));
+        renderShell();
+        applyFilters();
+        showPage();
+        if (window.lucide) window.lucide.createIcons();
+      } catch (e) {
+        console.error(e);
+        const root = document.getElementById('page-content');
+        root.innerHTML = feedbackCardHtml('Could not load users.', { type: 'error' });
+        showPage();
+        if (window.lucide) window.lucide.createIcons();
       }
     }
 
-    function filterUsers() {
-      return allUsers.filter((user) => {
-        if (roleFilter !== 'all' && user.role !== roleFilter) return false;
-        if (statusFilter === 'active' && user.isActive === false) return false;
-        if (statusFilter === 'blocked' && user.isActive !== false) return false;
-        if (levelFilter !== 'all' && (user.academicLevel || '') !== levelFilter) return false;
-        if (searchQuery) {
-          const normalized = searchQuery.toLowerCase();
-          return (user.fullName || '').toLowerCase().includes(normalized) || (user.email || '').toLowerCase().includes(normalized);
-        }
-        return true;
+    // ---------- Stats ----------
+    function computeStats() {
+      const all = state.all;
+      const total = all.length;
+      let active = 0, blocked = 0, admins = 0, pending = 0, students = 0, companies = 0;
+      for (const u of all) {
+        if (u.role === 'admin') admins++;
+        if (u.role === 'student') students++;
+        if (u.role === 'company') companies++;
+        if (u.isActive === false) blocked++; else if (u.approvalStatus !== 'pending' && u.approvalStatus !== 'rejected') active++;
+        if (u.role === 'company' && u.approvalStatus === 'pending') pending++;
+      }
+      return { total, active, blocked, admins, pending, students, companies };
+    }
+
+    // ---------- Shell ----------
+    function renderShell() {
+      const s = computeStats();
+      const root = document.getElementById('page-content');
+      root.innerHTML = `
+        <section class="surface-panel">
+          <div class="summary-pills">
+            <span class="summary-pill"><i data-lucide="users"></i><strong>${s.total}</strong> Total</span>
+            <span class="summary-pill is-success"><i data-lucide="check-circle"></i><strong>${s.active}</strong> Active</span>
+            <span class="summary-pill is-danger"><i data-lucide="ban"></i><strong>${s.blocked}</strong> Blocked</span>
+            <span class="summary-pill is-warning"><i data-lucide="clock"></i><strong>${s.pending}</strong> Pending review</span>
+            <span class="summary-pill is-info"><i data-lucide="shield"></i><strong>${s.admins}</strong> Admins</span>
+          </div>
+
+          <div class="chip-row">
+            <div class="chip-group" role="tablist" aria-label="Role filter">
+              <button type="button" class="chip" data-filter="role" data-value="all"><i data-lucide="users"></i>All</button>
+              <button type="button" class="chip" data-filter="role" data-value="student"><i data-lucide="graduation-cap"></i>Students</button>
+              <button type="button" class="chip" data-filter="role" data-value="company"><i data-lucide="building-2"></i>Companies</button>
+              <button type="button" class="chip" data-filter="role" data-value="admin"><i data-lucide="shield"></i>Admins</button>
+            </div>
+            <div class="chip-group" id="level-chips" role="tablist" aria-label="Academic level">
+              <span class="chip-group__label">Level</span>
+              <button type="button" class="chip" data-filter="level" data-value="all">All</button>
+              <button type="button" class="chip" data-filter="level" data-value="bac">Bac</button>
+              <button type="button" class="chip" data-filter="level" data-value="licence">Licence</button>
+              <button type="button" class="chip" data-filter="level" data-value="master">Master</button>
+              <button type="button" class="chip" data-filter="level" data-value="doctorat">Doctorat</button>
+            </div>
+            <div class="chip-group" id="status-chips" role="tablist" aria-label="Account status">
+              <span class="chip-group__label">Status</span>
+              <button type="button" class="chip" data-filter="status" data-value="all">All</button>
+              <button type="button" class="chip" data-filter="status" data-value="active"><i data-lucide="check"></i>Active</button>
+              <button type="button" class="chip" data-filter="status" data-value="blocked"><i data-lucide="ban"></i>Blocked</button>
+            </div>
+            <div class="chip-group" id="approval-chips" role="tablist" aria-label="Company review">
+              <span class="chip-group__label">Company review</span>
+              <button type="button" class="chip" data-filter="approval" data-value="all">All</button>
+              <button type="button" class="chip" data-filter="approval" data-value="pending"><i data-lucide="clock"></i>Pending</button>
+              <button type="button" class="chip" data-filter="approval" data-value="approved"><i data-lucide="check"></i>Approved</button>
+              <button type="button" class="chip" data-filter="approval" data-value="rejected"><i data-lucide="x-circle"></i>Rejected</button>
+            </div>
+          </div>
+
+          <div class="filter-bar">
+            <div class="search-bar" style="flex:1;">
+              <i data-lucide="search"></i>
+              <input id="user-search" type="search" placeholder="Search by name, email, or company..."/>
+            </div>
+          </div>
+
+          <div id="user-summary" style="margin-bottom: 12px; color: var(--c-text-faint); font-size: 13px;"></div>
+          <div id="user-list" class="list-grid"></div>
+        </section>
+      `;
+
+      // Bind chip filters
+      document.querySelectorAll('[data-filter]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const f = btn.getAttribute('data-filter');
+          const v = btn.getAttribute('data-value');
+          // Mirror Flutter mutex/reset behaviour
+          if (f === 'role') {
+            state.role = v;
+            // Hide/reset dependent filters when role changes
+            if (v === 'company' || v === 'admin') state.level = 'all';
+            if (v === 'student' || v === 'admin') state.approval = 'all';
+          } else if (f === 'level') {
+            state.level = v;
+            if (v !== 'all') state.approval = 'all';
+          } else if (f === 'approval') {
+            if (state.level !== 'all' && v !== 'all') return; // disabled
+            state.approval = v;
+          } else {
+            state[f] = v;
+          }
+          applyFilters();
+        });
+      });
+
+      // Search
+      document.getElementById('user-search').addEventListener('input', (e) => {
+        state.search = e.target.value;
+        applyFilters();
+      });
+
+      syncChips();
+    }
+
+    function syncChips() {
+      // Active states
+      document.querySelectorAll('[data-filter]').forEach((btn) => {
+        const f = btn.getAttribute('data-filter');
+        const v = btn.getAttribute('data-value');
+        btn.classList.toggle('active', state[f] === v);
+      });
+
+      // Contextual visibility: level only when Students or All; approval only when Companies or All
+      const levelChips = document.getElementById('level-chips');
+      const approvalChips = document.getElementById('approval-chips');
+      const showLevel = state.role === 'student' || state.role === 'all';
+      const showApproval = state.role === 'company' || state.role === 'all';
+      levelChips.style.display = showLevel ? '' : 'none';
+      approvalChips.style.display = showApproval ? '' : 'none';
+
+      // If approval is active, disable level chips (matching Flutter behavior)
+      const approvalActive = state.approval !== 'all';
+      const levelActive = state.level !== 'all';
+      levelChips.querySelectorAll('.chip').forEach((c) => {
+        c.style.opacity = approvalActive ? '0.4' : '';
+        c.style.pointerEvents = approvalActive ? 'none' : '';
+      });
+      approvalChips.querySelectorAll('.chip').forEach((c) => {
+        c.style.opacity = levelActive ? '0.4' : '';
+        c.style.pointerEvents = levelActive ? 'none' : '';
       });
     }
 
-    function renderSummary(filteredUsers = filterUsers()) {
-      const summary = document.getElementById('users-summary');
-      if (!summary) {
-        return;
-      }
-
-      const totalUsers = allUsers.length;
-      const activeUsers = allUsers.filter((user) => user.isActive !== false).length;
-      const blockedUsers = totalUsers - activeUsers;
-      const students = allUsers.filter((user) => user.role === 'student').length;
-      const companies = allUsers.filter((user) => user.role === 'company').length;
-      const admins = allUsers.filter((user) => user.role === 'admin').length;
-
-      summary.innerHTML = `
-        <div class="summary-card">
-          <span class="summary-label">Visible Results</span>
-          <div class="summary-value">${filteredUsers.length}</div>
-          <div class="summary-meta">Accounts matching the current search and filter combination.</div>
-        </div>
-        <div class="summary-card">
-          <span class="summary-label">Active Accounts</span>
-          <div class="summary-value">${activeUsers}</div>
-          <div class="summary-meta">${blockedUsers} blocked account${blockedUsers === 1 ? '' : 's'} currently require manual review.</div>
-        </div>
-        <div class="summary-card">
-          <span class="summary-label">Role Mix</span>
-          <div class="summary-value">${students} / ${companies} / ${admins}</div>
-          <div class="summary-meta">Students, companies, and admins across the full directory.</div>
-        </div>
-      `;
+    // Mirror Flutter's UserModel.normalizedApprovalStatus:
+    // trim+lowercase the stored value; if empty, companies default to 'approved',
+    // everyone else returns ''.
+    function normalizedApproval(u) {
+      const s = String(u.approvalStatus || '').trim().toLowerCase();
+      if (s) return s;
+      return u.role === 'company' ? 'approved' : '';
     }
+
+    // ---------- Filtering ----------
+    function applyFilters() {
+      let users = state.all.slice();
+      if (state.role !== 'all') users = users.filter((u) => u.role === state.role);
+      if (state.level !== 'all') {
+        users = users.filter((u) => String(u.academicLevel || '').trim().toLowerCase() === state.level);
+      }
+      if (state.approval !== 'all') {
+        users = users.filter((u) => normalizedApproval(u) === state.approval);
+      }
+      if (state.status === 'active') users = users.filter((u) => u.isActive !== false);
+      else if (state.status === 'blocked') users = users.filter((u) => u.isActive === false);
+      if (state.search.trim()) {
+        users = users.filter((u) => matchesSearch([u.fullName, u.companyName, u.email], state.search));
+      }
+      state.filtered = users;
+      syncChips();
+      renderUsers();
+    }
+
+    // ---------- User list ----------
+    function roleColor(r) { return r==='student'?'#2563EB':r==='company'?'#14B8A6':r==='admin'?'#F59E0B':'#64748B'; }
+    function roleBg(r)    { return r==='student'?'#2563EB1a':r==='company'?'#14B8A61a':r==='admin'?'#F59E0B1a':'#64748B1a'; }
 
     function renderUsers() {
-      const users = filterUsers();
-      renderSummary(users);
-      const el = document.getElementById('users-list');
-      if (users.length === 0) {
-        el.innerHTML = emptyStateHtml(
-          'Try adjusting the selected filters or search terms to broaden the results.',
-          { title: 'No users match these filters', icon: 'US' },
-        );
+      const list = document.getElementById('user-list');
+      const summary = document.getElementById('user-summary');
+      summary.textContent = `${state.filtered.length} user${state.filtered.length === 1 ? '' : 's'} shown of ${state.all.length} total.`;
+
+      if (!state.filtered.length) {
+        list.innerHTML = emptyStateHtml('Adjust the filters or search differently.', { title: 'No users match', icon: 'search-x' });
+        if (window.lucide) window.lucide.createIcons();
         return;
       }
 
-      el.innerHTML = users.map((user) => {
-        const color = roleColor(user.role);
-        return `<div class="user-card" data-uid="${esc(user.uid)}">
-          <div class="user-avatar" ${renderAvatarHtml(user, { color })}</div>
-          <div class="user-info">
-            <div class="user-name">${esc(user.fullName || 'Unknown')}</div>
-            <div class="user-email">${esc(user.email || '')}</div>
-            <div class="user-badges">
-              <span class="badge badge-${esc(user.role)}">${esc(user.role)}</span>
-              ${user.role === 'student' && user.academicLevel ? `<span class="badge badge-level">${esc(user.academicLevel)}</span>` : ''}
-            </div>
-          </div>
-          <div class="user-actions">
-            <span class="status-dot ${user.isActive !== false ? 'active' : 'inactive'}"></span>
-            <button class="btn-action btn-details" data-action="details" data-uid="${esc(user.uid)}">Details</button>
-            <button class="btn-action ${user.isActive !== false ? 'btn-block' : 'btn-unblock'}" data-action="toggle" data-uid="${esc(user.uid)}">${user.isActive !== false ? 'Block' : 'Unblock'}</button>
-          </div>
-        </div>`;
-      }).join('');
-    }
-
-    document.getElementById('search-input').addEventListener('input', (event) => {
-      searchQuery = event.target.value;
-      renderUsers();
-    });
-
-    document.getElementById('role-filters').addEventListener('click', (event) => {
-      const chip = event.target.closest('.chip');
-      if (!chip) return;
-      roleFilter = chip.dataset.role;
-      document.querySelectorAll('#role-filters .chip').forEach((item) => item.classList.remove('active'));
-      chip.classList.add('active');
-      const levelFilters = document.getElementById('level-filters');
-      levelFilters.style.display = (roleFilter === 'student' || roleFilter === 'all') ? 'flex' : 'none';
-      if (roleFilter !== 'student') {
-        levelFilter = 'all';
-        document.querySelectorAll('#level-filters .chip').forEach((item) => {
-          item.classList.toggle('active', item.dataset.level === 'all');
+      list.innerHTML = state.filtered.map((u) => userRow(u)).join('');
+      list.querySelectorAll('[data-action]').forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault(); e.stopPropagation();
+          const action = btn.getAttribute('data-action');
+          const id = btn.getAttribute('data-id');
+          if (action === 'view') return viewUser(id);
+          if (action === 'approve') return confirmAction(id, { approvalStatus: 'approved', isActive: true }, 'Approve company', 'The company will be able to post opportunities.');
+          if (action === 'reject') return confirmAction(id, { approvalStatus: 'rejected', isActive: false }, 'Reject company', 'This company will be hidden and cannot post content.');
+          if (action === 'block') return confirmAction(id, { isActive: false }, 'Block user', 'The user will lose access to the app.');
+          if (action === 'unblock') return confirmAction(id, { isActive: true }, 'Unblock user', 'The user will regain access.');
         });
-      }
-      renderUsers();
-    });
-
-    document.getElementById('status-filters').addEventListener('click', (event) => {
-      const chip = event.target.closest('.chip');
-      if (!chip) return;
-      statusFilter = chip.dataset.status || 'all';
-      document.querySelectorAll('#status-filters .chip').forEach((item) => item.classList.remove('active'));
-      chip.classList.add('active');
-      renderUsers();
-    });
-
-    document.getElementById('level-filters').addEventListener('click', (event) => {
-      const chip = event.target.closest('.chip');
-      if (!chip) return;
-      levelFilter = chip.dataset.level;
-      document.querySelectorAll('#level-filters .chip').forEach((item) => item.classList.remove('active'));
-      chip.classList.add('active');
-      renderUsers();
-    });
-
-    document.getElementById('users-list').addEventListener('click', (event) => {
-      const button = event.target.closest('[data-action]');
-      if (!button) return;
-      event.stopPropagation();
-      const uid = button.dataset.uid;
-      if (button.dataset.action === 'details') showUserDetails(uid);
-      else if (button.dataset.action === 'toggle') confirmToggle(uid);
-    });
-
-    function documentDateLabel(value) {
-      const timestampMs = parseTimestampMs(value);
-      if (!timestampMs) {
-        return 'Not available';
-      }
-
-      return new Date(timestampMs).toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
       });
+      list.querySelectorAll('.user-row').forEach((row) => {
+        row.addEventListener('click', () => viewUser(row.getAttribute('data-user-id')));
+      });
+
+      if (window.lucide) window.lucide.createIcons();
     }
 
-    function renderCvTagRow(items) {
-      if (!Array.isArray(items) || items.length === 0) {
-        return '';
-      }
+    function userRow(u) {
+      const name = u.fullName || u.companyName || 'Unknown';
+      const initial = (name[0] || '?').toUpperCase();
+      const role = u.role || 'user';
+      const isActive = u.isActive !== false;
+      const isPending = u.role === 'company' && u.approvalStatus === 'pending';
+      const isRejected = u.role === 'company' && u.approvalStatus === 'rejected';
 
-      return `
-        <div class="document-tag-row">
-          ${items.map((item) => `<span class="document-tag">${esc(item)}</span>`).join('')}
+      const dotClass = !isActive ? 'is-blocked' : (isPending ? 'is-pending' : 'is-active');
+
+      const photoUrl = role === 'company' ? (u.logo || u.companyLogo) : (u.profileImage || u.photoURL);
+      const isCompany = role === 'company';
+      const avatarClass = isCompany ? 'user-avatar logo-contain' : 'user-avatar';
+      const avatar = photoUrl
+        ? `<div class="avatar-wrap"><div class="${avatarClass}"><img src="${esc(photoUrl)}" alt="" onerror="this.parentNode.innerHTML='${esc(initial)}';this.parentNode.style.background='${roleBg(role)}';this.parentNode.style.color='${roleColor(role)}';"></div><span class="avatar-dot ${dotClass}"></span></div>`
+        : `<div class="avatar-wrap"><div class="${avatarClass}" style="background:${roleBg(role)};color:${roleColor(role)}">${esc(initial)}</div><span class="avatar-dot ${dotClass}"></span></div>`;
+
+      const roleLabel = role === 'student' ? 'Student' : role === 'company' ? 'Company' : role === 'admin' ? 'Admin' : 'User';
+      const roleBadgeClass = role === 'student' ? 'badge-info' : role === 'company' ? 'badge-success' : role === 'admin' ? 'badge-warning' : '';
+      const roleIcon = role === 'student' ? 'graduation-cap' : role === 'company' ? 'building-2' : role === 'admin' ? 'shield' : 'user';
+
+      let statusBadge = '';
+      if (isPending) statusBadge = `<span class="badge badge-warning"><i data-lucide="clock"></i>Pending review</span>`;
+      else if (isRejected) statusBadge = `<span class="badge badge-danger"><i data-lucide="x-circle"></i>Rejected</span>`;
+      else if (!isActive) statusBadge = `<span class="badge badge-danger"><i data-lucide="ban"></i>Blocked</span>`;
+      else statusBadge = `<span class="badge badge-success"><i data-lucide="check"></i>Active</span>`;
+
+      const levelBadge = (role === 'student' && u.academicLevel) ? `<span class="badge"><i data-lucide="graduation-cap"></i>${esc(u.academicLevel)}</span>` : '';
+      const approvedBadge = (role === 'company' && u.approvalStatus === 'approved')
+        ? `<span class="badge badge-success"><i data-lucide="badge-check"></i>Approved</span>` : '';
+
+      let actions = '';
+      if (role === 'company' && isPending) {
+        actions += `<button class="btn btn-sm btn-success" data-action="approve" data-id="${u.id}"><i data-lucide="check"></i>Approve</button>
+                    <button class="btn btn-sm btn-danger" data-action="reject" data-id="${u.id}"><i data-lucide="x"></i>Reject</button>`;
+      } else if (role !== 'admin') {
+        actions += isActive
+          ? `<button class="btn btn-sm btn-danger" data-action="block" data-id="${u.id}"><i data-lucide="ban"></i>Block</button>`
+          : `<button class="btn btn-sm btn-success" data-action="unblock" data-id="${u.id}"><i data-lucide="check"></i>Unblock</button>`;
+      }
+      actions += `<button class="btn btn-sm" data-action="view" data-id="${u.id}"><i data-lucide="eye"></i>View</button>`;
+
+      return `<div class="user-row" data-user-id="${u.id}" role="button" tabindex="0" style="cursor:pointer;">
+        ${avatar}
+        <div class="row-body">
+          <div class="row-title">${esc(name)}</div>
+          <div class="row-sub">${esc(u.email || '—')}</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">
+            <span class="badge ${roleBadgeClass}"><i data-lucide="${roleIcon}"></i>${roleLabel}</span>
+            ${statusBadge}
+            ${approvedBadge}
+            ${levelBadge}
+          </div>
         </div>
-      `;
+        <div class="row-actions">${actions}</div>
+      </div>`;
     }
 
-    function renderStudentCvSection(user, summary, { loading = false, error = '' } = {}) {
-      const primaryAvailable = summary?.primary?.isAvailable === true;
-      const builtAvailable = summary?.built?.isAvailable === true;
-      const hasBuiltInfo = summary?.built?.hasBuilderContent === true;
+    // ---------- Actions ----------
+    function confirmAction(id, payload, title, message) {
+      if (!confirm(`${title}\n\n${message}`)) return;
+      const successMap = {
+        'Approve company': 'Company approved.',
+        'Reject company': 'Company rejected.',
+        'Block user': 'User blocked.',
+        'Unblock user': 'User unblocked.',
+      };
+      return updateUser(id, payload, successMap[title] || 'Updated.');
+    }
 
-      let primaryBody = `
-        <div class="document-card-meta">Primary CV file is not available for this student.</div>
-      `;
-      if (primaryAvailable) {
-        primaryBody = `
-          <div class="document-card-meta">
-            Uploaded CV: ${esc(summary.primary.fileName || 'primary_cv.pdf')}
-          </div>
-          <div class="document-card-meta">
-            Uploaded: ${esc(documentDateLabel(summary.primary.uploadedAt))}
-          </div>
-          <div class="document-actions">
-            <button
-              class="btn-open"
-              data-document-action="user-cv"
-              data-user-id="${esc(user.uid)}"
-              data-variant="primary"
-              data-mode="view"
-            >
-              View CV
-            </button>
-            <button
-              class="btn-secondary"
-              data-document-action="user-cv"
-              data-user-id="${esc(user.uid)}"
-              data-variant="primary"
-              data-mode="download"
-            >
-              Download CV
-            </button>
-          </div>
-          ${
-            summary.primary.isPdf
-              ? ''
-              : '<div class="document-feedback is-warning">This file is not a PDF. Viewing may download it instead of previewing in the browser.</div>'
-          }
-        `;
+    async function updateUser(id, payload, successMessage) {
+      try {
+        await updateDoc(doc(db, 'users', id), payload);
+        const u = state.all.find((x) => x.id === id);
+        if (u) Object.assign(u, payload);
+        // Also update if profile modal is open
+        const openId = document.getElementById('profile-modal').getAttribute('data-user-id');
+        if (openId === id) viewUser(id);
+        applyFilters();
+        renderShell.stats && renderShell.stats();
+        // Re-render shell header stats
+        const pills = document.querySelector('.summary-pills');
+        if (pills) {
+          const s = computeStats();
+          pills.innerHTML = `
+            <span class="summary-pill"><i data-lucide="users"></i><strong>${s.total}</strong> Total</span>
+            <span class="summary-pill is-success"><i data-lucide="check-circle"></i><strong>${s.active}</strong> Active</span>
+            <span class="summary-pill is-danger"><i data-lucide="ban"></i><strong>${s.blocked}</strong> Blocked</span>
+            <span class="summary-pill is-warning"><i data-lucide="clock"></i><strong>${s.pending}</strong> Pending review</span>
+            <span class="summary-pill is-info"><i data-lucide="shield"></i><strong>${s.admins}</strong> Admins</span>`;
+          if (window.lucide) window.lucide.createIcons();
+        }
+        showToast(successMessage, 'success');
+      } catch (e) {
+        console.error(e);
+        showToast('Update failed. Try again.', 'error');
       }
+    }
 
-      let builtBody = `
-        <div class="document-card-meta">Built CV details are not available for this student.</div>
-      `;
-      if (hasBuiltInfo || builtAvailable) {
-        const builtSummary = summary?.built?.summary
-          ? `<div class="document-card-copy">${esc(summary.built.summary)}</div>`
-          : '';
-        const builtContact = [
-          summary?.built?.email,
-          summary?.built?.phone,
-        ].filter(Boolean).map((item) => esc(item)).join(' | ');
+    // ---------- Profile view ----------
+    async function viewUser(id) {
+      openModal('profile-modal');
+      const body = document.getElementById('profile-body');
+      const titleEl = document.getElementById('profile-title');
+      const modal = document.getElementById('profile-modal');
+      modal.setAttribute('data-user-id', id);
+      body.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+      try {
+        const userDoc = await getDoc(doc(db, 'users', id));
+        if (!userDoc.exists()) throw new Error('User not found');
+        const u = { id, ...userDoc.data() };
+        titleEl.textContent = u.fullName || u.companyName || 'User profile';
 
-        builtBody = `
-          <div class="document-card-meta">
-            ${
-              builtAvailable
-                ? `Built CV PDF: ${esc(summary.built.fileName || 'cv_builder.pdf')}`
-                : 'Built CV information is available, but no exported PDF was found.'
-            }
-          </div>
-          ${
-            builtContact
-              ? `<div class="document-card-meta">${builtContact}</div>`
-              : ''
-          }
-          ${builtSummary}
-          ${renderCvTagRow(summary?.built?.skills || [])}
-          ${renderCvTagRow(summary?.built?.languages || [])}
-          ${
-            builtAvailable
-              ? `
-                <div class="document-actions">
-                  <button
-                    class="btn-open"
-                    data-document-action="user-cv"
-                    data-user-id="${esc(user.uid)}"
-                    data-variant="built"
-                    data-mode="view"
-                  >
-                    View Built CV
-                  </button>
-                  <button
-                    class="btn-secondary"
-                    data-document-action="user-cv"
-                    data-user-id="${esc(user.uid)}"
-                    data-variant="built"
-                    data-mode="download"
-                  >
-                    Download Built CV
-                  </button>
-                </div>
-              `
-              : ''
-          }
-        `;
-      }
+        const role = u.role || 'user';
+        const isActive = u.isActive !== false;
+        const isPending = role === 'company' && u.approvalStatus === 'pending';
 
-      return `
-        <div class="document-section" id="student-cv-section">
-          <div class="document-section-header">
+        // Hero
+        const name = u.fullName || u.companyName || 'Unknown';
+        const initial = (name[0] || '?').toUpperCase();
+        const photoUrl = role === 'company' ? (u.logo || u.companyLogo) : (u.profileImage || u.photoURL);
+        const isCompany = role === 'company';
+        const avatarClass = isCompany ? 'user-avatar logo-contain' : 'user-avatar';
+        const avatarHtml = photoUrl
+          ? `<div class="${avatarClass}"><img src="${esc(photoUrl)}" alt="" onerror="this.parentNode.innerHTML='${esc(initial)}';this.parentNode.style.background='${roleBg(role)}';this.parentNode.style.color='${roleColor(role)}';"></div>`
+          : `<div class="${avatarClass}" style="background:${roleBg(role)};color:${roleColor(role)}">${esc(initial)}</div>`;
+        const roleLabel = role === 'student' ? 'Student' : role === 'company' ? 'Company' : role === 'admin' ? 'Admin' : 'User';
+        const roleBadgeClass = role === 'student' ? 'badge-info' : role === 'company' ? 'badge-success' : role === 'admin' ? 'badge-warning' : '';
+
+        let statusBadge = '';
+        if (isPending) statusBadge = `<span class="badge badge-warning"><i data-lucide="clock"></i>Pending review</span>`;
+        else if (u.approvalStatus === 'rejected') statusBadge = `<span class="badge badge-danger"><i data-lucide="x-circle"></i>Rejected</span>`;
+        else if (!isActive) statusBadge = `<span class="badge badge-danger"><i data-lucide="ban"></i>Blocked</span>`;
+        else statusBadge = `<span class="badge badge-success"><i data-lucide="check"></i>Active</span>`;
+
+        const hero = `
+          <div class="profile-hero">
+            ${avatarHtml}
             <div>
-              <div class="document-section-title">CV</div>
-              <div class="document-section-subtitle">
-                Review uploaded files and built CV information for this student.
+              <div class="profile-hero__name">${esc(name)}</div>
+              <div class="profile-hero__badges">
+                <span class="badge ${roleBadgeClass}">${roleLabel}</span>
+                ${statusBadge}
+                ${u.academicLevel ? `<span class="badge">${esc(u.academicLevel)}</span>` : ''}
               </div>
             </div>
-          </div>
-          ${
-            loading
-              ? '<div class="document-feedback is-loading">Loading CV details...</div>'
-              : error
-              ? `<div class="document-feedback is-error">${esc(error)}</div>`
-              : `
-                <div class="document-card document-card-accent">
-                  <div class="document-card-head">
-                    <div class="document-card-title">Uploaded CV</div>
-                    <span class="document-badge ${primaryAvailable ? 'is-success' : 'is-muted'}">
-                      ${primaryAvailable ? 'Available' : 'Not uploaded'}
-                    </span>
-                  </div>
-                  ${primaryBody}
-                </div>
-                <div class="document-card">
-                  <div class="document-card-head">
-                    <div class="document-card-title">Built CV</div>
-                    <span class="document-badge ${builtAvailable ? 'is-success' : hasBuiltInfo ? 'is-warning' : 'is-muted'}">
-                      ${builtAvailable ? 'PDF available' : hasBuiltInfo ? 'Info only' : 'Not available'}
-                    </span>
-                  </div>
-                  ${builtBody}
-                </div>
-              `
+          </div>`;
+
+        // Contact section
+        const contactRows = [];
+        if (u.email) contactRows.push(['Email', esc(u.email)]);
+        if (u.phone) contactRows.push(['Phone', `<a href="tel:${esc(u.phone)}">${esc(u.phone)}</a>`]);
+        if (u.location || u.address) contactRows.push(['Location', esc(u.location || u.address)]);
+        if (u.website) contactRows.push(['Website', `<a href="${esc(u.website)}" target="_blank" rel="noopener">${esc(u.website)}</a>`]);
+        contactRows.push(['Joined', esc(formatTimestamp(u.createdAt) || '—')]);
+
+        const contactHtml = `
+          <div class="profile-section">
+            <div class="profile-section__title"><i data-lucide="contact"></i>Contact</div>
+            <div class="profile-grid">
+              ${contactRows.map(([k, v]) => `<div class="profile-block"><div class="profile-block-label">${k}</div><div class="profile-block-value">${v}</div></div>`).join('')}
+            </div>
+          </div>`;
+
+        // Role-specific section
+        let roleSection = '';
+        if (role === 'student') {
+          const rows = [];
+          if (u.fieldOfStudy) rows.push(['Field of study', esc(u.fieldOfStudy)]);
+          if (u.university) rows.push(['University', esc(u.university)]);
+          if (u.academicLevel) rows.push(['Level', esc(u.academicLevel)]);
+          if (u.graduationYear) rows.push(['Graduation', esc(u.graduationYear)]);
+          // Doctorate specifics
+          const isDoctorate = String(u.academicLevel || '').toLowerCase().includes('doctor');
+          if (isDoctorate) {
+            if (u.researchTopic) rows.push(['Research topic', esc(u.researchTopic)]);
+            if (u.laboratory) rows.push(['Laboratory', esc(u.laboratory)]);
+            if (u.supervisor) rows.push(['Supervisor', esc(u.supervisor)]);
+            if (u.researchDomain) rows.push(['Research domain', esc(u.researchDomain)]);
           }
-          <div class="document-feedback" id="student-cv-feedback" aria-live="polite"></div>
-        </div>
-      `;
-    }
+          if (rows.length) {
+            roleSection = `
+              <div class="profile-section">
+                <div class="profile-section__title"><i data-lucide="graduation-cap"></i>Academic</div>
+                <div class="profile-grid">
+                  ${rows.map(([k, v]) => `<div class="profile-block"><div class="profile-block-label">${k}</div><div class="profile-block-value">${v}</div></div>`).join('')}
+                </div>
+              </div>`;
+          }
+        } else if (role === 'company') {
+          const rows = [];
+          if (u.industry) rows.push(['Industry', esc(u.industry)]);
+          if (u.companySize) rows.push(['Company size', esc(u.companySize)]);
+          if (u.foundedYear) rows.push(['Founded', esc(u.foundedYear)]);
+          if (u.registrationNumber) rows.push(['Registration #', esc(u.registrationNumber)]);
+          if (rows.length) {
+            roleSection = `
+              <div class="profile-section">
+                <div class="profile-section__title"><i data-lucide="building-2"></i>Company</div>
+                <div class="profile-grid">
+                  ${rows.map(([k, v]) => `<div class="profile-block"><div class="profile-block-label">${k}</div><div class="profile-block-value">${v}</div></div>`).join('')}
+                </div>
+              </div>`;
+          }
+        }
 
-    function setStudentCvFeedback(message, type = '') {
-      const feedback = document.getElementById('student-cv-feedback');
-      if (!feedback) {
-        return;
+        const bioText = u.bio || u.description;
+        const bioSection = bioText ? `
+          <div class="profile-section">
+            <div class="profile-section__title"><i data-lucide="text"></i>${role === 'company' ? 'About' : 'Bio'}</div>
+            <div class="profile-block"><div class="profile-block-value" style="white-space:pre-wrap;">${esc(bioText)}</div></div>
+          </div>` : '';
+
+        // Student-only: CV + Applications
+        let studentExtras = '';
+        if (role === 'student') {
+          studentExtras = `
+            <div class="profile-section" id="cv-section">
+              <div class="profile-section__title"><i data-lucide="file-text"></i>CV</div>
+              <div id="cv-block" class="profile-block"><div class="loading" style="padding:10px;"><div class="spinner"></div></div></div>
+            </div>
+            <div class="profile-section" id="apps-section">
+              <div class="profile-section__title"><i data-lucide="send"></i>Applications</div>
+              <div id="apps-block" class="profile-block"><div class="loading" style="padding:10px;"><div class="spinner"></div></div></div>
+            </div>`;
+        }
+
+        // Moderation actions footer
+        let moderationHtml = '';
+        if (role !== 'admin') {
+          const buttons = [];
+          if (role === 'company' && isPending) {
+            buttons.push(`<button class="btn btn-success" data-mod="approve"><i data-lucide="check"></i>Approve</button>`);
+            buttons.push(`<button class="btn btn-danger"  data-mod="reject"><i data-lucide="x"></i>Reject</button>`);
+          } else if (role === 'company' && u.approvalStatus === 'approved') {
+            buttons.push(`<button class="btn" data-mod="set-pending"><i data-lucide="clock"></i>Move to pending</button>`);
+          }
+          if (isActive) {
+            buttons.push(`<button class="btn btn-danger" data-mod="block"><i data-lucide="ban"></i>Block</button>`);
+          } else {
+            buttons.push(`<button class="btn btn-success" data-mod="unblock"><i data-lucide="check"></i>Unblock</button>`);
+          }
+          moderationHtml = `
+            <div class="profile-section">
+              <div class="profile-section__title"><i data-lucide="settings"></i>Actions</div>
+              <div style="display:flex;flex-wrap:wrap;gap:8px;">${buttons.join('')}</div>
+            </div>`;
+        }
+
+        body.innerHTML = hero + contactHtml + roleSection + bioSection + studentExtras + moderationHtml;
+
+        // Bind moderation buttons
+        body.querySelectorAll('[data-mod]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const m = btn.getAttribute('data-mod');
+            if (m === 'approve') confirmAction(id, { approvalStatus: 'approved', isActive: true }, 'Approve company', 'The company will be able to post opportunities.');
+            if (m === 'reject') confirmAction(id, { approvalStatus: 'rejected', isActive: false }, 'Reject company', 'This company will be hidden and cannot post content.');
+            if (m === 'set-pending') confirmAction(id, { approvalStatus: 'pending' }, 'Move to pending', 'Company will require re-approval.');
+            if (m === 'block') confirmAction(id, { isActive: false }, 'Block user', 'The user will lose access to the app.');
+            if (m === 'unblock') confirmAction(id, { isActive: true }, 'Unblock user', 'The user will regain access.');
+          });
+        });
+
+        if (window.lucide) window.lucide.createIcons();
+
+        // Async: load CV + Applications for students
+        if (role === 'student') {
+          loadStudentCvBlock(id);
+          loadStudentAppsBlock(id);
+        }
+      } catch (e) {
+        console.error(e);
+        body.innerHTML = feedbackCardHtml('Could not load this profile.', { type: 'error' });
+        if (window.lucide) window.lucide.createIcons();
       }
-
-      feedback.className = type ? `document-feedback is-${type}` : 'document-feedback';
-      feedback.textContent = message || '';
     }
 
-    function updateStudentCvSection(user, summary, options = {}) {
-      const section = document.getElementById('student-cv-section');
-      if (!section || currentModalUid !== user.uid) {
-        return;
-      }
-
-      section.outerHTML = renderStudentCvSection(user, summary, options);
-    }
-
-    async function loadAndRenderStudentCvSection(user) {
+    async function loadStudentCvBlock(id) {
+      const block = document.getElementById('cv-block');
+      if (!block) return;
       try {
-        const summary = await loadStudentCvSummary(user.uid);
-        userCvSummaryCache.set(user.uid, summary);
-        updateStudentCvSection(user, summary);
-      } catch (error) {
-        console.error('Load student CV summary error:', error);
-        if (userCvSummaryCache.has(user.uid)) {
-          setStudentCvFeedback('Could not refresh CV details right now.', 'error');
+        const summary = await loadStudentCvSummary(id);
+        const primary = summary?.primary;
+        const built = summary?.built;
+        const buttons = [];
+        if (primary?.isAvailable) buttons.push(`<button class="btn btn-sm" data-cv="primary"><i data-lucide="file"></i>Open uploaded CV</button>`);
+        if (built?.isAvailable) buttons.push(`<button class="btn btn-sm" data-cv="built"><i data-lucide="file-text"></i>Open built CV</button>`);
+        if (!buttons.length) {
+          block.innerHTML = `<div class="profile-block-value" style="color:var(--c-text-faint);">No CV uploaded yet.</div>`;
+        } else {
+          block.innerHTML = `<div style="display:flex;flex-wrap:wrap;gap:8px;">${buttons.join('')}</div>`;
+          block.querySelectorAll('[data-cv]').forEach((b) => {
+            b.addEventListener('click', async () => {
+              try {
+                const variant = b.getAttribute('data-cv');
+                const docResp = await getUserCvDocument(id, { variant });
+                if (!docResp?.url) throw new Error('Document unavailable');
+                openDocumentUrl(docResp.url, { fileName: docResp.fileName });
+              } catch (err) {
+                showToast(friendlyDocumentErrorMessage(err), 'error');
+              }
+            });
+          });
+        }
+        if (window.lucide) window.lucide.createIcons();
+      } catch (e) {
+        block.innerHTML = `<div class="profile-block-value" style="color:var(--c-text-faint);">No CV record.</div>`;
+      }
+    }
+
+    async function loadStudentAppsBlock(id) {
+      const block = document.getElementById('apps-block');
+      if (!block) return;
+      try {
+        const snap = await getDocs(query(collection(db, 'applications'), where('studentId', '==', id)));
+        const count = snap.size;
+        if (count === 0) {
+          block.innerHTML = `<div class="profile-block-value" style="color:var(--c-text-faint);">No applications yet.</div>`;
           return;
         }
-
-        updateStudentCvSection(user, null, {
-          error: 'Could not load CV details right now.',
-        });
+        block.innerHTML = `
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+            <div>
+              <div class="profile-block-label">Total applications</div>
+              <div class="profile-block-value" style="font-size:20px;font-weight:700;">${count}</div>
+            </div>
+            <button class="btn btn-sm" id="view-apps-btn"><i data-lucide="list"></i>View all</button>
+          </div>`;
+        document.getElementById('view-apps-btn').addEventListener('click', () => openAppsList(id, snap.docs));
+        if (window.lucide) window.lucide.createIcons();
+      } catch (e) {
+        block.innerHTML = `<div class="profile-block-value" style="color:var(--c-text-faint);">Could not load applications.</div>`;
       }
     }
 
-    async function handleUserCvAction(button) {
-      const userId = button.dataset.userId || '';
-      const variant = button.dataset.variant || 'primary';
-      const mode = button.dataset.mode || 'view';
-      const originalLabel = button.textContent;
-      const isDownload = mode === 'download';
-
-      button.disabled = true;
-      button.textContent = isDownload ? 'Preparing...' : 'Opening...';
-      setStudentCvFeedback('Preparing a secure CV link...', 'loading');
-
+    async function openAppsList(studentId, docs) {
+      openModal('apps-modal');
+      const body = document.getElementById('apps-body');
+      body.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
       try {
-        const documentLink = await getUserCvDocument(userId, { variant });
-        openDocumentUrl(
-          isDownload ? documentLink?.downloadUrl : documentLink?.viewUrl,
-          {
-            download: isDownload,
-            fileName: documentLink?.fileName || '',
-          },
-        );
-        setStudentCvFeedback(
-          isDownload ? 'Download started.' : 'Opening document in a new tab...',
-          'success',
-        );
-      } catch (error) {
-        const message = friendlyDocumentErrorMessage(error);
-        setStudentCvFeedback(message, 'error');
-        showToast(message, 'error');
-      } finally {
-        button.disabled = false;
-        button.textContent = originalLabel;
-      }
-    }
+        // Fetch opportunities once for enrichment
+        const appData = docs.map((d) => ({ id: d.id, ...d.data() }));
+        const oppIds = Array.from(new Set(appData.map((a) => a.opportunityId).filter(Boolean)));
+        const oppsMap = new Map();
+        await Promise.all(oppIds.map(async (oid) => {
+          try { const s = await getDoc(doc(db, 'opportunities', oid)); if (s.exists()) oppsMap.set(oid, s.data()); } catch {}
+        }));
 
-    function showUserDetails(uid) {
-      const user = allUsers.find((item) => item.uid === uid);
-      if (!user) return;
-
-      currentModalUid = uid;
-      const color = roleColor(user.role);
-      const modalAvatarEl = document.getElementById('modal-avatar');
-      const avatarContent = buildAvatarContent(user);
-      if (avatarContent.type === 'img') {
-        const initial = esc((user.fullName || '?')[0].toUpperCase());
-        modalAvatarEl.style.background = `${color}22`;
-        modalAvatarEl.style.color = color;
-        modalAvatarEl.innerHTML = `<img src="${esc(avatarContent.url)}" alt="${initial}" onerror="this.remove();this.parentNode.textContent='${initial}'">`;
-      } else if (avatarContent.type === 'emoji') {
-        modalAvatarEl.style.background = `${avatarContent.color}22`;
-        modalAvatarEl.style.color = '';
-        modalAvatarEl.textContent = avatarContent.emoji;
-      } else {
-        modalAvatarEl.style.background = `${color}22`;
-        modalAvatarEl.style.color = color;
-        modalAvatarEl.textContent = (user.fullName || '?')[0].toUpperCase();
-      }
-      document.getElementById('modal-name').textContent = user.fullName || 'Unknown';
-      document.getElementById('modal-badges').innerHTML = `
-        <span class="badge badge-${esc(user.role)}">${esc(user.role)}</span>
-        <span class="badge-status ${user.isActive !== false ? 'badge-active' : 'badge-blocked'}">${user.isActive !== false ? 'Active' : 'Blocked'}</span>`;
-
-      let details = '';
-      const row = (icon, label, value) => `<div class="detail-row"><span class="detail-icon">${icon}</span><span class="detail-label">${esc(label)}</span><span class="detail-value">${esc(value) || 'Not provided'}</span></div>`;
-      details += row('&#x1F4E7;', 'Email', user.email);
-      details += row('&#x1F4DE;', 'Phone', user.phone);
-      details += row('&#x1F4CD;', 'Location', user.location);
-      if (user.role === 'student') {
-        details += row('&#x1F393;', 'Level', user.academicLevel);
-        details += row('&#x1F3EB;', 'University', user.university);
-        details += row('&#x1F4DA;', 'Field', user.fieldOfStudy);
-        details += row('&#x1F4DD;', 'Bio', user.bio);
-        if (user.academicLevel === 'doctorat') {
-          details += row('&#x1F52C;', 'Research', user.researchTopic);
-          details += row('&#x1F9EA;', 'Lab', user.laboratory);
-          details += row('&#x1F468;&#x200D;&#x1F3EB;', 'Supervisor', user.supervisor);
-          details += row('&#x1F50D;', 'Domain', user.researchDomain);
+        if (!appData.length) {
+          body.innerHTML = emptyStateHtml('This student has not applied anywhere yet.', { title: 'No applications', icon: 'inbox' });
+        } else {
+          body.innerHTML = `<div class="list-grid">${appData.map((a) => {
+            const opp = oppsMap.get(a.opportunityId);
+            const title = opp?.title || a.opportunityTitle || 'Opportunity removed';
+            const company = opp?.companyName || a.companyName || '';
+            const applied = formatTimestamp(a.appliedAt);
+            const status = String(a.status || 'submitted').toLowerCase();
+            const statusCls = status === 'accepted' ? 'badge-success' : status === 'rejected' ? 'badge-danger' : status === 'reviewing' ? 'badge-info' : 'badge-warning';
+            return `<div class="item-row">
+              <div class="row-body">
+                <div class="row-title">${esc(title)}</div>
+                <div class="row-sub">${esc(company)} ${applied ? '· ' + esc(applied) : ''}</div>
+              </div>
+              <span class="badge ${statusCls}">${esc(status)}</span>
+            </div>`;
+          }).join('')}</div>`;
         }
-        details += renderStudentCvSection(
-          user,
-          userCvSummaryCache.get(user.uid),
-          { loading: !userCvSummaryCache.has(user.uid) },
-        );
-      } else if (user.role === 'company') {
-        details += row('&#x1F3E2;', 'Company', user.companyName);
-        details += row('&#x1F3ED;', 'Sector', user.sector);
-        details += row('&#x1F4C4;', 'Description', user.description);
-        details += row('&#x1F310;', 'Website', user.website);
-      }
-      document.getElementById('modal-details').innerHTML = details;
-      document.getElementById('user-modal').classList.add('show');
-
-      if (user.role === 'student') {
-        loadAndRenderStudentCvSection(user);
+        if (window.lucide) window.lucide.createIcons();
+      } catch (e) {
+        body.innerHTML = feedbackCardHtml('Could not load applications.', { type: 'error' });
+        if (window.lucide) window.lucide.createIcons();
       }
     }
-
-    document.getElementById('modal-close').onclick = () => {
-      currentModalUid = '';
-      document.getElementById('user-modal').classList.remove('show');
-    };
-    document.getElementById('user-modal').onclick = (event) => {
-      if (event.target === event.currentTarget) {
-        currentModalUid = '';
-        event.currentTarget.classList.remove('show');
-      }
-    };
-
-    document.getElementById('modal-details').addEventListener('click', async (event) => {
-      const button = event.target.closest('[data-document-action="user-cv"]');
-      if (!button) {
-        return;
-      }
-
-      await handleUserCvAction(button);
-    });
-
-    function confirmToggle(uid) {
-      const user = allUsers.find((item) => item.uid === uid);
-      if (!user) return;
-      const action = user.isActive !== false ? 'Block' : 'Unblock';
-      document.getElementById('confirm-title').textContent = `${action} User`;
-      document.getElementById('confirm-msg').textContent = `Are you sure you want to ${action.toLowerCase()} ${user.fullName}?`;
-      const okBtn = document.getElementById('confirm-ok');
-      okBtn.textContent = action;
-      okBtn.className = `btn-confirm ${user.isActive !== false ? 'danger' : 'success'}`;
-      okBtn.onclick = async () => {
-        document.getElementById('confirm-modal').classList.remove('show');
-        try {
-          const newStatus = user.isActive === false;
-          await updateDoc(doc(db, 'users', uid), { isActive: newStatus });
-          user.isActive = newStatus;
-          renderUsers();
-          showToast(`User ${action.toLowerCase()}ed successfully`, 'success');
-        } catch (error) {
-          console.error('Failed to update user status:', error);
-          showToast('Failed to update user status', 'error');
-        }
-      };
-      document.getElementById('confirm-cancel').onclick = () => {
-        document.getElementById('confirm-modal').classList.remove('show');
-      };
-      document.getElementById('confirm-modal').classList.add('show');
-    }
-
-    document.getElementById('confirm-modal').onclick = (event) => {
-      if (event.target === event.currentTarget) event.currentTarget.classList.remove('show');
-    };
   </script>
 </body>
 </html>

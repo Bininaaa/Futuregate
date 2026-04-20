@@ -91,28 +91,38 @@ function activityTypeLabel(type) {
   return labels[type] || 'Activity';
 }
 
-function typeIcon(type) {
+function typeIcon(type, subType) {
+  const subs = {
+    job: 'briefcase',
+    internship: 'user-check',
+    contract: 'file-signature',
+    volunteer: 'heart-handshake',
+    freelance: 'laptop',
+  };
+  if (subType && subs[String(subType).toLowerCase()]) return subs[String(subType).toLowerCase()];
+  if (subs[String(type).toLowerCase()]) return subs[String(type).toLowerCase()];
   const icons = {
-    application: 'AP',
-    opportunity: 'OP',
-    scholarship: 'SC',
-    training: 'TR',
-    project_idea: 'PI',
+    application: 'file-text',
+    opportunity: 'briefcase',
+    scholarship: 'award',
+    training: 'book-open',
+    project_idea: 'lightbulb',
+    idea: 'lightbulb',
   };
 
-  return icons[type] || 'AC';
+  return icons[type] || 'activity';
 }
 
 function typeColor(type) {
   const colors = {
-    application: '#7B1FA2',
-    opportunity: '#FF8C00',
-    scholarship: '#E91E63',
-    training: '#00BCD4',
-    project_idea: '#FFC107',
+    application: '#7C3AED',
+    opportunity: '#F59E0B',
+    scholarship: '#E24A4A',
+    training: '#14B8A6',
+    project_idea: '#2563EB',
   };
 
-  return colors[type] || '#777777';
+  return colors[type] || '#64748B';
 }
 
 function adminTargetUrl(type, targetId = '') {
