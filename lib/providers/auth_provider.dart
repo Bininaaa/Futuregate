@@ -552,7 +552,12 @@ class AuthProvider extends ChangeNotifier {
 
   bool get canChangePassword => _authService.canChangePassword;
 
-  bool get canChangeEmail => _authService.canChangeEmail;
+  bool get canChangeEmail {
+    if (_userModel?.isAdmin == true) {
+      return false;
+    }
+    return _authService.canChangeEmail;
+  }
 
   bool get requiresEmailVerification => _authService.requiresEmailVerification;
 
@@ -677,6 +682,10 @@ class AuthProvider extends ChangeNotifier {
     required String currentPassword,
     required String newEmail,
   }) async {
+    if (_userModel?.isAdmin == true) {
+      return 'Admin accounts cannot change their sign-in email from inside the app.';
+    }
+
     try {
       await _authService.changeEmail(
         currentPassword: currentPassword,

@@ -837,7 +837,8 @@ function canAccessProjectIdea(ideaData, userId, role) {
   }
 
   return (
-    trim(ideaData?.status).toLowerCase() === "approved" ||
+    (trim(ideaData?.status).toLowerCase() === "approved" &&
+      ideaData?.isHidden !== true) ||
     trim(ideaData?.submittedBy) === trim(userId)
   );
 }

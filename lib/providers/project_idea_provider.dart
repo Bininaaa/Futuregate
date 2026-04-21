@@ -42,7 +42,7 @@ class ProjectIdeaProvider extends ChangeNotifier {
     }
     if (_filterStatus != null && _filterStatus!.isNotEmpty) {
       list = list
-          .where((idea) => idea.status == _filterStatus)
+          .where((idea) => idea.moderationStatus == _filterStatus)
           .toList(growable: false);
     }
     return list;
@@ -284,6 +284,8 @@ class ProjectIdeaProvider extends ChangeNotifier {
     String imageUrl = '',
     String attachmentUrl = '',
     bool isPublic = true,
+    String? status,
+    bool? isHidden,
   }) async {
     try {
       _isLoading = true;
@@ -312,6 +314,8 @@ class ProjectIdeaProvider extends ChangeNotifier {
         imageUrl: imageUrl,
         attachmentUrl: attachmentUrl,
         isPublic: isPublic,
+        status: status,
+        isHidden: isHidden,
       );
 
       await fetchIdeas(submittedBy);

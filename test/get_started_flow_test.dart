@@ -391,7 +391,7 @@ void main() {
     await tester.pump();
     await tester.pumpAndSettle();
 
-    expect(find.text('Welcome back'), findsOneWidget);
+    expect(find.text('Welcome to FutureGate'), findsOneWidget);
     expect(authProvider.loadCurrentUserCalled, isTrue);
   });
 
@@ -464,7 +464,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(introService.hasSeen, isTrue);
-    expect(find.text('Welcome back'), findsOneWidget);
+    expect(find.text('Welcome to FutureGate'), findsOneWidget);
   });
 
   testWidgets('Create account CTA opens role chooser after onboarding', (
@@ -562,6 +562,6 @@ void main() {
     await tester.tap(find.text('Back to Login'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Welcome back'), findsOneWidget);
+    expect(find.text('Welcome to FutureGate'), findsOneWidget);
   });
 }

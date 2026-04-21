@@ -4190,7 +4190,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get uiWebsiteSocial => 'Website & Social';
 
   @override
-  String get uiWelcomeBack => 'Welcome back';
+  String get uiWelcomeBack => 'Welcome to FutureGate';
 
   @override
   String get uiWhenEnabledTheIdeaReadsLikeAPublicCommunityOpportunity =>

@@ -4251,7 +4251,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiWebsiteSocial => 'Site Web et réseaux sociaux';
 
   @override
-  String get uiWelcomeBack => 'Content de te revoir';
+  String get uiWelcomeBack => 'Bienvenue sur FutureGate';
 
   @override
   String get uiWhenEnabledTheIdeaReadsLikeAPublicCommunityOpportunity =>

@@ -1307,6 +1307,7 @@ class AppDetailHeroCard extends StatelessWidget {
   final String? summary;
   final List<AppBadgeData> badges;
   final Widget? leading;
+  final bool showLeading;
   final Widget? footer;
   final String? imageUrl;
   final Widget? media;
@@ -1320,6 +1321,7 @@ class AppDetailHeroCard extends StatelessWidget {
     this.summary,
     this.badges = const <AppBadgeData>[],
     this.leading,
+    this.showLeading = true,
     this.footer,
     this.imageUrl,
     this.media,
@@ -1329,6 +1331,22 @@ class AppDetailHeroCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final image = imageUrl?.trim() ?? '';
     final hasImage = image.isNotEmpty;
+    final headerLeading = showLeading
+        ? (leading ??
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: <Color>[theme.accent, theme.accentDark],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Icon(icon, color: Colors.white, size: 21),
+              ))
+        : null;
 
     return Container(
       width: double.infinity,
@@ -1349,21 +1367,10 @@ class AppDetailHeroCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              leading ??
-                  Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: <Color>[theme.accent, theme.accentDark],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Icon(icon, color: Colors.white, size: 21),
-                  ),
-              const SizedBox(width: AppContentSpacing.md),
+              if (headerLeading != null) ...<Widget>[
+                headerLeading,
+                const SizedBox(width: AppContentSpacing.md),
+              ],
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

@@ -1889,6 +1889,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     UserModel? user,
     _DashboardSnapshot snapshot,
   ) {
+    final carouselHeight = _recommendedCarouselHeight(context);
     final provider = context.watch<OpportunityProvider>();
     final appliedStatusMap = context
         .watch<ApplicationProvider>()
@@ -1899,7 +1900,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
 
     if (isLoading) {
       return SizedBox(
-        height: 210,
+        height: carouselHeight,
         child: Center(child: CircularProgressIndicator(color: primaryPurple)),
       );
     }
@@ -1913,7 +1914,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     }
 
     return SizedBox(
-      height: 220,
+      height: carouselHeight,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -1930,6 +1931,21 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
         },
       ),
     );
+  }
+
+  double _recommendedCarouselHeight(BuildContext context) {
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final textScale = MediaQuery.textScalerOf(context).scale(1);
+
+    if (textScale > 1.16) {
+      return 252;
+    }
+
+    if (screenWidth < 390 || textScale > 1.0) {
+      return 240;
+    }
+
+    return 236;
   }
 
   Widget _buildRecommendedCard(

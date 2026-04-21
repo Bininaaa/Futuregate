@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/notification_provider.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_typography.dart';
 import '../../utils/admin_palette.dart';
 import '../../widgets/admin/admin_ui.dart';
 import '../notifications_screen.dart';
@@ -126,7 +126,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               children: [
                                 Text(
                                   destination.title,
-                                  style: GoogleFonts.poppins(
+                                  style: AppTypography.product(
                                     fontSize: isCompactHeader ? 16 : 17,
                                     fontWeight: FontWeight.w700,
                                     color: AdminPalette.textPrimary,
@@ -140,7 +140,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 destination.subtitle,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: GoogleFonts.poppins(
+                                style: AppTypography.product(
                                   fontSize: 11.5,
                                   fontWeight: FontWeight.w500,
                                   color: AdminPalette.textMuted,
@@ -453,7 +453,7 @@ class _AdminPillNavItem extends StatelessWidget {
                             label,
                             maxLines: 1,
                             softWrap: false,
-                            style: GoogleFonts.poppins(
+                            style: AppTypography.product(
                               fontSize: compact ? 8.6 : 9.8,
                               fontWeight: FontWeight.w700,
                               color: Colors.white,

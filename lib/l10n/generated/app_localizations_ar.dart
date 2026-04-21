@@ -4180,7 +4180,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiWebsiteSocial => 'الموقع الإلكتروني والاجتماعي';
 
   @override
-  String get uiWelcomeBack => 'مرحبًا بعودتك';
+  String get uiWelcomeBack => 'مرحبًا بك في FutureGate';
 
   @override
   String get uiWhenEnabledTheIdeaReadsLikeAPublicCommunityOpportunity =>

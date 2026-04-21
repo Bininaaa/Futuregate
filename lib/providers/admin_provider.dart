@@ -26,6 +26,7 @@ class AdminProvider extends ChangeNotifier {
   List<UserModel> _filteredUsers = [];
   String _userRoleFilter = 'all';
   String _userLevelFilter = 'all';
+  String _userAccessFilter = 'all';
   String _companyApprovalFilter = 'all';
   String _userSearch = '';
   bool _usersLoading = false;
@@ -59,6 +60,7 @@ class AdminProvider extends ChangeNotifier {
   List<UserModel> get rawUsers => List.unmodifiable(_allUsers);
   String get userRoleFilter => _userRoleFilter;
   String get userLevelFilter => _userLevelFilter;
+  String get userAccessFilter => _userAccessFilter;
   String get companyApprovalFilter => _companyApprovalFilter;
   String get userSearch => _userSearch;
   bool get usersLoading => _usersLoading;
@@ -161,6 +163,12 @@ class AdminProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setUserAccessFilter(String filter) {
+    _userAccessFilter = filter;
+    _applyUserFilters();
+    notifyListeners();
+  }
+
   void setCompanyApprovalFilter(String status) {
     if (_userLevelFilter != 'all') {
       _companyApprovalFilter = 'all';
@@ -187,6 +195,12 @@ class AdminProvider extends ChangeNotifier {
       }
       if (_userLevelFilter != 'all' &&
           (user.academicLevel ?? '') != _userLevelFilter) {
+        return false;
+      }
+      if (_userAccessFilter == 'active' && !user.isActive) {
+        return false;
+      }
+      if (_userAccessFilter == 'blocked' && user.isActive) {
         return false;
       }
       if (_companyApprovalFilter != 'all') {
@@ -739,6 +753,7 @@ class AdminProvider extends ChangeNotifier {
     _filteredUsers = <UserModel>[];
     _userRoleFilter = 'all';
     _userLevelFilter = 'all';
+    _userAccessFilter = 'all';
     _companyApprovalFilter = 'all';
     _userSearch = '';
     _usersLoading = false;

@@ -65,10 +65,15 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
   bool _isUploadingImage = false;
   late String _adminStatus;
 
+  bool get _shouldResubmitAfterEdit =>
+      !widget.isAdmin &&
+      widget.isEditMode &&
+      (widget.idea?.shouldResubmitAfterEdit ?? false);
+
   bool get _isLocked =>
       !widget.isAdmin &&
       widget.isEditMode &&
-      (widget.idea?.status.toLowerCase() ?? '') != 'pending';
+      !(widget.idea?.canOwnerEdit ?? false);
 
   AppContentTheme get _theme => AppContentTheme.futureGate(
     accent: InnovationHubPalette.primary,
@@ -182,6 +187,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
     final roles = _selectedRoles.toList(growable: false);
     final description = _overviewController.text.trim();
     final tagline = _taglineController.text.trim();
+    final shouldResubmit = _shouldResubmitAfterEdit;
 
     final String? error;
 
@@ -246,6 +252,8 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
         imageUrl: _imageUrl.trim(),
         attachmentUrl: _attachmentUrlController.text.trim(),
         isPublic: _isPublic,
+        status: shouldResubmit ? 'pending' : null,
+        isHidden: shouldResubmit ? false : null,
       );
     } else {
       error = await provider.submitProjectIdea(
@@ -280,12 +288,16 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
 
     if (error == null) {
       context.showAppSnackBar(
-        widget.isEditMode
+        _shouldResubmitAfterEdit
+            ? 'Idea resubmitted successfully.'
+            : widget.isEditMode
             ? 'Idea updated successfully.'
             : widget.isAdmin
             ? 'Idea published successfully.'
             : 'Idea submitted successfully.',
-        title: widget.isEditMode
+        title: _shouldResubmitAfterEdit
+            ? 'Idea resubmitted'
+            : widget.isEditMode
             ? 'Idea updated'
             : widget.isAdmin
             ? 'Idea published'
@@ -684,6 +696,8 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                         ? 'Uploading cover image...'
                         : _isLocked
                         ? 'Editing locked after review'
+                        : _shouldResubmitAfterEdit
+                        ? 'Publish Again'
                         : widget.isEditMode
                         ? 'Save Changes'
                         : widget.isAdmin
@@ -1229,12 +1243,16 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
       theme: _theme,
       icon: widget.isEditMode ? Icons.edit_rounded : Icons.lightbulb_outline,
       title: widget.isEditMode
-          ? 'Refine your idea'
+          ? (_shouldResubmitAfterEdit
+                ? 'Refine and publish again'
+                : 'Refine your idea')
           : widget.isAdmin
           ? 'Publish an idea'
           : 'Launch your next breakthrough',
       subtitle: widget.isAdmin
           ? 'Add a platform-curated idea with a strong story, clear metadata, and a predictable posting structure.'
+          : _shouldResubmitAfterEdit
+          ? 'Update the idea, clear the rejection, and send it back for review.'
           : 'Build an idea profile that feels ready for collaborators, feedback, and student momentum.',
       badges: <AppBadgeData>[
         AppBadgeData(
@@ -1279,7 +1297,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
       icon: Icons.lock_outline_rounded,
       title: AppLocalizations.of(context)!.uiEditingLocked,
       message:
-          'Only pending ideas can be edited. This idea has already moved past review, so the form is shown in locked mode.',
+          'Approved ideas stay locked here. If an admin sends one back for changes, it will become editable again in this form.',
     );
   }
 

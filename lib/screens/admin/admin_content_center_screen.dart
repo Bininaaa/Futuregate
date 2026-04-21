@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -70,12 +69,12 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
   static const String _ideaFilterRejected = 'rejected';
   static const String _ideaFilterHidden = 'hidden';
   static const String _opportunityFilterAll = 'all';
-  static const String _opportunityFilterLatest = 'latest';
   static const String _opportunityFilterAdmin = 'admin';
   static const String _opportunityFilterPendingApps = 'pending_apps';
   static const String _opportunityFilterClosed = 'closed';
   static const String _opportunityFilterFeatured = 'featured';
   static const String _opportunityFilterHidden = 'hidden';
+  static const String _opportunityTypeFilterAll = 'all';
   static const String _scholarshipFilterAll = 'all';
   static const String _scholarshipFilterFeatured = 'featured';
   static const String _scholarshipFilterHidden = 'hidden';
@@ -88,6 +87,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
   late TabController _tabController;
   String _ideaStatusFilter = _ideaFilterAll;
   String _opportunityFilter = _opportunityFilterAll;
+  String _opportunityTypeFilter = _opportunityTypeFilterAll;
   String _scholarshipFilter = _scholarshipFilterAll;
   bool _openedInitialTarget = false;
 
@@ -133,11 +133,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
   }
 
   ThemeData _buildScopedTheme(BuildContext context) {
-    final theme = Theme.of(context);
-    return theme.copyWith(
-      textTheme: GoogleFonts.poppinsTextTheme(theme.textTheme),
-      primaryTextTheme: GoogleFonts.poppinsTextTheme(theme.primaryTextTheme),
-    );
+    return Theme.of(context);
   }
 
   @override
@@ -1013,37 +1009,6 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
           ..sort((first, second) {
             final firstModel = OpportunityModel.fromMap(first);
             final secondModel = OpportunityModel.fromMap(second);
-            final firstIsOpen = firstModel.effectiveStatus() == 'open';
-            final secondIsOpen = secondModel.effectiveStatus() == 'open';
-            if (firstIsOpen != secondIsOpen) {
-              return firstIsOpen ? -1 : 1;
-            }
-
-            if (firstModel.isHidden != secondModel.isHidden) {
-              return firstModel.isHidden ? 1 : -1;
-            }
-
-            if (firstModel.isFeatured != secondModel.isFeatured) {
-              return firstModel.isFeatured ? -1 : 1;
-            }
-
-            final firstDeadline =
-                firstModel.applicationDeadline ??
-                OpportunityMetadata.parseDateTimeLike(firstModel.deadlineLabel);
-            final secondDeadline =
-                secondModel.applicationDeadline ??
-                OpportunityMetadata.parseDateTimeLike(
-                  secondModel.deadlineLabel,
-                );
-            if (firstDeadline != null && secondDeadline != null) {
-              final comparison = firstDeadline.compareTo(secondDeadline);
-              if (comparison != 0) {
-                return comparison;
-              }
-            } else if (firstDeadline != null || secondDeadline != null) {
-              return firstDeadline != null ? -1 : 1;
-            }
-
             final firstTime =
                 (firstModel.updatedAt ?? firstModel.createdAt)
                     ?.millisecondsSinceEpoch ??
@@ -1052,13 +1017,26 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 (secondModel.updatedAt ?? secondModel.createdAt)
                     ?.millisecondsSinceEpoch ??
                 0;
-            return secondTime.compareTo(firstTime);
+            final timeComparison = secondTime.compareTo(firstTime);
+            if (timeComparison != 0) {
+              return timeComparison;
+            }
+
+            final titleComparison = (first['title'] ?? '')
+                .toString()
+                .trim()
+                .toLowerCase()
+                .compareTo(
+                  (second['title'] ?? '').toString().trim().toLowerCase(),
+                );
+            if (titleComparison != 0) {
+              return titleComparison;
+            }
+
+            return (first['id'] ?? '').toString().compareTo(
+              (second['id'] ?? '').toString(),
+            );
           });
-    final latestCount = allOpportunities.where((item) {
-      final ts = OpportunityModel.fromMap(item).createdAt;
-      if (ts == null) return false;
-      return DateTime.now().difference(ts.toDate()).inDays <= 7;
-    }).length;
     final adminCount = allOpportunities
         .where((item) => OpportunityModel.fromMap(item).isAdminPosted)
         .length;
@@ -1082,7 +1060,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     final hiddenCount = allOpportunities
         .where((item) => OpportunityModel.fromMap(item).isHidden)
         .length;
-    final opportunities = allOpportunities
+    final opportunitiesForSelectedFilter = allOpportunities
         .where(
           (item) => _matchesOpportunityFilter(
             item,
@@ -1090,6 +1068,32 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             provider,
             adminId,
           ),
+        )
+        .toList();
+    final jobCount = opportunitiesForSelectedFilter
+        .where(
+          (item) =>
+              OpportunityType.parse((item['type'] ?? '').toString()) ==
+              OpportunityType.job,
+        )
+        .length;
+    final internshipCount = opportunitiesForSelectedFilter
+        .where(
+          (item) =>
+              OpportunityType.parse((item['type'] ?? '').toString()) ==
+              OpportunityType.internship,
+        )
+        .length;
+    final sponsoringCount = opportunitiesForSelectedFilter
+        .where(
+          (item) =>
+              OpportunityType.parse((item['type'] ?? '').toString()) ==
+              OpportunityType.sponsoring,
+        )
+        .length;
+    final opportunities = opportunitiesForSelectedFilter
+        .where(
+          (item) => _matchesOpportunityTypeFilter(item, _opportunityTypeFilter),
         )
         .toList();
 
@@ -1120,7 +1124,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               child: _buildCollectionWorkspaceHeader(
                 eyebrow: 'Opportunities',
                 title:
-                    '${_opportunityFilterTitle(_opportunityFilter)} (${opportunities.length})',
+                    '${_opportunityWorkspaceTitle(_opportunityFilter, _opportunityTypeFilter, l10n)} (${opportunities.length})',
                 subtitle: searchQuery.isEmpty
                     ? 'Review jobs, internships, and sponsored posts. Filter by source, status, or pending reviews.'
                     : 'Showing filtered results for "$searchQuery".',
@@ -1133,19 +1137,6 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                     onTap: () => setState(
                       () => _opportunityFilter = _opportunityFilterAll,
                     ),
-                  ),
-                  _CollectionHeaderFilter(
-                    label: 'Latest',
-                    selected: _opportunityFilter == _opportunityFilterLatest,
-                    icon: Icons.schedule_rounded,
-                    badgeCount: latestCount,
-                    onTap: () => setState(() {
-                      _opportunityFilter = _toggleFilterValue(
-                        _opportunityFilter,
-                        _opportunityFilterLatest,
-                        allValue: _opportunityFilterAll,
-                      );
-                    }),
                   ),
                   _CollectionHeaderFilter(
                     label: 'Admin Posts',
@@ -1217,6 +1208,65 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                     }),
                   ),
                 ],
+                tertiaryFilters: [
+                  _CollectionHeaderFilter(
+                    label: 'All Types',
+                    selected:
+                        _opportunityTypeFilter == _opportunityTypeFilterAll,
+                    icon: Icons.category_outlined,
+                    badgeCount: opportunitiesForSelectedFilter.length,
+                    onTap: () => setState(
+                      () => _opportunityTypeFilter = _opportunityTypeFilterAll,
+                    ),
+                  ),
+                  _CollectionHeaderFilter(
+                    label: OpportunityType.label(OpportunityType.job, l10n),
+                    selected: _opportunityTypeFilter == OpportunityType.job,
+                    icon: OpportunityType.icon(OpportunityType.job),
+                    badgeCount: jobCount,
+                    onTap: () => setState(() {
+                      _opportunityTypeFilter = _toggleFilterValue(
+                        _opportunityTypeFilter,
+                        OpportunityType.job,
+                        allValue: _opportunityTypeFilterAll,
+                      );
+                    }),
+                  ),
+                  _CollectionHeaderFilter(
+                    label: OpportunityType.label(
+                      OpportunityType.internship,
+                      l10n,
+                    ),
+                    selected:
+                        _opportunityTypeFilter == OpportunityType.internship,
+                    icon: OpportunityType.icon(OpportunityType.internship),
+                    badgeCount: internshipCount,
+                    onTap: () => setState(() {
+                      _opportunityTypeFilter = _toggleFilterValue(
+                        _opportunityTypeFilter,
+                        OpportunityType.internship,
+                        allValue: _opportunityTypeFilterAll,
+                      );
+                    }),
+                  ),
+                  _CollectionHeaderFilter(
+                    label: OpportunityType.label(
+                      OpportunityType.sponsoring,
+                      l10n,
+                    ),
+                    selected:
+                        _opportunityTypeFilter == OpportunityType.sponsoring,
+                    icon: OpportunityType.icon(OpportunityType.sponsoring),
+                    badgeCount: sponsoringCount,
+                    onTap: () => setState(() {
+                      _opportunityTypeFilter = _toggleFilterValue(
+                        _opportunityTypeFilter,
+                        OpportunityType.sponsoring,
+                        allValue: _opportunityTypeFilterAll,
+                      );
+                    }),
+                  ),
+                ],
                 action: FilledButton.icon(
                   onPressed: () => _openOpportunityEditor(),
                   icon: const Icon(Icons.add_rounded, size: 18),
@@ -1236,7 +1286,11 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               padding: const EdgeInsets.only(top: 6),
               child: _buildEmptyState(
                 Icons.search_off_outlined,
-                _opportunityEmptyMessage(_opportunityFilter),
+                _opportunityEmptyMessage(
+                  _opportunityFilter,
+                  _opportunityTypeFilter,
+                  l10n,
+                ),
               ),
             );
           }
@@ -1847,6 +1901,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     }
     _ideaStatusFilter = _ideaFilterAll;
     _opportunityFilter = _opportunityFilterAll;
+    _opportunityTypeFilter = _opportunityTypeFilterAll;
     _scholarshipFilter = _scholarshipFilterAll;
     _openedInitialTarget = false;
     if (_tabController.index != AdminContentCenterScreen.projectIdeasTab) {
@@ -1906,11 +1961,6 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
   ) {
     final opportunityModel = OpportunityModel.fromMap(opportunity);
     switch (filter) {
-      case _opportunityFilterLatest:
-        final ts = opportunityModel.createdAt;
-        if (ts == null) return false;
-        final age = DateTime.now().difference(ts.toDate());
-        return age.inDays <= 7;
       case _opportunityFilterAdmin:
         return opportunityModel.isAdminPosted;
       case _opportunityFilterPendingApps:
@@ -1932,10 +1982,20 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     }
   }
 
+  bool _matchesOpportunityTypeFilter(
+    Map<String, dynamic> opportunity,
+    String typeFilter,
+  ) {
+    if (typeFilter == _opportunityTypeFilterAll) {
+      return true;
+    }
+
+    return OpportunityType.parse((opportunity['type'] ?? '').toString()) ==
+        OpportunityType.parse(typeFilter);
+  }
+
   String _opportunityFilterTitle(String filter) {
     switch (filter) {
-      case _opportunityFilterLatest:
-        return 'Latest Opportunities';
       case _opportunityFilterAdmin:
         return 'Admin Opportunities';
       case _opportunityFilterPendingApps:
@@ -1951,22 +2011,40 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     }
   }
 
-  String _opportunityEmptyMessage(String filter) {
+  String _opportunityWorkspaceTitle(
+    String filter,
+    String typeFilter,
+    AppLocalizations l10n,
+  ) {
+    final baseTitle = _opportunityFilterTitle(filter);
+    if (typeFilter == _opportunityTypeFilterAll) {
+      return baseTitle;
+    }
+
+    return '$baseTitle - ${OpportunityType.label(typeFilter, l10n)}';
+  }
+
+  String _opportunityEmptyMessage(
+    String filter,
+    String typeFilter,
+    AppLocalizations l10n,
+  ) {
+    final opportunityLabel = typeFilter == _opportunityTypeFilterAll
+        ? 'opportunities'
+        : '${OpportunityType.label(typeFilter, l10n).toLowerCase()} opportunities';
     switch (filter) {
-      case _opportunityFilterLatest:
-        return 'No opportunities added in the last 7 days';
       case _opportunityFilterAdmin:
-        return 'No admin-posted opportunities match this search';
+        return 'No admin-posted $opportunityLabel match this search';
       case _opportunityFilterPendingApps:
-        return 'No opportunities with pending applications right now';
+        return 'No $opportunityLabel with pending applications right now';
       case _opportunityFilterClosed:
-        return 'No closed opportunities match this search';
+        return 'No closed $opportunityLabel match this search';
       case _opportunityFilterFeatured:
-        return 'No featured opportunities match this search';
+        return 'No featured $opportunityLabel match this search';
       case _opportunityFilterHidden:
-        return 'No hidden opportunities match this search';
+        return 'No hidden $opportunityLabel match this search';
       default:
-        return 'No opportunities match this search';
+        return 'No $opportunityLabel match this search';
     }
   }
 
@@ -2464,6 +2542,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     required String subtitle,
     required List<_CollectionHeaderFilter> primaryFilters,
     List<_CollectionHeaderFilter> secondaryFilters = const [],
+    List<_CollectionHeaderFilter> tertiaryFilters = const [],
     Widget? action,
     String searchQuery = '',
   }) {
@@ -2498,6 +2577,22 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             const SizedBox(height: 8),
             _buildFilterChipRow(
               secondaryFilters
+                  .map(
+                    (filter) => AdminFilterChip(
+                      label: filter.label,
+                      selected: filter.selected,
+                      icon: filter.icon,
+                      badgeCount: filter.badgeCount,
+                      onTap: filter.onTap,
+                    ),
+                  )
+                  .toList(),
+            ),
+          ],
+          if (tertiaryFilters.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            _buildFilterChipRow(
+              tertiaryFilters
                   .map(
                     (filter) => AdminFilterChip(
                       label: filter.label,

@@ -434,7 +434,8 @@ class _AdminGoogleBooksImportScreenState
             AdminSectionHeader(
               eyebrow: _l10n.uiGoogleBooks,
               title: _l10n.uiImportBooks,
-              subtitle: _l10n.uiSearchByTopicDomainLevelAndLanguageBeforePublishingA,
+              subtitle:
+                  _l10n.uiSearchByTopicDomainLevelAndLanguageBeforePublishingA,
             ),
             const SizedBox(height: 14),
             TextField(
@@ -570,8 +571,8 @@ class _AdminGoogleBooksImportScreenState
         child: AdminEmptyState(
           icon: Icons.menu_book_rounded,
           title: _l10n.uiStartWithAGoogleBooksSearch,
-          message:
-              _l10n.uiUseATopicDomainOrLanguageFilterToBringInCuratedBooksForReview,
+          message: _l10n
+              .uiUseATopicDomainOrLanguageFilterToBringInCuratedBooksForReview,
         ),
       );
     }
@@ -598,8 +599,8 @@ class _AdminGoogleBooksImportScreenState
         child: AdminEmptyState(
           icon: Icons.search_off_rounded,
           title: _l10n.uiNoBooksMatchThisSearch,
-          message:
-              _l10n.uiTryABroaderQueryOrChangeTheLanguageAndDomainFiltersBeforeSearchingAgain,
+          message: _l10n
+              .uiTryABroaderQueryOrChangeTheLanguageAndDomainFiltersBeforeSearchingAgain,
         ),
       );
     }
@@ -655,7 +656,6 @@ class _AdminGoogleBooksImportScreenState
     return RefreshIndicator(
       onRefresh: provider.fetchTrainings,
       child: ListView(
-        primary: false,
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
         children: [
@@ -666,8 +666,8 @@ class _AdminGoogleBooksImportScreenState
                 AdminSectionHeader(
                   eyebrow: _l10n.uiLibrary,
                   title: _l10n.uiManageImportedBooks,
-                  subtitle:
-                      _l10n.uiThisWorkspaceIsDedicatedToGoogleBooksImportsSoBookCurationStaysFocused,
+                  subtitle: _l10n
+                      .uiThisWorkspaceIsDedicatedToGoogleBooksImportsSoBookCurationStaysFocused,
                 ),
                 const SizedBox(height: 14),
                 Wrap(
@@ -686,7 +686,9 @@ class _AdminGoogleBooksImportScreenState
                       icon: Icons.star_rounded,
                     ),
                     AdminPill(
-                      label: provider.isLoading ? _l10n.uiSyncing : _l10n.uiSynced,
+                      label: provider.isLoading
+                          ? _l10n.uiSyncing
+                          : _l10n.uiSynced,
                       color: provider.isLoading
                           ? AdminPalette.warning
                           : AdminPalette.success,
@@ -706,7 +708,8 @@ class _AdminGoogleBooksImportScreenState
               child: AdminEmptyState(
                 icon: Icons.menu_book_rounded,
                 title: _l10n.uiNoBooksImportedYet,
-                message: _l10n.uiImportAFewGoogleBooksResultsFirstThenManageFeaturing,
+                message: _l10n
+                    .uiImportAFewGoogleBooksResultsFirstThenManageFeaturing,
               ),
             )
           else
@@ -774,7 +777,10 @@ class _AdminGoogleBooksImportScreenState
                   spacing: 8,
                   runSpacing: 8,
                   children: [
-                    AdminPill(label: _l10n.uiBookLabel, color: AdminPalette.info),
+                    AdminPill(
+                      label: _l10n.uiBookLabel,
+                      color: AdminPalette.info,
+                    ),
                     if (book.language.trim().isNotEmpty)
                       AdminPill(
                         label: book.language.toUpperCase(),
@@ -885,7 +891,9 @@ class _AdminGoogleBooksImportScreenState
                             : Icons.star_rounded,
                       ),
                       label: Text(
-                        training.isFeatured ? _l10n.uiUnfeature : _l10n.uiFeature,
+                        training.isFeatured
+                            ? _l10n.uiUnfeature
+                            : _l10n.uiFeature,
                       ),
                     ),
                     OutlinedButton.icon(
@@ -937,7 +945,6 @@ class _AdminGoogleBooksImportScreenState
     final tabBarView = TabBarView(
       children: [
         CustomScrollView(
-          primary: false,
           physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
             SliverToBoxAdapter(
@@ -950,8 +957,8 @@ class _AdminGoogleBooksImportScreenState
                       AdminSectionHeader(
                         eyebrow: l10n.uiStudio,
                         title: l10n.uiBookImportWorkspace,
-                        subtitle:
-                            l10n.uiSearchAndImportBooksInOneContinuousFlowInsteadOf,
+                        subtitle: l10n
+                            .uiSearchAndImportBooksInOneContinuousFlowInsteadOf,
                       ),
                       const SizedBox(height: 14),
                       Wrap(

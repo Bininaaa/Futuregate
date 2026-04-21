@@ -203,9 +203,12 @@ class ProjectIdeaService {
     String imageUrl = '',
     String attachmentUrl = '',
     bool isPublic = true,
+    String? status,
+    bool? isHidden,
   }) async {
     try {
-      await _ideasCollection.doc(id).update(<String, dynamic>{
+      final nextStatus = status?.trim().toLowerCase();
+      final updateData = <String, dynamic>{
         'title': title,
         'description': description,
         'domain': domain,
@@ -228,7 +231,16 @@ class ProjectIdeaService {
         'attachmentUrl': attachmentUrl,
         'isPublic': isPublic,
         'updatedAt': FieldValue.serverTimestamp(),
-      });
+      };
+
+      if (nextStatus != null && nextStatus.isNotEmpty) {
+        updateData['status'] = nextStatus;
+      }
+      if (isHidden != null) {
+        updateData['isHidden'] = isHidden;
+      }
+
+      await _ideasCollection.doc(id).update(updateData);
     } on FirebaseException catch (error) {
       if (_isPermissionDeniedError(error)) {
         throw Exception(

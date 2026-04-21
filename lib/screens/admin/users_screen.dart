@@ -124,7 +124,8 @@ class _UsersScreenState extends State<UsersScreen> {
                     AdminSectionHeader(
                       eyebrow: 'Control',
                       title: l10n.uiUserManagement,
-                      subtitle: l10n.uiSearchQuicklyFilterByRoleOrLevelAndReviewAccount,
+                      subtitle: l10n
+                          .uiSearchQuicklyFilterByRoleOrLevelAndReviewAccount,
                     ),
                     const SizedBox(height: 14),
                     Wrap(
@@ -193,6 +194,29 @@ class _UsersScreenState extends State<UsersScreen> {
                     const SizedBox(width: 8),
                     _buildRoleChip('Admins', 'admin', provider),
                     const SizedBox(width: 8),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    AdminPill(
+                      label: 'Account state',
+                      color: AdminPalette.danger,
+                      icon: Icons.shield_outlined,
+                    ),
+                    const SizedBox(width: 4),
+                    _buildAccessChip('All', 'all', provider),
+                    const SizedBox(width: 6),
+                    _buildAccessChip('Active', 'active', provider),
+                    const SizedBox(width: 6),
+                    _buildAccessChip('Blocked', 'blocked', provider),
                   ],
                 ),
               ),
@@ -273,13 +297,20 @@ class _UsersScreenState extends State<UsersScreen> {
               ),
             ),
           if (provider.allUsers.isEmpty)
-            SliverFillRemaining(
-              hasScrollBody: false,
-              child: AdminEmptyState(
-                icon: Icons.people_outline_rounded,
-                title: l10n.uiNoUsersMatchThisSearch,
-                message:
-                    l10n.uiTryAnotherSearchOrRelaxTheCurrentRoleAndLevelFilters,
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(
+                  0,
+                  12,
+                  0,
+                  24 + MediaQuery.paddingOf(context).bottom,
+                ),
+                child: AdminEmptyState(
+                  icon: Icons.people_outline_rounded,
+                  title: l10n.uiNoUsersMatchThisSearch,
+                  message: l10n
+                      .uiTryAnotherSearchOrRelaxTheCurrentRoleAndLevelFilters,
+                ),
               ),
             )
           else
@@ -318,6 +349,20 @@ class _UsersScreenState extends State<UsersScreen> {
       selected: isSelected,
       onTap: () => provider.setUserLevelFilter(value),
       icon: Icons.school_outlined,
+    );
+  }
+
+  Widget _buildAccessChip(String label, String value, AdminProvider provider) {
+    final isSelected = provider.userAccessFilter == value;
+    return AdminFilterChip(
+      label: label,
+      selected: isSelected,
+      onTap: () => provider.setUserAccessFilter(value),
+      icon: switch (value) {
+        'active' => Icons.check_circle_outline_rounded,
+        'blocked' => Icons.block_outlined,
+        _ => Icons.filter_list_rounded,
+      },
     );
   }
 
@@ -800,7 +845,7 @@ class _UsersScreenState extends State<UsersScreen> {
                   children: chips,
                 ),
                 const SizedBox(height: 12),
-                Text(
+                _buildSingleLineText(
                   user.email,
                   textAlign: TextAlign.center,
                   style: const TextStyle(fontSize: 13, color: Colors.white70),
@@ -913,7 +958,8 @@ class _UsersScreenState extends State<UsersScreen> {
                     user: user,
                     compact: true,
                     eyebrow: l10n.uiQuickActions,
-                    subtitle: l10n.uiChooseTheNextModerationStepOrOpenTheFullProfile,
+                    subtitle:
+                        l10n.uiChooseTheNextModerationStepOrOpenTheFullProfile,
                   ),
                   const SizedBox(height: 12),
                   _buildActionSheetTile(
@@ -1195,8 +1241,9 @@ class _UsersScreenState extends State<UsersScreen> {
                       if (error != null && context.mounted) {
                         context.showAppSnackBar(
                           error,
-                          title:
-                              AppLocalizations.of(context)!.updateUnavailableTitle,
+                          title: AppLocalizations.of(
+                            context,
+                          )!.updateUnavailableTitle,
                           type: AppFeedbackType.error,
                         );
                       }
@@ -1329,18 +1376,23 @@ class _UsersScreenState extends State<UsersScreen> {
                     _buildOverlayUserHeaderCard(
                       user: user,
                       eyebrow: _l10n.uiProfileOverview,
-                      subtitle:
-                          _l10n.uiReviewIdentityStatusAndSubmittedInformationInOnePlace,
+                      subtitle: _l10n
+                          .uiReviewIdentityStatusAndSubmittedInformationInOnePlace,
                     ),
                     const SizedBox(height: 18),
                     AdminSectionHeader(
                       eyebrow: _l10n.uiProfile,
                       title: _l10n.uiUserDetails,
-                      subtitle:
-                          _l10n.uiReviewContactInfoAccountStatusAndRoleSpecificDetailsInOneCleanProfileView,
+                      subtitle: _l10n
+                          .uiReviewContactInfoAccountStatusAndRoleSpecificDetailsInOneCleanProfileView,
                     ),
                     const SizedBox(height: 12),
-                    _buildDetailRow(Icons.email_outlined, 'Email', user.email),
+                    _buildDetailRow(
+                      Icons.email_outlined,
+                      'Email',
+                      user.email,
+                      singleLineValue: true,
+                    ),
                     _buildOptionalDetailRow(
                       Icons.phone_outlined,
                       'Phone',
@@ -1536,7 +1588,8 @@ class _UsersScreenState extends State<UsersScreen> {
           ),
           const SizedBox(height: 4),
           Text(
-            _l10n.uiUpdateTheCompanyApprovalStateFromHereWithoutLeavingTheProfile,
+            _l10n
+                .uiUpdateTheCompanyApprovalStateFromHereWithoutLeavingTheProfile,
             style: TextStyle(
               fontSize: 12,
               height: 1.45,
@@ -1736,7 +1789,15 @@ class _UsersScreenState extends State<UsersScreen> {
     String label,
     String value, {
     bool mutedValue = false,
+    bool singleLineValue = false,
   }) {
+    final valueStyle = TextStyle(
+      fontSize: mutedValue ? 13.2 : 14,
+      height: 1.4,
+      color: mutedValue ? AdminPalette.textMuted : AdminPalette.textPrimary,
+      fontWeight: mutedValue ? FontWeight.w500 : FontWeight.w600,
+    );
+
     return AdminSurface(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
@@ -1767,21 +1828,42 @@ class _UsersScreenState extends State<UsersScreen> {
                   ),
                 ),
                 const SizedBox(height: 4),
-                Text(
-                  value,
-                  style: TextStyle(
-                    fontSize: mutedValue ? 13.2 : 14,
-                    height: 1.4,
-                    color: mutedValue
-                        ? AdminPalette.textMuted
-                        : AdminPalette.textPrimary,
-                    fontWeight: mutedValue ? FontWeight.w500 : FontWeight.w600,
-                  ),
-                ),
+                singleLineValue
+                    ? _buildSingleLineText(value, style: valueStyle)
+                    : Text(value, style: valueStyle),
               ],
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildSingleLineText(
+    String value, {
+    required TextStyle style,
+    TextAlign textAlign = TextAlign.start,
+  }) {
+    final alignment = switch (textAlign) {
+      TextAlign.center => Alignment.center,
+      TextAlign.right => Alignment.centerRight,
+      TextAlign.end => Alignment.centerRight,
+      _ => Alignment.centerLeft,
+    };
+
+    return SizedBox(
+      width: double.infinity,
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        alignment: alignment,
+        child: Text(
+          value,
+          maxLines: 1,
+          softWrap: false,
+          overflow: TextOverflow.visible,
+          textAlign: textAlign,
+          style: style,
+        ),
       ),
     );
   }

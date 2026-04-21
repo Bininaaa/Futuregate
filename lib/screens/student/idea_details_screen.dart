@@ -17,7 +17,6 @@ import '../../widgets/app_shell_background.dart';
 import '../../widgets/ideas/project_idea_cover_image.dart';
 import '../../widgets/ideas/idea_metrics_row.dart';
 import '../../widgets/ideas/innovation_hub_theme.dart';
-import '../../widgets/profile_avatar.dart';
 import '../../widgets/shared/app_content_system.dart';
 import '../../widgets/shared/content_translation_widgets.dart';
 import '../../widgets/shared/app_feedback.dart';
@@ -84,7 +83,7 @@ class IdeaDetailsScreen extends StatelessWidget {
 
     final categoryColor = innovationCategoryColor(idea.displayCategory);
     final stageColor = innovationStageColor(idea.displayStage);
-    final statusColor = innovationStatusColor(idea.status);
+    final statusColor = innovationStatusColor(idea.moderationStatus);
     final hasAttachment = idea.attachmentUrl.trim().isNotEmpty;
 
     return AppShellBackground(
@@ -142,7 +141,7 @@ class IdeaDetailsScreen extends StatelessWidget {
                   AppPrimaryButton(
                     theme: _theme,
                     label: isOwner
-                        ? (idea.status.toLowerCase() == 'pending'
+                        ? (idea.canOwnerEdit
                               ? AppLocalizations.of(context)!.ideaEditLabel
                               : AppLocalizations.of(context)!.ideaManageLabel)
                         : (idea.isJoinedByCurrentUser
@@ -153,7 +152,9 @@ class IdeaDetailsScreen extends StatelessWidget {
                                   context,
                                 )!.ideaImInterestedLabel),
                     icon: isOwner
-                        ? Icons.edit_rounded
+                        ? (idea.canOwnerEdit
+                              ? Icons.edit_rounded
+                              : Icons.tune_rounded)
                         : idea.isJoinedByCurrentUser
                         ? Icons.check_circle_rounded
                         : Icons.people_outline_rounded,
@@ -238,6 +239,7 @@ class IdeaDetailsScreen extends StatelessWidget {
             AppDetailHeroCard(
               theme: _theme,
               icon: innovationCategoryIcon(idea.displayCategory),
+              showLeading: false,
               title: idea.title,
               subtitle: idea.tagline.trim().isNotEmpty
                   ? idea.tagline
@@ -252,14 +254,6 @@ class IdeaDetailsScreen extends StatelessWidget {
                 fit: BoxFit.cover,
                 placeholderColor: _theme.surfaceMuted,
                 iconColor: _theme.textMuted,
-              ),
-              leading: ProfileAvatar(
-                userId: idea.submittedBy,
-                photoType: idea.authorPhotoType,
-                avatarId: idea.authorAvatarId,
-                photoUrl: idea.authorAvatarUrl,
-                fallbackName: idea.creatorName,
-                radius: 24,
               ),
               badges: <AppBadgeData>[
                 AppBadgeData(
@@ -777,7 +771,7 @@ class IdeaDetailsScreen extends StatelessWidget {
   }
 
   void _openEdit(BuildContext context, ProjectIdeaModel idea) {
-    if (idea.status.toLowerCase() != 'pending') {
+    if (!idea.canOwnerEdit) {
       _showManageTeamSheet(context, idea);
       return;
     }

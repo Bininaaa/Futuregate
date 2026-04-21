@@ -138,13 +138,12 @@ class _AddPasswordScreenState extends State<AddPasswordScreen> {
               ),
             ),
             const SizedBox(height: 14),
-            Text(
-              l10n.addPasswordNote,
-              style: SettingsFlowTheme.caption(),
-            ),
+            Text(l10n.addPasswordNote, style: SettingsFlowTheme.caption()),
             const SizedBox(height: 20),
             SettingsPrimaryButton(
-              label: _loading ? l10n.addingPasswordLabel : l10n.addPasswordTitle,
+              label: _loading
+                  ? l10n.addingPasswordLabel
+                  : l10n.addPasswordTitle,
               icon: _loading ? null : Icons.check_rounded,
               onPressed: _loading ? null : _submit,
             ),
@@ -294,7 +293,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             ),
             const SizedBox(height: 22),
             SettingsPrimaryButton(
-              label: _loading ? l10n.updatingPasswordLabel : l10n.updatePasswordLabel,
+              label: _loading
+                  ? l10n.updatingPasswordLabel
+                  : l10n.updatePasswordLabel,
               icon: _loading ? null : Icons.check_rounded,
               onPressed: _loading ? null : _submit,
             ),
@@ -368,10 +369,13 @@ class _ChangeEmailScreenState extends State<ChangeEmailScreen> {
     final l10n = AppLocalizations.of(context)!;
     final authProvider = context.watch<AuthProvider>();
     if (!authProvider.canChangeEmail) {
+      final isAdmin = authProvider.userModel?.isAdmin == true;
       return _UnsupportedSecurityAction(
         title: l10n.changeEmailTitle,
         bannerTitle: l10n.emailChangesUnavailableTitle,
-        bannerMessage: authProvider.hasGoogleProvider
+        bannerMessage: isAdmin
+            ? 'Admin accounts cannot change their sign-in email from inside the app.'
+            : authProvider.hasGoogleProvider
             ? l10n.emailChangesGoogleBody
             : l10n.emailChangesPasswordOnlyBody,
       );

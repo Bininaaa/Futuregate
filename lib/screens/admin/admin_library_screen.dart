@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -75,11 +74,7 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
   }
 
   ThemeData _buildScopedTheme(BuildContext context) {
-    final theme = Theme.of(context);
-    return theme.copyWith(
-      textTheme: GoogleFonts.poppinsTextTheme(theme.textTheme),
-      primaryTextTheme: GoogleFonts.poppinsTextTheme(theme.primaryTextTheme),
-    );
+    return Theme.of(context);
   }
 
   Future<void> _syncLibraryState() async {
@@ -95,6 +90,35 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
     }
     FocusManager.instance.primaryFocus?.unfocus();
     _sourceController.animateTo(source.index);
+  }
+
+  Future<void> _openSourceWorkspace(AdminLibrarySource source) async {
+    if (!widget.embedded) {
+      _selectSource(source);
+      return;
+    }
+
+    final Widget destination;
+    switch (source) {
+      case AdminLibrarySource.overview:
+        return;
+      case AdminLibrarySource.googleBooks:
+        destination = const AdminGoogleBooksImportScreen();
+        break;
+      case AdminLibrarySource.youtube:
+        destination = const AdminYoutubeImportScreen();
+        break;
+    }
+
+    await Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => destination));
+
+    if (!mounted) {
+      return;
+    }
+
+    await _syncLibraryState();
   }
 
   bool _matchesLibrarySearch(TrainingModel training) {
@@ -260,7 +284,9 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
       training.isHidden
           ? _l10n.uiThisResourceIsVisibleAgain
           : _l10n.uiThisResourceWasHiddenYouCanRestoreItLater,
-      title: training.isHidden ? _l10n.uiResourceVisible : _l10n.uiResourceHidden,
+      title: training.isHidden
+          ? _l10n.uiResourceVisible
+          : _l10n.uiResourceHidden,
       type: AppFeedbackType.success,
     );
   }
@@ -268,7 +294,9 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
   Future<void> _showTrainingDetails(TrainingModel training) async {
     final accentColor = _resourceAccentColor(training.type);
     final providerLabel = DisplayText.capitalizeLeadingLabel(
-      training.provider.isNotEmpty ? training.provider : _l10n.uiUnknownProvider,
+      training.provider.isNotEmpty
+          ? training.provider
+          : _l10n.uiUnknownProvider,
     );
     final domainLabel = DisplayText.capitalizeLeadingLabel(training.domain);
     final levelLabel = DisplayText.capitalizeWords(training.level);
@@ -318,9 +346,15 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
                       children: [
                         _buildBadge(typeLabel, accentColor),
                         if (!training.isApproved)
-                          _buildBadge(_l10n.uiPending, AdminPalette.textSecondary),
+                          _buildBadge(
+                            _l10n.uiPending,
+                            AdminPalette.textSecondary,
+                          ),
                         if (training.isFeatured)
-                          _buildBadge(_l10n.uiFeatured, AdminPalette.textSecondary),
+                          _buildBadge(
+                            _l10n.uiFeatured,
+                            AdminPalette.textSecondary,
+                          ),
                         if (training.isHidden)
                           _buildBadge(_l10n.uiHidden, Colors.blueGrey),
                         if (sourceLabel.isNotEmpty)
@@ -484,7 +518,6 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
       color: AdminPalette.primary,
       onRefresh: _syncLibraryState,
       child: ListView(
-        primary: false,
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
         children: [
@@ -499,13 +532,17 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
                   title:
                       '${_libraryFilterTitle(_libraryFilter)} (${trainings.length})',
                   subtitle: searchQuery.isEmpty
-                      ? _l10n.uiLibraryNowHoldsAllLearningResourcesSearchFilterReviewDetailsAndJumpIntoImportStudiosWhenYouNeedToAddMore
-                      : _l10n.uiShowingFilteredResultsForSearchQuery(searchQuery),
+                      ? _l10n
+                            .uiLibraryNowHoldsAllLearningResourcesSearchFilterReviewDetailsAndJumpIntoImportStudiosWhenYouNeedToAddMore
+                      : _l10n.uiShowingFilteredResultsForSearchQuery(
+                          searchQuery,
+                        ),
                 ),
                 const SizedBox(height: 12),
                 AdminSearchField(
                   controller: _searchController,
-                  hintText: _l10n.uiSearchLibraryByTitleProviderDomainLevelOrSource,
+                  hintText:
+                      _l10n.uiSearchLibraryByTitleProviderDomainLevelOrSource,
                   onChanged: (_) => setState(() {}),
                   onClear: () {
                     _searchController.clear();
@@ -584,7 +621,7 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
                   children: [
                     FilledButton.icon(
                       onPressed: () =>
-                          _selectSource(AdminLibrarySource.googleBooks),
+                          _openSourceWorkspace(AdminLibrarySource.googleBooks),
                       icon: const Icon(Icons.menu_book_rounded, size: 18),
                       label: Text(AppLocalizations.of(context)!.uiGoogleBooks),
                       style: FilledButton.styleFrom(
@@ -594,7 +631,7 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
                     ),
                     OutlinedButton.icon(
                       onPressed: () =>
-                          _selectSource(AdminLibrarySource.youtube),
+                          _openSourceWorkspace(AdminLibrarySource.youtube),
                       icon: const Icon(Icons.ondemand_video_rounded, size: 18),
                       label: Text(AppLocalizations.of(context)!.uiYoutube),
                       style: _compactOutlinedFooterStyle(
@@ -638,7 +675,9 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
   }) {
     final accentColor = _resourceAccentColor(training.type);
     final providerLabel = DisplayText.capitalizeLeadingLabel(
-      training.provider.isNotEmpty ? training.provider : _l10n.uiUnknownProvider,
+      training.provider.isNotEmpty
+          ? training.provider
+          : _l10n.uiUnknownProvider,
     );
     final domainLabel = DisplayText.capitalizeLeadingLabel(training.domain);
     final levelLabel = DisplayText.capitalizeWords(training.level);
@@ -1005,6 +1044,11 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
     final scopedTheme = _buildScopedTheme(context);
     final l10n = AppLocalizations.of(context)!;
     final provider = context.watch<TrainingProvider>();
+
+    if (widget.embedded) {
+      return Theme(data: scopedTheme, child: _buildOverviewTab(provider));
+    }
+
     final trainings = provider.trainings;
     final featuredCount = trainings.where((item) => item.isFeatured).length;
     final bookCount = trainings
@@ -1026,8 +1070,8 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
                 AdminSectionHeader(
                   eyebrow: l10n.uiLibrary,
                   title: l10n.uiLearningResources,
-                  subtitle:
-                      l10n.uiKeepBooksAndVideoResourcesInOneAdminFriendlyLibraryThenOpenTheSourceStudiosOnlyWhenYouNeedNewImports,
+                  subtitle: l10n
+                      .uiKeepBooksAndVideoResourcesInOneAdminFriendlyLibraryThenOpenTheSourceStudiosOnlyWhenYouNeedNewImports,
                 ),
                 const SizedBox(height: 12),
                 Wrap(
@@ -1109,10 +1153,6 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
         ),
       ],
     );
-
-    if (widget.embedded) {
-      return Theme(data: scopedTheme, child: content);
-    }
 
     return Theme(
       data: scopedTheme,

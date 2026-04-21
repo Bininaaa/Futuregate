@@ -1322,7 +1322,11 @@ service cloud.firestore {
     match /projectIdeas/{ideaId} {
       allow read: if isAdmin()
           || (signedIn() && resource.data.submittedBy == request.auth.uid)
-          || (signedIn() && resource.data.status == 'approved');
+          || (
+            signedIn() &&
+            resource.data.status == 'approved' &&
+            resource.data.get('isHidden', false) != true
+          );
 
       allow create: if (isStudent() || isAdmin()) &&
           request.resource.data.keys().hasOnly([
@@ -1475,6 +1479,46 @@ service cloud.firestore {
           request.resource.data.submittedBy == resource.data.submittedBy &&
           request.resource.data.createdAt == resource.data.createdAt &&
           isAcademicLevel(request.resource.data.level)
+        ) || (
+          // Owner can revise rejected or hidden ideas and resubmit them
+          isStudent() &&
+          resource.data.submittedBy == request.auth.uid &&
+          (
+            resource.data.status == 'rejected' ||
+            resource.data.get('isHidden', false) == true
+          ) &&
+          request.resource.data.diff(resource.data).changedKeys().hasOnly([
+            'title',
+            'description',
+            'domain',
+            'level',
+            'tools',
+            'originalLanguage',
+            'tagline',
+            'shortDescription',
+            'category',
+            'tags',
+            'stage',
+            'skillsNeeded',
+            'teamNeeded',
+            'targetAudience',
+            'problemStatement',
+            'solution',
+            'resourcesNeeded',
+            'benefits',
+            'imageUrl',
+            'attachmentUrl',
+            'isPublic',
+            'isHidden',
+            'status',
+            'updatedAt'
+          ]) &&
+          request.resource.data.id == resource.data.id &&
+          request.resource.data.status == 'pending' &&
+          request.resource.data.get('isHidden', false) == false &&
+          request.resource.data.submittedBy == resource.data.submittedBy &&
+          request.resource.data.createdAt == resource.data.createdAt &&
+          isAcademicLevel(request.resource.data.level)
         );
 
       allow delete: if isAdmin() ||
@@ -1488,7 +1532,10 @@ service cloud.firestore {
             (
               exists(projectIdeaPath(resource.data.ideaId)) &&
               (
-                get(projectIdeaPath(resource.data.ideaId)).data.status == 'approved' ||
+                (
+                  get(projectIdeaPath(resource.data.ideaId)).data.status == 'approved' &&
+                  get(projectIdeaPath(resource.data.ideaId)).data.get('isHidden', false) != true
+                ) ||
                 get(projectIdeaPath(resource.data.ideaId)).data.submittedBy == request.auth.uid
               )
             )
@@ -1507,7 +1554,10 @@ service cloud.firestore {
           isProjectIdeaInteractionType(request.resource.data.type) &&
           exists(projectIdeaPath(request.resource.data.ideaId)) &&
           (
-            get(projectIdeaPath(request.resource.data.ideaId)).data.status == 'approved' ||
+            (
+              get(projectIdeaPath(request.resource.data.ideaId)).data.status == 'approved' &&
+              get(projectIdeaPath(request.resource.data.ideaId)).data.get('isHidden', false) != true
+            ) ||
             get(projectIdeaPath(request.resource.data.ideaId)).data.submittedBy == request.auth.uid
           );
 

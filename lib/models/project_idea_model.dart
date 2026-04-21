@@ -264,8 +264,30 @@ class ProjectIdeaModel {
     return 'Concept';
   }
 
-  String get statusLabel {
+  String get moderationStatus {
+    if (isHidden) {
+      return 'rejected';
+    }
+
     final normalized = status.trim().toLowerCase();
+    if (normalized == 'approved' ||
+        normalized == 'pending' ||
+        normalized == 'rejected') {
+      return normalized;
+    }
+
+    return 'pending';
+  }
+
+  bool get canOwnerEdit {
+    final normalized = moderationStatus;
+    return normalized == 'pending' || normalized == 'rejected';
+  }
+
+  bool get shouldResubmitAfterEdit => moderationStatus == 'rejected';
+
+  String get statusLabel {
+    final normalized = moderationStatus;
     if (normalized.isEmpty) {
       return 'Pending';
     }

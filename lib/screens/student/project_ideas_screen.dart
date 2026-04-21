@@ -437,15 +437,15 @@ class _ProjectIdeasScreenState extends State<ProjectIdeasScreen> {
     switch (_filter) {
       case _IdeaFilter.approved:
         return source
-            .where((i) => i.status.toLowerCase() == 'approved')
+            .where((i) => i.moderationStatus == 'approved')
             .toList(growable: false);
       case _IdeaFilter.pending:
         return source
-            .where((i) => i.status.toLowerCase() == 'pending')
+            .where((i) => i.moderationStatus == 'pending')
             .toList(growable: false);
       case _IdeaFilter.rejected:
         return source
-            .where((i) => i.status.toLowerCase() == 'rejected')
+            .where((i) => i.moderationStatus == 'rejected')
             .toList(growable: false);
       case _IdeaFilter.interested:
         return source;
@@ -466,7 +466,7 @@ class _ProjectIdeasScreenState extends State<ProjectIdeasScreen> {
   }
 
   Future<void> _openEditIdea(ProjectIdeaModel idea) async {
-    if (idea.status.toLowerCase() != 'pending') return;
+    if (!idea.canOwnerEdit) return;
 
     final result = await Navigator.push<bool>(
       context,
@@ -712,11 +712,17 @@ class _MyIdeasSection extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: _StatCard(label: AppLocalizations.of(context)!.uiIdeas, value: '${ideas.length}'),
+              child: _StatCard(
+                label: AppLocalizations.of(context)!.uiIdeas,
+                value: '${ideas.length}',
+              ),
             ),
             const SizedBox(width: 10),
             Expanded(
-              child: _StatCard(label: AppLocalizations.of(context)!.uiInterested, value: '$totalInterested'),
+              child: _StatCard(
+                label: AppLocalizations.of(context)!.uiInterested,
+                value: '$totalInterested',
+              ),
             ),
           ],
         ),
@@ -727,9 +733,7 @@ class _MyIdeasSection extends StatelessWidget {
             child: IdeaWorkspaceCard(
               idea: idea,
               onView: () => onIdeaTap(idea),
-              onEdit: idea.status.toLowerCase() == 'pending'
-                  ? () => onEditTap(idea)
-                  : null,
+              onEdit: idea.canOwnerEdit ? () => onEditTap(idea) : null,
               onManageTeam: () => onManageTeamTap(idea),
             ),
           ),

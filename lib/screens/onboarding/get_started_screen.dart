@@ -3,12 +3,12 @@ import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/auth_provider.dart';
 import '../../services/app_intro_preferences_service.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_typography.dart';
 import '../../widgets/shared/app_logo.dart';
 import '../auth/login_screen.dart';
 import '../auth/role_chooser_screen.dart';
@@ -255,7 +255,7 @@ class _GetStartedScreenState extends State<GetStartedScreen> {
                         ),
                         child: Text(
                           'Skip',
-                          style: GoogleFonts.manrope(
+                          style: AppTypography.product(
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
                             color: colors.textMuted,
@@ -497,7 +497,7 @@ class _HeroStage extends StatelessWidget {
                           Expanded(
                             child: Text(
                               'Application\nApproved',
-                              style: GoogleFonts.manrope(
+                              style: AppTypography.product(
                                 fontSize: 14.4,
                                 fontWeight: FontWeight.w800,
                                 color: const Color(0xFF102040),
@@ -551,7 +551,7 @@ class _HeroStage extends StatelessWidget {
                           children: <Widget>[
                             Text(
                               'Alex from TechCorp',
-                              style: GoogleFonts.manrope(
+                              style: AppTypography.product(
                                 fontSize: 12.5,
                                 fontWeight: FontWeight.w800,
                                 color: const Color(0xFF102040),
@@ -560,7 +560,7 @@ class _HeroStage extends StatelessWidget {
                             const SizedBox(height: 4),
                             Text(
                               '"We\'d love to chat about..."',
-                              style: GoogleFonts.manrope(
+                              style: AppTypography.product(
                                 fontSize: 10.8,
                                 fontWeight: FontWeight.w600,
                                 color: const Color(0xFF5E6A82),
@@ -591,7 +591,7 @@ class _HeroStage extends StatelessWidget {
                     child: Center(
                       child: Text(
                         'Reply Now',
-                        style: GoogleFonts.manrope(
+                        style: AppTypography.product(
                           fontSize: 13.2,
                           fontWeight: FontWeight.w800,
                           color: Colors.white,
@@ -694,7 +694,7 @@ class _HeroStage extends StatelessWidget {
                           'Profile Strength',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.manrope(
+                          style: AppTypography.product(
                             fontSize: 13.5,
                             fontWeight: FontWeight.w700,
                             color: _ink,
@@ -704,7 +704,7 @@ class _HeroStage extends StatelessWidget {
                       const SizedBox(width: 8),
                       Text(
                         '85%',
-                        style: GoogleFonts.manrope(
+                        style: AppTypography.product(
                           fontSize: 13.5,
                           fontWeight: FontWeight.w800,
                           color: _deepTeal,
@@ -754,7 +754,7 @@ class _HeroStage extends StatelessWidget {
                     Text(
                       'Resume.pdf',
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.manrope(
+                      style: AppTypography.product(
                         fontSize: 11.6,
                         fontWeight: FontWeight.w700,
                         color: _ink,
@@ -812,7 +812,7 @@ class _HeroStage extends StatelessWidget {
                             'Saved',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.manrope(
+                            style: AppTypography.product(
                               fontSize: 11.4,
                               fontWeight: FontWeight.w800,
                               color: _ink,
@@ -824,7 +824,7 @@ class _HeroStage extends StatelessWidget {
                     const SizedBox(height: 10),
                     Text(
                       '12 matches',
-                      style: GoogleFonts.manrope(
+                      style: AppTypography.product(
                         fontSize: 14,
                         fontWeight: FontWeight.w800,
                         color: _primary,
@@ -833,7 +833,7 @@ class _HeroStage extends StatelessWidget {
                     const SizedBox(height: 2),
                     Text(
                       'Ready to apply',
-                      style: GoogleFonts.manrope(
+                      style: AppTypography.product(
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
                         color: const Color(0xFF6D7891),
@@ -890,7 +890,7 @@ class _HeroStage extends StatelessWidget {
                           'UX Research Internship',
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.manrope(
+                          style: AppTypography.product(
                             fontSize: 15.2,
                             fontWeight: FontWeight.w800,
                             color: Colors.white,
@@ -900,7 +900,7 @@ class _HeroStage extends StatelessWidget {
                         const SizedBox(height: 4),
                         Text(
                           'TechNova Global Inc.',
-                          style: GoogleFonts.manrope(
+                          style: AppTypography.product(
                             fontSize: 11.8,
                             fontWeight: FontWeight.w600,
                             color: Colors.white.withValues(alpha: 0.72),
@@ -985,7 +985,7 @@ class _HeroStage extends StatelessWidget {
                           children: <Widget>[
                             Text(
                               'INTERNSHIP',
-                              style: GoogleFonts.manrope(
+                              style: AppTypography.product(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w800,
                                 letterSpacing: 0.9,
@@ -995,7 +995,7 @@ class _HeroStage extends StatelessWidget {
                             const SizedBox(height: 3),
                             Text(
                               'UX Design at Tech',
-                              style: GoogleFonts.manrope(
+                              style: AppTypography.product(
                                 fontSize: 14.5,
                                 fontWeight: FontWeight.w800,
                                 color: _ink,
@@ -1040,7 +1040,7 @@ class _HeroStage extends StatelessWidget {
                               'Global Scholarship',
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
-                              style: GoogleFonts.manrope(
+                              style: AppTypography.product(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w800,
                                 color: _ink,
@@ -1052,7 +1052,7 @@ class _HeroStage extends StatelessWidget {
                       const SizedBox(height: 8),
                       Text(
                         'Full Tuition Coverage',
-                        style: GoogleFonts.manrope(
+                        style: AppTypography.product(
                           fontSize: 12.5,
                           fontWeight: FontWeight.w600,
                           color: const Color(0xFF6D7891),
@@ -1107,7 +1107,7 @@ class _HeroStage extends StatelessWidget {
                         children: <Widget>[
                           Text(
                             'Data Science Pro',
-                            style: GoogleFonts.manrope(
+                            style: AppTypography.product(
                               fontSize: 14,
                               fontWeight: FontWeight.w800,
                               color: _ink,
@@ -1116,7 +1116,7 @@ class _HeroStage extends StatelessWidget {
                           const SizedBox(height: 4),
                           Text(
                             '70% Completed',
-                            style: GoogleFonts.manrope(
+                            style: AppTypography.product(
                               fontSize: 12.5,
                               fontWeight: FontWeight.w600,
                               color: _deepTeal,
@@ -1268,7 +1268,7 @@ class _BottomSheetStage extends StatelessWidget {
                         .map(
                           (part) => TextSpan(
                             text: part.text,
-                            style: GoogleFonts.sora(
+                            style: AppTypography.product(
                               fontSize: titleFontSize,
                               height: 1.18,
                               fontWeight: FontWeight.w700,
@@ -1285,7 +1285,7 @@ class _BottomSheetStage extends StatelessWidget {
                 Text(
                   spec.description,
                   textAlign: spec.titleAlign,
-                  style: GoogleFonts.manrope(
+                  style: AppTypography.product(
                     fontSize: descriptionFontSize,
                     height: descriptionHeight,
                     fontWeight: FontWeight.w600,
@@ -1305,7 +1305,7 @@ class _BottomSheetStage extends StatelessWidget {
                         Text(
                           helperTitle,
                           textAlign: TextAlign.center,
-                          style: GoogleFonts.manrope(
+                          style: AppTypography.product(
                             fontSize: scaled(12.4, min: 10.4),
                             fontWeight: FontWeight.w800,
                             color: colors.primary.withValues(alpha: 0.84),
@@ -1325,7 +1325,7 @@ class _BottomSheetStage extends StatelessWidget {
                           ),
                           child: Text(
                             'Sign in',
-                            style: GoogleFonts.manrope(
+                            style: AppTypography.product(
                               fontSize: scaled(12.8, min: 10.6),
                               fontWeight: FontWeight.w800,
                               color: colors.primary,
@@ -1567,7 +1567,7 @@ class _PrimaryPillButton extends StatelessWidget {
                   child: Text(
                     label,
                     maxLines: 1,
-                    style: GoogleFonts.manrope(
+                    style: AppTypography.product(
                       fontSize: scaled(15.5, min: 13.2),
                       fontWeight: FontWeight.w800,
                       color: Colors.white,
@@ -1624,7 +1624,7 @@ class _SkillChip extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: GoogleFonts.manrope(
+        style: AppTypography.product(
           fontSize: 12.8,
           fontWeight: FontWeight.w800,
           color: textColor,

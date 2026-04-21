@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-
+import '../../theme/app_typography.dart';
 import '../../utils/admin_palette.dart';
 import '../../widgets/admin/admin_ui.dart';
 import '../../widgets/shared/app_content_system.dart';
@@ -50,7 +49,7 @@ class AdminEditorScaffold extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           title,
-          style: GoogleFonts.poppins(
+          style: AppTypography.product(
             fontWeight: FontWeight.w700,
             color: AdminPalette.textPrimary,
           ),
@@ -90,7 +89,7 @@ class AdminEditorScaffold extends StatelessWidget {
                           children: [
                             Text(
                               title,
-                              style: GoogleFonts.poppins(
+                              style: AppTypography.product(
                                 fontSize: 22,
                                 fontWeight: FontWeight.w700,
                                 color: Colors.white,
@@ -99,7 +98,7 @@ class AdminEditorScaffold extends StatelessWidget {
                             const SizedBox(height: 8),
                             Text(
                               subtitle,
-                              style: GoogleFonts.poppins(
+                              style: AppTypography.product(
                                 fontSize: 13,
                                 height: 1.6,
                                 color: Colors.white.withValues(alpha: 0.90),

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../l10n/generated/app_localizations.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_typography.dart';
 import '../../widgets/shared/app_content_system.dart';
 import '../../widgets/shared/app_logo.dart';
 
@@ -353,7 +353,7 @@ class AuthHeroPanel extends StatelessWidget {
                   Expanded(
                     child: Text(
                       eyebrow.toUpperCase(),
-                      style: GoogleFonts.manrope(
+                      style: AppTypography.product(
                         fontSize: 12,
                         letterSpacing: 1.2,
                         fontWeight: FontWeight.w700,
@@ -366,7 +366,7 @@ class AuthHeroPanel extends StatelessWidget {
               const SizedBox(height: 22),
               Text(
                 title,
-                style: GoogleFonts.sora(
+                style: AppTypography.product(
                   fontSize: 30,
                   height: 1.08,
                   fontWeight: FontWeight.w700,
@@ -376,7 +376,7 @@ class AuthHeroPanel extends StatelessWidget {
               const SizedBox(height: 14),
               Text(
                 subtitle,
-                style: GoogleFonts.manrope(
+                style: AppTypography.product(
                   fontSize: 14.4,
                   height: 1.6,
                   fontWeight: FontWeight.w500,
@@ -404,7 +404,7 @@ class AuthHeroPanel extends StatelessWidget {
                           ),
                           child: Text(
                             chip,
-                            style: GoogleFonts.manrope(
+                            style: AppTypography.product(
                               fontSize: 11.5,
                               fontWeight: FontWeight.w700,
                               color: Colors.white,
@@ -437,7 +437,7 @@ class AuthHeroPanel extends StatelessWidget {
                             children: <Widget>[
                               Text(
                                 metric.value,
-                                style: GoogleFonts.sora(
+                                style: AppTypography.product(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w700,
                                   color: Colors.white,
@@ -446,7 +446,7 @@ class AuthHeroPanel extends StatelessWidget {
                               const SizedBox(height: 4),
                               Text(
                                 metric.label,
-                                style: GoogleFonts.manrope(
+                                style: AppTypography.product(
                                   fontSize: 11.5,
                                   height: 1.45,
                                   fontWeight: FontWeight.w600,
@@ -496,7 +496,7 @@ class AuthHeroPanel extends StatelessWidget {
                               children: <Widget>[
                                 Text(
                                   feature.title,
-                                  style: GoogleFonts.sora(
+                                  style: AppTypography.product(
                                     fontSize: 13.4,
                                     fontWeight: FontWeight.w600,
                                     color: Colors.white,
@@ -505,7 +505,7 @@ class AuthHeroPanel extends StatelessWidget {
                                 const SizedBox(height: 4),
                                 Text(
                                   feature.subtitle,
-                                  style: GoogleFonts.manrope(
+                                  style: AppTypography.product(
                                     fontSize: 11.8,
                                     height: 1.45,
                                     fontWeight: FontWeight.w600,
@@ -930,7 +930,7 @@ class AuthGoogleButton extends StatelessWidget {
                 child: Center(
                   child: Text(
                     'G',
-                    style: GoogleFonts.sora(
+                    style: AppTypography.product(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
                       color: const Color(0xFF4285F4),
@@ -944,7 +944,7 @@ class AuthGoogleButton extends StatelessWidget {
                   AppLocalizations.of(context)!.uiContinueWithGoogle,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.manrope(
+                  style: AppTypography.product(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
                     color: authFlowTheme.textPrimary,
@@ -974,7 +974,7 @@ class AuthDivider extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Text(
             resolvedLabel,
-            style: GoogleFonts.manrope(
+            style: AppTypography.product(
               fontSize: 11.5,
               fontWeight: FontWeight.w700,
               color: authFlowTheme.textMuted,
@@ -1063,7 +1063,7 @@ class AuthSelectionCard extends StatelessWidget {
                   children: <Widget>[
                     Text(
                       title,
-                      style: GoogleFonts.sora(
+                      style: AppTypography.product(
                         fontSize: 14.2,
                         fontWeight: FontWeight.w600,
                         color: authFlowTheme.textPrimary,

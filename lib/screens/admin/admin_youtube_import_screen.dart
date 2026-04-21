@@ -449,8 +449,8 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
             AdminSectionHeader(
               eyebrow: _l10n.uiYoutube,
               title: _l10n.uiImportVideos,
-              subtitle:
-                  _l10n.uiSearchEducationalVideosReviewTheMetadataAndPublishCuratedContent,
+              subtitle: _l10n
+                  .uiSearchEducationalVideosReviewTheMetadataAndPublishCuratedContent,
             ),
             const SizedBox(height: 14),
             TextField(
@@ -621,8 +621,8 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
         child: AdminEmptyState(
           icon: Icons.search_off_rounded,
           title: _l10n.uiNoVideosMatchThisSearch,
-          message:
-              _l10n.uiTryABroaderQueryOrSwitchTheDomainAndLevelContextBeforeSearchingAgain,
+          message: _l10n
+              .uiTryABroaderQueryOrSwitchTheDomainAndLevelContextBeforeSearchingAgain,
         ),
       );
     }
@@ -678,7 +678,6 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
     return RefreshIndicator(
       onRefresh: provider.fetchTrainings,
       child: ListView(
-        primary: false,
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
         children: [
@@ -689,8 +688,8 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
                 AdminSectionHeader(
                   eyebrow: _l10n.uiLibrary,
                   title: _l10n.uiManageImportedVideos,
-                  subtitle:
-                      _l10n.uiThisWorkspaceIsDedicatedToYouTubeImportsSoVideoCurationStaysFocused,
+                  subtitle: _l10n
+                      .uiThisWorkspaceIsDedicatedToYouTubeImportsSoVideoCurationStaysFocused,
                 ),
                 const SizedBox(height: 14),
                 Wrap(
@@ -709,7 +708,9 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
                       icon: Icons.star_rounded,
                     ),
                     AdminPill(
-                      label: provider.isLoading ? _l10n.uiSyncing : _l10n.uiSynced,
+                      label: provider.isLoading
+                          ? _l10n.uiSyncing
+                          : _l10n.uiSynced,
                       color: provider.isLoading
                           ? AdminPalette.warning
                           : AdminPalette.success,
@@ -729,7 +730,8 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
               child: AdminEmptyState(
                 icon: Icons.ondemand_video_rounded,
                 title: _l10n.uiNoVideosImportedYet,
-                message: _l10n.uiImportAFewYoutubeResultsFirstThenManageFeaturingOpening,
+                message: _l10n
+                    .uiImportAFewYoutubeResultsFirstThenManageFeaturingOpening,
               ),
             )
           else
@@ -795,7 +797,10 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
                   spacing: 8,
                   runSpacing: 8,
                   children: [
-                    AdminPill(label: _l10n.uiVideoLabel, color: AdminPalette.danger),
+                    AdminPill(
+                      label: _l10n.uiVideoLabel,
+                      color: AdminPalette.danger,
+                    ),
                     AdminPill(
                       label: _l10n.uiYoutube,
                       color: AdminPalette.textPrimary,
@@ -905,7 +910,9 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
                             : Icons.star_rounded,
                       ),
                       label: Text(
-                        training.isFeatured ? _l10n.uiUnfeature : _l10n.uiFeature,
+                        training.isFeatured
+                            ? _l10n.uiUnfeature
+                            : _l10n.uiFeature,
                       ),
                     ),
                     OutlinedButton.icon(
@@ -957,7 +964,6 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
     final tabBarView = TabBarView(
       children: [
         CustomScrollView(
-          primary: false,
           physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
             SliverToBoxAdapter(
@@ -970,8 +976,8 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
                       AdminSectionHeader(
                         eyebrow: l10n.uiStudio,
                         title: l10n.uiVideoImportWorkspace,
-                        subtitle:
-                            l10n.uiSearchAndCurateYoutubeLessonsInOneContinuousFlowInstead,
+                        subtitle: l10n
+                            .uiSearchAndCurateYoutubeLessonsInOneContinuousFlowInstead,
                       ),
                       const SizedBox(height: 14),
                       Wrap(

@@ -7625,7 +7625,7 @@ abstract class AppLocalizations {
   /// No description provided for @uiWelcomeBack.
   ///
   /// In en, this message translates to:
-  /// **'Welcome back'**
+  /// **'Welcome to FutureGate'**
   String get uiWelcomeBack;
 
   /// No description provided for @uiWhenEnabledTheIdeaReadsLikeAPublicCommunityOpportunity.

@@ -183,7 +183,7 @@ class IdeaCard extends StatelessWidget {
                 const SizedBox(height: 6),
                 _MiniBadge(
                   label: idea.statusLabel,
-                  color: innovationStatusColor(idea.status),
+                  color: innovationStatusColor(idea.moderationStatus),
                 ),
               ],
               const SizedBox(height: 8),
@@ -299,7 +299,7 @@ class IdeaListCard extends StatelessWidget {
                           const SizedBox(width: 6),
                           _MiniBadge(
                             label: idea.statusLabel,
-                            color: innovationStatusColor(idea.status),
+                            color: innovationStatusColor(idea.moderationStatus),
                           ),
                         ],
                         const Spacer(),
@@ -406,7 +406,7 @@ class IdeaWorkspaceCard extends StatelessWidget {
               ),
               _MiniBadge(
                 label: idea.statusLabel,
-                color: innovationStatusColor(idea.status),
+                color: innovationStatusColor(idea.moderationStatus),
               ),
             ],
           ),

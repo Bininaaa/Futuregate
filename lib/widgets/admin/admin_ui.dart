@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-
 import '../../theme/app_colors.dart';
+import '../../theme/app_typography.dart';
 import '../../utils/admin_palette.dart';
 import '../../utils/display_text.dart';
 import '../shared/app_feedback.dart';
@@ -114,7 +113,7 @@ class AdminSectionHeader extends StatelessWidget {
               if ((eyebrow ?? '').trim().isNotEmpty)
                 Text(
                   eyebrow!,
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: 11,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.9,
@@ -123,7 +122,7 @@ class AdminSectionHeader extends StatelessWidget {
                 ),
               Text(
                 title,
-                style: GoogleFonts.poppins(
+                style: AppTypography.product(
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
                   color: AdminPalette.textPrimary,
@@ -133,7 +132,7 @@ class AdminSectionHeader extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   subtitle!,
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: 12.5,
                     fontWeight: FontWeight.w500,
                     color: AdminPalette.textMuted,
@@ -196,7 +195,7 @@ class AdminHeroCard extends StatelessWidget {
                       children: [
                         Text(
                           title,
-                          style: GoogleFonts.poppins(
+                          style: AppTypography.product(
                             fontSize: isCompact ? 19 : 22,
                             fontWeight: FontWeight.w700,
                             color: Colors.white,
@@ -206,7 +205,7 @@ class AdminHeroCard extends StatelessWidget {
                         const SizedBox(height: 8),
                         Text(
                           subtitle,
-                          style: GoogleFonts.poppins(
+                          style: AppTypography.product(
                             fontSize: isCompact ? 11.8 : 12.4,
                             fontWeight: FontWeight.w500,
                             color: Colors.white.withValues(alpha: 0.86),
@@ -313,7 +312,7 @@ class AdminActionChip extends StatelessWidget {
             const SizedBox(width: 6),
             Text(
               label,
-              style: GoogleFonts.poppins(
+              style: AppTypography.product(
                 fontSize: 11.5,
                 fontWeight: FontWeight.w600,
                 color: foreground,
@@ -358,14 +357,14 @@ class AdminSearchField extends StatelessWidget {
       child: TextField(
         controller: controller,
         onChanged: onChanged,
-        style: GoogleFonts.poppins(
+        style: AppTypography.product(
           fontSize: 13,
           fontWeight: FontWeight.w500,
           color: AdminPalette.textPrimary,
         ),
         decoration: InputDecoration(
           hintText: hintText,
-          hintStyle: GoogleFonts.poppins(
+          hintStyle: AppTypography.product(
             fontSize: 12.5,
             fontWeight: FontWeight.w500,
             color: AdminPalette.textMuted,
@@ -452,7 +451,7 @@ class AdminFilterChip extends StatelessWidget {
               ],
               Text(
                 label,
-                style: GoogleFonts.poppins(
+                style: AppTypography.product(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
                   color: foreground,
@@ -473,7 +472,7 @@ class AdminFilterChip extends StatelessWidget {
                   ),
                   child: Text(
                     '${badgeCount!}',
-                    style: GoogleFonts.poppins(
+                    style: AppTypography.product(
                       fontSize: 10.5,
                       fontWeight: FontWeight.w700,
                       color: selected ? Colors.white : AdminPalette.primary,
@@ -520,7 +519,7 @@ class AdminPill extends StatelessWidget {
           ],
           Text(
             displayLabel,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 11,
               fontWeight: FontWeight.w700,
               color: color,
@@ -602,7 +601,7 @@ class AdminIconActionButton extends StatelessWidget {
                       ),
                       child: Text(
                         badgeCount > 9 ? '9+' : '$badgeCount',
-                        style: GoogleFonts.poppins(
+                        style: AppTypography.product(
                           fontSize: 9.5,
                           fontWeight: FontWeight.w700,
                           color: Colors.white,
@@ -698,7 +697,7 @@ class _HeroStatChip extends StatelessWidget {
         children: [
           Text(
             value,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 16.5,
               fontWeight: FontWeight.w700,
               color: color,
@@ -707,7 +706,7 @@ class _HeroStatChip extends StatelessWidget {
           const SizedBox(height: 3),
           Text(
             label,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 10.5,
               fontWeight: FontWeight.w500,
               color: Colors.white.withValues(alpha: 0.84),
