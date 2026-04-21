@@ -539,6 +539,8 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
                         ),
                 ),
                 const SizedBox(height: 12),
+                _buildSourceWorkspaceButtons(),
+                const SizedBox(height: 12),
                 AdminSearchField(
                   controller: _searchController,
                   hintText:
@@ -557,6 +559,7 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
                     icon: Icons.grid_view_rounded,
                     badgeCount: allTrainings.length,
                     onTap: () => setState(() => _libraryFilter = _filterAll),
+                    compact: true,
                   ),
                   AdminFilterChip(
                     label: _l10n.uiFeatured,
@@ -570,6 +573,7 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
                         allValue: _filterAll,
                       );
                     }),
+                    compact: true,
                   ),
                   AdminFilterChip(
                     label: _l10n.uiHidden,
@@ -583,6 +587,7 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
                         allValue: _filterAll,
                       );
                     }),
+                    compact: true,
                   ),
                 ]),
                 const SizedBox(height: 8),
@@ -599,6 +604,7 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
                         allValue: _filterAll,
                       );
                     }),
+                    compact: true,
                   ),
                   AdminFilterChip(
                     label: _l10n.uiVideos,
@@ -612,34 +618,9 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
                         allValue: _filterAll,
                       );
                     }),
+                    compact: true,
                   ),
                 ]),
-                const SizedBox(height: 12),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
-                    FilledButton.icon(
-                      onPressed: () =>
-                          _openSourceWorkspace(AdminLibrarySource.googleBooks),
-                      icon: const Icon(Icons.menu_book_rounded, size: 18),
-                      label: Text(AppLocalizations.of(context)!.uiGoogleBooks),
-                      style: FilledButton.styleFrom(
-                        backgroundColor: AdminPalette.primary,
-                        foregroundColor: Colors.white,
-                      ),
-                    ),
-                    OutlinedButton.icon(
-                      onPressed: () =>
-                          _openSourceWorkspace(AdminLibrarySource.youtube),
-                      icon: const Icon(Icons.ondemand_video_rounded, size: 18),
-                      label: Text(AppLocalizations.of(context)!.uiYoutube),
-                      style: _compactOutlinedFooterStyle(
-                        AdminPalette.textSecondary,
-                      ),
-                    ),
-                  ],
-                ),
               ],
             ),
           ),
@@ -846,16 +827,56 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
       return const SizedBox.shrink();
     }
 
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: [
-          for (var index = 0; index < chips.length; index++) ...[
-            chips[index],
-            if (index < chips.length - 1) const SizedBox(width: 8),
-          ],
-        ],
+    return Wrap(spacing: 8, runSpacing: 8, children: chips);
+  }
+
+  Widget _buildSourceWorkspaceButtons() {
+    final googleBooksButton = FilledButton.icon(
+      onPressed: () => _openSourceWorkspace(AdminLibrarySource.googleBooks),
+      icon: const Icon(Icons.menu_book_rounded, size: 18),
+      label: Text(_l10n.uiGoogleBooks),
+      style: FilledButton.styleFrom(
+        backgroundColor: AdminPalette.primary,
+        foregroundColor: Colors.white,
+        minimumSize: const Size.fromHeight(48),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       ),
+    );
+    final youtubeButton = OutlinedButton.icon(
+      onPressed: () => _openSourceWorkspace(AdminLibrarySource.youtube),
+      icon: const Icon(Icons.ondemand_video_rounded, size: 18),
+      label: Text(_l10n.uiYoutube),
+      style: OutlinedButton.styleFrom(
+        foregroundColor: AdminPalette.textSecondary,
+        side: BorderSide(
+          color: AdminPalette.textSecondary.withValues(alpha: 0.24),
+        ),
+        minimumSize: const Size.fromHeight(48),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      ),
+    );
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth < 360) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              googleBooksButton,
+              const SizedBox(height: 8),
+              youtubeButton,
+            ],
+          );
+        }
+
+        return Row(
+          children: [
+            Expanded(child: googleBooksButton),
+            const SizedBox(width: 8),
+            Expanded(child: youtubeButton),
+          ],
+        );
+      },
     );
   }
 

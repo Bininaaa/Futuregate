@@ -474,123 +474,92 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                     _buildPendingIdeasWarning(totalPendingIdeasCount),
                     const SizedBox(height: 12),
                   ],
-                  AdminSurface(
-                    radius: 22,
-                    padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        AdminSectionHeader(
-                          eyebrow: 'Ideas',
-                          title:
-                              '${_ideaFilterTitle(_ideaStatusFilter)} (${ideas.length})',
-                          subtitle: searchQuery.isEmpty
-                              ? 'Review submitted ideas, keep the pending queue moving, and open details when you need the full picture.'
-                              : 'Showing filtered results for "$searchQuery".',
+                  _buildCollectionWorkspaceHeader(
+                    title:
+                        '${_ideaFilterTitle(_ideaStatusFilter)} (${ideas.length})',
+                    subtitle: searchQuery.isEmpty
+                        ? 'Review submitted ideas, keep the pending queue moving, and open details when you need the full picture.'
+                        : 'Showing filtered results for "$searchQuery".',
+                    primaryFilters: [
+                      _CollectionHeaderFilter(
+                        label: 'All Ideas',
+                        selected: _ideaStatusFilter == _ideaFilterAll,
+                        icon: Icons.grid_view_rounded,
+                        badgeCount: allIdeas.length,
+                        onTap: () =>
+                            setState(() => _ideaStatusFilter = _ideaFilterAll),
+                      ),
+                      _CollectionHeaderFilter(
+                        label: 'Pending',
+                        selected: _ideaStatusFilter == _ideaFilterPending,
+                        icon: Icons.hourglass_top_rounded,
+                        badgeCount: pendingIdeasCount,
+                        onTap: () => setState(() {
+                          _ideaStatusFilter = _toggleFilterValue(
+                            _ideaStatusFilter,
+                            _ideaFilterPending,
+                            allValue: _ideaFilterAll,
+                          );
+                        }),
+                      ),
+                      _CollectionHeaderFilter(
+                        label: 'Approved',
+                        selected: _ideaStatusFilter == _ideaFilterApproved,
+                        icon: Icons.check_circle_outline_rounded,
+                        badgeCount: approvedIdeasCount,
+                        onTap: () => setState(() {
+                          _ideaStatusFilter = _toggleFilterValue(
+                            _ideaStatusFilter,
+                            _ideaFilterApproved,
+                            allValue: _ideaFilterAll,
+                          );
+                        }),
+                      ),
+                      _CollectionHeaderFilter(
+                        label: 'Rejected',
+                        selected: _ideaStatusFilter == _ideaFilterRejected,
+                        icon: Icons.cancel_outlined,
+                        badgeCount: rejectedIdeasCount,
+                        onTap: () => setState(() {
+                          _ideaStatusFilter = _toggleFilterValue(
+                            _ideaStatusFilter,
+                            _ideaFilterRejected,
+                            allValue: _ideaFilterAll,
+                          );
+                        }),
+                      ),
+                    ],
+                    secondaryFilters: [
+                      _CollectionHeaderFilter(
+                        label: 'Hidden',
+                        selected: _ideaStatusFilter == _ideaFilterHidden,
+                        icon: Icons.visibility_off_outlined,
+                        badgeCount: hiddenIdeasCount,
+                        onTap: () => setState(() {
+                          _ideaStatusFilter = _toggleFilterValue(
+                            _ideaStatusFilter,
+                            _ideaFilterHidden,
+                            allValue: _ideaFilterAll,
+                          );
+                        }),
+                      ),
+                    ],
+                    action: FilledButton.icon(
+                      onPressed: () => _openIdeaEditor(),
+                      icon: const Icon(Icons.add_rounded, size: 18),
+                      label: Text(
+                        AppLocalizations.of(context)!.uiPostAdminIdea,
+                      ),
+                      style: FilledButton.styleFrom(
+                        backgroundColor: _ideaAccentColor,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 12,
                         ),
-                        const SizedBox(height: 12),
-                        _buildFilterChipRow([
-                          AdminFilterChip(
-                            label: 'All Ideas',
-                            selected: _ideaStatusFilter == _ideaFilterAll,
-                            icon: Icons.grid_view_rounded,
-                            badgeCount: allIdeas.length,
-                            onTap: () => setState(() {
-                              _ideaStatusFilter = _ideaFilterAll;
-                            }),
-                          ),
-                          AdminFilterChip(
-                            label: 'Pending',
-                            selected: _ideaStatusFilter == _ideaFilterPending,
-                            icon: Icons.hourglass_top_rounded,
-                            badgeCount: pendingIdeasCount,
-                            onTap: () => setState(() {
-                              _ideaStatusFilter = _toggleFilterValue(
-                                _ideaStatusFilter,
-                                _ideaFilterPending,
-                                allValue: _ideaFilterAll,
-                              );
-                            }),
-                          ),
-                        ]),
-                        if (_ideaStatusFilter != _ideaFilterPending) ...[
-                          const SizedBox(height: 8),
-                          _buildFilterChipRow([
-                            AdminFilterChip(
-                              label: 'Approved',
-                              selected:
-                                  _ideaStatusFilter == _ideaFilterApproved,
-                              icon: Icons.check_circle_outline_rounded,
-                              badgeCount: approvedIdeasCount,
-                              onTap: () => setState(() {
-                                _ideaStatusFilter = _toggleFilterValue(
-                                  _ideaStatusFilter,
-                                  _ideaFilterApproved,
-                                  allValue: _ideaFilterAll,
-                                );
-                              }),
-                            ),
-                            AdminFilterChip(
-                              label: 'Rejected',
-                              selected:
-                                  _ideaStatusFilter == _ideaFilterRejected,
-                              icon: Icons.cancel_outlined,
-                              badgeCount: rejectedIdeasCount,
-                              onTap: () => setState(() {
-                                _ideaStatusFilter = _toggleFilterValue(
-                                  _ideaStatusFilter,
-                                  _ideaFilterRejected,
-                                  allValue: _ideaFilterAll,
-                                );
-                              }),
-                            ),
-                          ]),
-                          const SizedBox(height: 8),
-                          _buildFilterChipRow([
-                            AdminFilterChip(
-                              label: 'Hidden',
-                              selected: _ideaStatusFilter == _ideaFilterHidden,
-                              icon: Icons.visibility_off_outlined,
-                              badgeCount: hiddenIdeasCount,
-                              onTap: () => setState(() {
-                                _ideaStatusFilter = _toggleFilterValue(
-                                  _ideaStatusFilter,
-                                  _ideaFilterHidden,
-                                  allValue: _ideaFilterAll,
-                                );
-                              }),
-                            ),
-                          ]),
-                        ],
-                        const SizedBox(height: 12),
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: FilledButton.icon(
-                            onPressed: () => _openIdeaEditor(),
-                            icon: const Icon(Icons.add_rounded, size: 18),
-                            label: Text(
-                              AppLocalizations.of(context)!.uiPostAdminIdea,
-                            ),
-                            style: FilledButton.styleFrom(
-                              backgroundColor: _ideaAccentColor,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 14,
-                                vertical: 12,
-                              ),
-                            ),
-                          ),
-                        ),
-                        if (searchQuery.isNotEmpty) ...[
-                          const SizedBox(height: 12),
-                          AdminPill(
-                            label: 'Search: $searchQuery',
-                            color: AdminPalette.textSecondary,
-                            icon: Icons.search_rounded,
-                          ),
-                        ],
-                      ],
+                      ),
                     ),
+                    searchQuery: searchQuery,
                   ),
                 ],
               ),
@@ -612,7 +581,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
           final isIdeaVisibilityBusy = provider.busyContentKeys.contains(
             'idea:${idea.id}',
           );
-          final canEditIdea = adminId.isNotEmpty && idea.submittedBy == adminId;
+          final canEditIdea = _canAdminEditIdea(idea, adminId);
           final submitterLabel = idea.submittedByName.trim().isNotEmpty
               ? idea.submittedByName
               : idea.submittedBy;
@@ -620,6 +589,13 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
           final isPending =
               _normalizedIdeaStatus(idea.status) == _ideaFilterPending;
           final ideaFooterButtons = <Widget>[
+            if (canEditIdea)
+              FilledButton.icon(
+                onPressed: () => _openIdeaEditor(idea: idea),
+                icon: const Icon(Icons.edit_outlined, size: 16),
+                label: const Text('Edit'),
+                style: _compactFilledFooterStyle(_ideaAccentColor),
+              ),
             OutlinedButton.icon(
               onPressed: () => _showProjectIdeaDetails(idea),
               icon: const Icon(Icons.open_in_new_rounded, size: 16),
@@ -1122,7 +1098,6 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             return Padding(
               padding: const EdgeInsets.only(bottom: 16),
               child: _buildCollectionWorkspaceHeader(
-                eyebrow: 'Opportunities',
                 title:
                     '${_opportunityWorkspaceTitle(_opportunityFilter, _opportunityTypeFilter, l10n)} (${opportunities.length})',
                 subtitle: searchQuery.isEmpty
@@ -1300,9 +1275,6 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
           final isOpportunityVisibilityBusy = provider.busyContentKeys.contains(
             'opportunity:$opportunityId',
           );
-          final isOwnedByAdmin =
-              adminId.isNotEmpty &&
-              (opportunity['companyId'] ?? '').toString().trim() == adminId;
           final applications = _applicationsForOpportunity(
             provider,
             opportunityId,
@@ -1315,6 +1287,10 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               )
               .length;
           final opportunityModel = OpportunityModel.fromMap(opportunity);
+          final canEditOpportunity = _canAdminEditOpportunity(
+            opportunityModel,
+            adminId,
+          );
           final effectiveStatus = opportunityModel.effectiveStatus();
           final opportunityType = OpportunityType.parse(
             (opportunity['type'] ?? '').toString(),
@@ -1337,6 +1313,13 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               OpportunityMetadata.formatWorkMode(opportunityModel.workMode) ??
               '';
           final footerButtons = <Widget>[
+            if (canEditOpportunity)
+              FilledButton.icon(
+                onPressed: () => _openOpportunityEditor(opportunity: opportunity),
+                icon: const Icon(Icons.edit_outlined, size: 16),
+                label: const Text('Edit'),
+                style: _compactFilledFooterStyle(AdminPalette.primary),
+              ),
             OutlinedButton.icon(
               onPressed: () => _showOpportunityDetails(opportunity),
               icon: const Icon(Icons.open_in_new_rounded, size: 16),
@@ -1403,7 +1386,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               isOpen: isOpen,
               typeLabel: OpportunityType.label(opportunityType, l10n),
               typeColor: opportunityTypeColor,
-              isOwnedByAdmin: isOwnedByAdmin,
+              isOwnedByAdmin: canEditOpportunity,
               workModeLabel: workModeLabel,
               deadlineLabel: deadlineLabel,
               compensationLabel: compensationLabel,
@@ -1420,7 +1403,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             ]),
             footer: _buildResponsiveActionGroup(footerButtons),
             trailing: _buildCardActionRow([
-              if (isOwnedByAdmin)
+              if (canEditOpportunity)
                 _buildCompactCardAction(
                   icon: Icons.edit_outlined,
                   color: AdminPalette.primary,
@@ -1547,7 +1530,6 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             return Padding(
               padding: const EdgeInsets.only(bottom: 16),
               child: _buildCollectionWorkspaceHeader(
-                eyebrow: 'Scholarships',
                 title:
                     '${_scholarshipFilterTitle(_scholarshipFilter)} (${scholarships.length})',
                 subtitle: searchQuery.isEmpty
@@ -2074,14 +2056,14 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       _BadgeData(typeLabel, typeColor),
     ];
 
-    final supportingLabel = workModeLabel.trim().isNotEmpty
+    final supportingLabel = isOwnedByAdmin
+        ? 'Your Post'
+        : workModeLabel.trim().isNotEmpty
         ? workModeLabel
         : (deadlineLabel?.trim().isNotEmpty ?? false)
         ? deadlineLabel!.trim()
         : (compensationLabel?.trim().isNotEmpty ?? false)
         ? compensationLabel!.trim()
-        : isOwnedByAdmin
-        ? 'Admin'
         : '';
 
     if (supportingLabel.isNotEmpty) {
@@ -2232,6 +2214,28 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             AdminScholarshipEditorScreen(initialScholarship: scholarship),
       ),
     );
+  }
+
+  bool _canAdminEditIdea(ProjectIdeaModel idea, String adminId) {
+    final normalizedAdminId = adminId.trim();
+    if (normalizedAdminId.isEmpty) {
+      return false;
+    }
+
+    return idea.submittedBy.trim() == normalizedAdminId;
+  }
+
+  bool _canAdminEditOpportunity(
+    OpportunityModel opportunity,
+    String adminId,
+  ) {
+    final normalizedAdminId = adminId.trim();
+    if (normalizedAdminId.isEmpty) {
+      return false;
+    }
+
+    return opportunity.isAdminPosted &&
+        opportunity.companyId.trim() == normalizedAdminId;
   }
 
   Widget _buildCardActionRow(List<Widget> actions) {
@@ -2537,7 +2541,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
   }
 
   Widget _buildCollectionWorkspaceHeader({
-    required String eyebrow,
+    String? eyebrow,
     required String title,
     required String subtitle,
     required List<_CollectionHeaderFilter> primaryFilters,
@@ -2568,6 +2572,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                       icon: filter.icon,
                       badgeCount: filter.badgeCount,
                       onTap: filter.onTap,
+                      compact: true,
                     ),
                   )
                   .toList(),
@@ -2584,6 +2589,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                       icon: filter.icon,
                       badgeCount: filter.badgeCount,
                       onTap: filter.onTap,
+                      compact: true,
                     ),
                   )
                   .toList(),
@@ -2600,6 +2606,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                       icon: filter.icon,
                       badgeCount: filter.badgeCount,
                       onTap: filter.onTap,
+                      compact: true,
                     ),
                   )
                   .toList(),
@@ -2627,17 +2634,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       return const SizedBox.shrink();
     }
 
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: [
-          for (var index = 0; index < chips.length; index++) ...[
-            chips[index],
-            if (index < chips.length - 1) const SizedBox(width: 8),
-          ],
-        ],
-      ),
-    );
+    return Wrap(spacing: 8, runSpacing: 8, children: chips);
   }
 
   String _joinCardSubtitleParts(Iterable<String?> parts) {
@@ -2784,9 +2781,10 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
         .map(_formatIdeaBadgeValue)
         .where((value) => value.trim().isNotEmpty)
         .toList(growable: false);
-    final canEditIdea =
-        (context.read<AuthProvider>().userModel?.uid.trim() ?? '') ==
-        idea.submittedBy;
+    final canEditIdea = _canAdminEditIdea(
+      idea,
+      context.read<AuthProvider>().userModel?.uid.trim() ?? '',
+    );
 
     showModalBottomSheet(
       context: context,
@@ -4090,6 +4088,11 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     final opportunityId = (opportunity['id'] ?? '').toString();
     final applications = _applicationsForOpportunity(provider, opportunityId);
     final opportunityModel = OpportunityModel.fromMap(opportunity);
+    final adminId = context.read<AuthProvider>().userModel?.uid.trim() ?? '';
+    final canEditOpportunity = _canAdminEditOpportunity(
+      opportunityModel,
+      adminId,
+    );
     final opportunityType = OpportunityType.parse(
       (opportunity['type'] ?? '').toString(),
     );
@@ -4329,6 +4332,22 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 ),
                 style: FilledButton.styleFrom(
                   backgroundColor: typeColor,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                ),
+              ),
+            ],
+            if (canEditOpportunity) ...[
+              const SizedBox(height: 10),
+              FilledButton.icon(
+                onPressed: () {
+                  Navigator.pop(context);
+                  _openOpportunityEditor(opportunity: opportunity);
+                },
+                icon: const Icon(Icons.edit_outlined),
+                label: const Text('Edit Opportunity'),
+                style: FilledButton.styleFrom(
+                  backgroundColor: AdminPalette.primary,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 15),
                 ),

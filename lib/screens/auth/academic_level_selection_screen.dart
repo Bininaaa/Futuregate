@@ -71,6 +71,7 @@ class _AcademicLevelSelectionScreenState
         : authAcademicLevelLabel(_selectedLevel!, l10n);
 
     return AuthFlowScaffold(
+      showBrandBadge: false,
       trailing: IconButton(
         tooltip: l10n.uiSignOutTooltip,
         onPressed: authProvider.isLoading

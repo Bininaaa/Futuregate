@@ -618,6 +618,8 @@ class _AppEditableListFieldState extends State<AppEditableListField> {
       validator: (value) => widget.validator?.call(value ?? widget.values),
       builder: (field) {
         _fieldState = field;
+        final showLabel = widget.label.trim().isNotEmpty;
+        final showEmptyText = widget.emptyText.trim().isNotEmpty;
 
         void removeItem(String item) {
           final current = field.value ?? widget.values;
@@ -644,35 +646,37 @@ class _AppEditableListFieldState extends State<AppEditableListField> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text(widget.label, style: widget.theme.label(size: 12)),
-            const SizedBox(height: AppContentSpacing.xs),
+            if (showLabel)
+              Text(widget.label, style: widget.theme.label(size: 12)),
+            if (showLabel) const SizedBox(height: AppContentSpacing.xs),
             if (widget.values.isEmpty)
-              Text(
-                widget.emptyText,
-                style: widget.theme.body(
-                  size: 11.8,
-                  color: widget.theme.textMuted,
+              if (showEmptyText)
+                Text(
+                  widget.emptyText,
+                  style: widget.theme.body(
+                    size: 11.8,
+                    color: widget.theme.textMuted,
+                  ),
+                )
+              else
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    return Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: widget.values
+                          .map(
+                            (item) => _AppEditableListChip(
+                              theme: widget.theme,
+                              label: item,
+                              maxWidth: constraints.maxWidth,
+                              onRemove: () => removeItem(item),
+                            ),
+                          )
+                          .toList(growable: false),
+                    );
+                  },
                 ),
-              )
-            else
-              LayoutBuilder(
-                builder: (context, constraints) {
-                  return Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: widget.values
-                        .map(
-                          (item) => _AppEditableListChip(
-                            theme: widget.theme,
-                            label: item,
-                            maxWidth: constraints.maxWidth,
-                            onRemove: () => removeItem(item),
-                          ),
-                        )
-                        .toList(growable: false),
-                  );
-                },
-              ),
             const SizedBox(height: AppContentSpacing.sm),
             TextFormField(
               controller: _controller._textController,

@@ -126,6 +126,7 @@ class _StudentOnboardingInfoScreenState
     final email = (user?.email ?? '').trim();
 
     return AuthFlowScaffold(
+      showBrandBadge: false,
       trailing: IconButton(
         tooltip: l10n.uiSignOutTooltip,
         onPressed: authProvider.isLoading

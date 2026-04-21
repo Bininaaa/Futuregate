@@ -393,6 +393,7 @@ class AdminFilterChip extends StatelessWidget {
   final IconData? icon;
   final int? badgeCount;
   final bool enabled;
+  final bool compact;
 
   const AdminFilterChip({
     super.key,
@@ -402,10 +403,21 @@ class AdminFilterChip extends StatelessWidget {
     this.icon,
     this.badgeCount,
     this.enabled = true,
+    this.compact = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    final horizontalPadding = compact ? 12.0 : 14.0;
+    final verticalPadding = compact ? 8.0 : 10.0;
+    final iconSize = compact ? 14.0 : 15.0;
+    final iconSpacing = compact ? 6.0 : 7.0;
+    final labelFontSize = compact ? 11.4 : 12.0;
+    final badgeSpacing = compact ? 6.0 : 8.0;
+    final badgeHorizontalPadding = compact ? 5.0 : 6.0;
+    final badgeVerticalPadding = compact ? 1.5 : 2.0;
+    final badgeFontSize = compact ? 10.0 : 10.5;
+    final minHeight = compact ? 34.0 : 40.0;
     final background = !enabled
         ? selected
               ? AdminPalette.primarySoft
@@ -436,7 +448,11 @@ class AdminFilterChip extends StatelessWidget {
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 180),
           curve: Curves.easeOutCubic,
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          constraints: BoxConstraints(minHeight: minHeight),
+          padding: EdgeInsets.symmetric(
+            horizontal: horizontalPadding,
+            vertical: verticalPadding,
+          ),
           decoration: BoxDecoration(
             color: background,
             borderRadius: BorderRadius.circular(999),
@@ -446,23 +462,23 @@ class AdminFilterChip extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               if (icon != null) ...[
-                Icon(icon, size: 15, color: foreground),
-                const SizedBox(width: 7),
+                Icon(icon, size: iconSize, color: foreground),
+                SizedBox(width: iconSpacing),
               ],
               Text(
                 label,
                 style: AppTypography.product(
-                  fontSize: 12,
+                  fontSize: labelFontSize,
                   fontWeight: FontWeight.w600,
                   color: foreground,
                 ),
               ),
               if ((badgeCount ?? 0) > 0) ...[
-                const SizedBox(width: 8),
+                SizedBox(width: badgeSpacing),
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6,
-                    vertical: 2,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: badgeHorizontalPadding,
+                    vertical: badgeVerticalPadding,
                   ),
                   decoration: BoxDecoration(
                     color: selected
@@ -473,7 +489,7 @@ class AdminFilterChip extends StatelessWidget {
                   child: Text(
                     '${badgeCount!}',
                     style: AppTypography.product(
-                      fontSize: 10.5,
+                      fontSize: badgeFontSize,
                       fontWeight: FontWeight.w700,
                       color: selected ? Colors.white : AdminPalette.primary,
                     ),

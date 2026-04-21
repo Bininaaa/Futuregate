@@ -358,7 +358,7 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                           subtitle: _requirementsSectionSubtitle(),
                           child: AppEditableListField(
                             theme: _theme,
-                            label: 'Checklist',
+                            label: '',
                             hint: _isSponsoring
                                 ? 'Type one eligibility rule, then press Enter'
                                 : 'Type one requirement, then press Enter',
@@ -368,9 +368,7 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                             listController: _requirementsListController,
                             validator: _validateRequirementItems,
                             splitOnCommas: false,
-                            emptyText: _isSponsoring
-                                ? 'Add eligibility rules, documents, or selection criteria.'
-                                : 'Add the skills, background, or tools students need.',
+                            emptyText: '',
                           ),
                         ),
                         const SizedBox(height: 12),

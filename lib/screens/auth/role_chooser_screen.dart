@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../../l10n/generated/app_localizations.dart';
 import '../../widgets/shared/app_content_system.dart';
-import '../../widgets/shared/app_logo.dart';
 import 'auth_flow_widgets.dart';
 import 'company_register_screen.dart';
 import 'login_screen.dart';
@@ -37,6 +36,7 @@ class RoleChooserScreen extends StatelessWidget {
       },
       child: AuthFlowScaffold(
         showBackButton: true,
+        showBrandBadge: false,
         onBack: () => _handleBack(context),
         child: Center(
           child: ConstrainedBox(
@@ -46,8 +46,6 @@ class RoleChooserScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
-                  const Center(child: AppLogo(height: 44)),
-                  const SizedBox(height: 18),
                   AuthCompactHeader(
                     icon: Icons.person_add_rounded,
                     title: l10n.uiJoinFutureGate,

@@ -97,6 +97,7 @@ String authAcademicLevelLabel(String value, AppLocalizations l10n) =>
 class AuthFlowScaffold extends StatelessWidget {
   final Widget child;
   final bool showBackButton;
+  final bool showBrandBadge;
   final VoidCallback? onBack;
   final Widget? trailing;
 
@@ -104,12 +105,16 @@ class AuthFlowScaffold extends StatelessWidget {
     super.key,
     required this.child,
     this.showBackButton = false,
+    this.showBrandBadge = true,
     this.onBack,
     this.trailing,
   });
 
   @override
   Widget build(BuildContext context) {
+    final shouldShowTopBar =
+        showBackButton || showBrandBadge || trailing != null;
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: DecoratedBox(
@@ -143,45 +148,53 @@ class AuthFlowScaffold extends StatelessWidget {
             SafeArea(
               child: Column(
                 children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 10, 20, 6),
-                    child: Row(
-                      children: <Widget>[
-                        if (showBackButton)
-                          _AuthTopButton(
-                            icon: Icons.arrow_back_rounded,
-                            onTap: onBack ?? () => Navigator.of(context).pop(),
-                          )
-                        else
-                          const SizedBox(width: 48),
-                        Expanded(
-                          child: Center(
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 14,
-                                vertical: 8,
-                              ),
-                              decoration: BoxDecoration(
-                                color: authFlowTheme.surface.withValues(
-                                  alpha: 0.84,
-                                ),
-                                borderRadius: BorderRadius.circular(999),
-                                border: Border.all(color: authFlowTheme.border),
-                              ),
-                              child: const AppLogoClear(height: 22),
+                  if (shouldShowTopBar)
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 10, 20, 6),
+                      child: Row(
+                        children: <Widget>[
+                          if (showBackButton)
+                            _AuthTopButton(
+                              icon: Icons.arrow_back_rounded,
+                              onTap:
+                                  onBack ?? () => Navigator.of(context).pop(),
+                            )
+                          else
+                            const SizedBox(width: 48),
+                          Expanded(
+                            child: Center(
+                              child: showBrandBadge
+                                  ? Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 14,
+                                        vertical: 8,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: authFlowTheme.surface.withValues(
+                                          alpha: 0.84,
+                                        ),
+                                        borderRadius: BorderRadius.circular(
+                                          999,
+                                        ),
+                                        border: Border.all(
+                                          color: authFlowTheme.border,
+                                        ),
+                                      ),
+                                      child: const AppLogoClear(height: 22),
+                                    )
+                                  : const SizedBox.shrink(),
                             ),
                           ),
-                        ),
-                        SizedBox(
-                          width: 48,
-                          child: Align(
-                            alignment: Alignment.centerRight,
-                            child: trailing,
+                          SizedBox(
+                            width: 48,
+                            child: Align(
+                              alignment: Alignment.centerRight,
+                              child: trailing,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
                   Expanded(
                     child: LayoutBuilder(
                       builder: (context, constraints) {

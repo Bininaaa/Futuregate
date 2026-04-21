@@ -112,6 +112,7 @@ class _AdminStudentProfileSheetState extends State<_AdminStudentProfileSheet> {
                   label: l10n.uiEmail,
                   value: widget.user.email,
                   preserveValueFormatting: true,
+                  singleLineValue: true,
                 ),
                 _DetailRow(
                   icon: Icons.phone_outlined,
@@ -751,7 +752,7 @@ class _StudentHeroCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          Text(
+          _SingleLineText(
             user.email,
             textAlign: TextAlign.center,
             style: const TextStyle(fontSize: 13, color: Colors.white70),
@@ -768,6 +769,7 @@ class _DetailRow extends StatelessWidget {
   final String? value;
   final String? placeholder;
   final bool preserveValueFormatting;
+  final bool singleLineValue;
 
   const _DetailRow({
     required this.icon,
@@ -775,6 +777,7 @@ class _DetailRow extends StatelessWidget {
     required this.value,
     this.placeholder,
     this.preserveValueFormatting = false,
+    this.singleLineValue = false,
   });
 
   @override
@@ -786,6 +789,14 @@ class _DetailRow extends StatelessWidget {
               ? trimmedValue
               : DisplayText.capitalizeLeadingLabel(trimmedValue))
         : (placeholder ?? l10n.uiNotProvided);
+    final valueStyle = TextStyle(
+      fontSize: trimmedValue.isEmpty ? 13.2 : 14,
+      height: 1.4,
+      color: trimmedValue.isEmpty
+          ? AdminPalette.textMuted
+          : AdminPalette.textPrimary,
+      fontWeight: trimmedValue.isEmpty ? FontWeight.w500 : FontWeight.w600,
+    );
 
     return AdminSurface(
       margin: const EdgeInsets.only(bottom: 10),
@@ -817,23 +828,51 @@ class _DetailRow extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 4),
-                Text(
-                  displayValue,
-                  style: TextStyle(
-                    fontSize: trimmedValue.isEmpty ? 13.2 : 14,
-                    height: 1.4,
-                    color: trimmedValue.isEmpty
-                        ? AdminPalette.textMuted
-                        : AdminPalette.textPrimary,
-                    fontWeight: trimmedValue.isEmpty
-                        ? FontWeight.w500
-                        : FontWeight.w600,
-                  ),
-                ),
+                singleLineValue
+                    ? _SingleLineText(displayValue, style: valueStyle)
+                    : Text(displayValue, style: valueStyle),
               ],
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _SingleLineText extends StatelessWidget {
+  final String value;
+  final TextStyle style;
+  final TextAlign textAlign;
+
+  const _SingleLineText(
+    this.value, {
+    required this.style,
+    this.textAlign = TextAlign.start,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final alignment = switch (textAlign) {
+      TextAlign.center => Alignment.center,
+      TextAlign.right => Alignment.centerRight,
+      TextAlign.end => Alignment.centerRight,
+      _ => Alignment.centerLeft,
+    };
+
+    return SizedBox(
+      width: double.infinity,
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        alignment: alignment,
+        child: Text(
+          value,
+          maxLines: 1,
+          softWrap: false,
+          overflow: TextOverflow.visible,
+          textAlign: textAlign,
+          style: style,
+        ),
       ),
     );
   }

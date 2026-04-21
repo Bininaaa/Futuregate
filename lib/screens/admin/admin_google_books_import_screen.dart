@@ -74,6 +74,50 @@ class _AdminGoogleBooksImportScreenState
 
   final List<String> _languages = const ['fr', 'en', 'ar', ''];
 
+  DropdownMenuItem<String> _buildDropdownItem({
+    required String value,
+    required String label,
+  }) {
+    return DropdownMenuItem<String>(
+      value: value,
+      child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
+    );
+  }
+
+  List<Widget> _buildSelectedDropdownItems(
+    List<String> values,
+    String Function(String value) labelBuilder,
+  ) {
+    return values
+        .map(
+          (value) => Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              labelBuilder(value),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        )
+        .toList();
+  }
+
+  Widget _buildImportButton({
+    required bool busy,
+    required VoidCallback onPressed,
+  }) {
+    return ElevatedButton(
+      onPressed: _isImporting ? null : onPressed,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AdminPalette.primary,
+        foregroundColor: Colors.white,
+        minimumSize: const Size(112, 48),
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+      ),
+      child: Text(busy ? _l10n.uiImporting : _l10n.uiImport),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -429,94 +473,21 @@ class _AdminGoogleBooksImportScreenState
     return Padding(
       padding: const EdgeInsets.all(16),
       child: AdminSurface(
-        child: Column(
-          children: [
-            AdminSectionHeader(
-              eyebrow: _l10n.uiGoogleBooks,
-              title: _l10n.uiImportBooks,
-              subtitle:
-                  _l10n.uiSearchByTopicDomainLevelAndLanguageBeforePublishingA,
-            ),
-            const SizedBox(height: 14),
-            TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                hintText: _l10n.uiSearchBooksForExampleAlgorithms,
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-              ),
-              onSubmitted: (_) => _searchBooks(),
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: DropdownButtonFormField<String>(
-                    initialValue: _selectedDomain,
-                    decoration: InputDecoration(
-                      labelText: _l10n.uiDomain,
-                      border: OutlineInputBorder(),
-                    ),
-                    items: _domains
-                        .map(
-                          (item) =>
-                              DropdownMenuItem(value: item, child: Text(item)),
-                        )
-                        .toList(),
-                    onChanged: (value) {
-                      if (value == null) {
-                        return;
-                      }
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final stackFilterFields = constraints.maxWidth < 430;
 
-                      setState(() {
-                        _selectedDomain = value;
-                      });
-                    },
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: DropdownButtonFormField<String>(
-                    initialValue: _selectedLevel,
-                    decoration: InputDecoration(
-                      labelText: _l10n.uiLevel,
-                      border: OutlineInputBorder(),
-                    ),
-                    items: _levels
-                        .map(
-                          (item) =>
-                              DropdownMenuItem(value: item, child: Text(item)),
-                        )
-                        .toList(),
-                    onChanged: (value) {
-                      if (value == null) {
-                        return;
-                      }
-
-                      setState(() {
-                        _selectedLevel = value;
-                      });
-                    },
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            DropdownButtonFormField<String>(
-              initialValue: _selectedLanguage,
+            final domainField = DropdownButtonFormField<String>(
+              initialValue: _selectedDomain,
+              isExpanded: true,
+              selectedItemBuilder: (context) =>
+                  _buildSelectedDropdownItems(_domains, (value) => value),
               decoration: InputDecoration(
-                labelText: _l10n.uiLanguage,
-                border: OutlineInputBorder(),
+                labelText: _l10n.uiDomain,
+                border: const OutlineInputBorder(),
               ),
-              items: _languages
-                  .map(
-                    (item) => DropdownMenuItem(
-                      value: item,
-                      child: Text(item.isEmpty ? _l10n.uiAny : item),
-                    ),
-                  )
+              items: _domains
+                  .map((item) => _buildDropdownItem(value: item, label: item))
                   .toList(),
               onChanged: (value) {
                 if (value == null) {
@@ -524,31 +495,123 @@ class _AdminGoogleBooksImportScreenState
                 }
 
                 setState(() {
-                  _selectedLanguage = value;
+                  _selectedDomain = value;
                 });
               },
-            ),
-            const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: _isSearching ? null : _searchBooks,
-                icon: _isSearching
-                    ? const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Icon(Icons.search),
-                label: Text(_isSearching ? _l10n.uiSearching : _l10n.uiSearch),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AdminPalette.primary,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                ),
+            );
+
+            final levelField = DropdownButtonFormField<String>(
+              initialValue: _selectedLevel,
+              isExpanded: true,
+              selectedItemBuilder: (context) =>
+                  _buildSelectedDropdownItems(_levels, (value) => value),
+              decoration: InputDecoration(
+                labelText: _l10n.uiLevel,
+                border: const OutlineInputBorder(),
               ),
-            ),
-          ],
+              items: _levels
+                  .map((item) => _buildDropdownItem(value: item, label: item))
+                  .toList(),
+              onChanged: (value) {
+                if (value == null) {
+                  return;
+                }
+
+                setState(() {
+                  _selectedLevel = value;
+                });
+              },
+            );
+
+            return Column(
+              children: [
+                AdminSectionHeader(
+                  eyebrow: _l10n.uiGoogleBooks,
+                  title: _l10n.uiImportBooks,
+                  subtitle: _l10n
+                      .uiSearchByTopicDomainLevelAndLanguageBeforePublishingA,
+                ),
+                const SizedBox(height: 14),
+                TextField(
+                  controller: _searchController,
+                  decoration: InputDecoration(
+                    hintText: _l10n.uiSearchBooksForExampleAlgorithms,
+                    prefixIcon: const Icon(Icons.search),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                  onSubmitted: (_) => _searchBooks(),
+                ),
+                const SizedBox(height: 12),
+                if (stackFilterFields) ...[
+                  domainField,
+                  const SizedBox(height: 10),
+                  levelField,
+                ] else
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(child: domainField),
+                      const SizedBox(width: 10),
+                      Expanded(child: levelField),
+                    ],
+                  ),
+                const SizedBox(height: 10),
+                DropdownButtonFormField<String>(
+                  initialValue: _selectedLanguage,
+                  isExpanded: true,
+                  selectedItemBuilder: (context) => _buildSelectedDropdownItems(
+                    _languages,
+                    (value) => value.isEmpty ? _l10n.uiAny : value,
+                  ),
+                  decoration: InputDecoration(
+                    labelText: _l10n.uiLanguage,
+                    border: const OutlineInputBorder(),
+                  ),
+                  items: _languages
+                      .map(
+                        (item) => _buildDropdownItem(
+                          value: item,
+                          label: item.isEmpty ? _l10n.uiAny : item,
+                        ),
+                      )
+                      .toList(),
+                  onChanged: (value) {
+                    if (value == null) {
+                      return;
+                    }
+
+                    setState(() {
+                      _selectedLanguage = value;
+                    });
+                  },
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: _isSearching ? null : _searchBooks,
+                    icon: _isSearching
+                        ? const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Icon(Icons.search),
+                    label: Text(
+                      _isSearching ? _l10n.uiSearching : _l10n.uiSearch,
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AdminPalette.primary,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
@@ -732,80 +795,91 @@ class _AdminGoogleBooksImportScreenState
     required TrainingModel book,
     required bool isImportingBook,
   }) {
+    final details = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          book.title,
+          maxLines: 3,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w700,
+            color: AdminPalette.textPrimary,
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          book.authors.isNotEmpty ? book.authors.join(', ') : book.provider,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(color: AdminPalette.textSecondary, fontSize: 13),
+        ),
+        const SizedBox(height: 6),
+        if (book.description.trim().isNotEmpty)
+          Text(
+            book.description,
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(color: AdminPalette.textSecondary, fontSize: 13),
+          ),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            AdminPill(label: _l10n.uiBookLabel, color: AdminPalette.info),
+            if (book.language.trim().isNotEmpty)
+              AdminPill(
+                label: book.language.toUpperCase(),
+                color: AdminPalette.success,
+              ),
+            if (book.domain.trim().isNotEmpty)
+              AdminPill(label: book.domain, color: AdminPalette.activity),
+          ],
+        ),
+      ],
+    );
+
+    final infoRow = Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildBookCover(book),
+        const SizedBox(width: 12),
+        Expanded(child: details),
+      ],
+    );
+
     return AdminSurface(
       radius: 22,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildBookCover(book),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final compact = constraints.maxWidth < 430;
+          final importButton = _buildImportButton(
+            busy: isImportingBook,
+            onPressed: () => _importBook(book),
+          );
+
+          if (compact) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(
-                  book.title,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                    color: AdminPalette.textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  book.authors.isNotEmpty
-                      ? book.authors.join(', ')
-                      : book.provider,
-                  style: TextStyle(
-                    color: AdminPalette.textSecondary,
-                    fontSize: 13,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                if (book.description.trim().isNotEmpty)
-                  Text(
-                    book.description,
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: AdminPalette.textSecondary,
-                      fontSize: 13,
-                    ),
-                  ),
-                const SizedBox(height: 8),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
-                    AdminPill(
-                      label: _l10n.uiBookLabel,
-                      color: AdminPalette.info,
-                    ),
-                    if (book.language.trim().isNotEmpty)
-                      AdminPill(
-                        label: book.language.toUpperCase(),
-                        color: AdminPalette.success,
-                      ),
-                    if (book.domain.trim().isNotEmpty)
-                      AdminPill(
-                        label: book.domain,
-                        color: AdminPalette.activity,
-                      ),
-                  ],
-                ),
+                infoRow,
+                const SizedBox(height: 12),
+                SizedBox(width: double.infinity, child: importButton),
               ],
-            ),
-          ),
-          const SizedBox(width: 10),
-          ElevatedButton(
-            onPressed: _isImporting ? null : () => _importBook(book),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AdminPalette.primary,
-              foregroundColor: Colors.white,
-            ),
-            child: Text(isImportingBook ? _l10n.uiImporting : _l10n.uiImport),
-          ),
-        ],
+            );
+          }
+
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(child: infoRow),
+              const SizedBox(width: 12),
+              importButton,
+            ],
+          );
+        },
       ),
     );
   }

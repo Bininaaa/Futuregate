@@ -82,6 +82,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
     final email = (authProvider.userModel?.email ?? '').trim();
 
     return AuthFlowScaffold(
+      showBrandBadge: false,
       trailing: IconButton(
         tooltip: l10n.uiSignOutTooltip,
         onPressed: _checking || _resending ? null : _backToLogin,

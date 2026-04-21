@@ -121,6 +121,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     return AuthFlowScaffold(
       showBackButton: true,
+      showBrandBadge: false,
       child: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 580),

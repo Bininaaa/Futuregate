@@ -8,7 +8,6 @@ import '../../theme/app_colors.dart';
 import '../../utils/document_upload_validator.dart';
 import '../../utils/validators.dart';
 import '../../widgets/shared/app_feedback.dart';
-import '../../widgets/shared/app_logo.dart';
 import '../../widgets/password_strength_indicator.dart';
 
 class CompanyRegisterScreen extends StatefulWidget {
@@ -173,7 +172,7 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
               onPressed: () => Navigator.pop(context),
             ),
           ),
-          const Expanded(child: Center(child: AppLogoClear(height: 32))),
+          const Spacer(),
           const SizedBox(width: 48),
         ],
       ),

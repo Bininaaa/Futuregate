@@ -275,7 +275,7 @@ class _AdminOpportunityEditorScreenState
               title: OpportunityType.requirementsLabel(_type, l10n),
               subtitle: _requirementsSectionSubtitle(),
               child: AdminEditorListField(
-                label: 'Checklist',
+                label: '',
                 hint: _type == OpportunityType.sponsoring
                     ? 'Type one eligibility rule, then press Enter'
                     : 'Type one requirement, then press Enter',
@@ -284,9 +284,7 @@ class _AdminOpportunityEditorScreenState
                 listController: _requirementsListController,
                 validator: _validateRequirementItems,
                 splitOnCommas: false,
-                emptyText: _type == OpportunityType.sponsoring
-                    ? 'Add eligibility rules, documents, or selection criteria.'
-                    : 'Add the skills, background, or tools students need.',
+                emptyText: '',
               ),
             ),
             const SizedBox(height: 12),
