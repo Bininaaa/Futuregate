@@ -76,6 +76,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   Widget _buildFormState() {
     final l10n = AppLocalizations.of(context)!;
+    final errorPresentation = _buildErrorPresentation(l10n, _errorMessage);
 
     return Form(
       key: _formKey,
@@ -108,12 +109,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             message: l10n.uiIfYouCreatedThisAccountWithGoogleUseGoogleTo,
             compact: true,
           ),
-          if ((_errorMessage ?? '').trim().isNotEmpty) ...<Widget>[
+          if (errorPresentation != null) ...<Widget>[
             const SizedBox(height: 22),
             AppInlineMessage(
-              type: AppFeedbackType.error,
-              title: l10n.uiResetUnavailable,
-              message: _errorMessage!,
+              type: errorPresentation.type,
+              title: errorPresentation.title,
+              message: errorPresentation.message,
               compact: true,
             ),
           ],
@@ -207,4 +208,59 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       ],
     );
   }
+
+  _ResetFeedbackPresentation? _buildErrorPresentation(
+    AppLocalizations l10n,
+    String? message,
+  ) {
+    final trimmed = (message ?? '').trim();
+    if (trimmed.isEmpty) {
+      return null;
+    }
+
+    final lower = trimmed.toLowerCase();
+    if (lower.contains('google')) {
+      return _ResetFeedbackPresentation(
+        type: AppFeedbackType.warning,
+        title: l10n.uiUsingGoogleSignIn,
+        message: trimmed,
+      );
+    }
+
+    if (lower.contains('connection') || lower.contains('network')) {
+      return _ResetFeedbackPresentation(
+        type: AppFeedbackType.error,
+        title: 'Connection problem',
+        message: trimmed,
+      );
+    }
+
+    if (lower.contains('temporarily unavailable') ||
+        lower.contains('try again in a few minutes') ||
+        lower.contains('try again in a moment')) {
+      return _ResetFeedbackPresentation(
+        type: AppFeedbackType.error,
+        title: 'Temporary service issue',
+        message: trimmed,
+      );
+    }
+
+    return _ResetFeedbackPresentation(
+      type: AppFeedbackType.error,
+      title: l10n.uiResetUnavailable,
+      message: trimmed,
+    );
+  }
+}
+
+class _ResetFeedbackPresentation {
+  const _ResetFeedbackPresentation({
+    required this.type,
+    required this.title,
+    required this.message,
+  });
+
+  final AppFeedbackType type;
+  final String title;
+  final String message;
 }

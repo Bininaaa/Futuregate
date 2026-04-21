@@ -8,7 +8,6 @@ import 'package:google_sign_in/google_sign_in.dart';
 import '../models/user_model.dart';
 import 'notification_worker_service.dart';
 import 'storage_service.dart';
-import 'worker_api_service.dart';
 
 class AuthService {
   static const String _googleClientId =
@@ -26,14 +25,13 @@ class AuthService {
   final NotificationWorkerService _notificationWorker =
       NotificationWorkerService();
   final StorageService _storageService = StorageService();
-  final WorkerApiService _workerApi = WorkerApiService();
 
   static bool _googleInitialized = false;
   static Future<void>? _googleInitializationFuture;
 
   User? get currentFirebaseUser => _auth.currentUser;
 
-  Stream<User?> get authStateChanges => _auth.authStateChanges();
+  Stream<User?> get authStateChanges => _auth.userChanges();
 
   Set<String> get linkedProviderIds {
     final user = _auth.currentUser;
@@ -440,47 +438,16 @@ class AuthService {
 
   Future<void> sendPasswordResetEmail(String email) async {
     final normalizedEmail = email.trim();
-
-    try {
-      await _workerApi.postPublic(
-        '/api/auth/password-reset',
-        body: <String, dynamic>{'email': normalizedEmail},
-      );
-    } on WorkerApiException catch (error) {
-      final message = error.message.trim();
-
-      if (error.statusCode == 400) {
-        throw FirebaseAuthException(
-          code: 'invalid-email',
-          message: message.isNotEmpty
-              ? message
-              : 'The email address is not valid.',
+    await _auth
+        .sendPasswordResetEmail(email: normalizedEmail)
+        .timeout(
+          _authOperationTimeout,
+          onTimeout: () => throw FirebaseAuthException(
+            code: 'auth-timeout',
+            message:
+                'Password reset is taking too long. Please check your connection and try again.',
+          ),
         );
-      }
-
-      if (error.statusCode == 409) {
-        throw FirebaseAuthException(
-          code: 'password-reset-google-only',
-          message: message.isNotEmpty
-              ? message
-              : 'This account uses Google sign-in. Sign in with Google, then add a password from Settings if you want reset emails later.',
-        );
-      }
-
-      if (error.statusCode == 429) {
-        throw FirebaseAuthException(
-          code: 'too-many-requests',
-          message: message.isNotEmpty
-              ? message
-              : 'Too many attempts. Please try again later.',
-        );
-      }
-
-      throw FirebaseAuthException(
-        code: 'password-reset-failed',
-        message: message.isNotEmpty ? message : 'Failed to send reset email.',
-      );
-    }
   }
 
   // --------------- Re-authentication ---------------
@@ -599,8 +566,10 @@ class AuthService {
     }
   }
 
-  Future<UserModel?> getCurrentUserProfile() async {
-    final user = _auth.currentUser;
+  Future<UserModel?> getCurrentUserProfile({
+    bool reloadAuthUser = false,
+  }) async {
+    final user = await _getCurrentUser(reload: reloadAuthUser);
     if (user == null) return null;
 
     final docRef = _firestore.collection('users').doc(user.uid);
@@ -622,6 +591,17 @@ class AuthService {
     return UserModel.fromMap(
       patch.isEmpty ? data : <String, dynamic>{...data, ...patch},
     );
+  }
+
+  Future<void> syncCurrentUserEmailToProfile({
+    bool reloadAuthUser = false,
+  }) async {
+    final user = await _getCurrentUser(reload: reloadAuthUser);
+    if (user == null) {
+      return;
+    }
+
+    await _syncUserEmailToProfile(user);
   }
 
   Map<String, dynamic> _buildLegacyUserProfilePatch({
@@ -733,6 +713,21 @@ class AuthService {
     await _firestore.collection('users').doc(user.uid).set({
       'email': email,
     }, SetOptions(merge: true));
+  }
+
+  Future<User?> _getCurrentUser({bool reload = false}) async {
+    var user = _auth.currentUser;
+    if (user == null || !reload) {
+      return user;
+    }
+
+    try {
+      await user.reload();
+    } catch (_) {
+      // Fall back to the cached auth user when reload is temporarily unavailable.
+    }
+
+    return _auth.currentUser ?? user;
   }
 
   Future<void> _cleanupGoogleSignInSession({

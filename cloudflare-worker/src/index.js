@@ -18,6 +18,7 @@ const PASSWORD_SIGN_IN_METHOD = "password";
 const GOOGLE_PROVIDER_ID = "google.com";
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PUBLIC_ADMIN_NAME = "FutureGate Admin";
+const DEFAULT_FIREBASE_WEB_API_KEY = "AIzaSyDcQlwKznxxnom_W5nIhC4uT1HyxSAOqHk";
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -343,6 +344,23 @@ function isValidEmail(value) {
   return EMAIL_PATTERN.test(trim(value));
 }
 
+function maskEmailForLogs(email) {
+  const normalized = trim(email).toLowerCase();
+  const atIndex = normalized.indexOf("@");
+  if (atIndex <= 0) {
+    return "unknown-email";
+  }
+
+  const localPart = normalized.slice(0, atIndex);
+  const domain = normalized.slice(atIndex + 1);
+  const visibleLocal =
+    localPart.length <= 2
+      ? `${localPart[0] || "*"}*`
+      : `${localPart.slice(0, 2)}***`;
+
+  return `${visibleLocal}@${domain}`;
+}
+
 function passwordResetRequestIp(request) {
   const cfConnectingIp =
     trim(request.headers.get("CF-Connecting-IP")) ||
@@ -374,6 +392,10 @@ function identityToolkitContinueUrl(env) {
   return `https://${projectId}.firebaseapp.com/__/auth/handler`;
 }
 
+function firebaseWebApiKey(env) {
+  return trim(env.FIREBASE_WEB_API_KEY) || DEFAULT_FIREBASE_WEB_API_KEY;
+}
+
 function extractIdentityToolkitErrorMessage(payload, fallbackMessage) {
   const details = payload && typeof payload === "object" ? payload.error : null;
   const message =
@@ -393,7 +415,7 @@ async function identityToolkitRequest(
   const url = new URL(`${IDENTITY_TOOLKIT_API_URL}${path}`);
 
   if (includeApiKey) {
-    const apiKey = trim(env.FIREBASE_WEB_API_KEY);
+    const apiKey = firebaseWebApiKey(env);
     if (!apiKey) {
       throw new Error(
         "Password reset is not configured: FIREBASE_WEB_API_KEY is missing.",
@@ -517,10 +539,18 @@ function accountHasGoogleMethod(account, signInMethods = []) {
 
 async function sendPasswordResetEmail(env, email, userIp) {
   const projectId = encodeURIComponent(trim(env.FIREBASE_PROJECT_ID));
+  const apiKey = firebaseWebApiKey(env);
+  if (!apiKey) {
+    throw new Error(
+      "Password reset is not configured: FIREBASE_WEB_API_KEY is missing.",
+    );
+  }
+
   await identityToolkitRequest(
     env,
     `/projects/${projectId}/accounts:sendOobCode`,
     {
+      includeApiKey: true,
       body: {
         requestType: "PASSWORD_RESET",
         email,
@@ -539,18 +569,22 @@ async function handlePasswordReset(request, env) {
   }
 
   const email = trim(body?.email);
+  const maskedEmail = maskEmailForLogs(email);
   if (!isValidEmail(email)) {
+    console.warn("[passwordReset] invalid-email", { email: maskedEmail });
     return err("The email address is not valid.", 400);
   }
 
   const userIp = passwordResetRequestIp(request);
   if (!userIp) {
+    console.error("[passwordReset] missing-user-ip", { email: maskedEmail });
     return err("Could not determine the caller IP for password reset.", 500);
   }
 
   try {
     const signInContext = await fetchSignInMethodsForEmail(env, email);
     if (!signInContext.registered) {
+      console.info("[passwordReset] email-not-found", { email: maskedEmail });
       return json({ success: true });
     }
 
@@ -569,6 +603,7 @@ async function handlePasswordReset(request, env) {
     }
 
     if (hasGoogle && !hasPassword) {
+      console.info("[passwordReset] google-only-account", { email: maskedEmail });
       return err(
         "This account uses Google sign-in. Sign in with Google first, then add a password from Settings if you want reset emails later.",
         409,
@@ -576,9 +611,19 @@ async function handlePasswordReset(request, env) {
     }
 
     await sendPasswordResetEmail(env, email, userIp);
+    console.info("[passwordReset] email-sent", {
+      email: maskedEmail,
+      hasPassword,
+      hasGoogle,
+    });
     return json({ success: true });
   } catch (error) {
     const message = trim(error?.message).toUpperCase();
+    console.error("[passwordReset] failed", {
+      email: maskedEmail,
+      message: trim(error?.message),
+      statusCode: error?.statusCode ?? 0,
+    });
 
     if (!message) {
       throw error;
@@ -601,6 +646,10 @@ async function handlePasswordReset(request, env) {
     }
 
     if (message.includes("OPERATION_NOT_ALLOWED")) {
+      return err("Password reset is not configured right now.", 503);
+    }
+
+    if (message.includes("FIREBASE_WEB_API_KEY IS MISSING")) {
       return err("Password reset is not configured right now.", 503);
     }
 

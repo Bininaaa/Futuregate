@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#F4F7FB">
+  <meta
+    name="description"
+    content="FutureGate account actions for password reset, email verification, email change, and recovery."
+  >
+  <title>FutureGate Account Action</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  >
+  <link rel="stylesheet" href="./action.css">
+</head>
+<body>
+  <div class="page-shell" aria-hidden="true">
+    <div class="page-glow page-glow-primary"></div>
+    <div class="page-glow page-glow-secondary"></div>
+  </div>
+
+  <main class="auth-layout">
+    <section class="auth-card" aria-labelledby="pageTitle">
+      <header class="card-header">
+        <div class="brand-row" aria-label="FutureGate">
+          <span class="brand-mark">FG</span>
+          <div class="brand-copy">
+            <span class="brand-name">FutureGate</span>
+            <span class="brand-label" id="pageEyebrow">Account action</span>
+          </div>
+        </div>
+        <span class="status-chip" id="statusChip">Checking link</span>
+      </header>
+
+      <section class="page-header">
+        <h1 id="pageTitle">Checking link</h1>
+        <p id="pageSubtitle">
+          Please wait a moment.
+        </p>
+      </section>
+
+      <div
+        id="networkBanner"
+        class="banner banner-info hidden"
+        role="status"
+        aria-live="polite"
+      ></div>
+      <div
+        id="flashBanner"
+        class="banner hidden"
+        role="status"
+        aria-live="polite"
+      ></div>
+
+      <section id="pageContent" class="page-content" aria-live="polite" aria-busy="true">
+        <div class="state-card state-loading">
+          <div class="state-icon" aria-hidden="true">
+            <span class="spinner"></span>
+          </div>
+          <div class="state-stack">
+            <h2>Checking your link</h2>
+            <p>Please wait a moment.</p>
+          </div>
+        </div>
+      </section>
+
+      <footer class="page-footer">
+        <p>Secure account action by FutureGate</p>
+      </footer>
+    </section>
+  </main>
+
+  <noscript>
+    <div class="noscript-shell">
+      <div class="noscript-card">
+        <strong>JavaScript is required.</strong>
+        <p>This page needs JavaScript to complete the secure account action.</p>
+      </div>
+    </div>
+  </noscript>
+
+  <script type="module" src="./action.js"></script>
+</body>
+</html>

@@ -21,7 +21,7 @@ class AuthProvider extends ChangeNotifier {
   Future<void>? _loadCurrentUserFuture;
   String? _loadCurrentUserUid;
   String? _listeningUserUid;
-  String? _lastFirebaseUid;
+  String? _lastFirebaseUserSignature;
 
   AuthProvider() {
     _authStateSubscription = _authService.authStateChanges.listen(
@@ -82,7 +82,9 @@ class AuthProvider extends ChangeNotifier {
         return;
       }
 
-      final userModel = await _authService.getCurrentUserProfile();
+      final userModel = await _authService.getCurrentUserProfile(
+        reloadAuthUser: true,
+      );
       if (_authService.currentFirebaseUser?.uid != expectedUid) {
         return;
       }
@@ -113,15 +115,15 @@ class AuthProvider extends ChangeNotifier {
   }
 
   void _handleFirebaseAuthStateChanged(User? firebaseUser) {
-    final uid = firebaseUser?.uid;
-    if (_hasReceivedAuthState && _lastFirebaseUid == uid) {
+    final signature = _buildFirebaseUserSignature(firebaseUser);
+    if (_hasReceivedAuthState && _lastFirebaseUserSignature == signature) {
       return;
     }
 
     _hasReceivedAuthState = true;
-    _lastFirebaseUid = uid;
+    _lastFirebaseUserSignature = signature;
 
-    if (uid == null) {
+    if (firebaseUser == null) {
       _handleSignedOutAuthState();
       return;
     }
@@ -137,6 +139,7 @@ class AuthProvider extends ChangeNotifier {
     _userModel = null;
     _isLoading = false;
     _isInitialLoadDone = true;
+    _lastFirebaseUserSignature = null;
 
     if (shouldNotify) {
       notifyListeners();
@@ -160,7 +163,10 @@ class AuthProvider extends ChangeNotifier {
             final data = snapshot.data();
             if (data == null) return;
 
-            final updatedUser = UserModel.fromMap(data);
+            final updatedUser = _mergeLiveAuthFields(
+              profileData: data,
+              userModel: UserModel.fromMap(data),
+            );
 
             if (!updatedUser.isActive) {
               _stopUserDocListener();
@@ -188,6 +194,45 @@ class AuthProvider extends ChangeNotifier {
     _userDocSubscription?.cancel();
     _userDocSubscription = null;
     _listeningUserUid = null;
+  }
+
+  String? _buildFirebaseUserSignature(User? firebaseUser) {
+    if (firebaseUser == null) {
+      return null;
+    }
+
+    final providers =
+        firebaseUser.providerData
+            .map((info) => info.providerId.trim())
+            .where((providerId) => providerId.isNotEmpty)
+            .toList()
+          ..sort();
+
+    return [
+      firebaseUser.uid,
+      (firebaseUser.email ?? '').trim().toLowerCase(),
+      firebaseUser.emailVerified ? 'verified' : 'unverified',
+      providers.join(','),
+    ].join('|');
+  }
+
+  UserModel _mergeLiveAuthFields({
+    required Map<String, dynamic> profileData,
+    required UserModel userModel,
+  }) {
+    final firebaseUser = _authService.currentFirebaseUser;
+    if (firebaseUser == null || firebaseUser.uid != userModel.uid) {
+      return userModel;
+    }
+
+    final authEmail = (firebaseUser.email ?? '').trim();
+    final storedEmail = (profileData['email'] ?? '').toString().trim();
+    if (authEmail.isEmpty || authEmail == storedEmail) {
+      return userModel;
+    }
+
+    unawaited(_authService.syncCurrentUserEmailToProfile().catchError((_) {}));
+    return userModel.copyWith(email: authEmail);
   }
 
   bool _isIgnorableFirebaseCancellation(Object error) {
@@ -587,23 +632,55 @@ class AuthProvider extends ChangeNotifier {
       await _authService.sendPasswordResetEmail(email);
       return null;
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        return 'No account found with this email.';
-      }
-      if (e.code == 'invalid-email') {
-        return 'The email address is not valid.';
-      }
-      if (e.code == 'password-reset-google-only') {
-        return e.message ??
-            'This account uses Google sign-in. Sign in with Google, then add a password from Settings if you want reset emails later.';
-      }
-      if (e.code == 'too-many-requests') {
-        return 'Too many attempts. Please try again later.';
-      }
-      return e.message ?? 'Failed to send reset email.';
+      return _mapPasswordResetError(e);
     } catch (e) {
-      return 'An unexpected error occurred.';
+      return 'We could not send the reset link right now. Please try again in a moment.';
     }
+  }
+
+  String _mapPasswordResetError(FirebaseAuthException error) {
+    switch (error.code) {
+      case 'user-not-found':
+        return 'No account was found for that email address.';
+      case 'invalid-email':
+        return 'Enter a valid email address and try again.';
+      case 'password-reset-google-only':
+        return 'This account signs in with Google. Go back and continue with Google, then add a password later from Settings if you want reset emails too.';
+      case 'too-many-requests':
+        return 'Too many reset attempts were made. Please wait a little and try again.';
+      case 'network-request-failed':
+        return 'We could not reach the password reset service. Check your connection and try again.';
+      case 'password-reset-failed':
+        return _mapPasswordResetFailureMessage(error.message);
+      default:
+        return _mapPasswordResetFailureMessage(error.message);
+    }
+  }
+
+  String _mapPasswordResetFailureMessage(String? rawMessage) {
+    final message = (rawMessage ?? '').trim().toLowerCase();
+
+    if (message.contains('google sign-in') ||
+        message.contains('sign in with google')) {
+      return 'This account signs in with Google. Go back and continue with Google, then add a password later from Settings if you want reset emails too.';
+    }
+
+    if (message.contains('network') || message.contains('connection')) {
+      return 'We could not reach the password reset service. Check your connection and try again.';
+    }
+
+    if (message.contains('too many') || message.contains('try again later')) {
+      return 'Too many reset attempts were made. Please wait a little and try again.';
+    }
+
+    if (message.contains('internal server error') ||
+        message.contains('not configured') ||
+        message.contains('temporarily unavailable') ||
+        message.contains('firebase_web_api_key')) {
+      return 'Password reset is temporarily unavailable. Please try again in a few minutes.';
+    }
+
+    return 'We could not send the reset link right now. Please try again in a moment.';
   }
 
   // --------------- Add Password ---------------

@@ -141,6 +141,9 @@ class _PresenceAwareAppState extends State<_PresenceAwareApp>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     _lastLifecycleState = state;
+    if (state == AppLifecycleState.resumed) {
+      context.read<AuthProvider>().loadCurrentUser();
+    }
     _syncPresence();
   }
 
