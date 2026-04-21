@@ -31,8 +31,9 @@ class ApplicationService {
   }
 
   Future<List<StudentApplicationItemModel>> getSubmittedApplications(
-    String studentId,
-  ) async {
+    String studentId, {
+    bool onlyVisibleOpportunities = true,
+  }) async {
     final normalizedStudentId = studentId.trim();
     if (normalizedStudentId.isEmpty) {
       return const [];
@@ -75,17 +76,17 @@ class ApplicationService {
 
       data['id'] = doc.id;
       final opportunity = OpportunityModel.fromMap(data);
-      if (opportunity.isVisibleToStudents()) {
+      if (!onlyVisibleOpportunities || opportunity.isVisibleToStudents()) {
         opportunitiesById[doc.id] = opportunity;
       }
     }
 
     return applications
-        .where((application) {
-          final opportunity =
-              opportunitiesById[application.opportunityId.trim()];
-          return opportunity != null && opportunity.isVisibleToStudents();
-        })
+        .where(
+          (application) =>
+              !onlyVisibleOpportunities ||
+              opportunitiesById.containsKey(application.opportunityId.trim()),
+        )
         .map(
           (application) => StudentApplicationItemModel(
             application: application,
@@ -141,7 +142,8 @@ class ApplicationService {
     if (existingApplication.docs.isNotEmpty) {
       final existingStatus =
           existingApplication.docs.first.data()['status'] as String? ?? '';
-      if (ApplicationStatus.parse(existingStatus) != ApplicationStatus.withdrawn) {
+      if (ApplicationStatus.parse(existingStatus) !=
+          ApplicationStatus.withdrawn) {
         return ApplicationEligibilityStatus.alreadyApplied;
       }
     }
@@ -281,12 +283,11 @@ class ApplicationService {
       throw Exception('Application not found.');
     }
 
-    final currentStatus =
-        ApplicationStatus.parse(snapshot.data()?['status'] as String? ?? '');
+    final currentStatus = ApplicationStatus.parse(
+      snapshot.data()?['status'] as String? ?? '',
+    );
     if (currentStatus != ApplicationStatus.pending) {
-      throw Exception(
-        'Only pending applications can be withdrawn.',
-      );
+      throw Exception('Only pending applications can be withdrawn.');
     }
 
     await applicationRef.update({

@@ -125,7 +125,7 @@
             </div>
             <div class="control-room">
               ${controlCard({ count: pendingIdeas, label: 'Project ideas awaiting review', icon: 'lightbulb', color: '#F59E0B', href: 'moderation.html?tab=ideas', cta: 'Review ideas' })}
-              ${controlCard({ count: pendingApps, label: 'Pending applications', icon: 'file-text', color: '#7C3AED', href: 'moderation.html?tab=applications', cta: 'Review applications' })}
+              ${controlCard({ count: pendingApps, label: 'Pending applications', icon: 'file-text', color: '#7C3AED', href: 'moderation.html?tab=opportunities&filter=pending_apps', cta: 'Review in opportunities' })}
               ${controlCard({ count: pendingCompanies, label: 'Companies awaiting approval', icon: 'building-2', color: '#14B8A6', href: 'users.html?role=company&status=pending', cta: 'Review companies' })}
               ${controlCard({ count: blockedUsers, label: 'Blocked users', icon: 'shield-alert', color: '#E24A4A', href: 'users.html?status=blocked', cta: 'Manage blocked' })}
               ${controlCard({ count: hiddenOpps, label: 'Hidden opportunities', icon: 'eye-off', color: '#64748B', href: 'moderation.html?tab=opportunities', cta: 'Review hidden' })}
@@ -175,11 +175,11 @@
           <section class="surface-panel">
             <div class="surface-heading"><div><div class="surface-heading-title">Quick actions</div></div></div>
             <div class="quick-access-grid">
-              ${quick('briefcase','Opportunities','moderation.html?tab=opportunities','var(--c-accent)','Review and feature listings.')}
-              ${quick('file-text','Applications','moderation.html?tab=applications','var(--c-activity)','Manage student applications.')}
+              ${quick('briefcase','Opportunities','moderation.html?tab=opportunities','var(--c-accent)','Review jobs, internships, and sponsoring posts.')}
+              ${quick('file-text','Pending apps','moderation.html?tab=opportunities&filter=pending_apps','var(--c-activity)','Review applications inside admin-posted opportunities.')}
               ${quick('graduation-cap','Scholarships','moderation.html?tab=scholarships','var(--c-danger)','Publish and curate scholarships.')}
               ${quick('book-open','Trainings','moderation.html?tab=trainings','var(--c-secondary)','Curate the training catalog.')}
-              ${quick('library','Library','moderation.html?tab=library','var(--c-info)','Import books and videos.')}
+              ${quick('library','Library','moderation.html?tab=trainings','var(--c-info)','Import books and videos.')}
               ${quick('lightbulb','Project ideas','moderation.html?tab=ideas','var(--c-warning)','Approve student submissions.')}
               ${quick('users','Users','users.html','var(--c-primary)','Approve companies, manage accounts.')}
               ${quick('activity','Activity','activity.html','var(--c-success)','See the latest events.')}

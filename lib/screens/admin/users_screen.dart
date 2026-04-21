@@ -3,11 +3,14 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../models/opportunity_model.dart';
 import '../../providers/admin_provider.dart';
 import '../../models/user_model.dart';
+import '../../services/company_service.dart';
 import '../../services/document_access_service.dart';
 import '../../utils/admin_palette.dart';
 import '../../utils/display_text.dart';
+import '../../utils/opportunity_type.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../widgets/admin/admin_ui.dart';
 import '../../widgets/profile_avatar.dart';
@@ -1339,13 +1342,33 @@ class _UsersScreenState extends State<UsersScreen> {
     );
   }
 
+  UserModel? _currentUser(AdminProvider provider, String uid) {
+    for (final candidate in provider.rawUsers) {
+      if (candidate.uid == uid) {
+        return candidate;
+      }
+    }
+    return null;
+  }
+
+  String _companyDisplayName(UserModel user) {
+    final companyName = (user.companyName ?? '').trim();
+    if (companyName.isNotEmpty) {
+      return companyName;
+    }
+
+    return user.fullName.trim().isEmpty ? user.email : user.fullName;
+  }
+
   void _showUserDetails(UserModel user) {
     if (user.role == 'student') {
       showAdminStudentProfileSheet(context, user: user);
       return;
     }
 
-    final provider = context.read<AdminProvider>();
+    final companyPostingFuture = user.role == 'company'
+        ? _loadAdminCompanyOpportunities(user.uid)
+        : null;
 
     showModalBottomSheet(
       context: context,
@@ -1361,6 +1384,9 @@ class _UsersScreenState extends State<UsersScreen> {
           maxChildSize: 0.94,
           expand: false,
           builder: (context, scrollController) {
+            final provider = context.watch<AdminProvider>();
+            final liveUser = _currentUser(provider, user.uid) ?? user;
+
             return ClipRRect(
               borderRadius: const BorderRadius.vertical(
                 top: Radius.circular(28),
@@ -1374,7 +1400,7 @@ class _UsersScreenState extends State<UsersScreen> {
                     _buildSheetHandle(),
                     const SizedBox(height: 16),
                     _buildOverlayUserHeaderCard(
-                      user: user,
+                      user: liveUser,
                       eyebrow: _l10n.uiProfileOverview,
                       subtitle: _l10n
                           .uiReviewIdentityStatusAndSubmittedInformationInOnePlace,
@@ -1390,103 +1416,116 @@ class _UsersScreenState extends State<UsersScreen> {
                     _buildDetailRow(
                       Icons.email_outlined,
                       'Email',
-                      user.email,
+                      liveUser.email,
                       singleLineValue: true,
                     ),
                     _buildOptionalDetailRow(
                       Icons.phone_outlined,
                       'Phone',
-                      user.phone,
+                      liveUser.phone,
                       'Not provided',
                     ),
                     _buildOptionalDetailRow(
                       Icons.location_on_outlined,
                       'Location',
-                      user.location,
+                      liveUser.location,
                       'Not provided',
                     ),
-                    if (user.role == 'student') ...[
+                    if (liveUser.role == 'student') ...[
                       _buildOptionalDetailRow(
                         Icons.school_outlined,
                         'Academic Level',
-                        user.academicLevel,
+                        liveUser.academicLevel,
                         'Not provided',
                       ),
                       _buildOptionalDetailRow(
                         Icons.account_balance_outlined,
                         'University',
-                        user.university,
+                        liveUser.university,
                         'Not provided',
                       ),
                       _buildOptionalDetailRow(
                         Icons.subject_outlined,
                         'Field of Study',
-                        user.fieldOfStudy,
+                        liveUser.fieldOfStudy,
                         'Not provided',
                       ),
                     ],
-                    if (user.role == 'student' &&
-                        user.academicLevel == 'doctorat') ...[
+                    if (liveUser.role == 'student' &&
+                        liveUser.academicLevel == 'doctorat') ...[
                       _buildOptionalDetailRow(
                         Icons.science_outlined,
                         'Research Topic',
-                        user.researchTopic,
+                        liveUser.researchTopic,
                         'Not provided',
                       ),
                       _buildOptionalDetailRow(
                         Icons.biotech_outlined,
                         'Laboratory',
-                        user.laboratory,
+                        liveUser.laboratory,
                         'Not provided',
                       ),
                       _buildOptionalDetailRow(
                         Icons.person_outline_rounded,
                         'Supervisor',
-                        user.supervisor,
+                        liveUser.supervisor,
                         'Not provided',
                       ),
                       _buildOptionalDetailRow(
                         Icons.category_outlined,
                         'Research Domain',
-                        user.researchDomain,
+                        liveUser.researchDomain,
                         'Not provided',
                       ),
                     ],
-                    if (user.role == 'company') ...[
+                    if (liveUser.role == 'company') ...[
                       _buildOptionalDetailRow(
                         Icons.business_outlined,
                         'Company',
-                        user.companyName,
+                        liveUser.companyName,
                         'Not provided',
                       ),
                       _buildDetailRow(
                         Icons.verified_user_outlined,
                         'Approval Status',
-                        _approvalDisplayLabel(user.normalizedApprovalStatus),
+                        _approvalDisplayLabel(
+                          liveUser.normalizedApprovalStatus,
+                        ),
                       ),
-                      _buildCompanyModerationPanel(user, provider),
+                      _buildCompanyModerationPanel(liveUser, provider),
                       _buildOptionalDetailRow(
                         Icons.category_outlined,
                         'Sector',
-                        user.sector,
+                        liveUser.sector,
                         'Not provided',
                       ),
                       _buildOptionalDetailRow(
                         Icons.language_outlined,
                         'Website',
-                        user.website,
+                        liveUser.website,
                         'Not provided',
                       ),
+                      if ((liveUser.description ?? '').trim().isNotEmpty)
+                        _buildDetailRow(
+                          Icons.description_outlined,
+                          'Description',
+                          liveUser.description!.trim(),
+                        ),
+                      if (companyPostingFuture != null)
+                        _buildCompanyOpportunitiesSection(
+                          liveUser,
+                          future: companyPostingFuture,
+                        ),
                     ],
-                    if (user.role == 'company') ...[
+                    if (liveUser.role == 'company') ...[
                       const SizedBox(height: 6),
-                      _buildCompanyCommercialRegisterSection(user),
+                      _buildCompanyCommercialRegisterSection(liveUser),
                     ],
-                    if (user.bio?.isNotEmpty == true)
+                    if (liveUser.bio?.isNotEmpty == true)
                       _buildDetailRow(
                         Icons.person_outline_rounded,
                         'Bio',
-                        user.bio!,
+                        liveUser.bio!,
                       ),
                   ],
                 ),
@@ -1495,6 +1534,71 @@ class _UsersScreenState extends State<UsersScreen> {
           },
         );
       },
+    );
+  }
+
+  Widget _buildCompanyOpportunitiesSection(
+    UserModel user, {
+    required Future<List<OpportunityModel>> future,
+  }) {
+    return FutureBuilder<List<OpportunityModel>>(
+      future: future,
+      builder: (context, snapshot) {
+        final opportunities = snapshot.data ?? const <OpportunityModel>[];
+        final summaryLabel = switch (snapshot.connectionState) {
+          ConnectionState.waiting => 'Loading posted opportunities...',
+          _ when snapshot.hasError => 'Could not load opportunities right now.',
+          _ when opportunities.isEmpty => 'No opportunities posted yet.',
+          _ when opportunities.length == 1 => '1 opportunity',
+          _ => '${opportunities.length} opportunities',
+        };
+
+        return AdminSurface(
+          margin: const EdgeInsets.only(bottom: 10),
+          padding: const EdgeInsets.all(16),
+          radius: 20,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const AdminSectionHeader(title: 'Posted Opportunities'),
+              const SizedBox(height: 14),
+              Text(
+                summaryLabel,
+                style: TextStyle(
+                  fontSize: 12.5,
+                  height: 1.5,
+                  color: AdminPalette.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                child: _buildDocumentButton(
+                  label: 'View Opportunities',
+                  icon: Icons.work_outline_rounded,
+                  onPressed: () => _showCompanyPostedOpportunitiesSheet(user),
+                  color: AdminPalette.secondary,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _showCompanyPostedOpportunitiesSheet(UserModel user) {
+    return showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      builder: (_) => _AdminCompanyOpportunitiesSheet(
+        companyId: user.uid,
+        companyName: _companyDisplayName(user),
+      ),
     );
   }
 
@@ -1869,5 +1973,260 @@ class _UsersScreenState extends State<UsersScreen> {
       default:
         return AdminPalette.textMuted;
     }
+  }
+}
+
+Future<List<OpportunityModel>> _loadAdminCompanyOpportunities(
+  String companyId,
+) async {
+  final service = CompanyService();
+  return service.getCompanyOpportunities(companyId);
+}
+
+class _AdminCompanyOpportunitiesSheet extends StatefulWidget {
+  const _AdminCompanyOpportunitiesSheet({
+    required this.companyId,
+    required this.companyName,
+  });
+
+  final String companyId;
+  final String companyName;
+
+  @override
+  State<_AdminCompanyOpportunitiesSheet> createState() =>
+      _AdminCompanyOpportunitiesSheetState();
+}
+
+class _AdminCompanyOpportunitiesSheetState
+    extends State<_AdminCompanyOpportunitiesSheet> {
+  late Future<List<OpportunityModel>> _overviewFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _overviewFuture = _loadOverview();
+  }
+
+  Future<List<OpportunityModel>> _loadOverview() {
+    return _loadAdminCompanyOpportunities(widget.companyId);
+  }
+
+  void _retry() {
+    setState(() {
+      _overviewFuture = _loadOverview();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return DraggableScrollableSheet(
+      initialChildSize: 0.74,
+      minChildSize: 0.42,
+      maxChildSize: 0.94,
+      expand: false,
+      builder: (context, scrollController) {
+        return ClipRRect(
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+          child: Material(
+            color: AdminPalette.background,
+            child: FutureBuilder<List<OpportunityModel>>(
+              future: _overviewFuture,
+              builder: (context, snapshot) {
+                final opportunities =
+                    snapshot.data ?? const <OpportunityModel>[];
+                final headline = switch (snapshot.connectionState) {
+                  ConnectionState.waiting => 'Loading posted opportunities...',
+                  _ when opportunities.isEmpty =>
+                    'No opportunities posted by this company yet.',
+                  _ when opportunities.length == 1 =>
+                    '1 opportunity posted by this company.',
+                  _ =>
+                    '${opportunities.length} opportunities posted by this company.',
+                };
+
+                return ListView(
+                  controller: scrollController,
+                  padding: const EdgeInsets.fromLTRB(16, 10, 16, 20),
+                  children: [
+                    _buildHandle(),
+                    const SizedBox(height: 12),
+                    AdminSurface(
+                      radius: 20,
+                      gradient: AdminPalette.heroGradient(
+                        AdminPalette.secondary,
+                      ),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.12),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Icon(
+                            Icons.work_outline_rounded,
+                            color: Colors.white,
+                            size: 26,
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            widget.companyName.trim().isEmpty
+                                ? 'Company opportunities'
+                                : widget.companyName,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            headline,
+                            style: const TextStyle(
+                              fontSize: 12.5,
+                              color: Colors.white70,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    if (snapshot.connectionState == ConnectionState.waiting)
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 28),
+                        child: Center(child: CircularProgressIndicator()),
+                      )
+                    else if (snapshot.hasError)
+                      AdminEmptyState(
+                        icon: Icons.work_off_outlined,
+                        title: 'Opportunity history unavailable',
+                        message:
+                            'We could not load this company\'s posted opportunities right now.',
+                        action: FilledButton.icon(
+                          onPressed: _retry,
+                          icon: const Icon(Icons.refresh_rounded),
+                          label: Text(l10n.retryLabel),
+                        ),
+                      )
+                    else if (opportunities.isEmpty)
+                      const AdminEmptyState(
+                        icon: Icons.work_outline_rounded,
+                        title: 'No opportunities yet',
+                        message:
+                            'This company has not posted any opportunities yet.',
+                      )
+                    else
+                      ...opportunities.map(
+                        (opportunity) => _buildOpportunityCard(opportunity),
+                      ),
+                  ],
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildHandle() {
+    return Center(
+      child: Container(
+        width: 46,
+        height: 5,
+        decoration: BoxDecoration(
+          color: AdminPalette.border,
+          borderRadius: BorderRadius.circular(999),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOpportunityCard(OpportunityModel opportunity) {
+    final status = opportunity.effectiveStatus();
+    final statusColor = status == 'open'
+        ? AdminPalette.success
+        : AdminPalette.textMuted;
+    final typeColor = OpportunityType.color(opportunity.type);
+
+    return AdminSurface(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(14),
+      radius: 20,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: typeColor.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Icon(
+              OpportunityType.icon(opportunity.type),
+              color: typeColor,
+              size: 20,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  opportunity.title.trim().isEmpty
+                      ? 'Untitled opportunity'
+                      : opportunity.title.trim(),
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: AdminPalette.textPrimary,
+                  ),
+                ),
+                if (opportunity.location.trim().isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    opportunity.location.trim(),
+                    style: TextStyle(
+                      fontSize: 12.2,
+                      color: AdminPalette.textSecondary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 10),
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 6,
+                  children: [
+                    AdminPill(
+                      label: OpportunityType.label(
+                        opportunity.type,
+                        AppLocalizations.of(context)!,
+                      ),
+                      color: typeColor,
+                      icon: OpportunityType.icon(opportunity.type),
+                    ),
+                    AdminPill(
+                      label: status == 'open' ? 'Open' : 'Closed',
+                      color: statusColor,
+                      icon: status == 'open'
+                          ? Icons.check_circle_outline_rounded
+                          : Icons.lock_outline_rounded,
+                    ),
+                    if (opportunity.isHidden)
+                      AdminPill(
+                        label: 'Hidden',
+                        color: AdminPalette.warning,
+                        icon: Icons.visibility_off_outlined,
+                      ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

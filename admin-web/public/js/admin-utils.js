@@ -131,8 +131,8 @@ function adminTargetUrl(type, targetId = '') {
   switch (type) {
     case 'application':
       return safeTargetId
-        ? `moderation.html?tab=applications&applicationId=${safeTargetId}`
-        : 'moderation.html?tab=applications';
+        ? `moderation.html?tab=opportunities&filter=pending_apps&applicationId=${safeTargetId}`
+        : 'moderation.html?tab=opportunities&filter=pending_apps';
     case 'opportunity':
       return safeTargetId
         ? `moderation.html?tab=opportunities&opportunityId=${safeTargetId}`

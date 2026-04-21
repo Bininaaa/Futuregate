@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scholarship editor &middot; FutureGate Admin</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/app.css?v=2026042012">
+  <script src="js/theme-init.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body data-page="scholarship-editor">
+  <div id="auth-gate" class="auth-gate"><div class="spinner"></div><p>Verifying session...</p></div>
+  <div id="shell"></div>
+
+  <script type="module">
+    import { mountShell, showPage } from './js/shell.js';
+    import { checkAuth, esc, showToast } from './js/auth.js';
+    import {
+      auth, db, collection, doc, getDoc, setDoc, updateDoc, serverTimestamp,
+    } from './js/firebase-config.js';
+    import { getQueryParam } from './js/admin-utils.js';
+
+    mountShell({ page: 'content' });
+    checkAuth(async () => { await initPage(); });
+
+    const id = getQueryParam('id') || '';
+    const isNew = !id;
+    let item = null;
+
+    const LANGS = [['fr', 'French'], ['en', 'English'], ['ar', 'Arabic']];
+    const LEVELS = ['Bac', 'Licence', 'Master', 'Doctorat'];
+    const FUNDING_TYPES = [
+      ['fully_funded', 'Fully funded'],
+      ['partial', 'Partial funding'],
+      ['merit', 'Merit-based'],
+      ['needs', 'Needs-based'],
+    ];
+
+    async function initPage() {
+      if (!isNew) {
+        try {
+          const snap = await getDoc(doc(db, 'scholarships', id));
+          if (snap.exists()) item = { id: snap.id, ...snap.data() };
+        } catch (error) {
+          console.error(error);
+        }
+      }
+      render();
+      showPage();
+    }
+
+    function val(id) {
+      return (document.getElementById(id)?.value || '').trim();
+    }
+
+    function splitLines(text) {
+      return String(text || '')
+        .split(/\r?\n/)
+        .map((entry) => entry.trim())
+        .filter(Boolean);
+    }
+
+    function joinLines(values) {
+      if (Array.isArray(values)) {
+        return values.join('\n');
+      }
+      return String(values || '').trim();
+    }
+
+    function splitCsv(text) {
+      return String(text || '')
+        .split(',')
+        .map((entry) => entry.trim())
+        .filter(Boolean);
+    }
+
+    function joinCsv(values) {
+      return Array.isArray(values) ? values.join(', ') : '';
+    }
+
+    function parseDateLike(value) {
+      if (!value) return null;
+      if (typeof value.toDate === 'function') return value.toDate();
+      if (value instanceof Date) return value;
+      if (typeof value.seconds === 'number') return new Date(value.seconds * 1000);
+      const parsed = Date.parse(value);
+      return Number.isNaN(parsed) ? null : new Date(parsed);
+    }
+
+    function toDateInput(value) {
+      const date = parseDateLike(value);
+      return date ? date.toISOString().slice(0, 10) : '';
+    }
+
+    function parseAmount(text) {
+      const normalized = String(text || '').replace(/[^0-9.\-]/g, '').trim();
+      if (!normalized) return null;
+      const parsed = Number(normalized);
+      return Number.isFinite(parsed) ? parsed : null;
+    }
+
+    function isPastDate(dateValue) {
+      if (!dateValue) return false;
+      const candidate = new Date(`${dateValue}T00:00:00`);
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      return candidate < today;
+    }
+
+    function scholarshipFeatured(value) {
+      return value?.featured === true || value?.isFeatured === true;
+    }
+
+    function scholarshipLocation(value) {
+      return String(value?.location || value?.locationLabel || '').trim();
+    }
+
+    function scholarshipLink(value) {
+      return String(value?.link || value?.applyUrl || '').trim();
+    }
+
+    function scholarshipImage(value) {
+      return String(value?.imageUrl || value?.image || value?.coverImage || value?.bannerUrl || '').trim();
+    }
+
+    function sectionBlock(title, icon, html) {
+      return `<section class="editor-section">
+        <header class="editor-section__head">
+          <div class="editor-section__icon"><i data-lucide="${icon}"></i></div>
+          <h3>${esc(title)}</h3>
+        </header>
+        <div class="editor-section__body">${html}</div>
+      </section>`;
+    }
+
+    function render() {
+      const root = document.getElementById('page-content');
+      const eligibility = item?.eligibilityItems?.length
+        ? item.eligibilityItems
+        : item?.eligibility_items?.length
+          ? item.eligibility_items
+          : item?.eligibility;
+
+      root.innerHTML = `
+        <div class="page-breadcrumb">
+          <a href="moderation.html?tab=scholarships" class="btn btn-ghost"><i data-lucide="arrow-left"></i>Back to content</a>
+        </div>
+        <header class="page-hero">
+          <div>
+            <h1 class="page-hero__title">${isNew ? 'Publish scholarship' : 'Edit scholarship'}</h1>
+            <p class="page-hero__subtitle">Use the same scholarship fields the app already understands, without extra web-only controls.</p>
+          </div>
+          <div class="page-hero__actions">
+            <button class="btn" id="cancel-btn"><i data-lucide="x"></i>Cancel</button>
+            <button class="btn btn-primary" id="save-btn"><i data-lucide="save"></i>${isNew ? 'Publish' : 'Save changes'}</button>
+          </div>
+        </header>
+
+        <div class="editor-grid">
+          ${sectionBlock('Publishing', 'star', `
+            <label style="display:flex;align-items:center;gap:10px;">
+              <input id="f-featured" type="checkbox" ${scholarshipFeatured(item) ? 'checked' : ''}>
+              <span>Feature this scholarship</span>
+            </label>
+            <p class="row-sub" style="margin-top:10px;">Featured scholarships get stronger placement in the student discovery flow.</p>
+          `)}
+
+          ${sectionBlock('Basic information', 'info', `
+            <div class="form-grid-2">
+              <div class="form-row"><label>Scholarship title *</label><input id="f-title" type="text" placeholder="Future Builders Global Scholarship" value="${esc(item?.title || '')}"></div>
+              <div class="form-row"><label>Provider *</label><input id="f-provider" type="text" placeholder="Who offers this scholarship?" value="${esc(item?.provider || '')}"></div>
+              <div class="form-row"><label>Language</label>
+                <select id="f-lang">${LANGS.map(([value, label]) => `<option value="${value}" ${((item?.originalLanguage || 'fr') === value) ? 'selected' : ''}>${label}</option>`).join('')}</select>
+              </div>
+            </div>
+          `)}
+
+          ${sectionBlock('Description', 'file-text', `
+            <div class="form-row"><label>Description *</label><textarea id="f-description" rows="5" placeholder="Explain the scholarship and what it supports">${esc(item?.description || '')}</textarea></div>
+          `)}
+
+          ${sectionBlock('Eligibility requirements', 'list-checks', `
+            <div class="form-row"><label>Eligibility items *</label><textarea id="f-eligibility" rows="5" placeholder="Type one eligibility item per line">${esc(joinLines(eligibility))}</textarea></div>
+          `)}
+
+          ${sectionBlock('Logistics', 'map-pin', `
+            <div class="form-grid-2">
+              <div class="form-row"><label>Amount *</label><input id="f-amount" type="text" placeholder="e.g. 250000" value="${esc(item?.amount ?? '')}"></div>
+              <div class="form-row"><label>Deadline *</label><input id="f-deadline" type="date" value="${esc(toDateInput(item?.deadline))}"></div>
+              <div class="form-row"><label>Country</label><input id="f-country" type="text" placeholder="e.g. France" value="${esc(item?.country || '')}"></div>
+              <div class="form-row"><label>City</label><input id="f-city" type="text" placeholder="e.g. Paris" value="${esc(item?.city || '')}"></div>
+              <div class="form-row" style="grid-column:1/-1;"><label>Location label</label><input id="f-location" type="text" placeholder="Fallback location text" value="${esc(scholarshipLocation(item))}"></div>
+            </div>
+          `)}
+
+          ${sectionBlock('Additional information', 'link', `
+            <div class="form-grid-2">
+              <div class="form-row"><label>Application link</label><input id="f-link" type="url" placeholder="https://..." value="${esc(scholarshipLink(item))}"></div>
+              <div class="form-row"><label>Funding type</label>
+                <select id="f-fundingType">
+                  <option value="">Select funding type</option>
+                  ${FUNDING_TYPES.map(([value, label]) => `<option value="${value}" ${item?.fundingType === value ? 'selected' : ''}>${label}</option>`).join('')}
+                </select>
+              </div>
+              <div class="form-row"><label>Category</label><input id="f-category" type="text" placeholder="e.g. Masters, Research, Exchange" value="${esc(item?.category || '')}"></div>
+              <div class="form-row"><label>Level</label>
+                <select id="f-level">
+                  <option value="">Select level</option>
+                  ${LEVELS.map((level) => `<option value="${level}" ${item?.level === level ? 'selected' : ''}>${level}</option>`).join('')}
+                </select>
+              </div>
+              <div class="form-row"><label>Image URL</label><input id="f-imageUrl" type="url" placeholder="https://..." value="${esc(scholarshipImage(item))}"></div>
+              <div class="form-row"><label>Tags</label><input id="f-tags" type="text" placeholder="Comma-separated tags" value="${esc(joinCsv(item?.tags))}"></div>
+            </div>
+          `)}
+        </div>
+
+        <div class="page-hero__actions" style="justify-content:flex-end;margin-top:18px;">
+          <button class="btn" id="cancel-btn-2"><i data-lucide="x"></i>Cancel</button>
+          <button class="btn btn-primary" id="save-btn-2"><i data-lucide="save"></i>${isNew ? 'Publish' : 'Save changes'}</button>
+        </div>
+      `;
+
+      document.getElementById('cancel-btn').onclick = back;
+      document.getElementById('cancel-btn-2').onclick = back;
+      document.getElementById('save-btn').onclick = save;
+      document.getElementById('save-btn-2').onclick = save;
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function back() {
+      window.location.href = 'moderation.html?tab=scholarships';
+    }
+
+    function validatePayload(payload) {
+      if (!payload.title || !payload.provider || !payload.description) {
+        showToast('Title, provider, and description are required.', 'warning');
+        return false;
+      }
+      if (!payload.eligibilityItems.length) {
+        showToast('Add at least one eligibility item.', 'warning');
+        return false;
+      }
+      if (payload.amount === null || payload.amount < 0) {
+        showToast('Enter a valid amount.', 'warning');
+        return false;
+      }
+      if (!payload.deadline) {
+        showToast('Deadline is required.', 'warning');
+        return false;
+      }
+      if (isPastDate(payload.deadline)) {
+        showToast('Deadline cannot be in the past.', 'warning');
+        return false;
+      }
+      return true;
+    }
+
+    async function save() {
+      const uid = String(auth.currentUser?.uid || '').trim();
+      const eligibilityItems = splitLines(val('f-eligibility'));
+      const payload = {
+        title: val('f-title'),
+        provider: val('f-provider'),
+        description: val('f-description'),
+        eligibility: eligibilityItems.join('\n'),
+        eligibilityItems,
+        amount: parseAmount(val('f-amount')),
+        deadline: val('f-deadline'),
+        link: val('f-link'),
+        country: val('f-country'),
+        city: val('f-city'),
+        location: val('f-location'),
+        imageUrl: val('f-imageUrl'),
+        fundingType: val('f-fundingType'),
+        category: val('f-category'),
+        level: val('f-level'),
+        tags: splitCsv(val('f-tags')),
+        originalLanguage: val('f-lang') || 'fr',
+        featured: document.getElementById('f-featured').checked,
+        createdBy: uid,
+        createdByRole: 'admin',
+        updatedAt: serverTimestamp(),
+      };
+
+      if (!validatePayload(payload)) {
+        return;
+      }
+
+      const saveButtons = [document.getElementById('save-btn'), document.getElementById('save-btn-2')];
+      saveButtons.forEach((button) => {
+        if (button) button.disabled = true;
+      });
+
+      try {
+        if (isNew) {
+          const ref = doc(collection(db, 'scholarships'));
+          const created = {
+            ...payload,
+            id: ref.id,
+            createdAt: serverTimestamp(),
+          };
+          await setDoc(ref, created);
+          showToast('Scholarship published.', 'success');
+        } else {
+          await updateDoc(doc(db, 'scholarships', id), payload);
+          showToast('Scholarship updated.', 'success');
+        }
+        back();
+      } catch (error) {
+        console.error(error);
+        showToast('Save failed: ' + (error?.message || error), 'error');
+        saveButtons.forEach((button) => {
+          if (button) button.disabled = false;
+        });
+      }
+    }
+  </script>
+</body>
+</html>

@@ -120,6 +120,9 @@ async function fetchDoc(path, id) {
 async function renderOpportunity(id) {
   const it = await fetchDoc('opportunities', id);
   if (!it) return renderError('Opportunity not found.');
+  const requirements = Array.isArray(it.requirementItems) && it.requirementItems.length
+    ? it.requirementItems.join('\n')
+    : it.requirements;
   // Count applications for this opportunity
   let appCount = 0;
   try {
@@ -138,7 +141,7 @@ async function renderOpportunity(id) {
       { label: 'Apply URL', value: it.applyUrl ? `<a href="${esc(it.applyUrl)}" target="_blank" rel="noopener">${esc(it.applyUrl)}</a>` : '', html: true, icon: 'external-link' },
     ])}
     ${section('Description', paragraphs(it.description), 'align-left')}
-    ${section('Requirements', paragraphs(it.requirements), 'list-checks')}
+    ${section('Requirements', paragraphs(requirements), 'list-checks')}
     ${section('Skills', chips(it.skills, 'rgba(59,34,246,0.1)'), 'sparkles')}
     <div class="details-flags">
       ${it.isFeatured ? '<span class="badge badge-warning"><i data-lucide="star"></i>Featured</span>' : ''}
@@ -155,6 +158,11 @@ async function renderOpportunity(id) {
 async function renderScholarship(id) {
   const it = await fetchDoc('scholarships', id);
   if (!it) return renderError('Scholarship not found.');
+  const applyLink = it.link || it.applyUrl || '';
+  const eligibility = Array.isArray(it.eligibilityItems) && it.eligibilityItems.length
+    ? it.eligibilityItems.join('\n')
+    : it.eligibility;
+  const isFeatured = it.featured === true || it.isFeatured === true;
   setHeader({ icon: 'graduation-cap', color: typeColor('scholarship'), eyebrow: 'Scholarship', title: it.title || 'Untitled' });
   setBody(`
     ${kvGrid([
@@ -163,13 +171,13 @@ async function renderScholarship(id) {
       { label: 'Amount', value: it.amount, icon: 'coins' },
       { label: 'Level', value: it.level || it.academicLevel, icon: 'graduation-cap' },
       { label: 'Deadline', value: formatFullTimestamp(it.deadline), icon: 'calendar-clock' },
-      { label: 'Apply URL', value: it.applyUrl ? `<a href="${esc(it.applyUrl)}" target="_blank" rel="noopener">${esc(it.applyUrl)}</a>` : '', html: true, icon: 'external-link' },
+      { label: 'Apply URL', value: applyLink ? `<a href="${esc(applyLink)}" target="_blank" rel="noopener">${esc(applyLink)}</a>` : '', html: true, icon: 'external-link' },
       { label: 'Posted', value: formatFullTimestamp(it.createdAt), icon: 'calendar' },
     ])}
     ${section('Description', paragraphs(it.description), 'align-left')}
-    ${section('Eligibility', paragraphs(it.eligibility), 'list-checks')}
+    ${section('Eligibility', paragraphs(eligibility), 'list-checks')}
     <div class="details-flags">
-      ${it.isFeatured ? '<span class="badge badge-warning"><i data-lucide="star"></i>Featured</span>' : ''}
+      ${isFeatured ? '<span class="badge badge-warning"><i data-lucide="star"></i>Featured</span>' : ''}
       ${it.isHidden ? '<span class="badge badge-danger"><i data-lucide="eye-off"></i>Hidden</span>' : ''}
     </div>
   `);
@@ -183,6 +191,7 @@ async function renderScholarship(id) {
 async function renderIdea(id) {
   const it = await fetchDoc('projectIdeas', id);
   if (!it) return renderError('Project idea not found.');
+  const summary = it.shortDescription || it.tagline || it.summary;
   setHeader({ icon: 'lightbulb', color: typeColor('project_idea'), eyebrow: 'Project idea', title: it.title || 'Untitled' });
   setBody(`
     ${kvGrid([
@@ -191,7 +200,7 @@ async function renderIdea(id) {
       { label: 'Submitted by', value: it.submittedByName || '—', icon: 'user' },
       { label: 'Submitted', value: formatFullTimestamp(it.createdAt), icon: 'calendar' },
     ])}
-    ${section('Summary', paragraphs(it.summary), 'align-left')}
+    ${section('Summary', paragraphs(summary), 'align-left')}
     ${section('Description', paragraphs(it.description), 'text')}
     ${section('Skills', chips(it.skills, 'rgba(37,99,235,0.1)'), 'sparkles')}
     <div class="details-flags">${it.isHidden ? '<span class="badge badge-danger"><i data-lucide="eye-off"></i>Hidden</span>' : ''}</div>
@@ -245,7 +254,7 @@ async function renderApplication(id) {
   `);
   setFooter(`
     <button class="btn" data-close-modal="${MODAL_ID}">Close</button>
-    <a class="btn btn-primary" href="moderation.html?tab=applications&applicationId=${encodeURIComponent(id)}"><i data-lucide="file"></i>Open CV & review</a>
+    <a class="btn btn-primary" href="moderation.html?tab=opportunities&filter=pending_apps&applicationId=${encodeURIComponent(id)}"><i data-lucide="file"></i>Open CV & review</a>
   `);
   if (window.lucide) window.lucide.createIcons();
 }

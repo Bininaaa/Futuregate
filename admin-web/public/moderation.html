@@ -49,7 +49,7 @@
       auth, db, collection, doc, getDoc, getDocs, query, orderBy, limit, where,
       setDoc, updateDoc, deleteDoc, serverTimestamp,
     } from './js/firebase-config.js';
-    import { matchesSearch, getQueryParam, updateUrlParams } from './js/admin-utils.js';
+    import { matchesSearch, getQueryParam, timestampToDate, updateUrlParams } from './js/admin-utils.js';
     import { searchBooksViaWorker } from './js/google-books-service.js';
     import { searchYoutubeVideos } from './js/youtube-service.js';
     import { getApplicationCv, getApplicationCvDocument, openDocumentUrl, friendlyDocumentErrorMessage } from './js/document-access.js';
@@ -60,13 +60,13 @@
       { id: 'opportunities',label: 'Opportunities', icon: 'briefcase' },
       { id: 'scholarships', label: 'Scholarships',  icon: 'graduation-cap' },
       { id: 'trainings',    label: 'Library',       icon: 'book-open' },
-      { id: 'applications', label: 'Applications',  icon: 'file-text' },
     ];
 
     // Per-tab chip filter definitions (mirrors Flutter content center)
     const FILTERS = {
       ideas: [
         { v: 'all',      l: 'All',      i: 'list' },
+        { v: 'admin',    l: 'My admin posts', i: 'shield' },
         { v: 'pending',  l: 'Pending',  i: 'clock' },
         { v: 'approved', l: 'Approved', i: 'check' },
         { v: 'rejected', l: 'Rejected', i: 'x-circle' },
@@ -74,10 +74,10 @@
       ],
       opportunities: [
         { v: 'all',         l: 'All opportunities', i: 'list' },
-        { v: 'open',        l: 'Open',              i: 'check-circle' },
-        { v: 'closed',      l: 'Closed',            i: 'lock' },
         { v: 'admin',       l: 'Posted by admin',   i: 'shield' },
         { v: 'pendingApps', l: 'Has pending apps',  i: 'hourglass' },
+        { v: 'featured',    l: 'Featured',          i: 'star' },
+        { v: 'closed',      l: 'Closed',            i: 'lock' },
         { v: 'hidden',      l: 'Hidden',            i: 'eye-off' },
       ],
       opportunityTypes: [
@@ -98,24 +98,118 @@
         { v: 'books',    l: 'Books',    i: 'book' },
         { v: 'videos',   l: 'Videos',   i: 'video' },
       ],
-      applications: [
-        { v: 'all',      l: 'All',      i: 'list' },
-        { v: 'pending',  l: 'Pending',  i: 'clock' },
-        { v: 'reviewed', l: 'Reviewed', i: 'eye' },
-        { v: 'accepted', l: 'Accepted', i: 'check' },
-        { v: 'rejected', l: 'Rejected', i: 'x-circle' },
-      ],
     };
+
+    const initialTabParam = getQueryParam('tab') || 'ideas';
+
+    function normalizeActiveTab(value) {
+      const normalized = String(value || '').trim();
+      if (normalized === 'applications') return 'opportunities';
+      if (normalized === 'library') return 'trainings';
+      return normalized;
+    }
+
+    function normalizeFilterValue(tab, value) {
+      const normalized = String(value || '').trim();
+      const allowed = {
+        ideas: new Set(['all', 'admin', 'pending', 'approved', 'rejected', 'hidden']),
+        opportunities: new Set(['all', 'admin', 'pendingApps', 'featured', 'closed', 'hidden']),
+        scholarships: new Set(['all', 'featured', 'hidden']),
+        trainings: new Set(['all', 'featured', 'hidden', 'books', 'videos']),
+      };
+
+      if (!normalized) {
+        return initialTabParam === 'applications' && tab === 'opportunities'
+          ? 'pendingApps'
+          : 'all';
+      }
+
+      const aliased =
+        tab === 'opportunities' && normalized === 'pending_apps'
+          ? 'pendingApps'
+          : normalized;
+      return allowed[tab]?.has(aliased) ? aliased : 'all';
+    }
+
+    function normalizeOpportunityType(value) {
+      const normalized = String(value || '').trim();
+      return FILTERS.opportunityTypes.some((item) => item.v === normalized)
+        ? normalized
+        : 'all';
+    }
+
+    function normalizeLibrarySource(value) {
+      const normalized = String(value || '').trim();
+      return ['overview', 'books', 'youtube'].includes(normalized)
+        ? normalized
+        : 'overview';
+    }
+
+    function activeAdminId() {
+      return String(auth.currentUser?.uid || '').trim();
+    }
+
+    function isOwnAdminIdea(item) {
+      const adminId = activeAdminId();
+      return !!adminId && String(item?.submittedBy || '').trim() === adminId;
+    }
+
+    function isAdminOpportunity(item) {
+      return String(item?.createdByRole || '').trim().toLowerCase() === 'admin';
+    }
+
+    function canEditOpportunity(item) {
+      const adminId = activeAdminId();
+      return !!adminId &&
+        isAdminOpportunity(item) &&
+        String(item?.companyId || '').trim() === adminId;
+    }
+
+    function scholarshipFeatured(item) {
+      return item?.featured === true || item?.isFeatured === true;
+    }
+
+    function scholarshipThumb(item) {
+      return item?.imageUrl || item?.bannerUrl || item?.image || item?.coverImage || item?.thumbnailUrl || '';
+    }
+
+    function scholarshipLink(item) {
+      return String(item?.link || item?.applyUrl || '').trim();
+    }
+
+    function scholarshipLocation(item) {
+      return String(item?.location || item?.locationLabel || '').trim();
+    }
+
+    function opportunityEffectiveStatus(item) {
+      const status = String(item?.status || '').trim().toLowerCase();
+      if (status === 'closed') {
+        return 'closed';
+      }
+
+      const deadline = timestampToDate(item?.applicationDeadline || item?.deadline);
+      if (!deadline) {
+        return 'open';
+      }
+
+      const endOfDay = new Date(deadline);
+      endOfDay.setHours(23, 59, 59, 999);
+      return endOfDay.getTime() < Date.now() ? 'closed' : 'open';
+    }
 
     mountShell({ page: 'content' });
 
+    const normalizedInitialTab = normalizeActiveTab(initialTabParam);
     const state = {
-      activeTab: getQueryParam('tab') || 'ideas',
+      activeTab: normalizedInitialTab,
       ideas: [], applications: [], opportunities: [], scholarships: [], trainings: [],
       booksResults: [], youtubeResults: [],
-      librarySource: 'overview', // overview | books | youtube
-      filter: 'all',
-      oppType: 'all',
+      librarySource: normalizeLibrarySource(getQueryParam('librarySource') || 'overview'), // overview | books | youtube
+      filter: normalizeFilterValue(
+        normalizedInitialTab,
+        getQueryParam('filter') || '',
+      ),
+      oppType: normalizeOpportunityType(getQueryParam('opportunityType') || 'all'),
       search: '',
     };
     if (!TABS.find((t) => t.id === state.activeTab)) state.activeTab = 'ideas';
@@ -136,10 +230,21 @@
         btn.addEventListener('click', () => {
           state.activeTab = btn.getAttribute('data-tab');
           document.querySelectorAll('#tab-bar .tab').forEach((b) => b.classList.toggle('active', b === btn));
-          updateUrlParams({ tab: state.activeTab });
           state.filter = 'all';
           state.oppType = 'all';
+          state.librarySource = 'overview';
           state.search = '';
+          updateUrlParams({
+            tab: state.activeTab,
+            filter: '',
+            opportunityType: '',
+            librarySource: '',
+            ideaId: '',
+            opportunityId: '',
+            scholarshipId: '',
+            trainingId: '',
+            applicationId: '',
+          });
           renderTab();
         });
       });
@@ -151,9 +256,29 @@
     }
 
     function handleDeepLink() {
+      const applicationId = getQueryParam('applicationId');
+      if (applicationId) {
+        const application = state.applications.find((item) => item.id === applicationId);
+        const opportunity = application?.opportunityId
+          ? state.opportunities.find((item) => item.id === application.opportunityId)
+          : null;
+
+        if (opportunity) {
+          state.activeTab = 'opportunities';
+          document.querySelectorAll('#tab-bar .tab').forEach((btn) => {
+            btn.classList.toggle('active', btn.getAttribute('data-tab') === 'opportunities');
+          });
+          renderTab();
+          requestAnimationFrame(() => openOpportunityDetails(opportunity, applicationId));
+          return;
+        }
+
+        requestAnimationFrame(() => openCvViewer(applicationId));
+        return;
+      }
+
       const targets = {
         ideas:         { p: 'ideaId',         list: state.ideas,         open: (it) => { window.location.href = 'idea-editor.html?id=' + encodeURIComponent(it.id); } },
-        applications:  { p: 'applicationId',  list: state.applications,  open: (it) => openCvViewer(it.id) },
         opportunities: { p: 'opportunityId',  list: state.opportunities, open: (it) => openOppEditor(it) },
         scholarships:  { p: 'scholarshipId',  list: state.scholarships,  open: (it) => openScholarEditor(it) },
         trainings:     { p: 'trainingId',     list: state.trainings,     open: null },
@@ -221,7 +346,6 @@
       const panel = document.getElementById('tab-panel');
       switch (state.activeTab) {
         case 'ideas':         return renderIdeasTab(panel);
-        case 'applications':  return renderApplicationsTab(panel);
         case 'opportunities': return renderOppsTab(panel);
         case 'scholarships':  return renderScholarsTab(panel);
         case 'trainings':     return renderTrainingsTab(panel);
@@ -280,6 +404,7 @@
     // =============== IDEAS ===============
     function renderIdeasTab(panel) {
       let items = state.ideas.slice();
+      if (state.filter === 'admin')    items = items.filter((x) => isOwnAdminIdea(x));
       if (state.filter === 'pending')  items = items.filter((x) => (x.status || 'pending') === 'pending');
       if (state.filter === 'approved') items = items.filter((x) => x.status === 'approved');
       if (state.filter === 'rejected') items = items.filter((x) => x.status === 'rejected');
@@ -303,6 +428,7 @@
     function renderIdeaRow(it) {
       const status = it.status || 'pending';
       const badgeClass = status === 'approved' ? 'success' : status === 'rejected' ? 'danger' : 'warning';
+      const canEdit = isOwnAdminIdea(it);
       return `<div class="item-row" data-row-id="${it.id}">
         <div class="activity-icon" style="background:rgba(245,158,11,0.14);color:#F59E0B"><i data-lucide="lightbulb"></i></div>
         <div class="row-body">
@@ -314,6 +440,7 @@
             ${it.domain ? `<span class="badge"><i data-lucide="tag"></i>${esc(it.domain)}</span>` : ''}
             ${it.academicLevel ? `<span class="badge">${esc(it.academicLevel)}</span>` : ''}
             ${it.submittedByName ? `<span class="badge"><i data-lucide="user"></i>${esc(it.submittedByName)}</span>` : ''}
+            ${canEdit ? '<span class="badge badge-info"><i data-lucide="shield"></i>Your post</span>' : ''}
             <span class="badge"><i data-lucide="calendar"></i>${esc(formatTimestamp(it.createdAt) || '—')}</span>
           </div>
         </div>
@@ -321,7 +448,7 @@
           ${status !== 'approved' ? `<button class="btn btn-sm btn-success" data-id="${it.id}" data-action="approve" title="Approve"><i data-lucide="check"></i></button>` : ''}
           ${status !== 'rejected' ? `<button class="btn btn-sm btn-danger" data-id="${it.id}" data-action="reject" title="Reject"><i data-lucide="x"></i></button>` : ''}
           <button class="btn btn-sm" data-id="${it.id}" data-action="toggle-hide" title="${it.isHidden ? 'Unhide' : 'Hide'}"><i data-lucide="${it.isHidden ? 'eye' : 'eye-off'}"></i></button>
-          <button class="btn btn-sm" data-id="${it.id}" data-action="edit" title="Edit"><i data-lucide="pencil"></i></button>
+          ${canEdit ? `<button class="btn btn-sm" data-id="${it.id}" data-action="edit" title="Edit"><i data-lucide="pencil"></i></button>` : ''}
           <button class="btn btn-sm btn-danger" data-id="${it.id}" data-action="delete" title="Delete"><i data-lucide="trash-2"></i></button>
         </div>
       </div>`;
@@ -334,7 +461,14 @@
         if (action === 'approve') { await updateDoc(ref, { status: 'approved' }); it.status = 'approved'; showToast('Idea approved.', 'success'); }
         else if (action === 'reject') { await updateDoc(ref, { status: 'rejected' }); it.status = 'rejected'; showToast('Idea rejected.', 'success'); }
         else if (action === 'toggle-hide') { const next = !it.isHidden; await updateDoc(ref, { isHidden: next }); it.isHidden = next; showToast(next ? 'Idea hidden.' : 'Idea visible again.', 'success'); }
-        else if (action === 'edit') { window.location.href = 'idea-editor.html?id=' + encodeURIComponent(id); return; }
+        else if (action === 'edit') {
+          if (!isOwnAdminIdea(it)) {
+            showToast('You can only edit ideas you posted as admin.', 'warning');
+            return;
+          }
+          window.location.href = 'idea-editor.html?id=' + encodeURIComponent(id);
+          return;
+        }
         else if (action === 'delete') {
           if (!confirm('Delete this idea?')) return;
           await deleteDoc(ref);
@@ -444,11 +578,20 @@
     }
 
     function renderOppsTab(panel) {
-      let items = state.opportunities.slice();
-      if (state.filter === 'open')       items = items.filter((x) => (x.status || 'open') === 'open');
-      if (state.filter === 'admin')      items = items.filter((x) => x.createdByRole === 'admin' || x.postedBy === 'admin');
-      if (state.filter === 'pendingApps')items = items.filter((x) => oppPendingAppsCount(x.id) > 0);
-      if (state.filter === 'closed')     items = items.filter((x) => x.status === 'closed');
+      let items = state.opportunities
+        .slice()
+        .sort((a, b) => {
+          const aTime = timestampToDate(a.updatedAt || a.createdAt)?.getTime() || 0;
+          const bTime = timestampToDate(b.updatedAt || b.createdAt)?.getTime() || 0;
+          if (bTime !== aTime) {
+            return bTime - aTime;
+          }
+          return String(a.title || '').localeCompare(String(b.title || ''), undefined, { sensitivity: 'base' });
+        });
+      if (state.filter === 'admin')      items = items.filter((x) => isAdminOpportunity(x));
+      if (state.filter === 'pendingApps')items = items.filter((x) => canEditOpportunity(x) && oppPendingAppsCount(x.id) > 0);
+      if (state.filter === 'featured')   items = items.filter((x) => x.isFeatured === true);
+      if (state.filter === 'closed')     items = items.filter((x) => opportunityEffectiveStatus(x) === 'closed');
       if (state.filter === 'hidden')     items = items.filter((x) => x.isHidden === true);
       if (state.oppType && state.oppType !== 'all') {
         items = items.filter((x) => (x.type || x.opportunityType) === state.oppType);
@@ -468,14 +611,14 @@
         <div style="display:flex; justify-content:flex-end; margin-bottom:12px;">
           <button class="btn btn-primary" id="new-opp"><i data-lucide="plus"></i>New opportunity</button>
         </div>
-        <div class="list-grid" id="list">${items.length ? items.map(renderOppRow).join('') : emptyStateHtml('Nothing to show here yet.', { title: 'No opportunities', icon: 'briefcase' })}</div>
+        <div class="list-grid" id="list">${items.length ? items.map(renderOpportunityRow).join('') : emptyStateHtml('Nothing to show here yet.', { title: 'No opportunities', icon: 'briefcase' })}</div>
       `;
       bindCommon();
       document.querySelectorAll('[data-opptype]').forEach((b) => {
         b.addEventListener('click', () => { state.oppType = b.getAttribute('data-opptype'); renderTab(); });
       });
       document.getElementById('new-opp').addEventListener('click', () => { window.location.href = 'opp-editor.html'; });
-      bindRowActions((id, action) => handleOppAction(id, action));
+      bindRowActions((id, action) => handleOpportunityAction(id, action));
       if (window.lucide) window.lucide.createIcons();
     }
 
@@ -583,6 +726,154 @@
         }
         renderStats(); renderTab();
       } catch (e) { console.error(e); showToast('Action failed.', 'error'); }
+    }
+
+    function renderOpportunityRow(it) {
+      const pendingCount = oppPendingAppsCount(it.id);
+      const type = it.type || it.opportunityType || '—';
+      const effectiveStatus = opportunityEffectiveStatus(it);
+      const canEdit = canEditOpportunity(it);
+      return `<div class="item-row" data-row-id="${it.id}">
+        <div class="activity-icon" style="background:rgba(245,158,11,0.14);color:#F59E0B"><i data-lucide="briefcase"></i></div>
+        <div class="row-body">
+          <div class="row-title">${esc(it.title || 'Untitled')}</div>
+          <div class="row-sub">${esc(it.companyName || '—')} · ${esc(it.location || '—')} · ${esc(type)}</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">
+            <span class="badge">${esc(effectiveStatus)}</span>
+            ${it.isFeatured ? '<span class="badge badge-warning"><i data-lucide="star"></i>Featured</span>' : ''}
+            ${it.isHidden ? '<span class="badge badge-danger"><i data-lucide="eye-off"></i>Hidden</span>' : ''}
+            ${pendingCount ? `<span class="badge badge-info"><i data-lucide="hourglass"></i>${pendingCount} pending</span>` : ''}
+            ${canEdit ? '<span class="badge badge-info"><i data-lucide="shield"></i>Your post</span>' : ''}
+            <span class="badge"><i data-lucide="calendar"></i>${esc(formatTimestamp(it.createdAt) || '—')}</span>
+          </div>
+        </div>
+        <div class="row-actions">
+          <button class="btn btn-sm" data-id="${it.id}" data-action="details" title="View details & applications"><i data-lucide="eye"></i></button>
+          <button class="btn btn-sm" data-id="${it.id}" data-action="toggle-hide" title="${it.isHidden ? 'Unhide' : 'Hide'}"><i data-lucide="${it.isHidden ? 'eye' : 'eye-off'}"></i></button>
+          ${canEdit ? `<button class="btn btn-sm" data-id="${it.id}" data-action="edit" title="Edit"><i data-lucide="pencil"></i></button>` : ''}
+          <button class="btn btn-sm btn-danger" data-id="${it.id}" data-action="delete" title="Delete"><i data-lucide="trash-2"></i></button>
+        </div>
+      </div>`;
+    }
+
+    function openOpportunityDetails(it, focusApplicationId = '') {
+      document.getElementById('editor-title').textContent = it.title || 'Opportunity details';
+      const apps = state.applications
+        .filter((item) => item.opportunityId === it.id)
+        .sort((a, b) => {
+          const aTime = timestampToDate(a.appliedAt)?.getTime() || 0;
+          const bTime = timestampToDate(b.appliedAt)?.getTime() || 0;
+          return bTime - aTime;
+        });
+      const pending = apps.filter((item) => (item.status || 'pending') === 'pending').length;
+      const accepted = apps.filter((item) => item.status === 'accepted').length;
+      const rejected = apps.filter((item) => item.status === 'rejected').length;
+      const canManageApplications = canEditOpportunity(it);
+      const requirementItems = Array.isArray(it.requirementItems) && it.requirementItems.length
+        ? it.requirementItems
+        : splitLines(it.requirements);
+      const meta = [];
+      if (it.type) meta.push(`<span class="badge"><i data-lucide="layers"></i>${esc(it.type)}</span>`);
+      meta.push(`<span class="badge">${esc(opportunityEffectiveStatus(it))}</span>`);
+      if (it.isFeatured) meta.push('<span class="badge badge-warning"><i data-lucide="star"></i>Featured</span>');
+      if (it.isHidden) meta.push('<span class="badge badge-danger"><i data-lucide="eye-off"></i>Hidden</span>');
+
+      const applyLine = (application) => {
+        const status = application.status || 'pending';
+        const statusClass = status === 'accepted' ? 'success' : status === 'rejected' ? 'danger' : 'warning';
+        const isFocused = focusApplicationId && application.id === focusApplicationId;
+        return `<div class="item-row${isFocused ? ' card-highlight' : ''}" data-app-row-id="${application.id}">
+          <div class="activity-icon" style="background:rgba(59,34,246,0.14);color:#3B22F6"><i data-lucide="user"></i></div>
+          <div class="row-body">
+            <div class="row-title">${esc(application.studentName || application.studentId || 'Applicant')}</div>
+            <div class="row-sub">Applied ${esc(formatTimestamp(application.appliedAt) || '—')}</div>
+            <div style="margin-top:6px;"><span class="badge badge-${statusClass}">${esc(status)}</span></div>
+          </div>
+          <div class="row-actions">
+            <button class="btn btn-sm" data-app="${application.id}" data-app-action="cv"><i data-lucide="file-text"></i>CV</button>
+            ${canManageApplications && status === 'pending' ? `<button class="btn btn-sm btn-success" data-app="${application.id}" data-app-action="accept"><i data-lucide="check"></i>Approve</button>` : ''}
+            ${canManageApplications && status === 'pending' ? `<button class="btn btn-sm btn-danger" data-app="${application.id}" data-app-action="reject"><i data-lucide="x"></i>Reject</button>` : ''}
+          </div>
+        </div>`;
+      };
+
+      document.getElementById('editor-body').innerHTML = `
+        ${section('Summary', 'info', `
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;">${meta.join('')}</div>
+          <div class="row-sub">${esc(it.companyName || '—')} · ${esc(it.location || '—')}</div>
+          <div style="margin-top:10px;display:flex;gap:14px;flex-wrap:wrap;">
+            <span class="badge badge-info"><i data-lucide="users"></i>${apps.length} total</span>
+            <span class="badge badge-warning"><i data-lucide="hourglass"></i>${pending} pending</span>
+            <span class="badge badge-success"><i data-lucide="check"></i>${accepted} accepted</span>
+            <span class="badge badge-danger"><i data-lucide="x"></i>${rejected} rejected</span>
+          </div>
+        `)}
+        ${section('Description', 'file-text', `<p style="white-space:pre-wrap;margin:0;">${esc(it.description || '—')}</p>`)}
+        ${requirementItems.length ? section('Requirements', 'list-checks', `<ul style="margin:0;padding-left:18px;">${requirementItems.map((item) => `<li>${esc(item)}</li>`).join('')}</ul>`) : ''}
+        ${section('Applications (' + apps.length + ')', 'file-text', apps.length ? `<div class="list-grid">${apps.map(applyLine).join('')}</div>` : '<p class="row-sub" style="margin:0;">No applications yet.</p>')}
+      `;
+      const saveBtn = document.getElementById('editor-save');
+      if (saveBtn) saveBtn.style.display = 'none';
+      openModal('editor-modal');
+
+      document.querySelectorAll('[data-app-action]').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const appId = btn.getAttribute('data-app');
+          const action = btn.getAttribute('data-app-action');
+          if (action === 'cv') {
+            closeModal('editor-modal');
+            openCvViewer(appId);
+            return;
+          }
+          if (!canManageApplications) {
+            showToast('You can only update applications for opportunities you posted as admin.', 'warning');
+            return;
+          }
+          try {
+            const nextStatus = action === 'accept' ? 'accepted' : 'rejected';
+            await updateDoc(doc(db, 'applications', appId), { status: nextStatus });
+            const appObj = state.applications.find((item) => item.id === appId);
+            if (appObj) appObj.status = nextStatus;
+            showToast('Application ' + nextStatus + '.', 'success');
+            openOpportunityDetails(it, appId);
+          } catch (e) {
+            console.error(e);
+            showToast('Action failed: ' + (e?.message || e), 'error');
+          }
+        });
+      });
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    async function handleOpportunityAction(id, action) {
+      const ref = doc(db, 'opportunities', id);
+      const item = state.opportunities.find((entry) => entry.id === id);
+      try {
+        if (action === 'toggle-hide') {
+          const next = !item.isHidden;
+          await updateDoc(ref, { isHidden: next, updatedAt: serverTimestamp() });
+          item.isHidden = next;
+          showToast(next ? 'Opportunity hidden.' : 'Opportunity visible.', 'success');
+        } else if (action === 'edit') {
+          if (!canEditOpportunity(item)) {
+            showToast('You can only edit opportunities you posted as admin.', 'warning');
+            return;
+          }
+          return openOppEditor(item);
+        } else if (action === 'details') {
+          return openOpportunityDetails(item);
+        } else if (action === 'delete') {
+          if (!confirm('Delete this opportunity?')) return;
+          await deleteDoc(ref);
+          state.opportunities = state.opportunities.filter((entry) => entry.id !== id);
+          showToast('Opportunity deleted.', 'success');
+        }
+        renderStats();
+        renderTab();
+      } catch (e) {
+        console.error(e);
+        showToast('Action failed.', 'error');
+      }
     }
 
     function openOppEditor(it) {
@@ -762,10 +1053,31 @@
 
     // =============== SCHOLARSHIPS ===============
     function renderScholarsTab(panel) {
-      let items = state.scholarships.slice();
-      if (state.filter === 'featured') items = items.filter((x) => x.isFeatured === true);
+      let items = state.scholarships
+        .slice()
+        .sort((a, b) => {
+          const aHidden = a.isHidden === true ? 1 : 0;
+          const bHidden = b.isHidden === true ? 1 : 0;
+          if (aHidden !== bHidden) {
+            return aHidden - bHidden;
+          }
+          const aFeatured = scholarshipFeatured(a) ? 1 : 0;
+          const bFeatured = scholarshipFeatured(b) ? 1 : 0;
+          if (aFeatured !== bFeatured) {
+            return bFeatured - aFeatured;
+          }
+          const aDeadline = timestampToDate(a.deadline)?.getTime() || Number.MAX_SAFE_INTEGER;
+          const bDeadline = timestampToDate(b.deadline)?.getTime() || Number.MAX_SAFE_INTEGER;
+          if (aDeadline !== bDeadline) {
+            return aDeadline - bDeadline;
+          }
+          const aTime = timestampToDate(a.createdAt)?.getTime() || 0;
+          const bTime = timestampToDate(b.createdAt)?.getTime() || 0;
+          return bTime - aTime;
+        });
+      if (state.filter === 'featured') items = items.filter((x) => scholarshipFeatured(x));
       if (state.filter === 'hidden')   items = items.filter((x) => x.isHidden === true);
-      items = items.filter((x) => matchesQuery(x, [x.title, x.provider, x.country, x.city, x.description, x.category]));
+      items = items.filter((x) => matchesQuery(x, [x.title, x.provider, x.country, x.city, scholarshipLocation(x), x.description, x.category]));
 
       panel.innerHTML = `
         ${chipFilterBar('scholarships')}
@@ -773,11 +1085,11 @@
         <div style="display:flex; justify-content:flex-end; margin-bottom:12px;">
           <button class="btn btn-primary" id="new-scholar"><i data-lucide="plus"></i>New scholarship</button>
         </div>
-        <div class="list-grid" id="list">${items.length ? items.map(renderScholarRow).join('') : emptyStateHtml('No scholarships yet.', { title: 'Empty', icon: 'graduation-cap' })}</div>
+        <div class="list-grid" id="list">${items.length ? items.map(renderScholarshipRow).join('') : emptyStateHtml('No scholarships yet.', { title: 'Empty', icon: 'graduation-cap' })}</div>
       `;
       bindCommon();
       document.getElementById('new-scholar').addEventListener('click', () => { window.location.href = 'scholarship-editor.html'; });
-      bindRowActions((id, action) => handleScholarAction(id, action));
+      bindRowActions((id, action) => handleScholarshipAction(id, action));
       if (window.lucide) window.lucide.createIcons();
     }
 
@@ -822,6 +1134,58 @@
         }
         renderStats(); renderTab();
       } catch (e) { console.error(e); showToast('Action failed.', 'error'); }
+    }
+
+    function renderScholarshipRow(it) {
+      const thumb = scholarshipThumb(it);
+      const location = scholarshipLocation(it) || [it.city, it.country].filter(Boolean).join(' · ');
+      const deadlineLabel = it.deadline ? ` · Deadline ${esc(formatTimestamp(it.deadline))}` : '';
+      return `<div class="item-row" data-row-id="${it.id}">
+        <div class="user-avatar" style="border-radius:10px;width:56px;height:56px;background:#FFFFFF;border:1px solid var(--c-border);${thumb ? `background-image:url(${esc(thumb)});background-size:contain;background-repeat:no-repeat;background-position:center;` : ''}">
+          ${!thumb ? '<i data-lucide="graduation-cap" style="color:#E24A4A"></i>' : ''}
+        </div>
+        <div class="row-body">
+          <div class="row-title">${esc(it.title || 'Untitled')}</div>
+          <div class="row-sub">${esc(it.provider || '—')}${location ? ' · ' + esc(location) : ''}${deadlineLabel}</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">
+            ${it.fundingType ? `<span class="badge"><i data-lucide="wallet"></i>${esc(it.fundingType)}</span>` : ''}
+            ${it.amount ? `<span class="badge"><i data-lucide="coins"></i>${esc(it.amount)}</span>` : ''}
+            ${it.level ? `<span class="badge">${esc(it.level)}</span>` : ''}
+            ${scholarshipFeatured(it) ? '<span class="badge badge-warning"><i data-lucide="star"></i>Featured</span>' : ''}
+            ${it.isHidden ? '<span class="badge badge-danger"><i data-lucide="eye-off"></i>Hidden</span>' : ''}
+          </div>
+        </div>
+        <div class="row-actions">
+          <button class="btn btn-sm" data-id="${it.id}" data-action="toggle-hide" title="${it.isHidden ? 'Unhide' : 'Hide'}"><i data-lucide="${it.isHidden ? 'eye' : 'eye-off'}"></i></button>
+          <button class="btn btn-sm" data-id="${it.id}" data-action="edit" title="Edit"><i data-lucide="pencil"></i></button>
+          <button class="btn btn-sm btn-danger" data-id="${it.id}" data-action="delete" title="Delete"><i data-lucide="trash-2"></i></button>
+        </div>
+      </div>`;
+    }
+
+    async function handleScholarshipAction(id, action) {
+      const ref = doc(db, 'scholarships', id);
+      const item = state.scholarships.find((entry) => entry.id === id);
+      try {
+        if (action === 'toggle-hide') {
+          const next = !item.isHidden;
+          await updateDoc(ref, { isHidden: next, updatedAt: serverTimestamp() });
+          item.isHidden = next;
+          showToast(next ? 'Hidden.' : 'Visible.', 'success');
+        } else if (action === 'edit') {
+          return openScholarEditor(item);
+        } else if (action === 'delete') {
+          if (!confirm('Delete this scholarship?')) return;
+          await deleteDoc(ref);
+          state.scholarships = state.scholarships.filter((entry) => entry.id !== id);
+          showToast('Scholarship deleted.', 'success');
+        }
+        renderStats();
+        renderTab();
+      } catch (e) {
+        console.error(e);
+        showToast('Action failed.', 'error');
+      }
     }
 
     function openScholarEditor(it) {

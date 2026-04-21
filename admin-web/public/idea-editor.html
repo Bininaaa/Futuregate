@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Idea editor &middot; FutureGate Admin</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/app.css?v=2026042012">
+  <script src="js/theme-init.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body data-page="idea-editor">
+  <div id="auth-gate" class="auth-gate"><div class="spinner"></div><p>Verifying session...</p></div>
+  <div id="shell"></div>
+
+  <script type="module">
+    import { mountShell, showPage } from './js/shell.js';
+    import { checkAuth, esc, showToast } from './js/auth.js';
+    import {
+      auth, db, collection, doc, getDoc, setDoc, updateDoc, serverTimestamp,
+    } from './js/firebase-config.js';
+    import { getQueryParam } from './js/admin-utils.js';
+
+    mountShell({ page: 'content' });
+    checkAuth(async () => { await initPage(); });
+
+    const id = getQueryParam('id') || '';
+    const isNew = !id;
+    let item = null;
+    let ideaStatus = 'approved';
+
+    const ADMIN_NAME = 'FutureGate Admin';
+    const LANGS = [['fr', 'French'], ['en', 'English'], ['ar', 'Arabic']];
+    const LEVELS = [
+      ['bac', 'Bac'],
+      ['licence', 'Licence'],
+      ['master', 'Master'],
+      ['doctorat', 'Doctorat'],
+    ];
+
+    async function initPage() {
+      if (!isNew) {
+        try {
+          const snap = await getDoc(doc(db, 'projectIdeas', id));
+          if (snap.exists()) item = { id: snap.id, ...snap.data() };
+        } catch (error) {
+          console.error(error);
+        }
+      }
+      ideaStatus = item?.status === 'pending' ? 'pending' : 'approved';
+      if (!isNew && item && !canEditExistingIdea()) {
+        renderBlocked('You can only edit ideas you posted as admin.');
+        showPage();
+        return;
+      }
+      render();
+      showPage();
+    }
+
+    function canEditExistingIdea() {
+      const adminId = String(auth.currentUser?.uid || '').trim();
+      return !!adminId && String(item?.submittedBy || '').trim() === adminId;
+    }
+
+    function renderBlocked(message) {
+      const root = document.getElementById('page-content');
+      root.innerHTML = `
+        <section class="surface-panel">
+          <div class="surface-heading">
+            <div>
+              <div class="surface-heading-title">Idea unavailable</div>
+              <div class="surface-heading-copy">${esc(message)}</div>
+            </div>
+          </div>
+          <a href="moderation.html?tab=ideas" class="btn btn-primary"><i data-lucide="arrow-left"></i>Back to ideas</a>
+        </section>
+      `;
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function val(id) {
+      return (document.getElementById(id)?.value || '').trim();
+    }
+
+    function splitCsv(text) {
+      return String(text || '')
+        .split(',')
+        .map((entry) => entry.trim())
+        .filter(Boolean);
+    }
+
+    function joinCsv(values) {
+      return Array.isArray(values) ? values.join(', ') : '';
+    }
+
+    function sectionBlock(title, icon, html) {
+      return `<section class="editor-section">
+        <header class="editor-section__head">
+          <div class="editor-section__icon"><i data-lucide="${icon}"></i></div>
+          <h3>${esc(title)}</h3>
+        </header>
+        <div class="editor-section__body">${html}</div>
+      </section>`;
+    }
+
+    function render() {
+      const root = document.getElementById('page-content');
+      const isHidden = item?.isHidden === true || item?.status === 'rejected';
+      const isPublic = item?.isPublic !== false;
+      const level = String(item?.level || 'licence').trim() || 'licence';
+
+      root.innerHTML = `
+        <div class="page-breadcrumb">
+          <a href="moderation.html?tab=ideas" class="btn btn-ghost"><i data-lucide="arrow-left"></i>Back to content</a>
+        </div>
+        <header class="page-hero">
+          <div>
+            <h1 class="page-hero__title">${isNew ? 'Publish admin idea' : 'Edit idea'}</h1>
+            <p class="page-hero__subtitle">Use the same admin-only idea editor structure the app already exposes.</p>
+          </div>
+          <div class="page-hero__actions">
+            <button class="btn" id="cancel-btn"><i data-lucide="x"></i>Cancel</button>
+            <button class="btn btn-primary" id="save-btn"><i data-lucide="save"></i>${isNew ? 'Publish' : 'Save changes'}</button>
+          </div>
+        </header>
+
+        <div class="editor-grid">
+          ${sectionBlock('Publishing', 'eye', `
+            <div class="form-grid-2">
+              <label class="form-row" style="display:flex;align-items:center;gap:10px;">
+                <input id="f-visible" type="radio" name="idea-visibility" ${!isHidden ? 'checked' : ''}>
+                <span>Visible</span>
+              </label>
+              <label class="form-row" style="display:flex;align-items:center;gap:10px;">
+                <input id="f-hidden" type="radio" name="idea-visibility" ${isHidden ? 'checked' : ''}>
+                <span>Hidden</span>
+              </label>
+            </div>
+            <label style="display:flex;align-items:center;gap:10px;margin-top:14px;">
+              <input id="f-public" type="checkbox" ${isPublic ? 'checked' : ''}>
+              <span>Public collaboration allowed</span>
+            </label>
+          `)}
+
+          ${sectionBlock('Core story', 'book-open', `
+            <div class="form-row"><label>Idea title *</label><input id="f-title" type="text" placeholder="Campus Innovation Partner Program" value="${esc(item?.title || '')}"></div>
+            <div class="form-row"><label>Tagline</label><input id="f-tagline" type="text" placeholder="Short hook for the hero section" value="${esc(item?.tagline || '')}"></div>
+            <div class="form-row"><label>Short description</label><textarea id="f-shortDescription" rows="3" placeholder="A tight one-paragraph summary">${esc(item?.shortDescription || '')}</textarea></div>
+            <div class="form-row"><label>Full description *</label><textarea id="f-description" rows="6" placeholder="Describe the idea clearly and with enough depth">${esc(item?.description || '')}</textarea></div>
+          `)}
+
+          ${sectionBlock('Metadata and collaboration', 'tag', `
+            <div class="form-grid-2">
+              <div class="form-row"><label>Domain *</label><input id="f-domain" type="text" placeholder="e.g. EdTech, AI, Sustainability" value="${esc(item?.domain || '')}"></div>
+              <div class="form-row"><label>Academic level</label>
+                <select id="f-level">${LEVELS.map(([value, label]) => `<option value="${value}" ${level === value ? 'selected' : ''}>${label}</option>`).join('')}</select>
+              </div>
+              <div class="form-row"><label>Language</label>
+                <select id="f-lang">${LANGS.map(([value, label]) => `<option value="${value}" ${((item?.originalLanguage || 'fr') === value) ? 'selected' : ''}>${label}</option>`).join('')}</select>
+              </div>
+              <div class="form-row"><label>Category</label><input id="f-category" type="text" placeholder="e.g. Innovation, Startup, Research" value="${esc(item?.category || '')}"></div>
+              <div class="form-row"><label>Stage</label><input id="f-stage" type="text" placeholder="e.g. Concept, Prototype, Pilot" value="${esc(item?.stage || '')}"></div>
+              <div class="form-row"><label>Tools or stack *</label><input id="f-tools" type="text" placeholder="e.g. Flutter, Firebase, Figma" value="${esc(item?.tools || '')}"></div>
+              <div class="form-row"><label>Tags</label><input id="f-tags" type="text" placeholder="Comma-separated tags" value="${esc(joinCsv(item?.tags))}"></div>
+              <div class="form-row"><label>Skills needed</label><input id="f-skillsNeeded" type="text" placeholder="Comma-separated skills" value="${esc(joinCsv(item?.skillsNeeded))}"></div>
+              <div class="form-row"><label>Team roles needed</label><input id="f-teamNeeded" type="text" placeholder="Comma-separated roles" value="${esc(joinCsv(item?.teamNeeded))}"></div>
+              <div class="form-row" style="grid-column:1/-1;"><label>Target audience</label><textarea id="f-targetAudience" rows="3" placeholder="Who benefits most from this idea?">${esc(item?.targetAudience || '')}</textarea></div>
+              <div class="form-row" style="grid-column:1/-1;"><label>Problem statement</label><textarea id="f-problemStatement" rows="4" placeholder="What challenge does this solve?">${esc(item?.problemStatement || '')}</textarea></div>
+              <div class="form-row" style="grid-column:1/-1;"><label>Solution</label><textarea id="f-solution" rows="4" placeholder="How does the idea solve the problem?">${esc(item?.solution || '')}</textarea></div>
+              <div class="form-row" style="grid-column:1/-1;"><label>Resources needed</label><textarea id="f-resourcesNeeded" rows="3" placeholder="What support, partners, or assets are required?">${esc(item?.resourcesNeeded || '')}</textarea></div>
+              <div class="form-row" style="grid-column:1/-1;"><label>Benefits or impact</label><textarea id="f-benefits" rows="3" placeholder="What outcomes make this valuable?">${esc(item?.benefits || '')}</textarea></div>
+            </div>
+          `)}
+        </div>
+
+        <div class="page-hero__actions" style="justify-content:flex-end;margin-top:18px;">
+          <button class="btn" id="cancel-btn-2"><i data-lucide="x"></i>Cancel</button>
+          <button class="btn btn-primary" id="save-btn-2"><i data-lucide="save"></i>${isNew ? 'Publish' : 'Save changes'}</button>
+        </div>
+      `;
+
+      document.getElementById('cancel-btn').onclick = back;
+      document.getElementById('cancel-btn-2').onclick = back;
+      document.getElementById('save-btn').onclick = save;
+      document.getElementById('save-btn-2').onclick = save;
+      document.getElementById('f-visible').addEventListener('change', () => {
+        if (document.getElementById('f-visible').checked) {
+          ideaStatus = 'approved';
+        }
+      });
+      document.getElementById('f-hidden').addEventListener('change', () => {
+        if (document.getElementById('f-hidden').checked) {
+          ideaStatus = 'approved';
+        }
+      });
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function back() {
+      window.location.href = 'moderation.html?tab=ideas';
+    }
+
+    function validatePayload(payload) {
+      if (!payload.title || payload.title.length < 4) {
+        showToast('Idea title must be at least 4 characters.', 'warning');
+        return false;
+      }
+      if (!payload.description || payload.description.length < 20) {
+        showToast('Full description must be at least 20 characters.', 'warning');
+        return false;
+      }
+      if (!payload.domain) {
+        showToast('Domain is required.', 'warning');
+        return false;
+      }
+      if (!payload.tools) {
+        showToast('Tools or stack is required.', 'warning');
+        return false;
+      }
+      return true;
+    }
+
+    async function save() {
+      const uid = String(auth.currentUser?.uid || '').trim();
+      const payload = {
+        title: val('f-title'),
+        tagline: val('f-tagline'),
+        shortDescription: val('f-shortDescription'),
+        description: val('f-description'),
+        domain: val('f-domain'),
+        level: val('f-level') || 'licence',
+        originalLanguage: val('f-lang') || 'fr',
+        category: val('f-category'),
+        stage: val('f-stage'),
+        tools: val('f-tools'),
+        tags: splitCsv(val('f-tags')),
+        skillsNeeded: splitCsv(val('f-skillsNeeded')),
+        teamNeeded: splitCsv(val('f-teamNeeded')),
+        targetAudience: val('f-targetAudience'),
+        problemStatement: val('f-problemStatement'),
+        solution: val('f-solution'),
+        resourcesNeeded: val('f-resourcesNeeded'),
+        benefits: val('f-benefits'),
+        isPublic: document.getElementById('f-public').checked,
+        isHidden: document.getElementById('f-hidden').checked,
+        status: ideaStatus,
+        submittedBy: uid,
+        submittedByName: ADMIN_NAME,
+        authorAvatar: String(auth.currentUser?.photoURL || item?.authorAvatar || '').trim(),
+        authorPhotoType: String(item?.authorPhotoType || '').trim(),
+        authorAvatarId: String(item?.authorAvatarId || '').trim(),
+        updatedAt: serverTimestamp(),
+      };
+
+      if (!validatePayload(payload)) {
+        return;
+      }
+
+      const saveButtons = [document.getElementById('save-btn'), document.getElementById('save-btn-2')];
+      saveButtons.forEach((button) => {
+        if (button) button.disabled = true;
+      });
+
+      try {
+        if (isNew) {
+          const ref = doc(collection(db, 'projectIdeas'));
+          const created = {
+            ...payload,
+            id: ref.id,
+            createdAt: serverTimestamp(),
+          };
+          await setDoc(ref, created);
+          showToast('Admin idea published.', 'success');
+        } else {
+          await updateDoc(doc(db, 'projectIdeas', id), payload);
+          showToast('Admin idea updated.', 'success');
+        }
+        back();
+      } catch (error) {
+        console.error(error);
+        showToast('Save failed: ' + (error?.message || error), 'error');
+        saveButtons.forEach((button) => {
+          if (button) button.disabled = false;
+        });
+      }
+    }
+  </script>
+</body>
+</html>

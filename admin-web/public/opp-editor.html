@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Opportunity editor · FutureGate Admin</title>
+  <title>Opportunity editor &middot; FutureGate Admin</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -29,34 +29,113 @@
 
     const id = getQueryParam('id') || '';
     const isNew = !id;
-    let opp = null;
+    let item = null;
+
+    const ADMIN_NAME = 'FutureGate Admin';
+    const TYPES = [['job', 'Job'], ['internship', 'Internship'], ['sponsoring', 'Sponsoring / Funding']];
+    const LANGS = [['fr', 'French'], ['en', 'English'], ['ar', 'Arabic']];
+    const PERIODS = [['monthly', 'Monthly'], ['yearly', 'Yearly'], ['hourly', 'Hourly'], ['daily', 'Daily']];
+    const EMPLOYMENT = [
+      ['full_time', 'Full-time'],
+      ['part_time', 'Part-time'],
+      ['internship', 'Internship'],
+      ['contract', 'Contract'],
+      ['temporary', 'Temporary'],
+      ['freelance', 'Freelance'],
+    ];
+    const WORK_MODES = [['onsite', 'On-site'], ['remote', 'Remote'], ['hybrid', 'Hybrid']];
+    const CURRENCIES = ['DZD', 'EUR', 'USD'];
 
     async function initPage() {
       if (!isNew) {
         try {
           const snap = await getDoc(doc(db, 'opportunities', id));
-          if (snap.exists()) opp = { id: snap.id, ...snap.data() };
-        } catch (e) { console.error(e); }
+          if (snap.exists()) item = { id: snap.id, ...snap.data() };
+        } catch (error) {
+          console.error(error);
+        }
+      }
+      if (!isNew && item && !canEditExistingOpportunity()) {
+        renderBlocked('You can only edit opportunities you posted as admin.');
+        showPage();
+        return;
       }
       render();
       showPage();
     }
 
-    const TYPES   = [['job','Job'],['internship','Internship'],['sponsoring','Sponsoring / Funding']];
-    const LANGS   = [['fr','French'],['en','English'],['ar','Arabic']];
-    const PERIODS = [['monthly','Monthly'],['yearly','Yearly'],['hourly','Hourly'],['daily','Daily']];
-    const EMP     = [['full_time','Full-time'],['part_time','Part-time'],['contract','Contract'],['internship','Internship']];
-    const MODES   = [['onsite','On-site'],['remote','Remote'],['hybrid','Hybrid']];
-    const CURR    = ['DZD','EUR','USD'];
+    function canEditExistingOpportunity() {
+      const adminId = String(auth.currentUser?.uid || '').trim();
+      return !!adminId &&
+        String(item?.createdByRole || '').trim().toLowerCase() === 'admin' &&
+        String(item?.companyId || '').trim() === adminId;
+    }
 
-    function val(k) { return (document.getElementById(k)?.value || '').trim(); }
-    function numOrNull(k) { const v = val(k); return v === '' ? null : Number(v); }
-    function splitLines(s) { return String(s || '').split(/\r?\n/).map((x) => x.trim()).filter(Boolean); }
-    function joinLines(a) { return Array.isArray(a) ? a.join('\n') : ''; }
+    function renderBlocked(message) {
+      const root = document.getElementById('page-content');
+      root.innerHTML = `
+        <section class="surface-panel">
+          <div class="surface-heading">
+            <div>
+              <div class="surface-heading-title">Opportunity unavailable</div>
+              <div class="surface-heading-copy">${esc(message)}</div>
+            </div>
+          </div>
+          <a href="moderation.html?tab=opportunities" class="btn btn-primary"><i data-lucide="arrow-left"></i>Back to opportunities</a>
+        </section>
+      `;
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function val(id) {
+      return (document.getElementById(id)?.value || '').trim();
+    }
+
+    function splitLines(text) {
+      return String(text || '')
+        .split(/\r?\n/)
+        .map((entry) => entry.trim())
+        .filter(Boolean);
+    }
+
+    function joinLines(values) {
+      if (Array.isArray(values)) {
+        return values.join('\n');
+      }
+      return String(values || '').trim();
+    }
+
+    function parseDateLike(value) {
+      if (!value) return null;
+      if (typeof value.toDate === 'function') return value.toDate();
+      if (value instanceof Date) return value;
+      if (typeof value.seconds === 'number') return new Date(value.seconds * 1000);
+      const parsed = Date.parse(value);
+      return Number.isNaN(parsed) ? null : new Date(parsed);
+    }
+
     function toDateInput(value) {
-      const d = value?.toDate ? value.toDate() : (value?.seconds ? new Date(value.seconds * 1000) : (value instanceof Date ? value : null));
-      if (!d) return '';
-      return d.toISOString().slice(0, 10);
+      const date = parseDateLike(value);
+      return date ? date.toISOString().slice(0, 10) : '';
+    }
+
+    function parseNumber(text) {
+      const normalized = String(text || '').replace(/[^0-9.\-]/g, '').trim();
+      if (!normalized) return null;
+      const parsed = Number(normalized);
+      return Number.isFinite(parsed) ? parsed : null;
+    }
+
+    function deadlineIsPast(dateValue) {
+      if (!dateValue) return false;
+      const deadline = new Date(`${dateValue}T00:00:00`);
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      return deadline < today;
+    }
+
+    function toEndOfDay(dateValue) {
+      return dateValue ? new Date(`${dateValue}T23:59:59.999`) : null;
     }
 
     function sectionBlock(title, icon, html) {
@@ -71,9 +150,12 @@
 
     function render() {
       const root = document.getElementById('page-content');
-      const opType = opp?.type || 'job';
-      const deadline = toDateInput(opp?.applicationDeadline || opp?.deadline);
-      const currency = opp?.salaryCurrency || opp?.fundingCurrency || 'DZD';
+      const opportunityType = item?.type || item?.opportunityType || 'job';
+      const deadline = toDateInput(item?.applicationDeadline || item?.deadline);
+      const requirements = item?.requirementItems?.length
+        ? item.requirementItems
+        : item?.requirements;
+      const defaultPublisher = String(item?.companyName || ADMIN_NAME).trim() || ADMIN_NAME;
 
       root.innerHTML = `
         <div class="page-breadcrumb">
@@ -81,8 +163,8 @@
         </div>
         <header class="page-hero">
           <div>
-            <h1 class="page-hero__title">${isNew ? 'Post an opportunity' : 'Edit opportunity'}</h1>
-            <p class="page-hero__subtitle">${isNew ? 'Share a job, internship or sponsoring program with students.' : 'Update the listing details, logistics and visibility.'}</p>
+            <h1 class="page-hero__title">${isNew ? 'Publish admin opportunity' : 'Edit admin opportunity'}</h1>
+            <p class="page-hero__subtitle">${isNew ? 'Fill in the same admin opportunity fields used in the app, then publish.' : 'Update the same structured fields students already rely on in the app.'}</p>
           </div>
           <div class="page-hero__actions">
             <button class="btn" id="cancel-btn"><i data-lucide="x"></i>Cancel</button>
@@ -91,40 +173,39 @@
         </header>
 
         <div class="editor-grid">
-          ${sectionBlock('Basics', 'info', `
+          ${sectionBlock('Basic information', 'info', `
             <div class="form-grid-2">
-              <div class="form-row"><label>Title *</label><input id="f-title" type="text" placeholder="Frontend Developer Internship" value="${esc(opp?.title || '')}"/></div>
-              <div class="form-row"><label>Publisher / company *</label><input id="f-company" type="text" placeholder="FutureGate" value="${esc(opp?.companyName || '')}"/></div>
-              <div class="form-row"><label>Location *</label><input id="f-location" type="text" placeholder="Algiers · Remote · Hybrid" value="${esc(opp?.location || '')}"/></div>
-              <div class="form-row"><label>Type *</label>
-                <select id="f-type">${TYPES.map(([v,l]) => `<option value="${v}" ${opType===v?'selected':''}>${l}</option>`).join('')}</select>
-              </div>
-              <div class="form-row"><label>Language</label>
-                <select id="f-lang">${LANGS.map(([v,l]) => `<option value="${v}" ${((opp?.originalLanguage||'fr')===v)?'selected':''}>${l}</option>`).join('')}</select>
-              </div>
-              <div class="form-row"><label>Status</label>
+              <div class="form-row"><label>Publisher name *</label><input id="f-company" type="text" placeholder="${ADMIN_NAME}" value="${esc(defaultPublisher)}"></div>
+              <div class="form-row"><label>Status *</label>
                 <select id="f-status">
-                  <option value="open"   ${(opp?.status||'open')==='open'?'selected':''}>Open for applications</option>
-                  <option value="closed" ${opp?.status==='closed'?'selected':''}>Closed</option>
+                  <option value="open" ${(item?.status || 'open') === 'open' ? 'selected' : ''}>Open</option>
+                  <option value="closed" ${item?.status === 'closed' ? 'selected' : ''}>Closed</option>
                 </select>
               </div>
+              <div class="form-row"><label>Title *</label><input id="f-title" type="text" placeholder="Frontend Developer Internship" value="${esc(item?.title || '')}"></div>
+              <div class="form-row"><label>Language</label>
+                <select id="f-lang">${LANGS.map(([value, label]) => `<option value="${value}" ${((item?.originalLanguage || 'fr') === value) ? 'selected' : ''}>${label}</option>`).join('')}</select>
+              </div>
+              <div class="form-row"><label>Type *</label>
+                <select id="f-type">${TYPES.map(([value, label]) => `<option value="${value}" ${opportunityType === value ? 'selected' : ''}>${label}</option>`).join('')}</select>
+              </div>
+              <div class="form-row"><label>Location *</label><input id="f-location" type="text" placeholder="Algiers / Hybrid" value="${esc(item?.location || '')}"></div>
             </div>
           `)}
 
-          ${sectionBlock('Description & requirements', 'file-text', `
-            <div class="form-row"><label>Description *</label><textarea id="f-description" rows="6" placeholder="Describe the role, mission and impact.">${esc(opp?.description || '')}</textarea></div>
-            <div class="form-row"><label>Requirements (one per line)</label><textarea id="f-requirements" rows="4" placeholder="Bachelor degree in computer science\nFrench or English\nKnowledge of React">${esc(joinLines(opp?.requirements || opp?.requirementItems))}</textarea></div>
+          ${sectionBlock('Description', 'file-text', `
+            <div class="form-row"><label>Description *</label><textarea id="f-description" rows="6" placeholder="Describe the role, scope, and value clearly.">${esc(item?.description || '')}</textarea></div>
+          `)}
+
+          ${sectionBlock('Requirements', 'list-checks', `
+            <div class="form-row"><label>Requirements or eligibility *</label><textarea id="f-requirements" rows="5" placeholder="Type one requirement per line">${esc(joinLines(requirements))}</textarea></div>
           `)}
 
           ${sectionBlock('Logistics', 'calendar', `
             <div class="form-grid-2">
-              <div class="form-row"><label>Application deadline</label><input id="f-deadline" type="date" value="${esc(deadline)}"/></div>
+              <div class="form-row"><label>Application deadline *</label><input id="f-deadline" type="date" value="${esc(deadline)}"></div>
             </div>
-            <div id="opp-type-fields" data-currency="${esc(currency)}"></div>
-          `)}
-
-          ${sectionBlock('Visibility', 'eye', `
-            <label style="display:flex;align-items:center;gap:8px;"><input id="f-hidden" type="checkbox" ${opp?.isHidden?'checked':''}/> Hide this opportunity from students</label>
+            <div id="type-fields" style="margin-top:12px;"></div>
           `)}
         </div>
 
@@ -133,6 +214,7 @@
           <button class="btn btn-primary" id="save-btn-2"><i data-lucide="save"></i>${isNew ? 'Publish' : 'Save changes'}</button>
         </div>
       `;
+
       document.getElementById('cancel-btn').onclick = back;
       document.getElementById('cancel-btn-2').onclick = back;
       document.getElementById('save-btn').onclick = save;
@@ -142,118 +224,195 @@
       if (window.lucide) window.lucide.createIcons();
     }
 
-    function back() { window.location.href = 'moderation.html?tab=opportunities'; }
-
     function renderTypeFields() {
-      const t = val('f-type');
-      const el = document.getElementById('opp-type-fields');
-      const currency = el.getAttribute('data-currency') || 'DZD';
-      const o = opp || {};
-      if (t === 'job') {
-        el.innerHTML = `
-          <div class="form-grid-2" style="margin-top:12px;">
-            <div class="form-row"><label>Salary min</label><input id="f-salaryMin" type="number" value="${esc(o.salaryMin ?? '')}"/></div>
-            <div class="form-row"><label>Salary max</label><input id="f-salaryMax" type="number" value="${esc(o.salaryMax ?? '')}"/></div>
+      const type = val('f-type') || 'job';
+      const target = document.getElementById('type-fields');
+      const salaryCurrency = item?.salaryCurrency || item?.fundingCurrency || CURRENCIES[0];
+      const salaryPeriod = item?.salaryPeriod || PERIODS[0][0];
+      const employmentType = item?.employmentType || (type === 'internship' ? 'internship' : EMPLOYMENT[0][0]);
+      const workMode = item?.workMode || WORK_MODES[0][0];
+      const isPaid = item?.isPaid;
+
+      if (type === 'sponsoring') {
+        target.innerHTML = `
+          <div class="form-grid-2">
+            <div class="form-row"><label>Funding amount</label><input id="f-fundingAmount" type="text" placeholder="e.g. 250000" value="${esc(item?.fundingAmount ?? item?.salaryMin ?? '')}"></div>
+            <div class="form-row"><label>Funding currency</label>
+              <select id="f-fundingCurrency">${CURRENCIES.map((currency) => `<option value="${currency}" ${salaryCurrency === currency ? 'selected' : ''}>${currency}</option>`).join('')}</select>
+            </div>
+            <div class="form-row" style="grid-column:1/-1;"><label>Funding note</label><textarea id="f-fundingNote" rows="3" placeholder="Optional support details shown to students">${esc(item?.fundingNote || item?.compensationText || '')}</textarea></div>
+          </div>
+        `;
+      } else {
+        target.innerHTML = `
+          <div class="form-grid-2">
+            <div class="form-row"><label>Salary minimum</label><input id="f-salaryMin" type="text" placeholder="e.g. 60000" value="${esc(item?.salaryMin ?? '')}"></div>
+            <div class="form-row"><label>Salary maximum</label><input id="f-salaryMax" type="text" placeholder="e.g. 90000" value="${esc(item?.salaryMax ?? '')}"></div>
             <div class="form-row"><label>Currency</label>
-              <select id="f-currency">${CURR.map((c) => `<option value="${c}" ${currency===c?'selected':''}>${c}</option>`).join('')}</select>
+              <select id="f-salaryCurrency">${CURRENCIES.map((currency) => `<option value="${currency}" ${salaryCurrency === currency ? 'selected' : ''}>${currency}</option>`).join('')}</select>
             </div>
             <div class="form-row"><label>Salary period</label>
-              <select id="f-salaryPeriod">${PERIODS.map(([v,l]) => `<option value="${v}" ${(o.salaryPeriod||'monthly')===v?'selected':''}>${l}</option>`).join('')}</select>
+              <select id="f-salaryPeriod">${PERIODS.map(([value, label]) => `<option value="${value}" ${salaryPeriod === value ? 'selected' : ''}>${label}</option>`).join('')}</select>
             </div>
             <div class="form-row"><label>Employment type</label>
-              <select id="f-employment">${EMP.map(([v,l]) => `<option value="${v}" ${(o.employmentType||'full_time')===v?'selected':''}>${l}</option>`).join('')}</select>
+              <select id="f-employmentType">${EMPLOYMENT.map(([value, label]) => `<option value="${value}" ${employmentType === value ? 'selected' : ''}>${label}</option>`).join('')}</select>
             </div>
             <div class="form-row"><label>Work mode</label>
-              <select id="f-workmode">${MODES.map(([v,l]) => `<option value="${v}" ${(o.workMode||'onsite')===v?'selected':''}>${l}</option>`).join('')}</select>
+              <select id="f-workMode">${WORK_MODES.map(([value, label]) => `<option value="${value}" ${workMode === value ? 'selected' : ''}>${label}</option>`).join('')}</select>
             </div>
-          </div>`;
-      } else if (t === 'internship') {
-        el.innerHTML = `
-          <div class="form-grid-2" style="margin-top:12px;">
-            <div class="form-row"><label>Duration (e.g. 3 months)</label><input id="f-duration" type="text" value="${esc(o.duration || '')}"/></div>
-            <div class="form-row"><label>Work mode</label>
-              <select id="f-workmode">${MODES.map(([v,l]) => `<option value="${v}" ${(o.workMode||'onsite')===v?'selected':''}>${l}</option>`).join('')}</select>
+            <div class="form-row"><label>Paid status</label>
+              <select id="f-isPaid">
+                <option value="" ${isPaid === undefined || isPaid === null ? 'selected' : ''}>Select status</option>
+                <option value="true" ${isPaid === true ? 'selected' : ''}>Paid</option>
+                <option value="false" ${isPaid === false ? 'selected' : ''}>Unpaid</option>
+              </select>
             </div>
-            <div class="form-row"><label>Paid?</label>
-              <select id="f-paid"><option value="true" ${o.isPaid?'selected':''}>Paid</option><option value="false" ${o.isPaid===false?'selected':''}>Unpaid</option></select>
-            </div>
-            <div class="form-row"><label>Compensation note</label><input id="f-compNote" type="text" value="${esc(o.compensationText || '')}"/></div>
-          </div>`;
-      } else if (t === 'sponsoring') {
-        el.innerHTML = `
-          <div class="form-grid-2" style="margin-top:12px;">
-            <div class="form-row"><label>Funding amount</label><input id="f-fundAmount" type="number" value="${esc(o.fundingAmount ?? '')}"/></div>
-            <div class="form-row"><label>Currency</label>
-              <select id="f-currency">${CURR.map((c) => `<option value="${c}" ${currency===c?'selected':''}>${c}</option>`).join('')}</select>
-            </div>
-            <div class="form-row" style="grid-column:1/-1;"><label>Funding note</label><input id="f-fundNote" type="text" value="${esc(o.fundingNote || '')}"/></div>
-          </div>`;
-      } else {
-        el.innerHTML = '';
+            ${type === 'internship' ? `<div class="form-row"><label>Duration</label><input id="f-duration" type="text" placeholder="e.g. 3 months" value="${esc(item?.duration || '')}"></div>` : ''}
+            <div class="form-row" style="grid-column:1/-1;"><label>Compensation note</label><textarea id="f-compensationText" rows="3" placeholder="Optional note shown to students">${esc(item?.compensationText || '')}</textarea></div>
+          </div>
+        `;
       }
+
       if (window.lucide) window.lucide.createIcons();
     }
 
-    async function save() {
-      const t = val('f-type');
-      const dl = val('f-deadline');
-      const payload = {
-        title: val('f-title'), companyName: val('f-company'), location: val('f-location'),
-        type: t, originalLanguage: val('f-lang'), status: val('f-status'),
-        description: val('f-description'),
-        requirements: splitLines(val('f-requirements')),
-        applicationDeadline: dl ? new Date(dl + 'T00:00:00') : null,
-        isHidden: document.getElementById('f-hidden').checked,
-        updatedAt: serverTimestamp(),
-      };
-      if (t === 'job') {
-        Object.assign(payload, {
-          salaryMin: numOrNull('f-salaryMin'), salaryMax: numOrNull('f-salaryMax'),
-          salaryCurrency: val('f-currency'), salaryPeriod: val('f-salaryPeriod'),
-          employmentType: val('f-employment'), workMode: val('f-workmode'),
-        });
-      } else if (t === 'internship') {
-        Object.assign(payload, {
-          duration: val('f-duration'), workMode: val('f-workmode'),
-          isPaid: val('f-paid') === 'true', compensationText: val('f-compNote'),
-        });
-      } else if (t === 'sponsoring') {
-        Object.assign(payload, {
-          fundingAmount: numOrNull('f-fundAmount'),
-          fundingCurrency: val('f-currency'), fundingNote: val('f-fundNote'),
-        });
+    function back() {
+      window.location.href = 'moderation.html?tab=opportunities';
+    }
+
+    function validatePayload(basePayload) {
+      if (!basePayload.companyName || !basePayload.title || !basePayload.location || !basePayload.description) {
+        showToast('Publisher, title, location, and description are required.', 'warning');
+        return false;
       }
-      if (!payload.title || !payload.companyName || !payload.location || !payload.description) {
-        showToast('Title, company, location and description are required.', 'warning'); return;
+      if (!basePayload.deadline) {
+        showToast('Application deadline is required.', 'warning');
+        return false;
+      }
+      if (deadlineIsPast(basePayload.deadline)) {
+        showToast('Deadline cannot be in the past.', 'warning');
+        return false;
+      }
+      if (!basePayload.requirementItems.length) {
+        showToast(basePayload.type === 'sponsoring' ? 'Add at least one eligibility item.' : 'Add at least one requirement.', 'warning');
+        return false;
       }
 
-      const saveBtn = document.getElementById('save-btn');
-      const saveBtn2 = document.getElementById('save-btn-2');
-      [saveBtn, saveBtn2].forEach((b) => b && (b.disabled = true));
+      if (basePayload.type === 'sponsoring') {
+        const fundingAmount = parseNumber(val('f-fundingAmount'));
+        const fundingNote = val('f-fundingNote');
+        if (val('f-fundingAmount') && fundingAmount === null) {
+          showToast('Enter a valid funding amount.', 'warning');
+          return false;
+        }
+        if (!val('f-fundingAmount') && !fundingNote) {
+          showToast('Add a funding amount or note.', 'warning');
+          return false;
+        }
+      } else {
+        const salaryMin = parseNumber(val('f-salaryMin'));
+        const salaryMax = parseNumber(val('f-salaryMax'));
+        if (val('f-salaryMin') && salaryMin === null) {
+          showToast('Enter a valid salary minimum.', 'warning');
+          return false;
+        }
+        if (val('f-salaryMax') && salaryMax === null) {
+          showToast('Enter a valid salary maximum.', 'warning');
+          return false;
+        }
+        if (salaryMin !== null && salaryMax !== null && salaryMax < salaryMin) {
+          showToast('Salary max must be at least salary min.', 'warning');
+          return false;
+        }
+      }
+
+      return true;
+    }
+
+    async function save() {
+      const type = val('f-type') || 'job';
+      const uid = String(auth.currentUser?.uid || '').trim();
+      const deadline = val('f-deadline');
+      const requirementItems = splitLines(val('f-requirements'));
+      const payload = {
+        companyId: uid,
+        companyName: val('f-company') || ADMIN_NAME,
+        companyLogo: String(auth.currentUser?.photoURL || item?.companyLogo || '').trim(),
+        createdBy: uid,
+        createdByRole: 'admin',
+        title: val('f-title'),
+        description: val('f-description'),
+        type,
+        location: val('f-location'),
+        requirements: requirementItems.join('\n'),
+        requirementItems,
+        status: val('f-status') || 'open',
+        deadline,
+        applicationDeadline: toEndOfDay(deadline),
+        salaryMin: null,
+        salaryMax: null,
+        salaryCurrency: null,
+        salaryPeriod: null,
+        compensationText: null,
+        fundingAmount: null,
+        fundingCurrency: null,
+        fundingNote: null,
+        employmentType: null,
+        workMode: null,
+        isPaid: null,
+        duration: null,
+        originalLanguage: val('f-lang') || 'fr',
+        updatedAt: serverTimestamp(),
+      };
+
+      if (!validatePayload(payload)) {
+        return;
+      }
+
+      if (type === 'sponsoring') {
+        payload.fundingAmount = parseNumber(val('f-fundingAmount'));
+        payload.fundingCurrency = val('f-fundingCurrency') || CURRENCIES[0];
+        payload.fundingNote = val('f-fundingNote');
+      } else {
+        payload.salaryMin = parseNumber(val('f-salaryMin'));
+        payload.salaryMax = parseNumber(val('f-salaryMax'));
+        payload.salaryCurrency = val('f-salaryCurrency') || CURRENCIES[0];
+        payload.salaryPeriod = val('f-salaryPeriod') || PERIODS[0][0];
+        payload.compensationText = val('f-compensationText');
+        payload.employmentType = type === 'internship'
+          ? (val('f-employmentType') || 'internship')
+          : val('f-employmentType');
+        payload.workMode = val('f-workMode');
+        payload.isPaid = val('f-isPaid') === '' ? null : val('f-isPaid') === 'true';
+        payload.duration = type === 'internship' ? val('f-duration') : null;
+      }
+
+      const saveButtons = [document.getElementById('save-btn'), document.getElementById('save-btn-2')];
+      saveButtons.forEach((button) => {
+        if (button) button.disabled = true;
+      });
 
       try {
         if (isNew) {
           const ref = doc(collection(db, 'opportunities'));
-          const uid = auth.currentUser?.uid || '';
           const created = {
             ...payload,
             id: ref.id,
-            companyId: uid,
-            createdBy: uid,
-            createdByRole: 'admin',
             createdAt: serverTimestamp(),
           };
           await setDoc(ref, created);
-          showToast('Opportunity published.', 'success');
+          showToast('Admin opportunity published.', 'success');
         } else {
           await updateDoc(doc(db, 'opportunities', id), payload);
-          showToast('Opportunity updated.', 'success');
+          showToast('Admin opportunity updated.', 'success');
         }
         back();
-      } catch (e) {
-        console.error(e);
-        showToast('Save failed: ' + (e?.message || e), 'error');
-        [saveBtn, saveBtn2].forEach((b) => b && (b.disabled = false));
+      } catch (error) {
+        console.error(error);
+        showToast('Save failed: ' + (error?.message || error), 'error');
+        saveButtons.forEach((button) => {
+          if (button) button.disabled = false;
+        });
       }
     }
   </script>
