@@ -47,7 +47,6 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
   List<TrainingModel> _results = [];
 
   String _selectedDomain = 'Informatique';
-  String _selectedLevel = 'licence';
   String _selectedLanguage = '';
 
   AppLocalizations get _l10n => AppLocalizations.of(context)!;
@@ -65,19 +64,11 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
     'Langues',
   ];
 
-  final List<String> _levels = const [
-    'bac',
-    'licence',
-    'master',
-    'doctorat',
-    'general',
-  ];
-
-  final List<String> _languages = const ['', 'fr', 'en', 'ar'];
+  final List<String> _languages = const ['', 'fr', 'ar', 'en'];
 
   String _languageLabel(String value) {
     return switch (value) {
-      '' => _l10n.originalLanguageFieldHint,
+      '' => _l10n.uiAll,
       'fr' => _l10n.languageFrench,
       'ar' => _l10n.languageArabic,
       _ => _l10n.languageEnglish,
@@ -170,7 +161,10 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
     });
 
     try {
-      final results = await _youtubeService.searchVideos(query: query);
+      final results = await _youtubeService.searchVideos(
+        query: query,
+        language: _selectedLanguage,
+      );
 
       if (!mounted) {
         return;
@@ -239,7 +233,6 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
         video: video,
         adminId: adminId,
         domain: _selectedDomain,
-        level: _selectedLevel,
         sourceLanguage: _selectedLanguage,
       );
 
@@ -497,11 +490,28 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
     return Padding(
       padding: const EdgeInsets.all(16),
       child: AdminSurface(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final stackFilterFields = constraints.maxWidth < 430;
-
-            final domainField = DropdownButtonFormField<String>(
+        child: Column(
+          children: [
+            AdminSectionHeader(
+              eyebrow: _l10n.uiYoutube,
+              title: _l10n.uiImportVideos,
+              subtitle: _l10n
+                  .uiSearchEducationalVideosReviewTheMetadataAndPublishCuratedContent,
+            ),
+            const SizedBox(height: 14),
+            TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: _l10n.uiSearchVideosForExampleAlgorithms,
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+              onSubmitted: (_) => _searchVideos(),
+            ),
+            const SizedBox(height: 12),
+            DropdownButtonFormField<String>(
               initialValue: _selectedDomain,
               isExpanded: true,
               selectedItemBuilder: (context) =>
@@ -522,19 +532,24 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
                   _selectedDomain = value;
                 });
               },
-            );
-
-            final levelField = DropdownButtonFormField<String>(
-              initialValue: _selectedLevel,
+            ),
+            const SizedBox(height: 10),
+            DropdownButtonFormField<String>(
+              initialValue: _selectedLanguage,
               isExpanded: true,
               selectedItemBuilder: (context) =>
-                  _buildSelectedDropdownItems(_levels, (value) => value),
+                  _buildSelectedDropdownItems(_languages, _languageLabel),
               decoration: InputDecoration(
-                labelText: _l10n.uiLevel,
+                labelText: _l10n.uiLanguage,
                 border: const OutlineInputBorder(),
               ),
-              items: _levels
-                  .map((item) => _buildDropdownItem(value: item, label: item))
+              items: _languages
+                  .map(
+                    (item) => _buildDropdownItem(
+                      value: item,
+                      label: _languageLabel(item),
+                    ),
+                  )
                   .toList(),
               onChanged: (value) {
                 if (value == null) {
@@ -542,98 +557,31 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
                 }
 
                 setState(() {
-                  _selectedLevel = value;
+                  _selectedLanguage = value;
                 });
               },
-            );
-
-            return Column(
-              children: [
-                AdminSectionHeader(
-                  eyebrow: _l10n.uiYoutube,
-                  title: _l10n.uiImportVideos,
-                  subtitle: _l10n
-                      .uiSearchEducationalVideosReviewTheMetadataAndPublishCuratedContent,
-                ),
-                const SizedBox(height: 14),
-                TextField(
-                  controller: _searchController,
-                  decoration: InputDecoration(
-                    hintText: _l10n.uiSearchVideosForExampleAlgorithms,
-                    prefixIcon: const Icon(Icons.search),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                  ),
-                  onSubmitted: (_) => _searchVideos(),
-                ),
-                const SizedBox(height: 12),
-                if (stackFilterFields) ...[
-                  domainField,
-                  const SizedBox(height: 10),
-                  levelField,
-                ] else
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(child: domainField),
-                      const SizedBox(width: 10),
-                      Expanded(child: levelField),
-                    ],
-                  ),
-                const SizedBox(height: 10),
-                DropdownButtonFormField<String>(
-                  initialValue: _selectedLanguage,
-                  isExpanded: true,
-                  selectedItemBuilder: (context) =>
-                      _buildSelectedDropdownItems(_languages, _languageLabel),
-                  decoration: InputDecoration(
-                    labelText: _l10n.originalLanguageFieldLabel,
-                    border: const OutlineInputBorder(),
-                  ),
-                  items: _languages
-                      .map(
-                        (item) => _buildDropdownItem(
-                          value: item,
-                          label: _languageLabel(item),
-                        ),
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: _isSearching ? null : _searchVideos,
+                icon: _isSearching
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                      .toList(),
-                  onChanged: (value) {
-                    if (value == null) {
-                      return;
-                    }
-
-                    setState(() {
-                      _selectedLanguage = value;
-                    });
-                  },
+                    : const Icon(Icons.search),
+                label: Text(_isSearching ? _l10n.uiSearching : _l10n.uiSearch),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AdminPalette.primary,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
-                const SizedBox(height: 12),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: _isSearching ? null : _searchVideos,
-                    icon: _isSearching
-                        ? const SizedBox(
-                            width: 18,
-                            height: 18,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : const Icon(Icons.search),
-                    label: Text(
-                      _isSearching ? _l10n.uiSearching : _l10n.uiSearch,
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AdminPalette.primary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                    ),
-                  ),
-                ),
-              ],
-            );
-          },
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -684,7 +632,7 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
           icon: Icons.search_off_rounded,
           title: _l10n.uiNoVideosMatchThisSearch,
           message: _l10n
-              .uiTryABroaderQueryOrSwitchTheDomainAndLevelContextBeforeSearchingAgain,
+              .uiTryABroaderQueryOrChangeTheLanguageAndDomainFiltersBeforeSearchingAgain,
         ),
       );
     }
@@ -968,49 +916,77 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
                   ],
                 ),
                 const SizedBox(height: 12),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
-                    OutlinedButton.icon(
-                      onPressed: isBusy
-                          ? null
-                          : () => _toggleFeatured(training),
-                      icon: Icon(
-                        training.isFeatured
-                            ? Icons.star_outline_rounded
-                            : Icons.star_rounded,
-                      ),
-                      label: Text(
-                        training.isFeatured
-                            ? _l10n.uiUnfeature
-                            : _l10n.uiFeature,
-                      ),
+                _buildInlineActionRow([
+                  OutlinedButton.icon(
+                    onPressed: isBusy ? null : () => _toggleFeatured(training),
+                    icon: Icon(
+                      training.isFeatured
+                          ? Icons.star_outline_rounded
+                          : Icons.star_rounded,
+                      size: 15,
                     ),
-                    OutlinedButton.icon(
-                      onPressed: isBusy || training.displayLink.trim().isEmpty
-                          ? null
-                          : () => _openLink(training.displayLink),
-                      icon: const Icon(Icons.open_in_new),
-                      label: Text(AppLocalizations.of(context)!.uiOpen),
+                    label: Text(
+                      training.isFeatured ? _l10n.uiUnfeature : _l10n.uiFeature,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    OutlinedButton.icon(
-                      onPressed: isBusy
-                          ? null
-                          : () => _deleteTraining(training),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: AdminPalette.danger,
-                      ),
-                      icon: const Icon(Icons.delete_outline),
-                      label: Text(AppLocalizations.of(context)!.uiDelete),
+                    style: _inlineActionStyle(AdminPalette.textPrimary),
+                  ),
+                  OutlinedButton.icon(
+                    onPressed: isBusy || training.displayLink.trim().isEmpty
+                        ? null
+                        : () => _openLink(training.displayLink),
+                    icon: const Icon(Icons.open_in_new, size: 15),
+                    label: Text(
+                      AppLocalizations.of(context)!.uiOpen,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ],
-                ),
+                    style: _inlineActionStyle(AdminPalette.textPrimary),
+                  ),
+                  OutlinedButton.icon(
+                    onPressed: isBusy ? null : () => _deleteTraining(training),
+                    icon: const Icon(Icons.delete_outline, size: 15),
+                    label: Text(
+                      AppLocalizations.of(context)!.uiDelete,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    style: _inlineActionStyle(AdminPalette.danger),
+                  ),
+                ]),
               ],
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildInlineActionRow(List<Widget> actions) {
+    if (actions.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Row(
+      children: [
+        for (var index = 0; index < actions.length; index++) ...[
+          Expanded(child: actions[index]),
+          if (index < actions.length - 1) const SizedBox(width: 6),
+        ],
+      ],
+    );
+  }
+
+  ButtonStyle _inlineActionStyle(Color color) {
+    return OutlinedButton.styleFrom(
+      foregroundColor: color,
+      side: BorderSide(color: color.withValues(alpha: 0.28)),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
+      minimumSize: const Size(0, 34),
+      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      visualDensity: const VisualDensity(horizontal: -2, vertical: -2),
+      textStyle: const TextStyle(fontSize: 12.2, fontWeight: FontWeight.w600),
     );
   }
 
@@ -1066,14 +1042,9 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
                             color: AdminPalette.activity,
                           ),
                           AdminPill(
-                            label: _selectedLevel,
-                            color: AdminPalette.warning,
+                            label: _languageLabel(_selectedLanguage),
+                            color: AdminPalette.success,
                           ),
-                          if (_selectedLanguage.trim().isNotEmpty)
-                            AdminPill(
-                              label: _selectedLanguage.toUpperCase(),
-                              color: AdminPalette.success,
-                            ),
                         ],
                       ),
                     ],

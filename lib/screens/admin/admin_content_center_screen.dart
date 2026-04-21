@@ -64,6 +64,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
   static Color get _scholarshipAccentColor => AdminPalette.activity;
   static Color get _libraryAccentColor => AdminPalette.secondary;
   static const String _ideaFilterAll = 'all';
+  static const String _ideaFilterAdmin = 'admin';
   static const String _ideaFilterPending = 'pending';
   static const String _ideaFilterApproved = 'approved';
   static const String _ideaFilterRejected = 'rejected';
@@ -432,6 +433,9 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
           (idea) => _normalizedIdeaStatus(idea.status) == _ideaFilterApproved,
         )
         .length;
+    final adminIdeasCount = allIdeas
+        .where((idea) => _canAdminEditIdea(idea, adminId))
+        .length;
     final rejectedIdeasCount = allIdeas
         .where(
           (idea) => _normalizedIdeaStatus(idea.status) == _ideaFilterRejected,
@@ -439,7 +443,9 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
         .length;
     final hiddenIdeasCount = allIdeas.where((idea) => idea.isHidden).length;
     final ideas = allIdeas
-        .where((idea) => _matchesIdeaStatusFilter(idea, _ideaStatusFilter))
+        .where(
+          (idea) => _matchesIdeaStatusFilter(idea, _ideaStatusFilter, adminId),
+        )
         .toList();
     if (provider.allProjectIdeas.isEmpty) {
       return AdminEmptyState(
@@ -498,6 +504,19 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                           _ideaStatusFilter = _toggleFilterValue(
                             _ideaStatusFilter,
                             _ideaFilterPending,
+                            allValue: _ideaFilterAll,
+                          );
+                        }),
+                      ),
+                      _CollectionHeaderFilter(
+                        label: 'Admin-Created Ideas',
+                        selected: _ideaStatusFilter == _ideaFilterAdmin,
+                        icon: Icons.admin_panel_settings_outlined,
+                        badgeCount: adminIdeasCount,
+                        onTap: () => setState(() {
+                          _ideaStatusFilter = _toggleFilterValue(
+                            _ideaStatusFilter,
+                            _ideaFilterAdmin,
                             allValue: _ideaFilterAll,
                           );
                         }),
@@ -593,7 +612,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               FilledButton.icon(
                 onPressed: () => _openIdeaEditor(idea: idea),
                 icon: const Icon(Icons.edit_outlined, size: 16),
-                label: const Text('Edit'),
+                label: Text(AppLocalizations.of(context)!.uiEditIdea),
                 style: _compactFilledFooterStyle(_ideaAccentColor),
               ),
             OutlinedButton.icon(
@@ -1317,7 +1336,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               FilledButton.icon(
                 onPressed: () => _openOpportunityEditor(opportunity: opportunity),
                 icon: const Icon(Icons.edit_outlined, size: 16),
-                label: const Text('Edit'),
+                label: const Text('Edit Opportunity'),
                 style: _compactFilledFooterStyle(AdminPalette.primary),
               ),
             OutlinedButton.icon(
@@ -1779,9 +1798,17 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
         idea.submittedByName.toLowerCase().contains(query);
   }
 
-  bool _matchesIdeaStatusFilter(ProjectIdeaModel idea, String filter) {
+  bool _matchesIdeaStatusFilter(
+    ProjectIdeaModel idea,
+    String filter,
+    String adminId,
+  ) {
     if (filter == _ideaFilterAll) {
       return true;
+    }
+
+    if (filter == _ideaFilterAdmin) {
+      return _canAdminEditIdea(idea, adminId);
     }
 
     if (filter == _ideaFilterHidden) {
@@ -1806,6 +1833,8 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
 
   String _ideaFilterTitle(String filter) {
     switch (filter) {
+      case _ideaFilterAdmin:
+        return 'Admin-Created Ideas';
       case _ideaFilterPending:
         return 'Pending Ideas';
       case _ideaFilterApproved:
@@ -1821,6 +1850,8 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
 
   String _ideaEmptyMessage(String filter) {
     switch (filter) {
+      case _ideaFilterAdmin:
+        return 'No admin-created ideas match this search';
       case _ideaFilterPending:
         return 'No pending ideas match this search';
       case _ideaFilterApproved:

@@ -16,7 +16,6 @@ import '../../widgets/opportunity_type_selector.dart';
 import '../../widgets/shared/app_content_system.dart';
 import '../../widgets/shared/app_feedback.dart';
 import '../../widgets/shared/app_loading.dart';
-import '../../widgets/shared/posting_language_selector.dart';
 
 class PublishOpportunityScreen extends StatefulWidget {
   final String? opportunityId;
@@ -270,20 +269,32 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                               _buildField(
                                 controller: _titleController,
                                 label: 'Opportunity title',
-                                hint: _titleHintForType(),
+                                hint: _titleHintForType(l10n),
                                 validator: _validateTitle,
                               ),
                               const SizedBox(height: 10),
-                              PostingLanguageSelector(
+                              _buildDropdownField<String>(
                                 value: _originalLanguage,
-                                onChanged: (v) =>
-                                    setState(() => _originalLanguage = v),
-                                activeColor: CompanyDashboardPalette.primary,
-                                borderColor: CompanyDashboardPalette.border,
-                                textColor:
-                                    CompanyDashboardPalette.textSecondary,
-                                iconColor:
-                                    CompanyDashboardPalette.textSecondary,
+                                label: l10n.originalLanguageFieldLabel,
+                                hint: l10n.originalLanguageFieldLabel,
+                                items: [
+                                  DropdownMenuItem(
+                                    value: ContentLanguage.french,
+                                    child: Text(l10n.languageFrench),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: ContentLanguage.english,
+                                    child: Text(l10n.languageEnglish),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: ContentLanguage.arabic,
+                                    child: Text(l10n.languageArabic),
+                                  ),
+                                ],
+                                onChanged: (value) {
+                                  if (value == null) return;
+                                  setState(() => _originalLanguage = value);
+                                },
                               ),
                               const SizedBox(height: 14),
                               _buildSectionLabel('Opportunity type'),
@@ -326,7 +337,7 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                               _buildField(
                                 controller: _locationController,
                                 label: 'Location',
-                                hint: _locationHintForType(),
+                                hint: _locationHintForType(l10n),
                                 validator: _validateLocation,
                               ),
                             ],
@@ -731,27 +742,19 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
     );
   }
 
-  String _titleHintForType() {
-    switch (_selectedType) {
-      case OpportunityType.internship:
-        return 'e.g. Flutter Internship - Mobile Team';
-      case OpportunityType.sponsoring:
-        return 'e.g. Student Innovation Sponsoring Program';
-      case OpportunityType.job:
-      default:
-        return 'e.g. Junior Flutter Developer';
-    }
+  String _titleHintForType(AppLocalizations l10n) {
+    return switch (OpportunityType.parse(_selectedType)) {
+      OpportunityType.internship => l10n.opportunityTitleHintInternship,
+      OpportunityType.sponsoring => l10n.opportunityTitleHintSponsoring,
+      _ => l10n.opportunityTitleHintJob,
+    };
   }
 
-  String _locationHintForType() {
-    switch (_selectedType) {
-      case OpportunityType.sponsoring:
-        return 'e.g. Algeria-wide or Algiers';
-      case OpportunityType.internship:
-      case OpportunityType.job:
-      default:
-        return 'e.g. Algiers, Algeria';
-    }
+  String _locationHintForType(AppLocalizations l10n) {
+    return switch (OpportunityType.parse(_selectedType)) {
+      OpportunityType.sponsoring => l10n.opportunityLocationHintSponsoring,
+      _ => l10n.opportunityLocationHintDefault,
+    };
   }
 
   String? _validateTitle(String? value) {

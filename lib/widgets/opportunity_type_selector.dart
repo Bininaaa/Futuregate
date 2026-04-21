@@ -69,31 +69,32 @@ class OpportunityTypeSelector extends StatelessWidget {
   }) {
     final isSelected = selected == type;
     final typeColor = OpportunityType.color(type);
+    const cardRadius = 18.0;
 
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(cardRadius),
         onTap: () => onChanged(type),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 180),
-          constraints: BoxConstraints(minHeight: wide ? 76 : 128),
-          padding: const EdgeInsets.all(12),
+          constraints: BoxConstraints(minHeight: wide ? 92 : 132),
+          padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
             color: isSelected
                 ? typeColor.withValues(alpha: 0.10)
                 : colors.surfaceElevated,
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(cardRadius),
             border: Border.all(
               color: isSelected ? typeColor : colors.border,
-              width: isSelected ? 1.6 : 1,
+              width: isSelected ? 1.8 : 1,
             ),
             boxShadow: isSelected
                 ? [
                     BoxShadow(
                       color: typeColor.withValues(alpha: 0.12),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
+                      blurRadius: 16,
+                      offset: const Offset(0, 6),
                     ),
                   ]
                 : const [],
@@ -171,7 +172,7 @@ class OpportunityTypeSelector extends StatelessWidget {
         Text(
           OpportunityType.label(type, l10n),
           style: GoogleFonts.poppins(
-            fontSize: 12,
+            fontSize: 12.6,
             fontWeight: FontWeight.w700,
             color: isSelected ? typeColor : colors.textSecondary,
           ),
@@ -183,7 +184,7 @@ class OpportunityTypeSelector extends StatelessWidget {
         Text(
           OpportunityType.subtitle(type, l10n),
           style: GoogleFonts.poppins(
-            fontSize: 9.5,
+            fontSize: 10.4,
             height: 1.35,
             color: isSelected
                 ? typeColor.withValues(alpha: 0.82)
@@ -210,7 +211,7 @@ class OpportunityTypeSelector extends StatelessWidget {
         color: isSelected
             ? typeColor.withValues(alpha: 0.16)
             : colors.surfaceMuted,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Icon(
         OpportunityType.icon(type),
@@ -222,11 +223,11 @@ class OpportunityTypeSelector extends StatelessWidget {
 
   Widget _buildCheck(Color typeColor) {
     return Container(
-      width: 22,
-      height: 22,
+      width: 24,
+      height: 24,
       decoration: BoxDecoration(
         color: typeColor,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(999),
       ),
       child: const Icon(Icons.check, size: 14, color: Colors.white),
     );

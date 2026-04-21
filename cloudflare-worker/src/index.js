@@ -1537,6 +1537,10 @@ async function handleSearchYoutube(request, env) {
   const body = await request.json();
   const query = trim(body.query).slice(0, 160);
   const maxResults = clamp(body.maxResults, 1, 20, 12);
+  const language = trim(body.language).toLowerCase().slice(0, 20);
+  const relevanceLanguage = ["fr", "en", "ar"].includes(language)
+    ? language
+    : "";
 
   if (!query) {
     return err("A search query is required.");
@@ -1549,6 +1553,10 @@ async function handleSearchYoutube(request, env) {
     maxResults: String(maxResults),
     key: env.YOUTUBE_API_KEY,
   });
+
+  if (relevanceLanguage) {
+    params.set("relevanceLanguage", relevanceLanguage);
+  }
 
   const response = await fetch(`${YOUTUBE_API_URL}?${params.toString()}`);
   if (!response.ok) {
@@ -1572,7 +1580,7 @@ async function handleImportBook(request, env) {
   const body = await request.json();
   const book = body.selectedBook;
   const domain = trim(body.domain).slice(0, 120);
-  const level = trim(body.level).slice(0, 50);
+  const level = trim(body.level).slice(0, 50) || "general";
   const languageOverride = trim(body.languageOverride).slice(0, 20);
   const isFeatured = body.isFeatured === true;
 
@@ -1581,9 +1589,6 @@ async function handleImportBook(request, env) {
   }
   if (!domain) {
     return err("A training domain is required.");
-  }
-  if (!level) {
-    return err("A training level is required.");
   }
 
   const googleBookId = trim(book.googleBookId);
@@ -1654,7 +1659,7 @@ async function handleImportYoutubeVideo(request, env) {
   const body = await request.json();
   const video = body.selectedVideo;
   const domain = trim(body.domain).slice(0, 120);
-  const level = trim(body.level).slice(0, 50);
+  const level = trim(body.level).slice(0, 50) || "general";
   const language = trim(body.language).slice(0, 20);
   const isFeatured = body.isFeatured === true;
 
@@ -1663,9 +1668,6 @@ async function handleImportYoutubeVideo(request, env) {
   }
   if (!domain) {
     return err("A training domain is required.");
-  }
-  if (!level) {
-    return err("A training level is required.");
   }
   if (!language) {
     return err("A training language is required.");

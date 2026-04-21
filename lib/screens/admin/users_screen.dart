@@ -1579,21 +1579,11 @@ class _UsersScreenState extends State<UsersScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            _l10n.uiModerationActions,
+            _l10n.uiCompanyReview,
             style: TextStyle(
               fontSize: 13.5,
               fontWeight: FontWeight.w700,
               color: AdminPalette.textPrimary,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            _l10n
-                .uiUpdateTheCompanyApprovalStateFromHereWithoutLeavingTheProfile,
-            style: TextStyle(
-              fontSize: 12,
-              height: 1.45,
-              color: AdminPalette.textMuted,
             ),
           ),
           const SizedBox(height: 12),

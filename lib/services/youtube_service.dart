@@ -5,13 +5,16 @@ import 'package:http/http.dart' as http;
 
 import '../models/training_model.dart';
 import '../utils/constants.dart';
+import '../utils/content_language.dart';
 
 class YoutubeService {
   Future<List<TrainingModel>> searchVideos({
     required String query,
     int maxResults = 12,
+    String language = '',
   }) async {
     final trimmedQuery = query.trim();
+    final normalizedLanguage = ContentLanguage.normalizeCode(language);
 
     if (trimmedQuery.isEmpty) {
       return [];
@@ -27,7 +30,11 @@ class YoutubeService {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
       },
-      body: jsonEncode({'query': trimmedQuery, 'maxResults': maxResults}),
+      body: jsonEncode({
+        'query': trimmedQuery,
+        'maxResults': maxResults,
+        'language': normalizedLanguage,
+      }),
     );
 
     if (response.statusCode != 200) {

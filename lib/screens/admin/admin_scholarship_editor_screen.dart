@@ -178,19 +178,27 @@ class _AdminScholarshipEditorScreenState
                   const SizedBox(height: 14),
                   AdminEditorDropdown<String>(
                     value: _originalLanguage,
-                    label: AppLocalizations.of(context)!.originalLanguageFieldLabel,
+                    label: AppLocalizations.of(
+                      context,
+                    )!.originalLanguageFieldLabel,
                     items: [
                       DropdownMenuItem(
                         value: 'fr',
-                        child: Text(AppLocalizations.of(context)!.languageFrench),
+                        child: Text(
+                          AppLocalizations.of(context)!.languageFrench,
+                        ),
                       ),
                       DropdownMenuItem(
                         value: 'en',
-                        child: Text(AppLocalizations.of(context)!.languageEnglish),
+                        child: Text(
+                          AppLocalizations.of(context)!.languageEnglish,
+                        ),
                       ),
                       DropdownMenuItem(
                         value: 'ar',
-                        child: Text(AppLocalizations.of(context)!.languageArabic),
+                        child: Text(
+                          AppLocalizations.of(context)!.languageArabic,
+                        ),
                       ),
                     ],
                     onChanged: (value) {
@@ -205,13 +213,11 @@ class _AdminScholarshipEditorScreenState
             const SizedBox(height: 16),
             AdminEditorSection(
               title: 'Description',
-              subtitle:
-                  'Explain what the scholarship supports and why it stands out.',
               child: Column(
                 children: [
                   AdminEditorField(
                     controller: _descriptionController,
-                    label: 'Description',
+                    label: '',
                     hint: 'Explain the scholarship and what it supports',
                     maxLines: 5,
                     validator: adminRequiredMin('Description', min: 20),
@@ -221,24 +227,17 @@ class _AdminScholarshipEditorScreenState
             ),
             const SizedBox(height: 16),
             AdminEditorSection(
-              title: 'Requirements And Eligibility',
-              subtitle:
-                  'Make the eligibility criteria explicit before students click out to apply.',
+              title: 'Eligibility Requirements',
               child: Column(
                 children: [
                   AdminEditorListField(
-                    label: 'Eligibility',
-                    hint: 'Type one eligibility rule, then press Enter',
+                    label: '',
+                    hint: 'Type one requirement, then press Enter',
                     values: _eligibilityItems,
                     onChanged: (items) =>
                         setState(() => _eligibilityItems = items),
                     listController: _eligibilityListController,
                     validator: _validateEligibilityItems,
-                    examples: const <String>[
-                      'Open to Master students',
-                      'Minimum GPA required',
-                      'English language certificate',
-                    ],
                     emptyText:
                         'Add who can apply, required documents, or academic conditions.',
                   ),
@@ -425,7 +424,9 @@ class _AdminScholarshipEditorScreenState
     if (error != null) {
       context.showAppSnackBar(
         error,
-        title: _isEditing ? l10n.updateUnavailableTitle : l10n.publishUnavailableTitle,
+        title: _isEditing
+            ? l10n.updateUnavailableTitle
+            : l10n.publishUnavailableTitle,
         type: AppFeedbackType.error,
       );
       return;

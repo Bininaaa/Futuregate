@@ -219,8 +219,6 @@ class _AdminStudentProfileSheetState extends State<_AdminStudentProfileSheet> {
           AdminSectionHeader(
             eyebrow: l10n.uiDocuments,
             title: l10n.uiStudentCv,
-            subtitle: l10n
-                .uiReviewTheUploadedCvAndTheBuiltCvExportWithoutLeavingTheStudentProfile,
           ),
           const SizedBox(height: 14),
           _SectionCopy(
@@ -338,12 +336,7 @@ class _AdminStudentProfileSheetState extends State<_AdminStudentProfileSheet> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AdminSectionHeader(
-            eyebrow: l10n.uiApplications,
-            title: l10n.uiStudentApplications,
-            subtitle: l10n
-                .uiReviewTheStudentApplicationHistoryUsingTheSameVisibleOpportunityRuleShownInTheApp,
-          ),
+          AdminSectionHeader(title: l10n.uiStudentApplications),
           const SizedBox(height: 14),
           _SectionCopy(title: l10n.uiVisibleSubmissions, value: countLabel),
           if (snapshot.hasError) ...[

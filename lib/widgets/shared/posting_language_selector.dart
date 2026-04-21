@@ -28,68 +28,106 @@ class PostingLanguageSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final normalizedValue = ContentLanguage.normalizeCode(
+      value,
+      fallback: ContentLanguage.english,
+    );
+    final selectedCode =
+        ContentLanguage.supportedCodes.contains(normalizedValue)
+        ? normalizedValue
+        : ContentLanguage.supportedCodes.first;
+    final remainingCodes = ContentLanguage.supportedCodes
+        .where((code) => code != selectedCode)
+        .toList(growable: false);
 
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      crossAxisAlignment: WrapCrossAlignment.center,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
-          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Icon(Icons.translate_rounded, size: 18, color: iconColor),
-            const SizedBox(width: 8),
-            Text(
-              l10n.postingLanguageLabel,
-              style: TextStyle(
-                fontSize: labelFontSize,
-                fontWeight: FontWeight.w600,
-                color: textColor,
-              ),
-            ),
-          ],
-        ),
-        ...ContentLanguage.supportedCodes.map((code) {
-          final selected = value == code;
-          final label = ContentLanguage.label(code, l10n);
-          return Semantics(
-            button: true,
-            selected: selected,
-            label: label,
-            child: GestureDetector(
-              onTap: () => onChanged(code),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 150),
-                constraints: const BoxConstraints(minHeight: 44),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 7,
-                ),
-                decoration: BoxDecoration(
-                  color: selected
-                      ? activeColor.withValues(alpha: 0.10)
-                      : Colors.transparent,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: selected ? activeColor : borderColor,
-                  ),
-                ),
-                child: Center(
-                  widthFactor: 1,
-                  child: Text(
-                    '${ContentLanguage.flag(code)} $label',
-                    style: TextStyle(
-                      fontSize: optionFontSize,
-                      fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-                      color: selected ? activeColor : textColor,
+            Expanded(
+              child: Row(
+                children: [
+                  Icon(Icons.translate_rounded, size: 18, color: iconColor),
+                  const SizedBox(width: 8),
+                  Flexible(
+                    child: Text(
+                      l10n.postingLanguageLabel,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: labelFontSize,
+                        fontWeight: FontWeight.w600,
+                        color: textColor,
+                      ),
                     ),
                   ),
-                ),
+                ],
               ),
             ),
-          );
-        }),
+            const SizedBox(width: 8),
+            _buildLanguageChip(context, l10n, selectedCode),
+          ],
+        ),
+        if (remainingCodes.isNotEmpty) ...[
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: remainingCodes
+                .map((code) => _buildLanguageChip(context, l10n, code))
+                .toList(growable: false),
+          ),
+        ],
       ],
+    );
+  }
+
+  Widget _buildLanguageChip(
+    BuildContext context,
+    AppLocalizations l10n,
+    String code,
+  ) {
+    final selected = ContentLanguage.normalizeCode(value) == code;
+    final label = ContentLanguage.label(code, l10n);
+
+    return Semantics(
+      button: true,
+      selected: selected,
+      label: label,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => onChanged(code),
+          borderRadius: BorderRadius.circular(14),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 150),
+            constraints: const BoxConstraints(minHeight: 46, minWidth: 112),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            decoration: BoxDecoration(
+              color: selected
+                  ? activeColor.withValues(alpha: 0.10)
+                  : Colors.transparent,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: selected ? activeColor : borderColor,
+                width: selected ? 1.3 : 1,
+              ),
+            ),
+            child: Text(
+              '${ContentLanguage.flag(code)} $label',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: optionFontSize,
+                fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                color: selected ? activeColor : textColor,
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

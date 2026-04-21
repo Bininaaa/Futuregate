@@ -77,7 +77,6 @@ class TrainingService {
     required TrainingModel book,
     required String adminId,
     required String domain,
-    required String level,
     String sourceLanguage = '',
   }) async {
     await _workerRequest(
@@ -97,7 +96,6 @@ class TrainingService {
           'pageCount': _parsePageCount(book.duration),
         },
         'domain': domain,
-        'level': level,
         'languageOverride': sourceLanguage.trim(),
       },
     );
@@ -107,7 +105,6 @@ class TrainingService {
     required TrainingModel video,
     required String adminId,
     required String domain,
-    required String level,
     required String sourceLanguage,
   }) async {
     await _workerRequest(
@@ -123,7 +120,6 @@ class TrainingService {
           'link': video.link,
         },
         'domain': domain,
-        'level': level,
         'language': sourceLanguage.trim(),
       },
     );

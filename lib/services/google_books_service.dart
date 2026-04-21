@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 
 import '../models/training_model.dart';
 import '../utils/constants.dart';
+import '../utils/content_language.dart';
 
 class GoogleBooksService {
   Future<List<TrainingModel>> searchBooks({
@@ -13,6 +14,7 @@ class GoogleBooksService {
     String langRestrict = '',
   }) async {
     final trimmedQuery = query.trim();
+    final normalizedLanguage = ContentLanguage.normalizeCode(langRestrict);
 
     if (trimmedQuery.isEmpty) {
       return [];
@@ -33,7 +35,7 @@ class GoogleBooksService {
       body: jsonEncode({
         'query': trimmedQuery,
         'maxResults': maxResults,
-        'langRestrict': langRestrict,
+        'langRestrict': normalizedLanguage,
       }),
     );
 
@@ -47,7 +49,7 @@ class GoogleBooksService {
     final data = jsonDecode(response.body) as Map<String, dynamic>;
     final items = data['items'] as List<dynamic>? ?? [];
 
-    return items.map((item) {
+    final results = items.map((item) {
       final map = item as Map<String, dynamic>;
 
       final authors =
@@ -82,6 +84,14 @@ class GoogleBooksService {
         isFeatured: false,
       );
     }).toList();
+
+    if (normalizedLanguage.isEmpty) {
+      return results;
+    }
+
+    return results
+        .where((book) => book.sourceLanguage == normalizedLanguage)
+        .toList();
   }
 
   Future<String> _getIdToken() async {

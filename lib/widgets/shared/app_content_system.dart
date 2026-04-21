@@ -261,6 +261,7 @@ InputDecoration _fieldDecoration({
   required String hint,
   Widget? suffixIcon,
 }) {
+  const fieldRadius = 20.0;
   return InputDecoration(
     hintText: hint,
     hintStyle: theme.body(size: 12.5, color: theme.textMuted),
@@ -269,23 +270,23 @@ InputDecoration _fieldDecoration({
     fillColor: theme.surfaceMuted,
     contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
     border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(fieldRadius),
       borderSide: BorderSide.none,
     ),
     enabledBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(fieldRadius),
       borderSide: BorderSide(color: theme.border),
     ),
     focusedBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(fieldRadius),
       borderSide: BorderSide(color: theme.accent, width: 1.4),
     ),
     errorBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(fieldRadius),
       borderSide: BorderSide(color: theme.error),
     ),
     focusedErrorBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(fieldRadius),
       borderSide: BorderSide(color: theme.error, width: 1.4),
     ),
     errorStyle: AppTypography.product(
@@ -458,11 +459,12 @@ class AppFormField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final showLabel = label.trim().isNotEmpty;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text(label, style: theme.label(size: 12)),
-        const SizedBox(height: AppContentSpacing.xs),
+        if (showLabel) Text(label, style: theme.label(size: 12)),
+        if (showLabel) const SizedBox(height: AppContentSpacing.xs),
         TextFormField(
           controller: controller,
           minLines: minLines,

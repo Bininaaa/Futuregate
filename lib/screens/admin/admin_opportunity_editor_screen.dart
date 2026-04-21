@@ -14,7 +14,6 @@ import '../../utils/opportunity_type.dart';
 import '../../widgets/opportunity_type_selector.dart';
 import '../../widgets/shared/app_content_system.dart';
 import '../../widgets/shared/app_feedback.dart';
-import '../../widgets/shared/posting_language_selector.dart';
 import 'admin_editor_widgets.dart';
 
 class AdminOpportunityEditorScreen extends StatefulWidget {
@@ -223,20 +222,35 @@ class _AdminOpportunityEditorScreenState
                   const SizedBox(height: 12),
                   AdminEditorField(
                     controller: _titleController,
-                    label: 'Opportunity title',
-                    hint: 'e.g. Junior Flutter Developer',
-                    validator: adminRequiredMin('Title', min: 4),
+                    label: l10n.opportunityTitleLabel,
+                    hint: _titleHintForType(l10n),
+                    validator: adminRequiredMin(
+                      l10n.opportunityTitleLabel,
+                      min: 4,
+                    ),
                   ),
                   const SizedBox(height: 12),
-                  PostingLanguageSelector(
+                  AdminEditorDropdown<String>(
                     value: _originalLanguage,
-                    onChanged: (v) => setState(() => _originalLanguage = v),
-                    activeColor: AdminPalette.primary,
-                    borderColor: AdminPalette.border,
-                    textColor: AdminPalette.textSecondary,
-                    iconColor: AdminPalette.textMuted,
-                    labelFontSize: 13,
-                    optionFontSize: 12,
+                    label: l10n.originalLanguageFieldLabel,
+                    items: [
+                      DropdownMenuItem(
+                        value: ContentLanguage.french,
+                        child: Text(l10n.languageFrench),
+                      ),
+                      DropdownMenuItem(
+                        value: ContentLanguage.english,
+                        child: Text(l10n.languageEnglish),
+                      ),
+                      DropdownMenuItem(
+                        value: ContentLanguage.arabic,
+                        child: Text(l10n.languageArabic),
+                      ),
+                    ],
+                    onChanged: (value) {
+                      if (value == null) return;
+                      setState(() => _originalLanguage = value);
+                    },
                   ),
                   const SizedBox(height: 12),
                   OpportunityTypeSelector(
@@ -252,9 +266,9 @@ class _AdminOpportunityEditorScreenState
                   const SizedBox(height: 12),
                   AdminEditorField(
                     controller: _locationController,
-                    label: 'Location',
-                    hint: 'e.g. Algiers, Algeria',
-                    validator: adminRequiredMin('Location'),
+                    label: l10n.locationLabel,
+                    hint: _locationHintForType(l10n),
+                    validator: adminRequiredMin(l10n.locationLabel),
                   ),
                 ],
               ),
@@ -655,6 +669,21 @@ class _AdminOpportunityEditorScreenState
     return _isSponsoring
         ? 'Add each eligibility point separately so students see a clean checklist.'
         : 'Add each requirement separately so students see a clean checklist.';
+  }
+
+  String _titleHintForType(AppLocalizations l10n) {
+    return switch (OpportunityType.parse(_type)) {
+      OpportunityType.internship => l10n.opportunityTitleHintInternship,
+      OpportunityType.sponsoring => l10n.opportunityTitleHintSponsoring,
+      _ => l10n.opportunityTitleHintJob,
+    };
+  }
+
+  String _locationHintForType(AppLocalizations l10n) {
+    return switch (OpportunityType.parse(_type)) {
+      OpportunityType.sponsoring => l10n.opportunityLocationHintSponsoring,
+      _ => l10n.opportunityLocationHintDefault,
+    };
   }
 
   List<String> get _employmentTypeOptions =>
