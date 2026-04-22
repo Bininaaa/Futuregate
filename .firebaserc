@@ -3,6 +3,17 @@
     "avenirdz": "avenirdz-7305d",
     "default": "avenirdz-7305d"
   },
-  "targets": {},
+  "targets": {
+    "avenirdz-7305d": {
+      "hosting": {
+        "root": [
+          "avenirdz-7305d"
+        ],
+        "admin": [
+          "avenirdz-7305d-admin"
+        ]
+      }
+    }
+  },
   "etags": {}
 }

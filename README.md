@@ -134,6 +134,34 @@ Depending on the features you want to use, you may also need to configure:
 - Firestore security rules
 - Firebase Cloud Messaging
 
+## Hosting Deployment
+
+Firebase Hosting is configured with two targets in [firebase.json](firebase.json):
+
+- `root`: serves `futuregate.tech` from `public/`
+- `admin`: serves the admin panel from `admin-web/public/`
+
+The checked-in `.firebaserc` maps those targets to:
+
+- `root` -> `avenirdz-7305d`
+- `admin` -> `avenirdz-7305d-admin`
+
+One-time admin Hosting setup:
+
+```bash
+firebase hosting:sites:create avenirdz-7305d-admin
+```
+
+Deploy commands:
+
+```bash
+npm run deploy:hosting:root
+npm run deploy:hosting:admin
+npm run deploy:hosting:all
+```
+
+After the admin site is deployed, connect `admin.futuregate.tech` to the `avenirdz-7305d-admin` Hosting site in Firebase Hosting and then add the DNS records that Firebase shows in your `futuregate.tech` DNS provider.
+
 ## Database Seeding
 
 The project includes a Firestore seed script at `firebase_seed/seed.js`.

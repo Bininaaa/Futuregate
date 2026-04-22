@@ -49,5 +49,7 @@ Scholarships are no longer expected to be created manually in Firebase Console.
 
 1. Deploy the Cloudflare Worker.
 2. Deploy Firestore rules and indexes as usual.
-3. Deploy the Flutter app and admin web as usual.
+3. Deploy Firebase Hosting targets:
+   `npm run deploy:hosting:root` for `futuregate.tech`
+   `npm run deploy:hosting:admin` for the admin site
 4. Do not deploy Firebase Functions.
