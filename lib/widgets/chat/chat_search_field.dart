@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../l10n/generated/app_localizations.dart';
 import 'chat_theme.dart';
 
 class ChatSearchField extends StatelessWidget {
@@ -78,7 +79,7 @@ class ChatSearchField extends StatelessWidget {
                 return Padding(
                   padding: const EdgeInsets.only(right: 8),
                   child: IconButton(
-                    tooltip: 'Clear search',
+                    tooltip: AppLocalizations.of(context)!.uiClearSearch,
                     visualDensity: VisualDensity.compact,
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints.tightFor(

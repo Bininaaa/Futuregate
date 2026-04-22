@@ -3792,5 +3792,108 @@
   "uiActionSeeOpenRoles": "See Open Roles",
   "uiActionOpenSaved": "Open Saved",
   "uiSavedScholarshipBadge": "Saved scholarship",
-  "uiSavedTypeBadge": "Saved {type}"
+  "uiSavedTypeBadge": "Saved {type}",
+  "uiGrowthNew": "New",
+  "uiNoApplicationsWereSubmittedInTheLast7Days": "No applications were submitted in the last 7 days.",
+  "uiPeakActivityReachedCountInASingleDay": "Peak activity reached {count} applications in a single day.",
+  "@uiPeakActivityReachedCountInASingleDay": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "uiNoReviewedApplicationsYet": "No reviewed applications yet.",
+  "uiReviewedApplicationsBreakdown": "{approved} approved and {rejected} rejected so far.",
+  "@uiReviewedApplicationsBreakdown": {
+    "placeholders": {
+      "approved": {},
+      "rejected": {}
+    }
+  },
+  "uiNoApplicationsAreWaitingForReviewRightNow": "No applications are waiting for review right now.",
+  "uiPendingApplicationsNeedReview": "{count} pending applications need review.",
+  "@uiPendingApplicationsNeedReview": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "uiNoOpenPostsExpireWithinTwoDays": "No open posts expire within two days.",
+  "uiOpenPostsExpireWithinTwoDays": "{count} open posts expire within two days.",
+  "@uiOpenPostsExpireWithinTwoDays": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "uiYourDashboardIsReadyForIncomingApplicants": "Your dashboard is ready for incoming applicants.",
+  "uiQuickHighlightsPulledFromYourLiveDashboardData": "Quick highlights pulled from your live dashboard data.",
+  "uiToday": "Today",
+  "uiYesterday": "Yesterday",
+  "uiDaysAgo": "{count} days ago",
+  "@uiDaysAgo": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "uiWeeksAgo": "{count} weeks ago",
+  "@uiWeeksAgo": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "uiFocusedReviewMode": "Focused review mode",
+  "uiReviewAndRespondToCandidates": "Review and respond to candidates",
+  "uiPendingApplicationsAcrossOpportunitiesNeedReview": "{count} pending applications across {opportunities} opportunities need review.",
+  "@uiPendingApplicationsAcrossOpportunitiesNeedReview": {
+    "placeholders": {
+      "count": {},
+      "opportunities": {}
+    }
+  },
+  "uiShowPending": "Show pending",
+  "uiShowingOnlyTheCandidatesWhoAppliedToThisRole": "Showing only the candidates who applied to this role.",
+  "uiDirectApplicationReviewWithAllCandidateDetailsInOnePlace": "Direct application review with all candidate details in one place.",
+  "uiLatestCandidatesReadyForReviewMessagingAndCvChecks": "Latest candidates ready for review, messaging, and CV checks.",
+  "uiApplicationSpotlight": "Application spotlight",
+  "uiCandidateQueue": "Candidate queue",
+  "uiLocationNotSpecified": "Location not specified",
+  "uiNotSpecified": "Not specified",
+  "uiNoDescriptionProvided": "No description provided.",
+  "uiStatusUnavailable": "Status unavailable",
+  "uiTheRequestedFileIsNoLongerAvailable": "The requested file is no longer available.",
+  "uiSummary": "Summary",
+  "uiShowingTheApplicationYouOpenedDirectly": "Showing the application you opened directly.",
+  "uiThisApplicationIsNoLongerAvailable": "This application is no longer available.",
+  "uiNoApplicationsMatchThisView": "No applications match this view.",
+  "uiTheApplicationYouOpenedIsNoLongerAvailableItMayHaveBeenRemovedOrMayNoLongerBelongToThisCompany": "The application you opened is no longer available. It may have been removed or may no longer belong to this company.",
+  "uiTryClearingTheFiltersOrBroadeningTheSearchToSeeMoreCandidates": "Try clearing the filters or broadening the search to see more candidates.",
+  "uiCandidateApplicationsAreListedHereWithQuickReviewActionsAndCvAccess": "Candidate applications are listed here with quick review actions and CV access.",
+  "uiReviewTheCandidateBeforeMakingADecision": "Review the candidate before making a decision.",
+  "uiKeepTheCandidateContextCloseAtHand": "Keep the candidate context close at hand.",
+  "uiUnnamedCandidate": "Unnamed candidate",
+  "uiCandidateApproved": "Candidate approved",
+  "uiCandidateRejected": "Candidate rejected",
+  "uiApplicationWithdrawn": "Application withdrawn",
+  "uiReadyForDecision": "Ready for decision",
+  "uiThisApplicationIsApprovedUseMessageOrCvReviewForNextSteps": "This application is approved. Use message or CV review for next steps.",
+  "uiThisApplicationIsRejectedTheProfileAndCvRemainAvailableForReference": "This application is rejected. The profile and CV remain available for reference.",
+  "uiThisApplicationHasBeenWithdrawnByTheCandidate": "This application has been withdrawn by the candidate.",
+  "uiApproveTheCandidateToMoveThemForwardOrRejectIfTheFitIsNotRight": "Approve the candidate to move them forward, or reject if the fit is not right.",
+  "uiWorking": "Working...",
+  "uiApplication": "Application",
+  "uiApplicationConversation": "Application conversation",
+  "companyFundingSectionTitle": "Company funding",
+  "internshipCompensationSectionTitle": "Internship compensation",
+  "compensationAndFormatSectionTitle": "Compensation & format",
+  "optionalSupportDetailsShownToStudents": "Optional support details shown to students",
+  "durationExampleHint": "Duration, e.g. 2 months",
+  "optionalCompensationNoteForDetailScreens": "Optional compensation note for detail screens",
+  "eligibilityChecklistHelper": "Add each eligibility point separately so students see a clean checklist.",
+  "requirementsChecklistHelper": "Add each requirement separately so students see a clean checklist.",
+  "opportunityUpdatedTitle": "Opportunity updated",
+  "opportunityPublishedTitle": "Opportunity published",
+  "uiSearchApplicants": "Search applicants",
+  "uiSearchApprovedCompanies": "Search approved companies",
+  "uiSuggested": "Suggested",
+  "uiApprovedCompanies": "Approved companies",
+  "uiNoApplicantsMatchYourSearch": "No applicants match your search.",
+  "uiNoApprovedCompaniesMatchYourSearch": "No approved companies match your search."
 }

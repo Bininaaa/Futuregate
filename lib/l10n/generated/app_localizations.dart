@@ -12776,6 +12776,408 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Saved {type}'**
   String uiSavedTypeBadge(Object type);
+
+  /// No description provided for @uiGrowthNew.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get uiGrowthNew;
+
+  /// No description provided for @uiNoApplicationsWereSubmittedInTheLast7Days.
+  ///
+  /// In en, this message translates to:
+  /// **'No applications were submitted in the last 7 days.'**
+  String get uiNoApplicationsWereSubmittedInTheLast7Days;
+
+  /// No description provided for @uiPeakActivityReachedCountInASingleDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Peak activity reached {count} applications in a single day.'**
+  String uiPeakActivityReachedCountInASingleDay(Object count);
+
+  /// No description provided for @uiNoReviewedApplicationsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No reviewed applications yet.'**
+  String get uiNoReviewedApplicationsYet;
+
+  /// No description provided for @uiReviewedApplicationsBreakdown.
+  ///
+  /// In en, this message translates to:
+  /// **'{approved} approved and {rejected} rejected so far.'**
+  String uiReviewedApplicationsBreakdown(Object approved, Object rejected);
+
+  /// No description provided for @uiNoApplicationsAreWaitingForReviewRightNow.
+  ///
+  /// In en, this message translates to:
+  /// **'No applications are waiting for review right now.'**
+  String get uiNoApplicationsAreWaitingForReviewRightNow;
+
+  /// No description provided for @uiPendingApplicationsNeedReview.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} pending applications need review.'**
+  String uiPendingApplicationsNeedReview(Object count);
+
+  /// No description provided for @uiNoOpenPostsExpireWithinTwoDays.
+  ///
+  /// In en, this message translates to:
+  /// **'No open posts expire within two days.'**
+  String get uiNoOpenPostsExpireWithinTwoDays;
+
+  /// No description provided for @uiOpenPostsExpireWithinTwoDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} open posts expire within two days.'**
+  String uiOpenPostsExpireWithinTwoDays(Object count);
+
+  /// No description provided for @uiYourDashboardIsReadyForIncomingApplicants.
+  ///
+  /// In en, this message translates to:
+  /// **'Your dashboard is ready for incoming applicants.'**
+  String get uiYourDashboardIsReadyForIncomingApplicants;
+
+  /// No description provided for @uiQuickHighlightsPulledFromYourLiveDashboardData.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick highlights pulled from your live dashboard data.'**
+  String get uiQuickHighlightsPulledFromYourLiveDashboardData;
+
+  /// No description provided for @uiToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get uiToday;
+
+  /// No description provided for @uiYesterday.
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday'**
+  String get uiYesterday;
+
+  /// No description provided for @uiDaysAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} days ago'**
+  String uiDaysAgo(Object count);
+
+  /// No description provided for @uiWeeksAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} weeks ago'**
+  String uiWeeksAgo(Object count);
+
+  /// No description provided for @uiFocusedReviewMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Focused review mode'**
+  String get uiFocusedReviewMode;
+
+  /// No description provided for @uiReviewAndRespondToCandidates.
+  ///
+  /// In en, this message translates to:
+  /// **'Review and respond to candidates'**
+  String get uiReviewAndRespondToCandidates;
+
+  /// No description provided for @uiPendingApplicationsAcrossOpportunitiesNeedReview.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} pending applications across {opportunities} opportunities need review.'**
+  String uiPendingApplicationsAcrossOpportunitiesNeedReview(
+    Object count,
+    Object opportunities,
+  );
+
+  /// No description provided for @uiShowPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Show pending'**
+  String get uiShowPending;
+
+  /// No description provided for @uiShowingOnlyTheCandidatesWhoAppliedToThisRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Showing only the candidates who applied to this role.'**
+  String get uiShowingOnlyTheCandidatesWhoAppliedToThisRole;
+
+  /// No description provided for @uiDirectApplicationReviewWithAllCandidateDetailsInOnePlace.
+  ///
+  /// In en, this message translates to:
+  /// **'Direct application review with all candidate details in one place.'**
+  String get uiDirectApplicationReviewWithAllCandidateDetailsInOnePlace;
+
+  /// No description provided for @uiLatestCandidatesReadyForReviewMessagingAndCvChecks.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest candidates ready for review, messaging, and CV checks.'**
+  String get uiLatestCandidatesReadyForReviewMessagingAndCvChecks;
+
+  /// No description provided for @uiApplicationSpotlight.
+  ///
+  /// In en, this message translates to:
+  /// **'Application spotlight'**
+  String get uiApplicationSpotlight;
+
+  /// No description provided for @uiCandidateQueue.
+  ///
+  /// In en, this message translates to:
+  /// **'Candidate queue'**
+  String get uiCandidateQueue;
+
+  /// No description provided for @uiLocationNotSpecified.
+  ///
+  /// In en, this message translates to:
+  /// **'Location not specified'**
+  String get uiLocationNotSpecified;
+
+  /// No description provided for @uiNotSpecified.
+  ///
+  /// In en, this message translates to:
+  /// **'Not specified'**
+  String get uiNotSpecified;
+
+  /// No description provided for @uiNoDescriptionProvided.
+  ///
+  /// In en, this message translates to:
+  /// **'No description provided.'**
+  String get uiNoDescriptionProvided;
+
+  /// No description provided for @uiStatusUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Status unavailable'**
+  String get uiStatusUnavailable;
+
+  /// No description provided for @uiTheRequestedFileIsNoLongerAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'The requested file is no longer available.'**
+  String get uiTheRequestedFileIsNoLongerAvailable;
+
+  /// No description provided for @uiSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Summary'**
+  String get uiSummary;
+
+  /// No description provided for @uiShowingTheApplicationYouOpenedDirectly.
+  ///
+  /// In en, this message translates to:
+  /// **'Showing the application you opened directly.'**
+  String get uiShowingTheApplicationYouOpenedDirectly;
+
+  /// No description provided for @uiThisApplicationIsNoLongerAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'This application is no longer available.'**
+  String get uiThisApplicationIsNoLongerAvailable;
+
+  /// No description provided for @uiNoApplicationsMatchThisView.
+  ///
+  /// In en, this message translates to:
+  /// **'No applications match this view.'**
+  String get uiNoApplicationsMatchThisView;
+
+  /// No description provided for @uiTheApplicationYouOpenedIsNoLongerAvailableItMayHaveBeenRemovedOrMayNoLongerBelongToThisCompany.
+  ///
+  /// In en, this message translates to:
+  /// **'The application you opened is no longer available. It may have been removed or may no longer belong to this company.'**
+  String
+  get uiTheApplicationYouOpenedIsNoLongerAvailableItMayHaveBeenRemovedOrMayNoLongerBelongToThisCompany;
+
+  /// No description provided for @uiTryClearingTheFiltersOrBroadeningTheSearchToSeeMoreCandidates.
+  ///
+  /// In en, this message translates to:
+  /// **'Try clearing the filters or broadening the search to see more candidates.'**
+  String get uiTryClearingTheFiltersOrBroadeningTheSearchToSeeMoreCandidates;
+
+  /// No description provided for @uiCandidateApplicationsAreListedHereWithQuickReviewActionsAndCvAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Candidate applications are listed here with quick review actions and CV access.'**
+  String
+  get uiCandidateApplicationsAreListedHereWithQuickReviewActionsAndCvAccess;
+
+  /// No description provided for @uiReviewTheCandidateBeforeMakingADecision.
+  ///
+  /// In en, this message translates to:
+  /// **'Review the candidate before making a decision.'**
+  String get uiReviewTheCandidateBeforeMakingADecision;
+
+  /// No description provided for @uiKeepTheCandidateContextCloseAtHand.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep the candidate context close at hand.'**
+  String get uiKeepTheCandidateContextCloseAtHand;
+
+  /// No description provided for @uiUnnamedCandidate.
+  ///
+  /// In en, this message translates to:
+  /// **'Unnamed candidate'**
+  String get uiUnnamedCandidate;
+
+  /// No description provided for @uiCandidateApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'Candidate approved'**
+  String get uiCandidateApproved;
+
+  /// No description provided for @uiCandidateRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Candidate rejected'**
+  String get uiCandidateRejected;
+
+  /// No description provided for @uiApplicationWithdrawn.
+  ///
+  /// In en, this message translates to:
+  /// **'Application withdrawn'**
+  String get uiApplicationWithdrawn;
+
+  /// No description provided for @uiReadyForDecision.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready for decision'**
+  String get uiReadyForDecision;
+
+  /// No description provided for @uiThisApplicationIsApprovedUseMessageOrCvReviewForNextSteps.
+  ///
+  /// In en, this message translates to:
+  /// **'This application is approved. Use message or CV review for next steps.'**
+  String get uiThisApplicationIsApprovedUseMessageOrCvReviewForNextSteps;
+
+  /// No description provided for @uiThisApplicationIsRejectedTheProfileAndCvRemainAvailableForReference.
+  ///
+  /// In en, this message translates to:
+  /// **'This application is rejected. The profile and CV remain available for reference.'**
+  String
+  get uiThisApplicationIsRejectedTheProfileAndCvRemainAvailableForReference;
+
+  /// No description provided for @uiThisApplicationHasBeenWithdrawnByTheCandidate.
+  ///
+  /// In en, this message translates to:
+  /// **'This application has been withdrawn by the candidate.'**
+  String get uiThisApplicationHasBeenWithdrawnByTheCandidate;
+
+  /// No description provided for @uiApproveTheCandidateToMoveThemForwardOrRejectIfTheFitIsNotRight.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve the candidate to move them forward, or reject if the fit is not right.'**
+  String get uiApproveTheCandidateToMoveThemForwardOrRejectIfTheFitIsNotRight;
+
+  /// No description provided for @uiWorking.
+  ///
+  /// In en, this message translates to:
+  /// **'Working...'**
+  String get uiWorking;
+
+  /// No description provided for @uiApplication.
+  ///
+  /// In en, this message translates to:
+  /// **'Application'**
+  String get uiApplication;
+
+  /// No description provided for @uiApplicationConversation.
+  ///
+  /// In en, this message translates to:
+  /// **'Application conversation'**
+  String get uiApplicationConversation;
+
+  /// No description provided for @companyFundingSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Company funding'**
+  String get companyFundingSectionTitle;
+
+  /// No description provided for @internshipCompensationSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Internship compensation'**
+  String get internshipCompensationSectionTitle;
+
+  /// No description provided for @compensationAndFormatSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Compensation & format'**
+  String get compensationAndFormatSectionTitle;
+
+  /// No description provided for @optionalSupportDetailsShownToStudents.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional support details shown to students'**
+  String get optionalSupportDetailsShownToStudents;
+
+  /// No description provided for @durationExampleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration, e.g. 2 months'**
+  String get durationExampleHint;
+
+  /// No description provided for @optionalCompensationNoteForDetailScreens.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional compensation note for detail screens'**
+  String get optionalCompensationNoteForDetailScreens;
+
+  /// No description provided for @eligibilityChecklistHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Add each eligibility point separately so students see a clean checklist.'**
+  String get eligibilityChecklistHelper;
+
+  /// No description provided for @requirementsChecklistHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Add each requirement separately so students see a clean checklist.'**
+  String get requirementsChecklistHelper;
+
+  /// No description provided for @opportunityUpdatedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Opportunity updated'**
+  String get opportunityUpdatedTitle;
+
+  /// No description provided for @opportunityPublishedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Opportunity published'**
+  String get opportunityPublishedTitle;
+
+  /// No description provided for @uiSearchApplicants.
+  ///
+  /// In en, this message translates to:
+  /// **'Search applicants'**
+  String get uiSearchApplicants;
+
+  /// No description provided for @uiSearchApprovedCompanies.
+  ///
+  /// In en, this message translates to:
+  /// **'Search approved companies'**
+  String get uiSearchApprovedCompanies;
+
+  /// No description provided for @uiSuggested.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested'**
+  String get uiSuggested;
+
+  /// No description provided for @uiApprovedCompanies.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved companies'**
+  String get uiApprovedCompanies;
+
+  /// No description provided for @uiNoApplicantsMatchYourSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'No applicants match your search.'**
+  String get uiNoApplicantsMatchYourSearch;
+
+  /// No description provided for @uiNoApprovedCompaniesMatchYourSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'No approved companies match your search.'**
+  String get uiNoApprovedCompaniesMatchYourSearch;
 }
 
 class _AppLocalizationsDelegate

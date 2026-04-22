@@ -29,6 +29,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
   List<UserModel> _contacts = const [];
   bool _isLoading = true;
   Timer? _searchDebounce;
+  AppLocalizations get _l10n => AppLocalizations.of(context)!;
 
   @override
   void initState() {
@@ -95,7 +96,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
               companyId: auth.uid,
               companyName: auth.companyName ?? auth.fullName,
               contextType: 'application',
-              contextLabel: 'Application conversation',
+              contextLabel: _l10n.uiApplicationConversation,
               currentUserId: auth.uid,
               currentUserRole: auth.role,
             )
@@ -105,7 +106,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
               companyId: contact.uid,
               companyName: contact.companyName ?? contact.fullName,
               contextType: 'application',
-              contextLabel: 'Application conversation',
+              contextLabel: _l10n.uiApplicationConversation,
               currentUserId: auth.uid,
               currentUserRole: auth.role,
             );
@@ -115,7 +116,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
       }
       context.showAppSnackBar(
         _readableError(error),
-        title: AppLocalizations.of(context)!.uiChatUnavailable,
+        title: _l10n.uiChatUnavailable,
         type: AppFeedbackType.warning,
       );
       return;
@@ -173,7 +174,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
                     const SizedBox(width: 14),
                     Expanded(
                       child: Text(
-                        'New Chat',
+                        _l10n.uiNewChat,
                         style: ChatThemeStyles.title().copyWith(fontSize: 22),
                       ),
                     ),
@@ -183,8 +184,8 @@ class _NewChatScreenState extends State<NewChatScreen> {
               ChatSearchField(
                 controller: _searchController,
                 hintText: currentUser?.role == 'company'
-                    ? 'Search applicants'
-                    : 'Search approved companies',
+                    ? _l10n.uiSearchApplicants
+                    : _l10n.uiSearchApprovedCompanies,
                 onChanged: _onSearchChanged,
                 onClear: _clearSearch,
                 margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -198,7 +199,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
                         children: [
                           if (recentContacts.isNotEmpty) ...[
                             Text(
-                              'Recent contacts',
+                              _l10n.uiRecentContacts,
                               style: ChatThemeStyles.meta().copyWith(
                                 fontWeight: FontWeight.w600,
                               ),
@@ -209,10 +210,10 @@ class _NewChatScreenState extends State<NewChatScreen> {
                           ],
                           Text(
                             recentContacts.isNotEmpty
-                                ? 'Suggested'
+                                ? _l10n.uiSuggested
                                 : currentUser?.role == 'company'
-                                ? 'Applicants'
-                                : 'Approved companies',
+                                ? _l10n.uiApplicants
+                                : _l10n.uiApprovedCompanies,
                             style: ChatThemeStyles.meta().copyWith(
                               fontWeight: FontWeight.w600,
                             ),
@@ -230,8 +231,9 @@ class _NewChatScreenState extends State<NewChatScreen> {
                               ),
                               child: Text(
                                 currentUser?.role == 'company'
-                                    ? 'No applicants match your search.'
-                                    : 'No approved companies match your search.',
+                                    ? _l10n.uiNoApplicantsMatchYourSearch
+                                    : _l10n
+                                          .uiNoApprovedCompaniesMatchYourSearch,
                                 style: ChatThemeStyles.body(
                                   ChatThemePalette.textSecondary,
                                 ),

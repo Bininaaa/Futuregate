@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import '../../theme/app_typography.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -67,6 +67,8 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
   bool _openedFocusedDetails = false;
 
   AppLocalizations get _l10n => AppLocalizations.of(context)!;
+
+  String get _localeName => Localizations.localeOf(context).toLanguageTag();
 
   @override
   void initState() {
@@ -252,10 +254,10 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
 
   String _statusLabel(_ApplicationStatusFilter filter) {
     return switch (filter) {
-      _ApplicationStatusFilter.all => 'All',
-      _ApplicationStatusFilter.pending => 'Pending',
-      _ApplicationStatusFilter.approved => 'Approved',
-      _ApplicationStatusFilter.rejected => 'Rejected',
+      _ApplicationStatusFilter.all => _l10n.uiAll,
+      _ApplicationStatusFilter.pending => _l10n.uiPending,
+      _ApplicationStatusFilter.approved => _l10n.uiApproved,
+      _ApplicationStatusFilter.rejected => _l10n.uiRejected,
     };
   }
 
@@ -369,13 +371,21 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                         const SizedBox(height: 12),
                         _InlineBanner(
                           icon: Icons.warning_amber_rounded,
-                          title: 'Pending opportunities need attention',
+                          title: _l10n.uiPendingOpportunitiesNeedAttention,
                           message: pendingCount == 1
-                              ? '1 application is still waiting for review.'
-                              : '$pendingCount applications across $pendingOpportunityCount ${pendingOpportunityCount == 1 ? 'opportunity' : 'opportunities'} are still waiting for a decision.',
+                              ? _l10n.uiPendingApplicationsNeedReview(
+                                  pendingCount,
+                                )
+                              : _l10n
+                                    .uiPendingApplicationsAcrossOpportunitiesNeedReview(
+                                      pendingCount,
+                                      pendingOpportunityCount,
+                                    ),
                           tone: _ApplicationsPalette.accent,
                           background: _ApplicationsPalette.accentSoft,
-                          actionLabel: isFocusedView ? null : 'Show pending',
+                          actionLabel: isFocusedView
+                              ? null
+                              : _l10n.uiShowPending,
                           onAction: isFocusedView
                               ? null
                               : _showPendingApplications,
@@ -393,7 +403,8 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                           message: resultsCount == 0
                               ? _l10n
                                     .uiThereAreNoSubmittedApplicationsForThisOpportunityRightNow
-                              : 'Showing only the candidates who applied to this role.',
+                              : _l10n
+                                    .uiShowingOnlyTheCandidatesWhoAppliedToThisRole,
                           tone: _ApplicationsPalette.primary,
                           background: _ApplicationsPalette.primarySoft,
                           actionLabel: _l10n.uiViewAllApps,
@@ -406,7 +417,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                         const SizedBox(height: 12),
                         _InlineBanner(
                           icon: Icons.info_outline_rounded,
-                          title: 'Application data is unavailable.',
+                          title: _l10n.uiApplicationDataIsUnavailable,
                           message: provider.applicationsError!,
                           tone: _ApplicationsPalette.error,
                           background: _ApplicationsPalette.error.withValues(
@@ -549,20 +560,20 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
     final difference = today.difference(target).inDays;
 
     if (difference <= 0) {
-      return 'today';
+      return _l10n.uiToday;
     }
     if (difference == 1) {
-      return 'yesterday';
+      return _l10n.uiYesterday;
     }
     if (difference < 7) {
-      return '$difference days ago';
+      return _l10n.uiDaysAgo(difference);
     }
     if (difference < 30) {
       final weeks = (difference / 7).ceil();
-      return '$weeks ${weeks == 1 ? 'week' : 'weeks'} ago';
+      return _l10n.uiWeeksAgo(weeks);
     }
 
-    return DateFormat('MMM d').format(appliedAt);
+    return DateFormat('MMM d', _localeName).format(appliedAt);
   }
 
   Widget _buildTopBar({
@@ -571,8 +582,8 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
     required bool isFocusedView,
   }) {
     final subtitle = isFocusedView
-        ? 'Focused review mode'
-        : 'Review and respond to candidates';
+        ? _l10n.uiFocusedReviewMode
+        : _l10n.uiReviewAndRespondToCandidates;
 
     return Row(
       children: [
@@ -590,8 +601,8 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Applications',
-                style: GoogleFonts.poppins(
+                _l10n.uiApplications,
+                style: AppTypography.product(
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
                   color: _ApplicationsPalette.textPrimary,
@@ -603,7 +614,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
               const SizedBox(height: 2),
               Text(
                 subtitle,
-                style: GoogleFonts.poppins(
+                style: AppTypography.product(
                   fontSize: 11,
                   color: _ApplicationsPalette.textMuted,
                 ),
@@ -677,7 +688,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
               children: [
                 Expanded(
                   child: _HeroStatTile(
-                    label: 'Total',
+                    label: _l10n.uiTotal,
                     value: '$totalApplications',
                     icon: Icons.inbox_rounded,
                     color: _ApplicationsPalette.primary,
@@ -686,7 +697,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                 const _KpiDivider(),
                 Expanded(
                   child: _HeroStatTile(
-                    label: 'Pending',
+                    label: _l10n.uiPending,
                     value: '$pendingCount',
                     icon: Icons.schedule_rounded,
                     color: _ApplicationsPalette.warning,
@@ -695,7 +706,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                 const _KpiDivider(),
                 Expanded(
                   child: _HeroStatTile(
-                    label: 'Reviewed',
+                    label: _l10n.uiReviewed,
                     value: '$reviewedCount',
                     icon: Icons.task_alt_rounded,
                     color: _ApplicationsPalette.success,
@@ -715,7 +726,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
     required int totalApplications,
     required Map<String, int> opportunityCounts,
   }) {
-    final sectionLabelStyle = GoogleFonts.poppins(
+    final sectionLabelStyle = AppTypography.product(
       fontSize: 11,
       fontWeight: FontWeight.w700,
       letterSpacing: 0.6,
@@ -733,13 +744,13 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
             ),
             const Spacer(),
             if (_activeFilterCount > 0)
-              _CounterBadge(count: _activeFilterCount, label: 'Active'),
+              _CounterBadge(count: _activeFilterCount, label: _l10n.uiActive),
           ],
         ),
         const SizedBox(height: 10),
         _SearchField(
           controller: _searchController,
-          hintText: 'Search by candidate, opportunity, location, or type...',
+          hintText: _l10n.uiSearchByCandidateOpportunityLocationOrType,
         ),
         const SizedBox(height: 12),
         Text(
@@ -798,7 +809,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
           child: Row(
             children: [
               _TypeFilterChip(
-                label: 'All',
+                label: _l10n.uiAll,
                 icon: Icons.widgets_outlined,
                 selected: _selectedTypeFilter == _allTypeFilter,
                 tone: _toneForType(null),
@@ -807,7 +818,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
               ),
               const SizedBox(width: 6),
               _TypeFilterChip(
-                label: 'Jobs',
+                label: _l10n.uiJobs,
                 icon: OpportunityType.icon(OpportunityType.job),
                 selected: _selectedTypeFilter == OpportunityType.job,
                 tone: _toneForType(OpportunityType.job),
@@ -816,7 +827,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
               ),
               const SizedBox(width: 6),
               _TypeFilterChip(
-                label: 'Internships',
+                label: _l10n.uiInternships,
                 icon: OpportunityType.icon(OpportunityType.internship),
                 selected: _selectedTypeFilter == OpportunityType.internship,
                 tone: _toneForType(OpportunityType.internship),
@@ -826,7 +837,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
               ),
               const SizedBox(width: 6),
               _TypeFilterChip(
-                label: 'Sponsored',
+                label: OpportunityType.label(OpportunityType.sponsoring, _l10n),
                 icon: OpportunityType.icon(OpportunityType.sponsoring),
                 selected: _selectedTypeFilter == OpportunityType.sponsoring,
                 tone: _toneForType(OpportunityType.sponsoring),
@@ -850,7 +861,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
             child: Row(
               children: [
                 _OpportunityFilterChip(
-                  label: 'All Roles',
+                  label: _l10n.uiAllRoles,
                   count: totalApplications,
                   selected: _selectedOpportunityFilter == _allOpportunityFilter,
                   onTap: () => setState(
@@ -880,8 +891,11 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
           children: [
             Expanded(
               child: Text(
-                'Showing $resultsCount of $totalApplications applications',
-                style: GoogleFonts.poppins(
+                _l10n.uiShowingValueOfValueApplications(
+                  resultsCount,
+                  totalApplications,
+                ),
+                style: AppTypography.product(
                   fontSize: 11.5,
                   fontWeight: FontWeight.w600,
                   color: _ApplicationsPalette.textMuted,
@@ -894,8 +908,8 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   child: Text(
-                    'Clear',
-                    style: GoogleFonts.poppins(
+                    _l10n.uiClearSearch,
+                    style: AppTypography.product(
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
                       color: _ApplicationsPalette.primary,
@@ -915,17 +929,20 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
     required bool isFocusedView,
   }) {
     final subtitle = isFocusedView
-        ? 'Direct application review with all candidate details in one place.'
+        ? _l10n.uiDirectApplicationReviewWithAllCandidateDetailsInOnePlace
         : _hasActiveFilters
-        ? 'Filtered results: $resultsCount of $totalApplications applications.'
-        : 'Latest candidates ready for review, messaging, and CV checks.';
+        ? _l10n.uiShowingValueOfValueApplications(
+            resultsCount,
+            totalApplications,
+          )
+        : _l10n.uiLatestCandidatesReadyForReviewMessagingAndCvChecks;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          isFocusedView ? 'Application Spotlight' : 'Candidate Queue',
-          style: GoogleFonts.poppins(
+          isFocusedView ? _l10n.uiApplicationSpotlight : _l10n.uiCandidateQueue,
+          style: AppTypography.product(
             fontSize: 18,
             fontWeight: FontWeight.w700,
             color: _ApplicationsPalette.textPrimary,
@@ -934,7 +951,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
         const SizedBox(height: 4),
         Text(
           subtitle,
-          style: GoogleFonts.poppins(
+          style: AppTypography.product(
             fontSize: 12,
             height: 1.45,
             color: _ApplicationsPalette.textSecondary,
@@ -974,7 +991,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
     if (value == null) {
       return null;
     }
-    return DateFormat('MMM d, yyyy').format(value.toDate());
+    return DateFormat.yMMMd(_localeName).format(value.toDate());
   }
 
   String? _opportunityTitleLabel(OpportunityModel? opportunity) {
@@ -1051,7 +1068,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                                         application.studentName,
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
-                                        style: GoogleFonts.poppins(
+                                        style: AppTypography.product(
                                           fontSize: 14.5,
                                           fontWeight: FontWeight.w700,
                                           color:
@@ -1074,8 +1091,8 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                                           ),
                                         ),
                                         child: Text(
-                                          'NEW',
-                                          style: GoogleFonts.poppins(
+                                          _l10n.uiNew,
+                                          style: AppTypography.product(
                                             fontSize: 9,
                                             fontWeight: FontWeight.w700,
                                             color: _ApplicationsPalette.accent,
@@ -1092,7 +1109,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                                     titleLabel,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: GoogleFonts.poppins(
+                                    style: AppTypography.product(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w500,
                                       color: _ApplicationsPalette.textSecondary,
@@ -1102,8 +1119,10 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                                 if (relativeAppliedLabel != null) ...[
                                   const SizedBox(height: 4),
                                   Text(
-                                    'Applied $relativeAppliedLabel',
-                                    style: GoogleFonts.poppins(
+                                    _l10n.uiAppliedAppliedtext(
+                                      relativeAppliedLabel,
+                                    ),
+                                    style: AppTypography.product(
                                       fontSize: 11,
                                       color: _ApplicationsPalette.textMuted,
                                     ),
@@ -1151,7 +1170,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
     final tone = _toneForOpportunity(opportunity);
     final studentName = _studentNameLabel(application);
     final opportunityTitle =
-        _opportunityTitleLabel(opportunity) ?? 'Opportunity unavailable';
+        _opportunityTitleLabel(opportunity) ?? _l10n.uiOpportunityUnavailable;
     final typeLabel = opportunity == null ? null : _typeLabel(opportunity.type);
     final appliedDateLabel = _appliedDateLabel(application.appliedAt);
     final relativeAppliedLabel = _relativeDateLabel(application.appliedAt);
@@ -1189,10 +1208,10 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                 padding: const EdgeInsets.fromLTRB(18, 10, 18, 28),
                 children: [
                   _SheetHeaderBar(
-                    title: 'Application details',
+                    title: _l10n.uiApplicationDetails,
                     subtitle: isPending
-                        ? 'Review the candidate before making a decision.'
-                        : 'Keep the candidate context close at hand.',
+                        ? _l10n.uiReviewTheCandidateBeforeMakingADecision
+                        : _l10n.uiKeepTheCandidateContextCloseAtHand,
                     onClose: () => Navigator.pop(sheetContext),
                   ),
                   const SizedBox(height: 14),
@@ -1214,7 +1233,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                   _ActionRail(
                     children: [
                       _WideActionButton(
-                        label: 'Profile',
+                        label: _l10n.uiProfile,
                         icon: Icons.person_outline_rounded,
                         background: _ApplicationsPalette.primarySoft,
                         foreground: _ApplicationsPalette.primary,
@@ -1224,7 +1243,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                         },
                       ),
                       _WideActionButton(
-                        label: 'Message',
+                        label: _l10n.uiMessage,
                         icon: Icons.chat_bubble_outline_rounded,
                         background: AppColors.current.secondarySoft,
                         foreground: _ApplicationsPalette.secondaryDark,
@@ -1234,7 +1253,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                         },
                       ),
                       _WideActionButton(
-                        label: 'View CV',
+                        label: _l10n.uiViewCv,
                         icon: Icons.description_outlined,
                         background: _ApplicationsPalette.accentSoft,
                         foreground: _ApplicationsPalette.accent,
@@ -1248,8 +1267,8 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                   const SizedBox(height: 14),
                   _OpportunityLinkButton(
                     title: opportunity == null
-                        ? 'Opportunity unavailable'
-                        : 'View opportunity details',
+                        ? _l10n.uiOpportunityUnavailable
+                        : _l10n.uiOpportunityDetails,
                     subtitle: opportunityTitle,
                     icon: OpportunityType.icon(
                       opportunity?.type ?? OpportunityType.job,
@@ -1298,7 +1317,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
 
   String _studentNameLabel(ApplicationModel application) {
     return OpportunityMetadata.sanitizeText(application.studentName) ??
-        'Unnamed candidate';
+        _l10n.uiUnnamedCandidate;
   }
 
   List<_DetailRowItem> _opportunityDetailRows(OpportunityModel? opportunity) {
@@ -1308,17 +1327,17 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
 
     final rows = <_DetailRowItem>[
       _DetailRowItem(
-        label: 'Location',
+        label: _l10n.uiLocation,
         value: _opportunityLocationLabel(opportunity),
         icon: Icons.place_outlined,
       ),
       _DetailRowItem(
-        label: 'Deadline',
+        label: _l10n.uiDeadline,
         value: _deadlineLabel(opportunity),
         icon: Icons.event_available_outlined,
       ),
       _DetailRowItem(
-        label: 'Compensation',
+        label: _l10n.uiCompensation,
         value: _compensationLabel(opportunity),
         icon: Icons.payments_outlined,
       ),
@@ -1354,7 +1373,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
 
   String _opportunityLocationLabel(OpportunityModel opportunity) {
     return OpportunityMetadata.sanitizeText(opportunity.location) ??
-        'Location not specified';
+        _l10n.uiLocationNotSpecified;
   }
 
   String _deadlineLabel(OpportunityModel opportunity) {
@@ -1366,12 +1385,12 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
     }
 
     return OpportunityMetadata.sanitizeText(opportunity.deadlineLabel) ??
-        'Not specified';
+        _l10n.uiNotSpecified;
   }
 
   String _compensationLabel(OpportunityModel opportunity) {
     if (OpportunityType.isSponsoring(opportunity.type)) {
-      return opportunity.fundingLabel() ?? 'Not specified';
+      return opportunity.fundingLabel() ?? _l10n.uiNotSpecified;
     }
 
     return OpportunityMetadata.buildCompensationLabel(
@@ -1382,7 +1401,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
           compensationText: opportunity.compensationText,
           isPaid: opportunity.isPaid,
         ) ??
-        'Not specified';
+        _l10n.uiNotSpecified;
   }
 
   void _openOpportunityDetailsFromSheet(
@@ -1415,7 +1434,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
     final detailRows = _opportunityDetailRows(opportunity);
     final description =
         OpportunityMetadata.sanitizeText(opportunity.description) ??
-        'No description provided.';
+        _l10n.uiNoDescriptionProvided;
     final requirements = _opportunityRequirementItems(opportunity);
     final benefits = _opportunityBenefits(opportunity);
 
@@ -1450,8 +1469,8 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                 padding: const EdgeInsets.fromLTRB(18, 10, 18, 28),
                 children: [
                   _SheetHeaderBar(
-                    title: 'Opportunity details',
-                    subtitle: 'The role this candidate applied for.',
+                    title: _l10n.uiOpportunityDetails,
+                    subtitle: _l10n.uiTheRoleThisCandidateAppliedFor,
                     onClose: () => Navigator.pop(sheetContext),
                   ),
                   const SizedBox(height: 14),
@@ -1464,7 +1483,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                   if (metadata.isNotEmpty) ...[
                     const SizedBox(height: 14),
                     _DetailSectionCard(
-                      title: 'Role details',
+                      title: _l10n.uiRoleDetails,
                       icon: Icons.tune_outlined,
                       child: Wrap(
                         spacing: 8,
@@ -1483,7 +1502,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                   if (detailRows.isNotEmpty) ...[
                     const SizedBox(height: 14),
                     _DetailSectionCard(
-                      title: 'Timeline and location',
+                      title: _l10n.uiTimelineAndLocation,
                       icon: Icons.event_note_outlined,
                       child: _DetailRows(rows: detailRows),
                     ),
@@ -1515,7 +1534,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                   if (benefits.isNotEmpty) ...[
                     const SizedBox(height: 14),
                     _DetailSectionCard(
-                      title: 'Benefits',
+                      title: _l10n.uiBenefits,
                       icon: Icons.workspace_premium_outlined,
                       child: _DetailBulletList(items: benefits),
                     ),
@@ -1561,7 +1580,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
         .replaceAll(RegExp(r'[_-]+'), ' ')
         .replaceAll(RegExp(r'\s+'), ' ');
     if (normalized.isEmpty) {
-      return 'Status unavailable';
+      return _l10n.uiStatusUnavailable;
     }
 
     return normalized
@@ -1580,7 +1599,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
       userId: application.studentId,
       fallbackName: application.studentName,
       fallbackRole: 'student',
-      contextLabel: 'Application',
+      contextLabel: _l10n.uiApplication,
     );
   }
 
@@ -1600,7 +1619,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
         companyId: currentUser.uid,
         companyName: currentUser.companyName ?? currentUser.fullName,
         contextType: 'application',
-        contextLabel: 'Application conversation',
+        contextLabel: _l10n.uiApplicationConversation,
         currentUserId: currentUser.uid,
         currentUserRole: currentUser.role,
       );
@@ -1616,7 +1635,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
             otherName: conversation.studentName,
             recipientId: conversation.studentId,
             otherRole: 'student',
-            contextLabel: 'Application conversation',
+            contextLabel: _l10n.uiApplicationConversation,
           ),
         ),
       );
@@ -1707,7 +1726,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                     padding: const EdgeInsets.all(24),
                     child: Text(
                       _documentErrorMessage(snapshot.error!),
-                      style: GoogleFonts.poppins(
+                      style: AppTypography.product(
                         color: _ApplicationsPalette.textSecondary,
                       ),
                       textAlign: TextAlign.center,
@@ -1753,8 +1772,10 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                         ),
                         const SizedBox(height: 12),
                         Text(
-                          'No CV available for ${application.studentName}',
-                          style: GoogleFonts.poppins(
+                          _l10n.uiNoCvAvailableForValue(
+                            application.studentName,
+                          ),
+                          style: AppTypography.product(
                             color: _ApplicationsPalette.textSecondary,
                           ),
                         ),
@@ -1789,7 +1810,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                         cv.fullName.isNotEmpty
                             ? cv.fullName
                             : application.studentName,
-                        style: GoogleFonts.poppins(
+                        style: AppTypography.product(
                           fontSize: 20,
                           fontWeight: FontWeight.w700,
                           color: _ApplicationsPalette.textPrimary,
@@ -1798,7 +1819,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                       const SizedBox(height: 4),
                       Text(
                         '${cv.email} - ${cv.phone}',
-                        style: GoogleFonts.poppins(
+                        style: AppTypography.product(
                           fontSize: 12,
                           color: _ApplicationsPalette.textSecondary,
                         ),
@@ -1807,7 +1828,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                         const SizedBox(height: 2),
                         Text(
                           cv.address,
-                          style: GoogleFonts.poppins(
+                          style: AppTypography.product(
                             fontSize: 12,
                             color: _ApplicationsPalette.textSecondary,
                           ),
@@ -1817,11 +1838,11 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                       _buildDocumentReviewCard(
                         title: _l10n.uiPrimaryCvPdf,
                         subtitle: cv.hasUploadedCv
-                            ? 'File: ${cv.uploadedCvDisplayName}\nUploaded: ${_formatDate(cv.uploadedCvUploadedAt)}'
+                            ? '${_l10n.uiFile}: ${cv.uploadedCvDisplayName}\n${_l10n.uiUploadedUploadedatlabel(_formatDate(cv.uploadedCvUploadedAt))}'
                             : _l10n.uiNoUploadedCv,
                         accentColor: _ApplicationsPalette.primary,
                         warningText: cv.hasUploadedCv && !cv.isUploadedCvPdf
-                            ? 'This uploaded file is not a valid PDF. Ask the applicant to replace it with a PDF version.'
+                            ? _l10n.uiTheRequestedFileIsNotAValidPdf
                             : null,
                         onView: cv.hasUploadedCv && cv.isUploadedCvPdf
                             ? () => _openApplicationDocument(
@@ -1864,12 +1885,12 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                       ),
                       if (cv.summary.isNotEmpty) ...[
                         const SizedBox(height: 14),
-                        _buildCvSection('Summary', [cv.summary]),
+                        _buildCvSection(_l10n.uiSummary, [cv.summary]),
                       ],
                       if (cv.education.isNotEmpty) ...[
                         const SizedBox(height: 14),
                         _buildCvSection(
-                          'Education',
+                          _l10n.uiEducation,
                           cv.education
                               .map(
                                 (entry) =>
@@ -1881,11 +1902,11 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                       if (cv.experience.isNotEmpty) ...[
                         const SizedBox(height: 14),
                         _buildCvSection(
-                          'Experience',
+                          _l10n.uiExperience,
                           cv.experience
                               .map(
                                 (entry) =>
-                                    '${entry['position'] ?? entry['title'] ?? ''} at ${entry['company'] ?? ''} (${entry['duration'] ?? ''})',
+                                    '${entry['position'] ?? entry['title'] ?? ''} - ${entry['company'] ?? ''} (${entry['duration'] ?? ''})',
                               )
                               .toList(growable: false),
                         ),
@@ -1893,8 +1914,8 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                       if (cv.skills.isNotEmpty) ...[
                         const SizedBox(height: 14),
                         Text(
-                          'Skills',
-                          style: GoogleFonts.poppins(
+                          _l10n.uiSkills,
+                          style: AppTypography.product(
                             fontSize: 15,
                             fontWeight: FontWeight.w600,
                             color: _ApplicationsPalette.textPrimary,
@@ -1921,8 +1942,8 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                       if (cv.languages.isNotEmpty) ...[
                         const SizedBox(height: 14),
                         Text(
-                          'Languages',
-                          style: GoogleFonts.poppins(
+                          _l10n.uiLanguages,
+                          style: AppTypography.product(
                             fontSize: 15,
                             fontWeight: FontWeight.w600,
                             color: _ApplicationsPalette.textPrimary,
@@ -1982,7 +2003,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
         download ? document.downloadUrl : document.viewUrl,
       );
       if (uri == null) {
-        throw Exception('File unavailable.');
+        throw Exception(_l10n.uiTheRequestedFileIsNoLongerAvailable);
       }
 
       final launched = await launchUrl(
@@ -2033,7 +2054,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
         children: [
           Text(
             title,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 14,
               fontWeight: FontWeight.w700,
               color: _ApplicationsPalette.textPrimary,
@@ -2042,7 +2063,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
           const SizedBox(height: 6),
           Text(
             subtitle,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 12,
               height: 1.5,
               color: _ApplicationsPalette.textSecondary,
@@ -2052,7 +2073,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
             const SizedBox(height: 10),
             Text(
               warningText,
-              style: GoogleFonts.poppins(
+              style: AppTypography.product(
                 fontSize: 12,
                 height: 1.4,
                 color: Colors.orange.shade800,
@@ -2102,20 +2123,20 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
 
   String _formatDate(Timestamp? value) {
     if (value == null) {
-      return 'Not available';
+      return _l10n.uiNotSpecified;
     }
-    return DateFormat('MMM d, yyyy').format(value.toDate());
+    return DateFormat.yMMMd(_localeName).format(value.toDate());
   }
 
   String _documentErrorMessage(Object error) {
     final message = error.toString().toLowerCase();
     if (message.contains('permission') || message.contains('403')) {
-      return 'Permission denied while opening the document.';
+      return _l10n.uiPermissionDeniedWhileOpeningTheDocument;
     }
     if (message.contains('404') || message.contains('not found')) {
-      return 'The requested file is no longer available.';
+      return _l10n.uiTheRequestedFileIsNoLongerAvailable;
     }
-    return 'We couldn\'t open the document right now.';
+    return _l10n.uiCouldNotOpenTheDocumentRightNow;
   }
 
   Widget _buildCvSection(String title, List<String> items) {
@@ -2124,7 +2145,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
       children: [
         Text(
           title,
-          style: GoogleFonts.poppins(
+          style: AppTypography.product(
             fontSize: 15,
             fontWeight: FontWeight.w600,
             color: _ApplicationsPalette.textPrimary,
@@ -2136,7 +2157,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
             padding: const EdgeInsets.only(bottom: 4),
             child: Text(
               item,
-              style: GoogleFonts.poppins(
+              style: AppTypography.product(
                 fontSize: 13,
                 color: _ApplicationsPalette.textSecondary,
               ),
@@ -2246,7 +2267,7 @@ class _NotificationIconButton extends StatelessWidget {
               child: Center(
                 child: Text(
                   unreadCount > 9 ? '9+' : '$unreadCount',
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: 8.5,
                     fontWeight: FontWeight.w700,
                     color: Colors.white,
@@ -2300,7 +2321,7 @@ class _HeroStatTile extends StatelessWidget {
               const SizedBox(width: 5),
               Text(
                 label,
-                style: GoogleFonts.poppins(
+                style: AppTypography.product(
                   fontSize: 10.5,
                   fontWeight: FontWeight.w600,
                   color: _ApplicationsPalette.textMuted,
@@ -2312,7 +2333,7 @@ class _HeroStatTile extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             value,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 20,
               fontWeight: FontWeight.w700,
               color: _ApplicationsPalette.textPrimary,
@@ -2342,7 +2363,7 @@ class _SearchField extends StatelessWidget {
       child: TextField(
         controller: controller,
         cursorColor: _ApplicationsPalette.primary,
-        style: GoogleFonts.poppins(
+        style: AppTypography.product(
           fontSize: 13,
           color: _ApplicationsPalette.textPrimary,
         ),
@@ -2376,7 +2397,7 @@ class _SearchField extends StatelessWidget {
                   ),
                 ),
           hintText: hintText,
-          hintStyle: GoogleFonts.poppins(
+          hintStyle: AppTypography.product(
             fontSize: 13,
             color: _ApplicationsPalette.textMuted,
           ),
@@ -2409,7 +2430,7 @@ class _CounterBadge extends StatelessWidget {
           if ((label ?? '').trim().isNotEmpty) ...[
             Text(
               label!,
-              style: GoogleFonts.poppins(
+              style: AppTypography.product(
                 fontSize: 10.5,
                 fontWeight: FontWeight.w700,
                 color: _ApplicationsPalette.primary,
@@ -2419,7 +2440,7 @@ class _CounterBadge extends StatelessWidget {
           ],
           Text(
             '$count',
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 11,
               fontWeight: FontWeight.w700,
               color: _ApplicationsPalette.primary,
@@ -2479,7 +2500,7 @@ class _FilterChip extends StatelessWidget {
             ],
             Text(
               label,
-              style: GoogleFonts.poppins(
+              style: AppTypography.product(
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
                 color: selected
@@ -2498,7 +2519,7 @@ class _FilterChip extends StatelessWidget {
               ),
               child: Text(
                 '$count',
-                style: GoogleFonts.poppins(
+                style: AppTypography.product(
                   fontSize: 10,
                   fontWeight: FontWeight.w700,
                   color: selected
@@ -2560,7 +2581,7 @@ class _TypeFilterChip extends StatelessWidget {
             ],
             Text(
               label,
-              style: GoogleFonts.poppins(
+              style: AppTypography.product(
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
                 color: selected
@@ -2615,7 +2636,7 @@ class _OpportunityFilterChip extends StatelessWidget {
                 label,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: GoogleFonts.poppins(
+                style: AppTypography.product(
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
                   color: selected
@@ -2636,7 +2657,7 @@ class _OpportunityFilterChip extends StatelessWidget {
                 ),
                 child: Text(
                   '$count',
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
                     color: selected
@@ -2660,12 +2681,13 @@ class _FocusedApplicationBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return _InlineBanner(
       icon: Icons.filter_alt_outlined,
-      title: 'Focused application view',
+      title: l10n.uiFocusedApplicationView,
       message: count == 1
-          ? 'Showing the application you opened directly.'
-          : 'The requested application is no longer available.',
+          ? l10n.uiShowingTheApplicationYouOpenedDirectly
+          : l10n.uiThisApplicationIsNoLongerAvailable,
       tone: _ApplicationsPalette.primary,
       background: _ApplicationsPalette.primarySoft,
     );
@@ -2720,7 +2742,7 @@ class _InlineBanner extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
                     color: _ApplicationsPalette.textPrimary,
@@ -2729,7 +2751,7 @@ class _InlineBanner extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   message,
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: 12,
                     color: _ApplicationsPalette.textSecondary,
                   ),
@@ -2742,7 +2764,7 @@ class _InlineBanner extends StatelessWidget {
                     icon: const Icon(Icons.visibility_outlined, size: 16),
                     label: Text(
                       actionLabel!,
-                      style: GoogleFonts.poppins(
+                      style: AppTypography.product(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                       ),
@@ -2771,6 +2793,7 @@ class _LoadingState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -2785,8 +2808,8 @@ class _LoadingState extends StatelessWidget {
           ),
           const SizedBox(height: 14),
           Text(
-            'Loading your applications...',
-            style: GoogleFonts.poppins(
+            l10n.uiLoadingYourApplications,
+            style: AppTypography.product(
               fontSize: 12.5,
               fontWeight: FontWeight.w600,
               color: _ApplicationsPalette.textSecondary,
@@ -2809,16 +2832,17 @@ class _EmptyApplicationsState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final title = isFocusedView
-        ? 'This application is no longer available'
+        ? l10n.uiThisApplicationIsNoLongerAvailable
         : hasFilters
-        ? 'No applications match this view'
-        : 'No applications yet';
+        ? l10n.uiNoApplicationsMatchThisView
+        : l10n.uiNoApplicationsYet;
     final message = isFocusedView
-        ? 'The application you opened is no longer available. It may have been removed or may no longer belong to this company.'
+        ? l10n.uiTheApplicationYouOpenedIsNoLongerAvailableItMayHaveBeenRemovedOrMayNoLongerBelongToThisCompany
         : hasFilters
-        ? 'Try clearing the filters or broadening the search to see more candidates.'
-        : 'Candidate applications are listed here with quick review actions and CV access.';
+        ? l10n.uiTryClearingTheFiltersOrBroadeningTheSearchToSeeMoreCandidates
+        : l10n.uiCandidateApplicationsAreListedHereWithQuickReviewActionsAndCvAccess;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
@@ -2850,7 +2874,7 @@ class _EmptyApplicationsState extends StatelessWidget {
               const SizedBox(height: 16),
               Text(
                 title,
-                style: GoogleFonts.poppins(
+                style: AppTypography.product(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
                   color: _ApplicationsPalette.textPrimary,
@@ -2860,7 +2884,7 @@ class _EmptyApplicationsState extends StatelessWidget {
               const SizedBox(height: 6),
               Text(
                 message,
-                style: GoogleFonts.poppins(
+                style: AppTypography.product(
                   fontSize: 13,
                   height: 1.5,
                   color: _ApplicationsPalette.textSecondary,
@@ -2892,7 +2916,7 @@ class _TypePill extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: GoogleFonts.poppins(
+        style: AppTypography.product(
           fontSize: 11,
           fontWeight: FontWeight.w700,
           letterSpacing: 0.3,
@@ -2930,7 +2954,7 @@ class _MetaPill extends StatelessWidget {
                 label,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: GoogleFonts.poppins(
+                style: AppTypography.product(
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
                   color: _ApplicationsPalette.textSecondary,
@@ -3013,7 +3037,7 @@ class _SheetHeaderBar extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             title,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 20,
               fontWeight: FontWeight.w800,
               color: _ApplicationsPalette.textPrimary,
@@ -3023,7 +3047,7 @@ class _SheetHeaderBar extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             subtitle,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 12.5,
               height: 1.45,
               color: _ApplicationsPalette.textSecondary,
@@ -3106,7 +3130,7 @@ class _OpportunityLinkButton extends StatelessWidget {
                         title,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.poppins(
+                        style: AppTypography.product(
                           fontSize: 13,
                           fontWeight: FontWeight.w800,
                           color: _ApplicationsPalette.textPrimary,
@@ -3117,7 +3141,7 @@ class _OpportunityLinkButton extends StatelessWidget {
                         subtitle,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.poppins(
+                        style: AppTypography.product(
                           fontSize: 11.5,
                           color: _ApplicationsPalette.textSecondary,
                         ),
@@ -3153,7 +3177,7 @@ class _OpportunityDetailsHero extends StatelessWidget {
   Widget build(BuildContext context) {
     final title =
         OpportunityMetadata.sanitizeText(opportunity.title) ??
-        'Untitled opportunity';
+        AppLocalizations.of(context)!.uiOpportunityUnavailable;
 
     return Container(
       width: double.infinity,
@@ -3191,7 +3215,7 @@ class _OpportunityDetailsHero extends StatelessWidget {
                       title,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.poppins(
+                      style: AppTypography.product(
                         fontSize: 17,
                         fontWeight: FontWeight.w800,
                         color: _ApplicationsPalette.textPrimary,
@@ -3212,7 +3236,7 @@ class _OpportunityDetailsHero extends StatelessWidget {
                             location,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.poppins(
+                            style: AppTypography.product(
                               fontSize: 12,
                               color: _ApplicationsPalette.textSecondary,
                             ),
@@ -3295,7 +3319,7 @@ class _DetailSectionCard extends StatelessWidget {
                   title,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: 13,
                     fontWeight: FontWeight.w800,
                     color: _ApplicationsPalette.textPrimary,
@@ -3321,7 +3345,7 @@ class _DetailBodyText extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: GoogleFonts.poppins(
+      style: AppTypography.product(
         fontSize: 12.5,
         height: 1.6,
         color: _ApplicationsPalette.textSecondary,
@@ -3399,7 +3423,7 @@ class _DetailInfoRow extends StatelessWidget {
         Expanded(
           child: Text(
             item.label,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 12,
               fontWeight: FontWeight.w600,
               color: _ApplicationsPalette.textSecondary,
@@ -3412,7 +3436,7 @@ class _DetailInfoRow extends StatelessWidget {
           child: Text(
             item.value,
             textAlign: TextAlign.right,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 12.5,
               fontWeight: FontWeight.w700,
               color: _ApplicationsPalette.textPrimary,
@@ -3453,20 +3477,30 @@ class _DecisionPanel extends StatelessWidget {
       _ => Icons.rate_review_outlined,
     };
     final title = switch (normalizedStatus) {
-      ApplicationStatus.accepted => 'Candidate approved',
-      ApplicationStatus.rejected => 'Candidate rejected',
-      ApplicationStatus.withdrawn => 'Application withdrawn',
-      _ => 'Ready for decision',
+      ApplicationStatus.accepted => AppLocalizations.of(
+        context,
+      )!.uiCandidateApproved,
+      ApplicationStatus.rejected => AppLocalizations.of(
+        context,
+      )!.uiCandidateRejected,
+      ApplicationStatus.withdrawn => AppLocalizations.of(
+        context,
+      )!.uiApplicationWithdrawn,
+      _ => AppLocalizations.of(context)!.uiReadyForDecision,
     };
     final message = switch (normalizedStatus) {
-      ApplicationStatus.accepted =>
-        'This application is approved. Use message or CV review for next steps.',
-      ApplicationStatus.rejected =>
-        'This application is rejected. The profile and CV remain available for reference.',
-      ApplicationStatus.withdrawn =>
-        'This application has been withdrawn by the candidate.',
-      _ =>
-        'Approve the candidate to move them forward, or reject if the fit is not right.',
+      ApplicationStatus.accepted => AppLocalizations.of(
+        context,
+      )!.uiThisApplicationIsApprovedUseMessageOrCvReviewForNextSteps,
+      ApplicationStatus.rejected => AppLocalizations.of(
+        context,
+      )!.uiThisApplicationIsRejectedTheProfileAndCvRemainAvailableForReference,
+      ApplicationStatus.withdrawn => AppLocalizations.of(
+        context,
+      )!.uiThisApplicationHasBeenWithdrawnByTheCandidate,
+      _ => AppLocalizations.of(
+        context,
+      )!.uiApproveTheCandidateToMoveThemForwardOrRejectIfTheFitIsNotRight,
     };
 
     return Container(
@@ -3499,7 +3533,7 @@ class _DecisionPanel extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: GoogleFonts.poppins(
+                      style: AppTypography.product(
                         fontSize: 14,
                         fontWeight: FontWeight.w800,
                         color: _ApplicationsPalette.textPrimary,
@@ -3508,7 +3542,7 @@ class _DecisionPanel extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       message,
-                      style: GoogleFonts.poppins(
+                      style: AppTypography.product(
                         fontSize: 12,
                         height: 1.45,
                         color: _ApplicationsPalette.textSecondary,
@@ -3525,7 +3559,9 @@ class _DecisionPanel extends StatelessWidget {
               children: [
                 Expanded(
                   child: _DecisionButton(
-                    label: isBusy ? 'Working...' : 'Approve',
+                    label: isBusy
+                        ? AppLocalizations.of(context)!.uiWorking
+                        : AppLocalizations.of(context)!.uiApprove,
                     icon: Icons.check_rounded,
                     background: _ApplicationsPalette.success,
                     onTap: isBusy ? null : onApprove,
@@ -3534,7 +3570,9 @@ class _DecisionPanel extends StatelessWidget {
                 const SizedBox(width: 10),
                 Expanded(
                   child: _DecisionButton(
-                    label: isBusy ? 'Working...' : 'Reject',
+                    label: isBusy
+                        ? AppLocalizations.of(context)!.uiWorking
+                        : AppLocalizations.of(context)!.uiReject,
                     icon: Icons.close_rounded,
                     background: _ApplicationsPalette.error,
                     onTap: isBusy ? null : onReject,
@@ -3572,7 +3610,10 @@ class _DecisionButton extends StatelessWidget {
         label: Text(
           label,
           overflow: TextOverflow.ellipsis,
-          style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w800),
+          style: AppTypography.product(
+            fontSize: 12,
+            fontWeight: FontWeight.w800,
+          ),
         ),
         style: ElevatedButton.styleFrom(
           backgroundColor: background,
@@ -3616,7 +3657,9 @@ class _DetailHeroCard extends StatelessWidget {
 
     return Semantics(
       button: onTapProfile != null,
-      label: 'Open candidate profile for $studentName',
+      label: AppLocalizations.of(
+        context,
+      )!.uiOpenCandidateProfileForStudentname(studentName),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
@@ -3671,7 +3714,7 @@ class _DetailHeroCard extends StatelessWidget {
                             studentName,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.poppins(
+                            style: AppTypography.product(
                               fontSize: 19,
                               fontWeight: FontWeight.w800,
                               color: _ApplicationsPalette.textPrimary,
@@ -3683,7 +3726,7 @@ class _DetailHeroCard extends StatelessWidget {
                             opportunityTitle,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.poppins(
+                            style: AppTypography.product(
                               fontSize: 12.5,
                               height: 1.35,
                               color: _ApplicationsPalette.textSecondary,
@@ -3707,7 +3750,9 @@ class _DetailHeroCard extends StatelessWidget {
                       if (appliedText != null)
                         _MetaPill(
                           icon: Icons.schedule_rounded,
-                          label: 'Applied $appliedText',
+                          label: AppLocalizations.of(
+                            context,
+                          )!.uiAppliedAppliedtext(appliedText),
                         ),
                     ],
                   ),
@@ -3763,7 +3808,7 @@ class _WideActionButton extends StatelessWidget {
                   label,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: 11,
                     fontWeight: FontWeight.w800,
                     color: foreground,

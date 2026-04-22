@@ -2106,5 +2106,108 @@
   "uiActionSeeOpenRoles": "Voir les offres",
   "uiActionOpenSaved": "Ouvrir les enregistrements",
   "uiSavedScholarshipBadge": "Bourse enregistrée",
-  "uiSavedTypeBadge": "{type} enregistré"
+  "uiSavedTypeBadge": "{type} enregistré",
+  "uiGrowthNew": "Nouveau",
+  "uiNoApplicationsWereSubmittedInTheLast7Days": "Aucune candidature n'a été soumise au cours des 7 derniers jours.",
+  "uiPeakActivityReachedCountInASingleDay": "Le pic d'activité a atteint {count} candidatures en une seule journée.",
+  "@uiPeakActivityReachedCountInASingleDay": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "uiNoReviewedApplicationsYet": "Aucune candidature examinée pour le moment.",
+  "uiReviewedApplicationsBreakdown": "{approved} approuvées et {rejected} rejetées jusqu'à présent.",
+  "@uiReviewedApplicationsBreakdown": {
+    "placeholders": {
+      "approved": {},
+      "rejected": {}
+    }
+  },
+  "uiNoApplicationsAreWaitingForReviewRightNow": "Aucune candidature n'est en attente de révision pour le moment.",
+  "uiPendingApplicationsNeedReview": "{count} candidatures en attente doivent être examinées.",
+  "@uiPendingApplicationsNeedReview": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "uiNoOpenPostsExpireWithinTwoDays": "Aucune offre ouverte n'expire dans les deux jours.",
+  "uiOpenPostsExpireWithinTwoDays": "{count} offres ouvertes expirent dans les deux jours.",
+  "@uiOpenPostsExpireWithinTwoDays": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "uiYourDashboardIsReadyForIncomingApplicants": "Votre tableau de bord est prêt pour les nouveaux candidats.",
+  "uiQuickHighlightsPulledFromYourLiveDashboardData": "Aperçu rapide tiré des données en direct de votre tableau de bord.",
+  "uiToday": "Aujourd'hui",
+  "uiYesterday": "Hier",
+  "uiDaysAgo": "Il y a {count} jours",
+  "@uiDaysAgo": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "uiWeeksAgo": "Il y a {count} semaines",
+  "@uiWeeksAgo": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "uiFocusedReviewMode": "Mode de révision ciblé",
+  "uiReviewAndRespondToCandidates": "Examiner et répondre aux candidats",
+  "uiPendingApplicationsAcrossOpportunitiesNeedReview": "{count} candidatures en attente sur {opportunities} offres doivent être examinées.",
+  "@uiPendingApplicationsAcrossOpportunitiesNeedReview": {
+    "placeholders": {
+      "count": {},
+      "opportunities": {}
+    }
+  },
+  "uiShowPending": "Afficher les en attente",
+  "uiShowingOnlyTheCandidatesWhoAppliedToThisRole": "Affichage uniquement des candidats ayant postulé à ce rôle.",
+  "uiDirectApplicationReviewWithAllCandidateDetailsInOnePlace": "Révision directe des candidatures avec tous les détails du candidat au même endroit.",
+  "uiLatestCandidatesReadyForReviewMessagingAndCvChecks": "Derniers candidats prêts pour la révision, la messagerie et la vérification du CV.",
+  "uiApplicationSpotlight": "Candidature mise en avant",
+  "uiCandidateQueue": "File des candidats",
+  "uiLocationNotSpecified": "Lieu non précisé",
+  "uiNotSpecified": "Non précisé",
+  "uiNoDescriptionProvided": "Aucune description fournie.",
+  "uiStatusUnavailable": "Statut indisponible",
+  "uiTheRequestedFileIsNoLongerAvailable": "Le fichier demandé n'est plus disponible.",
+  "uiSummary": "Résumé",
+  "uiShowingTheApplicationYouOpenedDirectly": "Affichage direct de la candidature que vous avez ouverte.",
+  "uiThisApplicationIsNoLongerAvailable": "Cette candidature n'est plus disponible.",
+  "uiNoApplicationsMatchThisView": "Aucune candidature ne correspond à cette vue.",
+  "uiTheApplicationYouOpenedIsNoLongerAvailableItMayHaveBeenRemovedOrMayNoLongerBelongToThisCompany": "La candidature que vous avez ouverte n'est plus disponible. Elle a peut-être été supprimée ou n'appartient plus à cette entreprise.",
+  "uiTryClearingTheFiltersOrBroadeningTheSearchToSeeMoreCandidates": "Essayez d'effacer les filtres ou d'élargir la recherche pour voir plus de candidats.",
+  "uiCandidateApplicationsAreListedHereWithQuickReviewActionsAndCvAccess": "Les candidatures sont listées ici avec des actions rapides de révision et l'accès au CV.",
+  "uiReviewTheCandidateBeforeMakingADecision": "Examinez le candidat avant de prendre une décision.",
+  "uiKeepTheCandidateContextCloseAtHand": "Gardez le contexte du candidat à portée de main.",
+  "uiUnnamedCandidate": "Candidat sans nom",
+  "uiCandidateApproved": "Candidat approuvé",
+  "uiCandidateRejected": "Candidat rejeté",
+  "uiApplicationWithdrawn": "Candidature retirée",
+  "uiReadyForDecision": "Prêt à décider",
+  "uiThisApplicationIsApprovedUseMessageOrCvReviewForNextSteps": "Cette candidature est approuvée. Utilisez la messagerie ou la révision du CV pour les prochaines étapes.",
+  "uiThisApplicationIsRejectedTheProfileAndCvRemainAvailableForReference": "Cette candidature est rejetée. Le profil et le CV restent disponibles à titre de référence.",
+  "uiThisApplicationHasBeenWithdrawnByTheCandidate": "Cette candidature a été retirée par le candidat.",
+  "uiApproveTheCandidateToMoveThemForwardOrRejectIfTheFitIsNotRight": "Approuvez le candidat pour le faire avancer, ou rejetez-le si le profil ne convient pas.",
+  "uiWorking": "Traitement...",
+  "uiApplication": "Candidature",
+  "uiApplicationConversation": "Conversation de candidature",
+  "companyFundingSectionTitle": "Financement de l'entreprise",
+  "internshipCompensationSectionTitle": "Rémunération du stage",
+  "compensationAndFormatSectionTitle": "Rémunération et format",
+  "optionalSupportDetailsShownToStudents": "Détails de soutien facultatifs affichés aux étudiants",
+  "durationExampleHint": "Durée, ex. 2 mois",
+  "optionalCompensationNoteForDetailScreens": "Note de rémunération facultative pour les écrans de détail",
+  "eligibilityChecklistHelper": "Ajoutez chaque critère d'éligibilité séparément afin que les étudiants voient une liste claire.",
+  "requirementsChecklistHelper": "Ajoutez chaque exigence séparément afin que les étudiants voient une liste claire.",
+  "opportunityUpdatedTitle": "Opportunité mise à jour",
+  "opportunityPublishedTitle": "Opportunité publiée",
+  "uiSearchApplicants": "Rechercher des candidats",
+  "uiSearchApprovedCompanies": "Rechercher des entreprises approuvées",
+  "uiSuggested": "Suggestions",
+  "uiApprovedCompanies": "Entreprises approuvées",
+  "uiNoApplicantsMatchYourSearch": "Aucun candidat ne correspond à votre recherche.",
+  "uiNoApprovedCompaniesMatchYourSearch": "Aucune entreprise approuvée ne correspond à votre recherche."
 }

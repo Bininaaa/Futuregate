@@ -2,10 +2,10 @@ import 'dart:math' as math;
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-import '../../config/app_metadata.dart';
+import '../../l10n/generated/app_localizations.dart';
 import '../../models/application_model.dart';
 import '../../models/opportunity_model.dart';
 import '../../models/user_model.dart';
@@ -13,6 +13,7 @@ import '../../providers/auth_provider.dart';
 import '../../providers/company_provider.dart';
 import '../../providers/notification_provider.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_typography.dart';
 import '../../utils/application_status.dart';
 import '../../utils/company_dashboard_palette.dart';
 import '../../widgets/app_shell_background.dart';
@@ -33,6 +34,10 @@ class CompanyDashboardScreen extends StatefulWidget {
 }
 
 class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
+  AppLocalizations get _l10n => AppLocalizations.of(context)!;
+
+  String get _localeName => Localizations.localeOf(context).toLanguageTag();
+
   @override
   void initState() {
     super.initState();
@@ -108,24 +113,8 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
 
   String _dayKey(DateTime value) => '${value.year}-${value.month}-${value.day}';
 
-  String _weekdayLabel(DateTime value) {
-    switch (value.weekday) {
-      case DateTime.monday:
-        return 'MON';
-      case DateTime.tuesday:
-        return 'TUE';
-      case DateTime.wednesday:
-        return 'WED';
-      case DateTime.thursday:
-        return 'THU';
-      case DateTime.friday:
-        return 'FRI';
-      case DateTime.saturday:
-        return 'SAT';
-      default:
-        return 'SUN';
-    }
-  }
+  String _weekdayLabel(DateTime value) =>
+      DateFormat('EEE', _localeName).format(value);
 
   List<double> _chartPoints(
     List<ApplicationModel> applications,
@@ -180,36 +169,15 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
       return fullName;
     }
 
-    return 'Company';
-  }
-
-  String _pluralize(String singular, int count) {
-    return count == 1 ? singular : '${singular}s';
+    return _l10n.uiCompany;
   }
 
   String _applicationDateLabel(ApplicationModel application) {
     final appliedAt = application.appliedAt?.toDate();
     if (appliedAt == null) {
-      return 'Date unavailable';
+      return _l10n.uiAppliedDateUnavailable;
     }
-
-    const monthNames = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
-
-    final month = monthNames[appliedAt.month - 1];
-    return '$month ${appliedAt.day}, ${appliedAt.year}';
+    return DateFormat.yMMMd(_localeName).format(appliedAt);
   }
 
   String _cleanError(String message) {
@@ -244,7 +212,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
     }
 
     if (previousCount == 0) {
-      return currentCount == 0 ? '0%' : 'New';
+      return currentCount == 0 ? '0%' : _l10n.uiGrowthNew;
     }
 
     final rate = ((currentCount - previousCount) / previousCount) * 100;
@@ -362,8 +330,8 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Dashboard unavailable',
-                  style: GoogleFonts.poppins(
+                  _l10n.uiDashboardUnavailable,
+                  style: AppTypography.product(
                     color: CompanyDashboardPalette.textPrimary,
                     fontWeight: FontWeight.w700,
                   ),
@@ -372,7 +340,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
                 Text(
                   _cleanError(provider.dashboardError!),
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     color: CompanyDashboardPalette.textMuted,
                     fontSize: 12,
                   ),
@@ -381,8 +349,8 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
                 TextButton(
                   onPressed: _loadDashboard,
                   child: Text(
-                    'Retry',
-                    style: GoogleFonts.poppins(
+                    _l10n.retryLabel,
+                    style: AppTypography.product(
                       color: CompanyDashboardPalette.primary,
                       fontWeight: FontWeight.w600,
                     ),
@@ -420,14 +388,14 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
             ],
             const SizedBox(height: 18),
             _buildStatCard(
-              label: 'Active Job Posts',
+              label: _l10n.uiActiveJobPosts,
               value: '$activeJobPosts',
               icon: Icons.work_outline_rounded,
               tone: CompanyDashboardPalette.primary,
             ),
             const SizedBox(height: 12),
             _buildStatCard(
-              label: 'Applications Received',
+              label: _l10n.uiApplicationsReceived,
               value: '$totalApplications',
               icon: Icons.inbox_rounded,
               tone: CompanyDashboardPalette.secondary,
@@ -534,7 +502,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
                   companyName,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: 17,
                     fontWeight: FontWeight.w700,
                     color: CompanyDashboardPalette.textPrimary,
@@ -543,10 +511,10 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  '${AppMetadata.appName} company workspace',
+                  _l10n.companyWorkspaceTitle,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: 11.5,
                     fontWeight: FontWeight.w500,
                     color: CompanyDashboardPalette.textMuted,
@@ -574,7 +542,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
 
   Widget _buildNotificationButton(BuildContext context, int unreadCount) {
     return Tooltip(
-      message: 'Notifications',
+      message: _l10n.notificationsTooltip,
       child: Material(
         color: CompanyDashboardPalette.surfaceMuted,
         borderRadius: BorderRadius.circular(18),
@@ -622,7 +590,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
                       child: Text(
                         unreadCount > 9 ? '9+' : '$unreadCount',
                         textAlign: TextAlign.center,
-                        style: GoogleFonts.poppins(
+                        style: AppTypography.product(
                           fontSize: 9,
                           fontWeight: FontWeight.w700,
                           color: Colors.white,
@@ -694,8 +662,8 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'STRATEGIC DASHBOARD',
-                style: GoogleFonts.poppins(
+                _l10n.uiStrategicDashboard,
+                style: AppTypography.product(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
                   letterSpacing: 1.4,
@@ -704,8 +672,8 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
               ),
               const SizedBox(height: 12),
               Text(
-                'Company Overview',
-                style: GoogleFonts.poppins(
+                _l10n.uiCompanyOverview,
+                style: AppTypography.product(
                   fontSize: 24,
                   fontWeight: FontWeight.w700,
                   color: Colors.white,
@@ -716,7 +684,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
               Row(
                 children: [
                   _buildHeroStat(
-                    label: 'ACTIVE JOBS',
+                    label: _l10n.uiActiveJobs,
                     value: '$activeJobPosts',
                   ),
                   Container(
@@ -725,7 +693,10 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
                     margin: const EdgeInsets.symmetric(horizontal: 22),
                     color: Colors.white.withValues(alpha: 0.16),
                   ),
-                  _buildHeroStat(label: 'GROWTH RATE', value: growthRateLabel),
+                  _buildHeroStat(
+                    label: _l10n.uiGrowthRate,
+                    value: growthRateLabel,
+                  ),
                 ],
               ),
               const SizedBox(height: 18),
@@ -733,7 +704,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
                 children: [
                   Expanded(
                     child: _buildHeroAction(
-                      label: 'Post\nOpportunity',
+                      label: _l10n.uiPostOpportunity2F1A,
                       icon: Icons.add_rounded,
                       background: CompanyDashboardPalette.surface,
                       foreground: CompanyDashboardPalette.primaryDark,
@@ -743,7 +714,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: _buildHeroAction(
-                      label: 'Review\nApplications',
+                      label: _l10n.uiReviewApplications,
                       icon: Icons.assignment_rounded,
                       background: CompanyDashboardPalette.surface,
                       foreground: CompanyDashboardPalette.primaryDark,
@@ -765,7 +736,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
       children: [
         Text(
           label,
-          style: GoogleFonts.poppins(
+          style: AppTypography.product(
             fontSize: 11.5,
             fontWeight: FontWeight.w600,
             letterSpacing: 0.8,
@@ -775,7 +746,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
         const SizedBox(height: 4),
         Text(
           value,
-          style: GoogleFonts.poppins(
+          style: AppTypography.product(
             fontSize: 19,
             fontWeight: FontWeight.w700,
             color: Colors.white,
@@ -831,7 +802,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
                 maxLines: 2,
                 softWrap: true,
                 textAlign: TextAlign.center,
-                style: GoogleFonts.poppins(
+                style: AppTypography.product(
                   fontSize: 11.5,
                   fontWeight: FontWeight.w700,
                   height: 1.1,
@@ -868,8 +839,8 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Application Status',
-            style: GoogleFonts.poppins(
+            _l10n.uiApplicationStatus,
+            style: AppTypography.product(
               fontSize: 17,
               fontWeight: FontWeight.w700,
               color: CompanyDashboardPalette.textPrimary,
@@ -877,8 +848,8 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
           ),
           const SizedBox(height: 4),
           Text(
-            'Pending, approved, and rejected counts from your live applications.',
-            style: GoogleFonts.poppins(
+            _l10n.uiPendingApprovedAndRejectedCountsFromYourLiveApplications,
+            style: AppTypography.product(
               fontSize: 12,
               color: CompanyDashboardPalette.textMuted,
             ),
@@ -888,7 +859,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
             children: [
               Expanded(
                 child: _buildStatusChip(
-                  'Pending',
+                  _l10n.uiPending,
                   '$pendingApplications',
                   CompanyDashboardPalette.warning,
                 ),
@@ -896,7 +867,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
               const SizedBox(width: 10),
               Expanded(
                 child: _buildStatusChip(
-                  'Approved',
+                  _l10n.uiApproved,
                   '$approvedApplications',
                   CompanyDashboardPalette.success,
                 ),
@@ -904,7 +875,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
               const SizedBox(width: 10),
               Expanded(
                 child: _buildStatusChip(
-                  'Rejected',
+                  _l10n.uiRejected,
                   '$rejectedApplications',
                   CompanyDashboardPalette.error,
                 ),
@@ -954,7 +925,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
               children: [
                 Text(
                   label,
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: 12.5,
                     color: CompanyDashboardPalette.textMuted,
                     fontWeight: FontWeight.w500,
@@ -963,7 +934,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
                 const SizedBox(height: 4),
                 Text(
                   value,
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: 24,
                     fontWeight: FontWeight.w700,
                     color: CompanyDashboardPalette.textPrimary,
@@ -1018,8 +989,8 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Application Activity',
-                      style: GoogleFonts.poppins(
+                      _l10n.uiApplicationActivity,
+                      style: AppTypography.product(
                         fontSize: 17,
                         fontWeight: FontWeight.w700,
                         color: CompanyDashboardPalette.textPrimary,
@@ -1027,8 +998,8 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Real applications submitted over the last 7 days.',
-                      style: GoogleFonts.poppins(
+                      _l10n.uiRealApplicationsSubmittedOverTheLast7Days,
+                      style: AppTypography.product(
                         fontSize: 12,
                         height: 1.5,
                         color: CompanyDashboardPalette.textMuted,
@@ -1052,15 +1023,15 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
                   children: [
                     Text(
                       '$totalThisWeek',
-                      style: GoogleFonts.poppins(
+                      style: AppTypography.product(
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
                         color: CompanyDashboardPalette.primary,
                       ),
                     ),
                     Text(
-                      'This week',
-                      style: GoogleFonts.poppins(
+                      _l10n.uiThisWeek,
+                      style: AppTypography.product(
                         fontSize: 11,
                         fontWeight: FontWeight.w500,
                         color: CompanyDashboardPalette.textMuted,
@@ -1076,9 +1047,9 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
           const SizedBox(height: 12),
           Text(
             totalThisWeek == 0
-                ? 'No applications were submitted in the last 7 days.'
-                : 'Peak activity reached $peak ${_pluralize('application', peak)} in a single day.',
-            style: GoogleFonts.poppins(
+                ? _l10n.uiNoApplicationsWereSubmittedInTheLast7Days
+                : _l10n.uiPeakActivityReachedCountInASingleDay(peak),
+            style: AppTypography.product(
               fontSize: 12,
               color: CompanyDashboardPalette.textSecondary,
             ),
@@ -1131,7 +1102,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
                   padding: const EdgeInsets.only(right: 8),
                   child: Text(
                     value.toInt().toString(),
-                    style: GoogleFonts.poppins(
+                    style: AppTypography.product(
                       fontSize: 10,
                       color: CompanyDashboardPalette.textMuted,
                     ),
@@ -1154,7 +1125,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
                   padding: const EdgeInsets.only(top: 8),
                   child: Text(
                     labels[index],
-                    style: GoogleFonts.poppins(
+                    style: AppTypography.product(
                       fontSize: 10,
                       fontWeight: FontWeight.w500,
                       color: CompanyDashboardPalette.textMuted,
@@ -1177,8 +1148,8 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
                     : '';
                 final count = spot.y.toInt();
                 return LineTooltipItem(
-                  '$label\n$count ${_pluralize('application', count)}',
-                  GoogleFonts.poppins(
+                  '$label\n${_l10n.uiApplications}: $count',
+                  AppTypography.product(
                     color: Colors.white,
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
@@ -1238,7 +1209,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
         children: [
           Text(
             count,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 22,
               fontWeight: FontWeight.w700,
               color: color,
@@ -1248,7 +1219,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
           Text(
             label,
             textAlign: TextAlign.center,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 11.5,
               fontWeight: FontWeight.w600,
               color: color,
@@ -1267,8 +1238,8 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Recent Applications',
-                style: GoogleFonts.poppins(
+                _l10n.uiRecentApplications,
+                style: AppTypography.product(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
                   color: CompanyDashboardPalette.textPrimary,
@@ -1276,8 +1247,8 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
               ),
               const SizedBox(height: 3),
               Text(
-                'Most recent student applications from your real data.',
-                style: GoogleFonts.poppins(
+                _l10n.uiMostRecentStudentApplicationsFromYourRealData,
+                style: AppTypography.product(
                   fontSize: 12,
                   color: CompanyDashboardPalette.textMuted,
                 ),
@@ -1292,8 +1263,8 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           ),
           child: Text(
-            'View all',
-            style: GoogleFonts.poppins(
+            _l10n.uiViewAll,
+            style: AppTypography.product(
               fontSize: 12.5,
               fontWeight: FontWeight.w600,
             ),
@@ -1310,7 +1281,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
   }) {
     final opportunityTitle = opportunity?.title.trim().isNotEmpty == true
         ? opportunity!.title.trim()
-        : 'Opportunity unavailable';
+        : _l10n.uiOpportunityUnavailable;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -1363,10 +1334,10 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
                               child: Text(
                                 application.studentName.trim().isNotEmpty
                                     ? application.studentName.trim()
-                                    : 'Student',
+                                    : _l10n.uiStudent,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: GoogleFonts.poppins(
+                                style: AppTypography.product(
                                   fontSize: 14.5,
                                   fontWeight: FontWeight.w700,
                                   color: CompanyDashboardPalette.textPrimary,
@@ -1385,7 +1356,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
                           opportunityTitle,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.poppins(
+                          style: AppTypography.product(
                             fontSize: 12.5,
                             fontWeight: FontWeight.w500,
                             color: CompanyDashboardPalette.textSecondary,
@@ -1405,7 +1376,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
                                 _applicationDateLabel(application),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: GoogleFonts.poppins(
+                                style: AppTypography.product(
                                   fontSize: 11.5,
                                   color: CompanyDashboardPalette.textMuted,
                                 ),
@@ -1448,14 +1419,17 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
   }) {
     final reviewedApplications = approvedApplications + rejectedApplications;
     final reviewSummary = reviewedApplications == 0
-        ? 'No reviewed applications yet. New decisions will be reflected here after you approve or reject candidates.'
-        : '$approvedApplications approved and $rejectedApplications rejected so far across reviewed applications.';
+        ? _l10n.uiNoReviewedApplicationsYet
+        : _l10n.uiReviewedApplicationsBreakdown(
+            approvedApplications,
+            rejectedApplications,
+          );
     final pendingSummary = pendingApplications == 0
-        ? 'No applications are waiting for review right now.'
-        : '$pendingApplications ${_pluralize('application', pendingApplications)} still ${pendingApplications == 1 ? 'needs' : 'need'} review.';
+        ? _l10n.uiNoApplicationsAreWaitingForReviewRightNow
+        : _l10n.uiPendingApplicationsNeedReview(pendingApplications);
     final expirySummary = expiringSoonCount == 0
-        ? 'No open job posts expire in the next 2 days.'
-        : '$expiringSoonCount open ${_pluralize('post', expiringSoonCount)} ${expiringSoonCount == 1 ? 'expires' : 'expire'} within 2 days.';
+        ? _l10n.uiNoOpenPostsExpireWithinTwoDays
+        : _l10n.uiOpenPostsExpireWithinTwoDays(expiringSoonCount);
 
     return Container(
       padding: const EdgeInsets.all(22),
@@ -1508,8 +1482,8 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Hiring Insights',
-                      style: GoogleFonts.poppins(
+                      _l10n.uiHiringInsights,
+                      style: AppTypography.product(
                         fontSize: 17,
                         fontWeight: FontWeight.w700,
                         color: CompanyDashboardPalette.textPrimary,
@@ -1517,9 +1491,10 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
                     ),
                     Text(
                       totalApplications == 0
-                          ? 'Your dashboard is ready for incoming applicants.'
-                          : 'Quick highlights pulled from your live dashboard data.',
-                      style: GoogleFonts.poppins(
+                          ? _l10n.uiYourDashboardIsReadyForIncomingApplicants
+                          : _l10n
+                                .uiQuickHighlightsPulledFromYourLiveDashboardData,
+                      style: AppTypography.product(
                         fontSize: 12,
                         color: CompanyDashboardPalette.textMuted,
                       ),
@@ -1573,7 +1548,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
         Expanded(
           child: Text(
             text,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 12.5,
               height: 1.55,
               color: CompanyDashboardPalette.textSecondary,
@@ -1616,8 +1591,8 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
           ),
           const SizedBox(height: 14),
           Text(
-            'No applications yet',
-            style: GoogleFonts.poppins(
+            _l10n.uiNoApplicationsYet,
+            style: AppTypography.product(
               fontSize: 16,
               fontWeight: FontWeight.w700,
               color: CompanyDashboardPalette.textPrimary,
@@ -1625,9 +1600,9 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
           ),
           const SizedBox(height: 6),
           Text(
-            'Student applications are added here as they come in.',
+            _l10n.uiStudentApplicationsAreAddedHereAsTheyComeIn,
             textAlign: TextAlign.center,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 12.5,
               color: CompanyDashboardPalette.textMuted,
               height: 1.5,
@@ -1660,7 +1635,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
           Expanded(
             child: Text(
               _cleanError(message),
-              style: GoogleFonts.poppins(
+              style: AppTypography.product(
                 fontSize: 12,
                 height: 1.5,
                 color: CompanyDashboardPalette.textSecondary,

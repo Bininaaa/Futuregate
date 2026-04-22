@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../../l10n/generated/app_localizations.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/company_provider.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_typography.dart';
 import '../../theme/locale_controller.dart';
 import '../../utils/content_language.dart';
 import '../../utils/company_dashboard_palette.dart';
@@ -68,6 +68,7 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
       OpportunityType.parse(_selectedType) == OpportunityType.internship;
   bool get _isSponsoring =>
       OpportunityType.parse(_selectedType) == OpportunityType.sponsoring;
+  AppLocalizations get _l10n => AppLocalizations.of(context)!;
 
   AppContentTheme get _theme => AppContentTheme.futureGate(
     accent: CompanyDashboardPalette.primary,
@@ -201,15 +202,15 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-
     return AppShellBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
           title: Text(
-            _isEditMode ? 'Edit Opportunity' : 'Create Opportunity',
-            style: GoogleFonts.poppins(
+            _isEditMode
+                ? _l10n.editOpportunityTitle
+                : _l10n.publishOpportunityTitle,
+            style: AppTypography.product(
               fontWeight: FontWeight.w700,
               color: primaryDark,
             ),
@@ -241,8 +242,10 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                   child: AppPrimaryButton(
                     theme: _theme,
                     label: _isEditMode
-                        ? 'Save Changes'
-                        : 'Publish ${OpportunityType.label(_selectedType, l10n)}',
+                        ? _l10n.saveOpportunityChangesLabel
+                        : _l10n.publishContentType(
+                            OpportunityType.label(_selectedType, _l10n),
+                          ),
                     onPressed: _isSubmitting ? null : _submit,
                     isBusy: _isSubmitting,
                   ),
@@ -262,33 +265,33 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                         _buildHeroCard(),
                         const SizedBox(height: 12),
                         _buildSectionCard(
-                          title: 'Basic Information',
+                          title: _l10n.basicInformationTitle,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               _buildField(
                                 controller: _titleController,
-                                label: 'Opportunity title',
-                                hint: _titleHintForType(l10n),
+                                label: _l10n.opportunityTitleLabel,
+                                hint: _titleHintForType(_l10n),
                                 validator: _validateTitle,
                               ),
                               const SizedBox(height: 10),
                               _buildDropdownField<String>(
                                 value: _originalLanguage,
-                                label: l10n.originalLanguageFieldLabel,
-                                hint: l10n.originalLanguageFieldLabel,
+                                label: _l10n.originalLanguageFieldLabel,
+                                hint: _l10n.originalLanguageFieldLabel,
                                 items: [
                                   DropdownMenuItem(
                                     value: ContentLanguage.french,
-                                    child: Text(l10n.languageFrench),
+                                    child: Text(_l10n.languageFrench),
                                   ),
                                   DropdownMenuItem(
                                     value: ContentLanguage.english,
-                                    child: Text(l10n.languageEnglish),
+                                    child: Text(_l10n.languageEnglish),
                                   ),
                                   DropdownMenuItem(
                                     value: ContentLanguage.arabic,
-                                    child: Text(l10n.languageArabic),
+                                    child: Text(_l10n.languageArabic),
                                   ),
                                 ],
                                 onChanged: (value) {
@@ -297,7 +300,7 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                                 },
                               ),
                               const SizedBox(height: 14),
-                              _buildSectionLabel('Opportunity type'),
+                              _buildSectionLabel(_l10n.opportunityTypeLabel),
                               const SizedBox(height: 10),
                               OpportunityTypeSelector(
                                 selected: _selectedType,
@@ -312,23 +315,23 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                                 },
                               ),
                               const SizedBox(height: 14),
-                              _buildSectionLabel('Publishing status'),
+                              _buildSectionLabel(_l10n.publishingStatusLabel),
                               const SizedBox(height: 10),
                               Row(
                                 children: [
                                   Expanded(
                                     child: _buildStatusChip(
-                                      label: 'Open',
+                                      label: _l10n.openStatusLabel,
                                       value: 'open',
-                                      subtitle: 'Visible to students',
+                                      subtitle: _l10n.openStatusSubtitle,
                                     ),
                                   ),
                                   const SizedBox(width: 10),
                                   Expanded(
                                     child: _buildStatusChip(
-                                      label: 'Closed',
+                                      label: _l10n.closedStatusLabel,
                                       value: 'closed',
-                                      subtitle: 'Saved privately',
+                                      subtitle: _l10n.closedStatusSubtitle,
                                     ),
                                   ),
                                 ],
@@ -336,8 +339,8 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                               const SizedBox(height: 14),
                               _buildField(
                                 controller: _locationController,
-                                label: 'Location',
-                                hint: _locationHintForType(l10n),
+                                label: _l10n.locationLabel,
+                                hint: _locationHintForType(_l10n),
                                 validator: _validateLocation,
                               ),
                             ],
@@ -345,16 +348,16 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                         ),
                         const SizedBox(height: 12),
                         _buildSectionCard(
-                          title: 'Description',
+                          title: _l10n.descriptionSectionTitle,
                           child: _buildField(
                             controller: _descriptionController,
                             label: OpportunityType.descriptionLabel(
                               _selectedType,
-                              l10n,
+                              _l10n,
                             ),
                             hint: OpportunityType.descriptionHint(
                               _selectedType,
-                              l10n,
+                              _l10n,
                             ),
                             maxLines: 6,
                             validator: _validateDescription,
@@ -364,15 +367,15 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                         _buildSectionCard(
                           title: OpportunityType.requirementsLabel(
                             _selectedType,
-                            l10n,
+                            _l10n,
                           ),
                           subtitle: _requirementsSectionSubtitle(),
                           child: AppEditableListField(
                             theme: _theme,
                             label: '',
                             hint: _isSponsoring
-                                ? 'Type one eligibility rule, then press Enter'
-                                : 'Type one requirement, then press Enter',
+                                ? _l10n.typeOneEligibilityHint
+                                : _l10n.typeOneRequirementHint,
                             values: _requirementItems,
                             onChanged: (items) =>
                                 setState(() => _requirementItems = items),
@@ -394,7 +397,6 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
   }
 
   Widget _buildHeroCard() {
-    final l10n = AppLocalizations.of(context)!;
     final statusColor = _selectedStatus == 'open'
         ? CompanyDashboardPalette.success
         : CompanyDashboardPalette.textSecondary;
@@ -402,18 +404,20 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
     return AppFormHeaderCard(
       theme: _theme,
       icon: OpportunityType.icon(_selectedType),
-      title: OpportunityType.headline(_selectedType, l10n),
+      title: OpportunityType.headline(_selectedType, _l10n),
       subtitle: _isEditMode
-          ? 'Update the fields below and save.'
-          : 'Fill in the fields below, then publish.',
+          ? _l10n.uiUpdateTheFieldsBelowAndSave
+          : _l10n.uiFillInTheFieldsBelowThenPublish,
       badges: <AppBadgeData>[
         AppBadgeData(
-          label: OpportunityType.label(_selectedType, l10n),
+          label: OpportunityType.label(_selectedType, _l10n),
           icon: OpportunityType.icon(_selectedType),
           color: _typeColor,
         ),
         AppBadgeData(
-          label: _selectedStatus == 'open' ? 'Open' : 'Closed',
+          label: _selectedStatus == 'open'
+              ? _l10n.openStatusLabel
+              : _l10n.closedStatusLabel,
           icon: _selectedStatus == 'open'
               ? Icons.visibility_outlined
               : Icons.lock_outline_rounded,
@@ -425,14 +429,16 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
 
   Widget _buildStructuredOpportunityCard() {
     return _buildSectionCard(
-      title: _usesStructuredFields || _isSponsoring ? 'Logistics' : 'Publish',
+      title: _usesStructuredFields || _isSponsoring
+          ? _l10n.logisticsTitle
+          : _l10n.publishLabel,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildField(
             controller: _deadlineController,
-            label: 'Application deadline',
-            hint: 'Select a closing date',
+            label: _l10n.applicationDeadlineLabel,
+            hint: _l10n.selectClosingDateHint,
             validator: _validateDeadline,
             onTap: _pickDate,
             readOnly: true,
@@ -440,15 +446,15 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
           ),
           if (_isSponsoring) ...[
             const SizedBox(height: 14),
-            _buildSectionLabel('Company funding'),
+            _buildSectionLabel(_l10n.companyFundingSectionTitle),
             const SizedBox(height: 10),
             Row(
               children: [
                 Expanded(
                   child: _buildField(
                     controller: _fundingAmountController,
-                    label: 'Funding amount',
-                    hint: 'Funding amount',
+                    label: _l10n.fundingAmountLabel,
+                    hint: _l10n.fundingAmountLabel,
                     keyboardType: const TextInputType.numberWithOptions(
                       decimal: true,
                     ),
@@ -459,8 +465,8 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                 Expanded(
                   child: _buildDropdownField<String>(
                     value: _selectedFundingCurrency,
-                    label: 'Funding currency',
-                    hint: 'Currency',
+                    label: _l10n.fundingCurrencyLabel,
+                    hint: _l10n.uiCurrency,
                     items: OpportunityMetadata.supportedCurrencies
                         .map(
                           (currency) => DropdownMenuItem<String>(
@@ -479,8 +485,8 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
             const SizedBox(height: 12),
             _buildField(
               controller: _fundingNoteController,
-              label: 'Funding note',
-              hint: 'Optional support details shown to students',
+              label: _l10n.fundingNoteLabel,
+              hint: _l10n.optionalSupportDetailsShownToStudents,
               maxLines: 2,
               validator: _validateFundingNote,
             ),
@@ -489,8 +495,8 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
             const SizedBox(height: 14),
             _buildSectionLabel(
               _isInternship
-                  ? 'Internship compensation'
-                  : 'Compensation & format',
+                  ? _l10n.internshipCompensationSectionTitle
+                  : _l10n.compensationAndFormatSectionTitle,
             ),
             const SizedBox(height: 10),
             Row(
@@ -498,8 +504,8 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                 Expanded(
                   child: _buildField(
                     controller: _salaryMinController,
-                    label: 'Salary minimum',
-                    hint: 'Salary min',
+                    label: _l10n.salaryMinimumLabel,
+                    hint: _l10n.salaryMinimumLabel,
                     keyboardType: const TextInputType.numberWithOptions(
                       decimal: true,
                     ),
@@ -510,8 +516,8 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                 Expanded(
                   child: _buildField(
                     controller: _salaryMaxController,
-                    label: 'Salary maximum',
-                    hint: 'Salary max',
+                    label: _l10n.salaryMaximumLabel,
+                    hint: _l10n.salaryMaximumLabel,
                     keyboardType: const TextInputType.numberWithOptions(
                       decimal: true,
                     ),
@@ -526,8 +532,8 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                 Expanded(
                   child: _buildDropdownField<String>(
                     value: _selectedSalaryCurrency,
-                    label: 'Currency',
-                    hint: 'Currency',
+                    label: _l10n.uiCurrency,
+                    hint: _l10n.uiCurrency,
                     items: OpportunityMetadata.supportedCurrencies
                         .map(
                           (currency) => DropdownMenuItem<String>(
@@ -545,8 +551,8 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                 Expanded(
                   child: _buildDropdownField<String>(
                     value: _selectedSalaryPeriod,
-                    label: 'Salary period',
-                    hint: 'Salary period',
+                    label: _l10n.salaryPeriodLabel,
+                    hint: _l10n.salaryPeriodLabel,
                     items: OpportunityMetadata.salaryPeriods
                         .map(
                           (period) => DropdownMenuItem<String>(
@@ -568,8 +574,8 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                 Expanded(
                   child: _buildDropdownField<String>(
                     value: _selectedEmploymentType,
-                    label: 'Employment type',
-                    hint: 'Employment type',
+                    label: _l10n.employmentTypeLabel,
+                    hint: _l10n.employmentTypeLabel,
                     items: _employmentTypeOptions
                         .map(
                           (type) => DropdownMenuItem<String>(
@@ -592,8 +598,8 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                 Expanded(
                   child: _buildDropdownField<String>(
                     value: _selectedWorkMode,
-                    label: 'Work mode',
-                    hint: 'Work mode',
+                    label: _l10n.workModeLabel,
+                    hint: _l10n.workModeLabel,
                     items: OpportunityMetadata.workModes
                         .map(
                           (mode) => DropdownMenuItem<String>(
@@ -615,16 +621,16 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
             const SizedBox(height: 12),
             _buildDropdownField<bool>(
               value: _isPaid,
-              label: 'Paid status',
-              hint: 'Paid status',
+              label: _l10n.paidStatusLabel,
+              hint: _l10n.paidStatusLabel,
               items: [
                 DropdownMenuItem<bool>(
                   value: true,
-                  child: Text(AppLocalizations.of(context)!.paidLabel),
+                  child: Text(_l10n.paidLabel),
                 ),
                 DropdownMenuItem<bool>(
                   value: false,
-                  child: Text(AppLocalizations.of(context)!.unpaidLabel),
+                  child: Text(_l10n.unpaidLabel),
                 ),
               ],
               onChanged: (value) {
@@ -635,16 +641,16 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
               const SizedBox(height: 12),
               _buildField(
                 controller: _durationController,
-                label: 'Duration',
-                hint: 'Duration, e.g. 2 months',
+                label: _l10n.durationLabel,
+                hint: _l10n.durationExampleHint,
                 validator: _validateDuration,
               ),
             ],
             const SizedBox(height: 12),
             _buildField(
               controller: _compensationTextController,
-              label: 'Compensation note',
-              hint: 'Optional compensation note for detail screens',
+              label: _l10n.compensationNoteLabel,
+              hint: _l10n.optionalCompensationNoteForDetailScreens,
               maxLines: 2,
             ),
           ],
@@ -669,7 +675,7 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
   Widget _buildSectionLabel(String text) {
     return Text(
       text,
-      style: GoogleFonts.poppins(
+      style: AppTypography.product(
         fontSize: 14,
         fontWeight: FontWeight.w700,
         color: primaryDark,
@@ -760,10 +766,10 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
   String? _validateTitle(String? value) {
     final text = value?.trim() ?? '';
     if (text.isEmpty) {
-      return 'Title is required';
+      return _l10n.validationTitleRequired;
     }
     if (text.length < 4) {
-      return 'Use at least 4 characters';
+      return _l10n.validationUseAtLeastFourCharacters;
     }
     return null;
   }
@@ -771,10 +777,10 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
   String? _validateDescription(String? value) {
     final text = value?.trim() ?? '';
     if (text.isEmpty) {
-      return 'Description is required';
+      return _l10n.validationDescriptionRequired;
     }
     if (text.length < 20) {
-      return 'Please add a little more detail';
+      return _l10n.validationAddMoreDetail;
     }
     return null;
   }
@@ -782,7 +788,7 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
   String? _validateLocation(String? value) {
     final text = value?.trim() ?? '';
     if (text.isEmpty) {
-      return 'Location is required';
+      return _l10n.validationLocationRequired;
     }
     return null;
   }
@@ -790,8 +796,8 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
   String? _validateRequirementItems(List<String> items) {
     if (items.where((item) => item.trim().isNotEmpty).isEmpty) {
       return _selectedType == OpportunityType.sponsoring
-          ? 'Add at least one eligibility item'
-          : 'Add at least one requirement';
+          ? _l10n.validationEligibilityItemRequired
+          : _l10n.validationRequirementItemRequired;
     }
     return null;
   }
@@ -799,20 +805,20 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
   String? _validateDeadline(String? value) {
     final text = value?.trim() ?? '';
     if (text.isEmpty) {
-      return 'Application deadline is required';
+      return _l10n.validationDeadlineRequired;
     }
 
     final parsed =
         _applicationDeadline ?? OpportunityMetadata.parseDateTimeLike(text);
     if (parsed == null) {
-      return 'Use a valid date';
+      return _l10n.validationValidDate;
     }
 
     final today = DateTime.now();
     final normalizedToday = DateTime(today.year, today.month, today.day);
     final normalizedDeadline = DateTime(parsed.year, parsed.month, parsed.day);
     if (normalizedDeadline.isBefore(normalizedToday)) {
-      return 'Deadline cannot be in the past';
+      return _l10n.validationDeadlinePast;
     }
 
     return null;
@@ -827,11 +833,11 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
     final maxValue = _parseOptionalNumber(_salaryMaxController.text);
 
     if ((value ?? '').trim().isNotEmpty && minValue == null) {
-      return 'Enter a valid number';
+      return _l10n.validationEnterValidNumber;
     }
 
     if (minValue != null && maxValue != null && maxValue < minValue) {
-      return 'Min cannot exceed max';
+      return _l10n.validationMinCannotExceedMax;
     }
 
     return null;
@@ -846,11 +852,11 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
     final maxValue = _parseOptionalNumber(_salaryMaxController.text);
 
     if ((value ?? '').trim().isNotEmpty && maxValue == null) {
-      return 'Enter a valid number';
+      return _l10n.validationEnterValidNumber;
     }
 
     if (minValue != null && maxValue != null && maxValue < minValue) {
-      return 'Max must be at least min';
+      return _l10n.validationMaxAtLeastMin;
     }
 
     return null;
@@ -867,7 +873,7 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
     }
 
     if (text.length < 2) {
-      return 'Add a clearer duration';
+      return _l10n.validationAddClearerDuration;
     }
 
     return null;
@@ -882,13 +888,13 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
     final note = _fundingNoteController.text.trim();
     final parsed = _parseOptionalNumber(text);
     if (text.isEmpty && note.isEmpty) {
-      return 'Add a funding amount or note';
+      return _l10n.validationFundingAmountOrNote;
     }
     if (text.isNotEmpty && parsed == null) {
-      return 'Enter a valid amount';
+      return _l10n.validationValidAmount;
     }
     if (parsed != null && parsed < 0) {
-      return 'Amount cannot be negative';
+      return _l10n.validationAmountNonNegative;
     }
     return null;
   }
@@ -901,15 +907,15 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
     final amount = _fundingAmountController.text.trim();
     final note = value?.trim() ?? '';
     if (amount.isEmpty && note.isEmpty) {
-      return 'Add a funding note or amount';
+      return _l10n.validationFundingNoteOrAmount;
     }
     return null;
   }
 
   String _requirementsSectionSubtitle() {
     return _isSponsoring
-        ? 'Add each eligibility point separately so students see a clean checklist.'
-        : 'Add each requirement separately so students see a clean checklist.';
+        ? _l10n.eligibilityChecklistHelper
+        : _l10n.requirementsChecklistHelper;
   }
 
   Future<void> _pickDate() async {
@@ -926,7 +932,7 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
           : initialDate,
       firstDate: normalizedFirstDate,
       lastDate: DateTime(2035),
-      helpText: 'Select deadline',
+      helpText: _l10n.selectClosingDateHint,
     );
     if (picked != null) {
       final normalized = DateTime(picked.year, picked.month, picked.day);
@@ -958,8 +964,8 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
       }
       setState(() => _isSubmitting = false);
       context.showAppSnackBar(
-        'Sign in to continue publishing opportunities.',
-        title: 'Login required',
+        _l10n.signInContinuePublishingMessage,
+        title: _l10n.loginRequiredTitle,
         type: AppFeedbackType.warning,
       );
       return;
@@ -1010,18 +1016,21 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
     if (error != null) {
       context.showAppSnackBar(
         error,
-        title: _isEditMode ? 'Update unavailable' : 'Publish unavailable',
+        title: _isEditMode
+            ? _l10n.updateUnavailableTitle
+            : _l10n.publishUnavailableTitle,
         type: AppFeedbackType.error,
       );
       return;
     }
 
-    final l10n = AppLocalizations.of(context)!;
     context.showAppSnackBar(
       _isEditMode
-          ? 'Your opportunity details have been updated.'
-          : '${OpportunityType.label(_selectedType, l10n)} published successfully.',
-      title: _isEditMode ? 'Opportunity updated' : 'Opportunity published',
+          ? _l10n.opportunityUpdatedMessage
+          : _l10n.opportunityPublishedMessage,
+      title: _isEditMode
+          ? _l10n.opportunityUpdatedTitle
+          : _l10n.opportunityPublishedTitle,
       type: AppFeedbackType.success,
     );
     Navigator.pop(context);

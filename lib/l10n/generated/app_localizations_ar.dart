@@ -7157,4 +7157,246 @@ class AppLocalizationsAr extends AppLocalizations {
   String uiSavedTypeBadge(Object type) {
     return '$type محفوظ';
   }
+
+  @override
+  String get uiGrowthNew => 'جديد';
+
+  @override
+  String get uiNoApplicationsWereSubmittedInTheLast7Days =>
+      'لم يتم تقديم أي طلبات خلال آخر 7 أيام.';
+
+  @override
+  String uiPeakActivityReachedCountInASingleDay(Object count) {
+    return 'بلغت ذروة النشاط $count طلبات في يوم واحد.';
+  }
+
+  @override
+  String get uiNoReviewedApplicationsYet => 'لا توجد طلبات تمت مراجعتها بعد.';
+
+  @override
+  String uiReviewedApplicationsBreakdown(Object approved, Object rejected) {
+    return 'حتى الآن، تمت الموافقة على $approved ورفض $rejected.';
+  }
+
+  @override
+  String get uiNoApplicationsAreWaitingForReviewRightNow =>
+      'لا توجد طلبات بانتظار المراجعة الآن.';
+
+  @override
+  String uiPendingApplicationsNeedReview(Object count) {
+    return 'هناك $count طلبات بانتظار المراجعة.';
+  }
+
+  @override
+  String get uiNoOpenPostsExpireWithinTwoDays =>
+      'لا توجد فرص مفتوحة تنتهي خلال يومين.';
+
+  @override
+  String uiOpenPostsExpireWithinTwoDays(Object count) {
+    return 'هناك $count فرص مفتوحة تنتهي خلال يومين.';
+  }
+
+  @override
+  String get uiYourDashboardIsReadyForIncomingApplicants =>
+      'لوحة التحكم جاهزة لاستقبال المتقدمين.';
+
+  @override
+  String get uiQuickHighlightsPulledFromYourLiveDashboardData =>
+      'ملخصات سريعة مستندة إلى بيانات لوحتك المباشرة.';
+
+  @override
+  String get uiToday => 'اليوم';
+
+  @override
+  String get uiYesterday => 'أمس';
+
+  @override
+  String uiDaysAgo(Object count) {
+    return 'منذ $count أيام';
+  }
+
+  @override
+  String uiWeeksAgo(Object count) {
+    return 'منذ $count أسابيع';
+  }
+
+  @override
+  String get uiFocusedReviewMode => 'وضع المراجعة المركّز';
+
+  @override
+  String get uiReviewAndRespondToCandidates => 'راجع المرشحين ورد عليهم';
+
+  @override
+  String uiPendingApplicationsAcrossOpportunitiesNeedReview(
+    Object count,
+    Object opportunities,
+  ) {
+    return 'هناك $count طلبات بانتظار المراجعة عبر $opportunities فرص.';
+  }
+
+  @override
+  String get uiShowPending => 'عرض المعلّق';
+
+  @override
+  String get uiShowingOnlyTheCandidatesWhoAppliedToThisRole =>
+      'يتم عرض المرشحين الذين تقدموا لهذا الدور فقط.';
+
+  @override
+  String get uiDirectApplicationReviewWithAllCandidateDetailsInOnePlace =>
+      'مراجعة مباشرة للطلبات مع كل تفاصيل المرشح في مكان واحد.';
+
+  @override
+  String get uiLatestCandidatesReadyForReviewMessagingAndCvChecks =>
+      'أحدث المرشحين الجاهزين للمراجعة والمراسلة وفحص السيرة الذاتية.';
+
+  @override
+  String get uiApplicationSpotlight => 'تسليط الضوء على الطلب';
+
+  @override
+  String get uiCandidateQueue => 'قائمة المرشحين';
+
+  @override
+  String get uiLocationNotSpecified => 'الموقع غير محدد';
+
+  @override
+  String get uiNotSpecified => 'غير محدد';
+
+  @override
+  String get uiNoDescriptionProvided => 'لا يوجد وصف متاح.';
+
+  @override
+  String get uiStatusUnavailable => 'الحالة غير متاحة';
+
+  @override
+  String get uiTheRequestedFileIsNoLongerAvailable =>
+      'الملف المطلوب لم يعد متاحًا.';
+
+  @override
+  String get uiSummary => 'الملخص';
+
+  @override
+  String get uiShowingTheApplicationYouOpenedDirectly =>
+      'يتم عرض الطلب الذي فتحته مباشرة.';
+
+  @override
+  String get uiThisApplicationIsNoLongerAvailable => 'هذا الطلب لم يعد متاحًا.';
+
+  @override
+  String get uiNoApplicationsMatchThisView => 'لا توجد طلبات تطابق هذا العرض.';
+
+  @override
+  String
+  get uiTheApplicationYouOpenedIsNoLongerAvailableItMayHaveBeenRemovedOrMayNoLongerBelongToThisCompany =>
+      'الطلب الذي فتحته لم يعد متاحًا. ربما تمت إزالته أو لم يعد تابعًا لهذه الشركة.';
+
+  @override
+  String get uiTryClearingTheFiltersOrBroadeningTheSearchToSeeMoreCandidates =>
+      'جرّب مسح عوامل التصفية أو توسيع البحث لرؤية المزيد من المرشحين.';
+
+  @override
+  String
+  get uiCandidateApplicationsAreListedHereWithQuickReviewActionsAndCvAccess =>
+      'تظهر هنا طلبات المرشحين مع إجراءات مراجعة سريعة وإمكانية الوصول إلى السيرة الذاتية.';
+
+  @override
+  String get uiReviewTheCandidateBeforeMakingADecision =>
+      'راجع المرشح قبل اتخاذ القرار.';
+
+  @override
+  String get uiKeepTheCandidateContextCloseAtHand =>
+      'احتفظ بسياق المرشح قريبًا منك.';
+
+  @override
+  String get uiUnnamedCandidate => 'مرشح بدون اسم';
+
+  @override
+  String get uiCandidateApproved => 'تمت الموافقة على المرشح';
+
+  @override
+  String get uiCandidateRejected => 'تم رفض المرشح';
+
+  @override
+  String get uiApplicationWithdrawn => 'تم سحب الطلب';
+
+  @override
+  String get uiReadyForDecision => 'جاهز لاتخاذ القرار';
+
+  @override
+  String get uiThisApplicationIsApprovedUseMessageOrCvReviewForNextSteps =>
+      'تمت الموافقة على هذا الطلب. استخدم الرسائل أو مراجعة السيرة الذاتية للخطوات التالية.';
+
+  @override
+  String
+  get uiThisApplicationIsRejectedTheProfileAndCvRemainAvailableForReference =>
+      'تم رفض هذا الطلب. يظل الملف الشخصي والسيرة الذاتية متاحين للرجوع إليهما.';
+
+  @override
+  String get uiThisApplicationHasBeenWithdrawnByTheCandidate =>
+      'قام المرشح بسحب هذا الطلب.';
+
+  @override
+  String get uiApproveTheCandidateToMoveThemForwardOrRejectIfTheFitIsNotRight =>
+      'وافق على المرشح للمضي قدمًا أو ارفضه إذا لم يكن مناسبًا.';
+
+  @override
+  String get uiWorking => 'جارٍ التنفيذ...';
+
+  @override
+  String get uiApplication => 'طلب';
+
+  @override
+  String get uiApplicationConversation => 'محادثة الطلب';
+
+  @override
+  String get companyFundingSectionTitle => 'تمويل الشركة';
+
+  @override
+  String get internshipCompensationSectionTitle => 'مقابل التدريب';
+
+  @override
+  String get compensationAndFormatSectionTitle => 'التعويض ونمط العمل';
+
+  @override
+  String get optionalSupportDetailsShownToStudents =>
+      'تفاصيل دعم اختيارية تظهر للطلاب';
+
+  @override
+  String get durationExampleHint => 'المدة، مثال: شهران';
+
+  @override
+  String get optionalCompensationNoteForDetailScreens =>
+      'ملاحظة تعويض اختيارية لصفحات التفاصيل';
+
+  @override
+  String get eligibilityChecklistHelper =>
+      'أضف كل بند أهلية بشكل منفصل حتى يرى الطلاب قائمة واضحة.';
+
+  @override
+  String get requirementsChecklistHelper =>
+      'أضف كل متطلب بشكل منفصل حتى يرى الطلاب قائمة واضحة.';
+
+  @override
+  String get opportunityUpdatedTitle => 'تم تحديث الفرصة';
+
+  @override
+  String get opportunityPublishedTitle => 'تم نشر الفرصة';
+
+  @override
+  String get uiSearchApplicants => 'ابحث عن المتقدمين';
+
+  @override
+  String get uiSearchApprovedCompanies => 'ابحث عن الشركات المعتمدة';
+
+  @override
+  String get uiSuggested => 'مقترح';
+
+  @override
+  String get uiApprovedCompanies => 'الشركات المعتمدة';
+
+  @override
+  String get uiNoApplicantsMatchYourSearch => 'لا يوجد متقدمون يطابقون بحثك.';
+
+  @override
+  String get uiNoApprovedCompaniesMatchYourSearch =>
+      'لا توجد شركات معتمدة تطابق بحثك.';
 }

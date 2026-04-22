@@ -7208,4 +7208,250 @@ class AppLocalizationsEn extends AppLocalizations {
   String uiSavedTypeBadge(Object type) {
     return 'Saved $type';
   }
+
+  @override
+  String get uiGrowthNew => 'New';
+
+  @override
+  String get uiNoApplicationsWereSubmittedInTheLast7Days =>
+      'No applications were submitted in the last 7 days.';
+
+  @override
+  String uiPeakActivityReachedCountInASingleDay(Object count) {
+    return 'Peak activity reached $count applications in a single day.';
+  }
+
+  @override
+  String get uiNoReviewedApplicationsYet => 'No reviewed applications yet.';
+
+  @override
+  String uiReviewedApplicationsBreakdown(Object approved, Object rejected) {
+    return '$approved approved and $rejected rejected so far.';
+  }
+
+  @override
+  String get uiNoApplicationsAreWaitingForReviewRightNow =>
+      'No applications are waiting for review right now.';
+
+  @override
+  String uiPendingApplicationsNeedReview(Object count) {
+    return '$count pending applications need review.';
+  }
+
+  @override
+  String get uiNoOpenPostsExpireWithinTwoDays =>
+      'No open posts expire within two days.';
+
+  @override
+  String uiOpenPostsExpireWithinTwoDays(Object count) {
+    return '$count open posts expire within two days.';
+  }
+
+  @override
+  String get uiYourDashboardIsReadyForIncomingApplicants =>
+      'Your dashboard is ready for incoming applicants.';
+
+  @override
+  String get uiQuickHighlightsPulledFromYourLiveDashboardData =>
+      'Quick highlights pulled from your live dashboard data.';
+
+  @override
+  String get uiToday => 'Today';
+
+  @override
+  String get uiYesterday => 'Yesterday';
+
+  @override
+  String uiDaysAgo(Object count) {
+    return '$count days ago';
+  }
+
+  @override
+  String uiWeeksAgo(Object count) {
+    return '$count weeks ago';
+  }
+
+  @override
+  String get uiFocusedReviewMode => 'Focused review mode';
+
+  @override
+  String get uiReviewAndRespondToCandidates =>
+      'Review and respond to candidates';
+
+  @override
+  String uiPendingApplicationsAcrossOpportunitiesNeedReview(
+    Object count,
+    Object opportunities,
+  ) {
+    return '$count pending applications across $opportunities opportunities need review.';
+  }
+
+  @override
+  String get uiShowPending => 'Show pending';
+
+  @override
+  String get uiShowingOnlyTheCandidatesWhoAppliedToThisRole =>
+      'Showing only the candidates who applied to this role.';
+
+  @override
+  String get uiDirectApplicationReviewWithAllCandidateDetailsInOnePlace =>
+      'Direct application review with all candidate details in one place.';
+
+  @override
+  String get uiLatestCandidatesReadyForReviewMessagingAndCvChecks =>
+      'Latest candidates ready for review, messaging, and CV checks.';
+
+  @override
+  String get uiApplicationSpotlight => 'Application spotlight';
+
+  @override
+  String get uiCandidateQueue => 'Candidate queue';
+
+  @override
+  String get uiLocationNotSpecified => 'Location not specified';
+
+  @override
+  String get uiNotSpecified => 'Not specified';
+
+  @override
+  String get uiNoDescriptionProvided => 'No description provided.';
+
+  @override
+  String get uiStatusUnavailable => 'Status unavailable';
+
+  @override
+  String get uiTheRequestedFileIsNoLongerAvailable =>
+      'The requested file is no longer available.';
+
+  @override
+  String get uiSummary => 'Summary';
+
+  @override
+  String get uiShowingTheApplicationYouOpenedDirectly =>
+      'Showing the application you opened directly.';
+
+  @override
+  String get uiThisApplicationIsNoLongerAvailable =>
+      'This application is no longer available.';
+
+  @override
+  String get uiNoApplicationsMatchThisView =>
+      'No applications match this view.';
+
+  @override
+  String
+  get uiTheApplicationYouOpenedIsNoLongerAvailableItMayHaveBeenRemovedOrMayNoLongerBelongToThisCompany =>
+      'The application you opened is no longer available. It may have been removed or may no longer belong to this company.';
+
+  @override
+  String get uiTryClearingTheFiltersOrBroadeningTheSearchToSeeMoreCandidates =>
+      'Try clearing the filters or broadening the search to see more candidates.';
+
+  @override
+  String
+  get uiCandidateApplicationsAreListedHereWithQuickReviewActionsAndCvAccess =>
+      'Candidate applications are listed here with quick review actions and CV access.';
+
+  @override
+  String get uiReviewTheCandidateBeforeMakingADecision =>
+      'Review the candidate before making a decision.';
+
+  @override
+  String get uiKeepTheCandidateContextCloseAtHand =>
+      'Keep the candidate context close at hand.';
+
+  @override
+  String get uiUnnamedCandidate => 'Unnamed candidate';
+
+  @override
+  String get uiCandidateApproved => 'Candidate approved';
+
+  @override
+  String get uiCandidateRejected => 'Candidate rejected';
+
+  @override
+  String get uiApplicationWithdrawn => 'Application withdrawn';
+
+  @override
+  String get uiReadyForDecision => 'Ready for decision';
+
+  @override
+  String get uiThisApplicationIsApprovedUseMessageOrCvReviewForNextSteps =>
+      'This application is approved. Use message or CV review for next steps.';
+
+  @override
+  String
+  get uiThisApplicationIsRejectedTheProfileAndCvRemainAvailableForReference =>
+      'This application is rejected. The profile and CV remain available for reference.';
+
+  @override
+  String get uiThisApplicationHasBeenWithdrawnByTheCandidate =>
+      'This application has been withdrawn by the candidate.';
+
+  @override
+  String get uiApproveTheCandidateToMoveThemForwardOrRejectIfTheFitIsNotRight =>
+      'Approve the candidate to move them forward, or reject if the fit is not right.';
+
+  @override
+  String get uiWorking => 'Working...';
+
+  @override
+  String get uiApplication => 'Application';
+
+  @override
+  String get uiApplicationConversation => 'Application conversation';
+
+  @override
+  String get companyFundingSectionTitle => 'Company funding';
+
+  @override
+  String get internshipCompensationSectionTitle => 'Internship compensation';
+
+  @override
+  String get compensationAndFormatSectionTitle => 'Compensation & format';
+
+  @override
+  String get optionalSupportDetailsShownToStudents =>
+      'Optional support details shown to students';
+
+  @override
+  String get durationExampleHint => 'Duration, e.g. 2 months';
+
+  @override
+  String get optionalCompensationNoteForDetailScreens =>
+      'Optional compensation note for detail screens';
+
+  @override
+  String get eligibilityChecklistHelper =>
+      'Add each eligibility point separately so students see a clean checklist.';
+
+  @override
+  String get requirementsChecklistHelper =>
+      'Add each requirement separately so students see a clean checklist.';
+
+  @override
+  String get opportunityUpdatedTitle => 'Opportunity updated';
+
+  @override
+  String get opportunityPublishedTitle => 'Opportunity published';
+
+  @override
+  String get uiSearchApplicants => 'Search applicants';
+
+  @override
+  String get uiSearchApprovedCompanies => 'Search approved companies';
+
+  @override
+  String get uiSuggested => 'Suggested';
+
+  @override
+  String get uiApprovedCompanies => 'Approved companies';
+
+  @override
+  String get uiNoApplicantsMatchYourSearch =>
+      'No applicants match your search.';
+
+  @override
+  String get uiNoApprovedCompaniesMatchYourSearch =>
+      'No approved companies match your search.';
 }

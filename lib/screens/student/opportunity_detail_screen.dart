@@ -292,10 +292,12 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
 
     setState(() => _isWithdrawing = true);
     try {
-      final error = await context.read<ApplicationProvider>().withdrawApplication(
-        studentId: currentUser.uid,
-        opportunityId: widget.opportunity.id,
-      );
+      final error = await context
+          .read<ApplicationProvider>()
+          .withdrawApplication(
+            studentId: currentUser.uid,
+            opportunityId: widget.opportunity.id,
+          );
 
       if (!mounted) return;
 
@@ -431,7 +433,9 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
 
     if (companyId.isEmpty) {
       context.showAppSnackBar(
-        'Company details are missing for this opportunity.',
+        AppLocalizations.of(
+          context,
+        )!.uiCompanyDetailsAreMissingForThisOpportunity,
         title: AppLocalizations.of(context)!.uiChatUnavailable,
         type: AppFeedbackType.error,
       );
@@ -448,7 +452,7 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
         companyId: companyId,
         companyName: _companyName,
         contextType: 'application',
-        contextLabel: 'Application conversation',
+        contextLabel: AppLocalizations.of(context)!.uiApplicationConversation,
         currentUserId: currentUser.uid,
         currentUserRole: currentUser.role,
       );
@@ -464,7 +468,9 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
             otherName: conversation.companyName,
             recipientId: conversation.companyId,
             otherRole: 'company',
-            contextLabel: 'Application conversation',
+            contextLabel: AppLocalizations.of(
+              context,
+            )!.uiApplicationConversation,
           ),
         ),
       );
@@ -474,7 +480,7 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
       }
 
       context.showAppSnackBar(
-        'Could not open chat: $error',
+        AppLocalizations.of(context)!.uiCouldNotOpenChatValue(error),
         title: AppLocalizations.of(context)!.uiChatUnavailable,
         type: AppFeedbackType.error,
       );

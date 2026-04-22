@@ -2106,5 +2106,108 @@
   "uiActionSeeOpenRoles": "استعرض الأدوار المفتوحة",
   "uiActionOpenSaved": "فتح المحفوظات",
   "uiSavedScholarshipBadge": "منحة محفوظة",
-  "uiSavedTypeBadge": "{type} محفوظ"
+  "uiSavedTypeBadge": "{type} محفوظ",
+  "uiGrowthNew": "جديد",
+  "uiNoApplicationsWereSubmittedInTheLast7Days": "لم يتم تقديم أي طلبات خلال آخر 7 أيام.",
+  "uiPeakActivityReachedCountInASingleDay": "بلغت ذروة النشاط {count} طلبات في يوم واحد.",
+  "@uiPeakActivityReachedCountInASingleDay": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "uiNoReviewedApplicationsYet": "لا توجد طلبات تمت مراجعتها بعد.",
+  "uiReviewedApplicationsBreakdown": "حتى الآن، تمت الموافقة على {approved} ورفض {rejected}.",
+  "@uiReviewedApplicationsBreakdown": {
+    "placeholders": {
+      "approved": {},
+      "rejected": {}
+    }
+  },
+  "uiNoApplicationsAreWaitingForReviewRightNow": "لا توجد طلبات بانتظار المراجعة الآن.",
+  "uiPendingApplicationsNeedReview": "هناك {count} طلبات بانتظار المراجعة.",
+  "@uiPendingApplicationsNeedReview": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "uiNoOpenPostsExpireWithinTwoDays": "لا توجد فرص مفتوحة تنتهي خلال يومين.",
+  "uiOpenPostsExpireWithinTwoDays": "هناك {count} فرص مفتوحة تنتهي خلال يومين.",
+  "@uiOpenPostsExpireWithinTwoDays": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "uiYourDashboardIsReadyForIncomingApplicants": "لوحة التحكم جاهزة لاستقبال المتقدمين.",
+  "uiQuickHighlightsPulledFromYourLiveDashboardData": "ملخصات سريعة مستندة إلى بيانات لوحتك المباشرة.",
+  "uiToday": "اليوم",
+  "uiYesterday": "أمس",
+  "uiDaysAgo": "منذ {count} أيام",
+  "@uiDaysAgo": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "uiWeeksAgo": "منذ {count} أسابيع",
+  "@uiWeeksAgo": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "uiFocusedReviewMode": "وضع المراجعة المركّز",
+  "uiReviewAndRespondToCandidates": "راجع المرشحين ورد عليهم",
+  "uiPendingApplicationsAcrossOpportunitiesNeedReview": "هناك {count} طلبات بانتظار المراجعة عبر {opportunities} فرص.",
+  "@uiPendingApplicationsAcrossOpportunitiesNeedReview": {
+    "placeholders": {
+      "count": {},
+      "opportunities": {}
+    }
+  },
+  "uiShowPending": "عرض المعلّق",
+  "uiShowingOnlyTheCandidatesWhoAppliedToThisRole": "يتم عرض المرشحين الذين تقدموا لهذا الدور فقط.",
+  "uiDirectApplicationReviewWithAllCandidateDetailsInOnePlace": "مراجعة مباشرة للطلبات مع كل تفاصيل المرشح في مكان واحد.",
+  "uiLatestCandidatesReadyForReviewMessagingAndCvChecks": "أحدث المرشحين الجاهزين للمراجعة والمراسلة وفحص السيرة الذاتية.",
+  "uiApplicationSpotlight": "تسليط الضوء على الطلب",
+  "uiCandidateQueue": "قائمة المرشحين",
+  "uiLocationNotSpecified": "الموقع غير محدد",
+  "uiNotSpecified": "غير محدد",
+  "uiNoDescriptionProvided": "لا يوجد وصف متاح.",
+  "uiStatusUnavailable": "الحالة غير متاحة",
+  "uiTheRequestedFileIsNoLongerAvailable": "الملف المطلوب لم يعد متاحًا.",
+  "uiSummary": "الملخص",
+  "uiShowingTheApplicationYouOpenedDirectly": "يتم عرض الطلب الذي فتحته مباشرة.",
+  "uiThisApplicationIsNoLongerAvailable": "هذا الطلب لم يعد متاحًا.",
+  "uiNoApplicationsMatchThisView": "لا توجد طلبات تطابق هذا العرض.",
+  "uiTheApplicationYouOpenedIsNoLongerAvailableItMayHaveBeenRemovedOrMayNoLongerBelongToThisCompany": "الطلب الذي فتحته لم يعد متاحًا. ربما تمت إزالته أو لم يعد تابعًا لهذه الشركة.",
+  "uiTryClearingTheFiltersOrBroadeningTheSearchToSeeMoreCandidates": "جرّب مسح عوامل التصفية أو توسيع البحث لرؤية المزيد من المرشحين.",
+  "uiCandidateApplicationsAreListedHereWithQuickReviewActionsAndCvAccess": "تظهر هنا طلبات المرشحين مع إجراءات مراجعة سريعة وإمكانية الوصول إلى السيرة الذاتية.",
+  "uiReviewTheCandidateBeforeMakingADecision": "راجع المرشح قبل اتخاذ القرار.",
+  "uiKeepTheCandidateContextCloseAtHand": "احتفظ بسياق المرشح قريبًا منك.",
+  "uiUnnamedCandidate": "مرشح بدون اسم",
+  "uiCandidateApproved": "تمت الموافقة على المرشح",
+  "uiCandidateRejected": "تم رفض المرشح",
+  "uiApplicationWithdrawn": "تم سحب الطلب",
+  "uiReadyForDecision": "جاهز لاتخاذ القرار",
+  "uiThisApplicationIsApprovedUseMessageOrCvReviewForNextSteps": "تمت الموافقة على هذا الطلب. استخدم الرسائل أو مراجعة السيرة الذاتية للخطوات التالية.",
+  "uiThisApplicationIsRejectedTheProfileAndCvRemainAvailableForReference": "تم رفض هذا الطلب. يظل الملف الشخصي والسيرة الذاتية متاحين للرجوع إليهما.",
+  "uiThisApplicationHasBeenWithdrawnByTheCandidate": "قام المرشح بسحب هذا الطلب.",
+  "uiApproveTheCandidateToMoveThemForwardOrRejectIfTheFitIsNotRight": "وافق على المرشح للمضي قدمًا أو ارفضه إذا لم يكن مناسبًا.",
+  "uiWorking": "جارٍ التنفيذ...",
+  "uiApplication": "طلب",
+  "uiApplicationConversation": "محادثة الطلب",
+  "companyFundingSectionTitle": "تمويل الشركة",
+  "internshipCompensationSectionTitle": "مقابل التدريب",
+  "compensationAndFormatSectionTitle": "التعويض ونمط العمل",
+  "optionalSupportDetailsShownToStudents": "تفاصيل دعم اختيارية تظهر للطلاب",
+  "durationExampleHint": "المدة، مثال: شهران",
+  "optionalCompensationNoteForDetailScreens": "ملاحظة تعويض اختيارية لصفحات التفاصيل",
+  "eligibilityChecklistHelper": "أضف كل بند أهلية بشكل منفصل حتى يرى الطلاب قائمة واضحة.",
+  "requirementsChecklistHelper": "أضف كل متطلب بشكل منفصل حتى يرى الطلاب قائمة واضحة.",
+  "opportunityUpdatedTitle": "تم تحديث الفرصة",
+  "opportunityPublishedTitle": "تم نشر الفرصة",
+  "uiSearchApplicants": "ابحث عن المتقدمين",
+  "uiSearchApprovedCompanies": "ابحث عن الشركات المعتمدة",
+  "uiSuggested": "مقترح",
+  "uiApprovedCompanies": "الشركات المعتمدة",
+  "uiNoApplicantsMatchYourSearch": "لا يوجد متقدمون يطابقون بحثك.",
+  "uiNoApprovedCompaniesMatchYourSearch": "لا توجد شركات معتمدة تطابق بحثك."
 }
