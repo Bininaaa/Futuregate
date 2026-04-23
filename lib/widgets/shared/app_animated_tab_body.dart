@@ -1,16 +1,24 @@
 import 'package:flutter/material.dart';
 
+import 'app_nav_scroll_switcher.dart';
+
 /// Wraps an [IndexedStack] with a smooth crossfade + micro-slide animation
 /// whenever the active tab changes. Old content gently dims, new content fades
 /// in — giving a premium "tab switch" feel without losing widget state.
 class AppAnimatedTabBody extends StatefulWidget {
   final int currentIndex;
   final List<Widget> children;
+  final ValueChanged<int>? onIndexChanged;
+  final double dragThreshold;
+  final double pointerScrollThreshold;
 
   const AppAnimatedTabBody({
     super.key,
     required this.currentIndex,
     required this.children,
+    this.onIndexChanged,
+    this.dragThreshold = 42,
+    this.pointerScrollThreshold = 42,
   });
 
   @override
@@ -37,10 +45,7 @@ class _AppAnimatedTabBodyState extends State<AppAnimatedTabBody>
   }
 
   void _buildAnimations() {
-    final curve = CurvedAnimation(
-      parent: _ctrl,
-      curve: Curves.easeOutCubic,
-    );
+    final curve = CurvedAnimation(parent: _ctrl, curve: Curves.easeOutCubic);
     _opacity = Tween<double>(begin: 0.82, end: 1.0).animate(curve);
     _slide = Tween<Offset>(
       begin: const Offset(0, 0.010),
@@ -65,15 +70,26 @@ class _AppAnimatedTabBodyState extends State<AppAnimatedTabBody>
 
   @override
   Widget build(BuildContext context) {
-    return FadeTransition(
+    final tabBody = FadeTransition(
       opacity: _opacity,
       child: SlideTransition(
         position: _slide,
-        child: IndexedStack(
-          index: _displayedIndex,
-          children: widget.children,
-        ),
+        child: IndexedStack(index: _displayedIndex, children: widget.children),
       ),
+    );
+
+    final onIndexChanged = widget.onIndexChanged;
+    if (onIndexChanged == null) {
+      return tabBody;
+    }
+
+    return AppNavScrollSwitcher(
+      currentIndex: widget.currentIndex,
+      itemCount: widget.children.length,
+      onIndexChanged: onIndexChanged,
+      dragThreshold: widget.dragThreshold,
+      pointerScrollThreshold: widget.pointerScrollThreshold,
+      child: tabBody,
     );
   }
 }

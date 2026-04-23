@@ -5,7 +5,6 @@ import '../../l10n/generated/app_localizations.dart';
 import '../../providers/notification_provider.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/shared/app_animated_tab_body.dart';
-import '../../widgets/shared/app_double_back_exit_scope.dart';
 import '../../widgets/student/student_workspace_shell.dart';
 import '../notifications_screen.dart';
 import 'chat_list_screen.dart';
@@ -251,74 +250,73 @@ class _HomeScreenState extends State<HomeScreen> {
     final keyboardVisible = MediaQuery.viewInsetsOf(context).bottom > 0;
     final destination = destinations[_currentIndex];
 
-    return AppDoubleBackExitScope(
-      child: AppShellBackground(
-        child: Scaffold(
-          backgroundColor: Colors.transparent,
-          body: SafeArea(
-            child: Column(
-              children: [
-                AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 260),
-                  switchInCurve: Curves.easeOutCubic,
-                  switchOutCurve: Curves.easeInCubic,
-                  transitionBuilder: (child, animation) => FadeTransition(
-                    opacity: animation,
-                    child: SlideTransition(
-                      position: Tween<Offset>(
-                        begin: const Offset(0, -0.25),
-                        end: Offset.zero,
-                      ).animate(animation),
-                      child: child,
-                    ),
-                  ),
-                  child: _currentIndex != 0
-                      ? StudentWorkspaceTopBar(
-                          key: const ValueKey(true),
-                          title: destination.title,
-                          subtitle: destination.subtitle,
-                          icon: destination.icon,
-                          actions: _buildTopBarActions(l10n, unreadCount),
-                        )
-                      : const SizedBox.shrink(key: ValueKey(false)),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: AppAnimatedTabBody(
-                      currentIndex: _currentIndex,
-                      children: List<Widget>.generate(
-                        _screens.length,
-                        (index) => _visitedIndexes.contains(index)
-                            ? _screens[index]
-                            : const SizedBox.shrink(),
-                      ),
-                    ),
+    return AppShellBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SafeArea(
+          child: Column(
+            children: [
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 260),
+                switchInCurve: Curves.easeOutCubic,
+                switchOutCurve: Curves.easeInCubic,
+                transitionBuilder: (child, animation) => FadeTransition(
+                  opacity: animation,
+                  child: SlideTransition(
+                    position: Tween<Offset>(
+                      begin: const Offset(0, -0.25),
+                      end: Offset.zero,
+                    ).animate(animation),
+                    child: child,
                   ),
                 ),
-              ],
-            ),
-          ),
-          bottomNavigationBar: keyboardVisible
-              ? null
-              : SafeArea(
-                  top: false,
-                  child: StudentPillNavigationBar(
-                    destinations: destinations
-                        .map(
-                          (destination) => StudentWorkspaceNavDestination(
-                            label: destination.navLabel,
-                            compactLabel: destination.compactNavLabel,
-                            icon: destination.navIcon,
-                            activeIcon: destination.activeNavIcon,
-                          ),
-                        )
-                        .toList(growable: false),
+                child: _currentIndex != 0
+                    ? StudentWorkspaceTopBar(
+                        key: const ValueKey(true),
+                        title: destination.title,
+                        subtitle: destination.subtitle,
+                        icon: destination.icon,
+                        actions: _buildTopBarActions(l10n, unreadCount),
+                      )
+                    : const SizedBox.shrink(key: ValueKey(false)),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: AppAnimatedTabBody(
                     currentIndex: _currentIndex,
-                    onTap: _selectIndex,
+                    onIndexChanged: _selectIndex,
+                    children: List<Widget>.generate(
+                      _screens.length,
+                      (index) => _visitedIndexes.contains(index)
+                          ? _screens[index]
+                          : const SizedBox.shrink(),
+                    ),
                   ),
                 ),
+              ),
+            ],
+          ),
         ),
+        bottomNavigationBar: keyboardVisible
+            ? null
+            : SafeArea(
+                top: false,
+                child: StudentPillNavigationBar(
+                  destinations: destinations
+                      .map(
+                        (destination) => StudentWorkspaceNavDestination(
+                          label: destination.navLabel,
+                          compactLabel: destination.compactNavLabel,
+                          icon: destination.navIcon,
+                          activeIcon: destination.activeNavIcon,
+                        ),
+                      )
+                      .toList(growable: false),
+                  currentIndex: _currentIndex,
+                  onTap: _selectIndex,
+                ),
+              ),
       ),
     );
   }

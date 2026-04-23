@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../services/app_intro_preferences_service.dart';
 import '../theme/app_colors.dart';
 import '../widgets/shared/app_loading.dart';
+import '../widgets/shared/app_double_back_exit_scope.dart';
 import 'auth_wrapper.dart';
 import 'onboarding/get_started_screen.dart';
 
@@ -37,12 +38,12 @@ class _PostLaunchGateScreenState extends State<PostLaunchGateScreen> {
         }
 
         final hasSeenGetStarted = snapshot.data ?? false;
-        if (hasSeenGetStarted) {
-          return const AuthWrapper();
-        }
-
-        return GetStartedScreen(
-          introPreferencesService: _introPreferencesService,
+        return AppDoubleBackExitScope(
+          child: hasSeenGetStarted
+              ? const AuthWrapper()
+              : GetStartedScreen(
+                  introPreferencesService: _introPreferencesService,
+                ),
         );
       },
     );
