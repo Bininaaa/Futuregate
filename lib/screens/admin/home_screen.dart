@@ -7,6 +7,8 @@ import '../../theme/app_typography.dart';
 import '../../utils/admin_palette.dart';
 import '../../widgets/admin/admin_ui.dart';
 import '../../widgets/shared/app_animated_tab_body.dart';
+import '../../widgets/shared/app_double_back_exit_scope.dart';
+import '../../widgets/shared/app_nav_scroll_switcher.dart';
 import '../notifications_screen.dart';
 import '../settings/logout_confirmation_sheet.dart';
 import '../settings/settings_screen.dart';
@@ -86,159 +88,164 @@ class _HomeScreenState extends State<HomeScreen> {
     final isCompactHeader = MediaQuery.sizeOf(context).width < 720;
     final keyboardVisible = MediaQuery.viewInsetsOf(context).bottom > 0;
 
-    return AdminShellBackground(
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: SafeArea(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 10),
-                child: AdminSurface(
-                  padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
-                  radius: 22,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 240),
-                        switchInCurve: Curves.easeOutCubic,
-                        switchOutCurve: Curves.easeInCubic,
-                        transitionBuilder: (child, animation) => FadeTransition(
-                          opacity: animation,
-                          child: ScaleTransition(
-                            scale: Tween<double>(begin: 0.82, end: 1.0)
-                                .animate(animation),
-                            child: child,
-                          ),
-                        ),
-                        child: Container(
-                          key: ValueKey(destination.title),
-                          width: 44,
-                          height: 44,
-                          decoration: BoxDecoration(
-                            gradient: AdminPalette.heroGradient(
-                              destination.title == 'Content'
-                                  ? AdminPalette.secondary
-                                  : AdminPalette.accent,
-                            ),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Icon(
-                            destination.icon,
-                            color: Colors.white,
-                            size: 22,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 220),
+    return AppDoubleBackExitScope(
+      child: AdminShellBackground(
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          body: SafeArea(
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 10),
+                  child: AdminSurface(
+                    padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+                    radius: 22,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 240),
                           switchInCurve: Curves.easeOutCubic,
                           switchOutCurve: Curves.easeInCubic,
                           transitionBuilder: (child, animation) =>
                               FadeTransition(
                                 opacity: animation,
-                                child: SlideTransition(
-                                  position: Tween<Offset>(
-                                    begin: const Offset(0.05, 0),
-                                    end: Offset.zero,
+                                child: ScaleTransition(
+                                  scale: Tween<double>(
+                                    begin: 0.82,
+                                    end: 1.0,
                                   ).animate(animation),
                                   child: child,
                                 ),
                               ),
-                          child: Column(
+                          child: Container(
                             key: ValueKey(destination.title),
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Row(
-                                children: [
+                            width: 44,
+                            height: 44,
+                            decoration: BoxDecoration(
+                              gradient: AdminPalette.heroGradient(
+                                destination.title == 'Content'
+                                    ? AdminPalette.secondary
+                                    : AdminPalette.accent,
+                              ),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Icon(
+                              destination.icon,
+                              color: Colors.white,
+                              size: 22,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 220),
+                            switchInCurve: Curves.easeOutCubic,
+                            switchOutCurve: Curves.easeInCubic,
+                            transitionBuilder: (child, animation) =>
+                                FadeTransition(
+                                  opacity: animation,
+                                  child: SlideTransition(
+                                    position: Tween<Offset>(
+                                      begin: const Offset(0.05, 0),
+                                      end: Offset.zero,
+                                    ).animate(animation),
+                                    child: child,
+                                  ),
+                                ),
+                            child: Column(
+                              key: ValueKey(destination.title),
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                      destination.title,
+                                      style: AppTypography.product(
+                                        fontSize: isCompactHeader ? 16 : 17,
+                                        fontWeight: FontWeight.w700,
+                                        color: AdminPalette.textPrimary,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                if (!isCompactHeader) ...[
+                                  const SizedBox(height: 2),
                                   Text(
-                                    destination.title,
+                                    destination.subtitle,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                     style: AppTypography.product(
-                                      fontSize: isCompactHeader ? 16 : 17,
-                                      fontWeight: FontWeight.w700,
-                                      color: AdminPalette.textPrimary,
+                                      fontSize: 11.5,
+                                      fontWeight: FontWeight.w500,
+                                      color: AdminPalette.textMuted,
                                     ),
                                   ),
                                 ],
-                              ),
-                              if (!isCompactHeader) ...[
-                                const SizedBox(height: 2),
-                                Text(
-                                  destination.subtitle,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: AppTypography.product(
-                                    fontSize: 11.5,
-                                    fontWeight: FontWeight.w500,
-                                    color: AdminPalette.textMuted,
-                                  ),
-                                ),
                               ],
-                            ],
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 10),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          AdminIconActionButton(
-                            icon: Icons.notifications_outlined,
-                            tooltip: 'Notification Center',
-                            badgeCount: unreadCount,
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const NotificationsScreen(),
-                                ),
-                              );
-                            },
-                          ),
-                          const SizedBox(width: 8),
-                          AdminIconActionButton(
-                            icon: Icons.logout_rounded,
-                            tooltip: 'Sign out',
-                            color: AdminPalette.danger,
-                            onTap: _showLogoutDialog,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: AppAnimatedTabBody(
-                    currentIndex: _currentIndex,
-                    children: List<Widget>.generate(
-                      _destinations.length,
-                      (index) => _visitedIndexes.contains(index)
-                          ? _screenForIndex(index)
-                          : const SizedBox.shrink(),
+                        const SizedBox(width: 10),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            AdminIconActionButton(
+                              icon: Icons.notifications_outlined,
+                              tooltip: 'Notification Center',
+                              badgeCount: unreadCount,
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const NotificationsScreen(),
+                                  ),
+                                );
+                              },
+                            ),
+                            const SizedBox(width: 8),
+                            AdminIconActionButton(
+                              icon: Icons.logout_rounded,
+                              tooltip: 'Sign out',
+                              color: AdminPalette.danger,
+                              onTap: _showLogoutDialog,
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        ),
-        bottomNavigationBar: keyboardVisible
-            ? null
-            : SafeArea(
-                top: false,
-                child: _AdminPillNavigationBar(
-                  destinations: _destinations,
-                  currentIndex: _currentIndex,
-                  onTap: _selectIndex,
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: AppAnimatedTabBody(
+                      currentIndex: _currentIndex,
+                      children: List<Widget>.generate(
+                        _destinations.length,
+                        (index) => _visitedIndexes.contains(index)
+                            ? _screenForIndex(index)
+                            : const SizedBox.shrink(),
+                      ),
+                    ),
+                  ),
                 ),
-              ),
+              ],
+            ),
+          ),
+          bottomNavigationBar: keyboardVisible
+              ? null
+              : SafeArea(
+                  top: false,
+                  child: _AdminPillNavigationBar(
+                    destinations: _destinations,
+                    currentIndex: _currentIndex,
+                    onTap: _selectIndex,
+                  ),
+                ),
+        ),
       ),
     );
   }
@@ -355,46 +362,51 @@ class _AdminPillNavigationBar extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-        decoration: BoxDecoration(
-          color: AppColors.isDark
-              ? AdminPalette.surface.withValues(alpha: 0.96)
-              : AdminPalette.surface.withValues(alpha: 0.96),
-          borderRadius: BorderRadius.circular(28),
-          border: Border.all(
-            color: AdminPalette.border.withValues(alpha: 0.92),
+      child: AppNavScrollSwitcher(
+        currentIndex: currentIndex,
+        itemCount: destinations.length,
+        onIndexChanged: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+          decoration: BoxDecoration(
+            color: AppColors.isDark
+                ? AdminPalette.surface.withValues(alpha: 0.96)
+                : AdminPalette.surface.withValues(alpha: 0.96),
+            borderRadius: BorderRadius.circular(28),
+            border: Border.all(
+              color: AdminPalette.border.withValues(alpha: 0.92),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: AdminPalette.primary.withValues(
+                  alpha: AppColors.isDark ? 0.16 : 0.10,
+                ),
+                blurRadius: 24,
+                offset: const Offset(0, 12),
+              ),
+              BoxShadow(
+                color: AppColors.current.shadow.withValues(
+                  alpha: AppColors.isDark ? 0.24 : 0.06,
+                ),
+                blurRadius: 16,
+                offset: const Offset(0, 6),
+              ),
+            ],
           ),
-          boxShadow: [
-            BoxShadow(
-              color: AdminPalette.primary.withValues(
-                alpha: AppColors.isDark ? 0.16 : 0.10,
-              ),
-              blurRadius: 24,
-              offset: const Offset(0, 12),
-            ),
-            BoxShadow(
-              color: AppColors.current.shadow.withValues(
-                alpha: AppColors.isDark ? 0.24 : 0.06,
-              ),
-              blurRadius: 16,
-              offset: const Offset(0, 6),
-            ),
-          ],
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: Row(
-          children: List<Widget>.generate(
-            destinations.length,
-            (index) => Flexible(
-              flex: currentIndex == index ? selectedFlex : idleFlex,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 2),
-                child: _AdminPillNavItem(
-                  destination: destinations[index],
-                  selected: currentIndex == index,
-                  compact: compact,
-                  onTap: () => onTap(index),
+          clipBehavior: Clip.antiAlias,
+          child: Row(
+            children: List<Widget>.generate(
+              destinations.length,
+              (index) => Flexible(
+                flex: currentIndex == index ? selectedFlex : idleFlex,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 2),
+                  child: _AdminPillNavItem(
+                    destination: destinations[index],
+                    selected: currentIndex == index,
+                    compact: compact,
+                    onTap: () => onTap(index),
+                  ),
                 ),
               ),
             ),

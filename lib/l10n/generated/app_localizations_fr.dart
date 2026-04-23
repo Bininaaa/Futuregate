@@ -7567,4 +7567,8 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get uiNoApprovedCompaniesMatchYourSearch =>
       'Aucune entreprise approuvée ne correspond à votre recherche.';
+
+  @override
+  String get pressBackAgainToExitApp =>
+      'Appuyez encore sur retour pour quitter l\'application.';
 }

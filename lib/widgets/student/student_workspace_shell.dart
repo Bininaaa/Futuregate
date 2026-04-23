@@ -6,6 +6,7 @@ import '../../theme/app_colors.dart';
 import '../../theme/app_typography.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
 import '../profile_avatar.dart';
+import '../shared/app_nav_scroll_switcher.dart';
 
 class StudentWorkspaceTopBar extends StatelessWidget {
   final String title;
@@ -541,46 +542,51 @@ class StudentPillNavigationBar extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-        decoration: BoxDecoration(
-          color: OpportunityDashboardPalette.surface.withValues(
-            alpha: AppColors.isDark ? 0.96 : 0.96,
-          ),
-          borderRadius: BorderRadius.circular(28),
-          border: Border.all(
-            color: OpportunityDashboardPalette.border.withValues(alpha: 0.92),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: OpportunityDashboardPalette.primary.withValues(
-                alpha: 0.10,
-              ),
-              blurRadius: 24,
-              offset: const Offset(0, 12),
+      child: AppNavScrollSwitcher(
+        currentIndex: currentIndex,
+        itemCount: destinations.length,
+        onIndexChanged: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+          decoration: BoxDecoration(
+            color: OpportunityDashboardPalette.surface.withValues(
+              alpha: AppColors.isDark ? 0.96 : 0.96,
             ),
-            BoxShadow(
-              color: AppColors.current.shadow.withValues(
-                alpha: AppColors.isDark ? 0.24 : 0.06,
-              ),
-              blurRadius: 16,
-              offset: const Offset(0, 6),
+            borderRadius: BorderRadius.circular(28),
+            border: Border.all(
+              color: OpportunityDashboardPalette.border.withValues(alpha: 0.92),
             ),
-          ],
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: Row(
-          children: List<Widget>.generate(
-            destinations.length,
-            (index) => Flexible(
-              flex: currentIndex == index ? selectedFlex : idleFlex,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 2),
-                child: _StudentPillNavItem(
-                  destination: destinations[index],
-                  selected: currentIndex == index,
-                  compact: compact,
-                  onTap: () => onTap(index),
+            boxShadow: [
+              BoxShadow(
+                color: OpportunityDashboardPalette.primary.withValues(
+                  alpha: 0.10,
+                ),
+                blurRadius: 24,
+                offset: const Offset(0, 12),
+              ),
+              BoxShadow(
+                color: AppColors.current.shadow.withValues(
+                  alpha: AppColors.isDark ? 0.24 : 0.06,
+                ),
+                blurRadius: 16,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: Row(
+            children: List<Widget>.generate(
+              destinations.length,
+              (index) => Flexible(
+                flex: currentIndex == index ? selectedFlex : idleFlex,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 2),
+                  child: _StudentPillNavItem(
+                    destination: destinations[index],
+                    selected: currentIndex == index,
+                    compact: compact,
+                    onTap: () => onTap(index),
+                  ),
                 ),
               ),
             ),

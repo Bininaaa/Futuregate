@@ -7399,4 +7399,7 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get uiNoApprovedCompaniesMatchYourSearch =>
       'لا توجد شركات معتمدة تطابق بحثك.';
+
+  @override
+  String get pressBackAgainToExitApp => 'اضغط رجوع مرة أخرى للخروج من التطبيق.';
 }

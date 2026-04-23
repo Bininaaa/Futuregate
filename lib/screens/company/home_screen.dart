@@ -7,6 +7,7 @@ import '../../providers/notification_provider.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/company/company_workspace_shell.dart';
 import '../../widgets/shared/app_animated_tab_body.dart';
+import '../../widgets/shared/app_double_back_exit_scope.dart';
 import '../notifications_screen.dart';
 import '../settings/settings_screen.dart';
 import 'applications_screen.dart';
@@ -78,61 +79,63 @@ class _HomeScreenState extends State<HomeScreen> {
     ];
     final destination = destinations[_currentIndex];
 
-    return AppShellBackground(
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: SafeArea(
-          child: Column(
-            children: [
-              CompanyWorkspaceTopBar(
-                destination: destination,
-                user: user,
-                unreadCount: unreadCount,
-                onNotificationsTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => const NotificationsScreen(),
-                    ),
-                  );
-                },
-                onProfileTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => const CompanyProfileScreen(),
-                    ),
-                  );
-                },
-                onSettingsTap: _currentIndex == 0
-                    ? () => _selectIndex(4)
-                    : null,
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: AppAnimatedTabBody(
-                    currentIndex: _currentIndex,
-                    children: List<Widget>.generate(
-                      destinations.length,
-                      (index) => _visitedIndexes.contains(index)
-                          ? _screenForIndex(index)
-                          : const SizedBox.shrink(),
+    return AppDoubleBackExitScope(
+      child: AppShellBackground(
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          body: SafeArea(
+            child: Column(
+              children: [
+                CompanyWorkspaceTopBar(
+                  destination: destination,
+                  user: user,
+                  unreadCount: unreadCount,
+                  onNotificationsTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const NotificationsScreen(),
+                      ),
+                    );
+                  },
+                  onProfileTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const CompanyProfileScreen(),
+                      ),
+                    );
+                  },
+                  onSettingsTap: _currentIndex == 0
+                      ? () => _selectIndex(4)
+                      : null,
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: AppAnimatedTabBody(
+                      currentIndex: _currentIndex,
+                      children: List<Widget>.generate(
+                        destinations.length,
+                        (index) => _visitedIndexes.contains(index)
+                            ? _screenForIndex(index)
+                            : const SizedBox.shrink(),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-        bottomNavigationBar: keyboardVisible
-            ? null
-            : SafeArea(
-                top: false,
-                child: CompanyPillNavigationBar(
-                  destinations: destinations,
-                  currentIndex: _currentIndex,
-                  onTap: _selectIndex,
+          bottomNavigationBar: keyboardVisible
+              ? null
+              : SafeArea(
+                  top: false,
+                  child: CompanyPillNavigationBar(
+                    destinations: destinations,
+                    currentIndex: _currentIndex,
+                    onTap: _selectIndex,
+                  ),
                 ),
-              ),
+        ),
       ),
     );
   }

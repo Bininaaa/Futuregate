@@ -13178,6 +13178,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No approved companies match your search.'**
   String get uiNoApprovedCompaniesMatchYourSearch;
+
+  /// No description provided for @pressBackAgainToExitApp.
+  ///
+  /// In en, this message translates to:
+  /// **'Press back again to exit the app.'**
+  String get pressBackAgainToExitApp;
 }
 
 class _AppLocalizationsDelegate

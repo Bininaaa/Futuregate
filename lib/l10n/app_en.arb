@@ -3895,5 +3895,6 @@
   "uiSuggested": "Suggested",
   "uiApprovedCompanies": "Approved companies",
   "uiNoApplicantsMatchYourSearch": "No applicants match your search.",
-  "uiNoApprovedCompaniesMatchYourSearch": "No approved companies match your search."
+  "uiNoApprovedCompaniesMatchYourSearch": "No approved companies match your search.",
+  "pressBackAgainToExitApp": "Press back again to exit the app."
 }

@@ -6,6 +6,7 @@ import '../../models/user_model.dart';
 import '../../theme/app_colors.dart';
 import '../../utils/company_dashboard_palette.dart';
 import '../profile_avatar.dart';
+import '../shared/app_nav_scroll_switcher.dart';
 
 class CompanyWorkspaceDestination {
   final String label;
@@ -435,46 +436,53 @@ class CompanyPillNavigationBar extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-        decoration: BoxDecoration(
-          color: AppColors.isDark
-              ? CompanyDashboardPalette.surfaceElevated.withValues(alpha: 0.96)
-              : CompanyDashboardPalette.surface.withValues(alpha: 0.96),
-          borderRadius: BorderRadius.circular(28),
-          border: Border.all(
-            color: CompanyDashboardPalette.border.withValues(alpha: 0.94),
+      child: AppNavScrollSwitcher(
+        currentIndex: currentIndex,
+        itemCount: destinations.length,
+        onIndexChanged: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+          decoration: BoxDecoration(
+            color: AppColors.isDark
+                ? CompanyDashboardPalette.surfaceElevated.withValues(
+                    alpha: 0.96,
+                  )
+                : CompanyDashboardPalette.surface.withValues(alpha: 0.96),
+            borderRadius: BorderRadius.circular(28),
+            border: Border.all(
+              color: CompanyDashboardPalette.border.withValues(alpha: 0.94),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: CompanyDashboardPalette.primary.withValues(
+                  alpha: AppColors.isDark ? 0.16 : 0.11,
+                ),
+                blurRadius: 24,
+                offset: const Offset(0, 12),
+              ),
+              BoxShadow(
+                color: AppColors.current.shadow.withValues(
+                  alpha: AppColors.isDark ? 0.24 : 0.06,
+                ),
+                blurRadius: 16,
+                offset: const Offset(0, 6),
+              ),
+            ],
           ),
-          boxShadow: [
-            BoxShadow(
-              color: CompanyDashboardPalette.primary.withValues(
-                alpha: AppColors.isDark ? 0.16 : 0.11,
-              ),
-              blurRadius: 24,
-              offset: const Offset(0, 12),
-            ),
-            BoxShadow(
-              color: AppColors.current.shadow.withValues(
-                alpha: AppColors.isDark ? 0.24 : 0.06,
-              ),
-              blurRadius: 16,
-              offset: const Offset(0, 6),
-            ),
-          ],
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: Row(
-          children: List<Widget>.generate(
-            destinations.length,
-            (index) => Flexible(
-              flex: currentIndex == index ? selectedFlex : idleFlex,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 2),
-                child: _CompanyPillNavItem(
-                  destination: destinations[index],
-                  selected: currentIndex == index,
-                  compact: compact,
-                  onTap: () => onTap(index),
+          clipBehavior: Clip.antiAlias,
+          child: Row(
+            children: List<Widget>.generate(
+              destinations.length,
+              (index) => Flexible(
+                flex: currentIndex == index ? selectedFlex : idleFlex,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 2),
+                  child: _CompanyPillNavItem(
+                    destination: destinations[index],
+                    selected: currentIndex == index,
+                    compact: compact,
+                    onTap: () => onTap(index),
+                  ),
                 ),
               ),
             ),

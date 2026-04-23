@@ -7454,4 +7454,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get uiNoApprovedCompaniesMatchYourSearch =>
       'No approved companies match your search.';
+
+  @override
+  String get pressBackAgainToExitApp => 'Press back again to exit the app.';
 }
