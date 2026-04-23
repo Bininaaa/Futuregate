@@ -108,20 +108,22 @@ class _ExitPromptCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = AppColors.of(context);
     final isDark = colors.isDarkMode;
+    final primaryTint = isDark ? colors.primary : colors.primaryDeep;
+    final secondaryTint = isDark ? colors.secondary : colors.secondaryDeep;
     final borderColor = isDark
-        ? colors.borderStrong.withValues(alpha: 0.86)
-        : colors.border.withValues(alpha: 0.94);
+        ? colors.borderStrong.withValues(alpha: 0.82)
+        : colors.border.withValues(alpha: 0.90);
     final surfaceGradient = LinearGradient(
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
       colors: <Color>[
         Color.alphaBlend(
-          colors.primary.withValues(alpha: isDark ? 0.18 : 0.08),
-          colors.surfaceElevated.withValues(alpha: isDark ? 0.92 : 0.96),
+          colors.primary.withValues(alpha: isDark ? 0.14 : 0.05),
+          colors.surfaceElevated.withValues(alpha: isDark ? 0.94 : 0.98),
         ),
         Color.alphaBlend(
-          colors.accent.withValues(alpha: isDark ? 0.12 : 0.06),
-          colors.surface.withValues(alpha: isDark ? 0.90 : 0.96),
+          colors.secondary.withValues(alpha: isDark ? 0.12 : 0.05),
+          colors.backgroundAlt.withValues(alpha: isDark ? 0.92 : 0.97),
         ),
       ],
     );
@@ -140,14 +142,14 @@ class _ExitPromptCard extends StatelessWidget {
                 boxShadow: <BoxShadow>[
                   BoxShadow(
                     color: colors.shadow.withValues(
-                      alpha: isDark ? 0.32 : 0.10,
+                      alpha: isDark ? 0.30 : 0.09,
                     ),
                     blurRadius: 28,
                     offset: const Offset(0, 16),
                   ),
                   BoxShadow(
-                    color: colors.primary.withValues(
-                      alpha: isDark ? 0.22 : 0.10,
+                    color: colors.secondary.withValues(
+                      alpha: isDark ? 0.16 : 0.08,
                     ),
                     blurRadius: 20,
                     offset: const Offset(0, 8),
@@ -162,11 +164,24 @@ class _ExitPromptCard extends StatelessWidget {
                       width: 46,
                       height: 46,
                       decoration: BoxDecoration(
-                        gradient: colors.heroGradient(colors.accent),
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: <Color>[
+                            colors.primaryDeep,
+                            colors.primary,
+                            colors.secondary,
+                          ],
+                        ),
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: <BoxShadow>[
                           BoxShadow(
-                            color: colors.primary.withValues(alpha: 0.24),
+                            color: colors.primary.withValues(alpha: 0.18),
+                            blurRadius: 16,
+                            offset: const Offset(0, 8),
+                          ),
+                          BoxShadow(
+                            color: colors.secondary.withValues(alpha: 0.12),
                             blurRadius: 16,
                             offset: const Offset(0, 8),
                           ),
@@ -198,16 +213,18 @@ class _ExitPromptCard extends StatelessWidget {
                       ),
                       decoration: BoxDecoration(
                         color: Color.alphaBlend(
-                          colors.primary.withValues(
-                            alpha: isDark ? 0.22 : 0.10,
+                          colors.secondary.withValues(
+                            alpha: isDark ? 0.18 : 0.08,
                           ),
                           colors.surface.withValues(
-                            alpha: isDark ? 0.78 : 0.90,
+                            alpha: isDark ? 0.80 : 0.92,
                           ),
                         ),
                         borderRadius: BorderRadius.circular(14),
                         border: Border.all(
-                          color: colors.primary.withValues(alpha: 0.16),
+                          color: colors.secondary.withValues(
+                            alpha: isDark ? 0.22 : 0.12,
+                          ),
                         ),
                       ),
                       child: Row(
@@ -216,7 +233,7 @@ class _ExitPromptCard extends StatelessWidget {
                           Icon(
                             Icons.keyboard_return_rounded,
                             size: 14,
-                            color: colors.primary,
+                            color: secondaryTint,
                           ),
                           const SizedBox(width: 5),
                           Text(
@@ -224,7 +241,7 @@ class _ExitPromptCard extends StatelessWidget {
                             style: AppTypography.display(
                               fontSize: 11.4,
                               fontWeight: FontWeight.w700,
-                              color: colors.primary,
+                              color: secondaryTint,
                             ),
                           ),
                         ],
@@ -250,8 +267,8 @@ class _ExitPromptCard extends StatelessWidget {
                   children: <Widget>[
                     Container(
                       height: 4,
-                      color: colors.border.withValues(
-                        alpha: isDark ? 0.34 : 0.58,
+                      color: colors.borderStrong.withValues(
+                        alpha: isDark ? 0.30 : 0.42,
                       ),
                     ),
                     FractionallySizedBox(
@@ -261,7 +278,7 @@ class _ExitPromptCard extends StatelessWidget {
                         height: 4,
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
-                            colors: <Color>[colors.primary, colors.accent],
+                            colors: <Color>[primaryTint, colors.secondary],
                           ),
                         ),
                       ),
