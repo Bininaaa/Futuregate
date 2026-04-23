@@ -6,6 +6,7 @@ import '../../theme/app_colors.dart';
 import '../../theme/app_typography.dart';
 import '../../utils/admin_palette.dart';
 import '../../widgets/admin/admin_ui.dart';
+import '../../widgets/shared/app_animated_tab_body.dart';
 import '../notifications_screen.dart';
 import '../settings/logout_confirmation_sheet.dart';
 import '../settings/settings_screen.dart';
@@ -99,55 +100,86 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          gradient: AdminPalette.heroGradient(
-                            destination.title == 'Content'
-                                ? AdminPalette.secondary
-                                : AdminPalette.accent,
+                      AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 240),
+                        switchInCurve: Curves.easeOutCubic,
+                        switchOutCurve: Curves.easeInCubic,
+                        transitionBuilder: (child, animation) => FadeTransition(
+                          opacity: animation,
+                          child: ScaleTransition(
+                            scale: Tween<double>(begin: 0.82, end: 1.0)
+                                .animate(animation),
+                            child: child,
                           ),
-                          borderRadius: BorderRadius.circular(20),
                         ),
-                        child: Icon(
-                          destination.icon,
-                          color: Colors.white,
-                          size: 22,
+                        child: Container(
+                          key: ValueKey(destination.title),
+                          width: 44,
+                          height: 44,
+                          decoration: BoxDecoration(
+                            gradient: AdminPalette.heroGradient(
+                              destination.title == 'Content'
+                                  ? AdminPalette.secondary
+                                  : AdminPalette.accent,
+                            ),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Icon(
+                            destination.icon,
+                            color: Colors.white,
+                            size: 22,
+                          ),
                         ),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Row(
-                              children: [
+                        child: AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 220),
+                          switchInCurve: Curves.easeOutCubic,
+                          switchOutCurve: Curves.easeInCubic,
+                          transitionBuilder: (child, animation) =>
+                              FadeTransition(
+                                opacity: animation,
+                                child: SlideTransition(
+                                  position: Tween<Offset>(
+                                    begin: const Offset(0.05, 0),
+                                    end: Offset.zero,
+                                  ).animate(animation),
+                                  child: child,
+                                ),
+                              ),
+                          child: Column(
+                            key: ValueKey(destination.title),
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Row(
+                                children: [
+                                  Text(
+                                    destination.title,
+                                    style: AppTypography.product(
+                                      fontSize: isCompactHeader ? 16 : 17,
+                                      fontWeight: FontWeight.w700,
+                                      color: AdminPalette.textPrimary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              if (!isCompactHeader) ...[
+                                const SizedBox(height: 2),
                                 Text(
-                                  destination.title,
+                                  destination.subtitle,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                   style: AppTypography.product(
-                                    fontSize: isCompactHeader ? 16 : 17,
-                                    fontWeight: FontWeight.w700,
-                                    color: AdminPalette.textPrimary,
+                                    fontSize: 11.5,
+                                    fontWeight: FontWeight.w500,
+                                    color: AdminPalette.textMuted,
                                   ),
                                 ),
                               ],
-                            ),
-                            if (!isCompactHeader) ...[
-                              const SizedBox(height: 2),
-                              Text(
-                                destination.subtitle,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: AppTypography.product(
-                                  fontSize: 11.5,
-                                  fontWeight: FontWeight.w500,
-                                  color: AdminPalette.textMuted,
-                                ),
-                              ),
                             ],
-                          ],
+                          ),
                         ),
                       ),
                       const SizedBox(width: 10),
@@ -183,8 +215,8 @@ class _HomeScreenState extends State<HomeScreen> {
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: IndexedStack(
-                    index: _currentIndex,
+                  child: AppAnimatedTabBody(
+                    currentIndex: _currentIndex,
                     children: List<Widget>.generate(
                       _destinations.length,
                       (index) => _visitedIndexes.contains(index)
@@ -405,7 +437,7 @@ class _AdminPillNavItem extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(22),
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 220),
+          duration: const Duration(milliseconds: 280),
           curve: Curves.easeOutCubic,
           height: 46,
           padding: EdgeInsets.symmetric(
@@ -431,9 +463,13 @@ class _AdminPillNavItem extends StatelessWidget {
                 : null,
           ),
           child: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 200),
-            switchInCurve: Curves.easeOutCubic,
-            switchOutCurve: Curves.easeOutCubic,
+            duration: const Duration(milliseconds: 260),
+            switchInCurve: Curves.easeOutBack,
+            switchOutCurve: Curves.easeInCubic,
+            transitionBuilder: (child, animation) => ScaleTransition(
+              scale: Tween<double>(begin: 0.72, end: 1.0).animate(animation),
+              child: FadeTransition(opacity: animation, child: child),
+            ),
             child: selected
                 ? Row(
                     key: ValueKey<String>('selected-${destination.navLabel}'),

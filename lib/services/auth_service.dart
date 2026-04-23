@@ -8,6 +8,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import '../models/user_model.dart';
 import 'notification_worker_service.dart';
 import 'storage_service.dart';
+import 'worker_api_service.dart';
 
 class AuthService {
   static const String _googleClientId =
@@ -25,6 +26,7 @@ class AuthService {
   final NotificationWorkerService _notificationWorker =
       NotificationWorkerService();
   final StorageService _storageService = StorageService();
+  final WorkerApiService _workerApiService = WorkerApiService();
 
   static bool _googleInitialized = false;
   static Future<void>? _googleInitializationFuture;
@@ -115,7 +117,7 @@ class AuthService {
     required String email,
     required String password,
   }) async {
-    return await _auth
+    final credential = await _auth
         .signInWithEmailAndPassword(email: email, password: password)
         .timeout(
           _authOperationTimeout,
@@ -125,6 +127,7 @@ class AuthService {
                 'Sign in is taking too long. Please check your connection and try again.',
           ),
         );
+    return credential;
   }
 
   Future<UserCredential> register({
@@ -421,14 +424,22 @@ class AuthService {
   Future<void> sendEmailVerification() async {
     final user = _auth.currentUser;
     if (user != null && !user.emailVerified) {
-      await user.sendEmailVerification();
+      try {
+        await user.sendEmailVerification().timeout(_authOperationTimeout);
+      } catch (_) {
+        // Non-critical — user can request another verification email later.
+      }
     }
   }
 
   Future<bool> reloadAndCheckVerification() async {
     final user = _auth.currentUser;
     if (user == null) return false;
-    await user.reload();
+    try {
+      await user.reload().timeout(_authOperationTimeout);
+    } catch (_) {
+      // Fall back to cached state if reload fails.
+    }
     return _auth.currentUser?.emailVerified ?? false;
   }
 
@@ -438,16 +449,29 @@ class AuthService {
 
   Future<void> sendPasswordResetEmail(String email) async {
     final normalizedEmail = email.trim();
-    await _auth
-        .sendPasswordResetEmail(email: normalizedEmail)
-        .timeout(
-          _authOperationTimeout,
-          onTimeout: () => throw FirebaseAuthException(
-            code: 'auth-timeout',
-            message:
-                'Password reset is taking too long. Please check your connection and try again.',
-          ),
-        );
+    try {
+      await _workerApiService
+          .postPublic(
+            '/api/auth/password-reset',
+            body: {'email': normalizedEmail},
+          )
+          .timeout(_authOperationTimeout);
+    } on WorkerApiException catch (e) {
+      final code = switch (e.statusCode) {
+        404 => 'user-not-found',
+        409 => 'password-reset-google-only',
+        400 => 'invalid-email',
+        429 => 'too-many-requests',
+        _ => 'auth-timeout',
+      };
+      throw FirebaseAuthException(code: code, message: e.message);
+    } on TimeoutException {
+      throw FirebaseAuthException(
+        code: 'auth-timeout',
+        message:
+            'Password reset is taking too long. Please check your connection and try again.',
+      );
+    }
   }
 
   // --------------- Re-authentication ---------------
@@ -722,7 +746,7 @@ class AuthService {
     }
 
     try {
-      await user.reload();
+      await user.reload().timeout(_authOperationTimeout);
     } catch (_) {
       // Fall back to the cached auth user when reload is temporarily unavailable.
     }
@@ -748,4 +772,5 @@ class AuthService {
       // Ignore cleanup failures after auth exceptions.
     }
   }
+
 }

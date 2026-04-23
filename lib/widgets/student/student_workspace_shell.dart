@@ -658,7 +658,7 @@ class _StudentPillNavItem extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(22),
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 220),
+        duration: const Duration(milliseconds: 280),
         curve: Curves.easeOutCubic,
         height: 46,
         padding: EdgeInsets.symmetric(
@@ -686,9 +686,13 @@ class _StudentPillNavItem extends StatelessWidget {
               : null,
         ),
         child: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 200),
-          switchInCurve: Curves.easeOutCubic,
-          switchOutCurve: Curves.easeOutCubic,
+          duration: const Duration(milliseconds: 260),
+          switchInCurve: Curves.easeOutBack,
+          switchOutCurve: Curves.easeInCubic,
+          transitionBuilder: (child, animation) => ScaleTransition(
+            scale: Tween<double>(begin: 0.72, end: 1.0).animate(animation),
+            child: FadeTransition(opacity: animation, child: child),
+          ),
           child: selected
               ? Row(
                   key: ValueKey<String>('selected-${destination.label}'),

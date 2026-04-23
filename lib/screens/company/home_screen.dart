@@ -6,6 +6,7 @@ import '../../providers/auth_provider.dart';
 import '../../providers/notification_provider.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/company/company_workspace_shell.dart';
+import '../../widgets/shared/app_animated_tab_body.dart';
 import '../notifications_screen.dart';
 import '../settings/settings_screen.dart';
 import 'applications_screen.dart';
@@ -108,8 +109,8 @@ class _HomeScreenState extends State<HomeScreen> {
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: IndexedStack(
-                    index: _currentIndex,
+                  child: AppAnimatedTabBody(
+                    currentIndex: _currentIndex,
                     children: List<Widget>.generate(
                       destinations.length,
                       (index) => _visitedIndexes.contains(index)

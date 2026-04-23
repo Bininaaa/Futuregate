@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../providers/notification_provider.dart';
 import '../../widgets/app_shell_background.dart';
+import '../../widgets/shared/app_animated_tab_body.dart';
 import '../../widgets/student/student_workspace_shell.dart';
 import '../notifications_screen.dart';
 import 'chat_list_screen.dart';
@@ -255,18 +256,35 @@ class _HomeScreenState extends State<HomeScreen> {
         body: SafeArea(
           child: Column(
             children: [
-              if (_currentIndex != 0)
-                StudentWorkspaceTopBar(
-                  title: destination.title,
-                  subtitle: destination.subtitle,
-                  icon: destination.icon,
-                  actions: _buildTopBarActions(l10n, unreadCount),
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 260),
+                switchInCurve: Curves.easeOutCubic,
+                switchOutCurve: Curves.easeInCubic,
+                transitionBuilder: (child, animation) => FadeTransition(
+                  opacity: animation,
+                  child: SlideTransition(
+                    position: Tween<Offset>(
+                      begin: const Offset(0, -0.25),
+                      end: Offset.zero,
+                    ).animate(animation),
+                    child: child,
+                  ),
                 ),
+                child: _currentIndex != 0
+                    ? StudentWorkspaceTopBar(
+                        key: const ValueKey(true),
+                        title: destination.title,
+                        subtitle: destination.subtitle,
+                        icon: destination.icon,
+                        actions: _buildTopBarActions(l10n, unreadCount),
+                      )
+                    : const SizedBox.shrink(key: ValueKey(false)),
+              ),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: IndexedStack(
-                    index: _currentIndex,
+                  child: AppAnimatedTabBody(
+                    currentIndex: _currentIndex,
                     children: List<Widget>.generate(
                       _screens.length,
                       (index) => _visitedIndexes.contains(index)

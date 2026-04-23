@@ -583,18 +583,24 @@ async function handlePasswordReset(request, env) {
 
   try {
     const signInContext = await fetchSignInMethodsForEmail(env, email);
-    if (!signInContext.registered) {
-      console.info("[passwordReset] email-not-found", { email: maskedEmail });
-      return json({ success: true });
-    }
-
     let hasPassword = signInContext.signInMethods.includes(
       PASSWORD_SIGN_IN_METHOD,
     );
     let hasGoogle = signInContext.signInMethods.includes(GOOGLE_PROVIDER_ID);
 
-    if (!hasPassword || !hasGoogle) {
-      const account = await lookupAccountByEmail(env, email);
+    // Email-enumeration protection can hide `registered` and `signinMethods`
+    // for real accounts, so verify with the privileged lookup before failing.
+    const account =
+      !signInContext.registered || !hasPassword || !hasGoogle
+        ? await lookupAccountByEmail(env, email)
+        : null;
+
+    if (!signInContext.registered && !account) {
+      console.info("[passwordReset] email-not-found", { email: maskedEmail });
+      return err("No account was found for that email address.", 404);
+    }
+
+    if (account) {
       hasPassword =
         hasPassword ||
         accountHasPasswordMethod(account, signInContext.signInMethods);

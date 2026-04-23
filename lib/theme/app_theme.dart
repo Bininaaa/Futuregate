@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../widgets/shared/app_feedback.dart';
+import '../widgets/shared/app_page_route.dart';
 import 'app_colors.dart';
 
 class AppTheme {
@@ -72,6 +73,7 @@ class AppTheme {
       useMaterial3: true,
       brightness: colors.brightness,
       colorScheme: scheme,
+      pageTransitionsTheme: appPageTransitionsTheme,
       scaffoldBackgroundColor: colors.background,
       canvasColor: colors.background,
       focusColor: colors.primary.withValues(alpha: isDark ? 0.22 : 0.14),
