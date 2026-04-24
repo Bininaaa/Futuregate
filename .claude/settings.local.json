@@ -20,7 +20,9 @@
       "Bash(python3 -c ' *)",
       "Bash(python3)",
       "Bash(grep -v \"^placeholders$\\\\|^type$\\\\|^value[0-9]$\\\\|^description$\\\\|^example$\")",
-      "Bash(python3 .claude/skills/ui-ux-pro-max/scripts/search.py \"auth account action SaaS education minimal modern\" --design-system -p \"FutureGate Auth\")"
+      "Bash(python3 .claude/skills/ui-ux-pro-max/scripts/search.py \"auth account action SaaS education minimal modern\" --design-system -p \"FutureGate Auth\")",
+      "Bash(python3 .claude/skills/ui-ux-pro-max/scripts/search.py \"flutter widgets layout theming\" --stack flutter)",
+      "Bash(python .claude/skills/ui-ux-pro-max/scripts/search.py \"flutter widgets layout theming\" --stack flutter)"
     ]
   }
 }

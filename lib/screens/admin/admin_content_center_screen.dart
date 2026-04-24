@@ -17,6 +17,7 @@ import '../../providers/admin_provider.dart';
 import '../../services/admin_service.dart';
 import '../../services/company_service.dart';
 import '../../services/document_access_service.dart';
+import '../../theme/app_typography.dart';
 import '../../utils/admin_palette.dart';
 import '../../utils/application_status.dart';
 import '../../utils/display_text.dart';
@@ -388,7 +389,13 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
         children: [
           Icon(icon, size: 14),
           const SizedBox(width: 4),
-          Text(label, style: const TextStyle(fontSize: 11)),
+          Text(
+            label,
+            style: AppTypography.product(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
           if (badgeCount > 0) ...[
             const SizedBox(width: 4),
             Container(
@@ -779,8 +786,8 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               children: [
                 Text(
                   'Pending ideas need review',
-                  style: TextStyle(
-                    fontSize: 14,
+                  style: AppTypography.product(
+                    fontSize: 13.5,
                     fontWeight: FontWeight.w700,
                     color: AdminPalette.textPrimary,
                   ),
@@ -788,9 +795,9 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 const SizedBox(height: 4),
                 Text(
                   '$pendingCount idea${pendingCount == 1 ? '' : 's'} still waiting for approval or rejection.',
-                  style: TextStyle(
-                    fontSize: 12.2,
-                    height: 1.4,
+                  style: AppTypography.product(
+                    fontSize: 12,
+                    height: 1.45,
                     color: AdminPalette.textSecondary,
                   ),
                 ),
@@ -2382,16 +2389,28 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
         color: isTarget
             ? highlightColor.withValues(alpha: 0.035)
             : AdminPalette.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(14),
         clipBehavior: Clip.antiAlias,
         elevation: 0,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(14),
           child: DecoratedBox(
             decoration: BoxDecoration(
-              border: Border.all(color: borderColor, width: isTarget ? 1.2 : 1),
-              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: borderColor,
+                width: isTarget ? 1.5 : 1,
+              ),
+              borderRadius: BorderRadius.circular(14),
+              boxShadow: isTarget
+                  ? null
+                  : [
+                      BoxShadow(
+                        color: AdminPalette.primary.withValues(alpha: 0.03),
+                        blurRadius: 6,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
             ),
             child: Padding(
               padding: const EdgeInsets.fromLTRB(12, 10, 10, 10),
@@ -2449,11 +2468,11 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
           title,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            fontWeight: FontWeight.w800,
-            fontSize: 13.6,
+          style: AppTypography.product(
+            fontWeight: FontWeight.w700,
+            fontSize: 13.5,
             color: AdminPalette.textPrimary,
-            height: 1.2,
+            height: 1.25,
           ),
         ),
         if (subtitle.trim().isNotEmpty) ...[
@@ -2462,11 +2481,11 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             subtitle,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: 11.4,
-              fontWeight: FontWeight.w600,
+            style: AppTypography.product(
+              fontSize: 11.5,
+              fontWeight: FontWeight.w500,
               color: AdminPalette.textMuted,
-              height: 1.25,
+              height: 1.3,
             ),
           ),
         ],
@@ -2509,6 +2528,10 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       visualDensity: VisualDensity.compact,
       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      textStyle: AppTypography.product(
+        fontSize: 12,
+        fontWeight: FontWeight.w600,
+      ),
     );
   }
 
@@ -2519,6 +2542,10 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       visualDensity: VisualDensity.compact,
       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      textStyle: AppTypography.product(
+        fontSize: 12,
+        fontWeight: FontWeight.w600,
+      ),
     );
   }
 
@@ -3436,7 +3463,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                   item.label,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
+                  style: AppTypography.product(
                     fontSize: 11.5,
                     fontWeight: FontWeight.w700,
                     color: AdminPalette.textMuted,
@@ -3453,7 +3480,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 item.value,
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(
+                style: AppTypography.product(
                   fontSize: 13.4,
                   height: 1.45,
                   color: AdminPalette.textPrimary,
@@ -4907,7 +4934,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 label,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(
+                style: AppTypography.product(
                   fontSize: 10.2,
                   fontWeight: FontWeight.w600,
                   color: AdminPalette.textMuted,
@@ -4931,7 +4958,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       ),
       child: Text(
         label,
-        style: TextStyle(
+        style: AppTypography.product(
           fontSize: 10.2,
           fontWeight: FontWeight.w700,
           color: color,

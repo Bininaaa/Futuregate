@@ -5,16 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard · FutureGate Admin</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/app.css?v=2026042007">
+  <link rel="stylesheet" href="css/app.css?v=2026042401">
   <script src="js/theme-init.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 </head>
 <body data-page="dashboard">
-  <div id="auth-gate" class="auth-gate"><div class="spinner"></div><p>Verifying session...</p></div>
+  <div id="auth-gate" class="auth-gate"><div class="spinner"></div><p>Verifying session…</p></div>
   <div id="shell"></div>
 
   <script type="module">
@@ -100,9 +97,8 @@
           .slice(0, 3)
           .map(([id, count]) => ({ ...oppMeta[id], count }));
         const topApplied = buildTop(appCounts);
-        const topSaved = buildTop(saveCounts);
+        const topSaved   = buildTop(saveCounts);
 
-        /* Control room: what needs admin attention right now */
         let pendingCompanies = 0, blockedUsers = 0;
         usersSnap.forEach((s) => {
           const d = s.data();
@@ -114,92 +110,177 @@
         let hiddenOpps = 0;
         oppsSnap.forEach((s) => { if (s.data().isHidden) hiddenOpps += 1; });
 
+        const totalPending = pendingIdeas + pendingApps + pendingCompanies;
+
         const root = document.getElementById('page-content');
         root.innerHTML = `
+
+          <!-- ── Dashboard hero ── -->
+          <div class="dash-hero">
+            <div class="dash-hero-orb dash-hero-orb--1"></div>
+            <div class="dash-hero-orb dash-hero-orb--2"></div>
+            <div class="dash-hero-content">
+              <div class="dash-hero-icon">
+                <i data-lucide="shield-check"></i>
+              </div>
+              <div>
+                <div class="dash-hero-eyebrow">FutureGate Admin</div>
+                <div class="dash-hero-title">Command Center</div>
+                <div class="dash-hero-subtitle">
+                  ${total.toLocaleString()} users · ${totalOpps} opportunities · ${totalPending > 0 ? `<strong style="color:#fff">${totalPending} item${totalPending !== 1 ? 's' : ''} need review</strong>` : 'Everything is up to date'}
+                </div>
+              </div>
+            </div>
+            <div class="dash-hero-actions">
+              <a class="dash-hero-btn dash-hero-btn--primary" href="users.html?role=company&status=pending">
+                <i data-lucide="building-2"></i>
+                Companies${pendingCompanies > 0 ? ` <span style="background:rgba(255,255,255,.28);border-radius:99px;padding:1px 7px;font-size:11px">${pendingCompanies}</span>` : ''}
+              </a>
+              <a class="dash-hero-btn" href="moderation.html?tab=ideas">
+                <i data-lucide="lightbulb"></i>
+                Project ideas${pendingIdeas > 0 ? ` <span style="background:rgba(255,255,255,.22);border-radius:99px;padding:1px 7px;font-size:11px">${pendingIdeas}</span>` : ''}
+              </a>
+              <a class="dash-hero-btn" href="moderation.html?tab=opportunities&filter=pending_apps">
+                <i data-lucide="file-text"></i>
+                Applications${pendingApps > 0 ? ` <span style="background:rgba(255,255,255,.22);border-radius:99px;padding:1px 7px;font-size:11px">${pendingApps}</span>` : ''}
+              </a>
+              <a class="dash-hero-btn" href="activity.html">
+                <i data-lucide="activity"></i>
+                Activity
+              </a>
+              <a class="dash-hero-btn" href="moderation.html?tab=trainings">
+                <i data-lucide="library"></i>
+                Library
+              </a>
+            </div>
+          </div>
+
+          <!-- ── Control room ── -->
           <section class="surface-panel">
             <div class="surface-heading">
               <div>
                 <div class="surface-heading-title">Control room</div>
-                <div class="surface-heading-copy">What needs your attention right now.</div>
+                <div class="surface-heading-copy">Items that need your attention right now.</div>
               </div>
             </div>
             <div class="control-room">
-              ${controlCard({ count: pendingIdeas, label: 'Project ideas awaiting review', icon: 'lightbulb', color: '#F59E0B', href: 'moderation.html?tab=ideas', cta: 'Review ideas' })}
-              ${controlCard({ count: pendingApps, label: 'Pending applications', icon: 'file-text', color: '#7C3AED', href: 'moderation.html?tab=opportunities&filter=pending_apps', cta: 'Review in opportunities' })}
-              ${controlCard({ count: pendingCompanies, label: 'Companies awaiting approval', icon: 'building-2', color: '#14B8A6', href: 'users.html?role=company&status=pending', cta: 'Review companies' })}
-              ${controlCard({ count: blockedUsers, label: 'Blocked users', icon: 'shield-alert', color: '#E24A4A', href: 'users.html?status=blocked', cta: 'Manage blocked' })}
-              ${controlCard({ count: hiddenOpps, label: 'Hidden opportunities', icon: 'eye-off', color: '#64748B', href: 'moderation.html?tab=opportunities', cta: 'Review hidden' })}
+              ${controlCard({ count: pendingIdeas,    label: 'Project ideas awaiting review',   icon: 'lightbulb',    color: '#F59E0B', href: 'moderation.html?tab=ideas' })}
+              ${controlCard({ count: pendingApps,     label: 'Pending applications',            icon: 'file-text',    color: '#7C3AED', href: 'moderation.html?tab=opportunities&filter=pending_apps' })}
+              ${controlCard({ count: pendingCompanies,label: 'Companies awaiting approval',     icon: 'building-2',   color: '#14B8A6', href: 'users.html?role=company&status=pending' })}
+              ${controlCard({ count: blockedUsers,    label: 'Blocked users',                   icon: 'shield-alert', color: '#E24A4A', href: 'users.html?status=blocked' })}
+              ${controlCard({ count: hiddenOpps,      label: 'Hidden opportunities',            icon: 'eye-off',      color: '#64748B', href: 'moderation.html?tab=opportunities' })}
             </div>
           </section>
 
+          <!-- ── Platform overview ── -->
           <section class="surface-panel">
-            <div class="surface-heading"><div><div class="surface-heading-title">Overview</div></div></div>
+            <div class="surface-heading"><div>
+              <div class="surface-heading-title">Platform overview</div>
+              <div class="surface-heading-copy">Live user counts across all account types.</div>
+            </div></div>
             <div class="stats-grid">
-              ${stat('Total users', total, 'users', 'var(--c-primary)')}
-              ${stat('Active', active, 'check-circle-2', 'var(--c-success)')}
-              ${stat('Inactive', inactive, 'x-circle', 'var(--c-danger)')}
-              ${stat('Students', students, 'graduation-cap', 'var(--c-info)')}
-              ${stat('Companies', companies, 'building-2', 'var(--c-secondary)')}
+              ${stat('Total users',  total,     'users',            'var(--c-primary)')}
+              ${stat('Active',       active,    'check-circle-2',   'var(--c-success)')}
+              ${stat('Inactive',     inactive,  'x-circle',         'var(--c-danger)')}
+              ${stat('Students',     students,  'graduation-cap',   'var(--c-info)')}
+              ${stat('Companies',    companies, 'building-2',       'var(--c-secondary)')}
             </div>
           </section>
 
+          <!-- ── Academic levels ── -->
           <section class="surface-panel">
-            <div class="surface-heading"><div><div class="surface-heading-title">Academic levels</div></div></div>
+            <div class="surface-heading"><div>
+              <div class="surface-heading-title">Academic levels</div>
+              <div class="surface-heading-copy">Student distribution by degree level.</div>
+            </div></div>
             <div class="stats-grid">
-              ${stat('Bac', bac, 'book', 'var(--c-warning)')}
-              ${stat('Licence', licence, 'book-marked', 'var(--c-info)')}
-              ${stat('Master', master, 'award', 'var(--c-activity)')}
-              ${stat('Doctorat', doctorat, 'medal', 'var(--c-secondary)')}
+              ${stat('Bac',       bac,      'book',        'var(--c-warning)')}
+              ${stat('Licence',   licence,  'book-marked', 'var(--c-info)')}
+              ${stat('Master',    master,   'award',       'var(--c-activity)')}
+              ${stat('Doctorat',  doctorat, 'medal',       'var(--c-secondary)')}
             </div>
           </section>
 
+          <!-- ── Charts ── -->
           <section class="charts-grid">
-            <div class="chart-card"><h3>Users by level</h3><canvas id="levelChart"></canvas></div>
-            <div class="chart-card"><h3>Roles</h3><canvas id="roleChart"></canvas></div>
+            <div class="chart-card">
+              <div class="chart-card-header">
+                <div class="chart-card-icon"><i data-lucide="bar-chart-2"></i></div>
+                <h3>Users by academic level</h3>
+              </div>
+              <canvas id="levelChart"></canvas>
+            </div>
+            <div class="chart-card">
+              <div class="chart-card-header">
+                <div class="chart-card-icon"><i data-lucide="pie-chart"></i></div>
+                <h3>Role distribution</h3>
+              </div>
+              <canvas id="roleChart"></canvas>
+            </div>
           </section>
 
-          <section class="chart-card"><h3>Monthly registrations</h3><canvas id="monthlyChart"></canvas></section>
+          <section class="chart-card">
+            <div class="chart-card-header">
+              <div class="chart-card-icon"><i data-lucide="trending-up"></i></div>
+              <h3>Monthly registrations</h3>
+            </div>
+            <canvas id="monthlyChart"></canvas>
+          </section>
 
+          <!-- ── Content inventory ── -->
           <section class="surface-panel">
-            <div class="surface-heading"><div><div class="surface-heading-title">Content</div></div></div>
+            <div class="surface-heading"><div>
+              <div class="surface-heading-title">Content inventory</div>
+              <div class="surface-heading-copy">Total published and active content across all categories.</div>
+            </div></div>
             <div class="stats-grid">
-              ${stat('Opportunities', totalOpps, 'briefcase', 'var(--c-accent)')}
-              ${stat('Applications', totalApps, 'file-text', 'var(--c-activity)')}
-              ${stat('Scholarships', scholarSnap.size, 'graduation-cap', 'var(--c-danger)')}
-              ${stat('Trainings', trainSnap.size, 'book-open', 'var(--c-secondary)')}
-              ${stat('Project ideas', ideasSnap.size, 'lightbulb', 'var(--c-warning)')}
-              ${stat('Conversations', convosSnap.size, 'message-square', 'var(--c-success)')}
+              ${stat('Opportunities',   totalOpps,        'briefcase',      'var(--c-accent)')}
+              ${stat('Applications',    totalApps,        'file-text',      'var(--c-activity)')}
+              ${stat('Scholarships',    scholarSnap.size, 'graduation-cap', 'var(--c-danger)')}
+              ${stat('Trainings',       trainSnap.size,   'book-open',      'var(--c-secondary)')}
+              ${stat('Project ideas',   ideasSnap.size,   'lightbulb',      'var(--c-warning)')}
+              ${stat('Conversations',   convosSnap.size,  'message-square', 'var(--c-success)')}
             </div>
           </section>
 
+          <!-- ── Engagement analytics ── -->
           <section class="surface-panel">
-            <div class="surface-heading"><div><div class="surface-heading-title">Quick actions</div></div></div>
-            <div class="quick-access-grid">
-              ${quick('briefcase','Opportunities','moderation.html?tab=opportunities','var(--c-accent)','Review jobs, internships, and sponsoring posts.')}
-              ${quick('file-text','Pending apps','moderation.html?tab=opportunities&filter=pending_apps','var(--c-activity)','Review applications inside admin-posted opportunities.')}
-              ${quick('graduation-cap','Scholarships','moderation.html?tab=scholarships','var(--c-danger)','Publish and curate scholarships.')}
-              ${quick('book-open','Trainings','moderation.html?tab=trainings','var(--c-secondary)','Curate the training catalog.')}
-              ${quick('library','Library','moderation.html?tab=trainings','var(--c-info)','Import books and videos.')}
-              ${quick('lightbulb','Project ideas','moderation.html?tab=ideas','var(--c-warning)','Approve student submissions.')}
-              ${quick('users','Users','users.html','var(--c-primary)','Approve companies, manage accounts.')}
-              ${quick('activity','Activity','activity.html','var(--c-success)','See the latest events.')}
-            </div>
-          </section>
-
-          <section class="surface-panel">
-            <div class="surface-heading"><div><div class="surface-heading-title">Engagement</div></div></div>
+            <div class="surface-heading"><div>
+              <div class="surface-heading-title">Engagement analytics</div>
+              <div class="surface-heading-copy">Key platform performance metrics.</div>
+            </div></div>
             <div>
-              ${engagement('Application rate', appRate.toFixed(1) + ' apps / opportunity', 'trending-up', 'var(--c-info)')}
-              ${engagement('CV completion', `${cvRate.toFixed(0)}% (${totalCvs} of ${students} students)`, 'file-check-2', 'var(--c-success)')}
-              ${engagement('Project ideas pipeline', `${pendingIdeas} pending · ${approvedIdeas} approved`, 'lightbulb', 'var(--c-warning)')}
+              ${engagement('Application rate',        appRate.toFixed(1) + ' apps per opportunity',            'trending-up',   'var(--c-info)')}
+              ${engagement('CV completion',           `${cvRate.toFixed(0)}% (${totalCvs} of ${students} students)`, 'file-check-2', 'var(--c-success)')}
+              ${engagement('Project ideas pipeline',  `${pendingIdeas} pending · ${approvedIdeas} approved`,   'lightbulb',     'var(--c-warning)')}
             </div>
           </section>
 
+          <!-- ── Top lists ── -->
           <section class="charts-grid">
             <div class="surface-panel" id="top-applied"></div>
             <div class="surface-panel" id="top-saved"></div>
           </section>
 
+          <!-- ── Quick actions ── -->
+          <section class="surface-panel">
+            <div class="surface-heading"><div>
+              <div class="surface-heading-title">Quick actions</div>
+              <div class="surface-heading-copy">Jump directly into any moderation queue.</div>
+            </div></div>
+            <div class="quick-access-grid">
+              ${quick('briefcase',    'Opportunities',  'moderation.html?tab=opportunities',                     'var(--c-accent)',    'Review jobs, internships, and sponsoring posts.')}
+              ${quick('file-text',    'Pending apps',   'moderation.html?tab=opportunities&filter=pending_apps', 'var(--c-activity)', 'Review applications inside admin-posted opportunities.')}
+              ${quick('graduation-cap','Scholarships',  'moderation.html?tab=scholarships',                      'var(--c-danger)',    'Publish and curate scholarships.')}
+              ${quick('book-open',    'Trainings',      'moderation.html?tab=trainings',                         'var(--c-secondary)','Curate the training catalog.')}
+              ${quick('library',      'Library',        'moderation.html?tab=trainings',                         'var(--c-info)',      'Import books and videos.')}
+              ${quick('lightbulb',    'Project ideas',  'moderation.html?tab=ideas',                             'var(--c-warning)',   'Approve student submissions.')}
+              ${quick('users',        'Users',          'users.html',                                            'var(--c-primary)',   'Approve companies, manage accounts.')}
+              ${quick('activity',     'Activity',       'activity.html',                                         'var(--c-success)',   'See the latest platform events.')}
+            </div>
+          </section>
+
+          <!-- ── Recent activity ── -->
           <section class="surface-panel">
             <div class="section-card-header">
               <h3>Recent activity</h3>
@@ -208,19 +289,27 @@
             <div id="activity-feed" class="list-grid"></div>
           </section>
 
+          <!-- ── Recent users ── -->
           <section class="surface-panel">
-            <div class="section-card-header"><h3>Recent users</h3><a class="section-link" href="users.html">All users <i data-lucide="arrow-right" class="sm"></i></a></div>
+            <div class="section-card-header">
+              <h3>Recent users</h3>
+              <a class="section-link" href="users.html">All users <i data-lucide="arrow-right" class="sm"></i></a>
+            </div>
             <div id="recent-users" class="list-grid"></div>
           </section>
 
+          <!-- ── Recent opportunities ── -->
           <section class="surface-panel">
-            <div class="section-card-header"><h3>Recent opportunities</h3><a class="section-link" href="moderation.html?tab=opportunities">All <i data-lucide="arrow-right" class="sm"></i></a></div>
+            <div class="section-card-header">
+              <h3>Recent opportunities</h3>
+              <a class="section-link" href="moderation.html?tab=opportunities">All <i data-lucide="arrow-right" class="sm"></i></a>
+            </div>
             <div id="recent-opps" class="list-grid"></div>
           </section>
         `;
 
-        renderTopList('top-applied', 'Most applied', topApplied, 'apps', 'var(--c-activity)');
-        renderTopList('top-saved', 'Most saved', topSaved, 'saves', 'var(--c-accent)');
+        renderTopList('top-applied', 'Most applied',  topApplied, 'apps',  'var(--c-activity)', '#7C3AED');
+        renderTopList('top-saved',   'Most saved',    topSaved,   'saves', 'var(--c-accent)',   '#F59E0B');
         renderCharts({ bac, licence, master, doctorat, students, companies, admins, monthlyMap, months });
         await renderActivity();
         await renderRecentUsers();
@@ -238,38 +327,47 @@
       }
     }
 
+    /* ── Template helpers ─────────────────────────────── */
+
     function stat(title, value, icon, color) {
-      return `<div class="stat-card">
-        <div class="stat-icon" style="background:${color}1a;color:${color}"><i data-lucide="${icon}"></i></div>
-        <div class="stat-info"><h4>${esc(title)}</h4><div class="value">${value}</div></div>
+      return `<div class="stat-card" style="--sc:${color}">
+        <div class="stat-icon"><i data-lucide="${icon}"></i></div>
+        <div class="stat-info"><h4>${esc(title)}</h4><div class="value">${value.toLocaleString ? value.toLocaleString() : value}</div></div>
       </div>`;
     }
+
     function quick(icon, title, href, color, copy) {
-      return `<a class="quick-link-card" href="${href}">
-        <div class="quick-link-icon" style="background:${color}1a;color:${color}"><i data-lucide="${icon}"></i></div>
+      return `<a class="quick-link-card" href="${href}" style="--ql:${color}">
+        <div class="quick-link-icon"><i data-lucide="${icon}"></i></div>
         <div class="quick-link-title">${esc(title)}</div>
         <div class="quick-link-copy">${esc(copy)}</div>
       </a>`;
     }
+
     function engagement(title, value, icon, color) {
-      return `<div class="engagement-card">
-        <div class="engagement-icon" style="background:${color}1a;color:${color}"><i data-lucide="${icon}"></i></div>
+      return `<div class="engagement-card" style="--eg:${color}">
+        <div class="engagement-icon"><i data-lucide="${icon}"></i></div>
         <div class="engagement-info"><h4>${esc(title)}</h4><div class="value">${esc(value)}</div></div>
       </div>`;
     }
+
     function controlCard({ count, label, icon, color, href }) {
       const empty = count === 0;
-      return `<a class="control-card ${empty ? 'control-empty' : ''}" href="${href}" style="--control-accent:${color}">
+      return `<a class="control-card${empty ? ' control-empty' : ''}" href="${href}" style="--ca:${color};--control-accent:${color}">
         <div class="control-card-icon"><i data-lucide="${empty ? 'check' : icon}"></i></div>
         <div class="control-card-count">${empty ? 'All clear' : count}</div>
         <div class="control-card-label">${esc(label)}</div>
       </a>`;
     }
+
     function typeLabel(t) {
       const map = { job: 'Job', internship: 'Internship', contract: 'Contract', volunteer: 'Volunteer', freelance: 'Freelance' };
       return map[t] || (t ? t.charAt(0).toUpperCase() + t.slice(1) : 'Opportunity');
     }
-    function renderTopList(id, title, items, label, color) {
+
+    /* ── Top lists ────────────────────────────────────── */
+
+    function renderTopList(id, title, items, label, color, hexColor) {
       const el = document.getElementById(id);
       let html = `<div class="surface-heading"><div><div class="surface-heading-title">${esc(title)}</div></div></div>`;
       if (items.length === 0) {
@@ -277,16 +375,16 @@
       } else {
         html += '<div class="list-grid">' + items.map((item, i) => `
           <div class="top-item" data-opp-id="${esc(item.id)}">
-            <div class="top-rank" style="background:${color}1a;color:${color}">#${i + 1}</div>
+            <div class="top-rank" style="background:${hexColor}1a;color:${hexColor}">#${i + 1}</div>
             <div class="top-body">
               <div class="top-title">${esc(item.title)}</div>
               <div class="top-sub">
                 <span class="mini-badge"><i data-lucide="${typeIcon('opportunity', item.type)}"></i>${esc(typeLabel(item.type))}</span>
                 ${item.companyName ? `<span class="mini-badge"><i data-lucide="building-2"></i>${esc(item.companyName)}</span>` : ''}
-                ${item.isFeatured ? '<span class="mini-badge" style="background:rgba(245,158,11,0.15);color:#F59E0B;"><i data-lucide="star"></i>Featured</span>' : ''}
+                ${item.isFeatured ? '<span class="mini-badge" style="background:rgba(245,158,11,.15);color:#F59E0B"><i data-lucide="star"></i>Featured</span>' : ''}
               </div>
             </div>
-            <div class="top-count" style="background:${color}1a;color:${color}">${item.count} ${label}</div>
+            <div class="top-count" style="background:${hexColor}1a;color:${hexColor}">${item.count} ${label}</div>
           </div>`).join('') + '</div>';
       }
       el.innerHTML = html;
@@ -297,30 +395,123 @@
         });
       });
     }
+
+    /* ── Charts ───────────────────────────────────────── */
+
+    function getCssColor(varName) {
+      return getComputedStyle(document.documentElement).getPropertyValue(varName).trim() || varName;
+    }
+
     function renderCharts({ bac, licence, master, doctorat, students, companies, admins, monthlyMap, months }) {
-      const opts = (label) => ({
-        responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { display: !!label, position: 'bottom', labels: { boxWidth: 10, font: { size: 11 } } } },
-        scales: label ? {} : { y: { beginAtZero: true, ticks: { stepSize: 1 } } },
-      });
+      const primary    = getCssColor('--c-primary')   || '#3B22F6';
+      const secondary  = getCssColor('--c-secondary') || '#14B8A6';
+      const warning    = getCssColor('--c-warning')   || '#D97706';
+      const info       = getCssColor('--c-info')      || '#2563EB';
+      const activity   = getCssColor('--c-activity')  || '#7C3AED';
+      const textFaint  = getCssColor('--c-text-faint') || '#64748B';
+      const border     = getCssColor('--c-border')    || 'rgba(199,210,234,.85)';
+
+      const sharedDefaults = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            labels: {
+              color: textFaint,
+              boxWidth: 11,
+              font: { size: 12, family: "'Manrope', sans-serif" },
+            },
+          },
+        },
+      };
+
+      /* Bar — users by level */
       new Chart(document.getElementById('levelChart'), {
         type: 'bar',
-        data: { labels: ['Bac','Licence','Master','Doctorat'],
-          datasets: [{ data: [bac,licence,master,doctorat], backgroundColor: ['#F59E0B','#2563EB','#7C3AED','#14B8A6'], borderRadius: 6 }] },
-        options: opts(),
+        data: {
+          labels: ['Bac', 'Licence', 'Master', 'Doctorat'],
+          datasets: [{
+            data: [bac, licence, master, doctorat],
+            backgroundColor: [`${warning}cc`, `${info}cc`, `${activity}cc`, `${secondary}cc`],
+            borderColor:     [warning, info, activity, secondary],
+            borderWidth: 1.5,
+            borderRadius: 8,
+            borderSkipped: false,
+          }],
+        },
+        options: {
+          ...sharedDefaults,
+          plugins: { ...sharedDefaults.plugins, legend: { display: false } },
+          scales: {
+            x: { ticks: { color: textFaint, font: { size: 12 } }, grid: { display: false }, border: { display: false } },
+            y: { beginAtZero: true, ticks: { stepSize: 1, color: textFaint, font: { size: 11 } }, grid: { color: `${border}` }, border: { display: false } },
+          },
+        },
       });
+
+      /* Doughnut — role distribution */
       new Chart(document.getElementById('roleChart'), {
         type: 'doughnut',
-        data: { labels: ['Students','Companies','Admins'],
-          datasets: [{ data: [students, companies, admins], backgroundColor: ['#2563EB','#14B8A6','#F59E0B'], borderWidth: 0 }] },
-        options: opts(true),
+        data: {
+          labels: ['Students', 'Companies', 'Admins'],
+          datasets: [{
+            data: [students, companies, admins],
+            backgroundColor: [`${info}dd`, `${secondary}dd`, `${warning}dd`],
+            borderColor: 'transparent',
+            hoverOffset: 6,
+          }],
+        },
+        options: {
+          ...sharedDefaults,
+          plugins: {
+            ...sharedDefaults.plugins,
+            legend: {
+              ...sharedDefaults.plugins.legend,
+              display: true,
+              position: 'bottom',
+            },
+          },
+          cutout: '62%',
+        },
       });
-      new Chart(document.getElementById('monthlyChart'), {
+
+      /* Line — monthly registrations with gradient fill */
+      const lineCanvas = document.getElementById('monthlyChart');
+      const ctx = lineCanvas.getContext('2d');
+      const gradient = ctx.createLinearGradient(0, 0, 0, 260);
+      gradient.addColorStop(0,   `${primary}44`);
+      gradient.addColorStop(0.7, `${primary}0a`);
+      gradient.addColorStop(1,   `${primary}00`);
+
+      new Chart(lineCanvas, {
         type: 'line',
-        data: { labels: months, datasets: [{ data: months.map((m)=>monthlyMap[m]||0), borderColor: '#3B22F6', backgroundColor: 'rgba(59,34,246,0.12)', tension: 0.35, fill: true, pointRadius: 3 }] },
-        options: opts(),
+        data: {
+          labels: months,
+          datasets: [{
+            data: months.map((m) => monthlyMap[m] || 0),
+            borderColor: primary,
+            backgroundColor: gradient,
+            tension: 0.38,
+            fill: true,
+            pointRadius: 4,
+            pointBackgroundColor: primary,
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2,
+            pointHoverRadius: 6,
+          }],
+        },
+        options: {
+          ...sharedDefaults,
+          plugins: { ...sharedDefaults.plugins, legend: { display: false } },
+          scales: {
+            x: { ticks: { color: textFaint, font: { size: 11 } }, grid: { display: false }, border: { display: false } },
+            y: { beginAtZero: true, ticks: { stepSize: 1, color: textFaint, font: { size: 11 } }, grid: { color: `${border}` }, border: { display: false } },
+          },
+        },
       });
     }
+
+    /* ── Recent feeds ─────────────────────────────────── */
 
     async function renderActivity() {
       const result = await loadRecentActivitiesPage(dashState, { pageSize: 5, maxItems: 5 });
@@ -342,7 +533,7 @@
       el.querySelectorAll('.activity-row').forEach((row) => {
         const go = () => {
           const type = row.getAttribute('data-type');
-          const id = row.getAttribute('data-id');
+          const id   = row.getAttribute('data-id');
           if (type && id) openDetailsModal(type, id);
         };
         row.addEventListener('click', go);
@@ -359,16 +550,16 @@
       }
       el.innerHTML = snap.docs.map((s) => {
         const d = s.data();
-        const name = d.fullName || d.companyName || 'Unknown';
-        const initial = (name[0] || '?').toUpperCase();
-        const role = d.role || 'user';
+        const name     = d.fullName || d.companyName || 'Unknown';
+        const initial  = (name[0] || '?').toUpperCase();
+        const role     = d.role || 'user';
         const photoUrl = role === 'company' ? (d.logo || d.companyLogo) : (d.profileImage || d.photoURL);
         const isCompany = role === 'company';
         const avatarClass = isCompany ? 'user-avatar logo-contain' : 'user-avatar';
         const avatar = photoUrl
           ? `<div class="${avatarClass}"><img src="${esc(photoUrl)}" alt="${esc(initial)}" onerror="this.parentNode.innerHTML='${esc(initial)}';this.parentNode.style.background='${roleBg(role)}';this.parentNode.style.color='${roleColor(role)}';"></div>`
           : `<div class="${avatarClass}" style="background:${roleBg(role)};color:${roleColor(role)}">${esc(initial)}</div>`;
-        return `<div class="user-row" data-user-id="${esc(s.id)}" role="button" tabindex="0" style="cursor:pointer;">
+        return `<div class="user-row" data-user-id="${esc(s.id)}" role="button" tabindex="0" style="cursor:pointer">
           ${avatar}
           <div class="row-body">
             <div class="row-title">${esc(name)}</div>
@@ -382,6 +573,7 @@
         row.addEventListener('click', () => openDetailsModal('user', id));
       });
     }
+
     async function renderRecentOpps() {
       const snap = await getDocs(query(collection(db, 'opportunities'), orderBy('createdAt', 'desc'), limit(5)));
       const el = document.getElementById('recent-opps');
@@ -390,13 +582,13 @@
         return;
       }
       el.innerHTML = snap.docs.map((s) => {
-        const d = s.data();
+        const d       = s.data();
         const subType = d.type || d.opportunityType || 'opportunity';
-        const logo = d.companyLogo || d.logo || '';
-        const avatar = logo
-          ? `<div class="user-avatar" style="border-radius:10px;background:#F8FAFF;"><img src="${esc(logo)}" alt="" onerror="this.parentNode.innerHTML='<i data-lucide=\\'${typeIcon('opportunity', subType)}\\'></i>';this.parentNode.style.background='rgba(245,158,11,0.12)';this.parentNode.style.color='#F59E0B';window.lucide&&window.lucide.createIcons();"></div>`
-          : `<div class="activity-icon" style="background:rgba(245,158,11,0.12);color:#F59E0B"><i data-lucide="${typeIcon('opportunity', subType)}"></i></div>`;
-        return `<div class="item-row" data-opp-id="${esc(s.id)}" role="button" tabindex="0" style="cursor:pointer;">
+        const logo    = d.companyLogo || d.logo || '';
+        const avatar  = logo
+          ? `<div class="user-avatar" style="border-radius:10px;background:#F8FAFF"><img src="${esc(logo)}" alt="" onerror="this.parentNode.innerHTML='<i data-lucide=\\'${typeIcon('opportunity', subType)}\\'></i>';this.parentNode.style.background='rgba(245,158,11,.12)';this.parentNode.style.color='#F59E0B';window.lucide&&window.lucide.createIcons();"></div>`
+          : `<div class="activity-icon" style="background:rgba(245,158,11,.12);color:#F59E0B"><i data-lucide="${typeIcon('opportunity', subType)}"></i></div>`;
+        return `<div class="item-row" data-opp-id="${esc(s.id)}" role="button" tabindex="0" style="cursor:pointer">
           ${avatar}
           <div class="row-body">
             <div class="row-title">${esc(d.title || 'Untitled')}</div>
@@ -410,8 +602,9 @@
         row.addEventListener('click', () => openDetailsModal('opportunity', id));
       });
     }
+
     function roleColor(r) { return r==='student'?'#2563EB':r==='company'?'#14B8A6':r==='admin'?'#F59E0B':'#64748B'; }
-    function roleBg(r) { return roleColor(r) + '1a'; }
+    function roleBg(r)    { return roleColor(r) + '1a'; }
     function roleBadge(r) { return r==='student'?'info':r==='company'?'success':r==='admin'?'warning':'primary'; }
   </script>
 </body>

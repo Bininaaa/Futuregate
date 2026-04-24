@@ -7,6 +7,7 @@ import '../../l10n/generated/app_localizations.dart';
 import '../../models/training_model.dart';
 import '../../providers/admin_provider.dart';
 import '../../providers/training_provider.dart';
+import '../../theme/app_typography.dart';
 import '../../utils/admin_palette.dart';
 import '../../utils/display_text.dart';
 import '../../widgets/admin/admin_ui.dart';
@@ -402,7 +403,7 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
                         padding: const EdgeInsets.all(14),
                         child: Text(
                           summary,
-                          style: TextStyle(
+                          style: AppTypography.product(
                             fontSize: 13,
                             height: 1.55,
                             color: AdminPalette.textSecondary,
@@ -682,17 +683,24 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
       padding: const EdgeInsets.only(bottom: 8),
       child: Material(
         color: AdminPalette.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(14),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           onTap: () => _showTrainingDetails(training),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(14),
           child: DecoratedBox(
             decoration: BoxDecoration(
               border: Border.all(
                 color: AdminPalette.border.withValues(alpha: 0.88),
               ),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(14),
+              boxShadow: [
+                BoxShadow(
+                  color: AdminPalette.primary.withValues(alpha: 0.03),
+                  blurRadius: 6,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
             child: Padding(
               padding: const EdgeInsets.fromLTRB(12, 10, 10, 10),
@@ -724,11 +732,11 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
                               DisplayText.capitalizeWords(training.title),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 13.6,
-                                fontWeight: FontWeight.w800,
+                              style: AppTypography.product(
+                                fontSize: 13.5,
+                                fontWeight: FontWeight.w700,
                                 color: AdminPalette.textPrimary,
-                                height: 1.2,
+                                height: 1.25,
                               ),
                             ),
                             const SizedBox(height: 3),
@@ -739,11 +747,11 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
                               ]),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 11.4,
-                                fontWeight: FontWeight.w600,
+                              style: AppTypography.product(
+                                fontSize: 11.5,
+                                fontWeight: FontWeight.w500,
                                 color: AdminPalette.textMuted,
-                                height: 1.25,
+                                height: 1.3,
                               ),
                             ),
                           ],
@@ -840,6 +848,10 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
         foregroundColor: Colors.white,
         minimumSize: const Size.fromHeight(48),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        textStyle: AppTypography.product(
+          fontSize: 13,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
     final youtubeButton = OutlinedButton.icon(
@@ -853,6 +865,10 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
         ),
         minimumSize: const Size.fromHeight(48),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        textStyle: AppTypography.product(
+          fontSize: 13,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
 
@@ -911,6 +927,7 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       visualDensity: VisualDensity.compact,
       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      textStyle: AppTypography.product(fontSize: 12, fontWeight: FontWeight.w600),
     );
   }
 
@@ -921,6 +938,7 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       visualDensity: VisualDensity.compact,
       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      textStyle: AppTypography.product(fontSize: 12, fontWeight: FontWeight.w600),
     );
   }
 
@@ -956,7 +974,7 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
       ),
       child: Text(
         label,
-        style: TextStyle(
+        style: AppTypography.product(
           fontSize: 10.2,
           fontWeight: FontWeight.w700,
           color: color,
@@ -995,7 +1013,7 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
                 normalized,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(
+                style: AppTypography.product(
                   fontSize: 10.2,
                   fontWeight: FontWeight.w600,
                   color: AdminPalette.textMuted,
@@ -1037,7 +1055,7 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
             width: 88,
             child: Text(
               label,
-              style: TextStyle(
+              style: AppTypography.product(
                 fontSize: 12,
                 fontWeight: FontWeight.w700,
                 color: AdminPalette.textMuted,
@@ -1047,7 +1065,7 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
           Expanded(
             child: Text(
               normalized,
-              style: TextStyle(
+              style: AppTypography.product(
                 fontSize: 12.5,
                 fontWeight: FontWeight.w600,
                 color: AdminPalette.textPrimary,
@@ -1201,7 +1219,17 @@ class _LibraryTab extends StatelessWidget {
     return Tab(
       child: Row(
         mainAxisSize: MainAxisSize.min,
-        children: [Icon(icon, size: 16), const SizedBox(width: 6), Text(label)],
+        children: [
+          Icon(icon, size: 14),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: AppTypography.product(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
       ),
     );
   }
