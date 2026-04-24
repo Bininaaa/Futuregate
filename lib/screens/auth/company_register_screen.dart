@@ -256,6 +256,7 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
               l10n,
               _passwordController.text,
             ),
+            autovalidateMode: AutovalidateMode.onUserInteraction,
           ),
           const SizedBox(height: 24),
           _buildSectionLabel(l10n.uiContactOptional),
@@ -322,6 +323,7 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
     bool obscureText = false,
     Widget? suffixIcon,
     String? Function(String?)? validator,
+    AutovalidateMode? autovalidateMode,
     int maxLines = 1,
   }) {
     final colors = AppColors.of(context);
@@ -343,6 +345,7 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
           keyboardType: keyboardType,
           obscureText: obscureText,
           validator: validator,
+          autovalidateMode: autovalidateMode,
           maxLines: maxLines,
           style: TextStyle(fontSize: 14, color: colors.textPrimary),
           decoration: InputDecoration(

@@ -184,13 +184,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
-                                Expanded(child: _buildPasswordField()),
+                                Expanded(child: _buildPasswordFieldGroup()),
                                 const SizedBox(width: 12),
                                 Expanded(child: _buildConfirmPasswordField()),
                               ],
                             )
                           else ...<Widget>[
-                            _buildPasswordField(),
+                            _buildPasswordFieldGroup(),
                             const SizedBox(height: 14),
                             _buildConfirmPasswordField(),
                           ],
@@ -198,10 +198,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       );
                     },
                   ),
-                  if (_passwordText.isNotEmpty) ...<Widget>[
-                    const SizedBox(height: 10),
-                    PasswordStrengthIndicator(password: _passwordText),
-                  ],
                   const SizedBox(height: 20),
                   _buildProfileSelection(),
                   if (_selectedRole == 'doctorat') ...<Widget>[
@@ -278,6 +274,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
+  Widget _buildPasswordFieldGroup() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        _buildPasswordField(),
+        PasswordStrengthIndicator(password: _passwordText),
+      ],
+    );
+  }
+
   Widget _buildConfirmPasswordField() {
     final l10n = AppLocalizations.of(context)!;
     return AuthTextField(
@@ -287,6 +293,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       icon: Icons.lock_outline_rounded,
       obscureText: _obscureConfirm,
       validator: Validators.confirmPassword(l10n, _passwordController.text),
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       textInputAction: TextInputAction.done,
       autofillHints: const <String>[AutofillHints.newPassword],
       suffixIcon: IconButton(

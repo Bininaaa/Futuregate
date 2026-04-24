@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'package:provider/provider.dart';
@@ -24,6 +26,12 @@ class _CvEditScreenState extends State<CvEditScreen> {
   final _summaryController = TextEditingController();
   final _skillInputController = TextEditingController();
   final _languageInputController = TextEditingController();
+  final _personalKey = GlobalKey();
+  final _summaryKey = GlobalKey();
+  final _educationKey = GlobalKey();
+  final _experienceKey = GlobalKey();
+  final _skillsKey = GlobalKey();
+  final _languagesKey = GlobalKey();
 
   List<Map<String, dynamic>> _education = [];
   List<Map<String, dynamic>> _experience = [];
@@ -31,6 +39,26 @@ class _CvEditScreenState extends State<CvEditScreen> {
   List<String> _languages = [];
 
   bool _initialized = false;
+  bool _isHydrating = false;
+  bool _isAutosaving = false;
+  bool _hasPendingAutosave = false;
+  bool _saveAgainAfterCurrent = false;
+  bool _hasExistingCv = false;
+  bool _allowPop = false;
+  String _templateId = '';
+  String? _lastSavedSignature;
+  String? _autosaveError;
+  Timer? _autosaveDebounce;
+
+  @override
+  void initState() {
+    super.initState();
+    _fullNameController.addListener(_handleFormChanged);
+    _emailController.addListener(_handleFormChanged);
+    _phoneController.addListener(_handleFormChanged);
+    _addressController.addListener(_handleFormChanged);
+    _summaryController.addListener(_handleFormChanged);
+  }
 
   @override
   void didChangeDependencies() {
@@ -39,7 +67,10 @@ class _CvEditScreenState extends State<CvEditScreen> {
       final cv = context.read<CvProvider>().cv;
       final user = context.read<AuthProvider>().userModel;
 
+      _isHydrating = true;
       if (cv != null) {
+        _hasExistingCv = true;
+        _templateId = cv.templateId;
         _fullNameController.text = cv.fullName;
         _emailController.text = cv.email;
         _phoneController.text = cv.phone;
@@ -55,12 +86,20 @@ class _CvEditScreenState extends State<CvEditScreen> {
         _phoneController.text = user.phone;
       }
 
+      _lastSavedSignature = _snapshotSignature();
+      _isHydrating = false;
       _initialized = true;
     }
   }
 
   @override
   void dispose() {
+    _autosaveDebounce?.cancel();
+    _fullNameController.removeListener(_handleFormChanged);
+    _emailController.removeListener(_handleFormChanged);
+    _phoneController.removeListener(_handleFormChanged);
+    _addressController.removeListener(_handleFormChanged);
+    _summaryController.removeListener(_handleFormChanged);
     _fullNameController.dispose();
     _emailController.dispose();
     _phoneController.dispose();
@@ -69,6 +108,12 @@ class _CvEditScreenState extends State<CvEditScreen> {
     _skillInputController.dispose();
     _languageInputController.dispose();
     super.dispose();
+  }
+
+  void _handleFormChanged() {
+    if (!mounted || _isHydrating) return;
+    setState(() {});
+    _scheduleAutosave();
   }
 
   InputDecoration _inputDecoration({
@@ -110,13 +155,109 @@ class _CvEditScreenState extends State<CvEditScreen> {
     );
   }
 
-  // ── Save ────────────────────────────────────────────────────────────────
+  String _snapshotSignature() {
+    String encodeMapList(List<Map<String, dynamic>> items) {
+      return items
+          .map(
+            (item) => [
+              item['degree'],
+              item['institution'],
+              item['year'],
+              item['position'],
+              item['company'],
+              item['duration'],
+            ].map((value) => (value ?? '').toString().trim()).join('|'),
+          )
+          .join('||');
+    }
 
-  Future<void> _save() async {
-    if (!_formKey.currentState!.validate()) return;
+    return [
+      _fullNameController.text.trim(),
+      _emailController.text.trim(),
+      _phoneController.text.trim(),
+      _addressController.text.trim(),
+      _summaryController.text.trim(),
+      encodeMapList(_education),
+      encodeMapList(_experience),
+      _skills.map((value) => value.trim()).join('|'),
+      _languages.map((value) => value.trim()).join('|'),
+      _templateId.trim(),
+    ].join('###');
+  }
+
+  bool _hasAnyCvContent() {
+    return _fullNameController.text.trim().isNotEmpty ||
+        _emailController.text.trim().isNotEmpty ||
+        _phoneController.text.trim().isNotEmpty ||
+        _addressController.text.trim().isNotEmpty ||
+        _summaryController.text.trim().isNotEmpty ||
+        _education.isNotEmpty ||
+        _experience.isNotEmpty ||
+        _skills.isNotEmpty ||
+        _languages.isNotEmpty;
+  }
+
+  void _scheduleAutosave({bool immediate = false}) {
+    if (!_initialized || _isHydrating) return;
+
+    final signature = _snapshotSignature();
+    if (signature == _lastSavedSignature) {
+      if (_hasPendingAutosave && mounted) {
+        setState(() => _hasPendingAutosave = false);
+      }
+      return;
+    }
+
+    if (!_hasAnyCvContent() && !_hasExistingCv) {
+      return;
+    }
+
+    _autosaveDebounce?.cancel();
+    if (mounted) {
+      setState(() {
+        _hasPendingAutosave = true;
+        _autosaveError = null;
+      });
+    }
+
+    if (immediate) {
+      unawaited(_performAutosave());
+      return;
+    }
+
+    _autosaveDebounce = Timer(
+      const Duration(milliseconds: 750),
+      _performAutosave,
+    );
+  }
+
+  Future<void> _performAutosave() async {
+    _autosaveDebounce?.cancel();
+
+    if (_isAutosaving) {
+      _saveAgainAfterCurrent = true;
+      return;
+    }
+
+    final signature = _snapshotSignature();
+    if (signature == _lastSavedSignature ||
+        (!_hasAnyCvContent() && !_hasExistingCv)) {
+      if (mounted) {
+        setState(() => _hasPendingAutosave = false);
+      }
+      return;
+    }
 
     final uid = context.read<AuthProvider>().userModel?.uid;
     if (uid == null) return;
+
+    if (mounted) {
+      setState(() {
+        _isAutosaving = true;
+        _hasPendingAutosave = false;
+        _autosaveError = null;
+      });
+    }
 
     final error = await context.read<CvProvider>().saveCv(
       studentId: uid,
@@ -129,74 +270,184 @@ class _CvEditScreenState extends State<CvEditScreen> {
       experience: _experience,
       skills: _skills,
       languages: _languages,
+      templateId: _templateId,
     );
 
     if (!mounted) return;
 
     if (error == null) {
-      context.showAppSnackBar(
-        'Your CV changes have been saved.',
-        title: AppLocalizations.of(context)!.uiCvSaved,
-        type: AppFeedbackType.success,
-      );
+      _hasExistingCv = true;
+      _lastSavedSignature = signature;
+      setState(() => _isAutosaving = false);
 
-      final cv = context.read<CvProvider>().cv;
-      if (cv != null && cv.templateId.trim().isEmpty && mounted) {
-        final shouldChoose = await showDialog<bool>(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: SettingsFlowTheme.radius(20),
-            ),
-            title: Text(
-              'Choose a Template?',
-              style: SettingsFlowTheme.sectionTitle(),
-            ),
-            content: Text(
-              'Your CV is saved. Pick a template to preview and export as PDF.',
-              style: SettingsFlowTheme.body(SettingsFlowPalette.textSecondary),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(ctx, false),
-                child: Text(
-                  'Later',
-                  style: SettingsFlowTheme.body(
-                    SettingsFlowPalette.textSecondary,
-                  ),
+      if (_saveAgainAfterCurrent || _snapshotSignature() != signature) {
+        _saveAgainAfterCurrent = false;
+        _scheduleAutosave(immediate: true);
+      }
+      return;
+    }
+
+    setState(() {
+      _isAutosaving = false;
+      _autosaveError = error;
+      _hasPendingAutosave = true;
+    });
+
+    context.showAppSnackBar(
+      error,
+      title: AppLocalizations.of(context)!.uiSaveUnavailable,
+      type: AppFeedbackType.error,
+    );
+  }
+
+  Future<void> _flushAutosave() async {
+    _autosaveDebounce?.cancel();
+    while (_isAutosaving && mounted) {
+      _saveAgainAfterCurrent = true;
+      await Future<void>.delayed(const Duration(milliseconds: 80));
+    }
+    await _performAutosave();
+  }
+
+  Future<void> _handleLeave() async {
+    if (_allowPop) return;
+    await _flushAutosave();
+    if (!mounted) return;
+    _allowPop = true;
+    Navigator.of(context).pop();
+  }
+
+  String _autosaveStatusLabel() {
+    if (_autosaveError != null) return 'Save failed';
+    if (_isAutosaving) return 'Saving';
+    if (_hasPendingAutosave) return 'Unsaved';
+    return 'Saved';
+  }
+
+  Color _autosaveStatusColor() {
+    if (_autosaveError != null) return SettingsFlowPalette.error;
+    if (_isAutosaving || _hasPendingAutosave) {
+      return SettingsFlowPalette.warning;
+    }
+    return SettingsFlowPalette.success;
+  }
+
+  List<_BuilderGuideStep> _builderGuideSteps() {
+    return [
+      _BuilderGuideStep(
+        key: _personalKey,
+        label: 'Basics',
+        icon: Icons.badge_outlined,
+        isComplete:
+            _fullNameController.text.trim().isNotEmpty &&
+            _emailController.text.trim().isNotEmpty,
+      ),
+      _BuilderGuideStep(
+        key: _summaryKey,
+        label: 'Summary',
+        icon: Icons.subject_rounded,
+        isComplete: _summaryController.text.trim().isNotEmpty,
+      ),
+      _BuilderGuideStep(
+        key: _educationKey,
+        label: 'Education',
+        icon: Icons.school_outlined,
+        isComplete: _education.isNotEmpty,
+      ),
+      _BuilderGuideStep(
+        key: _experienceKey,
+        label: 'Experience',
+        icon: Icons.work_outline,
+        isComplete: _experience.isNotEmpty,
+      ),
+      _BuilderGuideStep(
+        key: _skillsKey,
+        label: 'Skills',
+        icon: Icons.auto_awesome_outlined,
+        isComplete: _skills.isNotEmpty,
+      ),
+      _BuilderGuideStep(
+        key: _languagesKey,
+        label: 'Languages',
+        icon: Icons.translate_outlined,
+        isComplete: _languages.isNotEmpty,
+      ),
+    ];
+  }
+
+  void _scrollToSection(GlobalKey key) {
+    final sectionContext = key.currentContext;
+    if (sectionContext == null) return;
+    Scrollable.ensureVisible(
+      sectionContext,
+      duration: const Duration(milliseconds: 260),
+      curve: Curves.easeOutCubic,
+    );
+  }
+
+  Widget _buildBuilderGuide() {
+    final steps = _builderGuideSteps();
+    final completed = steps.where((step) => step.isComplete).length;
+    final progress = completed / steps.length;
+
+    return SettingsPanel(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Builder steps',
+                      style: SettingsFlowTheme.sectionTitle(),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      '$completed of ${steps.length} sections complete',
+                      style: SettingsFlowTheme.caption(),
+                    ),
+                  ],
                 ),
               ),
-              ElevatedButton(
-                onPressed: () => Navigator.pop(ctx, true),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: SettingsFlowPalette.primary,
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: SettingsFlowTheme.radius(12),
-                  ),
-                ),
-                child: Text(
-                  'Choose',
-                  style: SettingsFlowTheme.body(Colors.white),
-                ),
+              SettingsStatusPill(
+                label: _autosaveStatusLabel(),
+                color: _autosaveStatusColor(),
               ),
             ],
           ),
-        );
-
-        if (!mounted) return;
-        Navigator.pop(context, shouldChoose == true ? 'pick_template' : null);
-      } else {
-        Navigator.pop(context);
-      }
-    } else {
-      context.showAppSnackBar(
-        error,
-        title: AppLocalizations.of(context)!.uiSaveUnavailable,
-        type: AppFeedbackType.error,
-      );
-    }
+          const SizedBox(height: 14),
+          ClipRRect(
+            borderRadius: SettingsFlowTheme.radius(999),
+            child: LinearProgressIndicator(
+              value: progress,
+              minHeight: 8,
+              backgroundColor: SettingsFlowPalette.border,
+              valueColor: AlwaysStoppedAnimation<Color>(
+                progress >= 0.75
+                    ? SettingsFlowPalette.success
+                    : SettingsFlowPalette.primary,
+              ),
+            ),
+          ),
+          const SizedBox(height: 14),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: steps
+                .map(
+                  (step) => _BuilderStepChip(
+                    step: step,
+                    onPressed: () => _scrollToSection(step.key),
+                  ),
+                )
+                .toList(),
+          ),
+        ],
+      ),
+    );
   }
 
   // ── Skills / Languages ──────────────────────────────────────────────────
@@ -204,25 +455,55 @@ class _CvEditScreenState extends State<CvEditScreen> {
   void _addSkill() {
     final text = _skillInputController.text.trim();
     if (text.isEmpty) return;
+    var changed = false;
     setState(() {
       for (final item
           in text.split(',').map((s) => s.trim()).where((s) => s.isNotEmpty)) {
-        if (!_skills.contains(item)) _skills.add(item);
+        if (!_skills.contains(item)) {
+          _skills.add(item);
+          changed = true;
+        }
       }
       _skillInputController.clear();
     });
+    if (changed) _scheduleAutosave();
   }
 
   void _addLanguage() {
     final text = _languageInputController.text.trim();
     if (text.isEmpty) return;
+    var changed = false;
     setState(() {
       for (final item
           in text.split(',').map((s) => s.trim()).where((s) => s.isNotEmpty)) {
-        if (!_languages.contains(item)) _languages.add(item);
+        if (!_languages.contains(item)) {
+          _languages.add(item);
+          changed = true;
+        }
       }
       _languageInputController.clear();
     });
+    if (changed) _scheduleAutosave();
+  }
+
+  void _removeSkill(int index) {
+    setState(() => _skills.removeAt(index));
+    _scheduleAutosave();
+  }
+
+  void _removeLanguage(int index) {
+    setState(() => _languages.removeAt(index));
+    _scheduleAutosave();
+  }
+
+  void _removeEducation(int index) {
+    setState(() => _education.removeAt(index));
+    _scheduleAutosave();
+  }
+
+  void _removeExperience(int index) {
+    setState(() => _experience.removeAt(index));
+    _scheduleAutosave();
   }
 
   // ── Education CRUD ──────────────────────────────────────────────────────
@@ -316,6 +597,7 @@ class _CvEditScreenState extends State<CvEditScreen> {
                     _education.add(entry);
                   }
                 });
+                _scheduleAutosave();
                 Navigator.pop(ctx);
               },
             ),
@@ -417,6 +699,7 @@ class _CvEditScreenState extends State<CvEditScreen> {
                     _experience.add(entry);
                   }
                 });
+                _scheduleAutosave();
                 Navigator.pop(ctx);
               },
             ),
@@ -430,236 +713,281 @@ class _CvEditScreenState extends State<CvEditScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final cvProvider = context.watch<CvProvider>();
+    return PopScope(
+      canPop: _allowPop,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        await _handleLeave();
+      },
+      child: SettingsPageScaffold(
+        title: AppLocalizations.of(context)!.uiEditCv,
+        leading: IconButton(
+          onPressed: _handleLeave,
+          icon: Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: SettingsFlowPalette.textPrimary,
+          ),
+        ),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildBuilderGuide(),
+              const SizedBox(height: 24),
 
-    return SettingsPageScaffold(
-      title: AppLocalizations.of(context)!.uiEditCv,
-      child: Form(
-        key: _formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // ── Personal Information ──
-            SettingsSectionHeading(title: AppLocalizations.of(context)!.uiPersonalInformation),
-            const SizedBox(height: 10),
-            SettingsPanel(
-              child: Column(
-                children: [
-                  TextFormField(
-                    controller: _fullNameController,
-                    style: SettingsFlowTheme.body(),
-                    decoration: _inputDecoration(
-                      label: AppLocalizations.of(context)!.uiFullName,
-                      prefixIcon: Icons.badge_outlined,
-                    ),
-                    validator: (v) =>
-                        v == null || v.trim().isEmpty ? 'Required' : null,
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: _emailController,
-                    style: SettingsFlowTheme.body(),
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: _inputDecoration(
-                      label: AppLocalizations.of(context)!.uiEmail,
-                      prefixIcon: Icons.email_outlined,
-                    ),
-                    validator: (v) =>
-                        v == null || v.trim().isEmpty ? 'Required' : null,
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: _phoneController,
-                    style: SettingsFlowTheme.body(),
-                    keyboardType: TextInputType.phone,
-                    decoration: _inputDecoration(
-                      label: AppLocalizations.of(context)!.uiPhone,
-                      prefixIcon: Icons.phone_outlined,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: _addressController,
-                    style: SettingsFlowTheme.body(),
-                    decoration: _inputDecoration(
-                      label: AppLocalizations.of(context)!.uiAddress,
-                      prefixIcon: Icons.location_on_outlined,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 24),
-
-            // ── Professional Summary ──
-            SettingsSectionHeading(title: AppLocalizations.of(context)!.uiProfessionalSummary),
-            const SizedBox(height: 10),
-            SettingsPanel(
-              child: TextFormField(
-                controller: _summaryController,
-                style: SettingsFlowTheme.body(),
-                maxLines: 4,
-                decoration: _inputDecoration(
-                  label: AppLocalizations.of(context)!.uiBriefSummary,
+              // ── Personal Information ──
+              KeyedSubtree(
+                key: _personalKey,
+                child: SettingsSectionHeading(
+                  title: AppLocalizations.of(context)!.uiPersonalInformation,
                 ),
               ),
-            ),
-
-            const SizedBox(height: 24),
-
-            // ── Education ──
-            SettingsSectionHeading(
-              title: AppLocalizations.of(context)!.uiEducation,
-              trailing: _addChip(onTap: () => _addOrEditEducation()),
-            ),
-            const SizedBox(height: 10),
-            if (_education.isEmpty)
-              _emptyState('Add your education', Icons.school_outlined)
-            else
-              ..._education.asMap().entries.map((entry) {
-                final i = entry.key;
-                final edu = entry.value;
-                return _itemCard(
-                  title: edu['degree'] ?? '',
-                  subtitle:
-                      '${edu['institution'] ?? ''}${(edu['year'] ?? '').toString().isNotEmpty ? '  •  ${edu['year']}' : ''}',
-                  icon: Icons.school_outlined,
-                  onEdit: () => _addOrEditEducation(editIndex: i),
-                  onDelete: () => setState(() => _education.removeAt(i)),
-                );
-              }),
-
-            const SizedBox(height: 24),
-
-            // ── Experience ──
-            SettingsSectionHeading(
-              title: AppLocalizations.of(context)!.uiExperience,
-              trailing: _addChip(onTap: () => _addOrEditExperience()),
-            ),
-            const SizedBox(height: 10),
-            if (_experience.isEmpty)
-              _emptyState('Add your experience', Icons.work_outline)
-            else
-              ..._experience.asMap().entries.map((entry) {
-                final i = entry.key;
-                final exp = entry.value;
-                return _itemCard(
-                  title: exp['position'] ?? '',
-                  subtitle:
-                      '${exp['company'] ?? ''}${(exp['duration'] ?? '').toString().isNotEmpty ? '  •  ${exp['duration']}' : ''}',
-                  icon: Icons.work_outline,
-                  onEdit: () => _addOrEditExperience(editIndex: i),
-                  onDelete: () => setState(() => _experience.removeAt(i)),
-                );
-              }),
-
-            const SizedBox(height: 24),
-
-            // ── Skills ──
-            SettingsSectionHeading(title: AppLocalizations.of(context)!.uiSkills),
-            const SizedBox(height: 10),
-            SettingsPanel(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (_skills.isNotEmpty) ...[
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: _skills.asMap().entries.map((entry) {
-                        return _chip(
-                          entry.value,
-                          () => setState(() => _skills.removeAt(entry.key)),
-                        );
-                      }).toList(),
+              const SizedBox(height: 10),
+              SettingsPanel(
+                child: Column(
+                  children: [
+                    TextFormField(
+                      controller: _fullNameController,
+                      style: SettingsFlowTheme.body(),
+                      textInputAction: TextInputAction.next,
+                      autofillHints: const [AutofillHints.name],
+                      decoration: _inputDecoration(
+                        label: AppLocalizations.of(context)!.uiFullName,
+                        prefixIcon: Icons.badge_outlined,
+                      ),
+                      validator: (v) =>
+                          v == null || v.trim().isEmpty ? 'Required' : null,
                     ),
                     const SizedBox(height: 12),
-                  ],
-                  TextFormField(
-                    controller: _skillInputController,
-                    style: SettingsFlowTheme.body(),
-                    decoration: _inputDecoration(
-                      label: AppLocalizations.of(context)!.uiAddSkill,
-                      hint: 'Type and press Enter',
-                      prefixIcon: Icons.auto_awesome_outlined,
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          Icons.add_circle_outline,
-                          color: SettingsFlowPalette.primary,
-                        ),
-                        onPressed: _addSkill,
+                    TextFormField(
+                      controller: _emailController,
+                      style: SettingsFlowTheme.body(),
+                      keyboardType: TextInputType.emailAddress,
+                      textInputAction: TextInputAction.next,
+                      autofillHints: const [AutofillHints.email],
+                      decoration: _inputDecoration(
+                        label: AppLocalizations.of(context)!.uiEmail,
+                        prefixIcon: Icons.email_outlined,
                       ),
-                    ),
-                    onFieldSubmitted: (_) => _addSkill(),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 24),
-
-            // ── Languages ──
-            SettingsSectionHeading(title: AppLocalizations.of(context)!.uiLanguages),
-            const SizedBox(height: 10),
-            SettingsPanel(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (_languages.isNotEmpty) ...[
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: _languages.asMap().entries.map((entry) {
-                        return _chip(
-                          entry.value,
-                          () => setState(() => _languages.removeAt(entry.key)),
-                        );
-                      }).toList(),
+                      validator: (v) =>
+                          v == null || v.trim().isEmpty ? 'Required' : null,
                     ),
                     const SizedBox(height: 12),
+                    TextFormField(
+                      controller: _phoneController,
+                      style: SettingsFlowTheme.body(),
+                      keyboardType: TextInputType.phone,
+                      textInputAction: TextInputAction.next,
+                      autofillHints: const [AutofillHints.telephoneNumber],
+                      decoration: _inputDecoration(
+                        label: AppLocalizations.of(context)!.uiPhone,
+                        prefixIcon: Icons.phone_outlined,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      controller: _addressController,
+                      style: SettingsFlowTheme.body(),
+                      textInputAction: TextInputAction.next,
+                      autofillHints: const [AutofillHints.fullStreetAddress],
+                      decoration: _inputDecoration(
+                        label: AppLocalizations.of(context)!.uiAddress,
+                        prefixIcon: Icons.location_on_outlined,
+                      ),
+                    ),
                   ],
-                  TextFormField(
-                    controller: _languageInputController,
-                    style: SettingsFlowTheme.body(),
-                    decoration: _inputDecoration(
-                      label: AppLocalizations.of(context)!.uiAddALanguage,
-                      hint: 'Type and press Enter',
-                      prefixIcon: Icons.translate_outlined,
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          Icons.add_circle_outline,
-                          color: SettingsFlowPalette.primary,
-                        ),
-                        onPressed: _addLanguage,
-                      ),
-                    ),
-                    onFieldSubmitted: (_) => _addLanguage(),
-                  ),
-                ],
+                ),
               ),
-            ),
 
-            const SizedBox(height: 32),
+              const SizedBox(height: 24),
 
-            // ── Save ──
-            cvProvider.isLoading
-                ? Center(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(vertical: 10),
-                      child: CircularProgressIndicator(
-                        color: SettingsFlowPalette.primary,
-                      ),
-                    ),
-                  )
-                : SettingsPrimaryButton(
-                    label: AppLocalizations.of(context)!.uiSaveCv,
-                    icon: Icons.check_rounded,
-                    onPressed: _save,
+              // ── Professional Summary ──
+              KeyedSubtree(
+                key: _summaryKey,
+                child: SettingsSectionHeading(
+                  title: AppLocalizations.of(context)!.uiProfessionalSummary,
+                ),
+              ),
+              const SizedBox(height: 10),
+              SettingsPanel(
+                child: TextFormField(
+                  controller: _summaryController,
+                  style: SettingsFlowTheme.body(),
+                  maxLines: 4,
+                  textInputAction: TextInputAction.newline,
+                  decoration: _inputDecoration(
+                    label: AppLocalizations.of(context)!.uiBriefSummary,
                   ),
+                ),
+              ),
 
-            const SizedBox(height: 24),
-          ],
+              const SizedBox(height: 24),
+
+              // ── Education ──
+              KeyedSubtree(
+                key: _educationKey,
+                child: SettingsSectionHeading(
+                  title: AppLocalizations.of(context)!.uiEducation,
+                  trailing: _addChip(onTap: () => _addOrEditEducation()),
+                ),
+              ),
+              const SizedBox(height: 10),
+              if (_education.isEmpty)
+                _emptyState('Add your education', Icons.school_outlined)
+              else
+                ..._education.asMap().entries.map((entry) {
+                  final i = entry.key;
+                  final edu = entry.value;
+                  return _itemCard(
+                    title: edu['degree'] ?? '',
+                    subtitle:
+                        '${edu['institution'] ?? ''}${(edu['year'] ?? '').toString().isNotEmpty ? '  •  ${edu['year']}' : ''}',
+                    icon: Icons.school_outlined,
+                    onEdit: () => _addOrEditEducation(editIndex: i),
+                    onDelete: () => _removeEducation(i),
+                  );
+                }),
+
+              const SizedBox(height: 24),
+
+              // ── Experience ──
+              KeyedSubtree(
+                key: _experienceKey,
+                child: SettingsSectionHeading(
+                  title: AppLocalizations.of(context)!.uiExperience,
+                  trailing: _addChip(onTap: () => _addOrEditExperience()),
+                ),
+              ),
+              const SizedBox(height: 10),
+              if (_experience.isEmpty)
+                _emptyState('Add your experience', Icons.work_outline)
+              else
+                ..._experience.asMap().entries.map((entry) {
+                  final i = entry.key;
+                  final exp = entry.value;
+                  return _itemCard(
+                    title: exp['position'] ?? '',
+                    subtitle:
+                        '${exp['company'] ?? ''}${(exp['duration'] ?? '').toString().isNotEmpty ? '  •  ${exp['duration']}' : ''}',
+                    icon: Icons.work_outline,
+                    onEdit: () => _addOrEditExperience(editIndex: i),
+                    onDelete: () => _removeExperience(i),
+                  );
+                }),
+
+              const SizedBox(height: 24),
+
+              // ── Skills ──
+              KeyedSubtree(
+                key: _skillsKey,
+                child: SettingsSectionHeading(
+                  title: AppLocalizations.of(context)!.uiSkills,
+                ),
+              ),
+              const SizedBox(height: 10),
+              SettingsPanel(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (_skills.isNotEmpty) ...[
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: _skills.asMap().entries.map((entry) {
+                          return _chip(
+                            entry.value,
+                            () => _removeSkill(entry.key),
+                          );
+                        }).toList(),
+                      ),
+                      const SizedBox(height: 12),
+                    ],
+                    TextFormField(
+                      controller: _skillInputController,
+                      style: SettingsFlowTheme.body(),
+                      decoration: _inputDecoration(
+                        label: AppLocalizations.of(context)!.uiAddSkill,
+                        hint: 'Type and press Enter',
+                        prefixIcon: Icons.auto_awesome_outlined,
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            Icons.add_circle_outline,
+                            color: SettingsFlowPalette.primary,
+                          ),
+                          onPressed: _addSkill,
+                        ),
+                      ),
+                      onFieldSubmitted: (_) => _addSkill(),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              // ── Languages ──
+              KeyedSubtree(
+                key: _languagesKey,
+                child: SettingsSectionHeading(
+                  title: AppLocalizations.of(context)!.uiLanguages,
+                ),
+              ),
+              const SizedBox(height: 10),
+              SettingsPanel(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (_languages.isNotEmpty) ...[
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: _languages.asMap().entries.map((entry) {
+                          return _chip(
+                            entry.value,
+                            () => _removeLanguage(entry.key),
+                          );
+                        }).toList(),
+                      ),
+                      const SizedBox(height: 12),
+                    ],
+                    TextFormField(
+                      controller: _languageInputController,
+                      style: SettingsFlowTheme.body(),
+                      decoration: _inputDecoration(
+                        label: AppLocalizations.of(context)!.uiAddALanguage,
+                        hint: 'Type and press Enter',
+                        prefixIcon: Icons.translate_outlined,
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            Icons.add_circle_outline,
+                            color: SettingsFlowPalette.primary,
+                          ),
+                          onPressed: _addLanguage,
+                        ),
+                      ),
+                      onFieldSubmitted: (_) => _addLanguage(),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 20),
+              Center(
+                child: Text(
+                  _isAutosaving
+                      ? 'Saving changes...'
+                      : 'Changes save automatically',
+                  style: SettingsFlowTheme.caption(
+                    _autosaveError == null
+                        ? SettingsFlowPalette.textSecondary
+                        : SettingsFlowPalette.error,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+            ],
+          ),
         ),
       ),
     );
@@ -696,32 +1024,43 @@ class _CvEditScreenState extends State<CvEditScreen> {
   }
 
   Widget _chip(String label, VoidCallback onDelete) {
-    return Container(
-      padding: const EdgeInsets.only(left: 12, right: 6, top: 6, bottom: 6),
-      decoration: BoxDecoration(
-        color: SettingsFlowPalette.primary.withValues(alpha: 0.08),
-        borderRadius: SettingsFlowTheme.radius(10),
-        border: Border.all(
-          color: SettingsFlowPalette.primary.withValues(alpha: 0.15),
+    final maxChipWidth = (MediaQuery.sizeOf(context).width - 112)
+        .clamp(140.0, 360.0)
+        .toDouble();
+
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxWidth: maxChipWidth),
+      child: Container(
+        padding: const EdgeInsets.only(left: 12, right: 6, top: 6, bottom: 6),
+        decoration: BoxDecoration(
+          color: SettingsFlowPalette.primary.withValues(alpha: 0.08),
+          borderRadius: SettingsFlowTheme.radius(10),
+          border: Border.all(
+            color: SettingsFlowPalette.primary.withValues(alpha: 0.15),
+          ),
         ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            label,
-            style: SettingsFlowTheme.caption(SettingsFlowPalette.primary),
-          ),
-          const SizedBox(width: 4),
-          GestureDetector(
-            onTap: onDelete,
-            child: Icon(
-              Icons.close_rounded,
-              size: 16,
-              color: SettingsFlowPalette.primary.withValues(alpha: 0.5),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: SettingsFlowTheme.caption(SettingsFlowPalette.primary),
+              ),
             ),
-          ),
-        ],
+            const SizedBox(width: 4),
+            GestureDetector(
+              onTap: onDelete,
+              child: Icon(
+                Icons.close_rounded,
+                size: 16,
+                color: SettingsFlowPalette.primary.withValues(alpha: 0.5),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -801,6 +1140,50 @@ class _CvEditScreenState extends State<CvEditScreen> {
           const SizedBox(height: 8),
           Text(text, style: SettingsFlowTheme.caption()),
         ],
+      ),
+    );
+  }
+}
+
+class _BuilderGuideStep {
+  final GlobalKey key;
+  final String label;
+  final IconData icon;
+  final bool isComplete;
+
+  const _BuilderGuideStep({
+    required this.key,
+    required this.label,
+    required this.icon,
+    required this.isComplete,
+  });
+}
+
+class _BuilderStepChip extends StatelessWidget {
+  final _BuilderGuideStep step;
+  final VoidCallback onPressed;
+
+  const _BuilderStepChip({required this.step, required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    final color = step.isComplete
+        ? SettingsFlowPalette.success
+        : SettingsFlowPalette.primary;
+
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minHeight: 44),
+      child: ActionChip(
+        avatar: Icon(
+          step.isComplete ? Icons.check_rounded : step.icon,
+          size: 16,
+          color: color,
+        ),
+        label: Text(step.label, style: SettingsFlowTheme.micro(color)),
+        onPressed: onPressed,
+        backgroundColor: color.withValues(alpha: 0.09),
+        side: BorderSide(color: color.withValues(alpha: 0.22)),
+        shape: StadiumBorder(side: BorderSide.none),
       ),
     );
   }

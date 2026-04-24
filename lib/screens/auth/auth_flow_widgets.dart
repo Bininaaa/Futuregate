@@ -802,6 +802,7 @@ class AuthTextField extends StatelessWidget {
   final VoidCallback? onTap;
   final Iterable<String>? autofillHints;
   final ValueChanged<String>? onFieldSubmitted;
+  final AutovalidateMode? autovalidateMode;
 
   const AuthTextField({
     super.key,
@@ -821,6 +822,7 @@ class AuthTextField extends StatelessWidget {
     this.onTap,
     this.autofillHints,
     this.onFieldSubmitted,
+    this.autovalidateMode,
   });
 
   @override
@@ -841,6 +843,7 @@ class AuthTextField extends StatelessWidget {
           keyboardType: keyboardType,
           obscureText: obscureText,
           validator: validator,
+          autovalidateMode: autovalidateMode,
           maxLines: maxLines,
           minLines: minLines,
           readOnly: readOnly,
