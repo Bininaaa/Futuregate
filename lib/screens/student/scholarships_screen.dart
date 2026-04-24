@@ -16,6 +16,7 @@ import '../../widgets/app_shell_background.dart';
 import '../../widgets/shared/app_feedback.dart';
 import '../../widgets/shared/app_loading.dart';
 import '../../widgets/shared/content_translation_widgets.dart';
+import '../../widgets/student/student_search_field.dart';
 import '../../widgets/student/student_workspace_shell.dart';
 import '../notifications_screen.dart';
 import 'saved_screen.dart';
@@ -752,42 +753,14 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
   Widget _buildSearchBar() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
-      child: Container(
-        height: 40,
-        decoration: BoxDecoration(
-          color: _P.surface,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: _P.border, width: 1),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.03),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: TextField(
-          controller: _searchController,
-          onChanged: (value) => setState(() => _searchQuery = value.trim()),
-          style: AppTypography.product(fontSize: 12, color: _P.textPrimary),
-          decoration: InputDecoration(
-            hintText: AppLocalizations.of(context)!.uiSearchUniversityOrCountry,
-            hintStyle: AppTypography.product(
-              fontSize: 12,
-              color: _P.textSecondary.withValues(alpha: 0.6),
-            ),
-            prefixIcon: Icon(
-              Icons.search_rounded,
-              color: _P.textSecondary,
-              size: 18,
-            ),
-            border: InputBorder.none,
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 14,
-              vertical: 10,
-            ),
-          ),
-        ),
+      child: StudentSearchField(
+        controller: _searchController,
+        hintText: AppLocalizations.of(context)!.uiSearchUniversityOrCountry,
+        onChanged: (value) => setState(() => _searchQuery = value.trim()),
+        onClear: () {
+          _searchController.clear();
+          setState(() => _searchQuery = '');
+        },
       ),
     );
   }

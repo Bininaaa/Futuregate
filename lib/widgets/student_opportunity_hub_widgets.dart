@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../theme/app_colors.dart';
 import '../utils/opportunity_dashboard_palette.dart';
 import 'shared/app_feedback.dart';
+import 'student/student_search_field.dart';
 
 class StudentOpportunityHubPalette {
   StudentOpportunityHubPalette._();
@@ -258,60 +259,10 @@ class StudentOpportunitySearchField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
+    return StudentSearchField(
       controller: controller,
+      hintText: hintText,
       onChanged: onChanged,
-      style: GoogleFonts.poppins(
-        fontSize: 13.5,
-        color: StudentOpportunityHubPalette.textPrimary,
-      ),
-      decoration: InputDecoration(
-        hintText: hintText,
-        hintStyle: GoogleFonts.poppins(
-          fontSize: 13,
-          color: StudentOpportunityHubPalette.textMuted,
-        ),
-        prefixIcon: Icon(
-          Icons.search_rounded,
-          color: StudentOpportunityHubPalette.textMuted,
-          size: 20,
-        ),
-        suffixIcon: controller.text.trim().isEmpty
-            ? null
-            : IconButton(
-                onPressed: () {
-                  controller.clear();
-                  onChanged?.call('');
-                },
-                icon: Icon(
-                  Icons.close_rounded,
-                  color: StudentOpportunityHubPalette.textMuted,
-                  size: 18,
-                ),
-              ),
-        filled: true,
-        fillColor: StudentOpportunityHubPalette.surface.withValues(
-          alpha: StudentOpportunityHubPalette.isDark ? 0.96 : 0.88,
-        ),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 14,
-        ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
-          borderSide: BorderSide(color: StudentOpportunityHubPalette.border),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
-          borderSide: BorderSide(
-            color: StudentOpportunityHubPalette.border.withValues(alpha: 0.92),
-          ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
-          borderSide: BorderSide(color: StudentOpportunityHubPalette.primary),
-        ),
-      ),
     );
   }
 }

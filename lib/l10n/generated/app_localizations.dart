@@ -8501,25 +8501,25 @@ abstract class AppLocalizations {
   /// No description provided for @uiYourCvPdfHasBeenExportedAndSaved.
   ///
   /// In en, this message translates to:
-  /// **'Your CV PDF Has Been Exported And Saved'**
+  /// **'Your CV PDF has been saved to My CV'**
   String get uiYourCvPdfHasBeenExportedAndSaved;
 
   /// No description provided for @uiExportComplete.
   ///
   /// In en, this message translates to:
-  /// **'Export Complete'**
+  /// **'PDF saved'**
   String get uiExportComplete;
 
   /// No description provided for @uiExportUnavailable.
   ///
   /// In en, this message translates to:
-  /// **'Export Unavailable'**
+  /// **'Save unavailable'**
   String get uiExportUnavailable;
 
   /// No description provided for @uiExportSaveCv.
   ///
   /// In en, this message translates to:
-  /// **'Export Save CV'**
+  /// **'Save PDF to My CV'**
   String get uiExportSaveCv;
 
   /// No description provided for @uiAddYourCvDetailsBeforeGeneratingAPdf.
@@ -11600,7 +11600,7 @@ abstract class AppLocalizations {
   /// uiCvPreviewSubtitle
   ///
   /// In en, this message translates to:
-  /// **'Review the final layout before you export or share it.'**
+  /// **'Review the final layout before you save or download it.'**
   String get uiCvPreviewSubtitle;
 
   /// uiChooseTemplateSubtitle
@@ -12170,7 +12170,7 @@ abstract class AppLocalizations {
   /// ideaContactCreator
   ///
   /// In en, this message translates to:
-  /// **'Contact Creator'**
+  /// **'View Creator Profile'**
   String get ideaContactCreator;
 
   /// ideaSavedLabel

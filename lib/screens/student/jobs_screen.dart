@@ -16,6 +16,7 @@ import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/shared/app_feedback.dart';
+import '../../widgets/student/student_search_field.dart';
 import '../../widgets/student/student_workspace_shell.dart';
 import 'applied_opportunities_screen.dart';
 import 'opportunity_detail_screen.dart';
@@ -1055,7 +1056,6 @@ class _JobsScreenState extends State<JobsScreen> {
                     onClear: _searchQuery.isEmpty
                         ? null
                         : _searchController.clear,
-                    compact: isCompact,
                   ),
                 ),
               ),
@@ -1788,64 +1788,20 @@ class _JobsSearchBar extends StatelessWidget {
   final TextEditingController controller;
   final FocusNode focusNode;
   final VoidCallback? onClear;
-  final bool compact;
 
   const _JobsSearchBar({
     required this.controller,
     required this.focusNode,
     this.onClear,
-    required this.compact,
   });
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
+    return StudentSearchField(
       controller: controller,
       focusNode: focusNode,
-      textInputAction: TextInputAction.search,
-      style: GoogleFonts.poppins(
-        fontSize: compact ? 12 : 14,
-        fontWeight: FontWeight.w500,
-        color: OpportunityDashboardPalette.textPrimary,
-      ),
-      decoration: InputDecoration(
-        isDense: compact,
-        hintText: 'Search roles, companies...',
-        hintStyle: GoogleFonts.poppins(
-          fontSize: compact ? 12 : 14,
-          color: OpportunityDashboardPalette.textSecondary,
-        ),
-        prefixIcon: Icon(
-          Icons.search_rounded,
-          color: OpportunityDashboardPalette.textSecondary,
-          size: compact ? 18 : 22,
-        ),
-        suffixIcon: onClear == null
-            ? null
-            : IconButton(
-                onPressed: onClear,
-                tooltip: AppLocalizations.of(context)!.uiClearSearch,
-                icon: const Icon(Icons.close_rounded),
-                color: OpportunityDashboardPalette.textSecondary,
-              ),
-        filled: true,
-        fillColor: AppColors.current.surfaceMuted,
-        contentPadding: EdgeInsets.symmetric(
-          horizontal: compact ? 14 : 18,
-          vertical: compact ? 12 : 18,
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(compact ? 18 : 24),
-          borderSide: const BorderSide(color: Colors.transparent),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(compact ? 18 : 24),
-          borderSide: BorderSide(
-            color: OpportunityDashboardPalette.primary.withValues(alpha: 0.22),
-            width: 1.5,
-          ),
-        ),
-      ),
+      hintText: 'Search roles, companies...',
+      onClear: onClear,
     );
   }
 }

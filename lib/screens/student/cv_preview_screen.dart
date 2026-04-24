@@ -1,5 +1,7 @@
 import 'dart:typed_data';
 
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'package:printing/printing.dart';
@@ -14,7 +16,6 @@ import '../../screens/settings/settings_flow_widgets.dart';
 import '../../services/cv_pdf_service.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/shared/app_feedback.dart';
-import '../../widgets/student/student_workspace_shell.dart';
 
 class CvPreviewScreen extends StatefulWidget {
   final CvModel cv;
@@ -46,17 +47,66 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
 
     if (error == null) {
       context.showAppSnackBar(
-        'Your CV PDF has been exported and saved.',
-        title: AppLocalizations.of(context)!.uiExportComplete,
+        'Your CV PDF was saved to My CV.',
+        title: 'PDF saved',
         type: AppFeedbackType.success,
       );
       Navigator.pop(context, true);
     } else {
       context.showAppSnackBar(
         error,
-        title: AppLocalizations.of(context)!.uiExportUnavailable,
+        title: 'Save unavailable',
         type: AppFeedbackType.error,
       );
+    }
+  }
+
+  Future<void> _download(Uint8List bytes) async {
+    final templateId = CvTemplateConfig.resolveTemplateId(widget.cv.templateId);
+    final fileName = 'cv_$templateId.pdf';
+
+    try {
+      final savedPath = await FilePicker.platform.saveFile(
+        dialogTitle: 'Download CV PDF',
+        fileName: fileName,
+        type: FileType.custom,
+        allowedExtensions: const ['pdf'],
+        bytes: bytes,
+      );
+
+      if (!mounted) return;
+      if (savedPath == null && !kIsWeb) {
+        return;
+      }
+
+      context.showAppSnackBar(
+        'Your CV PDF download is ready.',
+        title: 'Download ready',
+        type: AppFeedbackType.success,
+      );
+    } catch (error) {
+      try {
+        final shared = await Printing.sharePdf(
+          bytes: bytes,
+          filename: fileName,
+        );
+        if (!mounted) return;
+        if (!shared) {
+          throw Exception('Download unavailable.');
+        }
+        context.showAppSnackBar(
+          'Use the system sheet to save or share your CV PDF.',
+          title: 'Download opened',
+          type: AppFeedbackType.info,
+        );
+      } catch (_) {
+        if (!mounted) return;
+        context.showAppSnackBar(
+          'We couldn\'t download this CV PDF. $error',
+          title: 'Download unavailable',
+          type: AppFeedbackType.error,
+        );
+      }
     }
   }
 
@@ -72,12 +122,23 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
     return AppShellBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        appBar: StudentWorkspaceAppBar(
-          title: AppLocalizations.of(context)!.uiCvPreview,
-          subtitle: AppLocalizations.of(context)!.uiCvPreviewSubtitle,
-          icon: Icons.picture_as_pdf_rounded,
-          showBackButton: true,
-          onBack: () => Navigator.maybePop(context),
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          backgroundColor: Colors.transparent,
+          surfaceTintColor: Colors.transparent,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          leading: IconButton(
+            onPressed: () => Navigator.maybePop(context),
+            icon: Icon(
+              Icons.arrow_back_ios_new_rounded,
+              color: SettingsFlowPalette.textPrimary,
+            ),
+          ),
+          title: Text(
+            AppLocalizations.of(context)!.uiCvPreview,
+            style: SettingsFlowTheme.appBarTitle(),
+          ),
           actions: [
             FutureBuilder<Uint8List>(
               future: _pdfFuture,
@@ -85,10 +146,11 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
                 if (!snapshot.hasData) {
                   return const SizedBox.shrink();
                 }
-                return StudentWorkspaceActionButton(
-                  icon: Icons.share_outlined,
+                return IconButton(
+                  icon: const Icon(Icons.share_outlined),
                   tooltip: AppLocalizations.of(context)!.uiSharePdf,
-                  onTap: () => _share(snapshot.data!),
+                  color: SettingsFlowPalette.textPrimary,
+                  onPressed: () => _share(snapshot.data!),
                 );
               },
             ),
@@ -125,7 +187,9 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
                         child: AppEmptyStateNotice(
                           type: AppFeedbackType.error,
                           icon: Icons.picture_as_pdf_rounded,
-                          title: AppLocalizations.of(context)!.uiPreviewUnavailable,
+                          title: AppLocalizations.of(
+                            context,
+                          )!.uiPreviewUnavailable,
                           message:
                               'We couldn\'t generate this PDF preview right now. ${snapshot.error}',
                           accentColor: SettingsFlowPalette.error,
@@ -168,10 +232,29 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
                         ),
                       ),
                     )
-                  : SettingsPrimaryButton(
-                      label: AppLocalizations.of(context)!.uiExportSaveCv,
-                      icon: Icons.cloud_upload_outlined,
-                      onPressed: _exportAndUpload,
+                  : FutureBuilder<Uint8List>(
+                      future: _pdfFuture,
+                      builder: (context, snapshot) {
+                        final pdfBytes = snapshot.data;
+                        return SettingsButtonGroup(
+                          children: [
+                            SettingsSecondaryButton(
+                              label: 'Download PDF',
+                              icon: Icons.download_rounded,
+                              onPressed: pdfBytes == null
+                                  ? null
+                                  : () => _download(pdfBytes),
+                            ),
+                            SettingsPrimaryButton(
+                              label: 'Save PDF to My CV',
+                              icon: Icons.cloud_upload_outlined,
+                              onPressed: !snapshot.hasData || snapshot.hasError
+                                  ? null
+                                  : _exportAndUpload,
+                            ),
+                          ],
+                        );
+                      },
                     ),
             ),
           ],

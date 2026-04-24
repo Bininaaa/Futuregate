@@ -5,7 +5,6 @@ import '../../config/cv_template_config.dart';
 import '../../models/cv_model.dart';
 import '../../screens/settings/settings_flow_theme.dart';
 import '../../widgets/app_shell_background.dart';
-import '../../widgets/student/student_workspace_shell.dart';
 import '../../widgets/cv_templates/cv_template_preview.dart';
 
 class CvTemplateSelectorScreen extends StatefulWidget {
@@ -37,17 +36,29 @@ class _CvTemplateSelectorScreenState extends State<CvTemplateSelectorScreen> {
     return AppShellBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        appBar: StudentWorkspaceAppBar(
-          title: AppLocalizations.of(context)!.uiChooseTemplate,
-          subtitle: AppLocalizations.of(context)!.uiChooseTemplateSubtitle,
-          icon: Icons.style_rounded,
-          showBackButton: true,
-          onBack: () => Navigator.maybePop(context),
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          backgroundColor: Colors.transparent,
+          surfaceTintColor: Colors.transparent,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          leading: IconButton(
+            onPressed: () => Navigator.maybePop(context),
+            icon: Icon(
+              Icons.arrow_back_ios_new_rounded,
+              color: SettingsFlowPalette.textPrimary,
+            ),
+          ),
+          title: Text(
+            AppLocalizations.of(context)!.uiChooseTemplate,
+            style: SettingsFlowTheme.appBarTitle(),
+          ),
           actions: [
-            StudentWorkspaceActionButton(
-              icon: Icons.check_rounded,
+            IconButton(
+              icon: const Icon(Icons.check_rounded),
               tooltip: AppLocalizations.of(context)!.uiApplyTemplate,
-              onTap: () => Navigator.pop(context, _selectedId),
+              color: SettingsFlowPalette.primary,
+              onPressed: () => Navigator.pop(context, _selectedId),
             ),
           ],
         ),

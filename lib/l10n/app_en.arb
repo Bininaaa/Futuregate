@@ -1997,10 +1997,10 @@
   "uiSkillsNeeded7988fd": "Skills needed",
   "uiYourCvChangesHaveBeenSaved": "Your CV Changes Have Been Saved",
   "uiEducation": "Education",
-  "uiYourCvPdfHasBeenExportedAndSaved": "Your CV PDF Has Been Exported And Saved",
-  "uiExportComplete": "Export Complete",
-  "uiExportUnavailable": "Export Unavailable",
-  "uiExportSaveCv": "Export Save CV",
+  "uiYourCvPdfHasBeenExportedAndSaved": "Your CV PDF has been saved to My CV",
+  "uiExportComplete": "PDF saved",
+  "uiExportUnavailable": "Save unavailable",
+  "uiExportSaveCv": "Save PDF to My CV",
   "uiAddYourCvDetailsBeforeGeneratingAPdf": "Add Your CV Details Before Generating A PDF",
   "uiThisFileIsNotAValidPdfYet": "This File Is Not A Valid PDF Yet",
   "uiValuea6a59e": "{value1}%",
@@ -3166,7 +3166,7 @@
   "@uiAddSkill": {
     "description": "uiAddSkill"
   },
-  "uiCvPreviewSubtitle": "Review the final layout before you export or share it.",
+  "uiCvPreviewSubtitle": "Review the final layout before you save or download it.",
   "@uiCvPreviewSubtitle": {
     "description": "uiCvPreviewSubtitle"
   },
@@ -3546,7 +3546,7 @@
   "@ideaManageTeamLabel": {
     "description": "ideaManageTeamLabel"
   },
-  "ideaContactCreator": "Contact Creator",
+  "ideaContactCreator": "View Creator Profile",
   "@ideaContactCreator": {
     "description": "ideaContactCreator"
   },

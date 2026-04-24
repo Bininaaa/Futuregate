@@ -4756,16 +4756,16 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiYourCvPdfHasBeenExportedAndSaved =>
-      'تم تصدير ملف PDF الخاص بسيرتك الذاتية وحفظه';
+      'تم حفظ ملف PDF لسيرتك الذاتية في My CV';
 
   @override
-  String get uiExportComplete => 'اكتمل التصدير';
+  String get uiExportComplete => 'تم حفظ ملف PDF';
 
   @override
-  String get uiExportUnavailable => 'التصدير غير متاح';
+  String get uiExportUnavailable => 'الحفظ غير متاح';
 
   @override
-  String get uiExportSaveCv => 'تصدير حفظ السيرة الذاتية';
+  String get uiExportSaveCv => 'حفظ PDF في My CV';
 
   @override
   String get uiAddYourCvDetailsBeforeGeneratingAPdf =>
@@ -6541,7 +6541,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiCvPreviewSubtitle =>
-      'راجع التخطيط النهائي قبل التصدير أو المشاركة.';
+      'راجع التخطيط النهائي قبل الحفظ أو التنزيل.';
 
   @override
   String get uiChooseTemplateSubtitle =>
@@ -6830,7 +6830,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get ideaManageTeamLabel => 'إدارة الفريق';
 
   @override
-  String get ideaContactCreator => 'التواصل مع المنشئ';
+  String get ideaContactCreator => 'عرض ملف المنشئ';
 
   @override
   String get ideaSavedLabel => 'محفوظة';

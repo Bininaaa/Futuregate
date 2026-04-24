@@ -4773,16 +4773,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get uiYourCvPdfHasBeenExportedAndSaved =>
-      'Your CV PDF Has Been Exported And Saved';
+      'Your CV PDF has been saved to My CV';
 
   @override
-  String get uiExportComplete => 'Export Complete';
+  String get uiExportComplete => 'PDF saved';
 
   @override
-  String get uiExportUnavailable => 'Export Unavailable';
+  String get uiExportUnavailable => 'Save unavailable';
 
   @override
-  String get uiExportSaveCv => 'Export Save CV';
+  String get uiExportSaveCv => 'Save PDF to My CV';
 
   @override
   String get uiAddYourCvDetailsBeforeGeneratingAPdf =>
@@ -6582,7 +6582,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get uiCvPreviewSubtitle =>
-      'Review the final layout before you export or share it.';
+      'Review the final layout before you save or download it.';
 
   @override
   String get uiChooseTemplateSubtitle =>
@@ -6875,7 +6875,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ideaManageTeamLabel => 'Manage Team';
 
   @override
-  String get ideaContactCreator => 'Contact Creator';
+  String get ideaContactCreator => 'View Creator Profile';
 
   @override
   String get ideaSavedLabel => 'Saved';

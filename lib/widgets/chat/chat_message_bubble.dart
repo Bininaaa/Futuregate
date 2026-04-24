@@ -364,6 +364,7 @@ class _ImageAttachmentBubbleState extends State<_ImageAttachmentBubble> {
               MaterialPageRoute(
                 builder: (_) => _ImagePreviewScreen(
                   imageUrl: document.viewUrl,
+                  downloadUrl: document.downloadUrl,
                   title: widget.message.fileName.trim().isEmpty
                       ? 'Photo'
                       : widget.message.fileName.trim(),
@@ -375,26 +376,31 @@ class _ImageAttachmentBubbleState extends State<_ImageAttachmentBubble> {
             borderRadius: BorderRadius.circular(16),
             child: AspectRatio(
               aspectRatio: 1.2,
-              child: CachedNetworkImage(
-                imageUrl: document.viewUrl,
-                fit: BoxFit.cover,
-                placeholder: (context, url) => Container(
-                  color: ChatThemePalette.background,
-                  alignment: Alignment.center,
-                  child: const SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(strokeWidth: 2),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  CachedNetworkImage(
+                    imageUrl: document.viewUrl,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => Container(
+                      color: ChatThemePalette.background,
+                      alignment: Alignment.center,
+                      child: const SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                    ),
+                    errorWidget: (context, url, error) => Container(
+                      color: ChatThemePalette.background,
+                      alignment: Alignment.center,
+                      child: Icon(
+                        Icons.broken_image_outlined,
+                        color: ChatThemePalette.textSecondary,
+                      ),
+                    ),
                   ),
-                ),
-                errorWidget: (context, url, error) => Container(
-                  color: ChatThemePalette.background,
-                  alignment: Alignment.center,
-                  child: Icon(
-                    Icons.broken_image_outlined,
-                    color: ChatThemePalette.textSecondary,
-                  ),
-                ),
+                ],
               ),
             ),
           ),
@@ -485,42 +491,41 @@ class _FileAttachmentBubble extends StatelessWidget {
                 ],
               ),
             ),
+            const SizedBox(width: 8),
+            _AttachmentDownloadButton(
+              foregroundColor: iconColor,
+              backgroundColor: iconBackground,
+              borderColor: borderColor,
+              onTap: () => _openAttachment(context, download: true),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Future<void> _openAttachment(BuildContext context) async {
+  Future<void> _openAttachment(
+    BuildContext context, {
+    bool download = false,
+  }) async {
     try {
       final document = await DocumentAccessService().getChatAttachmentDocument(
         conversationId: conversationId,
         messageId: message.id,
       );
-      final uri = Uri.tryParse(document.viewUrl);
-      if (uri == null) {
-        throw Exception('File unavailable.');
+      if (!context.mounted) {
+        return;
       }
-
-      final launched = await launchUrl(
-        uri,
-        mode: LaunchMode.platformDefault,
-        webOnlyWindowName: '_blank',
-      );
-      if (!launched && context.mounted) {
-        context.showAppSnackBar(
-          'We couldn\'t open this attachment.',
-          title: AppLocalizations.of(context)!.uiAttachmentUnavailable,
-          type: AppFeedbackType.error,
-        );
-      }
+      await _launchAttachment(context, document: document, download: download);
     } catch (error) {
       if (!context.mounted) {
         return;
       }
 
       context.showAppSnackBar(
-        'We couldn\'t open this attachment. $error',
+        download
+            ? 'We couldn\'t download this attachment. $error'
+            : 'We couldn\'t open this attachment. $error',
         title: AppLocalizations.of(context)!.uiAttachmentUnavailable,
         type: AppFeedbackType.error,
       );
@@ -548,20 +553,134 @@ class _FileAttachmentBubble extends StatelessWidget {
   }
 }
 
-class _ImagePreviewScreen extends StatelessWidget {
-  final String imageUrl;
-  final String title;
+class _AttachmentDownloadButton extends StatelessWidget {
+  final Color foregroundColor;
+  final Color backgroundColor;
+  final Color borderColor;
+  final VoidCallback onTap;
 
-  const _ImagePreviewScreen({required this.imageUrl, required this.title});
+  const _AttachmentDownloadButton({
+    required this.foregroundColor,
+    required this.backgroundColor,
+    required this.borderColor,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
+    return Tooltip(
+      message: AppLocalizations.of(context)!.uiDownloadA479,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(12),
+          child: Ink(
+            width: 34,
+            height: 34,
+            decoration: BoxDecoration(
+              color: backgroundColor,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: borderColor),
+            ),
+            child: Icon(
+              Icons.download_rounded,
+              color: foregroundColor,
+              size: 18,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+Future<void> _launchAttachment(
+  BuildContext context, {
+  required SecureDocumentLink document,
+  required bool download,
+}) {
+  final url = download && document.downloadUrl.trim().isNotEmpty
+      ? document.downloadUrl
+      : document.viewUrl;
+  return _launchAttachmentUrl(context, url, download: download);
+}
+
+Future<void> _launchAttachmentUrl(
+  BuildContext context,
+  String url, {
+  required bool download,
+}) async {
+  try {
+    final uri = Uri.tryParse(url.trim());
+    if (uri == null || !uri.hasScheme) {
+      throw Exception('File unavailable.');
+    }
+
+    final launched = await launchUrl(
+      uri,
+      mode: LaunchMode.platformDefault,
+      webOnlyWindowName: '_blank',
+    );
+
+    if (!launched && context.mounted) {
+      context.showAppSnackBar(
+        download
+            ? 'We couldn\'t download this attachment.'
+            : 'We couldn\'t open this attachment.',
+        title: AppLocalizations.of(context)!.uiAttachmentUnavailable,
+        type: AppFeedbackType.error,
+      );
+    }
+  } catch (error) {
+    if (!context.mounted) {
+      return;
+    }
+
+    context.showAppSnackBar(
+      download
+          ? 'We couldn\'t download this attachment. $error'
+          : 'We couldn\'t open this attachment. $error',
+      title: AppLocalizations.of(context)!.uiAttachmentUnavailable,
+      type: AppFeedbackType.error,
+    );
+  }
+}
+
+class _ImagePreviewScreen extends StatelessWidget {
+  final String imageUrl;
+  final String downloadUrl;
+  final String title;
+
+  const _ImagePreviewScreen({
+    required this.imageUrl,
+    required this.downloadUrl,
+    required this.title,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final actionColor = ChatThemePalette.secondary;
+
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
         backgroundColor: Colors.black,
-        foregroundColor: Colors.white,
+        foregroundColor: actionColor,
+        leading: IconButton(
+          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+          onPressed: () => Navigator.maybePop(context),
+          icon: Icon(Icons.arrow_back_rounded, color: actionColor),
+        ),
         title: Text(title, style: ChatThemeStyles.cardTitle(Colors.white)),
+        actions: [
+          IconButton(
+            tooltip: AppLocalizations.of(context)!.uiDownloadA479,
+            onPressed: () =>
+                _launchAttachmentUrl(context, downloadUrl, download: true),
+            icon: Icon(Icons.download_rounded, color: actionColor),
+          ),
+        ],
       ),
       body: InteractiveViewer(
         minScale: 0.8,

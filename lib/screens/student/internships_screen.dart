@@ -16,6 +16,7 @@ import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/shared/app_feedback.dart';
+import '../../widgets/student/student_search_field.dart';
 import '../../widgets/student/student_workspace_shell.dart';
 import 'applied_opportunities_screen.dart';
 import 'opportunity_detail_screen.dart';
@@ -1001,53 +1002,11 @@ class _InternshipSearchBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
+    return StudentSearchField(
       controller: controller,
       focusNode: focusNode,
-      textInputAction: TextInputAction.search,
-      style: GoogleFonts.poppins(
-        fontSize: 13,
-        fontWeight: FontWeight.w500,
-        color: OpportunityDashboardPalette.textPrimary,
-      ),
-      decoration: InputDecoration(
-        hintText: 'Search internships...',
-        hintStyle: GoogleFonts.poppins(
-          fontSize: 13,
-          color: OpportunityDashboardPalette.textSecondary,
-        ),
-        prefixIcon: Icon(
-          Icons.search_rounded,
-          color: _InternshipVisualPalette.deepTeal,
-        ),
-        suffixIcon: onClear == null
-            ? null
-            : IconButton(
-                onPressed: onClear,
-                icon: Icon(
-                  Icons.close_rounded,
-                  color: _InternshipVisualPalette.deepTeal,
-                ),
-              ),
-        filled: true,
-        fillColor: AppColors.current.secondarySoft,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 14,
-        ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(22),
-          borderSide: BorderSide.none,
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(22),
-          borderSide: BorderSide.none,
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(22),
-          borderSide: BorderSide(color: _InternshipVisualPalette.deepTeal),
-        ),
-      ),
+      hintText: 'Search internships...',
+      onClear: onClear,
     );
   }
 }

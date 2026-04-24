@@ -85,6 +85,8 @@ class IdeaDetailsScreen extends StatelessWidget {
     final stageColor = innovationStageColor(idea.displayStage);
     final statusColor = innovationStatusColor(idea.moderationStatus);
     final hasAttachment = idea.attachmentUrl.trim().isNotEmpty;
+    final hasImage = idea.imageUrl.trim().isNotEmpty;
+    final showLeadingSecondaryAction = !isOwner || idea.canOwnerEdit;
 
     return AppShellBackground(
       child: Scaffold(
@@ -173,29 +175,31 @@ class IdeaDetailsScreen extends StatelessWidget {
                   const SizedBox(height: 10),
                   Row(
                     children: <Widget>[
-                      Expanded(
-                        child: AppSecondaryButton(
-                          theme: _theme,
-                          label: isOwner
-                              ? AppLocalizations.of(
-                                  context,
-                                )!.ideaManageTeamLabel
-                              : AppLocalizations.of(
-                                  context,
-                                )!.ideaContactCreator,
-                          icon: isOwner
-                              ? Icons.groups_rounded
-                              : Icons.person_outline_rounded,
-                          onPressed: () {
-                            if (isOwner) {
-                              _showManageTeamSheet(context, idea);
-                              return;
-                            }
-                            _openCreatorProfile(context, idea);
-                          },
+                      if (showLeadingSecondaryAction) ...<Widget>[
+                        Expanded(
+                          child: AppSecondaryButton(
+                            theme: _theme,
+                            label: isOwner
+                                ? AppLocalizations.of(
+                                    context,
+                                  )!.ideaManageTeamLabel
+                                : AppLocalizations.of(
+                                    context,
+                                  )!.ideaContactCreator,
+                            icon: isOwner
+                                ? Icons.groups_rounded
+                                : Icons.person_outline_rounded,
+                            onPressed: () {
+                              if (isOwner) {
+                                _showManageTeamSheet(context, idea);
+                                return;
+                              }
+                              _openCreatorProfile(context, idea);
+                            },
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 10),
+                        const SizedBox(width: 10),
+                      ],
                       Expanded(
                         child: AppSecondaryButton(
                           theme: _theme,
@@ -245,16 +249,18 @@ class IdeaDetailsScreen extends StatelessWidget {
                   ? idea.tagline
                   : idea.creatorHeadline,
               summary: idea.overviewText,
-              imageUrl: idea.imageUrl,
-              media: ProjectIdeaCoverImage(
-                imageUrl: idea.imageUrl,
-                ideaId: idea.id,
-                height: 168,
-                width: double.infinity,
-                fit: BoxFit.cover,
-                placeholderColor: _theme.surfaceMuted,
-                iconColor: _theme.textMuted,
-              ),
+              imageUrl: hasImage ? idea.imageUrl : null,
+              media: hasImage
+                  ? ProjectIdeaCoverImage(
+                      imageUrl: idea.imageUrl,
+                      ideaId: idea.id,
+                      height: 168,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      placeholderColor: _theme.surfaceMuted,
+                      iconColor: _theme.textMuted,
+                    )
+                  : null,
               badges: <AppBadgeData>[
                 AppBadgeData(
                   label: innovationCategoryLabel(context, idea.displayCategory),
@@ -721,7 +727,7 @@ class IdeaDetailsScreen extends StatelessWidget {
     final auth = context.read<AuthProvider>().userModel;
     if (auth == null) {
       context.showAppSnackBar(
-        'Sign in to contact the creator.',
+        'Sign in to view the creator profile.',
         title: AppLocalizations.of(context)!.uiLoginRequired,
         type: AppFeedbackType.warning,
       );
@@ -731,7 +737,7 @@ class IdeaDetailsScreen extends StatelessWidget {
     if (idea.submittedBy.trim().isEmpty) {
       context.showAppSnackBar(
         AppLocalizations.of(context)!.ideaNotAvailable,
-        title: 'Contact unavailable',
+        title: 'Profile unavailable',
         type: AppFeedbackType.warning,
       );
       return;

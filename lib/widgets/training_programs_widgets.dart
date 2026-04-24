@@ -6,6 +6,7 @@ import '../theme/app_typography.dart';
 import '../utils/opportunity_dashboard_palette.dart';
 import 'shared/app_feedback.dart';
 import 'shared/app_loading.dart';
+import 'student/student_search_field.dart';
 
 class TrainingCourseBadgeData {
   final String label;
@@ -143,64 +144,12 @@ class TrainingSearchBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
+    return StudentSearchField(
       controller: controller,
       focusNode: focusNode,
+      hintText: AppLocalizations.of(context)!.uiSearchCourses,
       onChanged: onChanged,
-      textInputAction: TextInputAction.search,
-      style: AppTypography.product(
-        fontSize: 13,
-        fontWeight: FontWeight.w500,
-        color: OpportunityDashboardPalette.textPrimary,
-      ),
-      decoration: InputDecoration(
-        hintText: AppLocalizations.of(context)!.uiSearchCourses,
-        hintStyle: AppTypography.product(
-          fontSize: 13,
-          fontWeight: FontWeight.w500,
-          color: OpportunityDashboardPalette.textSecondary,
-        ),
-        prefixIcon: Icon(
-          Icons.search_rounded,
-          color: OpportunityDashboardPalette.textSecondary,
-          size: 20,
-        ),
-        suffixIcon: controller.text.trim().isEmpty
-            ? null
-            : IconButton(
-                tooltip: AppLocalizations.of(context)!.uiClearSearch,
-                onPressed: onClear,
-                icon: Icon(
-                  Icons.close_rounded,
-                  color: OpportunityDashboardPalette.textSecondary,
-                  size: 18,
-                ),
-              ),
-        filled: true,
-        fillColor: OpportunityDashboardPalette.surface,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 13,
-        ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
-          borderSide: BorderSide(
-            color: OpportunityDashboardPalette.border.withValues(alpha: 0.95),
-          ),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
-          borderSide: BorderSide(
-            color: OpportunityDashboardPalette.border.withValues(alpha: 0.95),
-          ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
-          borderSide: BorderSide(
-            color: OpportunityDashboardPalette.primary.withValues(alpha: 0.18),
-          ),
-        ),
-      ),
+      onClear: onClear,
     );
   }
 }

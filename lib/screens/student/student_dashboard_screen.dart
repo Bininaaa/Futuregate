@@ -2696,7 +2696,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
             dedupeKey: 'saved_idea:${item.ideaId}',
             sortDate: item.savedAt!.toDate(),
             badgeLabel: 'Saved idea',
-            accent: const Color(0xFFFF6B6B),
+            accent: accentGold,
             icon: Icons.lightbulb_outline_rounded,
             title: item.idea.title.trim().isNotEmpty
                 ? item.idea.title.trim()

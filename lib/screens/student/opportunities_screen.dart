@@ -18,6 +18,7 @@ import '../../utils/opportunity_type.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/opportunity_dashboard_widgets.dart';
 import '../../widgets/shared/app_feedback.dart';
+import '../../widgets/student/student_search_field.dart';
 import '../../widgets/student/student_workspace_shell.dart';
 import 'internships_screen.dart';
 import 'jobs_screen.dart';
@@ -1370,44 +1371,11 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
         const SizedBox(height: 14),
         KeyedSubtree(
           key: _searchSectionKey,
-          child: TextField(
+          child: StudentSearchField(
             controller: _searchController,
             focusNode: _searchFocusNode,
-            textInputAction: TextInputAction.search,
-            decoration: InputDecoration(
-              hintText: l10n.uiSearchJobsInternshipsOrSponsoredRoles,
-              hintStyle: GoogleFonts.poppins(
-                fontSize: 12,
-                color: OpportunityDashboardPalette.textSecondary,
-              ),
-              prefixIcon: Icon(
-                Icons.search_rounded,
-                color: OpportunityDashboardPalette.textSecondary,
-              ),
-              suffixIcon: _searchQuery.isEmpty
-                  ? null
-                  : IconButton(
-                      tooltip: AppLocalizations.of(context)!.uiClearSearch,
-                      onPressed: _searchController.clear,
-                      icon: const Icon(Icons.close_rounded),
-                    ),
-              filled: true,
-              fillColor: OpportunityDashboardPalette.surface,
-              contentPadding: const EdgeInsets.symmetric(vertical: 13),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(20),
-                borderSide: BorderSide(
-                  color: OpportunityDashboardPalette.border,
-                ),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(20),
-                borderSide: BorderSide(
-                  color: OpportunityDashboardPalette.primary,
-                  width: 1.5,
-                ),
-              ),
-            ),
+            hintText: l10n.uiSearchJobsInternshipsOrSponsoredRoles,
+            onClear: _searchController.clear,
           ),
         ),
         const SizedBox(height: 10),

@@ -343,7 +343,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
         }
 
         selected.add(training);
-        if (selected.length == 2) {
+        if (selected.length == 1) {
           return;
         }
       }
@@ -357,7 +357,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
     addCandidates(items.where((training) => training.isFeatured));
     addCandidates(items);
 
-    return selected.take(2).toList(growable: false);
+    return selected.take(1).toList(growable: false);
   }
 
   TrainingModel? _findTrainingById(
@@ -842,7 +842,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
                 sliver: SliverList(
                   delegate: SliverChildListDelegate([
                     const TrainingHeroIntro(),
-                    const SizedBox(height: 18),
+                    const SizedBox(height: 4),
                     if (provider.isSavedLoading) ...[
                       const SizedBox(height: 12),
                       const LinearProgressIndicator(minHeight: 2),
@@ -859,7 +859,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
                             : '${provider.errorMessage!} Showing the training content currently available.',
                       ),
                     ],
-                    const SizedBox(height: 18),
+                    const SizedBox(height: 12),
                     TrainingSearchBar(
                       controller: _searchController,
                       focusNode: _searchFocusNode,

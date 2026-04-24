@@ -260,6 +260,102 @@ class CvService {
     });
   }
 
+  Future<void> removeUploadedCv({required String studentId}) async {
+    final existingDoc = await _getExistingCvDoc(studentId);
+
+    if (existingDoc == null) {
+      return;
+    }
+
+    final existingData = existingDoc.data();
+    final previousStorageProvider =
+        (existingData['uploadedCvStorageProvider'] ?? '').toString();
+    final previousObjectKey =
+        (existingData['uploadedCvObjectKey'] ??
+                existingData['uploadedCvPath'] ??
+                existingData['uploadedCvUrl'] ??
+                '')
+            .toString()
+            .trim();
+    final hasBuilderData =
+        _hasBuilderData(existingData) ||
+        _hasAnyValue([
+          existingData['exportedPdfPath'],
+          existingData['exportedPdfObjectKey'],
+          existingData['exportedPdfUrl'],
+        ]);
+    final hasExportedPdf = _hasAnyValue([
+      existingData['exportedPdfPath'],
+      existingData['exportedPdfObjectKey'],
+      existingData['exportedPdfUrl'],
+    ]);
+
+    await existingDoc.reference.update({
+      'sourceType': hasBuilderData ? 'builder' : '',
+      'primaryCvMode': hasExportedPdf ? 'builder_pdf' : '',
+      ..._emptyUploadedCvData(),
+      ..._legacyStorageCleanupData(),
+      'updatedAt': FieldValue.serverTimestamp(),
+    });
+
+    if (previousStorageProvider == 'cloudflare_r2' &&
+        previousObjectKey.isNotEmpty) {
+      try {
+        await _storageService.deleteFileByPath(previousObjectKey);
+      } catch (_) {
+        // The CV is detached from the profile even if storage cleanup is delayed.
+      }
+    }
+  }
+
+  Future<void> resetBuiltCv({required String studentId}) async {
+    final existingDoc = await _getExistingCvDoc(studentId);
+
+    if (existingDoc == null) {
+      return;
+    }
+
+    final existingData = existingDoc.data();
+    final previousExportedPdfPath =
+        (existingData['exportedPdfPath'] ??
+                existingData['exportedPdfObjectKey'] ??
+                existingData['exportedPdfUrl'] ??
+                '')
+            .toString()
+            .trim();
+    final hasUploadedCv = _hasAnyValue([
+      existingData['uploadedCvPath'],
+      existingData['uploadedCvObjectKey'],
+      existingData['uploadedCvUrl'],
+    ]);
+
+    await existingDoc.reference.update({
+      'fullName': '',
+      'email': '',
+      'phone': '',
+      'address': '',
+      'summary': '',
+      'education': <Map<String, dynamic>>[],
+      'experience': <Map<String, dynamic>>[],
+      'skills': <String>[],
+      'languages': <String>[],
+      'templateId': '',
+      'exportedPdfUrl': '',
+      'exportedPdfPath': '',
+      'sourceType': hasUploadedCv ? 'uploaded' : '',
+      'primaryCvMode': hasUploadedCv ? 'uploaded' : '',
+      'updatedAt': FieldValue.serverTimestamp(),
+    });
+
+    if (previousExportedPdfPath.isNotEmpty) {
+      try {
+        await _storageService.deleteFileByPath(previousExportedPdfPath);
+      } catch (_) {
+        // The built CV is detached even if storage cleanup is delayed.
+      }
+    }
+  }
+
   Future<QueryDocumentSnapshot<Map<String, dynamic>>?> _getExistingCvDoc(
     String studentId,
   ) async {
@@ -336,6 +432,27 @@ class CvService {
 
   bool _hasAnyValue(List<Object?> values) {
     return values.any((value) => value?.toString().trim().isNotEmpty ?? false);
+  }
+
+  bool _hasBuilderData(Map<String, dynamic> data) {
+    return _hasAnyValue([
+          data['fullName'],
+          data['email'],
+          data['phone'],
+          data['address'],
+          data['summary'],
+          data['templateId'],
+        ]) ||
+        _hasAnyListValue([
+          data['education'],
+          data['experience'],
+          data['skills'],
+          data['languages'],
+        ]);
+  }
+
+  bool _hasAnyListValue(List<Object?> values) {
+    return values.any((value) => value is Iterable && value.isNotEmpty);
   }
 
   int _timestampToMillis(Object? value) {

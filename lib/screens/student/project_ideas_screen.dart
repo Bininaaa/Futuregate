@@ -15,6 +15,7 @@ import '../../widgets/ideas/my_ideas_toggle.dart';
 import '../../widgets/profile_avatar.dart';
 import '../../widgets/shared/app_feedback.dart';
 import '../../widgets/shared/app_loading.dart';
+import '../../widgets/student/student_search_field.dart';
 import 'create_idea_screen.dart';
 import 'idea_details_screen.dart';
 import 'profile_screen.dart';
@@ -221,44 +222,15 @@ class _ProjectIdeasScreenState extends State<ProjectIdeasScreen> {
   }
 
   Widget _buildSearchBar() {
-    return Container(
-      decoration: BoxDecoration(
-        color: InnovationHubPalette.searchTint,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: InnovationHubPalette.border),
-      ),
-      child: TextField(
-        controller: _searchController,
-        focusNode: _searchFocusNode,
-        onChanged: (_) => setState(() {}),
-        style: InnovationHubTypography.body(
-          color: InnovationHubPalette.textPrimary,
-          size: 13.5,
-        ),
-        decoration: InputDecoration(
-          hintText: AppLocalizations.of(context)!.uiSearchIdeas,
-          hintStyle: InnovationHubTypography.body(
-            color: InnovationHubPalette.textSecondary.withValues(alpha: 0.82),
-            size: 13.5,
-          ),
-          prefixIcon: Icon(
-            Icons.search_rounded,
-            color: InnovationHubPalette.primary,
-            size: 20,
-          ),
-          suffixIcon: _searchController.text.trim().isEmpty
-              ? null
-              : IconButton(
-                  onPressed: () {
-                    _searchController.clear();
-                    setState(() {});
-                  },
-                  icon: const Icon(Icons.close_rounded, size: 18),
-                ),
-          border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(vertical: 13),
-        ),
-      ),
+    return StudentSearchField(
+      controller: _searchController,
+      focusNode: _searchFocusNode,
+      hintText: AppLocalizations.of(context)!.uiSearchIdeas,
+      onChanged: (_) => setState(() {}),
+      onClear: () {
+        _searchController.clear();
+        setState(() {});
+      },
     );
   }
 

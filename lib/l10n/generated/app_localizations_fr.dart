@@ -4836,16 +4836,16 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get uiYourCvPdfHasBeenExportedAndSaved =>
-      'Votre CV PDF a été exporté et enregistré';
+      'Votre CV PDF a été enregistré dans My CV';
 
   @override
-  String get uiExportComplete => 'Exportation terminée';
+  String get uiExportComplete => 'PDF enregistré';
 
   @override
-  String get uiExportUnavailable => 'Exportation indisponible';
+  String get uiExportUnavailable => 'Enregistrement indisponible';
 
   @override
-  String get uiExportSaveCv => 'Exporter Enregistrer le CV';
+  String get uiExportSaveCv => 'Enregistrer le PDF dans My CV';
 
   @override
   String get uiAddYourCvDetailsBeforeGeneratingAPdf =>
@@ -6687,7 +6687,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get uiCvPreviewSubtitle =>
-      'Verifiez la mise en page finale avant de l\'exporter.';
+      'Verifiez la mise en page finale avant de l\'enregistrer ou de le telecharger.';
 
   @override
   String get uiChooseTemplateSubtitle =>
@@ -6981,7 +6981,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get ideaManageTeamLabel => 'Gérer l\'équipe';
 
   @override
-  String get ideaContactCreator => 'Contacter le créateur';
+  String get ideaContactCreator => 'Voir le profil du createur';
 
   @override
   String get ideaSavedLabel => 'Sauvegardé';

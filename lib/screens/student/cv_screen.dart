@@ -118,7 +118,7 @@ class _CvScreenState extends State<CvScreen> {
   Future<void> _generateCv(CvModel? cv) async {
     if (cv == null || !cv.hasBuilderContent) {
       context.showAppSnackBar(
-        'Add your CV details before generating a PDF.',
+        'Add your CV details before saving a PDF.',
         title: AppLocalizations.of(context)!.uiContentNeeded,
         type: AppFeedbackType.warning,
       );
@@ -135,8 +135,8 @@ class _CvScreenState extends State<CvScreen> {
     if (!mounted) return;
 
     context.showAppSnackBar(
-      error ?? 'Your CV PDF is ready and has been saved.',
-      title: error == null ? 'CV exported' : 'Export unavailable',
+      error ?? 'Your CV PDF was saved to My CV.',
+      title: error == null ? 'PDF saved' : 'Save unavailable',
       type: error == null ? AppFeedbackType.success : AppFeedbackType.error,
     );
   }
@@ -206,6 +206,98 @@ class _CvScreenState extends State<CvScreen> {
     context.showAppSnackBar(
       error ?? successMessage,
       title: error == null ? 'Primary CV updated' : 'Update unavailable',
+      type: error == null ? AppFeedbackType.success : AppFeedbackType.error,
+    );
+  }
+
+  Future<void> _removeUploadedCv(CvModel cv) async {
+    final l10n = AppLocalizations.of(context)!;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Remove uploaded CV?'),
+          content: Text(
+            'This removes ${cv.uploadedCvDisplayName} from your CV studio. Your built CV content stays available.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: Text(l10n.cancelLabel),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              style: FilledButton.styleFrom(
+                backgroundColor: SettingsFlowPalette.error,
+                foregroundColor: Colors.white,
+              ),
+              child: Text(l10n.removeLabel),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    final uid = _uid;
+    if (uid == null) return;
+
+    final error = await context.read<CvProvider>().removeUploadedCv(
+      studentId: uid,
+    );
+
+    if (!mounted) return;
+
+    context.showAppSnackBar(
+      error ?? 'Uploaded CV removed.',
+      title: error == null ? 'CV removed' : l10n.uiRemoveUnavailable,
+      type: error == null ? AppFeedbackType.success : AppFeedbackType.error,
+    );
+  }
+
+  Future<void> _resetBuiltCv(CvModel cv) async {
+    final l10n = AppLocalizations.of(context)!;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Reset built CV?'),
+          content: Text(
+            cv.hasUploadedCv
+                ? 'This deletes your built CV details and saved PDF. Your uploaded CV stays available.'
+                : 'This deletes your built CV details and saved PDF.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: Text(l10n.cancelLabel),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              style: FilledButton.styleFrom(
+                backgroundColor: SettingsFlowPalette.error,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Reset'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    final uid = _uid;
+    if (uid == null) return;
+
+    final error = await context.read<CvProvider>().resetBuiltCv(studentId: uid);
+
+    if (!mounted) return;
+
+    context.showAppSnackBar(
+      error ?? 'Built CV reset.',
+      title: error == null ? 'Built CV reset' : 'Reset unavailable',
       type: error == null ? AppFeedbackType.success : AppFeedbackType.error,
     );
   }
@@ -451,12 +543,12 @@ class _CvScreenState extends State<CvScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Preview & Export',
+                        'Preview & Save',
                         style: SettingsFlowTheme.sectionTitle(),
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Generate a polished PDF from your CV.',
+                        'Create a polished PDF and keep it in My CV.',
                         style: SettingsFlowTheme.caption(),
                       ),
                       const SizedBox(height: 14),
@@ -471,8 +563,8 @@ class _CvScreenState extends State<CvScreen> {
                           ),
                           SettingsPrimaryButton(
                             label: cvProvider.isExporting
-                                ? 'Exporting...'
-                                : 'Export PDF',
+                                ? 'Saving...'
+                                : 'Save PDF to My CV',
                             icon: Icons.picture_as_pdf_rounded,
                             onPressed: cvProvider.isExporting
                                 ? null
@@ -480,6 +572,20 @@ class _CvScreenState extends State<CvScreen> {
                           ),
                         ],
                       ),
+                      if (cv?.hasBuilderContent == true &&
+                          cv?.hasExportedPdf != true) ...[
+                        const SizedBox(height: 12),
+                        SettingsListRow(
+                          icon: Icons.delete_sweep_outlined,
+                          iconColor: SettingsFlowPalette.error,
+                          title: 'Reset built CV',
+                          subtitle:
+                              'Delete built details and start again. Uploaded CV stays.',
+                          destructive: true,
+                          compact: true,
+                          onTap: () => _resetBuiltCv(cv!),
+                        ),
+                      ],
                     ],
                   ),
                 ),
@@ -551,6 +657,7 @@ class _CvScreenState extends State<CvScreen> {
                               variant: 'primary',
                               download: true,
                             ),
+                            onRemove: () => _removeUploadedCv(cv),
                           ),
                         if (cv.hasUploadedCv && cv.hasExportedPdf)
                           Divider(
@@ -570,6 +677,7 @@ class _CvScreenState extends State<CvScreen> {
                             ),
                             onDownload: () =>
                                 _openSecureCv(variant: 'built', download: true),
+                            onRemove: () => _resetBuiltCv(cv),
                           ),
                         if (cv.hasUploadedCv && cv.hasExportedPdf) ...[
                           const SizedBox(height: 14),
@@ -608,6 +716,7 @@ class _FileRow extends StatelessWidget {
   final bool isActive;
   final VoidCallback? onView;
   final VoidCallback? onDownload;
+  final VoidCallback? onRemove;
 
   const _FileRow({
     required this.icon,
@@ -615,6 +724,7 @@ class _FileRow extends StatelessWidget {
     required this.isActive,
     this.onView,
     this.onDownload,
+    this.onRemove,
   });
 
   @override
@@ -653,6 +763,21 @@ class _FileRow extends StatelessWidget {
                 Icons.download_outlined,
                 size: 18,
                 color: SettingsFlowPalette.textSecondary,
+              ),
+            ),
+          ),
+        if (onRemove != null)
+          Tooltip(
+            message: AppLocalizations.of(context)!.removeLabel,
+            child: GestureDetector(
+              onTap: onRemove,
+              child: Padding(
+                padding: EdgeInsets.all(6),
+                child: Icon(
+                  Icons.delete_outline_rounded,
+                  size: 18,
+                  color: SettingsFlowPalette.error,
+                ),
               ),
             ),
           ),

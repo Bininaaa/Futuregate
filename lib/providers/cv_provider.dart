@@ -124,6 +124,40 @@ class CvProvider extends ChangeNotifier {
     }
   }
 
+  Future<String?> removeUploadedCv({required String studentId}) async {
+    try {
+      _isLoading = true;
+      notifyListeners();
+
+      await _service.removeUploadedCv(studentId: studentId);
+
+      await loadCv(studentId);
+      return null;
+    } catch (e) {
+      return e.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<String?> resetBuiltCv({required String studentId}) async {
+    try {
+      _isLoading = true;
+      notifyListeners();
+
+      await _service.resetBuiltCv(studentId: studentId);
+
+      await loadCv(studentId);
+      return null;
+    } catch (e) {
+      return e.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
   Future<String?> exportCvAsPdf({required String studentId}) async {
     if (_cv == null || !_cv!.hasBuilderContent) {
       return 'No CV content to export. Please fill in your CV first.';
