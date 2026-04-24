@@ -2208,55 +2208,46 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     String companyName, {
     double size = 42,
   }) {
+    final hasLogo = logoUrl.trim().isNotEmpty;
     final borderRadius = size <= 38 ? 11.0 : 12.0;
     final fontSize = size <= 38 ? 16.0 : 18.0;
+    final initial = companyName.trim().isNotEmpty
+        ? companyName.trim().substring(0, 1).toUpperCase()
+        : 'C';
+    Widget fallbackLogo(Color color) => Center(
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Text(
+          initial,
+          textAlign: TextAlign.center,
+          maxLines: 1,
+          style: AppTypography.product(
+            fontSize: fontSize,
+            height: 1,
+            fontWeight: FontWeight.w700,
+            color: color,
+          ),
+        ),
+      ),
+    );
 
     return Container(
       width: size,
       height: size,
-      padding: logoUrl.isNotEmpty
-          ? EdgeInsets.all(size * 0.12)
-          : EdgeInsets.zero,
+      padding: hasLogo ? EdgeInsets.all(size * 0.12) : EdgeInsets.zero,
       decoration: BoxDecoration(
-        color: softLavender,
+        color: hasLogo ? softLavender : primaryPurple,
         borderRadius: BorderRadius.circular(borderRadius),
       ),
       clipBehavior: Clip.antiAlias,
-      child: logoUrl.isNotEmpty
+      child: hasLogo
           ? CachedNetworkImage(
               imageUrl: logoUrl,
               fit: BoxFit.contain,
-              placeholder: (_, _) => Center(
-                child: Text(
-                  companyName.isNotEmpty ? companyName[0].toUpperCase() : 'C',
-                  style: AppTypography.product(
-                    fontSize: fontSize,
-                    fontWeight: FontWeight.w700,
-                    color: primaryPurple,
-                  ),
-                ),
-              ),
-              errorWidget: (_, _, _) => Center(
-                child: Text(
-                  companyName.isNotEmpty ? companyName[0].toUpperCase() : 'C',
-                  style: AppTypography.product(
-                    fontSize: fontSize,
-                    fontWeight: FontWeight.w700,
-                    color: primaryPurple,
-                  ),
-                ),
-              ),
+              placeholder: (_, _) => fallbackLogo(primaryPurple),
+              errorWidget: (_, _, _) => fallbackLogo(primaryPurple),
             )
-          : Center(
-              child: Text(
-                companyName.isNotEmpty ? companyName[0].toUpperCase() : 'C',
-                style: AppTypography.product(
-                  fontSize: fontSize,
-                  fontWeight: FontWeight.w700,
-                  color: primaryPurple,
-                ),
-              ),
-            ),
+          : fallbackLogo(Colors.white),
     );
   }
 

@@ -996,7 +996,7 @@ class _SponsoredOpportunitiesScreenState
                           ),
                           SizedBox(height: isCompact ? 10 : 12),
                           SizedBox(
-                            height: 40,
+                            height: isCompact ? 34 : 36,
                             child: ListView.separated(
                               scrollDirection: Axis.horizontal,
                               padding: EdgeInsets.symmetric(
@@ -1004,7 +1004,7 @@ class _SponsoredOpportunitiesScreenState
                               ),
                               itemCount: _buildFilters(l10n).length,
                               separatorBuilder: (context, index) =>
-                                  const SizedBox(width: 8),
+                                  const SizedBox(width: 6),
                               itemBuilder: (context, index) {
                                 final filter = _buildFilters(l10n)[index];
                                 final isActive = filter.value == _activeFilter;
@@ -1284,7 +1284,7 @@ class _SponsoredFilterChip extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(999),
         child: Ink(
-          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 9),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
           decoration: BoxDecoration(
             gradient: isActive
                 ? LinearGradient(
@@ -1307,8 +1307,8 @@ class _SponsoredFilterChip extends StatelessWidget {
                 ? [
                     BoxShadow(
                       color: _SponsoredPalette.accent.withValues(alpha: 0.18),
-                      blurRadius: 14,
-                      offset: const Offset(0, 6),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
                     ),
                   ]
                 : null,
@@ -1316,7 +1316,7 @@ class _SponsoredFilterChip extends StatelessWidget {
           child: Text(
             label,
             style: GoogleFonts.poppins(
-              fontSize: 11.5,
+              fontSize: 10.6,
               fontWeight: FontWeight.w600,
               color: isActive ? Colors.white : _SponsoredPalette.textPrimary,
             ),

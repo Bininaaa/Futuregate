@@ -1069,17 +1069,7 @@ class _JobsScreenState extends State<JobsScreen> {
                 sliver: SliverToBoxAdapter(
                   child: _SectionHeader(
                     title: AppLocalizations.of(context)!.uiCategories,
-                    actionLabel: 'See All',
                     compact: isCompact,
-                    onAction: () {
-                      if (_selectedCategoryKey == null) {
-                        return;
-                      }
-
-                      setState(() {
-                        _selectedCategoryKey = null;
-                      });
-                    },
                   ),
                 ),
               ),
@@ -1809,16 +1799,12 @@ class _JobsSearchBar extends StatelessWidget {
 class _SectionHeader extends StatelessWidget {
   final String title;
   final String? countLabel;
-  final String? actionLabel;
-  final VoidCallback? onAction;
   final Widget? trailing;
   final bool compact;
 
   const _SectionHeader({
     required this.title,
     this.countLabel,
-    this.actionLabel,
-    this.onAction,
     this.trailing,
     required this.compact,
   });
@@ -1871,25 +1857,7 @@ class _SectionHeader extends StatelessWidget {
             ],
           ),
         ),
-        if (trailing != null)
-          trailing!
-        else if (actionLabel != null)
-          TextButton(
-            onPressed: onAction,
-            style: TextButton.styleFrom(
-              foregroundColor: OpportunityDashboardPalette.primary,
-              padding: EdgeInsets.symmetric(horizontal: compact ? 4 : 6),
-              minimumSize: Size(0, compact ? 28 : 36),
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            ),
-            child: Text(
-              actionLabel!,
-              style: GoogleFonts.poppins(
-                fontSize: compact ? 11 : 13,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
+        ?trailing,
       ],
     );
   }
@@ -3748,31 +3716,39 @@ class _CompanyLogoTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final hasLogo = logoUrl.trim().isNotEmpty;
     final trimmedCompanyName = companyName.trim();
     final initial = trimmedCompanyName.isEmpty
         ? 'A'
         : trimmedCompanyName[0].toUpperCase();
+    Widget fallbackText(Color color) => Center(
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Text(
+          initial,
+          textAlign: TextAlign.center,
+          maxLines: 1,
+          style: GoogleFonts.poppins(
+            fontSize: size * 0.42,
+            height: 1,
+            fontWeight: FontWeight.w700,
+            color: color,
+          ),
+        ),
+      ),
+    );
 
     return Container(
       width: size,
       height: size,
-      padding: logoUrl.isEmpty ? EdgeInsets.zero : EdgeInsets.all(size * 0.12),
+      padding: hasLogo ? EdgeInsets.all(size * 0.12) : EdgeInsets.zero,
       decoration: BoxDecoration(
-        color: backgroundColor,
+        color: hasLogo ? backgroundColor : foregroundColor,
         borderRadius: BorderRadius.circular(16),
       ),
       clipBehavior: Clip.antiAlias,
-      child: logoUrl.isEmpty
-          ? Center(
-              child: Text(
-                initial,
-                style: GoogleFonts.poppins(
-                  fontSize: size * 0.36,
-                  fontWeight: FontWeight.w700,
-                  color: foregroundColor,
-                ),
-              ),
-            )
+      child: !hasLogo
+          ? fallbackText(Colors.white)
           : CachedNetworkImage(
               imageUrl: logoUrl,
               fit: BoxFit.contain,
@@ -3786,16 +3762,8 @@ class _CompanyLogoTile extends StatelessWidget {
                   ),
                 ),
               ),
-              errorWidget: (context, url, error) => Center(
-                child: Text(
-                  initial,
-                  style: GoogleFonts.poppins(
-                    fontSize: size * 0.36,
-                    fontWeight: FontWeight.w700,
-                    color: foregroundColor,
-                  ),
-                ),
-              ),
+              errorWidget: (context, url, error) =>
+                  fallbackText(foregroundColor),
             ),
     );
   }

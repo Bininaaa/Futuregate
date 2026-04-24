@@ -1254,40 +1254,6 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
           : _shouldResubmitAfterEdit
           ? 'Update the idea, clear the rejection, and send it back for review.'
           : 'Build an idea profile that feels ready for collaborators, feedback, and student momentum.',
-      badges: <AppBadgeData>[
-        AppBadgeData(
-          label: _selectedCategory,
-          icon: innovationCategoryIcon(_selectedCategory),
-          color: _theme.accent,
-        ),
-        AppBadgeData(
-          label: _selectedStage,
-          icon: Icons.timeline_rounded,
-          color: innovationStageColor(_selectedStage),
-        ),
-      ],
-      footer: Row(
-        children: <Widget>[
-          Expanded(
-            child: AppMetaRow(
-              theme: _theme,
-              label: AppLocalizations.of(context)!.uiVisibility,
-              value: _isPublic ? 'Public-ready' : 'Private draft',
-              icon: _isPublic
-                  ? Icons.public_rounded
-                  : Icons.lock_outline_rounded,
-            ),
-          ),
-          Expanded(
-            child: AppMetaRow(
-              theme: _theme,
-              label: AppLocalizations.of(context)!.uiFocus,
-              value: academicLevelLabel(_selectedLevel),
-              icon: Icons.school_outlined,
-            ),
-          ),
-        ],
-      ),
     );
   }
 

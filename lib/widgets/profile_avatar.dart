@@ -232,49 +232,71 @@ class _ProfileAvatarState extends State<ProfileAvatar> {
         backgroundColor: _fallbackColor(role),
         child: Icon(
           Icons.business,
-          color: const Color(0xFF004E98),
+          color: _fallbackTextColor(role),
           size: widget.radius,
         ),
       );
     }
 
-    final initial = name.isNotEmpty
-        ? name[0].toUpperCase()
-        : (role == 'admin' ? 'A' : '?');
+    final initial = _fallbackInitial(name, role);
+    final diameter = widget.radius * 2;
 
-    return CircleAvatar(
-      radius: widget.radius,
-      backgroundColor: _fallbackColor(role),
-      child: Text(
-        initial,
-        style: GoogleFonts.poppins(
-          fontSize: widget.radius * 0.75,
-          fontWeight: FontWeight.w600,
-          color: _fallbackTextColor(role),
+    return Container(
+      width: diameter,
+      height: diameter,
+      decoration: BoxDecoration(
+        color: _fallbackColor(role),
+        shape: BoxShape.circle,
+      ),
+      alignment: Alignment.center,
+      child: Padding(
+        padding: EdgeInsets.all(widget.radius * 0.28),
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            initial,
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            style: GoogleFonts.poppins(
+              fontSize: widget.radius,
+              height: 1,
+              fontWeight: FontWeight.w700,
+              color: _fallbackTextColor(role),
+            ),
+          ),
         ),
       ),
     );
   }
 
-  Color _fallbackColor(String role) {
-    switch (role) {
-      case 'company':
-        return const Color(0xFF004E98).withValues(alpha: 0.12);
-      case 'admin':
-        return const Color(0xFFFF8C00).withValues(alpha: 0.15);
-      default:
-        return const Color(0xFF3A6EA5).withValues(alpha: 0.2);
+  String _fallbackInitial(String name, String role) {
+    final trimmed = name.trim();
+    if (trimmed.isNotEmpty) {
+      return trimmed.substring(0, 1).toUpperCase();
     }
+
+    return role == 'admin' ? 'A' : '?';
   }
 
-  Color _fallbackTextColor(String role) {
+  Color _fallbackColor(String role) {
     switch (role) {
       case 'company':
         return const Color(0xFF004E98);
       case 'admin':
         return const Color(0xFFFF8C00);
       default:
-        return const Color(0xFF004E98);
+        return const Color(0xFF4F46E5);
+    }
+  }
+
+  Color _fallbackTextColor(String role) {
+    switch (role) {
+      case 'company':
+        return Colors.white;
+      case 'admin':
+        return Colors.white;
+      default:
+        return Colors.white;
     }
   }
 }

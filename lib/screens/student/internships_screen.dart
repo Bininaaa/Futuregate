@@ -75,7 +75,6 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
   final ScrollController _scrollController = ScrollController();
-  final GlobalKey _availableSectionKey = GlobalKey();
 
   String _searchQuery = '';
   _InternshipQuickFilter? _selectedQuickFilter;
@@ -204,20 +203,6 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
       error ?? message,
       title: error == null ? 'Saved items updated' : 'Save unavailable',
       type: error == null ? AppFeedbackType.success : AppFeedbackType.error,
-    );
-  }
-
-  Future<void> _scrollToAvailableSection() async {
-    final sectionContext = _availableSectionKey.currentContext;
-    if (sectionContext == null) {
-      return;
-    }
-
-    await Scrollable.ensureVisible(
-      sectionContext,
-      duration: const Duration(milliseconds: 320),
-      curve: Curves.easeOutCubic,
-      alignment: 0.02,
     );
   }
 
@@ -772,8 +757,6 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
                       title: AppLocalizations.of(
                         context,
                       )!.uiFeaturedInternships,
-                      actionLabel: 'Browse all',
-                      onAction: _scrollToAvailableSection,
                     ),
                     const SizedBox(height: 10),
                     if (filteredInternships.isEmpty)
@@ -802,21 +785,18 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
                         isSaving: savedProvider.isLoading,
                       ),
                     const SizedBox(height: 20),
-                    Container(
-                      key: _availableSectionKey,
-                      child: _InternshipSectionHeader(
-                        title: AppLocalizations.of(
-                          context,
-                        )!.uiAvailableInternships,
-                        countLabel: availableCountLabel,
-                        trailing: _InternshipViewToggle(
-                          viewMode: _viewMode,
-                          onChanged: (nextViewMode) {
-                            setState(() {
-                              _viewMode = nextViewMode;
-                            });
-                          },
-                        ),
+                    _InternshipSectionHeader(
+                      title: AppLocalizations.of(
+                        context,
+                      )!.uiAvailableInternships,
+                      countLabel: availableCountLabel,
+                      trailing: _InternshipViewToggle(
+                        viewMode: _viewMode,
+                        onChanged: (nextViewMode) {
+                          setState(() {
+                            _viewMode = nextViewMode;
+                          });
+                        },
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -1074,15 +1054,11 @@ class _InternshipFilterChipRow extends StatelessWidget {
 class _InternshipSectionHeader extends StatelessWidget {
   final String title;
   final String? countLabel;
-  final String? actionLabel;
-  final VoidCallback? onAction;
   final Widget? trailing;
 
   const _InternshipSectionHeader({
     required this.title,
     this.countLabel,
-    this.actionLabel,
-    this.onAction,
     this.trailing,
   });
 
@@ -1130,53 +1106,7 @@ class _InternshipSectionHeader extends StatelessWidget {
             ],
           ),
         ),
-        if (trailing != null) ...[
-          const SizedBox(width: 12),
-          trailing!,
-        ] else if (actionLabel != null && onAction != null) ...[
-          const SizedBox(width: 12),
-          Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: onAction,
-              borderRadius: BorderRadius.circular(16),
-              child: Ink(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.transparent,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: OpportunityDashboardPalette.border.withValues(
-                      alpha: 0.9,
-                    ),
-                  ),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      actionLabel!,
-                      style: GoogleFonts.poppins(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        color: OpportunityDashboardPalette.primary,
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-                    Icon(
-                      Icons.arrow_outward_rounded,
-                      size: 14,
-                      color: OpportunityDashboardPalette.primary,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
+        if (trailing != null) ...[const SizedBox(width: 12), trailing!],
       ],
     );
   }
@@ -3225,39 +3155,43 @@ class _CompanyLogoTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final hasLogo = logoUrl.trim().isNotEmpty;
+    final logoInitial = fallbackLabel.trim().isEmpty
+        ? 'C'
+        : fallbackLabel.trim().substring(0, 1).toUpperCase();
+    Widget fallbackText(Color color) => Center(
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Text(
+          logoInitial,
+          textAlign: TextAlign.center,
+          maxLines: 1,
+          style: GoogleFonts.poppins(
+            fontSize: size * 0.42,
+            height: 1,
+            fontWeight: FontWeight.w700,
+            color: color,
+          ),
+        ),
+      ),
+    );
+
     return Container(
       width: size,
       height: size,
-      padding: logoUrl.isEmpty ? EdgeInsets.zero : EdgeInsets.all(size * 0.12),
+      padding: hasLogo ? EdgeInsets.all(size * 0.12) : EdgeInsets.zero,
       decoration: BoxDecoration(
-        color: backgroundColor,
+        color: hasLogo ? backgroundColor : foregroundColor,
         borderRadius: BorderRadius.circular(borderRadius),
       ),
       clipBehavior: Clip.antiAlias,
-      child: logoUrl.isEmpty
-          ? Center(
-              child: Text(
-                fallbackLabel,
-                style: GoogleFonts.poppins(
-                  fontSize: size * 0.38,
-                  fontWeight: FontWeight.w700,
-                  color: foregroundColor,
-                ),
-              ),
-            )
+      child: !hasLogo
+          ? fallbackText(Colors.white)
           : CachedNetworkImage(
               imageUrl: logoUrl,
               fit: BoxFit.contain,
-              errorWidget: (context, url, error) => Center(
-                child: Text(
-                  fallbackLabel,
-                  style: GoogleFonts.poppins(
-                    fontSize: size * 0.38,
-                    fontWeight: FontWeight.w700,
-                    color: foregroundColor,
-                  ),
-                ),
-              ),
+              errorWidget: (context, url, error) =>
+                  fallbackText(foregroundColor),
             ),
     );
   }
