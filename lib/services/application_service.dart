@@ -6,6 +6,8 @@ import '../models/student_application_item_model.dart';
 import 'notification_worker_service.dart';
 import 'cv_service.dart';
 import '../utils/application_status.dart';
+import 'interfaces/i_application_service.dart';
+import '../utils/crashlytics_logger.dart';
 
 enum ApplicationEligibilityStatus {
   requiresLogin,
@@ -15,12 +17,13 @@ enum ApplicationEligibilityStatus {
   unavailable,
 }
 
-class ApplicationService {
+class ApplicationService implements IApplicationService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final NotificationWorkerService _notificationWorker =
       NotificationWorkerService();
   final CvService _cvService = CvService();
 
+  @override
   Future<int> getApplicationsCount(String studentId) async {
     final normalizedStudentId = studentId.trim();
     if (normalizedStudentId.isEmpty) {
@@ -30,6 +33,7 @@ class ApplicationService {
     return (await getSubmittedApplications(normalizedStudentId)).length;
   }
 
+  @override
   Future<List<StudentApplicationItemModel>> getSubmittedApplications(
     String studentId, {
     bool onlyVisibleOpportunities = true,
@@ -96,6 +100,7 @@ class ApplicationService {
         .toList(growable: false);
   }
 
+  @override
   Future<ApplicationEligibilityStatus> getEligibility({
     required String studentId,
     required String opportunityId,
@@ -151,6 +156,7 @@ class ApplicationService {
     return ApplicationEligibilityStatus.available;
   }
 
+  @override
   Future<void> applyToOpportunity({
     required String studentId,
     required String studentName,
@@ -260,12 +266,14 @@ class ApplicationService {
         }
       }
 
+      recordNonFatal(e, StackTrace.current, context: 'apply_to_opportunity');
       rethrow;
     }
 
     await _notificationWorker.notifyApplicationSubmitted(applicationRef.id);
   }
 
+  @override
   Future<void> withdrawApplication({
     required String studentId,
     required String opportunityId,

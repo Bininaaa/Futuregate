@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 import '../config/cloudflare_storage_config.dart';
+import '../utils/image_compress_utils.dart';
 
 class StoredFileUploadResult {
   final String objectKey;
@@ -93,10 +94,14 @@ class FileStorageService {
       fallback: 'image/jpeg',
     );
 
+    final compressedBytes = fileBytes != null
+        ? await ImageCompressUtils.compress(fileBytes)
+        : null;
+
     return _uploadFile(
       userId: userId,
       filePath: filePath,
-      fileBytes: fileBytes,
+      fileBytes: compressedBytes,
       fileName: sanitizedFileName,
       mimeType: mimeType,
       fileType: 'profile_photo',
@@ -137,10 +142,14 @@ class FileStorageService {
       fallback: 'image/jpeg',
     );
 
+    final compressedBytes = fileBytes != null
+        ? await ImageCompressUtils.compress(fileBytes)
+        : null;
+
     return _uploadFile(
       userId: userId,
       filePath: filePath,
-      fileBytes: fileBytes,
+      fileBytes: compressedBytes,
       fileName: sanitizedFileName,
       mimeType: mimeType,
       fileType: 'chat_image',
@@ -159,10 +168,14 @@ class FileStorageService {
       fallback: 'image/jpeg',
     );
 
+    final compressedBytes = fileBytes != null
+        ? await ImageCompressUtils.compress(fileBytes)
+        : null;
+
     return _uploadFile(
       userId: userId,
       filePath: filePath,
-      fileBytes: fileBytes,
+      fileBytes: compressedBytes,
       fileName: sanitizedFileName,
       mimeType: mimeType,
       fileType: 'project_idea_image',

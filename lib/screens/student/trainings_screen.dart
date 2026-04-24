@@ -428,8 +428,10 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
             label: hasTranslation && showingTranslated
                 ? '${l10n.translatedFromLabel} ${ContentLanguage.localizedName(context, training.sourceLanguage)}'
                 : '${l10n.originalLanguageLabel}: ${ContentLanguage.localizedName(context, training.sourceLanguage)}',
-            backgroundColor: accent.primary.withValues(alpha: 0.12),
-            foregroundColor: accent.primary,
+            backgroundColor: OpportunityDashboardPalette.surface.withValues(
+              alpha: 0.96,
+            ),
+            foregroundColor: OpportunityDashboardPalette.textPrimary,
           ),
       ],
     );

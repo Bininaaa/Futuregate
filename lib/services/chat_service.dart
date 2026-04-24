@@ -6,16 +6,19 @@ import '../models/message_model.dart';
 import '../models/user_model.dart';
 import '../utils/application_status.dart';
 import 'file_storage_service.dart';
+import 'interfaces/i_chat_service.dart';
 import 'notification_worker_service.dart';
 import 'worker_api_service.dart';
+import '../utils/crashlytics_logger.dart';
 
-class ChatService {
+class ChatService implements IChatService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final NotificationWorkerService _notificationWorker =
       NotificationWorkerService();
   final StorageService _storageService = StorageService();
   final WorkerApiService _workerApi = WorkerApiService();
 
+  @override
   Stream<List<ConversationModel>> getConversationsAsStudent(String userId) {
     return _firestore
         .collection('conversations')
@@ -25,6 +28,7 @@ class ChatService {
         .map((snapshot) => _mapConversations(snapshot.docs));
   }
 
+  @override
   Stream<List<ConversationModel>> getConversationsAsCompany(String userId) {
     return _firestore
         .collection('conversations')
@@ -34,6 +38,7 @@ class ChatService {
         .map((snapshot) => _mapConversations(snapshot.docs));
   }
 
+  @override
   Stream<ConversationModel?> watchConversation(String conversationId) {
     return _firestore
         .collection('conversations')
@@ -52,6 +57,7 @@ class ChatService {
         });
   }
 
+  @override
   Stream<List<MessageModel>> getMessages(String conversationId) {
     return _firestore
         .collection('conversations')
@@ -62,6 +68,7 @@ class ChatService {
         .map((snapshot) => _mapMessages(snapshot.docs));
   }
 
+  @override
   Future<ConversationModel> getOrCreateConversation({
     required String studentId,
     required String studentName,
@@ -231,6 +238,7 @@ class ChatService {
     return conversation;
   }
 
+  @override
   Future<void> sendMessage({
     required String conversationId,
     required String senderId,
@@ -414,6 +422,7 @@ class ChatService {
         );
       }
 
+      recordNonFatal(error, StackTrace.current, context: 'chat_send_message');
       rethrow;
     }
 
@@ -466,6 +475,7 @@ class ChatService {
     );
   }
 
+  @override
   Future<void> archiveConversation({
     required String conversationId,
     required String userId,
@@ -501,6 +511,7 @@ class ChatService {
     );
   }
 
+  @override
   Future<void> deleteConversation({
     required String conversationId,
     required String userId,
@@ -543,6 +554,7 @@ class ChatService {
         .toList();
   }
 
+  @override
   Future<void> markMessagesAsRead({
     required String conversationId,
     required String currentUserId,
@@ -616,6 +628,7 @@ class ChatService {
     }
   }
 
+  @override
   Stream<int> getUnreadCount({
     required String conversationId,
     required String currentUserId,

@@ -7,6 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../config/app_navigation.dart';
 import '../models/user_model.dart';
 import '../services/auth_service.dart';
+import '../utils/crashlytics_logger.dart';
 
 class AuthProvider extends ChangeNotifier {
   final AuthService _authService = AuthService();
@@ -31,7 +32,7 @@ class AuthProvider extends ChangeNotifier {
           return;
         }
 
-        debugPrint('Firebase auth state listener error: $error');
+        recordNonFatal(error, stackTrace, context: 'auth_state_listener');
       },
     );
   }
@@ -103,7 +104,7 @@ class AuthProvider extends ChangeNotifier {
         notifyListeners();
         return;
       }
-      debugPrint('loadCurrentUser error: $e');
+      recordNonFatal(e, StackTrace.current, context: 'load_current_user');
     } finally {
       if (expectedUid == null ||
           _authService.currentFirebaseUser?.uid == expectedUid) {
@@ -185,7 +186,7 @@ class AuthProvider extends ChangeNotifier {
               return;
             }
 
-            debugPrint('User profile listener error: $error');
+            recordNonFatal(error, stackTrace, context: 'user_doc_listener');
           },
         );
   }

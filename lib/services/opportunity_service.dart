@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/opportunity_model.dart';
+import 'interfaces/i_opportunity_service.dart';
 
-class OpportunityService {
+class OpportunityService implements IOpportunityService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  @override
   Future<List<OpportunityModel>> getAllOpportunities() async {
     final snapshot = await _firestore
         .collection('opportunities')
@@ -37,6 +39,7 @@ class OpportunityService {
     return opportunities;
   }
 
+  @override
   Future<OpportunityModel?> getOpportunityById(String id) async {
     final doc = await _firestore.collection('opportunities').doc(id).get();
 
@@ -48,6 +51,7 @@ class OpportunityService {
     return opportunity.isVisibleToStudents() ? opportunity : null;
   }
 
+  @override
   Future<List<OpportunityModel>> getFeaturedOpportunities() async {
     final snapshot = await _firestore
         .collection('opportunities')

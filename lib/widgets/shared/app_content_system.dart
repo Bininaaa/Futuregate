@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../theme/app_typography.dart';
 import '../../theme/app_colors.dart';
@@ -574,12 +575,14 @@ class AppEditableListField extends StatefulWidget {
 
 class _AppEditableListFieldState extends State<AppEditableListField> {
   late AppEditableListController _controller;
+  late final FocusNode _inputFocusNode;
   FormFieldState<List<String>>? _fieldState;
   bool _ownsController = false;
 
   @override
   void initState() {
     super.initState();
+    _inputFocusNode = FocusNode(onKeyEvent: _handleInputKeyEvent);
     _attachController(widget.listController);
   }
 
@@ -595,6 +598,7 @@ class _AppEditableListFieldState extends State<AppEditableListField> {
   @override
   void dispose() {
     _detachController();
+    _inputFocusNode.dispose();
     super.dispose();
   }
 
@@ -613,6 +617,22 @@ class _AppEditableListFieldState extends State<AppEditableListField> {
     }
   }
 
+  KeyEventResult _handleInputKeyEvent(FocusNode node, KeyEvent event) {
+    if (event is! KeyDownEvent) {
+      return KeyEventResult.ignored;
+    }
+
+    final isEnter =
+        event.logicalKey == LogicalKeyboardKey.enter ||
+        event.logicalKey == LogicalKeyboardKey.numpadEnter;
+    if (!isEnter || HardwareKeyboard.instance.isShiftPressed) {
+      return KeyEventResult.ignored;
+    }
+
+    _commitPendingInput();
+    return KeyEventResult.handled;
+  }
+
   @override
   Widget build(BuildContext context) {
     return FormField<List<String>>(
@@ -622,10 +642,10 @@ class _AppEditableListFieldState extends State<AppEditableListField> {
         _fieldState = field;
         final showLabel = widget.label.trim().isNotEmpty;
         final showEmptyText = widget.emptyText.trim().isNotEmpty;
+        final currentValues = field.value ?? widget.values;
 
         void removeItem(String item) {
-          final current = field.value ?? widget.values;
-          final next = current
+          final next = currentValues
               .where(
                 (value) =>
                     value.trim().toLowerCase() != item.trim().toLowerCase(),
@@ -636,9 +656,7 @@ class _AppEditableListFieldState extends State<AppEditableListField> {
         }
 
         void addExample(String item) {
-          final next = _mergeUnique(field.value ?? widget.values, <String>[
-            item,
-          ]);
+          final next = _mergeUnique(currentValues, <String>[item]);
           widget.onChanged(next);
           field.didChange(next);
         }
@@ -651,37 +669,37 @@ class _AppEditableListFieldState extends State<AppEditableListField> {
             if (showLabel)
               Text(widget.label, style: widget.theme.label(size: 12)),
             if (showLabel) const SizedBox(height: AppContentSpacing.xs),
-            if (widget.values.isEmpty)
-              if (showEmptyText)
-                Text(
-                  widget.emptyText,
-                  style: widget.theme.body(
-                    size: 11.8,
-                    color: widget.theme.textMuted,
-                  ),
-                )
-              else
-                LayoutBuilder(
-                  builder: (context, constraints) {
-                    return Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: widget.values
-                          .map(
-                            (item) => _AppEditableListChip(
-                              theme: widget.theme,
-                              label: item,
-                              maxWidth: constraints.maxWidth,
-                              onRemove: () => removeItem(item),
-                            ),
-                          )
-                          .toList(growable: false),
-                    );
-                  },
+            if (currentValues.isEmpty && showEmptyText)
+              Text(
+                widget.emptyText,
+                style: widget.theme.body(
+                  size: 11.8,
+                  color: widget.theme.textMuted,
                 ),
+              )
+            else if (currentValues.isNotEmpty)
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  return Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: currentValues
+                        .map(
+                          (item) => _AppEditableListChip(
+                            theme: widget.theme,
+                            label: item,
+                            maxWidth: constraints.maxWidth,
+                            onRemove: () => removeItem(item),
+                          ),
+                        )
+                        .toList(growable: false),
+                  );
+                },
+              ),
             const SizedBox(height: AppContentSpacing.sm),
             TextFormField(
               controller: _controller._textController,
+              focusNode: _inputFocusNode,
               minLines: 1,
               maxLines: 3,
               textInputAction: TextInputAction.done,

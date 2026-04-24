@@ -1,8 +1,8 @@
 {
   "$schema": "./.vscode/schemas/package.schema.json",
-  "name": "avenirdz",
-  "version": "1.0.0",
-  "description": "A new Flutter project.",
+  "name": "futuregate",
+  "version": "2.0.0",
+  "description": "FutureGate — connect students with opportunities, scholarships, and internships.",
   "main": "index.js",
   "directories": {
     "lib": "lib",
