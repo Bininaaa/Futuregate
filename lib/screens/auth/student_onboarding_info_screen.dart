@@ -429,11 +429,16 @@ class _ResearchCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AuthFlowPalette.orangeSoft.withValues(alpha: 0.55),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: AuthFlowPalette.orange.withValues(alpha: 0.2),
+        gradient: LinearGradient(
+          colors: <Color>[
+            authFlowTheme.accentSoft.withValues(alpha: 0.82),
+            authFlowTheme.secondary.withValues(alpha: 0.08),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: authFlowTheme.accent.withValues(alpha: 0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -452,14 +457,14 @@ class _ResearchCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.7),
+                  color: authFlowTheme.surface.withValues(alpha: 0.86),
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
                   l10n.uiOptional,
                   style: authFlowTheme.label(
                     size: 10.7,
-                    color: AuthFlowPalette.orange,
+                    color: authFlowTheme.accent,
                     weight: FontWeight.w800,
                   ),
                 ),

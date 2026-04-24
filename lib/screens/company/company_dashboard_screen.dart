@@ -26,8 +26,13 @@ import 'publish_opportunity_screen.dart';
 
 class CompanyDashboardScreen extends StatefulWidget {
   final bool embedded;
+  final VoidCallback? onOpenApplications;
 
-  const CompanyDashboardScreen({super.key, this.embedded = false});
+  const CompanyDashboardScreen({
+    super.key,
+    this.embedded = false,
+    this.onOpenApplications,
+  });
 
   @override
   State<CompanyDashboardScreen> createState() => _CompanyDashboardScreenState();
@@ -71,6 +76,12 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
     BuildContext context, {
     String? applicationId,
   }) async {
+    if ((applicationId ?? '').trim().isEmpty &&
+        widget.onOpenApplications != null) {
+      widget.onOpenApplications!();
+      return;
+    }
+
     await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => ApplicationsScreen(
@@ -1010,19 +1021,22 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
               ),
               const SizedBox(width: 16),
               Container(
+                constraints: const BoxConstraints(minWidth: 76),
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 12,
+                  horizontal: 12,
+                  vertical: 11,
                 ),
                 decoration: BoxDecoration(
                   color: CompanyDashboardPalette.primarySoft,
                   borderRadius: BorderRadius.circular(18),
                 ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
                       '$totalThisWeek',
+                      textAlign: TextAlign.center,
                       style: AppTypography.product(
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
@@ -1031,6 +1045,9 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
                     ),
                     Text(
                       _l10n.uiThisWeek,
+                      textAlign: TextAlign.center,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: AppTypography.product(
                         fontSize: 11,
                         fontWeight: FontWeight.w500,
@@ -1063,18 +1080,24 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
     final maxPoint = chartPoints.fold<double>(0, math.max);
     final maxY = math.max(4, maxPoint.ceil() + 1).toDouble();
     final interval = maxY <= 4 ? 1.0 : (maxY / 4).ceilToDouble();
+    final baselineInset = maxY <= 4 ? 0.35 : interval * 0.25;
 
     return LineChart(
       LineChartData(
         minX: 0,
         maxX: labels.isEmpty ? 6 : (labels.length - 1).toDouble(),
-        minY: 0,
+        minY: -baselineInset,
         maxY: maxY,
+        baselineY: 0,
+        clipData: const FlClipData.all(),
         gridData: FlGridData(
           show: true,
           drawVerticalLine: false,
           horizontalInterval: interval,
           getDrawingHorizontalLine: (value) {
+            if (value < 0) {
+              return const FlLine(color: Colors.transparent, strokeWidth: 0);
+            }
             return FlLine(
               color: CompanyDashboardPalette.border,
               strokeWidth: 1,
@@ -1092,14 +1115,15 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
           leftTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
-              reservedSize: 30,
+              reservedSize: 32,
               interval: interval,
               getTitlesWidget: (value, meta) {
                 if (value < 0 || value > maxY) {
                   return const SizedBox.shrink();
                 }
-                return Padding(
-                  padding: const EdgeInsets.only(right: 8),
+                return SideTitleWidget(
+                  meta: meta,
+                  space: 8,
                   child: Text(
                     value.toInt().toString(),
                     style: AppTypography.product(
@@ -1114,17 +1138,23 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
-              reservedSize: 26,
+              reservedSize: 34,
               interval: 1,
               getTitlesWidget: (value, meta) {
                 final index = value.toInt();
                 if (index < 0 || index >= labels.length) {
                   return const SizedBox.shrink();
                 }
-                return Padding(
-                  padding: const EdgeInsets.only(top: 8),
+                return SideTitleWidget(
+                  meta: meta,
+                  space: 10,
+                  fitInside: SideTitleFitInsideData.fromTitleMeta(
+                    meta,
+                    distanceFromEdge: 2,
+                  ),
                   child: Text(
                     labels[index],
+                    textAlign: TextAlign.center,
                     style: AppTypography.product(
                       fontSize: 10,
                       fontWeight: FontWeight.w500,
@@ -1163,6 +1193,9 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
         lineBarsData: [
           LineChartBarData(
             isCurved: true,
+            curveSmoothness: 0.18,
+            preventCurveOverShooting: true,
+            preventCurveOvershootingThreshold: 1,
             color: CompanyDashboardPalette.primary,
             barWidth: 4,
             isStrokeCapRound: true,

@@ -105,6 +105,21 @@ class UserModel {
 
   factory UserModel.fromMap(Map<String, dynamic> map) {
     final role = (map['role'] ?? '').toString();
+    final profileImage = _firstString(map, const [
+      'profileImage',
+      'photoURL',
+      'photoUrl',
+      'profileImageUrl',
+      'profilePhotoUrl',
+      'profilePictureUrl',
+      'avatarUrl',
+    ]);
+    final logo = _firstString(map, const [
+      'logo',
+      'companyLogo',
+      'logoUrl',
+      'companyLogoUrl',
+    ]);
 
     return UserModel(
       uid: map['uid'] ?? '',
@@ -113,7 +128,7 @@ class UserModel {
       role: role,
       phone: map['phone'] ?? '',
       location: map['location'] ?? '',
-      profileImage: map['profileImage'] ?? '',
+      profileImage: profileImage,
       academicLevel: map['academicLevel'],
       university: map['university'],
       fieldOfStudy: map['fieldOfStudy'],
@@ -122,7 +137,7 @@ class UserModel {
       sector: map['sector'],
       description: map['description'],
       website: map['website'],
-      logo: map['logo'],
+      logo: logo.isEmpty ? null : logo,
       adminLevel: map['adminLevel'],
       researchTopic: map['researchTopic'],
       laboratory: map['laboratory'],
@@ -146,8 +161,9 @@ class UserModel {
       isActive: map['isActive'] ?? true,
       provider: map['provider'] ?? 'email',
       studentOnboardingPending: map['studentOnboardingPending'] == true,
-      preferredPostingLanguage:
-          (map['preferredPostingLanguage'] ?? '').toString().trim(),
+      preferredPostingLanguage: (map['preferredPostingLanguage'] ?? '')
+          .toString()
+          .trim(),
     );
   }
 
@@ -312,6 +328,17 @@ class UserModel {
     }
 
     return null;
+  }
+
+  static String _firstString(Map<String, dynamic> map, List<String> keys) {
+    for (final key in keys) {
+      final value = (map[key] ?? '').toString().trim();
+      if (value.isNotEmpty) {
+        return value;
+      }
+    }
+
+    return '';
   }
 
   static String _normalizeApprovalStatus(

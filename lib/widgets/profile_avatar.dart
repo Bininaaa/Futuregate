@@ -170,10 +170,20 @@ class _ProfileAvatarState extends State<ProfileAvatar> {
     }
 
     if (resolvedRole == 'company') {
-      return (resolvedUser.logo ?? '').trim();
+      final logo = (resolvedUser.logo ?? '').trim();
+      if (logo.isNotEmpty) {
+        return logo;
+      }
+
+      return resolvedUser.profileImage.trim();
     }
 
-    return resolvedUser.profileImage.trim();
+    final profileImage = resolvedUser.profileImage.trim();
+    if (profileImage.isNotEmpty) {
+      return profileImage;
+    }
+
+    return (resolvedUser.logo ?? '').trim();
   }
 
   Widget _buildNetworkAvatar(String url, String name, String role) {

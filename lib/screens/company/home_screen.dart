@@ -140,7 +140,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _screenForIndex(int index) {
     return switch (index) {
-      0 => const CompanyDashboardScreen(embedded: true),
+      0 => CompanyDashboardScreen(
+        embedded: true,
+        onOpenApplications: () => _selectIndex(2),
+      ),
       1 => const MyOpportunitiesScreen(embedded: true),
       2 => const ApplicationsScreen(embedded: true),
       3 => const ChatListScreen(embedded: true),

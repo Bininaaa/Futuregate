@@ -21,6 +21,8 @@ import 'admin_activity_center_screen.dart';
 import 'admin_content_center_screen.dart';
 import 'users_screen.dart';
 
+const int _dashboardPreviewLimit = 5;
+
 class AdminDashboardScreen extends StatefulWidget {
   final VoidCallback? onOpenUsers;
   final void Function(int tab, {String targetId})? onOpenContent;
@@ -86,9 +88,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           children: [
             AdminHeroCard(
               title: l10n.uiAdminControlRoom,
-              subtitle:
-                  l10n
-                      .uiReviewCompaniesContentAndPlatformActivityFromOneFocusedWorkspace,
+              subtitle: l10n
+                  .uiReviewCompaniesContentAndPlatformActivityFromOneFocusedWorkspace,
               icon: Icons.admin_panel_settings_rounded,
               accentColor: AdminPalette.secondary,
               actions: [
@@ -120,7 +121,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             AdminSectionHeader(
               eyebrow: l10n.uiSnapshot,
               title: l10n.uiPlatformOverview,
-              subtitle: l10n.uiTheHighLevelUserAndAccountPictureAdminsUsuallyNeed,
+              subtitle:
+                  l10n.uiTheHighLevelUserAndAccountPictureAdminsUsuallyNeed,
             ),
             const SizedBox(height: 12),
             _DashboardMetricGrid(
@@ -323,14 +325,20 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             ),
             const SizedBox(height: 12),
             _RecentActivityCard(
-              activities: provider.recentActivity.take(6).toList(),
+              activities: provider.recentActivity
+                  .take(_dashboardPreviewLimit)
+                  .toList(),
               onOpenActivity: _openActivityItem,
             ),
             const SizedBox(height: 16),
-            _RecentUsersCard(users: provider.recentUsers.take(6).toList()),
+            _RecentUsersCard(
+              users: provider.recentUsers.take(_dashboardPreviewLimit).toList(),
+            ),
             const SizedBox(height: 16),
             _RecentOpportunitiesCard(
-              opportunities: provider.recentOpportunities.take(6).toList(),
+              opportunities: provider.recentOpportunities
+                  .take(_dashboardPreviewLimit)
+                  .toList(),
             ),
           ],
         ),

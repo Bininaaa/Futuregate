@@ -378,7 +378,14 @@ class AdminService {
         .limit(5)
         .get();
 
-    return snapshot.docs.map((doc) => UserModel.fromMap(doc.data())).toList();
+    return snapshot.docs
+        .map(
+          (doc) => UserModel.fromMap({
+            ...doc.data(),
+            'uid': (doc.data()['uid'] ?? doc.id).toString(),
+          }),
+        )
+        .toList();
   }
 
   Future<List<Map<String, dynamic>>> getRecentOpportunities() async {
@@ -387,7 +394,7 @@ class AdminService {
     final snapshot = await _firestore
         .collection('opportunities')
         .orderBy('createdAt', descending: true)
-        .limit(6)
+        .limit(5)
         .get();
 
     return snapshot.docs.map((doc) => {...doc.data(), 'id': doc.id}).toList();
@@ -904,7 +911,14 @@ class AdminService {
         .orderBy('createdAt', descending: true)
         .get();
 
-    return snapshot.docs.map((doc) => UserModel.fromMap(doc.data())).toList();
+    return snapshot.docs
+        .map(
+          (doc) => UserModel.fromMap({
+            ...doc.data(),
+            'uid': (doc.data()['uid'] ?? doc.id).toString(),
+          }),
+        )
+        .toList();
   }
 
   Future<UserModel?> getUserById(String uid) async {

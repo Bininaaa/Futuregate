@@ -9,6 +9,7 @@ import '../../utils/document_upload_validator.dart';
 import '../../utils/validators.dart';
 import '../../widgets/shared/app_feedback.dart';
 import '../../widgets/password_strength_indicator.dart';
+import 'auth_flow_widgets.dart';
 
 class CompanyRegisterScreen extends StatefulWidget {
   const CompanyRegisterScreen({super.key});
@@ -124,112 +125,41 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
   @override
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
-    final colors = AppColors.of(context);
+    AppColors.of(context);
 
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(gradient: colors.shellGradient),
-        child: SafeArea(
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                _buildTopBar(),
-                _buildBrandingArea(),
-                _buildFormCard(authProvider),
-              ],
-            ),
+    return AuthFlowScaffold(
+      showBackButton: true,
+      showBrandBadge: false,
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 620),
+          child: AuthPanelCard(
+            padding: const EdgeInsets.all(28),
+            child: _buildFormCard(authProvider),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildTopBar() {
-    final colors = AppColors.of(context);
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Row(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              color: colors.surfaceElevated.withValues(
-                alpha: colors.isDarkMode ? 0.88 : 0.94,
-              ),
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: colors.shadow.withValues(
-                    alpha: colors.isDarkMode ? 0.28 : 0.08,
-                  ),
-                  blurRadius: 14,
-                  offset: const Offset(0, 6),
-                ),
-              ],
-            ),
-            child: IconButton(
-              icon: Icon(Icons.arrow_back, color: colors.primary),
-              onPressed: () => Navigator.pop(context),
-            ),
-          ),
-          const Spacer(),
-          const SizedBox(width: 48),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBrandingArea() {
+  Widget _buildBrandingHeader() {
     final l10n = AppLocalizations.of(context)!;
-    final colors = AppColors.of(context);
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 20),
-      child: Column(
-        children: [
-          Container(
-            width: 70,
-            height: 70,
-            decoration: BoxDecoration(
-              gradient: colors.primaryGradient,
-              borderRadius: BorderRadius.circular(18),
-              boxShadow: [
-                BoxShadow(
-                  color: colors.primary.withValues(
-                    alpha: colors.isDarkMode ? 0.34 : 0.26,
-                  ),
-                  blurRadius: 14,
-                  offset: const Offset(0, 5),
-                ),
-              ],
-            ),
-            child: const Icon(
-              Icons.business_center_rounded,
-              size: 36,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 14),
-          Text(
-            l10n.uiCompanyRegistration,
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              color: colors.textPrimary,
-            ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            l10n.uiRegisterCompanySubtitle,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 13,
-              color: colors.textSecondary,
-              height: 1.5,
-            ),
-          ),
-        ],
-      ),
+    return AuthCompactHeader(
+      icon: Icons.business_center_rounded,
+      title: l10n.uiCompanyRegistration,
+      subtitle: l10n.uiRegisterCompanySubtitle,
+      stickers: const <AuthStickerSpec>[
+        AuthStickerSpec(
+          icon: Icons.verified_user_outlined,
+          color: Color(0xFF3B22F6),
+        ),
+        AuthStickerSpec(icon: Icons.language_rounded, color: Color(0xFF14B8A6)),
+        AuthStickerSpec(
+          icon: Icons.description_outlined,
+          color: Color(0xFF2563EB),
+        ),
+      ],
     );
   }
 
@@ -237,142 +167,122 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
     final l10n = AppLocalizations.of(context)!;
     final colors = AppColors.of(context);
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20),
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
-      decoration: BoxDecoration(
-        color: colors.surfaceElevated,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
-        border: Border.all(
-          color: colors.border.withValues(
-            alpha: colors.isDarkMode ? 0.88 : 0.5,
+    return Form(
+      key: _formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _buildBrandingHeader(),
+          const SizedBox(height: 24),
+          _buildSectionLabel(l10n.uiCompanyInformation),
+          const SizedBox(height: 14),
+          _buildTextField(
+            controller: _companyNameController,
+            label: l10n.uiCompanyName,
+            hint: l10n.uiExTechCorpAlgeria,
+            icon: Icons.business_outlined,
+            validator: (v) => (v == null || v.trim().isEmpty)
+                ? l10n.uiCompanyNameIsRequired
+                : null,
           ),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: colors.shadow.withValues(
-              alpha: colors.isDarkMode ? 0.34 : 0.08,
+          const SizedBox(height: 14),
+          _buildTextField(
+            controller: _sectorController,
+            label: l10n.uiIndustrySectorOptional,
+            hint: l10n.uiExTechnologyHealthcareFinance,
+            icon: Icons.category_outlined,
+          ),
+          const SizedBox(height: 14),
+          _buildTextField(
+            controller: _descriptionController,
+            label: l10n.uiCompanyDescriptionOptional,
+            hint: l10n.uiBriefDescriptionOfYourOrganization,
+            icon: Icons.description_outlined,
+            maxLines: 3,
+          ),
+          const SizedBox(height: 18),
+          _buildCommercialRegisterSection(),
+          const SizedBox(height: 24),
+          _buildSectionLabel(l10n.uiAccountDetails),
+          const SizedBox(height: 14),
+          _buildTextField(
+            controller: _emailController,
+            label: l10n.uiBusinessEmail,
+            hint: l10n.uiContactEmailHint,
+            icon: Icons.email_outlined,
+            keyboardType: TextInputType.emailAddress,
+            validator: Validators.email(l10n),
+          ),
+          const SizedBox(height: 14),
+          _buildTextField(
+            controller: _passwordController,
+            label: l10n.uiPassword,
+            hint: '\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022',
+            icon: Icons.lock_outline,
+            obscureText: _obscurePassword,
+            suffixIcon: IconButton(
+              icon: Icon(
+                _obscurePassword
+                    ? Icons.visibility_off_outlined
+                    : Icons.visibility_outlined,
+                size: 20,
+                color: colors.textMuted,
+              ),
+              onPressed: () =>
+                  setState(() => _obscurePassword = !_obscurePassword),
             ),
-            blurRadius: 24,
-            offset: const Offset(0, -6),
+            validator: Validators.password(l10n),
           ),
+          PasswordStrengthIndicator(password: _passwordText),
+          const SizedBox(height: 14),
+          _buildTextField(
+            controller: _confirmPasswordController,
+            label: l10n.uiConfirmPassword,
+            hint: '\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022',
+            icon: Icons.lock_outline,
+            obscureText: _obscureConfirm,
+            suffixIcon: IconButton(
+              icon: Icon(
+                _obscureConfirm
+                    ? Icons.visibility_off_outlined
+                    : Icons.visibility_outlined,
+                size: 20,
+                color: colors.textMuted,
+              ),
+              onPressed: () =>
+                  setState(() => _obscureConfirm = !_obscureConfirm),
+            ),
+            validator: Validators.confirmPassword(
+              l10n,
+              _passwordController.text,
+            ),
+          ),
+          const SizedBox(height: 24),
+          _buildSectionLabel(l10n.uiContactOptional),
+          const SizedBox(height: 14),
+          _buildTextField(
+            controller: _phoneController,
+            label: l10n.uiPhoneNumber,
+            hint: l10n.uiPhoneNumberHint,
+            icon: Icons.phone_outlined,
+            keyboardType: TextInputType.phone,
+          ),
+          const SizedBox(height: 14),
+          _buildTextField(
+            controller: _websiteController,
+            label: l10n.uiWebsite,
+            hint: l10n.uiWebsiteHint,
+            icon: Icons.language_outlined,
+            keyboardType: TextInputType.url,
+          ),
+          const SizedBox(height: 28),
+          _buildRegisterButton(authProvider),
+          const SizedBox(height: 16),
+          _buildLoginLink(),
+          const SizedBox(height: 12),
+          _buildTermsText(),
+          const SizedBox(height: 16),
         ],
-      ),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _buildSectionLabel(l10n.uiCompanyInformation),
-            const SizedBox(height: 14),
-            _buildTextField(
-              controller: _companyNameController,
-              label: l10n.uiCompanyName,
-              hint: l10n.uiExTechCorpAlgeria,
-              icon: Icons.business_outlined,
-              validator: (v) => (v == null || v.trim().isEmpty)
-                  ? l10n.uiCompanyNameIsRequired
-                  : null,
-            ),
-            const SizedBox(height: 14),
-            _buildTextField(
-              controller: _sectorController,
-              label: l10n.uiIndustrySectorOptional,
-              hint: l10n.uiExTechnologyHealthcareFinance,
-              icon: Icons.category_outlined,
-            ),
-            const SizedBox(height: 14),
-            _buildTextField(
-              controller: _descriptionController,
-              label: l10n.uiCompanyDescriptionOptional,
-              hint: l10n.uiBriefDescriptionOfYourOrganization,
-              icon: Icons.description_outlined,
-              maxLines: 3,
-            ),
-            const SizedBox(height: 18),
-            _buildCommercialRegisterSection(),
-            const SizedBox(height: 24),
-            _buildSectionLabel(l10n.uiAccountDetails),
-            const SizedBox(height: 14),
-            _buildTextField(
-              controller: _emailController,
-              label: l10n.uiBusinessEmail,
-              hint: l10n.uiContactEmailHint,
-              icon: Icons.email_outlined,
-              keyboardType: TextInputType.emailAddress,
-              validator: Validators.email(l10n),
-            ),
-            const SizedBox(height: 14),
-            _buildTextField(
-              controller: _passwordController,
-              label: l10n.uiPassword,
-              hint: '\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022',
-              icon: Icons.lock_outline,
-              obscureText: _obscurePassword,
-              suffixIcon: IconButton(
-                icon: Icon(
-                  _obscurePassword
-                      ? Icons.visibility_off_outlined
-                      : Icons.visibility_outlined,
-                  size: 20,
-                  color: colors.textMuted,
-                ),
-                onPressed: () =>
-                    setState(() => _obscurePassword = !_obscurePassword),
-              ),
-              validator: Validators.password(l10n),
-            ),
-            PasswordStrengthIndicator(password: _passwordText),
-            const SizedBox(height: 14),
-            _buildTextField(
-              controller: _confirmPasswordController,
-              label: l10n.uiConfirmPassword,
-              hint: '\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022',
-              icon: Icons.lock_outline,
-              obscureText: _obscureConfirm,
-              suffixIcon: IconButton(
-                icon: Icon(
-                  _obscureConfirm
-                      ? Icons.visibility_off_outlined
-                      : Icons.visibility_outlined,
-                  size: 20,
-                  color: colors.textMuted,
-                ),
-                onPressed: () =>
-                    setState(() => _obscureConfirm = !_obscureConfirm),
-              ),
-              validator: Validators.confirmPassword(
-                l10n,
-                _passwordController.text,
-              ),
-            ),
-            const SizedBox(height: 24),
-            _buildSectionLabel(l10n.uiContactOptional),
-            const SizedBox(height: 14),
-            _buildTextField(
-              controller: _phoneController,
-              label: l10n.uiPhoneNumber,
-              hint: l10n.uiPhoneNumberHint,
-              icon: Icons.phone_outlined,
-              keyboardType: TextInputType.phone,
-            ),
-            const SizedBox(height: 14),
-            _buildTextField(
-              controller: _websiteController,
-              label: l10n.uiWebsite,
-              hint: l10n.uiWebsiteHint,
-              icon: Icons.language_outlined,
-              keyboardType: TextInputType.url,
-            ),
-            const SizedBox(height: 28),
-            _buildRegisterButton(authProvider),
-            const SizedBox(height: 16),
-            _buildLoginLink(),
-            const SizedBox(height: 12),
-            _buildTermsText(),
-            const SizedBox(height: 16),
-          ],
-        ),
       ),
     );
   }

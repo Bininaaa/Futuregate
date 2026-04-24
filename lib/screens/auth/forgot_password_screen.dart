@@ -102,13 +102,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 22),
-          AppInlineMessage(
-            type: AppFeedbackType.warning,
-            title: l10n.uiUsingGoogleSignIn,
-            message: l10n.uiIfYouCreatedThisAccountWithGoogleUseGoogleTo,
-            compact: true,
-          ),
           if (errorPresentation != null) ...<Widget>[
             const SizedBox(height: 22),
             AppInlineMessage(
@@ -180,12 +173,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           compact: true,
           accentColor: const Color(0xFF179D6C),
         ),
-        const SizedBox(height: 14),
-        AppInlineMessage(
-          type: AppFeedbackType.warning,
-          message: l10n.uiIfThisAccountNormallySignsInWithGoogleReturnAnd,
-          compact: true,
-        ),
         const SizedBox(height: 22),
         AppPrimaryButton(
           theme: authFlowTheme,
@@ -219,14 +206,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     }
 
     final lower = trimmed.toLowerCase();
-    if (lower.contains('google')) {
-      return _ResetFeedbackPresentation(
-        type: AppFeedbackType.warning,
-        title: l10n.uiUsingGoogleSignIn,
-        message: trimmed,
-      );
-    }
-
     if (lower.contains('connection') || lower.contains('network')) {
       return _ResetFeedbackPresentation(
         type: AppFeedbackType.error,

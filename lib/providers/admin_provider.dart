@@ -9,7 +9,7 @@ import '../services/admin_service.dart';
 import '../utils/application_status.dart';
 
 class AdminProvider extends ChangeNotifier {
-  static const int _dashboardActivityPerCollectionLimit = 4;
+  static const int _dashboardActivityPerCollectionLimit = 5;
   static const int _activityPageSize = 10;
   static const int _activityBatchSize = 8;
 

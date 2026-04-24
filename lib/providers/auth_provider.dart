@@ -646,7 +646,7 @@ class AuthProvider extends ChangeNotifier {
       case 'invalid-email':
         return 'Enter a valid email address and try again.';
       case 'password-reset-google-only':
-        return 'This account signs in with Google. Go back and continue with Google, then add a password later from Settings if you want reset emails too.';
+        return 'Password reset is not available for this account.';
       case 'too-many-requests':
         return 'Too many reset attempts were made. Please wait a little and try again.';
       case 'network-request-failed':
@@ -663,7 +663,7 @@ class AuthProvider extends ChangeNotifier {
 
     if (message.contains('google sign-in') ||
         message.contains('sign in with google')) {
-      return 'This account signs in with Google. Go back and continue with Google, then add a password later from Settings if you want reset emails too.';
+      return 'Password reset is not available for this account.';
     }
 
     if (message.contains('network') || message.contains('connection')) {

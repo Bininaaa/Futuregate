@@ -27,6 +27,7 @@ class CompanyProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.of(context);
     final authProvider = context.watch<AuthProvider>();
     final user = authProvider.userModel;
     if (user == null) {
@@ -1769,7 +1770,10 @@ class _CompanySettingsAppBar extends StatelessWidget
               ),
             )
           : null,
-      title: Text(title, style: SettingsFlowTheme.appBarTitle()),
+      title: Text(
+        title,
+        style: SettingsFlowTheme.appBarTitle(SettingsFlowPalette.textPrimary),
+      ),
     );
   }
 }
