@@ -13,6 +13,14 @@ class NotificationWorkerService {
     );
   }
 
+  Future<void> notifyCompanyApprovalStatusChanged(String companyId) {
+    return _postBestEffort(
+      '/api/notify/company-approval-status',
+      {'companyId': companyId},
+      contextLabel: 'company approval status notification',
+    );
+  }
+
   Future<void> notifyOpportunityCreated(String opportunityId) {
     return _postBestEffort('/api/notify/opportunity', {
       'opportunityId': opportunityId,

@@ -946,9 +946,26 @@ class AdminService {
   }
 
   Future<void> updateCompanyApprovalStatus(String uid, String status) async {
-    await _firestore.collection('users').doc(uid).update({
-      'approvalStatus': _normalizeCompanyApprovalStatus(status),
-    });
+    final normalizedStatus = _normalizeCompanyApprovalStatus(status);
+    final docRef = _firestore.collection('users').doc(uid);
+    final snapshot = await docRef.get();
+    if (!snapshot.exists) {
+      throw Exception('Company not found');
+    }
+
+    final previousStatus = _normalizeCompanyApprovalStatus(
+      snapshot.data()?['approvalStatus'],
+    );
+
+    if (previousStatus == normalizedStatus) {
+      return;
+    }
+
+    await docRef.update({'approvalStatus': normalizedStatus});
+
+    if (normalizedStatus == 'approved' || normalizedStatus == 'rejected') {
+      await _notificationWorker.notifyCompanyApprovalStatusChanged(uid);
+    }
   }
 
   Future<List<ProjectIdeaModel>> getAllProjectIdeas() async {

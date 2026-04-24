@@ -1306,6 +1306,8 @@ class _NotificationCard extends StatelessWidget {
         return Icons.lightbulb_outline_rounded;
       case 'company_review':
         return Icons.verified_user_outlined;
+      case 'company_status':
+        return Icons.business_center_outlined;
       default:
         return Icons.notifications_none_rounded;
     }
@@ -1331,6 +1333,8 @@ class _NotificationCard extends StatelessWidget {
         return SettingsFlowPalette.primaryDark;
       case 'company_review':
         return SettingsFlowPalette.warning;
+      case 'company_status':
+        return SettingsFlowPalette.primary;
       default:
         return SettingsFlowPalette.textSecondary;
     }

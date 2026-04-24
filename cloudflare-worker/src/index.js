@@ -19,6 +19,7 @@ const GOOGLE_PROVIDER_ID = "google.com";
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PUBLIC_ADMIN_NAME = "FutureGate Admin";
 const DEFAULT_FIREBASE_WEB_API_KEY = "AIzaSyDcQlwKznxxnom_W5nIhC4uT1HyxSAOqHk";
+const DAY_MS = 24 * 60 * 60 * 1000;
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -120,6 +121,13 @@ function normalizeApplicationStatus(value) {
   return "pending";
 }
 
+function normalizeCompanyApprovalStatus(value) {
+  const normalized = trim(value).toLowerCase();
+  return ["approved", "rejected", "pending"].includes(normalized)
+    ? normalized
+    : "approved";
+}
+
 function normalizeDeadlineDate(value) {
   if (!value) {
     return null;
@@ -172,6 +180,43 @@ function opportunityDeadlineDate(opportunity) {
 function isOpportunityDeadlineExpired(opportunity, now = new Date()) {
   const deadline = opportunityDeadlineDate(opportunity);
   return deadline ? deadline.getTime() <= now.getTime() : false;
+}
+
+function scholarshipDeadlineDate(scholarship) {
+  if (!scholarship || typeof scholarship !== "object") {
+    return null;
+  }
+
+  return normalizeDeadlineDate(scholarship.deadline);
+}
+
+function isDeadlineReminderCandidate(deadline, now = new Date()) {
+  if (!deadline || Number.isNaN(deadline.getTime())) {
+    return false;
+  }
+
+  const remainingMs = deadline.getTime() - now.getTime();
+  return remainingMs > 0 && remainingMs <= 3 * DAY_MS;
+}
+
+function deadlineReminderBucket(deadline, now = new Date()) {
+  if (!isDeadlineReminderCandidate(deadline, now)) {
+    return "";
+  }
+
+  const days = Math.ceil((deadline.getTime() - now.getTime()) / DAY_MS);
+  return days <= 1 ? "1d" : "3d";
+}
+
+function deadlineRelativeLabel(deadline, now = new Date()) {
+  const days = Math.ceil((deadline.getTime() - now.getTime()) / DAY_MS);
+  if (days <= 0) {
+    return "today";
+  }
+  if (days === 1) {
+    return "tomorrow";
+  }
+  return `in ${days} days`;
 }
 
 function normalizeFcmPlatform(value) {
@@ -1071,6 +1116,7 @@ async function notifyRecipients(
     actorUserId = "",
     excludeUserIds = [],
     excludeTokens = [],
+    includeInactiveRecipients = false,
   },
 ) {
   const recipientsFound = Array.isArray(recipients) ? recipients.length : 0;
@@ -1094,7 +1140,7 @@ async function notifyRecipients(
       duplicateRecipientInputsSkipped += 1;
       continue;
     }
-    if (recipient?.data?.isActive === false) {
+    if (!includeInactiveRecipients && recipient?.data?.isActive === false) {
       inactiveRecipientsSkipped += 1;
       continue;
     }
@@ -1980,6 +2026,236 @@ async function handleExpireDeadlines(request, env) {
     ...result,
     scope: isAdmin ? "all" : "company",
   });
+}
+
+function shouldRunDeadlineReminderSweep(now = new Date()) {
+  return now.getUTCHours() === 8 && now.getUTCMinutes() < 5;
+}
+
+function activeUserMap(users) {
+  const result = new Map();
+  for (const user of Array.isArray(users) ? users : []) {
+    const id = trim(user?.id);
+    if (id) {
+      result.set(id, user);
+    }
+  }
+  return result;
+}
+
+function addStudentRecipientId(result, value) {
+  const id = trim(value);
+  if (id) {
+    result.add(id);
+  }
+}
+
+function applicationNeedsDeadlineReminder(application) {
+  return normalizeApplicationStatus(application?.status) === "pending";
+}
+
+function deadlineReminderRecipients(recipientIds, activeStudentsById) {
+  return [...recipientIds]
+    .map((id) => activeStudentsById.get(id))
+    .filter(Boolean);
+}
+
+function emptyDeadlineReminderStats({ skipped = false, reason = "" } = {}) {
+  return {
+    skipped,
+    reason,
+    opportunitiesChecked: 0,
+    scholarshipsChecked: 0,
+    notificationDocsCreated: 0,
+    pushSent: 0,
+    missingTokens: 0,
+    errors: [],
+  };
+}
+
+function addDeadlineReminderResult(summary, result) {
+  if (!result || typeof result !== "object") {
+    return;
+  }
+
+  summary.notificationDocsCreated += positiveInt(
+    result.notificationDocsCreated ?? result.created,
+  ) || 0;
+  summary.pushSent += positiveInt(result.pushSent ?? result.pushesSent) || 0;
+  summary.missingTokens += positiveInt(result.missingTokens) || 0;
+  if (Array.isArray(result.errors) && result.errors.length > 0) {
+    summary.errors.push(...result.errors);
+  }
+}
+
+async function notifyOpportunityDeadlineReminder(
+  env,
+  opportunityDoc,
+  activeStudentsById,
+  now,
+) {
+  const opportunityId = trim(opportunityDoc?.id);
+  const opportunity = opportunityDoc?.data || {};
+  const deadline = opportunityDeadlineDate(opportunity);
+  const bucket = deadlineReminderBucket(deadline, now);
+
+  if (
+    !opportunityId ||
+    !bucket ||
+    opportunity.isHidden === true
+  ) {
+    return null;
+  }
+
+  const [savedRefs, applications] = await Promise.all([
+    firestoreQuery(env, "savedOpportunities", [
+      { field: "opportunityId", op: "EQUAL", value: opportunityId },
+    ]).catch(() => []),
+    firestoreQuery(env, "applications", [
+      { field: "opportunityId", op: "EQUAL", value: opportunityId },
+    ]).catch(() => []),
+  ]);
+
+  const recipientIds = new Set();
+  for (const savedRef of savedRefs) {
+    addStudentRecipientId(recipientIds, savedRef?.data?.studentId);
+  }
+  for (const application of applications) {
+    if (applicationNeedsDeadlineReminder(application?.data)) {
+      addStudentRecipientId(recipientIds, application?.data?.studentId);
+    }
+  }
+
+  const recipients = deadlineReminderRecipients(
+    recipientIds,
+    activeStudentsById,
+  );
+  if (recipients.length === 0) {
+    return null;
+  }
+
+  const title = trim(opportunity.title) || "Opportunity";
+  return notifyRecipients(env, recipients, {
+    title: "Opportunity deadline soon",
+    message: `${title} closes ${deadlineRelativeLabel(deadline, now)}.`,
+    type: "opportunity",
+    targetId: opportunityId,
+    eventKey: `deadline:${bucket}:opportunity:${opportunityId}`,
+    logLabel: `[deadlineReminder:opportunity:${opportunityId}:${bucket}]`,
+  });
+}
+
+async function notifyScholarshipDeadlineReminder(
+  env,
+  scholarshipDoc,
+  activeStudentsById,
+  now,
+) {
+  const scholarshipId = trim(scholarshipDoc?.id);
+  const scholarship = scholarshipDoc?.data || {};
+  const deadline = scholarshipDeadlineDate(scholarship);
+  const bucket = deadlineReminderBucket(deadline, now);
+
+  if (!scholarshipId || !bucket || scholarship.isHidden === true) {
+    return null;
+  }
+
+  const savedRefs = await firestoreQuery(env, "savedScholarships", [
+    { field: "scholarshipId", op: "EQUAL", value: scholarshipId },
+  ]).catch(() => []);
+
+  const recipientIds = new Set();
+  for (const savedRef of savedRefs) {
+    addStudentRecipientId(recipientIds, savedRef?.data?.studentId);
+  }
+
+  const recipients = deadlineReminderRecipients(
+    recipientIds,
+    activeStudentsById,
+  );
+  if (recipients.length === 0) {
+    return null;
+  }
+
+  const title = trim(scholarship.title) || "Scholarship";
+  return notifyRecipients(env, recipients, {
+    title: "Scholarship deadline soon",
+    message: `${title} closes ${deadlineRelativeLabel(deadline, now)}.`,
+    type: "scholarship",
+    targetId: scholarshipId,
+    eventKey: `deadline:${bucket}:scholarship:${scholarshipId}`,
+    logLabel: `[deadlineReminder:scholarship:${scholarshipId}:${bucket}]`,
+  });
+}
+
+async function sendDeadlineReminders(env, { force = false } = {}) {
+  const now = new Date();
+  if (!force && !shouldRunDeadlineReminderSweep(now)) {
+    return emptyDeadlineReminderStats({
+      skipped: true,
+      reason: "outside_reminder_window",
+    });
+  }
+
+  const [students, opportunities, scholarships] = await Promise.all([
+    getActiveUsersByRole(env, "student"),
+    firestoreQuery(env, "opportunities", [
+      { field: "status", op: "EQUAL", value: "open" },
+    ]).catch(() => []),
+    firestoreQuery(env, "scholarships", []).catch(() => []),
+  ]);
+
+  const activeStudentsById = activeUserMap(students);
+  const summary = emptyDeadlineReminderStats();
+  summary.opportunitiesChecked = opportunities.length;
+  summary.scholarshipsChecked = scholarships.length;
+
+  for (const opportunity of opportunities) {
+    try {
+      const result = await notifyOpportunityDeadlineReminder(
+        env,
+        opportunity,
+        activeStudentsById,
+        now,
+      );
+      addDeadlineReminderResult(summary, result);
+    } catch (error) {
+      summary.errors.push({
+        type: "opportunity",
+        id: trim(opportunity?.id),
+        message: error?.message ?? "deadline_reminder_failed",
+      });
+    }
+  }
+
+  for (const scholarship of scholarships) {
+    try {
+      const result = await notifyScholarshipDeadlineReminder(
+        env,
+        scholarship,
+        activeStudentsById,
+        now,
+      );
+      addDeadlineReminderResult(summary, result);
+    } catch (error) {
+      summary.errors.push({
+        type: "scholarship",
+        id: trim(scholarship?.id),
+        message: error?.message ?? "deadline_reminder_failed",
+      });
+    }
+  }
+
+  return summary;
+}
+
+async function handleSendDeadlineReminders(request, env) {
+  const auth = await requireUser(request, env, { roles: ["admin"] });
+  if (auth.error) {
+    return auth.error;
+  }
+
+  return json(await sendDeadlineReminders(env, { force: true }));
 }
 
 function encodeObjectKey(objectKey) {
@@ -3146,6 +3422,62 @@ async function handleNotifyCompanyRegistration(request, env) {
   return json(result);
 }
 
+async function handleNotifyCompanyApprovalStatusChanged(request, env) {
+  const auth = await requireUser(request, env, { roles: ["admin"] });
+  if (auth.error) {
+    return auth.error;
+  }
+
+  const body = await request.json();
+  const companyId = trim(body.companyId);
+  if (!companyId) {
+    return err("companyId is required.");
+  }
+
+  const companyDoc = await firestoreGet(env, "users", companyId);
+  if (!companyDoc) {
+    return err("Company not found.", 404);
+  }
+
+  const company = companyDoc.data || {};
+  if (trim(company.role) !== "company") {
+    return err("Only company accounts can receive this notification.", 400);
+  }
+
+  const status = normalizeCompanyApprovalStatus(company.approvalStatus);
+  if (status !== "approved" && status !== "rejected") {
+    return json({
+      created: 0,
+      pushSent: 0,
+      duplicatesSkipped: 0,
+      missingTokens: 0,
+      invalidTokens: 0,
+      skipped: true,
+      reason: "company_status_not_notifiable",
+      status,
+    });
+  }
+
+  const approved = status === "approved";
+  const result = await notifyRecipients(env, [companyDoc], {
+    title: approved ? "Company Account Approved" : "Company Account Rejected",
+    message: approved
+      ? "Your company account has been approved. You can now access the company workspace."
+      : "Your company registration was rejected. Please contact support if you think this is a mistake.",
+    type: "company_status",
+    targetId: companyId,
+    route: `/notifications/company-status/${encodeURIComponent(companyId)}`,
+    eventKey: `company-approval:${companyId}:${status}`,
+    actorUserId: auth.user.uid,
+    excludeUserIds: [auth.user.uid],
+    excludeTokens: collectRecipientTokens(auth.profile),
+    includeInactiveRecipients: true,
+    logLabel: `[notifyCompanyApproval:${companyId}:${status}]`,
+  });
+
+  return json(result);
+}
+
 async function handleNotifyProjectIdeaSubmitted(request, env) {
   const auth = await requireUser(request, env, { roles: ["student"] });
   if (auth.error) {
@@ -3660,6 +3992,21 @@ async function handleNotifyChatMessage(request, env) {
     });
   }
 
+  if (
+    Array.isArray(conversation.mutedBy) &&
+    conversation.mutedBy.map((value) => trim(value)).includes(recipientId)
+  ) {
+    return json({
+      created: 0,
+      pushSent: 0,
+      duplicatesSkipped: 0,
+      missingTokens: 0,
+      invalidTokens: 0,
+      skipped: true,
+      reason: "conversation_muted",
+    });
+  }
+
   const recipientDoc = await firestoreGet(env, "users", recipientId);
   if (!recipientDoc) {
     return err("The chat recipient could not be resolved.", 404);
@@ -3828,6 +4175,9 @@ function matchRoute(method, path) {
   if (method === "POST" && path === "/api/deadlines/expire") {
     return { handler: "expireDeadlines" };
   }
+  if (method === "POST" && path === "/api/deadlines/reminders") {
+    return { handler: "sendDeadlineReminders" };
+  }
   if (method === "POST" && path === "/api/notify/opportunity") {
     return { handler: "notifyOpportunity" };
   }
@@ -3836,6 +4186,9 @@ function matchRoute(method, path) {
   }
   if (method === "POST" && path === "/api/notify/company-registration") {
     return { handler: "notifyCompanyRegistration" };
+  }
+  if (method === "POST" && path === "/api/notify/company-approval-status") {
+    return { handler: "notifyCompanyApprovalStatusChanged" };
   }
   if (method === "POST" && path === "/api/notify/application-submitted") {
     return { handler: "notifyApplicationSubmitted" };
@@ -4003,6 +4356,9 @@ export default {
         case "expireDeadlines":
           response = await handleExpireDeadlines(request, env);
           break;
+        case "sendDeadlineReminders":
+          response = await handleSendDeadlineReminders(request, env);
+          break;
         case "deleteTraining":
           response = await handleDeleteTraining(request, env, route.id);
           break;
@@ -4017,6 +4373,12 @@ export default {
           break;
         case "notifyCompanyRegistration":
           response = await handleNotifyCompanyRegistration(request, env);
+          break;
+        case "notifyCompanyApprovalStatusChanged":
+          response = await handleNotifyCompanyApprovalStatusChanged(
+            request,
+            env,
+          );
           break;
         case "notifyApplicationSubmitted":
           response = await handleNotifyApplicationSubmitted(request, env);
@@ -4096,6 +4458,11 @@ export default {
     }
   },
   async scheduled(event, env, ctx) {
-    ctx.waitUntil(expireDeadlineOpportunities(env));
+    ctx.waitUntil(
+      Promise.all([
+        expireDeadlineOpportunities(env),
+        sendDeadlineReminders(env),
+      ]),
+    );
   },
 };

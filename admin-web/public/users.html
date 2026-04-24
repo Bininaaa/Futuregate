@@ -41,10 +41,11 @@
   <script type="module">
     import { mountShell, showPage } from './js/shell.js';
     import { checkAuth, emptyStateHtml, esc, feedbackCardHtml, showToast, formatTimestamp } from './js/auth.js';
-    import { db, collection, getDocs, query, orderBy, doc, updateDoc, where, getDoc } from './js/firebase-config.js';
+    import { auth, db, collection, getDocs, query, orderBy, doc, updateDoc, where, getDoc } from './js/firebase-config.js';
     import { loadStudentCvSummary, getUserCvDocument, openDocumentUrl, friendlyDocumentErrorMessage } from './js/document-access.js';
     import { matchesSearch } from './js/admin-utils.js';
     import { openModal, closeModal } from './js/ui.js';
+    import { WORKER_BASE_URL } from './js/google-books-config.js';
 
     mountShell({ page: 'users' });
 
@@ -336,9 +337,33 @@
       return updateUser(id, payload, successMap[title] || 'Updated.');
     }
 
+    async function notifyCompanyApprovalStatus(id) {
+      const token = await auth.currentUser?.getIdToken();
+      if (!token) return;
+
+      const response = await fetch(`${WORKER_BASE_URL}/api/notify/company-approval-status`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ companyId: id }),
+      });
+
+      if (!response.ok) {
+        const payload = await response.json().catch(() => ({}));
+        console.warn('Company approval notification failed:', payload.error || response.status);
+      }
+    }
+
     async function updateUser(id, payload, successMessage) {
       try {
         await updateDoc(doc(db, 'users', id), payload);
+        if (['approved', 'rejected'].includes(String(payload.approvalStatus || '').trim().toLowerCase())) {
+          await notifyCompanyApprovalStatus(id).catch((error) => {
+            console.warn('Company approval notification failed:', error);
+          });
+        }
         const u = state.all.find((x) => x.id === id);
         if (u) Object.assign(u, payload);
         // Also update if profile modal is open
