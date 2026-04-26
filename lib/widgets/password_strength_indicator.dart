@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/generated/app_localizations.dart';
 import '../theme/app_colors.dart';
 import '../utils/validators.dart';
 
@@ -12,11 +13,21 @@ class PasswordStrengthIndicator extends StatelessWidget {
     if (password.isEmpty) return const SizedBox.shrink();
 
     final colors = AppColors.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final rules = [
-      _Rule('At least 8 characters', Validators.hasMinLength(password)),
-      _Rule('One uppercase letter', Validators.hasUppercase(password)),
-      _Rule('One lowercase letter', Validators.hasLowercase(password)),
-      _Rule('One number', Validators.hasNumber(password)),
+      _Rule(
+        l10n.validationPasswordMinLength,
+        Validators.hasMinLength(password),
+      ),
+      _Rule(
+        l10n.validationPasswordUppercase,
+        Validators.hasUppercase(password),
+      ),
+      _Rule(
+        l10n.validationPasswordLowercase,
+        Validators.hasLowercase(password),
+      ),
+      _Rule(l10n.validationPasswordNumber, Validators.hasNumber(password)),
     ];
 
     final passed = rules.where((r) => r.met).length;
@@ -58,12 +69,16 @@ class PasswordStrengthIndicator extends StatelessWidget {
                   color: rule.met ? colors.success : colors.textMuted,
                 ),
                 const SizedBox(width: 6),
-                Text(
-                  rule.label,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: rule.met ? colors.success : colors.textMuted,
-                    fontWeight: rule.met ? FontWeight.w500 : FontWeight.normal,
+                Expanded(
+                  child: Text(
+                    rule.label,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: rule.met ? colors.success : colors.textMuted,
+                      fontWeight: rule.met
+                          ? FontWeight.w600
+                          : FontWeight.normal,
+                    ),
                   ),
                 ),
               ],
