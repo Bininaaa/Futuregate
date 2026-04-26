@@ -23,27 +23,34 @@ class AppTheme {
   static ThemeData _build(AppColors colors, {String? languageCode}) {
     final scheme = colors.toColorScheme();
     final isDark = colors.brightness == Brightness.dark;
+    final useArabicFont = _useArabicFont(languageCode);
     final base = isDark
         ? ThemeData.dark(useMaterial3: true)
         : ThemeData.light(useMaterial3: true);
 
-    final textTheme = GoogleFonts.cairoTextTheme(base.textTheme).apply(
-      bodyColor: colors.textPrimary,
-      displayColor: colors.textPrimary,
-    );
+    final textTheme =
+        (useArabicFont
+                ? GoogleFonts.cairoTextTheme(base.textTheme)
+                : GoogleFonts.poppinsTextTheme(base.textTheme))
+            .apply(
+              bodyColor: colors.textPrimary,
+              displayColor: colors.textPrimary,
+            );
 
     TextStyle f({
       double? fontSize,
       FontWeight? fontWeight,
       Color? color,
       double? height,
-    }) =>
-        GoogleFonts.cairo(
-          fontSize: fontSize,
-          fontWeight: fontWeight,
-          color: color,
-          height: height,
-        );
+    }) {
+      final builder = useArabicFont ? GoogleFonts.cairo : GoogleFonts.poppins;
+      return builder(
+        fontSize: fontSize,
+        fontWeight: fontWeight,
+        color: color,
+        height: height,
+      );
+    }
 
     return ThemeData(
       useMaterial3: true,
@@ -200,7 +207,7 @@ class AppTheme {
           ),
         ),
       ),
-      inputDecorationTheme: _inputTheme(colors),
+      inputDecorationTheme: _inputTheme(colors, useArabicFont: useArabicFont),
       filledButtonTheme: FilledButtonThemeData(
         style: ButtonStyle(
           minimumSize: const WidgetStatePropertyAll<Size>(Size(64, 48)),
@@ -400,7 +407,15 @@ class AppTheme {
     );
   }
 
-  static InputDecorationTheme _inputTheme(AppColors colors) {
+  static bool _useArabicFont(String? languageCode) {
+    final normalized = (languageCode ?? '').trim().toLowerCase();
+    return normalized == 'ar' || normalized.startsWith('ar_');
+  }
+
+  static InputDecorationTheme _inputTheme(
+    AppColors colors, {
+    required bool useArabicFont,
+  }) {
     final isDark = colors.isDarkMode;
     final fillColor = isDark ? colors.surfaceMuted : colors.surface;
 
@@ -409,13 +424,15 @@ class AppTheme {
       FontWeight? fontWeight,
       Color? color,
       double? height,
-    }) =>
-        GoogleFonts.cairo(
-          fontSize: fontSize,
-          fontWeight: fontWeight,
-          color: color,
-          height: height,
-        );
+    }) {
+      final builder = useArabicFont ? GoogleFonts.cairo : GoogleFonts.poppins;
+      return builder(
+        fontSize: fontSize,
+        fontWeight: fontWeight,
+        color: color,
+        height: height,
+      );
+    }
 
     OutlineInputBorder border(Color color, [double width = 1]) {
       return OutlineInputBorder(

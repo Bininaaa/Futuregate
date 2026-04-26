@@ -12,28 +12,28 @@ class AppLocalizationsAr extends AppLocalizations {
   String get appTitle => 'بوابة المستقبل';
 
   @override
-  String get languageEnglish => 'إنجليزي';
+  String get languageEnglish => 'الإنجليزية';
 
   @override
-  String get languageFrench => 'فرنسي';
+  String get languageFrench => 'الفرنسية';
 
   @override
-  String get languageArabic => 'عربي';
+  String get languageArabic => 'العربية';
 
   @override
-  String get unknownLanguage => 'مجهول';
+  String get unknownLanguage => 'لغة غير معروفة';
 
   @override
-  String get currentLabel => 'حاضِر';
+  String get currentLabel => 'الحالي';
 
   @override
-  String get closeLabel => 'يغلق';
+  String get closeLabel => 'إغلاق';
 
   @override
-  String get cancelLabel => 'يلغي';
+  String get cancelLabel => 'إلغاء';
 
   @override
-  String get saveLabel => 'يحفظ';
+  String get saveLabel => 'حفظ';
 
   @override
   String get saveChangesLabel => 'حفظ التغييرات';
@@ -42,41 +42,41 @@ class AppLocalizationsAr extends AppLocalizations {
   String get publishLabel => 'نشر';
 
   @override
-  String get retryLabel => 'أعد المحاولة';
+  String get retryLabel => 'إعادة المحاولة';
 
   @override
-  String get removeLabel => 'يزيل';
+  String get removeLabel => 'إزالة';
 
   @override
-  String get changeLabel => 'يتغير';
+  String get changeLabel => 'تغيير';
 
   @override
-  String get continueLabel => 'يكمل';
+  String get continueLabel => 'متابعة';
 
   @override
-  String get uploadLabel => 'رفع';
+  String get uploadLabel => 'رفع الملف';
 
   @override
   String get changeImageLabel => 'تغيير الصورة';
 
   @override
-  String get uploadImageLabel => 'تحميل الصورة';
+  String get uploadImageLabel => 'رفع الصورة';
 
   @override
   String get removeImageLabel => 'إزالة الصورة';
 
   @override
-  String get selectLabel => 'يختار';
+  String get selectLabel => 'اختيار';
 
   @override
-  String get languageTitle => 'لغة';
+  String get languageTitle => 'اللغة';
 
   @override
   String get languagePickerTitle => 'اختر لغة التطبيق';
 
   @override
   String get languagePickerSubtitle =>
-      'قم بتطبيق اللغة الإنجليزية أو الفرنسية أو العربية عبر التطبيق على الفور.';
+      'طبّق اللغة المختارة فورًا داخل التطبيق.';
 
   @override
   String get languageUpdatedTitle => 'تم تحديث اللغة';
@@ -98,7 +98,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get translatedContentFallbackLabel =>
-      'الترجمة غير متوفرة، يظهر المحتوى الأصلي.';
+      'الترجمة غير متوفرة، لذلك يتم عرض المحتوى الأصلي.';
 
   @override
   String get unknownOriginalLanguage => 'لغة أصلية غير معروفة';
@@ -111,130 +111,126 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get accountBlockedMessage =>
-      'لقد تم حظر حسابك من قبل المسؤول. لم يعد بإمكانك الوصول إلى المنصة. إذا كنت تعتقد أن هذا خطأ، يرجى الاتصال بالدعم.';
+      'تم حظر حسابك من طرف المشرف. لم يعد بإمكانك استخدام التطبيق. إذا كنت تعتقد أن هذا خطأ، تواصل مع الدعم.';
 
   @override
   String get backToSignInLabel => 'العودة لتسجيل الدخول';
 
   @override
-  String get settingsTitle => 'إعدادات';
+  String get settingsTitle => 'الإعدادات';
 
   @override
-  String get moreTitle => 'أكثر';
+  String get moreTitle => 'المزيد';
 
   @override
   String get preferencesTitle => 'التفضيلات';
 
   @override
-  String get preferencesSubtitle =>
-      'اضبط تجربة التطبيق، وراجع تفاصيل الحساب، وانتقل إلى الإعدادات الأكثر أهمية.';
+  String get preferencesSubtitle => 'خصص إعدادات التطبيق حسب احتياجاتك.';
 
   @override
-  String get experienceTitle => 'خبرة';
+  String get experienceTitle => 'التجربة';
 
   @override
-  String get experienceSubtitle =>
-      'حافظ على التجربة مصقولة ومتسقة وسهلة التنقل.';
+  String get experienceSubtitle => 'اجعل استخدام التطبيق أوضح وأسهل.';
 
   @override
-  String get accountTitle => 'حساب';
+  String get accountTitle => 'الحساب';
 
   @override
-  String get accountSubtitle =>
-      'استخدم ملف التعريف المتصل وتدفقات الأمان المتصلة بالفعل بحسابك.';
+  String get accountSubtitle => 'إدارة معلومات حسابك وإعدادات الأمان.';
 
   @override
   String get workspaceTitle => 'مساحة العمل';
 
   @override
-  String get workspaceSubtitle =>
-      'انتقل مباشرة إلى المجالات الأساسية التي تشكل وجود شركتك.';
+  String get workspaceSubtitle => 'انتقل بسرعة إلى أهم أدوات إدارة شركتك.';
 
   @override
-  String get supportTitle => 'يدعم';
+  String get supportTitle => 'الدعم';
 
   @override
-  String get supportSubtitle => 'وجهات مفيدة تتجاوز إدارة الملف الشخصي.';
+  String get supportSubtitle => 'موارد مفيدة ودعم إضافي.';
 
   @override
   String get companyWorkspaceTitle => 'مساحة عمل الشركة';
 
   @override
   String get companyWorkspaceSubtitle =>
-      'الملف الشخصي والأمان والدعم، كل ذلك في مركز واحد مصقول.';
+      'إدارة الملف الشخصي والأمان والدعم في مكان واحد.';
 
   @override
   String get companyWorkspaceBody =>
-      'استخدم هذه المنطقة للحفاظ على حضور علامتك التجارية بشكل واضح، والبقاء على اطلاع بالإشعارات، وإدارة أجزاء مساحة العمل التي تحتاجها بشدة.';
+      'استخدم هذه المساحة لإدارة ملف شركتك ومتابعة الإشعارات وتنظيم عملك بسهولة.';
 
   @override
   String get companyDashboardTabSubtitle =>
-      'تابع النشاط المباشر والطلبات الجديدة وما يحتاج إلى انتباهك أولاً.';
+      'تابع النشاط الحالي والطلبات الجديدة وما يحتاج إلى انتباهك أولًا.';
 
   @override
   String get companyOpportunitiesTabSubtitle =>
-      'انشر الفرص، وراقب القوائم، وحافظ على وضوح زخم التوظيف.';
+      'انشر الفرص، وتابع القوائم، وحافظ على تنظيم عملية التوظيف.';
 
   @override
   String get companyApplicationsTabSubtitle =>
-      'راجع المرشحين والفلاتر والقرارات من قائمة واحدة مركزة.';
+      'راجع المرشحين والتصفية والقرارات من مكان واحد.';
 
   @override
   String get companyMessagesTabSubtitle =>
-      'ابق قريباً من المحادثات والمتابعات وسياق المرشحين.';
+      'تابع المحادثات والتواصل مع المرشحين.';
 
   @override
   String get companyProfileTitle => 'ملف الشركة';
 
   @override
-  String get companyProfileSubtitle => 'قم بمعاينة تواجد شركتك أمام الجمهور';
+  String get companyProfileSubtitle => 'عاين حضور شركتك الظاهر للطلاب';
 
   @override
-  String get editCompanyProfileTitle => 'تحرير ملف تعريف الشركة';
+  String get editCompanyProfileTitle => 'تعديل ملف الشركة';
 
   @override
   String get editCompanyProfileSubtitle =>
-      'قم بتحديث الوصف ومعلومات الاتصال والشعار الخاص بك';
+      'حدّث الوصف ومعلومات التواصل والشعار';
 
   @override
-  String get notificationsTitle => 'إشعارات';
+  String get notificationsTitle => 'الإشعارات';
 
   @override
-  String get notificationsSubtitle => 'افتح مركز الإشعارات الخاص بك';
+  String get notificationsSubtitle => 'افتح مركز الإشعارات';
 
   @override
-  String get securityPrivacyTitle => 'الأمن والخصوصية';
+  String get securityPrivacyTitle => 'الأمان والخصوصية';
 
   @override
   String get securityPrivacySubtitle =>
-      'كلمات المرور وتحديثات البريد الإلكتروني والخصوصية والمعلومات القانونية';
+      'كلمات المرور وتحديثات البريد والخصوصية والمعلومات القانونية';
 
   @override
   String get helpCenterTitle => 'مركز المساعدة';
 
   @override
-  String get helpCenterSubtitle => 'تصفح الأسئلة الشائعة واتصل بالدعم';
+  String get helpCenterSubtitle => 'استعرض الأسئلة الشائعة أو تواصل مع الدعم';
 
   @override
   String get aboutFutureGateTitle => 'حول بوابة المستقبل';
 
   @override
-  String get aboutFutureGateSubtitle => 'تفاصيل المهمة والإصدار والمنصة';
+  String get aboutFutureGateSubtitle => 'معلومات عن المنصة والإصدار.';
 
   @override
   String get appVersionTitle => 'نسخة التطبيق';
 
   @override
-  String get appVersionCurrentLabel => 'حاضِر';
+  String get appVersionCurrentLabel => 'الحالي';
 
   @override
   String get signOutTitle => 'تسجيل الخروج';
 
   @override
-  String get signOutSubtitle => 'قم بإنهاء هذه الجلسة على الجهاز الحالي';
+  String get signOutSubtitle => 'تسجيل الخروج من هذا الجهاز';
 
   @override
-  String get notificationPreferencesTitle => 'تفضيلات الإخطار';
+  String get notificationPreferencesTitle => 'تفضيلات الإشعارات';
 
   @override
   String get notificationPreferencesSubtitle => 'افتح مركز الإشعارات الخاص بك';
@@ -243,45 +239,45 @@ class AppLocalizationsAr extends AppLocalizations {
   String get accountPreferencesTitle => 'تفضيلات الحساب';
 
   @override
-  String get accountPreferencesSubtitle => 'قم بتحديث تفاصيل ملفك الشخصي';
+  String get accountPreferencesSubtitle => 'حدّث تفاصيل ملفك الشخصي';
 
   @override
-  String get appearanceThemeTitle => 'المظهر / الموضوع';
+  String get appearanceThemeTitle => 'المظهر / النمط';
 
   @override
-  String get appearanceThemeSubtitle => 'النظام البصري الخفيف';
+  String get appearanceThemeSubtitle => 'نظام بصري فاتح';
 
   @override
   String get appearanceThemeSheetMessage =>
-      'يستخدم هذا الإصدار حاليًا نظامًا مرئيًا خفيفًا عبر التطبيق. لم يتم توصيل مفتاح التبديل العالمي حتى الآن.';
+      'يستخدم هذا الإصدار حاليًا نظامًا بصريًا فاتحًا في التطبيق. لم يتم تفعيل تبديل النمط العام بعد.';
 
   @override
   String get languageSheetMessage =>
-      'اختر اللغة الإنجليزية أو الفرنسية أو العربية وقم بتطبيقها على الفور عبر التطبيق.';
+      'اختر الإنجليزية أو الفرنسية أو العربية وطبّقها فورًا في التطبيق.';
 
   @override
-  String get lightVisualSystemLabel => 'النظام البصري الخفيف';
+  String get lightVisualSystemLabel => 'الوضع الفاتح';
 
   @override
-  String get openNotificationsCenterLabel => 'افتح مركز الإشعارات الخاص بك';
+  String get openNotificationsCenterLabel => 'فتح الإشعارات';
 
   @override
   String get companyAccountLabel => 'حساب الشركة';
 
   @override
-  String get publishingSectionTitle => 'نشر';
+  String get publishingSectionTitle => 'النشر';
 
   @override
   String get basicInformationTitle => 'المعلومات الأساسية';
 
   @override
-  String get descriptionSectionTitle => 'وصف';
+  String get descriptionSectionTitle => 'الوصف';
 
   @override
   String get requirementsAndEligibilityTitle => 'المتطلبات والأهلية';
 
   @override
-  String get logisticsTitle => 'اللوجستية';
+  String get logisticsTitle => 'التفاصيل العملية';
 
   @override
   String get additionalInformationTitle => 'معلومات إضافية';
@@ -299,46 +295,46 @@ class AppLocalizationsAr extends AppLocalizations {
   String get scholarshipTitleLabel => 'عنوان المنحة الدراسية';
 
   @override
-  String get providerLabel => 'مزود';
+  String get providerLabel => 'الجهة المقدمة';
 
   @override
-  String get titleLabel => 'عنوان';
+  String get titleLabel => 'العنوان';
 
   @override
-  String get descriptionLabel => 'وصف';
+  String get descriptionLabel => 'الوصف';
 
   @override
-  String get locationLabel => 'موقع';
+  String get locationLabel => 'الموقع';
 
   @override
-  String get applicationDeadlineLabel => 'الموعد النهائي لتقديم الطلبات';
+  String get applicationDeadlineLabel => 'آخر أجل للتقديم';
 
   @override
-  String get deadlineLabel => 'موعد التسليم';
+  String get deadlineLabel => 'الموعد النهائي';
 
   @override
-  String get amountLabel => 'كمية';
+  String get amountLabel => 'المبلغ';
 
   @override
-  String get linkLabel => 'رابط التطبيق';
+  String get linkLabel => 'رابط التقديم';
 
   @override
-  String get countryLabel => 'دولة';
+  String get countryLabel => 'الدولة';
 
   @override
-  String get cityLabel => 'مدينة';
+  String get cityLabel => 'المدينة';
 
   @override
-  String get levelLabel => 'مستوى';
+  String get levelLabel => 'المستوى';
 
   @override
-  String get categoryLabel => 'فئة';
+  String get categoryLabel => 'الفئة';
 
   @override
-  String get tagsLabel => 'العلامات';
+  String get tagsLabel => 'الوسوم';
 
   @override
-  String get imageUrlLabel => 'عنوان URL للصورة';
+  String get imageUrlLabel => 'رابط الصورة';
 
   @override
   String get fundingTypeLabel => 'نوع التمويل';
@@ -350,7 +346,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get fundingCurrencyLabel => 'عملة التمويل';
 
   @override
-  String get fundingNoteLabel => 'مذكرة التمويل';
+  String get fundingNoteLabel => 'ملاحظات التمويل';
 
   @override
   String get salaryMinimumLabel => 'الحد الأدنى للراتب';
@@ -368,82 +364,79 @@ class AppLocalizationsAr extends AppLocalizations {
   String get workModeLabel => 'وضع العمل';
 
   @override
-  String get paidStatusLabel => 'الحالة المدفوعة';
+  String get paidStatusLabel => 'حالة الدفع';
 
   @override
-  String get compensationNoteLabel => 'مذكرة التعويض';
+  String get compensationNoteLabel => 'ملاحظة المقابل';
 
   @override
-  String get durationLabel => 'مدة';
+  String get durationLabel => 'المدة';
 
   @override
   String get originalLanguageFieldLabel => 'اللغة الأصلية';
 
   @override
-  String get originalLanguageFieldHint => 'حدد اللغة المصدر لهذا المحتوى';
+  String get originalLanguageFieldHint => 'اختر اللغة الأصلية لهذا المحتوى';
 
   @override
-  String get openStatusLabel => 'يفتح';
+  String get openStatusLabel => 'مفتوح';
 
   @override
-  String get openStatusSubtitle => 'مرئية للطلاب';
+  String get openStatusSubtitle => 'تظهر للطلاب';
 
   @override
   String get closedStatusLabel => 'مغلق';
 
   @override
-  String get closedStatusSubtitle => 'تم الحفظ بشكل خاص';
+  String get closedStatusSubtitle => 'غير ظاهرة للطلاب';
 
   @override
-  String get savedHiddenLabel => 'محفوظة ولكنها مخفية';
+  String get savedHiddenLabel => 'محفوظة ومخفية';
 
   @override
   String get selectClosingDateHint => 'حدد تاريخ الإغلاق';
 
   @override
-  String get optionalDirectLinkHint => 'رابط مباشر اختياري';
+  String get optionalDirectLinkHint => 'رابط مباشر (اختياري)';
 
   @override
-  String get optionalCoverImageUrlHint => 'عنوان URL لصورة الغلاف الاختيارية';
+  String get optionalCoverImageUrlHint => 'رابط صورة الغلاف (اختياري)';
 
   @override
-  String get commaSeparatedTagsHint => 'علامات مفصولة بفواصل';
+  String get commaSeparatedTagsHint => 'وسوم مفصولة بفواصل';
 
   @override
-  String get scholarshipProviderHint => 'من يقدم هذه المنحة؟';
+  String get scholarshipProviderHint => 'الجهة المقدمة للمنحة';
 
   @override
-  String get scholarshipDescriptionHint => 'شرح المنحة وما تدعمه';
+  String get scholarshipDescriptionHint => 'اشرح المنحة وما تدعمه';
 
   @override
-  String get scholarshipTitleHint =>
-      'على سبيل المثال منحة بناة المستقبل العالمية';
+  String get scholarshipTitleHint => 'مثال: منحة قادة المستقبل العالمية';
 
   @override
-  String get opportunityTitleHintJob =>
-      'على سبيل المثال مطور الرفرفة المبتدئين';
+  String get opportunityTitleHintJob => 'مثال: مطوّر Flutter مبتدئ';
 
   @override
   String get opportunityTitleHintInternship =>
-      'على سبيل المثال تدريب الرفرفة - الفريق المتنقل';
+      'مثال: تدريب Flutter - فريق الهاتف المحمول';
 
   @override
   String get opportunityTitleHintSponsoring =>
-      'على سبيل المثال برنامج رعاية الابتكار الطلابي';
+      'مثال: برنامج تمويل الابتكار الطلابي';
 
   @override
-  String get opportunityLocationHintDefault =>
-      'على سبيل المثال الجزائر العاصمة';
+  String get opportunityLocationHintDefault => 'مثال: الجزائر العاصمة';
 
   @override
   String get opportunityLocationHintSponsoring =>
-      'على سبيل المثال على مستوى الجزائر أو الجزائر العاصمة';
+      'مثال: كل الجزائر أو الجزائر العاصمة';
 
   @override
   String get eligibilityLabel => 'الأهلية';
 
   @override
-  String get requirementsLabel => 'متطلبات';
+  String get requirementsLabel => 'المتطلبات';
 
   @override
   String get programDescriptionLabel => 'وصف البرنامج';
@@ -452,66 +445,65 @@ class AppLocalizationsAr extends AppLocalizations {
   String get roleDescriptionLabel => 'وصف الدور';
 
   @override
-  String get typeOneEligibilityHint =>
-      'اكتب قاعدة أهلية واحدة، ثم اضغط على Enter';
+  String get typeOneEligibilityHint => 'اكتب شرط أهلية واحدًا ثم اضغط Enter';
 
   @override
-  String get typeOneRequirementHint => 'اكتب متطلبًا واحدًا، ثم اضغط على Enter';
+  String get typeOneRequirementHint => 'اكتب متطلبًا واحدًا ثم اضغط Enter';
 
   @override
   String get addEligibilityEmptyHint =>
-      'إضافة من يمكنه التقديم أو المستندات المطلوبة أو الشروط الأكاديمية.';
+      'أضف من يمكنه التقديم أو المستندات المطلوبة أو الشروط الأكاديمية.';
 
   @override
   String get addRequirementEmptyHint =>
       'أضف المهارات أو الخلفية أو الأدوات التي يحتاجها الطلاب.';
 
   @override
-  String get featureScholarshipTitle => 'تميز بهذه المنحة';
+  String get featureScholarshipTitle => 'تمييز هذه المنحة';
 
   @override
   String get featureScholarshipSubtitle =>
-      'استخدم هذا للحصول على فرص دراسية ذات أولوية عالية أو قوية بشكل خاص.';
+      'استخدمها للمنح المهمة أو ذات الأولوية العالية.';
 
   @override
   String get scholarshipEditorSubtitle =>
-      'قم بتنظيم المنح الدراسية في نفس التطبيق الذي يكتشفها الطلاب، مع بنية كافية لبطاقات أكثر ثراءً وتصفية أكثر فائدة.';
+      'نظّم المنح داخل التطبيق بطريقة تساعد الطلاب على اكتشافها بسهولة، مع بطاقات أوضح وتصفية أفضل.';
 
   @override
   String get scholarshipPublishingSubtitle =>
-      'تحظى المنح الدراسية المميزة بحضور أقوى في تدفق اكتشاف الطلاب.';
+      'تظهر المنح المميزة بوضوح أكبر للطلاب.';
 
   @override
   String get scholarshipBasicInfoSubtitle =>
-      'ابدأ بهوية المنحة الدراسية الأساسية حتى تقرأ الفرصة بوضوح عبر البطاقات والتفاصيل.';
+      'ابدأ بالمعلومات الأساسية حتى تظهر المنحة بوضوح في البطاقات والتفاصيل.';
 
   @override
   String get scholarshipDescriptionSubtitle =>
-      'اشرح ما الذي تدعمه المنحة وسبب تميزها.';
+      'اشرح ما تدعمه المنحة ولماذا هي مميزة.';
 
   @override
   String get scholarshipRequirementsSubtitle =>
-      'اجعل معايير الأهلية واضحة قبل أن ينقر الطلاب للتقديم.';
+      'وضّح شروط الأهلية قبل انتقال الطلاب إلى التقديم.';
 
   @override
   String get scholarshipLogisticsSubtitle =>
-      'احتفظ بالمبلغ والموعد النهائي وتفاصيل الوجهة في قسم واحد يمكن التنبؤ به.';
+      'اجمع المبلغ والموعد والوجهة في قسم واضح.';
 
   @override
   String get scholarshipAdditionalInfoSubtitle =>
-      'استخدم هذه الحقول الاختيارية لتحسين الاكتشاف والتصفية ووضوح التطبيقات الصادرة.';
+      'استخدم هذه الحقول الاختيارية لتحسين الاكتشاف والتصفية ووضوح التقديم الخارجي.';
 
   @override
   String get publishScholarshipTitle => 'نشر المنحة الدراسية';
 
   @override
-  String get editScholarshipTitle => 'تحرير المنحة الدراسية';
+  String get editScholarshipTitle => 'تعديل المنحة الدراسية';
 
   @override
-  String get saveScholarshipChangesLabel => 'حفظ تغييرات المنح الدراسية';
+  String get saveScholarshipChangesLabel => 'حفظ تغييرات المنحة';
 
   @override
-  String get publishOpportunityTitle => 'خلق الفرصة';
+  String get publishOpportunityTitle => 'إنشاء فرصة';
 
   @override
   String get editOpportunityTitle => 'تعديل الفرصة';
@@ -520,10 +512,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get saveOpportunityChangesLabel => 'حفظ تغييرات الفرصة';
 
   @override
-  String get publishAdminOpportunityTitle => 'نشر فرصة المشرف';
+  String get publishAdminOpportunityTitle => 'نشر فرصة من المشرف';
 
   @override
-  String get editAdminOpportunityTitle => 'تعديل فرصة المشرف';
+  String get editAdminOpportunityTitle => 'تعديل فرصة من المشرف';
 
   @override
   String get futureGateAdminLabel => 'مشرف بوابة المستقبل';
@@ -532,24 +524,24 @@ class AppLocalizationsAr extends AppLocalizations {
   String get publishIdeaTitle => 'نشر فكرة';
 
   @override
-  String get refineIdeaTitle => 'صقل فكرتك';
+  String get refineIdeaTitle => 'طوّر فكرتك';
 
   @override
-  String get launchBreakthroughTitle => 'أطلق اختراقك التالي';
+  String get launchBreakthroughTitle => 'ابدأ فكرتك القادمة';
 
   @override
-  String get editLockedTitle => 'التحرير مغلق';
+  String get editLockedTitle => 'التعديل مغلق';
 
   @override
   String get editLockedMessage =>
-      'يمكن تعديل الأفكار المعلقة فقط. لقد تجاوزت هذه الفكرة المراجعة بالفعل، لذا يظهر النموذج في الوضع المقفل.';
+      'يمكن تعديل الأفكار قيد المراجعة فقط. تجاوزت هذه الفكرة مرحلة المراجعة، لذلك يظهر النموذج بوضع مغلق.';
 
   @override
-  String get uploadInProgressTitle => 'التحميل قيد التقدم';
+  String get uploadInProgressTitle => 'جارٍ الرفع';
 
   @override
   String get pleaseWaitForCoverUpload =>
-      'يرجى الانتظار حتى ينتهي تحميل صورة الغلاف.';
+      'يرجى الانتظار حتى يكتمل رفع صورة الغلاف.';
 
   @override
   String get ideaPublishedTitle => 'تم نشر الفكرة';
@@ -570,45 +562,45 @@ class AppLocalizationsAr extends AppLocalizations {
   String get ideaUpdatedMessage => 'تم تحديث الفكرة بنجاح.';
 
   @override
-  String get submissionUnavailableTitle => 'التقديم غير متاح';
+  String get submissionUnavailableTitle => 'التقديم غير متاح حاليًا';
 
   @override
-  String get readyForPublicDiscoveryTitle => 'جاهز للاكتشاف العام';
+  String get readyForPublicDiscoveryTitle => 'جاهزة للظهور';
 
   @override
   String get readyForPublicDiscoverySubtitle =>
-      'تظهر الأفكار المعتمدة في Discover. تظل الأفكار المعلقة مرئية في \"أفكاري\".';
+      'الأفكار المعتمدة تظهر في قسم الاكتشاف';
 
   @override
   String get coverImageReadyTitle => 'صورة الغلاف جاهزة';
 
   @override
-  String get uploadCoverImageTitle => 'قم بتحميل صورة الغلاف';
+  String get uploadCoverImageTitle => 'رفع صورة غلاف';
 
   @override
   String get coverImageReadySubtitle =>
-      'تحتوي فكرتك الآن على رأس مرئي سيتم عرضه عبر \"اكتشف\" و\"أفكاري\" وعرض التفاصيل.';
+      'ستظهر صورة الغلاف في جميع أماكن عرض الفكرة';
 
   @override
   String get uploadCoverImageSubtitle =>
-      'اختر صورة JPG أو PNG أو WebP لتجعل الفكرة مصقولة من النظرة الأولى.';
+      'اختر صورة JPG أو PNG أو WebP لتظهر الفكرة بشكل أفضل من أول نظرة.';
 
   @override
-  String get coverImageUploadedLabel => 'تم تحميل صورة الغلاف';
+  String get coverImageUploadedLabel => 'تم رفع صورة الغلاف';
 
   @override
-  String get strongVisualHint =>
-      'الرؤية القوية تجعل البطاقات المميزة وتفاصيل البطل تبدو أكثر حيوية.';
+  String get strongVisualHint => 'الصورة الجيدة تجعل الفكرة أوضح وأكثر جاذبية';
 
   @override
   String get bestResultsImageHint =>
-      'أفضل النتائج: غلاف 16:9، بحجم أقل من 5 ميجابايت.';
+      'أفضل نتيجة: غلاف بنسبة 16:9 وبحجم أقل من 5 ميغابايت.';
 
   @override
-  String get deckDemoLinkLabel => 'سطح السفينة / الرابط التجريبي';
+  String get deckDemoLinkLabel => 'رابط العرض التقديمي / النموذج التجريبي';
 
   @override
-  String get deckDemoLinkHint => 'فيجما، فكرة، سطح السفينة، الصفحة المقصودة...';
+  String get deckDemoLinkHint =>
+      'Figma أو Notion أو عرض تقديمي أو صفحة هبوط...';
 
   @override
   String get chooseOneOptionLabel => 'اختر خيارًا واحدًا';
@@ -624,11 +616,11 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get signInContinuePublishingMessage =>
-      'قم بتسجيل الدخول لمواصلة فرص النشر.';
+      'سجّل الدخول لمتابعة نشر الفرص.';
 
   @override
   String get loginRequiredUploadMessage =>
-      'الرجاء تسجيل الدخول مرة أخرى لتحميل الصور.';
+      'يرجى تسجيل الدخول مرة أخرى لرفع الصور.';
 
   @override
   String get updateUnavailableTitle => 'التحديث غير متاح';
@@ -637,16 +629,16 @@ class AppLocalizationsAr extends AppLocalizations {
   String get publishUnavailableTitle => 'النشر غير متاح';
 
   @override
-  String get uploadUnavailableTitle => 'التحميل غير متاح';
+  String get uploadUnavailableTitle => 'الرفع غير متاح';
 
   @override
-  String get opportunityUpdatedMessage => 'تم تحديث تفاصيل فرصتك.';
+  String get opportunityUpdatedMessage => 'تم تحديث تفاصيل الفرصة.';
 
   @override
   String get opportunityPublishedMessage => 'تم نشر الفرصة بنجاح.';
 
   @override
-  String get scholarshipUpdatedMessage => 'تم تحديث المنحة الدراسية بنجاح.';
+  String get scholarshipUpdatedMessage => 'تم تحديث المنحة بنجاح';
 
   @override
   String get scholarshipPublishedMessage => 'تم نشر المنحة الدراسية بنجاح.';
@@ -665,14 +657,14 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get validationEligibilityItemRequired =>
-      'قم بإضافة عنصر أهلية واحد على الأقل';
+      'أضف شرط أهلية واحدًا على الأقل';
 
   @override
   String get validationRequirementItemRequired =>
       'أضف متطلبًا واحدًا على الأقل';
 
   @override
-  String get validationUseAtLeastFourCharacters => 'استخدم 4 أحرف على الأقل';
+  String get validationUseAtLeastFourCharacters => 'يجب إدخال 4 أحرف على الأقل';
 
   @override
   String get validationAddMoreDetail => 'الرجاء إضافة المزيد من التفاصيل';
@@ -692,19 +684,19 @@ class AppLocalizationsAr extends AppLocalizations {
   String get validationValidAmount => 'أدخل مبلغًا صالحًا';
 
   @override
-  String get validationAmountNonNegative => 'لا يمكن أن يكون المبلغ سالبًا';
+  String get validationAmountNonNegative => 'لا يمكن أن يكون المبلغ أقل من صفر';
 
   @override
   String get validationFundingAmountOrNote => 'أضف مبلغ تمويل أو ملاحظة';
 
   @override
-  String get validationFundingNoteOrAmount => 'أضف مذكرة تمويل أو مبلغ';
+  String get validationFundingNoteOrAmount => 'أضف ملاحظة تمويل أو مبلغًا';
 
   @override
-  String get validationAddClearerDuration => 'أضف مدة أوضح';
+  String get validationAddClearerDuration => 'يرجى تحديد مدة واضحة';
 
   @override
-  String get validationEnterValidNumber => 'أدخل رقمًا صالحًا';
+  String get validationEnterValidNumber => 'يرجى إدخال رقم صحيح';
 
   @override
   String get validationMinCannotExceedMax =>
@@ -712,19 +704,19 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get validationMaxAtLeastMin =>
-      'يجب أن يكون الحد الأقصى على الأقل دقيقة';
+      'يجب أن يكون الحد الأقصى أكبر من أو يساوي الحد الأدنى';
 
   @override
   String get validationOriginalLanguageRequired => 'اللغة الأصلية مطلوبة';
 
   @override
-  String get validationProjectIdeaTitleRequired => 'هذه الخانة مطلوبه.';
+  String get validationProjectIdeaTitleRequired => 'هذه الخانة مطلوبة.';
 
   @override
-  String get validationFieldRequired => 'هذه الخانة مطلوبه.';
+  String get validationFieldRequired => 'هذه الخانة مطلوبة.';
 
   @override
-  String get continueWithGoogleLabel => 'تواصل مع جوجل';
+  String get continueWithGoogleLabel => 'المتابعة باستخدام Google';
 
   @override
   String get orDividerLabel => 'أو';
@@ -756,13 +748,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get academicLevelBachelorDescription => 'المسار الجامعي التأسيسي';
 
   @override
-  String get academicLevelLicence => 'رخصة';
+  String get academicLevelLicence => 'ليسانس';
 
   @override
-  String get academicLevelLicenceDescription => 'برنامج درجة الترخيص';
+  String get academicLevelLicenceDescription => 'برنامج شهادة الليسانس';
 
   @override
-  String get academicLevelMaster => 'يتقن';
+  String get academicLevelMaster => 'ماستر';
 
   @override
   String get academicLevelMasterDescription => 'التخصص الأكاديمي المتقدم';
@@ -772,101 +764,100 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get academicLevelDoctoratDescription =>
-      'عمل أبحاث الدكتوراه والرسائل العلمية';
+      'مرحلة البحث وإعداد أطروحة الدكتوراه';
 
   @override
   String get jobLabel => 'وظيفة';
 
   @override
-  String get internshipLabel => 'التدريب الداخلي';
+  String get internshipLabel => 'تدريب';
 
   @override
-  String get sponsoredLabel => 'برعاية';
+  String get sponsoredLabel => 'فرصة ممولة';
 
   @override
   String get jobLowercaseLabel => 'وظيفة';
 
   @override
-  String get internshipLowercaseLabel => 'التدريب الداخلي';
+  String get internshipLowercaseLabel => 'تدريب';
 
   @override
-  String get sponsoredLowercaseLabel => 'برعاية';
+  String get sponsoredLowercaseLabel => 'فرصة ممولة';
 
   @override
-  String get opportunityHeadlineJob => 'استئجار لدور حقيقي';
+  String get opportunityHeadlineJob => 'وظيفة فعلية';
 
   @override
-  String get opportunityHeadlineInternship => 'جلب المواهب المستقبلية';
+  String get opportunityHeadlineInternship => 'درّب مواهب المستقبل';
 
   @override
-  String get opportunityHeadlineSponsoring =>
-      'دعم الطلاب من خلال برنامج برعاية متميزة';
+  String get opportunityHeadlineSponsoring => 'ادعم الطلاب ببرنامج ممول مميز';
 
   @override
-  String get opportunitySubtitleJob => 'العمل بدوام كامل وبدوام جزئي';
+  String get opportunitySubtitleJob => 'عمل بدوام كامل أو جزئي';
 
   @override
-  String get opportunitySubtitleInternship => 'التعلم والخبرة في العمل';
+  String get opportunitySubtitleInternship => 'تدريب وخبرة عملية';
 
   @override
-  String get opportunitySubtitleSponsoring => 'برامج ممولة وشريكة مميزة';
+  String get opportunitySubtitleSponsoring => 'برامج ممولة وشراكات مميزة';
 
   @override
   String get opportunityDescriptionHintJob =>
-      'وصف الدور والفريق والمسؤوليات...';
+      'صِف الدور والفريق والمسؤوليات...';
 
   @override
   String get opportunityDescriptionHintInternship =>
-      'وصف نطاق التدريب وأهداف التعلم والمسؤوليات...';
+      'صِف نطاق التدريب وأهداف التعلم والمسؤوليات...';
 
   @override
   String get opportunityDescriptionHintSponsoring =>
-      'قم بوصف برنامج الرعاية والدعم المقدم ومن هو مخصص له...';
+      'صِف البرنامج الممول والدعم المقدّم والفئة المستهدفة...';
 
   @override
   String get opportunityRequirementsHintJob =>
-      'شارك بالمهارات والمؤهلات المطلوبة...';
+      'اذكر المهارات والمؤهلات المطلوبة...';
 
   @override
   String get opportunityRequirementsHintInternship =>
-      'مشاركة المهارات المفضلة أو الخلفية الأكاديمية أو الأدوات...';
+      'اذكر المهارات المفضلة أو الخلفية الأكاديمية أو الأدوات...';
 
   @override
   String get opportunityRequirementsHintSponsoring =>
-      'مشاركة معايير الأهلية أو المستندات أو التوقعات...';
+      'اذكر شروط الأهلية أو المستندات أو التوقعات...';
 
   @override
   String get employmentTypeFullTime => 'بدوام كامل';
 
   @override
-  String get employmentTypePartTime => 'دوام جزئى';
+  String get employmentTypePartTime => 'دوام جزئي';
 
   @override
-  String get employmentTypeInternship => 'التدريب الداخلي';
+  String get employmentTypeInternship => 'تدريب';
 
   @override
-  String get employmentTypeContract => 'عقد';
+  String get employmentTypeContract => 'بعقد';
 
   @override
   String get employmentTypeTemporary => 'مؤقت';
 
   @override
-  String get employmentTypeFreelance => 'مستقل';
+  String get employmentTypeFreelance => 'عمل مستقل';
 
   @override
   String get workModeOnsite => 'في الموقع';
 
   @override
-  String get workModeRemote => 'بعيد';
+  String get workModeRemote => 'عن بُعد';
 
   @override
   String get workModeHybrid => 'هجين';
 
   @override
-  String get paidLabel => 'مدفوع';
+  String get paidLabel => 'مدفوعة';
 
   @override
-  String get unpaidLabel => 'غير مدفوعة الأجر';
+  String get unpaidLabel => 'غير مدفوعة';
 
   @override
   String get benefitFundingIncluded => 'يشمل التمويل';
@@ -875,26 +866,26 @@ class AppLocalizationsAr extends AppLocalizations {
   String get benefitPaidOpportunity => 'فرصة مدفوعة الأجر';
 
   @override
-  String get benefitRemoteFriendly => 'الإعداد ودية عن بعد';
+  String get benefitRemoteFriendly => 'يدعم العمل عن بُعد';
 
   @override
-  String get benefitHybridFormat => 'تنسيق العمل الهجين';
+  String get benefitHybridFormat => 'نظام عمل هجين';
 
   @override
-  String get benefitFeaturedSponsored => 'موضع برعاية مميز';
+  String get benefitFeaturedSponsored => 'فرصة ممولة مميزة';
 
   @override
-  String get ui12Matches => '12 مباراة';
+  String get ui12Matches => '12 نتيجة';
 
   @override
-  String get ui70Completed => 'تم الانتهاء من 70%';
+  String get ui70Completed => 'اكتمل 70%';
 
   @override
   String get uiABriefSummaryOfYourProfile => 'ملخص موجز لملفك الشخصي';
 
   @override
   String get uiACleanerBreakdownOfTheProviderDestinationAndTrack =>
-      'تفصيل أنظف للمزود والوجهة والمسار.';
+      'تفصيل أوضح للجهة والوجهة والمسار.';
 
   @override
   String get uiAClearerPathFromStudentAmbitionToRealWorldOpportunity =>
@@ -902,11 +893,11 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiACurrentCommercialRegisterReinforcesTrustAndHelpsKeepThe =>
-      'يعزز السجل التجاري الحالي الثقة ويساعد في إبقاء ملف الشركة جاهزًا للمراجعة.';
+      'يساعد السجل التجاري المحدّث على تعزيز الثقة وجعل ملف الشركة جاهزًا للمراجعة.';
 
   @override
   String get uiAFocusedOverviewSoTheOpportunityFeelsEasyToScan =>
-      'نظرة عامة مركزة بحيث تكون الفرصة سهلة الفحص.';
+      'نظرة مركزة تجعل الفرصة سهلة الفهم بسرعة.';
 
   @override
   String get uiAPublicWebsiteAndSocialChannelsAreNotLinkedInside =>
@@ -914,23 +905,23 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiAQuickCountOfTheContentTypesHandledInsideThe =>
-      'إحصاء سريع لأنواع المحتوى التي يتم التعامل معها داخل مساحة عمل المسؤول.';
+      'إحصاء سريع لأنواع المحتوى داخل مساحة عمل المشرف.';
 
   @override
   String get uiAQuickHighlightPickedFromTheScholarships =>
-      'تسليط الضوء سريعًا على المنح الدراسية';
+      'لمحة سريعة عن منحة مختارة';
 
   @override
   String get uiAQuickPulseOnImportedResourcesSoAdminsCanCurate =>
-      'نظرة سريعة على الموارد المستوردة حتى يتمكن المسؤولون من التنظيم بدلاً من التخمين.';
+      'نظرة سريعة على الموارد المستوردة لمساعدة المشرفين على تنظيمها بسهولة.';
 
   @override
   String get uiAReadyCvMakesJobsInternshipsAndScholarshipsMuchQuicker =>
-      'السيرة الذاتية الجاهزة تجعل التقدم للحصول على الوظائف والتدريب الداخلي والمنح الدراسية أسرع بكثير.';
+      'السيرة الذاتية الجاهزة تجعل التقديم للوظائف والتدريبات والمنح أسرع بكثير.';
 
   @override
   String get uiASharperCompanyStoryMakesTheProfileFeelMoreConfident =>
-      'قصة الشركة الأكثر وضوحًا تجعل الملف الشخصي يشعر بمزيد من الثقة والجدارة بالثقة.';
+      'قصة أوضح للشركة تجعل الملف أكثر ثقة ومصداقية.';
 
   @override
   String get uiAStrongLogoOrCompanyPhotoMakesTheProfileFeel =>
@@ -950,7 +941,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiAboutYou => 'عنك';
 
   @override
-  String get uiAcademicBreakdown => 'الانهيار الأكاديمي';
+  String get uiAcademicBreakdown => 'التوزيع الأكاديمي';
 
   @override
   String get uiAcademicLevel => 'المستوى الأكاديمي';
@@ -966,7 +957,7 @@ class AppLocalizationsAr extends AppLocalizations {
       'التنسيقات المقبولة: JPG، PNG، أو WebP. الحد الأقصى للحجم: 5 ميجابايت.';
 
   @override
-  String get uiAccess => 'وصول';
+  String get uiAccess => 'الدخول / الوصول';
 
   @override
   String get uiAccountAccess => 'الوصول إلى الحساب';
@@ -984,7 +975,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiAccountSecurity => 'أمان الحساب';
 
   @override
-  String get uiActBeforeDeadlinesClose => 'التصرف قبل إغلاق المواعيد النهائية.';
+  String get uiActBeforeDeadlinesClose => 'تحرّك قبل انتهاء المواعيد النهائية.';
 
   @override
   String uiActionUser(Object action) {
@@ -995,10 +986,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiActions => 'الإجراءات';
 
   @override
-  String get uiActive => 'نشيط';
+  String get uiActive => 'نشط';
 
   @override
-  String get uiActiveJobPosts => 'المشاركات الوظيفية النشطة';
+  String get uiActiveJobPosts => 'إعلانات الوظائف النشطة';
 
   @override
   String get uiActiveJobs => 'وظائف نشطة';
@@ -1007,13 +998,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiActiveUsers => 'المستخدمون النشطون';
 
   @override
-  String get uiActivity => 'نشاط';
+  String get uiActivity => 'النشاط';
 
   @override
   String get uiActivityFeedUnavailable => 'خلاصة النشاط غير متاحة';
 
   @override
-  String get uiAdd => 'يضيف';
+  String get uiAdd => 'إضافة';
 
   @override
   String get uiAddAFewLinesAboutWhatYourCompanyBuildsAnd =>
@@ -1024,7 +1015,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiAddAPlatformCuratedIdeaWithAStrongStoryClear =>
-      'أضف فكرة منسقة بواسطة النظام الأساسي مع قصة قوية وبيانات وصفية واضحة ونفس البنية المصقولة التي يعرفها المستخدمون بالفعل في موجز الابتكار.';
+      'أضف فكرة منسّقة من المنصة مع وصف قوي وبيانات واضحة لتظهر جيدًا في قسم الابتكار.';
 
   @override
   String get uiAddASkill => 'أضف مهارة';
@@ -1035,7 +1026,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiAddEmailAndPasswordSignIn =>
-      'إضافة البريد الإلكتروني وكلمة المرور لتسجيل الدخول';
+      'إضافة طريقة تسجيل الدخول بالبريد الإلكتروني وكلمة المرور';
 
   @override
   String get uiAddItem => 'إضافة عنصر';
@@ -1045,7 +1036,7 @@ class AppLocalizationsAr extends AppLocalizations {
       'أضف عنصرًا واحدًا واضحًا في كل مرة حتى يرى الطلاب قائمة مرجعية نظيفة.';
 
   @override
-  String get uiAddPassword => 'إضافة كلمة المرور';
+  String get uiAddPassword => 'إضافة كلمة مرور';
 
   @override
   String
@@ -1059,22 +1050,22 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiAdditionalInformation => 'معلومات إضافية';
 
   @override
-  String get uiAddress => 'عنوان';
+  String get uiAddress => 'العنوان';
 
   @override
-  String get uiAdminContentCenter => 'مركز محتوى المشرف';
+  String get uiAdminContentCenter => 'مركز إدارة المحتوى';
 
   @override
-  String get uiAdminControlRoom => 'غرفة التحكم الادارية';
+  String get uiAdminControlRoom => 'لوحة تحكم المشرف';
 
   @override
-  String get uiAdminPosts => 'المشاركات الادارية';
+  String get uiAdminPosts => 'منشورات المشرف';
 
   @override
   String get uiAiActionUnavailable => 'إجراء الذكاء الاصطناعي غير متاح';
 
   @override
-  String get uiAiIsProcessing => 'يقوم الذكاء الاصطناعي بمعالجة...';
+  String get uiAiIsProcessing => 'الذكاء الاصطناعي يعالج الطلب...';
 
   @override
   String get uiAiTrainer => 'مدرب الذكاء الاصطناعي';
@@ -1086,7 +1077,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiAlexFromTechcorp => 'أليكس من TechCorp';
 
   @override
-  String get uiAll => 'الجميع';
+  String get uiAll => 'الكل';
 
   @override
   String get uiAllIdeas => 'جميع الأفكار';
@@ -1100,7 +1091,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiAllRoles => 'جميع الأدوار';
 
   @override
-  String get uiAllSponsoredPrograms => 'جميع البرامج المدعومة';
+  String get uiAllSponsoredPrograms => 'جميع البرامج الممولة';
 
   @override
   String get uiAnswersGuidanceAndSupport => 'الإجابات والتوجيه والدعم.';
@@ -1109,7 +1100,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiAny => 'أي';
 
   @override
-  String get uiAppearanceTheme => 'المظهر / الموضوع';
+  String get uiAppearanceTheme => 'المظهر / النمط';
 
   @override
   String uiApplicantcount(Object applicantCount) {
@@ -1118,75 +1109,75 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String uiApplicantcountApplicants(Object applicantCount) {
-    return '$applicantCount المتقدمين';
+    return '$applicantCount متقدم';
   }
 
   @override
-  String get uiApplicants => 'المتقدمين';
+  String get uiApplicants => 'المتقدمون';
 
   @override
-  String get uiApplicationActivity => 'نشاط التطبيق';
+  String get uiApplicationActivity => 'نشاط التقديم';
 
   @override
-  String get uiApplicationApproved => 'التطبيق\nتمت الموافقة عليه';
+  String get uiApplicationApproved => 'تمت الموافقة على الطلب';
 
   @override
   String get uiApplicationApprovedB0Cb => 'تمت الموافقة على الطلب';
 
   @override
-  String get uiApplicationBlocked => 'تم حظر التطبيق';
+  String get uiApplicationBlocked => 'تم حظر الطلب';
 
   @override
-  String get uiApplicationDataIsUnavailable => 'بيانات التطبيق غير متوفرة.';
+  String get uiApplicationDataIsUnavailable => 'بيانات الطلب غير متوفرة.';
 
   @override
   String get uiApplicationDataIsUnavailableRightNow =>
-      'بيانات التطبيق غير متوفرة في الوقت الحالي.';
+      'بيانات الطلب غير متوفرة حاليًا.';
 
   @override
-  String get uiApplicationDetails => 'تفاصيل التطبيق';
+  String get uiApplicationDetails => 'تفاصيل الطلب';
 
   @override
-  String get uiApplicationHelp => 'مساعدة التطبيق';
+  String get uiApplicationHelp => 'مساعدة الطلبات';
 
   @override
-  String get uiApplicationLink => 'رابط التطبيق';
+  String get uiApplicationLink => 'رابط التقديم';
 
   @override
-  String get uiApplicationPipeline => 'خط أنابيب التطبيق';
+  String get uiApplicationPipeline => 'مراحل التقديم';
 
   @override
   String get uiApplicationProcess => 'عملية التقديم';
 
   @override
-  String get uiApplicationRate => 'معدل التطبيق';
+  String get uiApplicationRate => 'معدل التقديم';
 
   @override
-  String get uiApplicationStatus => 'حالة التطبيق';
+  String get uiApplicationStatus => 'حالة الطلب';
 
   @override
-  String get uiApplicationUnavailable => 'التطبيق غير متاح';
+  String get uiApplicationUnavailable => 'الطلب غير متاح';
 
   @override
-  String get uiApplicationUpdated => 'تم تحديث التطبيق';
+  String get uiApplicationUpdated => 'تم تحديث الطلب';
 
   @override
-  String get uiApplications => 'التطبيقات';
+  String get uiApplications => 'الطلبات';
 
   @override
   String uiApplicationsForOpportunitytitle(Object opportunityTitle) {
-    return 'طلبات الحصول على $opportunityTitle';
+    return 'طلبات $opportunityTitle';
   }
 
   @override
   String get uiApplicationsReceived => 'الطلبات المستلمة';
 
   @override
-  String get uiApplied => 'مُطبَّق';
+  String get uiApplied => 'تم التقديم';
 
   @override
   String uiAppliedAppliedtext(Object appliedText) {
-    return 'تطبيق $appliedText';
+    return 'تم التقديم $appliedText';
   }
 
   @override
@@ -1194,29 +1185,29 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String uiAppliedRelativeappliedlabel(Object relativeAppliedLabel) {
-    return 'Applied $relativeAppliedLabel';
+    return 'تم التقديم $relativeAppliedLabel';
   }
 
   @override
-  String get uiApply => 'يتقدم';
+  String get uiApply => 'تقديم الطلب';
 
   @override
-  String get uiApplyLink => 'تطبيق الرابط';
+  String get uiApplyLink => 'رابط التقديم';
 
   @override
-  String get uiApplyNow => 'تقدم بطلبك الآن';
+  String get uiApplyNow => 'قدّم الآن';
 
   @override
-  String get uiApplyTemplate => 'تطبيق القالب';
+  String get uiApplyTemplate => 'استخدام هذا القالب';
 
   @override
-  String get uiApprove => 'يعتمد';
+  String get uiApprove => 'موافقة';
 
   @override
   String get uiApproveCompany => 'الموافقة على الشركة';
 
   @override
-  String get uiApproved => 'موافقة';
+  String get uiApproved => 'تمت الموافقة';
 
   @override
   String uiApprovedValue1Approved(Object value1, Object approved) {
@@ -1238,10 +1229,10 @@ class AppLocalizationsAr extends AppLocalizations {
       'هل أنت متأكد أنك تريد حذف هذه المحادثة؟ لا يمكن التراجع عن هذا الإجراء.';
 
   @override
-  String get uiAtAGlance => 'في لمحة';
+  String get uiAtAGlance => 'نظرة سريعة';
 
   @override
-  String get uiAttach => 'نعلق';
+  String get uiAttach => 'إرفاق';
 
   @override
   String get uiAttachment => 'مرفق';
@@ -1262,7 +1253,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiAudienceMetadata => 'الجمهور والبيانات الوصفية';
 
   @override
-  String get uiAvailableInternships => 'التدريب المتاح';
+  String get uiAvailableInternships => 'التدريبات المتاحة';
 
   @override
   String get uiAvailableJobs => 'الوظائف المتاحة';
@@ -1274,16 +1265,16 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiAvailableScholarships => 'المنح الدراسية\nالمتاحة';
 
   @override
-  String get uiAvatarUnavailable => 'الصورة الرمزية غير متاحة';
+  String get uiAvatarUnavailable => 'الصورة الشخصية غير متاحة';
 
   @override
-  String get uiAvenirCloudSupport => 'دعم Avenir Cloud';
+  String get uiAvenirCloudSupport => 'دعم FutureGate Cloud';
 
   @override
-  String get uiBac => 'البكالوريا';
+  String get uiBac => 'بكالوريا';
 
   @override
-  String get uiBack => 'خلف';
+  String get uiBack => 'رجوع';
 
   @override
   String get uiBackToLogin => 'العودة لتسجيل الدخول';
@@ -1292,7 +1283,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiBackToLoginB5Cd => 'العودة إلى تسجيل الدخول';
 
   @override
-  String get uiBackendSupport => 'دعم الخلفية';
+  String get uiBackendSupport => 'دعم الواجهة الخلفية';
 
   @override
   String uiBadgecount(Object badgeCount) {
@@ -1309,25 +1300,25 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiBasicInformation => 'المعلومات الأساسية';
 
   @override
-  String get uiBenefits => 'فوائد';
+  String get uiBenefits => 'المزايا';
 
   @override
   String get uiBenefitsAndImpact => 'الفوائد والأثر';
 
   @override
-  String get uiBenefitsImpact => 'الفوائد / التأثير';
+  String get uiBenefitsImpact => 'الفوائد / الأثر';
 
   @override
   String get uiBenefitsOrImpact => 'الفوائد أو التأثير';
 
   @override
-  String get uiBestSuitedFor => 'الأنسب ل';
+  String get uiBestSuitedFor => 'الأنسب لـ';
 
   @override
-  String get uiBio => 'السيرة الذاتية';
+  String get uiBio => 'نبذة تعريفية';
 
   @override
-  String get uiBookImportWorkspace => 'حجز مساحة عمل الاستيراد';
+  String get uiBookImportWorkspace => 'مساحة استيراد الكتب';
 
   @override
   String get uiBookLibraryUnavailable => 'مكتبة الكتب غير متوفرة';
@@ -1336,10 +1327,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiBooks => 'كتب';
 
   @override
-  String get uiBrandStory => 'قصة العلامة التجارية';
+  String get uiBrandStory => 'قصة الشركة';
 
   @override
-  String get uiBrightStudioGrowth => 'برايت ستوديو ™ النمو';
+  String get uiBrightStudioGrowth => 'Bright Studio - النمو';
 
   @override
   String get uiBrowseCategories => 'تصفح الفئات';
@@ -1347,40 +1338,40 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String
   get uiBrowseJobsInternshipsSponsoredTracksAndTrainingPicksDesignedFor =>
-      'تصفح الوظائف والتدريب الداخلي والمسارات المدعومة واختيارات التدريب المصممة للطلاب.';
+      'تصفح وظائف وتدريبات ومسارات ممولة واختيارات تدريبية مصممة للطلاب.';
 
   @override
   String get uiBrowseLearningHub => 'تصفح مركز التعلم';
 
   @override
   String get uiBuildSaveAndGrowYourNextProjectIdeaWithConfidence =>
-      'قم ببناء فكرة مشروعك التالي وحفظها وتنميتها بثقة.';
+      'أنشئ فكرة مشروعك التالية واحفظها وطوّرها بثقة.';
 
   @override
   String get uiBuildSkillsAndGrowYourCareerWithCuratedLearningPaths =>
-      'قم ببناء المهارات وتنمية حياتك المهنية من خلال مسارات التعلم المنسقة.';
+      'طوّر مهاراتك ومسارك المهني من خلال مسارات تعلم مختارة.';
 
   @override
-  String get uiBuildStory => 'بناء القصة';
+  String get uiBuildStory => 'صياغة القصة';
 
   @override
   String get uiBuildUploadAndExportYourCv =>
-      'إنشاء سيرتك الذاتية وتحميلها وتصديرها.';
+      'أنشئ سيرتك الذاتية أو ارفعها أو صدّرها.';
 
   @override
-  String get uiBuildYourCvFirst => 'قم ببناء سيرتك الذاتية أولاً.';
+  String get uiBuildYourCvFirst => 'أنشئ سيرتك الذاتية أولًا.';
 
   @override
-  String get uiBuildYourNextSkill => 'قم ببناء مهارتك التالية';
+  String get uiBuildYourNextSkill => 'طوّر مهارتك التالية';
 
   @override
-  String get uiBuiltCv => 'بنيت السيرة الذاتية';
+  String get uiBuiltCv => 'سيرة ذاتية مُنشأة داخل التطبيق';
 
   @override
-  String get uiBusiness => 'عمل';
+  String get uiBusiness => 'الأعمال';
 
   @override
-  String get uiBusinessEmail => 'البريد الإلكتروني للأعمال';
+  String get uiBusinessEmail => 'البريد الإلكتروني المهني';
 
   @override
   String uiByValue1(Object value1) {
@@ -1388,7 +1379,7 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get uiCatalogue => 'كتالوج';
+  String get uiCatalogue => 'الفهرس';
 
   @override
   String get uiCategories => 'فئات';
@@ -1410,7 +1401,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiCheckBackSoonForFreshCuratedOpportunities =>
-      'تحقق مرة أخرى قريبًا للحصول على فرص جديدة منسقة.';
+      'تحقق لاحقًا لفرص جديدة مختارة.';
 
   @override
   String get uiCheckTheCoreEligibilitySignalsBeforeMovingForward =>
@@ -1420,10 +1411,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiCheckYourEmail => 'تحقق من بريدك الإلكتروني';
 
   @override
-  String get uiChoose => 'يختار';
+  String get uiChoose => 'اختر';
 
   @override
-  String get uiChooseATemplate => 'اختيار قالب؟';
+  String get uiChooseATemplate => 'اختر قالباً';
 
   @override
   String get uiChooseAnAvatar => 'اختر الصورة الرمزية';
@@ -1452,19 +1443,19 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiChooseYourDomain => 'اختر المجال الخاص بك';
 
   @override
-  String get uiClear => 'واضح';
+  String get uiClear => 'مسح';
 
   @override
-  String get uiClearFilters => 'مسح المرشحات';
+  String get uiClearFilters => 'مسح عوامل التصفية';
 
   @override
   String get uiClearSearch => 'مسح البحث';
 
   @override
-  String get uiClosingSoon => 'إغلاق قريبا';
+  String get uiClosingSoon => 'يغلق قريبًا';
 
   @override
-  String get uiClosingSoonC287 => 'إغلاق قريبا';
+  String get uiClosingSoonC287 => 'يغلق قريبًا';
 
   @override
   String get uiCloudSupportEngineer => 'مهندس الدعم السحابي';
@@ -1488,7 +1479,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiCompanyDescriptionOptional => 'وصف الشركة (اختياري)';
 
   @override
-  String get uiCompanyModeration => 'اعتدال الشركة';
+  String get uiCompanyModeration => 'إشراف الشركات';
 
   @override
   String get uiCompanyName => 'اسم الشركة';
@@ -1506,10 +1497,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiCompanyReview => 'مراجعة الشركة';
 
   @override
-  String get uiCompanyReviews => 'تقييمات الشركة';
+  String get uiCompanyReviews => 'مراجعة الشركات';
 
   @override
-  String get uiCompensation => 'تعويض';
+  String get uiCompensation => 'المقابل';
 
   @override
   String get uiCompetition => 'مسابقة';
@@ -1522,7 +1513,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String uiCompletedOfTotalSectionsComplete(Object completed, Object total) {
-    return 'اكتملت $completed من أقسام $total';
+    return 'اكتمل $completed من أصل $total أقسام';
   }
 
   @override
@@ -1539,13 +1530,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiConfirmPassword => 'تأكيد كلمة المرور';
 
   @override
-  String get uiContact => 'اتصال';
+  String get uiContact => 'تواصل';
 
   @override
-  String get uiContactPresence => 'الاتصال والتواجد';
+  String get uiContactPresence => 'معلومات التواصل والحضور';
 
   @override
-  String get uiContactSupport => 'اتصل بالدعم';
+  String get uiContactSupport => 'تواصل مع الدعم';
 
   @override
   String get uiContent => 'محتوى';
@@ -1558,10 +1549,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiContinueWithConfidenceOnTheOfficialDestination =>
-      'تواصل بثقة على الوجهة الرسمية.';
+      'تابع بثقة عبر الرابط الرسمي.';
 
   @override
-  String get uiControl => 'يتحكم';
+  String get uiControl => 'تحكم';
 
   @override
   String get uiConversationContext => 'سياق المحادثة';
@@ -1592,7 +1583,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiCoursesBooksAndCertificationsThatSharpenYourJourney =>
-      'الدورات والكتب والشهادات التي تزيد من رحلتك.';
+      'دورات وكتب وشهادات تصقل مسيرتك.';
 
   @override
   String get uiCreateAccount => 'إنشاء حساب';
@@ -1606,21 +1597,21 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiCreateYourFirstIdeaOrAdjustTheFilters =>
-      'أنشئ فكرتك الأولى أو اضبط المرشحات.';
+      'أنشئ فكرتك الأولى أو عدّل عوامل التصفية.';
 
   @override
-  String get uiCreator => 'الخالق';
+  String get uiCreator => 'المنشئ';
 
   @override
   String get uiCurateImportedBooksAndVideoResourcesFromOnePlace =>
-      'قم بتنظيم الكتب وموارد الفيديو المستوردة من مكان واحد.';
+      'نظّم الكتب وموارد الفيديو المستوردة من مكان واحد.';
 
   @override
-  String get uiCurateResourceHub => 'مركز الموارد المنظم';
+  String get uiCurateResourceHub => 'إدارة مركز الموارد';
 
   @override
   String get uiCuratedFundingPathsDeadlinesAndGlobalStudyOptions =>
-      'مسارات التمويل المنسقة والمواعيد النهائية وخيارات الدراسة العالمية.';
+      'مسارات تمويل مختارة، ومواعيد نهائية، وخيارات دراسة عالمية.';
 
   @override
   String get uiCurrency => 'عملة';
@@ -1639,7 +1630,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiCvDetailsAreNotAvailableForThisApplication =>
-      'تفاصيل السيرة الذاتية غير متوفرة لهذا التطبيق';
+      'تفاصيل السيرة الذاتية غير متوفرة لهذا الطلب';
 
   @override
   String get uiCvPreview => 'معاينة السيرة الذاتية';
@@ -1654,7 +1645,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiCvStudio => 'استوديو السيرة الذاتية';
 
   @override
-  String get uiDashboard => 'لوحة القيادة';
+  String get uiDashboard => 'لوحة التحكم';
 
   @override
   String get uiDashboardUnavailable => 'لوحة التحكم غير متاحة';
@@ -1666,7 +1657,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiDataPermissions => 'أذونات البيانات';
 
   @override
-  String get uiDataSciencePro => 'علوم البيانات برو';
+  String get uiDataSciencePro => 'Data Science Pro';
 
   @override
   String get uiDeadlineExpired => 'انتهى الموعد النهائي';
@@ -1675,13 +1666,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiDeadlineSet => 'تعيين الموعد النهائي';
 
   @override
-  String get uiDeckDemoLink => 'سطح السفينة / الرابط التجريبي';
+  String get uiDeckDemoLink => 'رابط العرض التقديمي / النموذج التجريبي';
 
   @override
   String get uiDegree => 'درجة';
 
   @override
-  String get uiDelete => 'يمسح';
+  String get uiDelete => 'حذف';
 
   @override
   String get uiDeleteChat => 'حذف الدردشة';
@@ -1690,7 +1681,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiDeleteConversation => 'هل تريد حذف المحادثة؟';
 
   @override
-  String get uiDeleteForEveryone => 'الحذف للجميع';
+  String get uiDeleteForEveryone => 'الحذف لدى الجميع';
 
   @override
   String get uiDeleteMessage => 'هل تريد حذف الرسالة؟';
@@ -1711,17 +1702,17 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String uiDeleteValue1IfItAlreadyHasApplicationsItWillBe(Object value1) {
-    return 'هل تريد حذف \"$value1\"؟ إذا كان لديه بالفعل تطبيقات، فسيتم إغلاقه بدلاً من ذلك للحفاظ على السجل.';
+    return 'هل تريد حذف \"$value1\"؟ إذا كانت لديها طلبات بالفعل، فسيتم إغلاقها بدلًا من حذفها للحفاظ على السجل.';
   }
 
   @override
-  String get uiDeliveryAccess => 'التسليم والوصول';
+  String get uiDeliveryAccess => 'طريقة الوصول';
 
   @override
   String get uiDesign => 'تصميم';
 
   @override
-  String get uiDestination => 'وجهة';
+  String get uiDestination => 'الوجهة';
 
   @override
   String get uiDetails => 'تفاصيل';
@@ -1734,11 +1725,11 @@ class AppLocalizationsAr extends AppLocalizations {
       'تم تعطيله عندما يكون مرشح المستوى نشطًا';
 
   @override
-  String get uiDiscover => 'يكتشف';
+  String get uiDiscover => 'اكتشف';
 
   @override
   String get uiDiscoverPremiumOpenRolesFromTrustedEmployersAndRemoteReady =>
-      'اكتشف الأدوار المفتوحة المتميزة من أصحاب العمل الموثوقين والفرق الجاهزة للعمل عن بعد.';
+      'اكتشف فرصًا مميزة من جهات موثوقة وفرق تدعم العمل عن بُعد.';
 
   @override
   String get uiDoctorate => 'دكتوراه';
@@ -1750,56 +1741,56 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiDocumentUnavailable => 'المستند غير متاح';
 
   @override
-  String get uiDocuments => 'وثائق';
+  String get uiDocuments => 'المستندات';
 
   @override
-  String get uiDomain => 'اِختِصاص';
+  String get uiDomain => 'مجال';
 
   @override
-  String get uiDownload => 'تحميل';
+  String get uiDownload => 'تنزيل';
 
   @override
-  String get uiDownloadA479 => 'تحميل';
+  String get uiDownloadA479 => 'تنزيل';
 
   @override
-  String get uiDownloadBuiltCv => 'تحميل السيرة الذاتية المبنية';
+  String get uiDownloadBuiltCv => 'تنزيل السيرة الذاتية المُنشأة';
 
   @override
-  String get uiDownloadCv => 'تحميل السيرة الذاتية';
+  String get uiDownloadCv => 'تنزيل السيرة الذاتية';
 
   @override
   String get uiEachSourceKeepsItsOwnSearchWorkflowAndManagementTools =>
-      'يحتفظ كل مصدر بسير عمل البحث وأدوات الإدارة الخاصة به، ولكنها تعيش الآن ضمن وجهة مكتبة واحدة.';
+      'لكل مصدر طريقة بحث وأدوات إدارة خاصة به، لكنها أصبحت الآن ضمن مكتبة واحدة.';
 
   @override
-  String get uiEdit => 'يحرر';
+  String get uiEdit => 'تعديل';
 
   @override
-  String get uiEditCompanyProfile => 'تحرير ملف تعريف الشركة';
+  String get uiEditCompanyProfile => 'تعديل ملف الشركة';
 
   @override
-  String get uiEditCv => 'تحرير السيرة الذاتية';
+  String get uiEditCv => 'تعديل السيرة الذاتية';
 
   @override
-  String get uiEditIdea => 'تحرير الفكرة';
+  String get uiEditIdea => 'تعديل الفكرة';
 
   @override
-  String get uiEditMessage => 'تحرير الرسالة';
+  String get uiEditMessage => 'تعديل الرسالة';
 
   @override
-  String get uiEditProfile => 'تحرير الملف الشخصي';
+  String get uiEditProfile => 'تعديل الملف الشخصي';
 
   @override
-  String get uiEditProfileCd28 => 'تحرير الملف الشخصي';
+  String get uiEditProfileCd28 => 'تعديل الملف الشخصي';
 
   @override
-  String get uiEditingMessage => 'تحرير الرسالة';
+  String get uiEditingMessage => 'تعديل الرسالة';
 
   @override
-  String get uiEmail => 'بريد إلكتروني';
+  String get uiEmail => 'البريد الإلكتروني';
 
   @override
-  String get uiEmailSignUp => 'الاشتراك بالبريد الإلكتروني';
+  String get uiEmailSignUp => 'التسجيل بالبريد الإلكتروني';
 
   @override
   String get uiEmailUnavailable => 'البريد الإلكتروني غير متاح';
@@ -1812,7 +1803,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiEndThisSessionOnTheCurrentDevice =>
-      'قم بإنهاء هذه الجلسة على الجهاز الحالي.';
+      'إنهاء هذه الجلسة على الجهاز الحالي.';
 
   @override
   String get uiEngagementAnalytics => 'تحليلات المشاركة';
@@ -1828,10 +1819,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiEverythingImportantIsSurfacedHereBeforeYouOpenTheFull =>
-      'يتم عرض كل شيء مهم هنا قبل فتح مكالمة التقديم الكاملة.';
+      'تظهر هنا أهم التفاصيل قبل فتح دعوة التقديم الكاملة.';
 
   @override
-  String get uiExternalApplication => 'التطبيق الخارجي';
+  String get uiExternalApplication => 'التقديم عبر رابط خارجي';
 
   @override
   String get uiExternalLink => 'رابط خارجي';
@@ -1840,7 +1831,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiExternalLink6630 => 'رابط خارجي';
 
   @override
-  String get uiFailedToLoadAdminContent => 'فشل في تحميل محتوى المسؤول';
+  String get uiFailedToLoadAdminContent => 'تعذّر تحميل محتوى المشرف';
 
   @override
   String get uiFaqs => 'الأسئلة الشائعة';
@@ -1853,10 +1844,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiFeaturedFreshAndHighSignalPicksFromLiveData =>
-      'اختيارات مميزة وجديدة وعالية الإشارة من البيانات المباشرة';
+      'اختيارات مميزة وحديثة وذات قيمة من البيانات الحالية';
 
   @override
-  String get uiFeaturedInternships => 'التدريب العملي المميز';
+  String get uiFeaturedInternships => 'تدريبات مميزة';
 
   @override
   String get uiFeaturedJobs => 'وظائف مميزة';
@@ -1865,15 +1856,15 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiFeaturedListUpdated => 'تم تحديث القائمة المميزة';
 
   @override
-  String get uiFeaturedScholarship => 'مميز\nمنحة دراسية';
+  String get uiFeaturedScholarship => 'منحة دراسية<br>مميزة';
 
   @override
   String uiFeaturedcountFeaturedResources(Object featuredCount) {
-    return '$featuredCount الموارد المميزة';
+    return '$featuredCount موارد مميزة';
   }
 
   @override
-  String get uiFeed => 'يٌطعم';
+  String get uiFeed => 'الخلاصة';
 
   @override
   String get uiFieldOfStudy => 'مجال الدراسة';
@@ -1889,41 +1880,41 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiFindBooksByDomainLevelAndLanguageThenImportThem =>
-      'ابحث عن الكتب حسب المجال والمستوى واللغة، ثم قم باستيرادها إلى مكتبة التدريب باستخدام البيانات الوصفية للمسؤول.';
+      'ابحث عن الكتب حسب المجال والمستوى واللغة، ثم استوردها إلى مكتبة التدريب مع بيانات المشرف الوصفية.';
 
   @override
-  String get uiFindYourNextBestOpportunity => 'ابحث عن أفضل فرصة تالية لك.';
+  String get uiFindYourNextBestOpportunity => 'ابحث عن أفضل فرصة لك';
 
   @override
   String get uiFindYourNextMove => 'ابحث عن خطوتك التالية.';
 
   @override
-  String get uiFinish => 'ينهي';
+  String get uiFinish => 'إنهاء';
 
   @override
   String get uiFinishProfile => 'إنهاء الملف الشخصي';
 
   @override
-  String get uiFocus => 'ركز';
+  String get uiFocus => 'تركيز';
 
   @override
-  String get uiFocusSearch => 'بحث التركيز';
+  String get uiFocusSearch => 'بحث مخصص';
 
   @override
-  String get uiFocusedApplicationView => 'عرض التطبيق المركز';
+  String get uiFocusedApplicationView => 'عرض مركّز للطلب';
 
   @override
   String get uiForgotPassword => 'هل نسيت كلمة السر؟';
 
   @override
-  String get uiFormalize => 'إضفاء الطابع الرسمي';
+  String get uiFormalize => 'اجعل النص رسميًا';
 
   @override
-  String get uiFree => 'حر';
+  String get uiFree => 'مجاني';
 
   @override
   String get uiFreshRecommendationsAreHighlightedAsNewListingsGoLive =>
-      'يتم تسليط الضوء على التوصيات الجديدة مع نشر القوائم الجديدة.';
+      'يتم إبراز التوصيات الجديدة عند نشر فرص جديدة.';
 
   @override
   String get uiFullDescription => 'الوصف الكامل';
@@ -1952,7 +1943,7 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String
   get uiFuturegateExpectsAccurateProfilesRespectfulCommunicationAndResponsibleUseOf =>
-      'تتوقع FutureGate ملفات تعريف دقيقة وتواصلًا محترمًا واستخدامًا مسؤولاً للتطبيق وأدوات المحتوى المتوفرة في التطبيق.';
+      'يتوقع FutureGate ملفات شخصية دقيقة وتواصلًا محترمًا واستخدامًا مسؤولًا لأدوات الطلبات والمحتوى المتاحة في التطبيق.';
 
   @override
   String get uiFuturegateIsDesignedAsABridgeBetweenStudentsTheirGrowing =>
@@ -1960,11 +1951,11 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiFuturegateStoresTheProfileDetailsCvContentSavedItemsAnd =>
-      'يقوم FutureGate بتخزين تفاصيل الملف الشخصي ومحتوى السيرة الذاتية والعناصر المحفوظة ونشاط التطبيق اللازم لمطابقة الطلاب بالفرص ودعم مراجعة الطلبات.';
+      'يخزّن FutureGate تفاصيل الملف الشخصي ومحتوى السيرة الذاتية والعناصر المحفوظة ونشاط الطلبات اللازمة لمطابقة الطلاب بالفرص ودعم مراجعة الطلبات.';
 
   @override
   String get uiGenerateAPolishedPdfFromYourCv =>
-      'قم بإنشاء ملف PDF مصقول من سيرتك الذاتية.';
+      'أنشئ ملف PDF احترافيًا من سيرتك الذاتية.';
 
   @override
   String get uiGeneratingPdf => 'جارٍ إنشاء ملف PDF...';
@@ -1979,7 +1970,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiGoogleBooks => 'كتب جوجل';
 
   @override
-  String get uiGoogleBooksImport => 'استيراد كتب جوجل';
+  String get uiGoogleBooksImport => 'استيراد من كتب Google';
 
   @override
   String get uiGoogleSignInUnavailable => 'تسجيل الدخول إلى Google غير متاح';
@@ -1988,13 +1979,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiGrants => 'المنح';
 
   @override
-  String get uiGrowthMarketingLead => 'قائد تسويق النمو';
+  String get uiGrowthMarketingLead => 'مسؤول تسويق النمو';
 
   @override
   String get uiGrowthRate => 'معدل النمو';
 
   @override
-  String get uiHandsOnStudentPlacements => 'التدريب العملي على مواضع الطلاب';
+  String get uiHandsOnStudentPlacements => 'تدريبات عملية للطلاب';
 
   @override
   String get uiHealth => 'صحة';
@@ -2003,16 +1994,16 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiHelpCenter => 'مركز المساعدة';
 
   @override
-  String get uiHidden => 'مختفي';
+  String get uiHidden => 'مخفي';
 
   @override
-  String get uiHighlights => 'أبرز';
+  String get uiHighlights => 'أبرز النقاط';
 
   @override
   String get uiHiringInsights => 'رؤى التوظيف';
 
   @override
-  String get uiHome => 'بيت';
+  String get uiHome => 'الرئيسية';
 
   @override
   String get uiHowCanWeHelp => 'كيف يمكننا المساعدة؟';
@@ -2053,15 +2044,15 @@ class AppLocalizationsAr extends AppLocalizations {
       'إذا قمت بإنشاء هذا الحساب مع Google، فاستخدم Google لتسجيل الدخول الآن. بعد ذلك، يمكنك إضافة كلمة مرور من الإعدادات إذا كنت تريد الوصول إلى البريد الإلكتروني/كلمة المرور أيضًا.';
 
   @override
-  String get uiIllustratorIntern => 'المصور المتدرب';
+  String get uiIllustratorIntern => 'متدرب في التصميم التوضيحي';
 
   @override
   String get uiImportAFewGoogleBooksResultsFirstThenManageFeaturing =>
-      'قم باستيراد بعض نتائج كتب Google أولاً، ثم قم بإدارة التمييز والفتح والحذف من هنا.';
+      'استورد بعض نتائج كتب Google أولًا، ثم أدِر التمييز والفتح والحذف من هنا.';
 
   @override
   String get uiImportAFewYoutubeResultsFirstThenManageFeaturingOpening =>
-      'قم باستيراد بعض نتائج YouTube أولاً، ثم قم بإدارة التمييز والفتح والحذف من هنا.';
+      'استورد بعض نتائج YouTube أولًا، ثم أدِر التمييز والفتح والحذف من هنا.';
 
   @override
   String get uiImportBooks => 'استيراد الكتب';
@@ -2073,15 +2064,15 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiImportGoogleBooks => 'استيراد كتب جوجل';
 
   @override
-  String get uiImportPipelines => 'استيراد خطوط الأنابيب';
+  String get uiImportPipelines => 'عمليات الاستيراد';
 
   @override
   String get uiImportTheFirstLearningResourceToStartBuildingTheTraining =>
-      'قم باستيراد المصدر التعليمي الأول لبدء إنشاء مكتبة التدريب.';
+      'استورد المصدر التعليمي الأول لبدء إنشاء مكتبة التدريب.';
 
   @override
   String get uiImportTrustedLearningResourcesKeepFeaturedContentFreshAndTurn =>
-      'قم باستيراد مصادر تعليمية موثوقة، واحتفظ بالمحتوى المميز محدثًا، وقم بتحويل المصادر الخارجية إلى مكتبة نظيفة يديرها المسؤول.';
+      'استورد موارد تعليمية موثوقة، وحافظ على حداثة المحتوى المميز، وحوّل المصادر الخارجية إلى مكتبة منظمة يديرها المشرف.';
 
   @override
   String get uiImportUnavailable => 'الاستيراد غير متاح';
@@ -2094,7 +2085,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiImportantFieldsAreGroupedHereInAMoreReadableAdmin =>
-      'يتم تجميع الحقول المهمة هنا في تخطيط تفصيلي للمسؤول أكثر قابلية للقراءة.';
+      'تُجمع الحقول المهمة هنا في عرض تفاصيل أوضح للمشرف.';
 
   @override
   String get uiImported => 'مستورد';
@@ -2109,7 +2100,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiInstitution => 'مؤسسة';
 
   @override
-  String get uiInterestSnapshot => 'لقطة الفائدة';
+  String get uiInterestSnapshot => 'لمحة عن الاهتمام';
 
   @override
   String get uiInterested => 'مهتم';
@@ -2120,7 +2111,7 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get uiInternships => 'التدريب';
+  String get uiInternships => 'التدريبات';
 
   @override
   String get uiItemMetadata => 'البيانات التعريفية للعنصر';
@@ -2130,22 +2121,22 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiJobsInternshipsAndSponsoredTracksMatchedToYourNextMove =>
-      'الوظائف والتدريب الداخلي والمسارات المدعومة التي تتوافق مع خطوتك التالية.';
+      'وظائف وتدريبات ومسارات ممولة تناسب خطوتك القادمة.';
 
   @override
   String get uiJobsInternshipsSponsoredTracksAndTrainingInOneStream =>
-      'الوظائف والتدريب الداخلي والمسارات المدعومة والتدريب في مسار واحد.';
+      'وظائف وتدريبات ومسارات ممولة وتدريب في خلاصة واحدة.';
 
   @override
-  String get uiJoinFuturegate => 'انضم إلى بوابة المستقبل';
+  String get uiJoinFuturegate => 'انضم إلى FutureGate';
 
   @override
   String get uiJumpBackIntoEverythingYouBookmarked =>
-      'انتقل مرة أخرى إلى كل ما قمت بوضع إشارة مرجعية عليه.';
+      'ارجع بسرعة إلى كل ما حفظته.';
 
   @override
   String get uiJumpStraightIntoTheAdminAreasYouOpenMostOften =>
-      'انتقل مباشرة إلى المناطق الإدارية التي تفتحها في أغلب الأحيان.';
+      'انتقل مباشرة إلى أقسام الإدارة التي تستخدمها كثيرًا.';
 
   @override
   String get uiJuniorFrontendDeveloper => 'مطور الواجهة المبتدئة';
@@ -2156,7 +2147,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiKeepAFewStrongOptionsMovingWhileYouWaitFor =>
-      'احتفظ ببعض الخيارات القوية أثناء انتظار الردود.';
+      'واصل التقديم على بعض الخيارات القوية أثناء انتظار الردود.';
 
   @override
   String get uiKeepApplyingWhileTeamsAreAlreadyEngagingWithYourProfile =>
@@ -2164,25 +2155,25 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiKeepGoogleSignInAndAddEmailPasswordToo =>
-      'احتفظ بتسجيل الدخول إلى Google وأضف البريد الإلكتروني/كلمة المرور أيضًا';
+      'احتفظ بتسجيل الدخول عبر Google وأضف البريد الإلكتروني وكلمة المرور أيضًا';
 
   @override
-  String get uiKeepItOutOfDiscovery => 'يبقيه بعيدا عن الاكتشاف';
+  String get uiKeepItOutOfDiscovery => 'إبقاؤها خارج قسم الاكتشاف';
 
   @override
-  String get uiKeepOutOfDiscovery => 'الابتعاد عن الاكتشاف';
+  String get uiKeepOutOfDiscovery => 'إبقاء المحتوى خارج قسم الاكتشاف';
 
   @override
   String get uiKeepTheCompanyOutOfTheWorkspaceUntilTheProfile =>
-      'أبقِ الشركة خارج مساحة العمل حتى يتم تصحيح ملف التعريف.';
+      'أبقِ الشركة خارج مساحة العمل إلى أن يتم تصحيح الملف.';
 
   @override
   String get uiKeepTheExistingDataSourceButTailorWhatYouSee =>
-      'احتفظ بمصدر البيانات الحالي، ولكن قم بتخصيص ما تراه.';
+      'احتفظ بمصدر البيانات الحالي، وخصّص ما تراه.';
 
   @override
   String get uiKeepTheHeadlineAndOverviewCrispSoTheIdeaReads =>
-      'حافظ على وضوح العنوان والنظرة العامة بحيث يتم قراءة الفكرة بقوة في كل من البطاقات وطرق عرض التفاصيل الكاملة.';
+      'اجعل العنوان والنظرة العامة واضحين حتى تظهر الفكرة بقوة في البطاقات وصفحة التفاصيل.';
 
   @override
   String get uiKeepThePageGroundedInTheCurrentAppBehaviorInstead =>
@@ -2202,7 +2193,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiKeepYourStudentContextCurrentSoOpportunityMatchingStaysUseful =>
-      'حافظ على تحديث سياق الطالب الخاص بك حتى تظل مطابقة الفرص مفيدة.';
+      'حدّث معلوماتك كطالب حتى تبقى مطابقة الفرص مفيدة.';
 
   @override
   String get uiKeySkills => 'المهارات الأساسية';
@@ -2213,10 +2204,10 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get uiLaboratory => 'معمل';
+  String get uiLaboratory => 'مخبر';
 
   @override
-  String get uiLanguageFilters => 'مرشحات اللغة';
+  String get uiLanguageFilters => 'تصفية اللغة';
 
   @override
   String get uiLanguages => 'اللغات';
@@ -2228,7 +2219,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiLater => 'لاحقاً';
 
   @override
-  String get uiLatest => 'أحدث';
+  String get uiLatest => 'الأحدث';
 
   @override
   String get uiLatestOpportunities => 'أحدث الفرص';
@@ -2237,13 +2228,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiLearnMoreAboutThePlatform => 'تعرف على المزيد حول المنصة.';
 
   @override
-  String get uiLearners => 'المتعلمين';
+  String get uiLearners => 'المتعلمون';
 
   @override
   String get uiLegal => 'قانوني';
 
   @override
-  String get uiLevelFilters => 'مرشحات المستوى';
+  String get uiLevelFilters => 'عوامل تصفية المستوى';
 
   @override
   String get uiLibrary => 'مكتبة';
@@ -2252,38 +2243,38 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiLibraryOverview => 'نظرة عامة على المكتبة';
 
   @override
-  String get uiLink => 'وصلة';
+  String get uiLink => 'رابط';
 
   @override
   String get uiLinkUnavailable => 'الرابط غير متاح';
 
   @override
-  String get uiLive => 'يعيش';
+  String get uiLive => 'نشط';
 
   @override
-  String get uiLiveFeed => 'تغذية حية';
+  String get uiLiveFeed => 'الخلاصة المباشرة';
 
   @override
   String get uiLiveProfileDetailsCouldNotBeRefreshedSoYouAre =>
-      'لا يمكن تحديث تفاصيل الملف الشخصي المباشر، لذلك ترى معلومات احتياطية آمنة.';
+      'تعذّر تحديث تفاصيل الملف الشخصي النشطة، لذلك تظهر معلومات احتياطية آمنة.';
 
   @override
-  String get uiLoadingLiveInternships => 'جارٍ تحميل التدريب العملي المباشر...';
+  String get uiLoadingLiveInternships => 'جارٍ تحميل التدريبات النشطة...';
 
   @override
   String get uiLoadingOpportunities => 'جارٍ تحميل الفرص...';
 
   @override
-  String get uiLoadingYourApplications => 'جارٍ تحميل تطبيقاتك...';
+  String get uiLoadingYourApplications => 'جارٍ تحميل طلباتك...';
 
   @override
   String get uiLoadingYourSavedItems => 'جارٍ تحميل العناصر المحفوظة...';
 
   @override
-  String get uiLocationAndLogistics => 'الموقع والخدمات اللوجستية';
+  String get uiLocationAndLogistics => 'الموقع والتفاصيل العملية';
 
   @override
-  String get uiLocationLogistics => 'الموقع والخدمات اللوجستية';
+  String get uiLocationLogistics => 'الموقع والتفاصيل العملية';
 
   @override
   String get uiLogin => 'تسجيل الدخول';
@@ -2298,11 +2289,11 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiLogoVisualIdentity => 'الشعار والهوية البصرية';
 
   @override
-  String get uiLoomStudioDesign => 'تصميم استوديو المنوال';
+  String get uiLoomStudioDesign => 'Loom Studio - التصميم';
 
   @override
   String get uiMakeItEasyForStudentsToUnderstandWhereYourCompany =>
-      'اجعل من السهل على الطلاب فهم مكان شركتك وكيفية الوصول إليها.';
+      'سهّل على الطلاب معرفة موقع شركتك وطريقة الوصول إليها.';
 
   @override
   String get uiManageImportedBooks => 'إدارة الكتب المستوردة';
@@ -2311,7 +2302,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiManageImportedVideos => 'إدارة مقاطع الفيديو المستوردة';
 
   @override
-  String get uiManageLiveOffers => 'إدارة العروض الحية';
+  String get uiManageLiveOffers => 'إدارة العروض النشطة';
 
   @override
   String get uiManageSessionsDevices => 'إدارة الجلسات والأجهزة';
@@ -2323,10 +2314,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiManageYourListings => 'إدارة القوائم الخاصة بك';
 
   @override
-  String get uiManagedInventory => 'المخزون المُدار';
+  String get uiManagedInventory => 'المحتوى المُدار';
 
   @override
-  String get uiMarkPendingReview => 'وضع علامة في انتظار المراجعة';
+  String get uiMarkPendingReview => 'إعادتها إلى المراجعة';
 
   @override
   String get uiMarketing => 'تسويق';
@@ -2368,17 +2359,17 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get uiModerateIdeaQueue => 'قائمة انتظار الأفكار المعتدلة';
+  String get uiModerateIdeaQueue => 'مراجعة قائمة الأفكار';
 
   @override
   String get uiModerateIdeasApplicationsListingsScholarshipsAndTraining =>
-      'أفكار وتطبيقات وقوائم ومنح دراسية وتدريبات معتدلة.';
+      'أشرف على الأفكار والطلبات والقوائم والمنح والدورات التدريبية.';
 
   @override
-  String get uiModeration => 'الاعتدال';
+  String get uiModeration => 'الإشراف';
 
   @override
-  String get uiModerationActions => 'إجراءات الاعتدال';
+  String get uiModerationActions => 'إجراءات الإشراف';
 
   @override
   String get uiMonthlyRegistrations => 'التسجيلات الشهرية';
@@ -2387,18 +2378,18 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiMoreInformation => 'مزيد من المعلومات';
 
   @override
-  String get uiMostAppliedOpportunities => 'الفرص الأكثر تطبيقا';
+  String get uiMostAppliedOpportunities => 'أكثر الفرص تلقّيًا للطلبات';
 
   @override
   String get uiMostRecentStudentApplicationsFromYourRealData =>
-      'أحدث تطبيقات الطلاب من بياناتك الحقيقية.';
+      'أحدث طلبات الطلاب من بياناتك الفعلية.';
 
   @override
   String get uiMostSavedOpportunities => 'الفرص الأكثر حفظًا';
 
   @override
   String get uiMoveTheCompanyBackIntoTheReviewQueueForAnother =>
-      'انقل الشركة مرة أخرى إلى قائمة انتظار المراجعة لإجراء فحص آخر.';
+      'إعادة الشركة إلى قائمة المراجعة لإعادة التحقق.';
 
   @override
   String get uiMuted => 'كتم الصوت';
@@ -2434,7 +2425,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiNoActivityMatchesThisSearch => 'لا يوجد نشاط يطابق هذا البحث';
 
   @override
-  String get uiNoApplicationsToReviewYet => 'لا يوجد طلبات للمراجعة حتى الآن';
+  String get uiNoApplicationsToReviewYet => 'لا توجد طلبات للمراجعة حتى الآن';
 
   @override
   String get uiNoApplicationsYet => 'لا توجد طلبات حتى الآن';
@@ -2455,10 +2446,10 @@ class AppLocalizationsAr extends AppLocalizations {
       'لا توجد مواضيع مساعدة تطابق بحثك';
 
   @override
-  String get uiNoHighlightsAvailableYet => 'لا توجد أبرز المتاحة حتى الآن';
+  String get uiNoHighlightsAvailableYet => 'لا توجد عناصر مميزة حتى الآن';
 
   @override
-  String get uiNoIdeasMatchThisView => 'لا توجد أفكار تتطابق مع هذا الرأي';
+  String get uiNoIdeasMatchThisView => 'لا توجد أفكار تطابق هذا العرض';
 
   @override
   String get uiNoIdeasYet => 'لا توجد أفكار حتى الآن';
@@ -2470,8 +2461,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiNoLearningResourcesYet => 'لا توجد مصادر تعليمية حتى الآن';
 
   @override
-  String get uiNoOpportunitiesMatchThisView =>
-      'لا توجد فرص تتطابق مع هذا الرأي';
+  String get uiNoOpportunitiesMatchThisView => 'لا توجد فرص تطابق هذا العرض';
 
   @override
   String get uiNoOpportunitiesPublishedYet => 'لم يتم نشر الفرص بعد';
@@ -2493,7 +2483,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiNoRequirementsProvided => 'لم يتم توفير المتطلبات.';
 
   @override
-  String get uiNoResultsInThisView => 'لا توجد نتائج في هذا الرأي';
+  String get uiNoResultsInThisView => 'لا توجد نتائج في هذا العرض';
 
   @override
   String get uiNoScholarshipLinkIsAvailableForThisItemYet =>
@@ -2515,8 +2505,7 @@ class AppLocalizationsAr extends AppLocalizations {
       'لا توجد برامج تدريبية متاحة في الوقت الحالي';
 
   @override
-  String get uiNoTrendingOpportunitiesRightNow =>
-      'لا توجد فرص تتجه في الوقت الحالي';
+  String get uiNoTrendingOpportunitiesRightNow => 'لا توجد فرص رائجة حالياً';
 
   @override
   String get uiNoUrgentDeadlinesRightNow =>
@@ -2527,7 +2516,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiNoVerificationDocumentUploadedYet =>
-      'لم يتم تحميل مستند التحقق حتى الآن';
+      'لم يتم رفع مستند التحقق بعد';
 
   @override
   String get uiNoVideosImportedYet => 'لم يتم استيراد أي مقاطع فيديو حتى الآن';
@@ -2536,74 +2525,74 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiNoVideosMatchThisSearch => 'لا توجد مقاطع فيديو تطابق هذا البحث';
 
   @override
-  String get uiNorthMetricsAnalytics => 'مقاييس الشمال - تحليلات';
+  String get uiNorthMetricsAnalytics => 'North Metrics - التحليلات';
 
   @override
   String get uiNotSignedIn => 'لم يتم تسجيل الدخول';
 
   @override
-  String get uiNotificationCenter => 'مركز الإخطار';
+  String get uiNotificationCenter => 'مركز الإشعارات';
 
   @override
   String get uiNovaLabsProductDesign => 'نوفا لابز تصميم المنتجات';
 
   @override
-  String get uiOffers => 'العروض';
+  String get uiOffers => 'العروض / الفرص';
 
   @override
   String get uiOneQuickStep => 'خطوة واحدة سريعة';
 
   @override
-  String get uiOpenActivity => 'نشاط مفتوح';
+  String get uiOpenActivity => 'فتح النشاط';
 
   @override
   String get uiOpenActivityF327 => 'فتح النشاط';
 
   @override
-  String get uiOpenAttachment => 'افتح المرفق';
+  String get uiOpenAttachment => 'فتح المرفق';
 
   @override
   String uiOpenCandidateProfileForStudentname(Object studentName) {
-    return 'افتح الملف الشخصي للمرشح لـ $studentName';
+    return 'فتح ملف المرشح: $studentName';
   }
 
   @override
-  String get uiOpenCvStudio => 'افتح استوديو السيرة الذاتية';
+  String get uiOpenCvStudio => 'فتح استوديو السيرة الذاتية';
 
   @override
-  String get uiOpenDetails => 'افتح التفاصيل';
+  String get uiOpenDetails => 'فتح التفاصيل';
 
   @override
-  String get uiOpenLibraryStudio => 'افتح استوديو المكتبة';
+  String get uiOpenLibraryStudio => 'فتح استوديو المكتبة';
 
   @override
-  String get uiOpenLink => 'افتح الرابط';
+  String get uiOpenLink => 'فتح الرابط';
 
   @override
-  String get uiOpenResource => 'فتح الموارد';
+  String get uiOpenResource => 'فتح المورد';
 
   @override
-  String get uiOpenRoles => 'الأدوار المفتوحة';
+  String get uiOpenRoles => 'الوظائف المفتوحة';
 
   @override
-  String get uiOpenScholarshipLink => 'رابط المنحة المفتوحة';
+  String get uiOpenScholarshipLink => 'فتح رابط المنحة';
 
   @override
-  String get uiOpenStudio => 'افتح الاستوديو';
+  String get uiOpenStudio => 'فتح الاستوديو';
 
   @override
   String get uiOpenTheFullAdminProfileSheetForThisUser =>
-      'افتح ورقة ملف تعريف المسؤول الكاملة لهذا المستخدم.';
+      'افتح نافذة ملف المشرف الكاملة لهذا المستخدم.';
 
   @override
-  String get uiOpenUnavailable => 'مفتوح غير متاح';
+  String get uiOpenUnavailable => 'الفتح غير متاح';
 
   @override
   String get uiOpenYourCompanyWorkspaceHub => 'افتح مركز مساحة عمل شركتك';
 
   @override
   String get uiOpenYourInboxAndConfirmYourAccount =>
-      'افتح صندوق الوارد الخاص بك وقم بتأكيد حسابك.';
+      'افتح صندوق الوارد الخاص بك وأكّد حسابك.';
 
   @override
   String get uiOpenYourInboxAndFollowTheResetLink =>
@@ -2614,7 +2603,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiOpportunitiesNearingTheirDeadlinesAreHighlightedHere =>
-      'يتم تسليط الضوء هنا على الفرص التي تقترب من المواعيد النهائية لها.';
+      'يتم إبراز الفرص التي اقترب موعدها النهائي هنا.';
 
   @override
   String get uiOpportunitiesScholarshipsTraining =>
@@ -2627,7 +2616,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiOpportunityDetails => 'تفاصيل الفرصة';
 
   @override
-  String get uiOpportunityPostingHelp => 'فرصة نشر المساعدة';
+  String get uiOpportunityPostingHelp => 'مساعدة نشر الفرص';
 
   @override
   String get uiOpportunityUnavailable => 'الفرصة غير متاحة';
@@ -2636,16 +2625,16 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiOpps => 'الفرص';
 
   @override
-  String get uiOptional => 'خياري';
+  String get uiOptional => 'اختياري';
 
   @override
   String get uiOptionalExtras => 'إضافات اختيارية';
 
   @override
-  String get uiOrUploadYourOwn => 'أو تحميل الخاصة بك';
+  String get uiOrUploadYourOwn => 'أو ارفع صورتك الخاصة';
 
   @override
-  String get uiOrbitAiAiOps => 'Orbit AI ™ AI Ops';
+  String get uiOrbitAiAiOps => 'Orbit AI - AIOps';
 
   @override
   String get uiOverview => 'ملخص';
@@ -2654,10 +2643,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiWorkspace => 'مساحة العمل';
 
   @override
-  String get uiPaidOnly => 'المدفوعة فقط';
+  String get uiPaidOnly => 'الفرص المدفوعة فقط';
 
   @override
-  String get uiPartnerBackedSupport => 'الدعم المدعوم من الشركاء';
+  String get uiPartnerBackedSupport => 'دعم من الشركاء';
 
   @override
   String get uiPassword => 'كلمة المرور';
@@ -2687,23 +2676,23 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiPendingApprovedAndRejectedCountsFromYourLiveApplications =>
-      'الأعداد المعلقة والموافقة عليها والمرفوضة من تطبيقاتك المباشرة.';
+      'أعداد الطلبات المعلقة والمقبولة والمرفوضة من طلباتك النشطة.';
 
   @override
-  String get uiPendingApps => 'التطبيقات المعلقة';
+  String get uiPendingApps => 'الطلبات المعلقة';
 
   @override
-  String get uiPendingIdeasNeedReview => 'الأفكار المعلقة تحتاج إلى مراجعة';
+  String get uiPendingIdeasNeedReview => 'الأفكار المعلقة بحاجة إلى مراجعة';
 
   @override
   String get uiPendingOpportunitiesNeedAttention =>
-      'الفرص المعلقة تحتاج إلى الاهتمام';
+      'الفرص المعلقة بحاجة إلى متابعة';
 
   @override
   String get uiPendingProjectIdeas => 'أفكار المشاريع المعلقة';
 
   @override
-  String get uiPendingReviews => 'المراجعات المعلقة';
+  String get uiPendingReviews => 'قيد المراجعة';
 
   @override
   String uiPendingValue1InReview(Object value1, Object pending) {
@@ -2712,7 +2701,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String uiPendingapplicationsPendingApps(Object pendingApplications) {
-    return '$pendingApplications التطبيقات المعلقة';
+    return '$pendingApplications طلبات معلقة';
   }
 
   @override
@@ -2735,7 +2724,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiPhone => 'هاتف';
 
   @override
-  String get uiPhoneNumber => 'رقم التليفون';
+  String get uiPhoneNumber => 'رقم الهاتف';
 
   @override
   String get uiPhoto => 'صورة';
@@ -2745,14 +2734,14 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiPickABuiltInLookOrKeepUsingYourUploaded =>
-      'اختر مظهرًا مدمجًا، أو استمر في استخدام صورتك التي تم تحميلها.';
+      'اختر مظهرًا جاهزًا أو واصل استخدام صورتك المرفوعة.';
 
   @override
   String get uiPickTheResumeStyleThatBestFitsTheRoleYou =>
       'اختر نمط السيرة الذاتية الذي يناسب الدور الذي تريده.';
 
   @override
-  String get uiPixelFoundryEngineering => 'مسبك بكسل - الهندسة';
+  String get uiPixelFoundryEngineering => 'Pixel Foundry - الهندسة';
 
   @override
   String get uiPlatformMissionAndVersionDetails =>
@@ -2763,7 +2752,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiPlatformPulseModerationLoadAndQuickControlPoints =>
-      'نبض المنصة، حمل الاعتدال، ونقاط التحكم السريعة.';
+      'نظرة عامة على نشاط المنصة، وضغط المراجعة، وأهم نقاط التحكم.';
 
   @override
   String get uiPlatformStory => 'قصة المنصة';
@@ -2773,35 +2762,35 @@ class AppLocalizationsAr extends AppLocalizations {
       'يرجى التحقق من اتصالك والمحاولة مرة أخرى.';
 
   @override
-  String get uiPolishYourPublicCompanyPresence => 'تلميع وجود شركتك العامة';
+  String get uiPolishYourPublicCompanyPresence => 'حسّن حضور شركتك العام';
 
   @override
-  String get uiPosition => 'موضع';
+  String get uiPosition => 'المنصب';
 
   @override
-  String get uiPositioning => 'تحديد المواقع';
+  String get uiPositioning => 'طريقة العرض';
 
   @override
-  String get uiPositioningAccess => 'تحديد المواقع والوصول';
+  String get uiPositioningAccess => 'طريقة العرض والوصول';
 
   @override
-  String get uiPostAdminIdea => 'فكرة نشر المشرف';
+  String get uiPostAdminIdea => 'نشر فكرة من المشرف';
 
   @override
-  String get uiPostOpportunity => 'فرصة النشر';
+  String get uiPostOpportunity => 'نشر فرصة';
 
   @override
-  String get uiPostOpportunity2F1A => 'مشاركة\nفرصة';
+  String get uiPostOpportunity2F1A => 'نشر\nفرصة';
 
   @override
-  String get uiPostScholarship => 'ما بعد المنحة الدراسية';
+  String get uiPostScholarship => 'نشر منحة';
 
   @override
-  String get uiPosted => 'نشر';
+  String get uiPosted => 'منشور';
 
   @override
   String get uiPreferencesDisplayAndAppChoices =>
-      'التفضيلات والعرض واختيارات التطبيق.';
+      'التفضيلات، وطريقة العرض، وخيارات التطبيق.';
 
   @override
   String get uiPreview => 'معاينة';
@@ -2813,7 +2802,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiPreviewUnavailable => 'المعاينة غير متاحة';
 
   @override
-  String get uiPrimaryCvPdf => 'السيرة الذاتية الأولية PDF';
+  String get uiPrimaryCvPdf => 'ملف PDF للسيرة الذاتية الرئيسية';
 
   @override
   String get uiPrivacyControls => 'ضوابط الخصوصية';
@@ -2837,24 +2826,24 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiProductDesign => 'تصميم المنتج';
 
   @override
-  String get uiProfessionalSummary => 'ملخص احترافي';
+  String get uiProfessionalSummary => 'الملخص المهني';
 
   @override
-  String get uiProfile => 'حساب تعريفي';
+  String get uiProfile => 'الملف الشخصي';
 
   @override
   String get uiProfileCompletion => 'استكمال الملف الشخصي';
 
   @override
   String get uiProfileCvAndApplicationDataAreUsedToPowerOpportunities =>
-      'يتم استخدام بيانات الملف الشخصي والسيرة الذاتية والتطبيق لتعزيز الفرص وتدفقات مراجعة مسؤول التوظيف.';
+      'تُستخدم بيانات الملف الشخصي والسيرة الذاتية والطلبات لتوفير الفرص ومسارات مراجعة مسؤولي التوظيف.';
 
   @override
   String get uiProfileCvNotificationAndApplicationDataAreUsedOnlyTo =>
-      'يتم استخدام بيانات الملف الشخصي والسيرة الذاتية والإشعارات والتطبيق فقط لتوفير ميزات المطابقة والمراجعة والاتصال التي تدعم تجربة FutureGate.';
+      'تُستخدم بيانات الملف الشخصي والسيرة الذاتية والإشعارات والطلبات فقط لتوفير ميزات المطابقة والمراجعة والتواصل التي تدعم تجربة FutureGate.';
 
   @override
-  String get uiProfileNext => 'الملف الشخصي التالي';
+  String get uiProfileNext => 'الملف الشخصي لاحقًا';
 
   @override
   String get uiProfileOverview => 'نظرة عامة على الملف الشخصي';
@@ -2884,10 +2873,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiProposedSolution => 'الحل المقترح';
 
   @override
-  String get uiProviderAndAccess => 'المزود والوصول';
+  String get uiProviderAndAccess => 'الجهة والوصول';
 
   @override
-  String get uiProviderAndDeliverySetup => 'إعداد الموفر والتسليم';
+  String get uiProviderAndDeliverySetup => 'إعداد الجهة وطريقة الوصول';
 
   @override
   String get uiPublicCollaborationAllowed => 'التعاون العام مسموح به';
@@ -2897,18 +2886,18 @@ class AppLocalizationsAr extends AppLocalizations {
       'تتم إضافة الروابط العامة هنا عند نشرها';
 
   @override
-  String get uiPublicSpeaking => 'التحدث أمام الجمهور';
+  String get uiPublicSpeaking => 'مهارات العرض والتحدث أمام الجمهور';
 
   @override
   String get uiPublishOpportunities => 'نشر الفرص';
 
   @override
   String get uiPublishTheFirstOpportunityToStartPopulatingTheStudentDiscovery =>
-      'انشر الفرصة الأولى لبدء نشر تجربة اكتشاف الطالب.';
+      'انشر أول فرصة لتبدأ بالظهور في صفحة اكتشاف الطلاب.';
 
   @override
   String get uiPublishTheFirstScholarshipToStartShapingTheStudentDiscovery =>
-      'نشر أول منحة دراسية للبدء في تشكيل كتالوج اكتشاف الطلاب.';
+      'انشر أول منحة لتبدأ ببناء دليل المنح للطلاب.';
 
   @override
   String get uiPublisherName => 'اسم الناشر';
@@ -2916,12 +2905,12 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String
   get uiPullingTogetherYourSavedOpportunitiesScholarshipsTrainingsAndIdeas =>
-      'تجميع الفرص المحفوظة والمنح الدراسية والدورات التدريبية والأفكار الخاصة بك.';
+      'نجمع فرصك ومنحك ودوراتك وأفكارك المحفوظة.';
 
   @override
   String
   get uiPullingTogetherYourSubmittedOpportunitiesAndTheirLatestStatuses =>
-      'تجميع الفرص المقدمة وأحدث حالاتها.';
+      'نجمع الفرص التي قدمتها وآخر حالاتها.';
 
   @override
   String get uiQuickAccess => 'الوصول السريع';
@@ -2934,10 +2923,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiQuickActions => 'إجراءات سريعة';
 
   @override
-  String get uiQuickCuration => 'المعالجة السريعة';
+  String get uiQuickCuration => 'فرز وتنظيم سريع';
 
   @override
-  String get uiQuickFilters => 'مرشحات سريعة';
+  String get uiQuickFilters => 'عوامل تصفية سريعة';
 
   @override
   String get uiQuickSnapshot => 'لقطة سريعة';
@@ -2950,7 +2939,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiReachOutWithContextSoTheTeamCanHelpFaster =>
-      'تواصل مع السياق حتى يتمكن الفريق من المساعدة بشكل أسرع.';
+      'اشرح المشكلة بوضوح حتى يتمكن الفريق من مساعدتك بسرعة.';
 
   @override
   String get uiReadAll => 'اقرأ الكل';
@@ -2973,10 +2962,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiRecentActivity => 'النشاط الأخير';
 
   @override
-  String get uiRecentApplications => 'التطبيقات الحديثة';
+  String get uiRecentApplications => 'الطلبات الحديثة';
 
   @override
-  String get uiRecentContacts => 'الاتصالات الأخيرة';
+  String get uiRecentContacts => 'جهات الاتصال الأخيرة';
 
   @override
   String get uiRecentOffers => 'العروض الأخيرة';
@@ -2997,35 +2986,35 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiRefreshActivityFeed => 'تحديث خلاصة النشاط';
 
   @override
-  String get uiRefreshApplications => 'تحديث التطبيقات';
+  String get uiRefreshApplications => 'تحديث الطلبات';
 
   @override
   String get uiRefreshSavedItems => 'تحديث العناصر المحفوظة';
 
   @override
   String get uiRefreshYourDetailsSwitchAvatarsOrUploadANewPhoto =>
-      'قم بتحديث التفاصيل الخاصة بك، أو تبديل الصور الرمزية، أو تحميل صورة جديدة دون التأثير على منطق حسابك الحالي.';
+      'حدّث بياناتك، أو غيّر الصورة الشخصية، أو ارفع صورة جديدة دون التأثير على إعدادات حسابك الحالية.';
 
   @override
   String get uiRefreshYourStoryContactDetailsAndAssets =>
-      'قم بتحديث قصتك وتفاصيل الاتصال والأصول';
+      'حدّث قصتك ومعلومات التواصل والملفات.';
 
   @override
-  String get uiRegister => 'يسجل';
+  String get uiRegister => 'إنشاء حساب';
 
   @override
-  String get uiRegisterCompany => 'سجل الشركة';
+  String get uiRegisterCompany => 'تسجيل الشركة';
 
   @override
   String
   get uiRegisterYourOrganizationToPostOpportunitiesAndConnectWithTalent =>
-      'سجل مؤسستك للنشر\nالفرص والتواصل مع المواهب.';
+      'سجّل مؤسستك لنشر الفرص والتواصل مع المواهب.';
 
   @override
   String get uiRegistrationUnavailable => 'التسجيل غير متاح';
 
   @override
-  String get uiReject => 'يرفض';
+  String get uiReject => 'رفض';
 
   @override
   String get uiRejectCompany => 'رفض الشركة';
@@ -3044,10 +3033,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiRemovePhoto => 'إزالة الصورة';
 
   @override
-  String get uiRemoveUnavailable => 'إزالة غير متاح';
+  String get uiRemoveUnavailable => 'الإزالة غير متاحة';
 
   @override
-  String get uiReplace => 'يستبدل';
+  String get uiReplace => 'استبدال';
 
   @override
   String get uiReplyNow => 'الرد الآن';
@@ -3087,23 +3076,22 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiResourceDeleted => 'تم حذف المورد';
 
   @override
-  String get uiResourceDetails => 'تفاصيل الموارد';
+  String get uiResourceDetails => 'تفاصيل المورد';
 
   @override
   String get uiResourceLibrary => 'مكتبة الموارد';
 
   @override
-  String get uiResourceStudioForAdminCuration =>
-      'استوديو الموارد لتنظيم المشرف';
+  String get uiResourceStudioForAdminCuration => 'استوديو إدارة الموارد';
 
   @override
   String get uiResources => 'موارد';
 
   @override
-  String get uiResourcesNeeded => 'الموارد اللازمة';
+  String get uiResourcesNeeded => 'الموارد المطلوبة';
 
   @override
-  String get uiResourcesNeeds => 'الموارد / الاحتياجات';
+  String get uiResourcesNeeds => 'الموارد والاحتياجات';
 
   @override
   String get uiResourcesOrNeeds => 'الموارد أو الاحتياجات';
@@ -3115,53 +3103,53 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiRetrySync => 'أعد محاولة المزامنة';
 
   @override
-  String get uiReviewApplications => 'مراجعة\nالتطبيقات';
+  String get uiReviewApplications => 'مراجعة\nالطلبات';
 
   @override
-  String get uiReviewCompanies => 'مراجعة الشركات';
+  String get uiReviewCompanies => 'مراجعة حسابات الشركات';
 
   @override
   String
   get uiReviewCompaniesContentAndPlatformActivityFromOneFocusedWorkspace =>
-      'قم بمراجعة الشركات والمحتوى ونشاط النظام الأساسي من مساحة عمل واحدة مركزة.';
+      'راجع الشركات والمحتوى ونشاط المنصة من مساحة عمل مركّزة واحدة.';
 
   @override
   String get uiReviewContactInfoAccountStatusAndRoleSpecificDetailsIn =>
-      'قم بمراجعة معلومات الاتصال وحالة الحساب والتفاصيل الخاصة بالدور في عرض ملف تعريف واحد نظيف.';
+      'راجع معلومات الاتصال وحالة الحساب والتفاصيل الخاصة بالدور في عرض ملف تعريف واحد نظيف.';
 
   @override
-  String get uiReviewContent => 'مراجعة المحتوى';
+  String get uiReviewContent => 'مراجعة المنشورات';
 
   @override
   String get uiReviewExpectedPlatformUsage => 'مراجعة الاستخدام المتوقع للمنصة';
 
   @override
-  String get uiReviewFundingQueue => 'مراجعة قائمة انتظار التمويل';
+  String get uiReviewFundingQueue => 'مراجعة طلبات التمويل';
 
   @override
   String get uiReviewIdentityStatusAndSubmittedInformationInOnePlace =>
-      'قم بمراجعة الهوية والحالة والمعلومات المقدمة في مكان واحد.';
+      'راجع الهوية والحالة والمعلومات المقدمة في مكان واحد.';
 
   @override
-  String get uiReviewOfferSubmissions => 'مراجعة عروض العروض';
+  String get uiReviewOfferSubmissions => 'مراجعة عروض الفرص';
 
   @override
   String
   get uiReviewSubmissionsMonitorQueuesAndMoveBetweenContentTypesWithout =>
-      'قم بمراجعة عمليات الإرسال ومراقبة قوائم الانتظار والتنقل بين أنواع المحتوى دون فقدان السياق.';
+      'راجع الطلبات، وراقب قوائم الانتظار، وانتقل بين أنواع المحتوى دون فقدان السياق.';
 
   @override
   String get uiReviewTheFinalLayoutBeforeYouExportOrShareIt =>
-      'قم بمراجعة التخطيط النهائي قبل تصديره أو مشاركته.';
+      'راجع التخطيط النهائي قبل تصديره أو مشاركته.';
 
   @override
   String
   get uiReviewTheLatestModerationUpdatesPublishingChangesAndSubmissionsFrom =>
-      'قم بمراجعة آخر تحديثات الإشراف ونشر التغييرات والإرسالات من قائمة انتظار واحدة نظيفة.';
+      'راجع آخر تحديثات الإشراف وتغييرات النشر والطلبات من مكان واحد.';
 
   @override
   String get uiReviewTheUploadedCvAndTheBuiltCvExportWithout =>
-      'قم بمراجعة السيرة الذاتية التي تم تحميلها وتصدير السيرة الذاتية المضمنة دون مغادرة ملف تعريف المستخدم.';
+      'راجع السيرة الذاتية المرفوعة ونسخة السيرة المُنشأة دون مغادرة ملف المستخدم.';
 
   @override
   String get uiReviewWhereYourAccountIsBeingUsed => 'راجع مكان استخدام حسابك';
@@ -3171,10 +3159,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiRevisitSavedPicksBeforeTheStrongestDeadlinesSlipBy =>
-      'قم بإعادة النظر في الاختيارات المحفوظة قبل مرور أقوى المواعيد النهائية.';
+      'أعد النظر في الاختيارات المحفوظة قبل مرور أقوى المواعيد النهائية.';
 
   @override
-  String get uiRole => 'دور';
+  String get uiRole => 'الدور';
 
   @override
   String get uiRoleDetails => 'تفاصيل الدور';
@@ -3195,7 +3183,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiSaveUnavailable => 'الحفظ غير متاح';
 
   @override
-  String get uiSaved => 'أنقذ';
+  String get uiSaved => 'محفوظ';
 
   @override
   String get uiSavedCollection => 'المجموعة المحفوظة';
@@ -3216,7 +3204,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiSavedScholarships => 'المنح الدراسية المحفوظة';
 
   @override
-  String get uiSavedShortlist => 'القائمة المختصرة المحفوظة';
+  String get uiSavedShortlist => 'القائمة المحفوظة المختصرة';
 
   @override
   String get uiSavedTraining => 'التدريب المحفوظ';
@@ -3236,7 +3224,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiSearchBooksForExampleAlgorithms =>
-      'ابحث في الكتب، على سبيل المثال: الخوارزميات';
+      'ابحث عن كتب، مثل: الخوارزميات';
 
   @override
   String get uiSearchByCandidateOpportunityLocationOrType =>
@@ -3251,7 +3239,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiSearchByTitleCompanyProviderOrCategory =>
-      'البحث حسب العنوان أو الشركة أو المزود أو الفئة';
+      'ابحث حسب العنوان أو الشركة أو الجهة أو الفئة';
 
   @override
   String get uiSearchByTopicDomainLevelAndLanguageBeforePublishingA =>
@@ -3291,18 +3279,18 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiSearchIdeas => 'البحث في الأفكار...';
 
   @override
-  String get uiSearchInternships => 'بحث عن التدريب العملي...';
+  String get uiSearchInternships => 'ابحث عن التدريبات...';
 
   @override
   String get uiSearchJobsInternshipsOrSponsoredRoles =>
-      'البحث عن وظائف، والتدريب الداخلي أو الأدوار التي ترعاها';
+      'ابحث عن وظائف أو تدريبات أو فرص ممولة';
 
   @override
-  String get uiSearchProgramsPartners => 'برامج البحث والشركاء...';
+  String get uiSearchProgramsPartners => 'ابحث عن برامج أو شركاء...';
 
   @override
   String get uiSearchQuicklyFilterByRoleOrLevelAndReviewAccount =>
-      'ابحث بسرعة، وقم بالتصفية حسب الدور أو المستوى، وراجع حالة الحساب دون التنقل في منطقة الإدارة.';
+      'ابحث بسرعة، وصفِّ حسب الدور أو المستوى، وراجع حالة الحساب دون التنقل في منطقة الإدارة.';
 
   @override
   String get uiSearchRequired => 'البحث مطلوب';
@@ -3380,23 +3368,23 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiSetTheCoreHeadlineCategoryAndStageSoTheIdea =>
-      'قم بتعيين العنوان الرئيسي والفئة والمرحلة بحيث تتم قراءة الفكرة بوضوح من البداية.';
+      'حدّد العنوان الرئيسي والفئة والمرحلة حتى تظهر الفكرة بوضوح من البداية.';
 
   @override
   String get uiShapeTheFirstImpressionStudentsGetFromYourCompany =>
-      'قم بتشكيل الانطباع الأول الذي يحصل عليه الطلاب من شركتك.';
+      'اعرض شركتك بطريقة تترك انطباعًا أوليًا جيدًا لدى الطلاب.';
 
   @override
-  String get uiShare => 'يشارك';
+  String get uiShare => 'مشاركة';
 
   @override
   String get uiShareIdea => 'مشاركة الفكرة';
 
   @override
-  String get uiShareOpportunity => 'حصة الفرصة';
+  String get uiShareOpportunity => 'مشاركة الفرصة';
 
   @override
-  String get uiSharePdf => 'مشاركة قوات الدفاع الشعبي';
+  String get uiSharePdf => 'مشاركة PDF';
 
   @override
   String get uiShareScreenshotsStepsOrAccountIssues =>
@@ -3418,7 +3406,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiShowArchived => 'عرض المؤرشفة';
 
   @override
-  String get uiShowInDiscovery => 'تظهر في الاكتشاف';
+  String get uiShowInDiscovery => 'إظهارها في الاكتشاف';
 
   @override
   String get uiShowInbox => 'إظهار البريد الوارد';
@@ -3435,7 +3423,7 @@ class AppLocalizationsAr extends AppLocalizations {
     Object resultsCount,
     Object totalApplications,
   ) {
-    return 'عرض $resultsCount من تطبيقات $totalApplications';
+    return 'عرض $resultsCount من أصل $totalApplications طلب';
   }
 
   @override
@@ -3447,11 +3435,11 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiSignIn => 'تسجيل الدخول';
 
   @override
-  String get uiSignInToSeeYourMessages => 'قم بتسجيل الدخول لرؤية رسائلك';
+  String get uiSignInToSeeYourMessages => 'سجّل الدخول لرؤية رسائلك';
 
   @override
   String get uiSignInToViewYourConversationsAndRecentUpdates =>
-      'قم بتسجيل الدخول لعرض محادثاتك وآخر التحديثات.';
+      'سجّل الدخول لعرض محادثاتك وآخر التحديثات.';
 
   @override
   String get uiSignOut => 'تسجيل الخروج';
@@ -3488,7 +3476,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiSkillsNeeded7988 => 'المهارات المطلوبة';
 
   @override
-  String get uiSkip => 'يتخطى';
+  String get uiSkip => 'تخطي';
 
   @override
   String get uiSnapshot => 'لقطة';
@@ -3513,10 +3501,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiStackHarborPlatform => 'منصة ستاك هاربور';
 
   @override
-  String get uiStage => 'منصة';
+  String get uiStage => 'مرحلة';
 
   @override
-  String get uiStart => 'يبدأ';
+  String get uiStart => 'بدء';
 
   @override
   String get uiStartDate => 'تاريخ البدء';
@@ -3553,7 +3541,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiStoryStillMissing => 'القصة لا تزال مفقودة';
 
   @override
-  String get uiStrategicDashboard => 'لوحة القيادة الاستراتيجية';
+  String get uiStrategicDashboard => 'لوحة التحكم الاستراتيجية';
 
   @override
   String get uiStrategicThinking => 'التفكير الاستراتيجي';
@@ -3657,7 +3645,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiTheEssentialsRecruitersAndProgramsOftenScanFirst =>
-      'غالبًا ما يقوم القائمون على التوظيف والبرامج الأساسية بالفحص أولاً.';
+      'الأساسيات التي يراجعها مسؤولو التوظيف والبرامج عادةً أولًا.';
 
   @override
   String get uiTheEssentialsStudentsAndApplicantsUsuallyLookForFirst =>
@@ -3665,13 +3653,13 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiTheHighLevelUserAndAccountPictureAdminsUsuallyNeed =>
-      'عادةً ما يحتاج المستخدمون رفيعو المستوى ومسؤولو صورة الحساب أولاً.';
+      'الصورة العامة للمستخدم والحساب التي يحتاجها المشرفون عادةً أولًا.';
 
   @override
   String uiTheLatestitemslimitNewestRolesInternshipsAndSponsoredTracks(
     Object latestItemsLimit,
   ) {
-    return 'أحدث الأدوار والتدريب الداخلي والمسارات المدعومة في $latestItemsLimit';
+    return 'أحدث $latestItemsLimit وظائف وتدريبات ومسارات ممولة';
   }
 
   @override
@@ -3687,7 +3675,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiTheUploadedFileIsNotAValidPdf =>
-      'الملف الذي تم تحميله ليس ملف PDF صالحًا.';
+      'الملف المرفوع ليس ملف PDF صالحًا.';
 
   @override
   String get uiThereAreNoSubmittedApplicationsForThisOpportunityRightNow =>
@@ -3715,11 +3703,11 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiTheseRatiosHelpAdminsSeeWhetherUsersAreEngagingDeeply =>
-      'تساعد هذه النسب المسؤولين في معرفة ما إذا كان المستخدمون يتفاعلون بعمق أم أنهم يتصفحون فقط.';
+      'تساعد هذه النسب المشرفين على معرفة ما إذا كان المستخدمون يتفاعلون بعمق أم يتصفحون فقط.';
 
   @override
   String get uiThisGivesTheAdminViewOfWhatMakesTheRole =>
-      'وهذا يعطي وجهة نظر المسؤول لما يجعل الدور جذابا.';
+      'يعرض هذا للمشرف ما يجعل الدور جذابًا.';
 
   @override
   String get uiThisIdeaIsNoLongerAvailable => 'هذه الفكرة لم تعد متوفرة.';
@@ -3744,19 +3732,19 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiThisWorkspaceIsDedicatedToYoutubeImportsSoVideoCuration =>
-      'مساحة العمل هذه مخصصة لواردات YouTube، لذلك يظل تنظيم الفيديو مركزًا.';
+      'مساحة العمل هذه مخصصة لاستيراد YouTube حتى يبقى تنسيق الفيديو مركزًا.';
 
   @override
   String get uiTimelineAndLocation => 'الجدول الزمني والموقع';
 
   @override
-  String get uiToolsAndStack => 'الأدوات والمكدس';
+  String get uiToolsAndStack => 'الأدوات والتقنيات';
 
   @override
-  String get uiToolsOrStack => 'الأدوات أو المكدس';
+  String get uiToolsOrStack => 'الأدوات أو التقنيات';
 
   @override
-  String get uiTop => 'قمة';
+  String get uiTop => 'الأعلى';
 
   @override
   String get uiTotal => 'المجموع';
@@ -3778,14 +3766,14 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiTrackPlatformChangesAndJumpStraightIntoTheRightQueue =>
-      'تتبع تغييرات النظام الأساسي وانتقل مباشرة إلى قائمة الانتظار الصحيحة.';
+      'تتبع تغييرات المنصة وانتقل مباشرة إلى القائمة المناسبة.';
 
   @override
   String get uiTrackTheRolesYouNeedAndTheInterestBuildingAround =>
       'تتبع الأدوار التي تحتاجها والاهتمام المبني حول هذه الفكرة.';
 
   @override
-  String get uiTraining => 'تمرين';
+  String get uiTraining => 'تدريب';
 
   @override
   String get uiTrainingMenu => 'قائمة التدريب';
@@ -3803,25 +3791,25 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiTrainings => 'التدريبات';
 
   @override
-  String get uiTranslate => 'يترجم';
+  String get uiTranslate => 'ترجمة';
 
   @override
-  String get uiTranslateTo => 'ترجمة ل';
+  String get uiTranslateTo => 'ترجمة إلى';
 
   @override
   String get uiTrendingOpportunities => 'الفرص الرائجة';
 
   @override
   String get uiTryABroaderQueryOrChangeTheLanguageAndDomain =>
-      'حاول إجراء استعلام أوسع أو قم بتغيير عوامل تصفية اللغة والمجال قبل البحث مرة أخرى.';
+      'جرّب بحثًا أوسع أو غيّر عوامل تصفية اللغة والمجال قبل البحث مرة أخرى.';
 
   @override
   String get uiTryABroaderQueryOrRefreshToLoadTheLatest =>
-      'حاول إجراء استعلام أوسع أو قم بالتحديث لتحميل الأحداث الأخيرة.';
+      'جرّب بحثًا أوسع أو حدّث لتحميل أحدث الأحداث.';
 
   @override
   String get uiTryABroaderQueryOrSwitchTheDomainAndLevel =>
-      'حاول إجراء استعلام أوسع أو قم بتبديل المجال وسياق المستوى قبل البحث مرة أخرى.';
+      'جرّب بحثًا أوسع أو غيّر المجال والمستوى قبل البحث مرة أخرى.';
 
   @override
   String get uiTryABroaderSearchTermOrContactSupportIfYou =>
@@ -3841,13 +3829,13 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiTryAnotherSearchOrRelaxTheCurrentRoleAndLevel =>
-      'حاول إجراء بحث آخر أو استرخِ في الدور الحالي ومرشحات المستوى.';
+      'جرّب بحثًا آخر أو وسّع عوامل تصفية الدور والمستوى الحالية.';
 
   @override
-  String get uiTwoStepVerification => 'التحقق من خطوتين';
+  String get uiTwoStepVerification => 'التحقق بخطوتين';
 
   @override
-  String get uiType => 'يكتب';
+  String get uiType => 'النوع';
 
   @override
   String get uiUiDesignIntern => 'متدرب تصميم واجهة المستخدم';
@@ -3872,40 +3860,39 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiUpdateCredentialsReviewPrivacyTouchpointsAndKeepAccessToYour =>
-      'قم بتحديث بيانات الاعتماد، ومراجعة نقاط اتصال الخصوصية، وحافظ على أمان الوصول إلى ملف تعريف FutureGate الخاص بك.';
+      'حدّث بيانات الاعتماد، وراجع نقاط الخصوصية، وحافظ على أمان الوصول إلى ملفك الشخصي في FutureGate.';
 
   @override
   String get uiUpdateProfile => 'تحديث الملف الشخصي';
 
   @override
   String get uiUpdateTheCompanyApprovalStateFromHereWithoutLeavingThe =>
-      'قم بتحديث حالة موافقة الشركة من هنا دون مغادرة الملف الشخصي.';
+      'حدّث حالة موافقة الشركة من هنا دون مغادرة الملف الشخصي.';
 
   @override
-  String get uiUpdateYourProfile => 'قم بتحديث ملف التعريف الخاص بك';
+  String get uiUpdateYourProfile => 'تحديث ملفك الشخصي';
 
   @override
-  String get uiUpdateYourSignInPassword =>
-      'قم بتحديث كلمة مرور تسجيل الدخول الخاصة بك';
+  String get uiUpdateYourSignInPassword => 'تحديث كلمة مرور تسجيل الدخول';
 
   @override
   String get uiUploadAPdfJpgOrPngDocumentUpTo10 =>
-      'قم بتحميل مستند PDF أو JPG أو PNG بحجم يصل إلى 10 ميغابايت لإكمال هذا الجزء من الملف الشخصي.';
+      'ارفع مستند PDF أو JPG أو PNG بحجم يصل إلى 10 ميغابايت لإكمال هذا الجزء من الملف الشخصي.';
 
   @override
   String get uiUploadCommercialRegister => 'رفع السجل التجاري';
 
   @override
-  String get uiUploadComplete => 'اكتمل التحميل';
+  String get uiUploadComplete => 'اكتمل الرفع';
 
   @override
-  String get uiUploadDocument => 'تحميل الوثيقة';
+  String get uiUploadDocument => 'رفع المستند';
 
   @override
-  String get uiUploadPhoto => 'تحميل الصورة';
+  String get uiUploadPhoto => 'رفع الصورة';
 
   @override
-  String get uiUploadedCv => 'السيرة الذاتية التي تم تحميلها';
+  String get uiUploadedCv => 'السيرة الذاتية المرفوعة';
 
   @override
   String uiUploadedUploadedatlabel(Object uploadedAtLabel) {
@@ -3914,7 +3901,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiUrgentApplicationsThatNeedAttentionBeforeTheyExpire =>
-      'التطبيقات العاجلة التي تحتاج إلى الاهتمام قبل انتهاء صلاحيتها';
+      'طلبات عاجلة تحتاج إلى انتباه قبل انتهاء صلاحيتها';
 
   @override
   String get uiUseAStrongPasswordWithAMixOfLettersNumbers =>
@@ -3931,7 +3918,7 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String
   get uiUseFuturegateResponsiblyKeepAccountInformationAccurateAndAvoidSubmitting =>
-      'استخدم FutureGate بمسؤولية، وحافظ على دقة معلومات الحساب، وتجنب تقديم تطبيقات أو محتوى مضلل ينتهك قواعد النظام الأساسي.';
+      'استخدم FutureGate بمسؤولية، وحافظ على دقة معلومات الحساب، وتجنب تقديم طلبات مضللة أو محتوى ينتهك قواعد المنصة.';
 
   @override
   String get uiUseGracefulFallbacksWhereDataIsMissingAndKeepEmail =>
@@ -3947,14 +3934,14 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiUseTheLiveFeedToJumpDirectlyIntoTheRight =>
-      'استخدم البث المباشر للانتقال مباشرة إلى هدف الإشراف الصحيح.';
+      'استخدم الخلاصة المباشرة للانتقال مباشرة إلى هدف الإشراف المناسب.';
 
   @override
   String get uiUseTheseTagsToUnderstandWhatSupportTheIdeaNeeds =>
       'استخدم هذه العلامات لفهم الدعم الذي تحتاجه الفكرة بعد ذلك.';
 
   @override
-  String get uiUseUploaded => 'استخدم تم الرفع';
+  String get uiUseUploaded => 'استخدام الملف المرفوع';
 
   @override
   String get uiUsefulReferencesAndContactPointsForThePlatform =>
@@ -3970,7 +3957,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiUserManagement => 'إدارة المستخدم';
 
   @override
-  String get uiUsers => 'المستخدمين';
+  String get uiUsers => 'المستخدمون';
 
   @override
   String get uiUsersCouldNotBeLoaded => 'لا يمكن تحميل المستخدمين';
@@ -3999,12 +3986,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String uiValue1Admins(Object value1) {
-    return 'مدراء $value1';
+    return '$value1 مشرفين';
   }
 
   @override
   String uiValue1Apps(Object value1) {
-    return 'تطبيقات $value1';
+    return '$value1 طلبات';
   }
 
   @override
@@ -4029,12 +4016,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String uiValue1Featured(Object value1) {
-    return 'ظهرت $value1';
+    return '$value1 مميزة';
   }
 
   @override
   String uiValue1ImportedBooks(Object value1) {
-    return '$value1 الكتب المستوردة';
+    return '$value1 كتب مستوردة';
   }
 
   @override
@@ -4044,7 +4031,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String uiValue1Interested(Object value1) {
-    return '$value1 مهتمة';
+    return '$value1 مهتم';
   }
 
   @override
@@ -4059,7 +4046,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String uiValue1Opportunities(Object value1) {
-    return 'فرص $value1';
+    return '$value1 فرصة';
   }
 
   @override
@@ -4069,22 +4056,22 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String uiValue1Results(Object value1) {
-    return 'نتائج $value1';
+    return '$value1 نتيجة';
   }
 
   @override
   String uiValue1Scholarships(Object value1) {
-    return 'المنح الدراسية $value1';
+    return '$value1 منحة';
   }
 
   @override
   String uiValue1Trainings(Object value1) {
-    return 'تدريبات $value1';
+    return '$value1 تدريب';
   }
 
   @override
   String uiValue1Users(Object value1) {
-    return 'مستخدمي $value1';
+    return '$value1 مستخدمين';
   }
 
   @override
@@ -4137,7 +4124,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String uiViewApplicationsValue1(Object value1) {
-    return 'عرض التطبيقات ($value1)';
+    return 'عرض الطلبات ($value1)';
   }
 
   @override
@@ -4163,7 +4150,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiWeCouldNotLoadAdminAnalyticsRightNow =>
-      'لم نتمكن من تحميل تحليلات المسؤول الآن.';
+      'لم نتمكن من تحميل تحليلات المشرف الآن.';
 
   @override
   String uiWeCouldnTGenerateThisPdfPreviewRightNowValue1(Object value1) {
@@ -4210,11 +4197,11 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiYouHaveReachedTheEndOfTheRecentActivityFeed =>
-      'لقد وصلت إلى نهاية موجز النشاط الأخير.';
+      'لقد وصلت إلى نهاية خلاصة النشاط الأخيرة.';
 
   @override
   String get uiYouWillLeaveTheAdminWorkspaceOnThisDeviceSaved =>
-      'ستترك مساحة عمل المسؤول على هذا الجهاز. تظل التغييرات المحفوظة آمنة.';
+      'ستترك مساحة عمل المشرف على هذا الجهاز. تظل التغييرات المحفوظة آمنة.';
 
   @override
   String get uiYouWillLeaveTheCompanyWorkspaceOnThisDeviceYour =>
@@ -4226,7 +4213,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiYourAccountDataIsUsedToProvideSignInProfile =>
-      'يتم استخدام بيانات حسابك لتوفير تسجيل الدخول وإدارة الملف الشخصي والفرص المحفوظة والإشعارات والوصول إلى السيرة الذاتية والتطبيقات. يقتصر الوصول الحساس على ميزات النظام الأساسي التي تتطلب ذلك.';
+      'تُستخدم بيانات حسابك لتوفير تسجيل الدخول وإدارة الملف الشخصي والفرص المحفوظة والإشعارات والوصول إلى السيرة الذاتية والطلبات. يقتصر الوصول الحساس على ميزات المنصة التي تتطلب ذلك.';
 
   @override
   String get uiYourAccountProtectionHub => 'مركز حماية حسابك';
@@ -4244,7 +4231,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiYourLatestApplicationsSavesAndCvUpdatesAreReflectedHere =>
-      'تظهر هنا أحدث تطبيقاتك وحفظك وتحديثات سيرتك الذاتية.';
+      'تظهر هنا أحدث طلباتك وحفظك وتحديثات سيرتك الذاتية.';
 
   @override
   String get uiYourShortlist => 'القائمة المختصرة الخاصة بك';
@@ -4263,35 +4250,35 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiYoutubeImport => 'استيراد يوتيوب';
 
   @override
-  String get uiBookLabel => '????';
+  String get uiBookLabel => 'كتاب';
 
   @override
-  String get uiVideoLabel => '?????';
+  String get uiVideoLabel => 'فيديو';
 
   @override
-  String get uiCourseLabel => '????';
+  String get uiCourseLabel => 'دورة';
 
   @override
-  String get uiGuideLabel => '????';
+  String get uiGuideLabel => 'دليل';
 
   @override
-  String get uiProgramLabel => '??????';
+  String get uiProgramLabel => 'برنامج';
 
   @override
-  String get uiTrainLabel => '?????';
+  String get uiTrainLabel => 'تدريب';
 
   @override
-  String get uiLoading => '??? ???????...';
+  String get uiLoading => 'جارٍ التحميل...';
 
   @override
   String get uiNoTrainingResourcesAvailableRightNow =>
-      '?? ???? ????? ????? ????? ?????';
+      'لا تتوفر موارد تدريبية الآن';
 
   @override
-  String get uiFeature => '?????';
+  String get uiFeature => 'تمييز';
 
   @override
-  String get uiUnfeature => '????? ???????';
+  String get uiUnfeature => 'إلغاء التمييز';
 
   @override
   String get uiThisOpportunityIsCurrentlyHidden => 'هذه الفرصة مخفية حاليا';
@@ -4323,10 +4310,10 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get uiEdited => 'تم تحريره';
+  String get uiEdited => 'تم التعديل';
 
   @override
-  String get uiScholarshipOverview => 'نظرة عامة على المنح الدراسية';
+  String get uiScholarshipOverview => 'نظرة عامة على المنحة';
 
   @override
   String get uiScholarshipDetails => 'تفاصيل المنحة';
@@ -4336,7 +4323,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String uiWeCouldntLoadLinkedActivity(Object value1) {
-    return '???? ????? ?????? ??????? $value1.';
+    return 'تعذّر تحميل $value1 المرتبط.';
   }
 
   @override
@@ -4365,7 +4352,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String uiValuePendingApps(Object value1) {
-    return '$value1 التطبيقات المعلقة';
+    return '$value1 طلبات معلقة';
   }
 
   @override
@@ -4418,12 +4405,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String uiApplicationsLinkedToOpportunity(Object value1) {
-    return 'التطبيقات المرتبطة بالفرصة $value1';
+    return 'طلبات مرتبطة بالفرصة $value1';
   }
 
   @override
   String uiValueApps(Object value1) {
-    return 'تطبيقات $value1';
+    return 'طلبات $value1';
   }
 
   @override
@@ -4443,7 +4430,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String uiViewApplicationsValue(Object value1) {
-    return 'عرض التطبيقات ($value1)';
+    return 'عرض الطلبات ($value1)';
   }
 
   @override
@@ -4456,7 +4443,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiEnterASearchQueryToContinue => 'أدخل استعلام بحث للمتابعة';
 
   @override
-  String get uiAdminUserNotFound => 'لم يتم العثور على المستخدم المسؤول';
+  String get uiAdminUserNotFound => 'لم يتم العثور على المستخدم المشرف';
 
   @override
   String uiDeleteValueFromFirestoreThisActionCannotBeUndone(Object value1) {
@@ -4496,7 +4483,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String uiInternalItems(Object value1) {
-    return '$value1 ????? ??????';
+    return '$value1 عناصر داخلية';
   }
 
   @override
@@ -4595,7 +4582,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiFieldOfStudy81e26d => 'مجال الدراسة';
 
   @override
-  String get uiFilters => 'المرشحات';
+  String get uiFilters => 'عوامل التصفية';
 
   @override
   String get uiStatus716883 => 'حالة';
@@ -4608,7 +4595,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String uiShowingValueOfValueApplications(Object value1, Object value2) {
-    return 'عرض $value1 من $value2 التطبيقات';
+    return 'عرض $value1 من أصل $value2 طلبًا';
   }
 
   @override
@@ -4616,7 +4603,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String uiAppliedValue(Object value1) {
-    return 'تم التطبيق $value1';
+    return 'تم التقديم $value1';
   }
 
   @override
@@ -4644,12 +4631,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String uiOpenCandidateProfileForValue(Object value1) {
-    return 'افتح الملف التعريفي للمرشح لـ $value1';
+    return 'فتح ملف المرشح $value1';
   }
 
   @override
   String uiAppliedValue051b93(Object value1) {
-    return 'Applied $value1';
+    return 'تم التقديم $value1';
   }
 
   @override
@@ -4671,7 +4658,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String uiDeleteValueIfItAlreadyHasApplicationsItWillBe(Object value1) {
-    return 'هل تريد حذف \"$value1\"؟ إذا كان لديه بالفعل تطبيقات، فسيتم إغلاقه بدلاً من ذلك للحفاظ على السجل.';
+    return 'هل تريد حذف \"$value1\"؟ إذا كان لديه بالفعل طلبات، فسيتم إغلاقه بدلاً من ذلك للحفاظ على السجل.';
   }
 
   @override
@@ -4686,11 +4673,11 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String uiValueApplicants(Object value1) {
-    return '$value1 المتقدمين';
+    return '$value1 متقدم';
   }
 
   @override
-  String get uiDownloada479c9 => 'تحميل';
+  String get uiDownloada479c9 => 'تنزيل';
 
   @override
   String uiValueMbSelected(Object value1) {
@@ -4714,7 +4701,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiPasswordAddedSuccessfullyYouCanNowSignInWithGoogle =>
-      'تمت إضافة كلمة المرور بنجاح، يمكنك الآن تسجيل الدخول باستخدام Google';
+      'تمت إضافة كلمة المرور بنجاح. يمكنك الآن تسجيل الدخول بالبريد الإلكتروني وكلمة المرور أيضًا.';
 
   @override
   String get uiYourPasswordHasBeenUpdatedSuccessfully =>
@@ -4722,7 +4709,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiVerificationEmailSentConfirmYourNewAddressToCompleteThe =>
-      'تم إرسال رسالة التحقق عبر البريد الإلكتروني لتأكيد عنوانك الجديد لإكمال';
+      'تم إرسال رسالة تحقق إلى بريدك الجديد. أكّد العنوان لإكمال التغيير.';
 
   @override
   String get uiNoEmailAppIsAvailableOnThisDevice =>
@@ -4733,14 +4720,14 @@ class AppLocalizationsAr extends AppLocalizations {
       'هذه الفرصة لم تعد متاحة للفتح';
 
   @override
-  String get uiCoverImageUploadedSuccessfully => 'تم تحميل صورة الغلاف بنجاح';
+  String get uiCoverImageUploadedSuccessfully => 'تم رفع صورة الغلاف بنجاح';
 
   @override
   String get uiIdeaTitlead8343 => 'عنوان الفكرة';
 
   @override
   String get uiExplainTheConceptTheProblemBehindItAndTheSolution =>
-      'شرح المفهوم المشكلة وراءها والحل';
+      'اشرح الفكرة، والمشكلة التي تعالجها، والحل المقترح.';
 
   @override
   String get uiTargetAudience5cc631 => 'الجمهور المستهدف';
@@ -4790,7 +4777,7 @@ class AppLocalizationsAr extends AppLocalizations {
       'لقد تم تحديث ملف التعريف الخاص بك بنجاح';
 
   @override
-  String get uiEditProfilecd280a => 'تحرير الملف الشخصي';
+  String get uiEditProfilecd280a => 'تعديل الملف الشخصي';
 
   @override
   String get uiFullDescriptionb43e9e => 'الوصف الكامل';
@@ -4803,18 +4790,18 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiSignInToSaveInternshipsForLater =>
-      'قم بتسجيل الدخول لحفظ التدريب الداخلي لوقت لاحق';
+      'سجّل الدخول لحفظ فرص التدريب لاحقًا';
 
   @override
   String get uiSignInToSaveOpportunitiesForLater =>
-      'قم بتسجيل الدخول لحفظ الفرص لوقت لاحق';
+      'سجّل الدخول لحفظ الفرص لاحقًا';
 
   @override
   String get uiFullTime => 'دوام كامل';
 
   @override
   String uiTheValueNewestRolesInternshipsAndSponsoredTracks(Object value1) {
-    return '$value1 أحدث الأدوار التدريبية والمسارات المدعومة';
+    return 'أحدث $value1 وظائف وتدريبات ومسارات ممولة';
   }
 
   @override
@@ -4822,18 +4809,17 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiSignInToContinueWithYourApplication =>
-      'قم بتسجيل الدخول لمتابعة طلبك';
+      'سجّل الدخول لمتابعة طلبك';
 
   @override
   String get uiCreateYourCvBeforeApplyingToThisOpportunity =>
-      'قم بإنشاء سيرتك الذاتية قبل التقدم لهذه الفرصة';
+      'أنشئ سيرتك الذاتية قبل التقدم لهذه الفرصة';
 
   @override
-  String get uiApplicationApprovedb0cb9c => 'التطبيق\nتمت الموافقة عليه';
+  String get uiApplicationApprovedb0cb9c => 'تمت الموافقة\nعلى الطلب';
 
   @override
-  String get uiSignInToChatWithTheCompany =>
-      'قم بتسجيل الدخول للدردشة مع الشركة';
+  String get uiSignInToChatWithTheCompany => 'سجّل الدخول للدردشة مع الشركة';
 
   @override
   String get uiCompanyDetailsAreMissingForThisOpportunity =>
@@ -4931,7 +4917,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiExploreOpenRolesInternshipsFundingAndLearningPicksDesignedFor =>
-      'اكتشف تمويل الدورات التدريبية المفتوحة واختيارات التعلم المصممة من أجلها';
+      'استكشف وظائف وتدريبات وتمويلًا واختيارات تعليمية مصممة لك';
 
   @override
   String uiValueReadyForBetterStudentMatching(Object value1) {
@@ -4956,7 +4942,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiSignInToSaveTrainingResourcesForLater =>
-      'قم بتسجيل الدخول لحفظ موارد التدريب لوقت لاحق';
+      'سجّل الدخول لحفظ موارد التدريب لاحقًا';
 
   @override
   String uiWeCouldnTGenerateThisPdfPreviewRightNowValue(Object value1) {
@@ -4964,176 +4950,174 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get uiAlreadyHaveAccountPrompt => '???? ???? ??????? ';
+  String get uiAlreadyHaveAccountPrompt => 'لديك حساب بالفعل؟ ';
 
   @override
-  String get uiLogIn => '????? ??????';
+  String get uiLogIn => 'تسجيل الدخول';
 
   @override
-  String get uiByRegisteringAgreePrefix => '????????? ???? ????? ??? ';
+  String get uiByRegisteringAgreePrefix => 'بالتسجيل، أنت توافق على ';
 
   @override
-  String get uiBySigningUpAgreePrefix => '?????? ????? ???? ????? ??? ';
+  String get uiBySigningUpAgreePrefix => 'بإنشاء حساب، أنت توافق على ';
 
   @override
-  String get uiAndOur => ' ?';
+  String get uiAndOur => ' و';
 
   @override
-  String get uiCertified => '?????';
+  String get uiCertified => 'معتمد';
 
   @override
   String get authGoogleMissingToken =>
-      '???? ??? ????? ?????? ??? Google ??????? ??? ?????? ???????.';
+      'تعذّر على تسجيل الدخول عبر Google جلب رمز الحساب المطلوب.';
 
   @override
-  String get authGoogleSignInFailedShort => '??? ????? ?????? ??? Google.';
+  String get authGoogleSignInFailedShort => 'فشل تسجيل الدخول عبر Google.';
 
   @override
-  String get authInvalidEmailMessage => '????? ?????? ?????????? ??? ????.';
+  String get authInvalidEmailMessage => 'عنوان البريد الإلكتروني غير صالح.';
 
   @override
   String get authGoogleOnlyPasswordResetMessage =>
-      '?????? ??? ?????? ????? ?????? ??? Google. ???? ?????? ???????? Google? ?? ??? ???? ???? ?? ????????? ??? ??? ???? ????? ????? ??????? ?????.';
+      'يستخدم هذا الحساب تسجيل الدخول عبر Google. سجّل الدخول باستخدام Google، ثم أضف كلمة مرور من الإعدادات إذا أردت رسائل إعادة التعيين لاحقًا.';
 
   @override
   String get authTooManyAttemptsMessage =>
-      '??????? ????? ???. ???? ???????? ?????.';
+      'محاولات كثيرة جدًا. يرجى المحاولة لاحقًا.';
 
   @override
-  String get authPasswordResetFailedMessage =>
-      '???? ????? ????? ????? ???????.';
+  String get authPasswordResetFailedMessage => 'فشل إرسال رسالة إعادة التعيين.';
 
   @override
   String get authPasswordProviderNotLinkedMessage =>
-      '?? ?????? ??? ?????? ?????? ?????????? ????? ?????? ????????? ???????.';
+      'لا يستخدم هذا الحساب البريد الإلكتروني وكلمة المرور للتغييرات الحساسة.';
 
   @override
   String get authPasswordAlreadyAvailableMessage =>
-      '?? ????? ????? ?????? ??????? ?????????? ????? ?????? ???? ?????? ??????.';
+      'تسجيل الدخول بالبريد الإلكتروني وكلمة المرور مفعّل بالفعل لهذا الحساب.';
 
   @override
   String get authMissingEmailForPasswordMessage =>
-      '?? ????? ??? ?????? ??? ???? ???????? ???? ?????? ?????? ????? ????.';
+      'لا يتوفر عنوان بريد إلكتروني لهذا الحساب لتسجيل الدخول بكلمة مرور.';
 
   @override
   String get authPasswordChangeNotSupportedMessage =>
-      '????? ???? ?????? ???? ??? ???????? ???? ?????? ?????? ?????????? ????? ??????.';
+      'تغيير كلمة المرور متاح فقط للحسابات التي تستخدم تسجيل الدخول بالبريد الإلكتروني وكلمة المرور.';
 
   @override
-  String get workerNotAuthenticatedMessage => '??? ????? ????';
+  String get workerNotAuthenticatedMessage => 'غير مصادق عليه';
 
   @override
   String uiSearchFailedValue(Object value1) {
-    return '??? ?????: $value1';
+    return 'فشل البحث: $value1';
   }
 
   @override
   String uiValueImportedSuccessfully(Object value1) {
-    return '?? ??????? \"$value1\" ?????.';
+    return 'تم استيراد \"$value1\" بنجاح.';
   }
 
   @override
   String uiImportFailedValue(Object value1) {
-    return '??? ?????????: $value1';
+    return 'فشل الاستيراد: $value1';
   }
 
   @override
   String uiValueDeleted(Object value1) {
-    return '?? ??? \"$value1\".';
+    return 'تم حذف \"$value1\".';
   }
 
   @override
   String uiCouldNotOpenChatValue(Object value1) {
-    return '???? ??? ????????: $value1';
+    return 'تعذّر فتح المحادثة: $value1';
   }
 
   @override
   String uiApplicationStatusValue(Object value1) {
-    return '???? ?????: $value1.';
+    return 'حالة الطلب: $value1.';
   }
 
   @override
   String uiWeCouldnTOpenThisAttachmentValue(Object value1) {
-    return '???? ??? ??? ??????. $value1';
+    return 'تعذّر فتح هذا المرفق. $value1';
   }
 
   @override
   String get uiSearchBooksFailedMessage =>
-      '??? ??? ????? ????? ?? ?????. ???? ???????? ??? ????.';
+      'حدث خطأ أثناء البحث في الكتب. يرجى المحاولة مرة أخرى.';
 
   @override
-  String get validationFullNameRequired => '????? ?????? ?????';
+  String get validationFullNameRequired => 'الاسم الكامل مطلوب';
 
   @override
-  String get validationNameMinLength => '??? ?? ????? ????? ?? ????? ??? ?????';
+  String get validationNameMinLength => 'يجب ألا يقل الاسم عن حرفين';
 
   @override
-  String get validationEmailRequired => '?????? ?????????? ?????';
+  String get validationEmailRequired => 'البريد الإلكتروني مطلوب';
 
   @override
-  String get validationValidEmailAddress => '???? ????? ????????? ?????';
+  String get validationValidEmailAddress => 'أدخل عنوان بريد إلكتروني صالحًا';
 
   @override
-  String get validationPasswordRequired => '???? ?????? ??????';
+  String get validationPasswordRequired => 'كلمة المرور مطلوبة';
 
   @override
-  String get validationPasswordMinLength =>
-      '??? ?? ????? ???? ?????? ?? 8 ???? ??? ?????';
+  String get validationPasswordMinLength => 'يجب ألا تقل كلمة المرور عن 8 أحرف';
 
   @override
   String get validationPasswordUppercase =>
-      '??? ?? ????? ???? ?????? ??? ??? ????';
+      'يجب أن تحتوي كلمة المرور على حرف كبير';
 
   @override
   String get validationPasswordLowercase =>
-      '??? ?? ????? ???? ?????? ??? ??? ????';
+      'يجب أن تحتوي كلمة المرور على حرف صغير';
 
   @override
-  String get validationPasswordNumber => '??? ?? ????? ???? ?????? ??? ???';
+  String get validationPasswordNumber => 'يجب أن تحتوي كلمة المرور على رقم';
 
   @override
-  String get validationConfirmPasswordRequired => '???? ????? ???? ??????';
+  String get validationConfirmPasswordRequired => 'يرجى تأكيد كلمة المرور';
 
   @override
-  String get validationPasswordsDoNotMatch => '????? ?????? ??? ?????????';
+  String get validationPasswordsDoNotMatch => 'كلمتا المرور غير متطابقتين';
 
   @override
-  String get documentSelectPrimaryCv => '???? ??? ???? ????? ????? PDF.';
+  String get documentSelectPrimaryCv => 'اختر ملف سيرة ذاتية بصيغة PDF.';
 
   @override
-  String get documentPrimaryCvEmpty => '??? ?????? ??????? ?????? ????.';
+  String get documentPrimaryCvEmpty => 'ملف السيرة الذاتية المحدد فارغ.';
 
   @override
   String get documentPrimaryCvTooLarge =>
-      '??? ?? ???? ??? ?????? ??????? ???????? ??? ?? 10 ????????.';
+      'يجب أن يكون حجم السيرة الذاتية الرئيسية أقل من 10 ميغابايت.';
 
   @override
   String get documentPrimaryCvMustBePdf =>
-      '??? ??? ?????? ??????? ???????? ???? PDF.';
+      'يجب رفع السيرة الذاتية الرئيسية كملف PDF.';
 
   @override
-  String get documentCommercialRegisterRequired => '????? ??????? ?????.';
+  String get documentCommercialRegisterRequired => 'السجل التجاري مطلوب.';
 
   @override
   String get documentCommercialRegisterEmpty =>
-      '??? ????? ??????? ?????? ????.';
+      'ملف السجل التجاري المحدد فارغ.';
 
   @override
   String get documentCommercialRegisterTooLarge =>
-      '??? ?? ???? ??? ????? ??????? ??? ?? 10 ????????.';
+      'يجب أن يكون حجم السجل التجاري أقل من 10 ميغابايت.';
 
   @override
   String get documentCommercialRegisterInvalidType =>
-      '??? ?? ???? ????? ??????? ??? PDF ?? JPG ?? PNG.';
+      'يجب أن يكون السجل التجاري ملف PDF أو JPG أو PNG.';
 
   @override
-  String get applicationStatusApprovedSentence => '?????';
+  String get applicationStatusApprovedSentence => 'مقبول';
 
   @override
-  String get applicationStatusRejectedSentence => '?????';
+  String get applicationStatusRejectedSentence => 'مرفوض';
 
   @override
-  String get applicationStatusPendingSentence => '??? ????????';
+  String get applicationStatusPendingSentence => 'قيد المراجعة';
 
   @override
   String get launchAnimationHint => 'تفضل انطلاقة أسرع؟ أوقف هذا من الإعدادات.';
@@ -5302,7 +5286,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String uiFieldIsRequired(String field) {
-    return '$field مطلوب';
+    return 'حقل $field مطلوب';
   }
 
   @override
@@ -5376,28 +5360,27 @@ class AppLocalizationsAr extends AppLocalizations {
   String get signOutCompanySubtitle => 'تسجيل الخروج من مساحة عمل الشركة';
 
   @override
-  String get adminSettingsTitle => 'إعدادات المسؤول';
+  String get adminSettingsTitle => 'إعدادات المشرف';
 
   @override
-  String get adminAccountLabel => 'حساب المسؤول';
+  String get adminAccountLabel => 'حساب المشرف';
 
   @override
   String get adminWorkspaceBody =>
-      'تحكم في تفضيلات مساحة العمل دون تغيير سجل ملف المسؤول.';
+      'تحكم في تفضيلات مساحة العمل دون تغيير سجل ملف المشرف.';
 
   @override
-  String get adminLabel => 'مسؤول';
+  String get adminLabel => 'مشرف';
 
   @override
   String get adminWorkspaceSectionSubtitle =>
       'أبقِ عمليات المنصة قريبة دون كشف تعديل الملف الشخصي.';
 
   @override
-  String get adminSupportSubtitle =>
-      'معلومات التطبيق والمساعدة لمسؤولي المنصة.';
+  String get adminSupportSubtitle => 'معلومات التطبيق والمساعدة لمشرفي المنصة.';
 
   @override
-  String get signOutAdminSubtitle => 'إنهاء جلسة المسؤول على هذا الجهاز';
+  String get signOutAdminSubtitle => 'إنهاء جلسة المشرف على هذا الجهاز';
 
   @override
   String get themeTitle => 'المظهر';
@@ -5570,7 +5553,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get termsOfUseSettingsBody =>
-      'استخدم FutureGate بمسؤولية، وحافظ على دقة معلومات الحساب، وتجنب تقديم طلبات مضللة أو محتوى ينتهك قواعد المنصة.';
+      'استخدم FutureGate بمشرفية، وحافظ على دقة معلومات الحساب، وتجنب تقديم طلبات مضللة أو محتوى ينتهك قواعد المنصة.';
 
   @override
   String get addPasswordBannerTitle =>
@@ -5859,11 +5842,11 @@ class AppLocalizationsAr extends AppLocalizations {
   String get aboutFutureGateSubject => 'حول FutureGate';
 
   @override
-  String get signOutAdminQuestion => 'تسجيل الخروج من حساب المسؤول؟';
+  String get signOutAdminQuestion => 'تسجيل الخروج من حساب المشرف؟';
 
   @override
   String get signOutAdminBody =>
-      'ستغادر مساحة عمل المسؤول على هذا الجهاز. التغييرات المحفوظة تبقى آمنة.';
+      'ستغادر مساحة عمل المشرف على هذا الجهاز. التغييرات المحفوظة تبقى آمنة.';
 
   @override
   String get signOutCompanyQuestion => 'تسجيل الخروج من حساب الشركة؟';
@@ -5887,7 +5870,7 @@ class AppLocalizationsAr extends AppLocalizations {
       'يمكنك تسجيل الدخول مجددًا في أي وقت بنفس الحساب.';
 
   @override
-  String get adminRoleLabel => 'مسؤول';
+  String get adminRoleLabel => 'مشرف';
 
   @override
   String get companyRoleLabel => 'شركة';
@@ -6126,264 +6109,264 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiFillInTheFieldsBelowThenPublish => 'املأ الحقول أدناه ثم انشر.';
 
   @override
-  String get uiBookLibrary => '????? ?????';
+  String get uiBookLibrary => 'مكتبة الكتب';
 
   @override
-  String get uiFeaturedResources => '??????? ???????';
+  String get uiFeaturedResources => 'الموارد المميزة';
 
   @override
-  String get uiHiddenResources => '??????? ???????';
+  String get uiHiddenResources => 'الموارد المخفية';
 
   @override
   String get uiNoFeaturedResourcesMatchThisSearch =>
-      '?? ???? ????? ????? ????? ??? ?????';
+      'لا توجد موارد مميزة تطابق هذا البحث';
 
   @override
   String get uiNoHiddenResourcesMatchThisSearch =>
-      '?? ???? ????? ????? ????? ??? ?????';
+      'لا توجد موارد مخفية تطابق هذا البحث';
 
   @override
   String get uiNoLibraryResourcesMatchThisSearch =>
-      '?? ???? ????? ?? ??????? ????? ??? ?????';
+      'لا توجد موارد في المكتبة تطابق هذا البحث';
 
   @override
-  String get uiThisResourceLinkIsInvalid => '???? ??? ?????? ??? ????.';
+  String get uiThisResourceLinkIsInvalid => 'رابط هذا المورد غير صالح.';
 
   @override
-  String get uiThisResourceIsVisibleAgain => '???? ??? ?????? ????? ??? ????.';
+  String get uiThisResourceIsVisibleAgain => 'أصبح هذا المورد مرئيًا مرة أخرى.';
 
   @override
   String get uiThisResourceWasHiddenYouCanRestoreItLater =>
-      '?? ????? ??? ??????. ????? ???????? ?????.';
+      'تم إخفاء هذا المورد. يمكنك استعادته لاحقًا.';
 
   @override
-  String get uiResourceVisible => '?????? ????';
+  String get uiResourceVisible => 'المورد مرئي';
 
   @override
-  String get uiResourceHidden => '?????? ????';
+  String get uiResourceHidden => 'المورد مخفي';
 
   @override
-  String get uiUnknownProvider => '???? ??? ?????';
+  String get uiUnknownProvider => 'جهة غير معروفة';
 
   @override
   String
   get uiKeepBooksAndVideoResourcesInOneAdminFriendlyLibraryThenOpenTheSourceStudiosOnlyWhenYouNeedNewImports =>
-      '????? ?????? ?????? ??????? ?? ????? ?????? ?????? ?? ???? ?????????? ?????? ??? ????? ????? ??? ????????? ?????.';
+      'احتفظ بالكتب وموارد الفيديو في مكتبة واحدة سهلة للمشرفين، وافتح استوديوهات المصدر فقط عند الحاجة إلى استيرادات جديدة.';
 
   @override
   String
   get uiLibraryNowHoldsAllLearningResourcesSearchFilterReviewDetailsAndJumpIntoImportStudiosWhenYouNeedToAddMore =>
-      '????? ??????? ???? ??? ???? ????? ??????. ???? ??? ????? ???????? ????? ?????????? ????????? ????? ????? ??? ????? ??????.';
+      'تضم المكتبة الآن كل موارد التعلم. ابحث وصفِّ وراجع التفاصيل وانتقل إلى استوديوهات الاستيراد عندما تحتاج إلى إضافة المزيد.';
 
   @override
   String uiShowingFilteredResultsForSearchQuery(Object searchQuery) {
-    return '??? ??????? ??????? ?? \"$searchQuery\".';
+    return 'عرض النتائج المصفّاة لـ \"$searchQuery\".';
   }
 
   @override
   String get uiSearchLibraryByTitleProviderDomainLevelOrSource =>
-      '???? ?? ??????? ??? ??????? ?? ?????? ?? ?????? ?? ??????? ?? ??????...';
+      'ابحث في المكتبة حسب العنوان أو الجهة أو المجال أو المستوى أو المصدر...';
 
   @override
-  String get uiHide => '?????';
+  String get uiHide => 'إخفاء';
 
   @override
-  String get uiUnhide => '?????';
+  String get uiUnhide => 'إظهار';
 
   @override
-  String get uiLibraryUnavailable => '??????? ??? ?????';
+  String get uiLibraryUnavailable => 'المكتبة غير متاحة';
 
   @override
-  String get uiLanguage => '?????';
+  String get uiLanguage => 'اللغة';
 
   @override
-  String get uiSearching => '??? ?????...';
+  String get uiSearching => 'جارٍ البحث...';
 
   @override
-  String get uiImport => '???????';
+  String get uiImport => 'استيراد';
 
   @override
-  String get uiImporting => '??? ?????????...';
+  String get uiImporting => 'جارٍ الاستيراد...';
 
   @override
-  String get uiSyncing => '??? ????????';
+  String get uiSyncing => 'جارٍ المزامنة';
 
   @override
-  String get uiSynced => '??? ????????';
+  String get uiSynced => 'تمت المزامنة';
 
   @override
-  String get uiStudentDetails => '?????? ??????';
+  String get uiStudentDetails => 'تفاصيل الطالب';
 
   @override
   String
   get uiReviewIdentityAcademicDetailsCvDocumentsAndVisibleSubmittedApplicationsInOnePlace =>
-      '???? ?????? ????????? ?????????? ?????? ?????? ??????? ???????? ??????? ?? ???? ????.';
+      'راجع الهوية والتفاصيل الأكاديمية ومستندات السيرة الذاتية والطلبات المقدمة الظاهرة في مكان واحد.';
 
   @override
   String
   get uiReviewTheUploadedCvAndTheBuiltCvExportWithoutLeavingTheStudentProfile =>
-      '???? ?????? ??????? ???????? ????? ?????? ??????? ??????? ??? ?????? ??? ??????.';
+      'راجع السيرة الذاتية المرفوعة ونسخة السيرة المُنشأة دون مغادرة ملف الطالب.';
 
   @override
   String get uiNoCvHasBeenCreatedForThisStudent =>
-      '?? ??? ????? ???? ????? ???? ??????.';
+      'لم يتم إنشاء سيرة ذاتية لهذا الطالب.';
 
   @override
   String uiPrimaryCvValue(Object value) {
-    return '?????? ??????? ????????: $value';
+    return 'السيرة الذاتية الرئيسية: $value';
   }
 
   @override
-  String get uiPrimaryCvNotUploaded => '?? ??? ??? ?????? ??????? ????????';
+  String get uiPrimaryCvNotUploaded => 'لم يتم رفع السيرة الذاتية الرئيسية';
 
   @override
-  String get uiBuiltCvUnavailable => '?????? ??????? ??????? ??? ?????';
+  String get uiBuiltCvUnavailable => 'السيرة الذاتية المُنشأة غير متاحة';
 
   @override
-  String get uiBuiltCvPdfAvailable => '??? PDF ?????? ??????? ??????? ????';
+  String get uiBuiltCvPdfAvailable => 'ملف PDF للسيرة الذاتية المُنشأة متاح';
 
   @override
   String get uiBuiltCvInformationAvailable =>
-      '??????? ?????? ??????? ??????? ?????';
+      'معلومات السيرة الذاتية المُنشأة متاحة';
 
   @override
-  String get uiLoadingVisibleApplications => '??? ????? ??????? ???????...';
+  String get uiLoadingVisibleApplications => 'جارٍ تحميل الطلبات الظاهرة...';
 
   @override
   String get uiApplicationHistoryIsUnavailableRightNow =>
-      '??? ??????? ??? ???? ?????.';
+      'سجل الطلبات غير متاح حاليًا.';
 
   @override
   String get uiNoVisibleApplicationsAvailableForThisStudent =>
-      '?? ???? ????? ????? ????? ???? ??????.';
+      'لا توجد طلبات ظاهرة لهذا الطالب.';
 
   @override
-  String get uiOneVisibleApplication => '??? ???? ????';
+  String get uiOneVisibleApplication => 'طلب ظاهر واحد';
 
   @override
   String uiVisibleApplicationsCount(Object count) {
-    return '$count ????? ?????';
+    return '$count طلبات ظاهرة';
   }
 
   @override
-  String get uiStudentApplications => '????? ??????';
+  String get uiStudentApplications => 'طلبات الطالب';
 
   @override
   String
   get uiReviewTheStudentApplicationHistoryUsingTheSameVisibleOpportunityRuleShownInTheApp =>
-      '???? ??? ????? ?????? ???????? ????? ????? ??????? ????? ???????? ?? ???????.';
+      'افتح سجل طلبات الطالب باستخدام قاعدة الفرص الظاهرة نفسها المعروضة في التطبيق.';
 
   @override
-  String get uiVisibleSubmissions => '??????? ???????';
+  String get uiVisibleSubmissions => 'الطلبات الظاهرة';
 
   @override
   String
   get uiCouldNotLoadApplicationCountRightNowYouCanStillOpenTheApplicationsSheetAndTryAgain =>
-      '???? ????? ??? ??????? ????. ?? ??? ??????? ??? ????? ??????? ????????? ??? ????.';
+      'تعذّر تحميل عدد الطلبات حاليًا. لا يزال بإمكانك فتح ورقة الطلبات والمحاولة مرة أخرى.';
 
   @override
   String get uiStudentProfileAvailableForAdminReview =>
-      '??? ?????? ???? ??????? ???????.';
+      'ملف الطالب متاح لمراجعة المشرف.';
 
   @override
-  String get uiApplicationHistoryUnavailable => '??? ??????? ??? ????';
+  String get uiApplicationHistoryUnavailable => 'سجل الطلبات غير متاح';
 
   @override
-  String get uiNoVisibleApplications => '?? ???? ????? ?????';
+  String get uiNoVisibleApplications => 'لا توجد طلبات ظاهرة';
 
   @override
   String get uiLoadingVisibleOpportunityApplications =>
-      '??? ????? ??????? ?????? ?????? ???????.';
+      'جارٍ تحميل طلبات الفرص الظاهرة.';
 
   @override
   String uiVisibleApplicationsAvailableForReviewCount(Object count) {
-    return '$count ????? ????? ????? ????????.';
+    return '$count طلبات ظاهرة متاحة للمراجعة.';
   }
 
   @override
   String get uiCouldNotLoadThisStudentsVisibleApplicationsRightNow =>
-      '???? ????? ??????? ??????? ???? ?????? ?????.';
+      'تعذّر تحميل الطلبات الظاهرة لهذا الطالب حاليًا.';
 
   @override
   String
   get uiThisStudentHasNoApplicationsLinkedToOpenAndVisibleOpportunitiesRightNow =>
-      '??? ??? ??? ?????? ????? ?????? ???? ?????? ?????? ?????.';
+      'ليس لدى هذا الطالب طلبات مرتبطة بفرص مفتوحة وظاهرة حاليًا.';
 
   @override
-  String get uiAppliedDateUnavailable => '????? ??????? ??? ????';
+  String get uiAppliedDateUnavailable => 'تاريخ التقديم غير متاح';
 
   @override
   String get uiPermissionDeniedWhileOpeningTheDocument =>
-      '?? ??? ????? ????? ??? ???????.';
+      'تم رفض الإذن أثناء فتح المستند.';
 
   @override
   String get uiTheRequestedDocumentIsNoLongerAvailable =>
-      '??????? ??????? ?? ??? ?????.';
+      'المستند المطلوب لم يعد متاحًا.';
 
   @override
-  String get uiNotProvided => '??? ?????';
+  String get uiNotProvided => 'غير متوفر';
 
   @override
-  String get uiStudent => '????';
+  String get uiStudent => 'طالب';
 
   @override
-  String get uiBlocked => '?????';
+  String get uiBlocked => 'محظور';
 
   @override
   String get uiUseATopicDomainOrLanguageFilterToBringInCuratedBooksForReview =>
-      '?????? ?????? ?? ????? ?? ???? ??? ?????? ??? ?????? ????????.';
+      'استخدم عامل تصفية حسب الموضوع أو المجال أو اللغة لجلب كتب منسقة للمراجعة.';
 
   @override
   String
   get uiTryABroaderQueryOrChangeTheLanguageAndDomainFiltersBeforeSearchingAgain =>
-      '??? ???? ???? ?? ??? ????? ????? ??????? ??? ????? ?????.';
+      'جرّب بحثًا أوسع أو غيّر عوامل تصفية اللغة والمجال قبل البحث مرة أخرى.';
 
   @override
   String
   get uiThisWorkspaceIsDedicatedToGoogleBooksImportsSoBookCurationStaysFocused =>
-      '??? ??????? ????? ??????? Google Books ??? ???? ????? ????? ?????.';
+      'مساحة العمل هذه مخصصة لاستيراد Google Books حتى يبقى تنسيق الكتب مركزًا.';
 
   @override
   String get uiUseATopicSearchToBringBackImportReadyVideosForReview =>
-      '?????? ???? ???????? ?????? ???????? ????? ????????? ?????????.';
+      'استخدم بحثًا حسب الموضوع لجلب فيديوهات جاهزة للاستيراد والمراجعة.';
 
   @override
   String
   get uiTryABroaderQueryOrSwitchTheDomainAndLevelContextBeforeSearchingAgain =>
-      '??? ???? ???? ?? ??? ?????? ???????? ??? ????? ?????.';
+      'جرّب بحثًا أوسع أو غيّر المجال والمستوى قبل البحث مرة أخرى.';
 
   @override
   String
   get uiThisWorkspaceIsDedicatedToYouTubeImportsSoVideoCurationStaysFocused =>
-      '??? ??????? ????? ??????? YouTube ??? ???? ????? ??????? ?????.';
+      'مساحة العمل هذه مخصصة لاستيراد YouTube حتى يبقى تنسيق الفيديو مركزًا.';
 
   @override
-  String get uiVideoLibrary => '????? ???????';
+  String get uiVideoLibrary => 'مكتبة الفيديو';
 
   @override
-  String get uiLearningResources => '????? ??????';
+  String get uiLearningResources => 'موارد التعلم';
 
   @override
-  String get uiPrimaryCv => '?????? ??????? ????????';
+  String get uiPrimaryCv => 'السيرة الذاتية الرئيسية';
 
   @override
   String get uiTryAnotherSearchOrRelaxTheCurrentRoleAndLevelFilters =>
-      '???? ???? ??? ?? ??? ????? ????? ???????? ???????.';
+      'جرّب بحثًا آخر أو وسّع عوامل تصفية الدور والمستوى الحالية.';
 
   @override
   String
   get uiReviewContactInfoAccountStatusAndRoleSpecificDetailsInOneCleanProfileView =>
-      '???? ??????? ??????? ????? ?????? ????????? ?????? ?????? ?? ??? ???? ????.';
+      'راجع معلومات التواصل وحالة الحساب والتفاصيل المرتبطة بالدور في عرض ملف واحد واضح.';
 
   @override
   String get uiUpdateTheCompanyApprovalStateFromHereWithoutLeavingTheProfile =>
-      '???? ???? ?????? ?????? ?? ??? ??? ?????? ?????.';
+      'حدّث حالة موافقة الشركة من هنا دون مغادرة الملف.';
 
   @override
   String get languageDeviceDefault => 'افتراضي الجهاز';
 
   @override
-  String get uiSponsored => 'برعاية';
+  String get uiSponsored => 'مموّل';
 
   @override
   String get uiClosed => 'مغلق';
@@ -6431,10 +6414,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiLoginRequired => 'تسجيل الدخول مطلوب';
 
   @override
-  String get uiUploadUnavailable => 'التحميل غير متاح';
+  String get uiUploadUnavailable => 'الرفع غير متاح';
 
   @override
-  String get uiUploadInProgress => 'جارٍ التحميل';
+  String get uiUploadInProgress => 'جارٍ الرفع';
 
   @override
   String get uiUpdateUnavailable => 'التحديث غير متاح';
@@ -6443,7 +6426,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiEditingLocked => 'التعديل مقفل';
 
   @override
-  String get uiSubmissionUnavailable => 'الإرسال غير متاح';
+  String get uiSubmissionUnavailable => 'التقديم غير متاح';
 
   @override
   String get uiNoUrgentDeadlines => 'لا توجد مواعيد نهائية عاجلة الآن';
@@ -6548,7 +6531,7 @@ class AppLocalizationsAr extends AppLocalizations {
       'اختر نمط السيرة الذاتية الأنسب للدور الذي تريده.';
 
   @override
-  String get uiProvider => 'مزود الخدمة';
+  String get uiProvider => 'الجهة';
 
   @override
   String get uiApplicationDeadline => 'الموعد النهائي للتقديم';
@@ -6587,13 +6570,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiTryDifferentFilter => 'جرب فلتراً مختلفاً أو ابدأ فكرة جديدة.';
 
   @override
-  String get uiCreateFirstIdea => 'أنشئ فكرتك الأولى أو اضبط الفلاتر.';
+  String get uiCreateFirstIdea => 'أنشئ فكرتك الأولى أو اضبط عوامل التصفية.';
 
   @override
   String get uiCvStudioSubtitle => 'أنشئ سيرتك الذاتية وحمّلها وصدّرها.';
 
   @override
-  String get notifAdminTitle => 'إشعارات المسؤول';
+  String get notifAdminTitle => 'إشعارات المشرف';
 
   @override
   String get notifCompanyTitle => 'إشعارات الشركة';
@@ -6729,10 +6712,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get dashSectionSavedShortlist => 'القائمة المحفوظة';
 
   @override
-  String get dashBuildCv => 'بناء السيرة';
+  String get dashBuildCv => 'إنشاء السيرة الذاتية';
 
   @override
-  String get dashCompleteProfile => 'اكمال الملف';
+  String get dashCompleteProfile => 'إكمال الملف';
 
   @override
   String get dashDiscover => 'استكشاف';
@@ -6744,7 +6727,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get dashTrackStatus => 'تتبع الحالة';
 
   @override
-  String get dashSeeOpenRoles => 'رؤية الفرص المتاحة';
+  String get dashSeeOpenRoles => 'عرض الفرص المفتوحة';
 
   @override
   String get dashOpenSaved => 'فتح المحفوظات';
@@ -6761,10 +6744,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get scholarshipNoEligFallback =>
-      'سيتم مشاركة تفاصيل الأهلية من قِبل مزود المنحة.';
+      'ستشارك الجهة المقدمة تفاصيل الأهلية.';
 
   @override
-  String get scholarshipDeadlineFallback => 'الموعد النهائي المُعلن من المزود';
+  String get scholarshipDeadlineFallback => 'الموعد النهائي المعلن من الجهة';
 
   @override
   String get scholarshipFundingFallback => 'التمويل مُشارك في الإعلان الرسمي';
@@ -6791,7 +6774,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get scholarshipAtAGlance => 'نظرة عامة';
 
   @override
-  String get scholarshipNoLink => 'لم يُرفق المزود بعد رابط التقديم الخارجي.';
+  String get scholarshipNoLink => 'لم تُرفق الجهة رابط التقديم الخارجي بعد.';
 
   @override
   String get scholarshipOfficialSource => 'المصدر الرسمي للمنحة';
@@ -6876,7 +6859,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get trainingUpdateUnavailableTitle => 'التحديث غير متاح';
 
   @override
-  String get trainingProviderFallback => 'مزود التدريب';
+  String get trainingProviderFallback => 'جهة التدريب';
 
   @override
   String get trainingFlexibleLabel => 'مرن';
@@ -6909,7 +6892,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get opportunityStudentInternshipFallback => 'فرصة تدريب طلابية';
 
   @override
-  String get opportunitySponsoredFallback => 'فرصة برعاية';
+  String get opportunitySponsoredFallback => 'فرصة ممولة';
 
   @override
   String get opportunityOpenJobFallback => 'فرصة عمل مفتوحة';
@@ -6933,7 +6916,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get ideaPrivateLabel => 'خاص';
 
   @override
-  String get ideaSharedFromHub => 'مشترك من مركز الابتكار';
+  String get ideaSharedFromHub => 'مشاركة من مركز الابتكار';
 
   @override
   String get ideaCategoryInnovation => 'ابتكار';
@@ -6957,7 +6940,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get ideaStageConcept => 'فكرة أولية';
 
   @override
-  String get ideaStageMvp => 'نموذج أعمال أولي';
+  String get ideaStageMvp => 'نسخة أولية قابلة للتجربة';
 
   @override
   String get ideaStagePrototype => 'نموذج أولي';
@@ -7058,7 +7041,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get scholarshipNoFeaturedInViewSubtitle =>
-      'جرّب بحثًا أو فلترًا آخر لاستعراض المنح المتاحة.';
+      'جرّب بحثًا أو عامل تصفية آخر لاستعراض المنح المتاحة.';
 
   @override
   String get uiNoTrainingMatchesYourSearch => 'لا يوجد تدريب يطابق بحثك';
@@ -7093,7 +7076,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiNoSponsoredProgramsAvailableRightNow =>
-      'لا توجد برامج برعاية متاحة الآن';
+      'لا توجد برامج ممولة متاحة الآن';
 
   @override
   String get uiResource => 'مورد';
@@ -7413,14 +7396,14 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiContentSubtitle =>
-      'اعتدل الأفكار والطلبات والقوائم والمنح الدراسية وموارد المكتبة.';
+      'أشرف على الأفكار والطلبات والقوائم والمنح الدراسية وموارد المكتبة.';
 
   @override
   String get uiActivitySubtitle =>
       'تتبع تغييرات المنصة وانتقل مباشرة إلى قائمة الانتظار الصحيحة.';
 
   @override
-  String get uiAdmins => 'المسؤولون';
+  String get uiAdmins => 'المشرفون';
 
   @override
   String get uiAccountState => 'حالة الحساب';
@@ -7558,7 +7541,7 @@ class AppLocalizationsAr extends AppLocalizations {
       'تحميل التحديثات الأقدم من الطلبات والعروض والتدريبات والمنح وأفكار المشاريع.';
 
   @override
-  String get uiAdminCreatedIdeas => 'أفكار المسؤول';
+  String get uiAdminCreatedIdeas => 'أفكار المشرف';
 
   @override
   String get uiReviewSubmittedIdeas =>
@@ -7642,7 +7625,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiScholarshipListings => 'قائمة المنح';
 
   @override
-  String get uiNoAdminIdeasMatch => 'لا توجد أفكار من المسؤول تطابق هذا البحث';
+  String get uiNoAdminIdeasMatch => 'لا توجد أفكار من المشرف تطابق هذا البحث';
 
   @override
   String get uiNoPendingIdeasMatch => 'لا توجد أفكار معلّقة تطابق هذا البحث';
@@ -7670,7 +7653,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiNoScholarshipsMatch => 'لا توجد منح تطابق هذا البحث';
 
   @override
-  String get uiAdminOpportunities => 'فرص المسؤول';
+  String get uiAdminOpportunities => 'فرص المشرف';
 
   @override
   String get uiPendingApplications => 'الطلبات المعلّقة';
@@ -7697,7 +7680,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String uiNoAdminPostedItemsMatchSearch(Object items) {
-    return 'لا توجد $items نشرها المسؤول تطابق هذا البحث';
+    return 'لا توجد $items نشرها المشرف تطابق هذا البحث';
   }
 
   @override
@@ -7784,7 +7767,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiCouldNotLoadFullStudentProfile =>
-      'تعذّر تحميل ملف الطالب الكامل حالياً. لا يزال بإمكانك فتح السيرة الذاتية للطلب والطلبات المرسلة الظاهرة.';
+      'تعذّر تحميل ملف الطالب الكامل حاليًا. لا يزال بإمكانك فتح السيرة الذاتية للطلب والطلبات المقدمة الظاهرة.';
 
   @override
   String get uiApplicant => 'المتقدم';

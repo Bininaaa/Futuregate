@@ -47,8 +47,7 @@
       setDoc, updateDoc, deleteDoc, serverTimestamp,
     } from './js/firebase-config.js';
     import { matchesSearch, getQueryParam, timestampToDate, updateUrlParams } from './js/admin-utils.js';
-    import { searchBooksViaWorker } from './js/google-books-service.js';
-    import { searchYoutubeVideos } from './js/youtube-service.js';
+    import { WORKER_BASE_URL } from './js/google-books-config.js';
     import { getApplicationCv, getApplicationCvDocument, openDocumentUrl, friendlyDocumentErrorMessage } from './js/document-access.js';
     import { openModal, closeModal } from './js/ui.js';
 
@@ -142,6 +141,11 @@
         : 'overview';
     }
 
+    function normalizeLibraryMode(value) {
+      const normalized = String(value || '').trim();
+      return ['search', 'manage'].includes(normalized) ? normalized : 'search';
+    }
+
     function activeAdminId() {
       return String(auth.currentUser?.uid || '').trim();
     }
@@ -194,6 +198,159 @@
       return endOfDay.getTime() < Date.now() ? 'closed' : 'open';
     }
 
+    function cleanText(value) {
+      return String(value || '').trim();
+    }
+
+    function capitalizeLabel(value) {
+      return cleanText(value)
+        .replace(/[_-]+/g, ' ')
+        .replace(/\s+/g, ' ')
+        .replace(/\b\w/g, (letter) => letter.toUpperCase());
+    }
+
+    function statusBadgeClass(status) {
+      const normalized = cleanText(status).toLowerCase();
+      if (['approved', 'accepted', 'open', 'visible'].includes(normalized)) return 'success';
+      if (['rejected', 'closed', 'hidden'].includes(normalized)) return 'danger';
+      if (['featured'].includes(normalized)) return 'warning';
+      if (['reviewed'].includes(normalized)) return 'info';
+      return 'warning';
+    }
+
+    function badge(label, className = '', icon = '') {
+      const text = cleanText(label);
+      if (!text) return '';
+      return `<span class="badge ${className}">${icon ? `<i data-lucide="${icon}"></i>` : ''}${esc(text)}</span>`;
+    }
+
+    function iconAction(id, action, icon, title, className = '') {
+      return `<button class="btn btn-sm btn-icon ${className}" data-id="${esc(id)}" data-action="${esc(action)}" title="${esc(title)}" aria-label="${esc(title)}"><i data-lucide="${esc(icon)}"></i></button>`;
+    }
+
+    function textAction(id, action, icon, label, className = '') {
+      return `<button class="btn btn-sm ${className}" data-id="${esc(id)}" data-action="${esc(action)}"><i data-lucide="${esc(icon)}"></i>${esc(label)}</button>`;
+    }
+
+    function externalLinkAction(url, icon, title) {
+      const href = cleanText(url);
+      if (!href) return '';
+      return `<a class="btn btn-sm btn-icon" href="${esc(href)}" target="_blank" rel="noopener" title="${esc(title)}" aria-label="${esc(title)}"><i data-lucide="${esc(icon)}"></i></a>`;
+    }
+
+    function contentCard({
+      id,
+      tone = 'primary',
+      icon = 'file-text',
+      mediaHtml = '',
+      title = '',
+      subtitle = '',
+      description = '',
+      badges = [],
+      meta = '',
+      actions = [],
+      footerActions = [],
+      detailsAction = 'details',
+    }) {
+      const safeId = esc(id);
+      const visibleBadges = badges.filter(Boolean).join('');
+      const visibleActions = actions.filter(Boolean).join('');
+      const visibleFooterActions = footerActions.filter(Boolean).join('');
+      const safeDescription = cleanText(description);
+      const safeMeta = cleanText(meta);
+      return `<article class="content-card content-card--${esc(tone)}" data-row-id="${safeId}" data-open-details="${safeId}" data-action-open="${esc(detailsAction)}">
+        <div class="content-card__main">
+          <div class="content-card__media">${mediaHtml || `<i data-lucide="${esc(icon)}"></i>`}</div>
+          <div class="content-card__body">
+            <div class="content-card__title-row">
+              <h3 class="content-card__title">${esc(title || 'Untitled')}</h3>
+              ${safeMeta ? `<span class="content-card__meta"><i data-lucide="clock-3"></i>${esc(safeMeta)}</span>` : ''}
+            </div>
+            ${subtitle ? `<p class="content-card__subtitle">${esc(subtitle)}</p>` : ''}
+            ${safeDescription ? `<p class="content-card__description">${esc(truncate(safeDescription, 180))}</p>` : ''}
+            ${visibleBadges ? `<div class="content-card__badges">${visibleBadges}</div>` : ''}
+          </div>
+          ${visibleActions ? `<div class="content-card__actions">${visibleActions}</div>` : ''}
+        </div>
+        ${visibleFooterActions ? `<div class="content-card__footer">${visibleFooterActions}</div>` : ''}
+      </article>`;
+    }
+
+    function bindCardOpens(handler) {
+      document.getElementById('list')?.querySelectorAll('[data-open-details]').forEach((card) => {
+        card.addEventListener('click', (event) => {
+          if (event.target.closest('button, a, [data-action]')) return;
+          handler(card.getAttribute('data-open-details'), card.getAttribute('data-action-open') || 'details');
+        });
+      });
+    }
+
+    async function authToken() {
+      return auth.currentUser ? auth.currentUser.getIdToken() : '';
+    }
+
+    async function workerRequest(path, { method = 'POST', body = null } = {}) {
+      const token = await authToken();
+      const response = await fetch(`${WORKER_BASE_URL}${path}`, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: body == null ? undefined : JSON.stringify(body),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(data.error || data.message || `Request failed: ${response.status}`);
+      }
+      return data;
+    }
+
+    async function workerBestEffort(path, body) {
+      try {
+        await workerRequest(path, { body });
+      } catch (error) {
+        console.warn('Worker side effect failed:', path, error);
+      }
+    }
+
+    function trainingDisplayLink(item) {
+      return cleanText(item?.link || item?.url || item?.previewLink || item?.infoLink);
+    }
+
+    function trainingThumbnail(item) {
+      return cleanText(item?.thumbnail || item?.thumbnailUrl || item?.coverImage || item?.image);
+    }
+
+    function trainingSourceKind(item) {
+      const source = cleanText(item?.source).toLowerCase();
+      const type = cleanText(item?.type).toLowerCase();
+      if (source === 'youtube' || type === 'video') return 'youtube';
+      if (source === 'google_books' || type === 'book') return 'books';
+      return 'other';
+    }
+
+    function trainingSourceLabel(item) {
+      const kind = trainingSourceKind(item);
+      if (kind === 'youtube') return 'YouTube';
+      if (kind === 'books') return 'Google Books';
+      return capitalizeLabel(item?.source || item?.type || 'Resource');
+    }
+
+    function trainingMedia(item) {
+      const thumb = trainingThumbnail(item);
+      const isVideo = trainingSourceKind(item) === 'youtube';
+      if (thumb) {
+        return `<img src="${esc(thumb)}" alt="" loading="lazy">`;
+      }
+      return `<i data-lucide="${isVideo ? 'video' : 'book-open'}"></i>`;
+    }
+
+    async function loadTrainings() {
+      const trainS = await getDocs(query(collection(db, 'trainings'), orderBy('createdAt', 'desc')));
+      state.trainings = trainS.docs.map((s) => ({ id: s.id, ...s.data() }));
+    }
+
     mountShell({ page: 'content' });
 
     const normalizedInitialTab = normalizeActiveTab(initialTabParam);
@@ -202,6 +359,7 @@
       ideas: [], applications: [], opportunities: [], scholarships: [], trainings: [],
       booksResults: [], youtubeResults: [],
       librarySource: normalizeLibrarySource(getQueryParam('librarySource') || 'overview'), // overview | books | youtube
+      libraryMode: normalizeLibraryMode(getQueryParam('libraryMode') || 'search'), // search | manage
       filter: normalizeFilterValue(
         normalizedInitialTab,
         getQueryParam('filter') || '',
@@ -230,12 +388,14 @@
           state.filter = 'all';
           state.oppType = 'all';
           state.librarySource = 'overview';
+          state.libraryMode = 'search';
           state.search = '';
           updateUrlParams({
             tab: state.activeTab,
             filter: '',
             opportunityType: '',
             librarySource: '',
+            libraryMode: '',
             ideaId: '',
             opportunityId: '',
             scholarshipId: '',
@@ -299,12 +459,13 @@
 
     async function loadAll() {
       try {
+        await workerBestEffort('/api/deadlines/expire', {});
         const [ideasS, appsS, oppsS, scholarS, trainS] = await Promise.all([
           getDocs(query(collection(db, 'projectIdeas'), orderBy('createdAt', 'desc'))),
           getDocs(query(collection(db, 'applications'), orderBy('appliedAt', 'desc'))),
           getDocs(query(collection(db, 'opportunities'), orderBy('createdAt', 'desc'))),
           getDocs(query(collection(db, 'scholarships'), orderBy('createdAt', 'desc'))),
-          getDocs(collection(db, 'trainings')),
+          getDocs(query(collection(db, 'trainings'), orderBy('createdAt', 'desc'))),
         ]);
         state.ideas         = ideasS.docs.map((s) => ({ id: s.id, ...s.data() }));
         state.applications  = appsS.docs.map((s) => ({ id: s.id, ...s.data() }));
@@ -323,7 +484,15 @@
       const el = document.getElementById('stats-pills');
       if (!el) return;
       const pendingIdeas = state.ideas.filter((x) => (x.status || 'pending') === 'pending').length;
-      const pendingApps = state.applications.filter((x) => (x.status || 'pending') === 'pending').length;
+      const adminId = activeAdminId();
+      const oppMap = new Map(state.opportunities.map((item) => [item.id, item]));
+      const pendingApps = state.applications.filter((item) => {
+        const opportunity = oppMap.get(item.opportunityId);
+        return (item.status || 'pending') === 'pending' &&
+          !!opportunity &&
+          String(opportunity.createdByRole || '').trim().toLowerCase() === 'admin' &&
+          String(opportunity.companyId || '').trim() === adminId;
+      }).length;
       const opps = state.opportunities.length;
       const scholarships = state.scholarships.length;
       const resources = state.trainings.length;
@@ -419,61 +588,124 @@
       bindCommon();
       document.getElementById('new-idea').addEventListener('click', () => { window.location.href = 'idea-editor.html'; });
       bindRowActions((id, action) => handleIdeaAction(id, action));
+      bindCardOpens((id, action) => handleIdeaAction(id, action));
       if (window.lucide) window.lucide.createIcons();
     }
 
     function renderIdeaRow(it) {
       const status = it.status || 'pending';
-      const badgeClass = status === 'approved' ? 'success' : status === 'rejected' ? 'danger' : 'warning';
       const canEdit = isOwnAdminIdea(it);
-      return `<div class="item-row" data-row-id="${it.id}">
-        <div class="activity-icon" style="background:rgba(245,158,11,0.14);color:#F59E0B"><i data-lucide="lightbulb"></i></div>
-        <div class="row-body">
-          <div class="row-title">${esc(it.title || 'Untitled idea')}</div>
-          <div class="row-sub">${esc(truncate(it.tagline || it.shortDescription || it.description || '', 140))}</div>
-          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">
-            <span class="badge badge-${badgeClass}">${esc(status)}</span>
-            ${it.isHidden ? '<span class="badge badge-danger"><i data-lucide="eye-off"></i>Hidden</span>' : ''}
-            ${it.domain ? `<span class="badge"><i data-lucide="tag"></i>${esc(it.domain)}</span>` : ''}
-            ${it.academicLevel ? `<span class="badge">${esc(it.academicLevel)}</span>` : ''}
-            ${it.submittedByName ? `<span class="badge"><i data-lucide="user"></i>${esc(it.submittedByName)}</span>` : ''}
-            ${canEdit ? '<span class="badge badge-info"><i data-lucide="shield"></i>Your post</span>' : ''}
-            <span class="badge"><i data-lucide="calendar"></i>${esc(formatTimestamp(it.createdAt) || '—')}</span>
-          </div>
-        </div>
-        <div class="row-actions">
-          ${status !== 'approved' ? `<button class="btn btn-sm btn-success" data-id="${it.id}" data-action="approve" title="Approve"><i data-lucide="check"></i></button>` : ''}
-          ${status !== 'rejected' ? `<button class="btn btn-sm btn-danger" data-id="${it.id}" data-action="reject" title="Reject"><i data-lucide="x"></i></button>` : ''}
-          <button class="btn btn-sm" data-id="${it.id}" data-action="toggle-hide" title="${it.isHidden ? 'Unhide' : 'Hide'}"><i data-lucide="${it.isHidden ? 'eye' : 'eye-off'}"></i></button>
-          ${canEdit ? `<button class="btn btn-sm" data-id="${it.id}" data-action="edit" title="Edit"><i data-lucide="pencil"></i></button>` : ''}
-          <button class="btn btn-sm btn-danger" data-id="${it.id}" data-action="delete" title="Delete"><i data-lucide="trash-2"></i></button>
-        </div>
-      </div>`;
+      return contentCard({
+        id: it.id,
+        tone: 'idea',
+        icon: 'lightbulb',
+        title: it.title || 'Untitled idea',
+        subtitle: [it.domain, it.academicLevel].filter(Boolean).join(' • '),
+        description: it.tagline || it.shortDescription || it.description || '',
+        badges: [
+          badge(status, `badge-${statusBadgeClass(status)}`),
+          it.isHidden ? badge('Hidden', 'badge-danger', 'eye-off') : '',
+          it.domain ? badge(it.domain, '', 'tag') : '',
+          it.submittedByName ? badge(it.submittedByName, '', 'user') : '',
+          canEdit ? badge('Your post', 'badge-info', 'shield') : '',
+        ],
+        meta: formatTimestamp(it.createdAt) || '',
+        actions: [
+          iconAction(it.id, 'details', 'eye', 'Open details'),
+          status !== 'approved' ? iconAction(it.id, 'approve', 'check', 'Approve', 'btn-success') : '',
+          status !== 'rejected' ? iconAction(it.id, 'reject', 'x', 'Reject', 'btn-danger') : '',
+          iconAction(it.id, 'toggle-hide', it.isHidden ? 'eye' : 'eye-off', it.isHidden ? 'Show idea' : 'Hide idea'),
+          canEdit ? iconAction(it.id, 'edit', 'pencil', 'Edit idea') : '',
+          iconAction(it.id, 'delete', 'trash-2', 'Delete idea', 'btn-danger'),
+        ],
+      });
     }
 
     async function handleIdeaAction(id, action) {
       const ref = doc(db, 'projectIdeas', id);
       const it = state.ideas.find((x) => x.id === id);
+      if (!it) return;
       try {
-        if (action === 'approve') { await updateDoc(ref, { status: 'approved' }); it.status = 'approved'; showToast('Idea approved.', 'success'); }
-        else if (action === 'reject') { await updateDoc(ref, { status: 'rejected' }); it.status = 'rejected'; showToast('Idea rejected.', 'success'); }
-        else if (action === 'toggle-hide') { const next = !it.isHidden; await updateDoc(ref, { isHidden: next }); it.isHidden = next; showToast(next ? 'Idea hidden.' : 'Idea visible again.', 'success'); }
-        else if (action === 'edit') {
+        if (action === 'details') {
+          openIdeaDetails(it);
+          return;
+        }
+        if (action === 'approve') {
+          await updateDoc(ref, { status: 'approved' });
+          it.status = 'approved';
+          await workerBestEffort('/api/notify/idea-status-changed', { ideaId: id });
+          showToast('Idea approved.', 'success');
+        } else if (action === 'reject') {
+          await updateDoc(ref, { status: 'rejected' });
+          it.status = 'rejected';
+          await workerBestEffort('/api/notify/idea-status-changed', { ideaId: id });
+          showToast('Idea rejected.', 'success');
+        } else if (action === 'toggle-hide') {
+          const next = !it.isHidden;
+          await updateDoc(ref, { isHidden: next });
+          it.isHidden = next;
+          showToast(next ? 'Idea hidden.' : 'Idea visible again.', 'success');
+        } else if (action === 'edit') {
           if (!isOwnAdminIdea(it)) {
             showToast('You can only edit ideas you posted as admin.', 'warning');
             return;
           }
           window.location.href = 'idea-editor.html?id=' + encodeURIComponent(id);
           return;
-        }
-        else if (action === 'delete') {
+        } else if (action === 'delete') {
           if (!confirm('Delete this idea?')) return;
           await deleteDoc(ref);
           state.ideas = state.ideas.filter((x) => x.id !== id);
           showToast('Idea deleted.', 'success');
         }
-        renderStats(); renderTab();
-      } catch (e) { console.error(e); showToast('Action failed.', 'error'); }
+        renderStats();
+        renderTab();
+      } catch (e) {
+        console.error(e);
+        showToast('Action failed.', 'error');
+      }
+    }
+
+    function openIdeaDetails(it) {
+      document.getElementById('editor-title').textContent = it.title || 'Idea details';
+      document.getElementById('editor-body').innerHTML = `
+        ${section('Summary', 'lightbulb', `
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;">
+            ${badge(it.status || 'pending', `badge-${statusBadgeClass(it.status || 'pending')}`)}
+            ${it.isHidden ? badge('Hidden', 'badge-danger', 'eye-off') : ''}
+            ${it.domain ? badge(it.domain, '', 'tag') : ''}
+            ${it.academicLevel ? badge(it.academicLevel) : ''}
+            ${it.stage ? badge(capitalizeLabel(it.stage)) : ''}
+            ${it.submittedByName ? badge(it.submittedByName, '', 'user') : ''}
+          </div>
+          ${it.tagline ? `<p style="margin:0 0 8px 0;">${esc(it.tagline)}</p>` : ''}
+          <div class="row-sub">${esc(formatTimestamp(it.createdAt) || '—')}</div>
+        `)}
+        ${it.shortDescription ? section('Overview', 'file-text', `<p style="white-space:pre-wrap;margin:0;">${esc(it.shortDescription)}</p>`) : ''}
+        ${it.description ? section('Description', 'align-left', `<p style="white-space:pre-wrap;margin:0;">${esc(it.description)}</p>`) : ''}
+        ${section('Details', 'layers', `
+          <div class="profile-grid">
+            <div class="profile-block"><div class="profile-block-label">Domain</div><div class="profile-block-value">${esc(it.domain || '—')}</div></div>
+            <div class="profile-block"><div class="profile-block-label">Category</div><div class="profile-block-value">${esc(it.category || '—')}</div></div>
+            <div class="profile-block"><div class="profile-block-label">Stage</div><div class="profile-block-value">${esc(capitalizeLabel(it.stage || '') || '—')}</div></div>
+            <div class="profile-block"><div class="profile-block-label">Academic level</div><div class="profile-block-value">${esc(it.academicLevel || '—')}</div></div>
+            <div class="profile-block"><div class="profile-block-label">Language</div><div class="profile-block-value">${esc((it.originalLanguage || '').toUpperCase() || '—')}</div></div>
+            <div class="profile-block"><div class="profile-block-label">Collaboration</div><div class="profile-block-value">${it.openForCollab ? 'Open to collaboration' : 'Not open'}</div></div>
+          </div>
+        `)}
+        ${Array.isArray(it.tags) && it.tags.length ? section('Tags', 'tags', `<div class="tag-list">${it.tags.map((item) => badge(item)).join('')}</div>`) : ''}
+        ${Array.isArray(it.tools) && it.tools.length ? section('Tools', 'wrench', `<div class="tag-list">${it.tools.map((item) => badge(item)).join('')}</div>`) : ''}
+        ${Array.isArray(it.skillsNeeded) && it.skillsNeeded.length ? section('Skills needed', 'sparkles', `<div class="tag-list">${it.skillsNeeded.map((item) => badge(item)).join('')}</div>`) : ''}
+        ${Array.isArray(it.teamRoles) && it.teamRoles.length ? section('Roles needed', 'users', `<div class="tag-list">${it.teamRoles.map((item) => badge(item)).join('')}</div>`) : ''}
+        ${it.problemStatement ? section('Problem', 'triangle-alert', `<p style="white-space:pre-wrap;margin:0;">${esc(it.problemStatement)}</p>`) : ''}
+        ${it.solution ? section('Solution', 'rocket', `<p style="white-space:pre-wrap;margin:0;">${esc(it.solution)}</p>`) : ''}
+        ${it.resourcesNeeded ? section('Resources needed', 'package', `<p style="white-space:pre-wrap;margin:0;">${esc(it.resourcesNeeded)}</p>`) : ''}
+        ${it.benefits ? section('Benefits', 'badge-plus', `<p style="white-space:pre-wrap;margin:0;">${esc(it.benefits)}</p>`) : ''}
+      `;
+      const saveBtn = document.getElementById('editor-save');
+      if (saveBtn) saveBtn.style.display = 'none';
+      openModal('editor-modal');
+      if (window.lucide) window.lucide.createIcons();
     }
 
     function openIdeaEditor(it) {
@@ -616,11 +848,13 @@
       });
       document.getElementById('new-opp').addEventListener('click', () => { window.location.href = 'opp-editor.html'; });
       bindRowActions((id, action) => handleOpportunityAction(id, action));
+      bindCardOpens((id, action) => handleOpportunityAction(id, action));
       if (window.lucide) window.lucide.createIcons();
     }
 
     function renderOppRow(it) {
-      const pendingCount = oppPendingAppsCount(it.id);
+      {
+      const legacyPendingCount = oppPendingAppsCount(it.id);
       const type = it.type || it.opportunityType || '—';
       return `<div class="item-row" data-row-id="${it.id}">
         <div class="activity-icon" style="background:rgba(245,158,11,0.14);color:#F59E0B"><i data-lucide="briefcase"></i></div>
@@ -641,6 +875,7 @@
           <button class="btn btn-sm btn-danger" data-id="${it.id}" data-action="delete" title="Delete"><i data-lucide="trash-2"></i></button>
         </div>
       </div>`;
+      }
     }
 
     function openOppDetails(it) {
@@ -727,30 +962,41 @@
 
     function renderOpportunityRow(it) {
       const pendingCount = oppPendingAppsCount(it.id);
-      const type = it.type || it.opportunityType || '—';
+      const type = it.type || it.opportunityType || '';
       const effectiveStatus = opportunityEffectiveStatus(it);
       const canEdit = canEditOpportunity(it);
-      return `<div class="item-row" data-row-id="${it.id}">
-        <div class="activity-icon" style="background:rgba(245,158,11,0.14);color:#F59E0B"><i data-lucide="briefcase"></i></div>
-        <div class="row-body">
-          <div class="row-title">${esc(it.title || 'Untitled')}</div>
-          <div class="row-sub">${esc(it.companyName || '—')} · ${esc(it.location || '—')} · ${esc(type)}</div>
-          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">
-            <span class="badge">${esc(effectiveStatus)}</span>
-            ${it.isFeatured ? '<span class="badge badge-warning"><i data-lucide="star"></i>Featured</span>' : ''}
-            ${it.isHidden ? '<span class="badge badge-danger"><i data-lucide="eye-off"></i>Hidden</span>' : ''}
-            ${pendingCount ? `<span class="badge badge-info"><i data-lucide="hourglass"></i>${pendingCount} pending</span>` : ''}
-            ${canEdit ? '<span class="badge badge-info"><i data-lucide="shield"></i>Your post</span>' : ''}
-            <span class="badge"><i data-lucide="calendar"></i>${esc(formatTimestamp(it.createdAt) || '—')}</span>
-          </div>
-        </div>
-        <div class="row-actions">
-          <button class="btn btn-sm" data-id="${it.id}" data-action="details" title="View details & applications"><i data-lucide="eye"></i></button>
-          <button class="btn btn-sm" data-id="${it.id}" data-action="toggle-hide" title="${it.isHidden ? 'Unhide' : 'Hide'}"><i data-lucide="${it.isHidden ? 'eye' : 'eye-off'}"></i></button>
-          ${canEdit ? `<button class="btn btn-sm" data-id="${it.id}" data-action="edit" title="Edit"><i data-lucide="pencil"></i></button>` : ''}
-          <button class="btn btn-sm btn-danger" data-id="${it.id}" data-action="delete" title="Delete"><i data-lucide="trash-2"></i></button>
-        </div>
-      </div>`;
+      return contentCard({
+        id: it.id,
+        tone: type === 'internship' ? 'internship' : type === 'sponsoring' ? 'scholarship' : 'opportunity',
+        icon: type === 'internship' ? 'briefcase-business' : type === 'sponsoring' ? 'badge-dollar-sign' : 'briefcase',
+        title: it.title || 'Untitled',
+        subtitle: [it.companyName, it.location, capitalizeLabel(type)].filter(Boolean).join(' • '),
+        description: it.description || '',
+        badges: [
+          badge(effectiveStatus, `badge-${statusBadgeClass(effectiveStatus)}`),
+          it.isFeatured ? badge('Featured', 'badge-warning', 'star') : '',
+          it.isHidden ? badge('Hidden', 'badge-danger', 'eye-off') : '',
+          pendingCount ? badge(`${pendingCount} pending`, 'badge-info', 'hourglass') : '',
+          it.workMode ? badge(capitalizeLabel(it.workMode), '', 'map-pinned') : '',
+          canEdit ? badge('Your post', 'badge-info', 'shield') : '',
+        ],
+        meta: formatTimestamp(it.updatedAt || it.createdAt) || '',
+        actions: [
+          iconAction(it.id, 'details', 'eye', 'Open details'),
+          iconAction(it.id, 'toggle-hide', it.isHidden ? 'eye' : 'eye-off', it.isHidden ? 'Show opportunity' : 'Hide opportunity'),
+          canEdit ? iconAction(it.id, 'edit', 'pencil', 'Edit opportunity') : '',
+          iconAction(it.id, 'delete', 'trash-2', 'Delete opportunity', 'btn-danger'),
+        ],
+        footerActions: [
+          it.applicationDeadline ? `<span class="content-card__footer-note"><i data-lucide="calendar-range"></i>Deadline ${esc(formatTimestamp(it.applicationDeadline) || '')}</span>` : '',
+          it.type === 'sponsoring' && (it.fundingAmount || it.fundingNote)
+            ? `<span class="content-card__footer-note"><i data-lucide="coins"></i>${esc(it.fundingAmount ? `${it.fundingAmount} ${it.fundingCurrency || ''}`.trim() : it.fundingNote)}</span>`
+            : '',
+          it.type === 'internship' && it.compensationText
+            ? `<span class="content-card__footer-note"><i data-lucide="wallet"></i>${esc(it.compensationText)}</span>`
+            : '',
+        ],
+      });
     }
 
     function openOpportunityDetails(it, focusApplicationId = '') {
@@ -769,11 +1015,13 @@
       const requirementItems = Array.isArray(it.requirementItems) && it.requirementItems.length
         ? it.requirementItems
         : splitLines(it.requirements);
-      const meta = [];
-      if (it.type) meta.push(`<span class="badge"><i data-lucide="layers"></i>${esc(it.type)}</span>`);
-      meta.push(`<span class="badge">${esc(opportunityEffectiveStatus(it))}</span>`);
-      if (it.isFeatured) meta.push('<span class="badge badge-warning"><i data-lucide="star"></i>Featured</span>');
-      if (it.isHidden) meta.push('<span class="badge badge-danger"><i data-lucide="eye-off"></i>Hidden</span>');
+      const meta = [
+        badge(capitalizeLabel(it.type || 'opportunity'), '', 'layers'),
+        badge(opportunityEffectiveStatus(it), `badge-${statusBadgeClass(opportunityEffectiveStatus(it))}`),
+        it.isFeatured ? badge('Featured', 'badge-warning', 'star') : '',
+        it.isHidden ? badge('Hidden', 'badge-danger', 'eye-off') : '',
+        it.workMode ? badge(capitalizeLabel(it.workMode), '', 'map-pinned') : '',
+      ].filter(Boolean).join('');
 
       const applyLine = (application) => {
         const status = application.status || 'pending';
@@ -796,9 +1044,14 @@
 
       document.getElementById('editor-body').innerHTML = `
         ${section('Summary', 'info', `
-          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;">${meta.join('')}</div>
-          <div class="row-sub">${esc(it.companyName || '—')} · ${esc(it.location || '—')}</div>
-          <div style="margin-top:10px;display:flex;gap:14px;flex-wrap:wrap;">
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;">${meta}</div>
+          <div class="profile-grid">
+            <div class="profile-block"><div class="profile-block-label">Company</div><div class="profile-block-value">${esc(it.companyName || '—')}</div></div>
+            <div class="profile-block"><div class="profile-block-label">Location</div><div class="profile-block-value">${esc(it.location || '—')}</div></div>
+            <div class="profile-block"><div class="profile-block-label">Deadline</div><div class="profile-block-value">${esc(formatTimestamp(it.applicationDeadline) || '—')}</div></div>
+            <div class="profile-block"><div class="profile-block-label">Created</div><div class="profile-block-value">${esc(formatTimestamp(it.createdAt) || '—')}</div></div>
+          </div>
+          <div style="margin-top:12px;display:flex;gap:14px;flex-wrap:wrap;">
             <span class="badge badge-info"><i data-lucide="users"></i>${apps.length} total</span>
             <span class="badge badge-warning"><i data-lucide="hourglass"></i>${pending} pending</span>
             <span class="badge badge-success"><i data-lucide="check"></i>${accepted} accepted</span>
@@ -831,6 +1084,7 @@
             await updateDoc(doc(db, 'applications', appId), { status: nextStatus });
             const appObj = state.applications.find((item) => item.id === appId);
             if (appObj) appObj.status = nextStatus;
+            await workerBestEffort('/api/notify/application-status-changed', { applicationId: appId });
             showToast('Application ' + nextStatus + '.', 'success');
             openOpportunityDetails(it, appId);
           } catch (e) {
@@ -845,6 +1099,7 @@
     async function handleOpportunityAction(id, action) {
       const ref = doc(db, 'opportunities', id);
       const item = state.opportunities.find((entry) => entry.id === id);
+      if (!item) return;
       try {
         if (action === 'toggle-hide') {
           const next = !item.isHidden;
@@ -1087,6 +1342,7 @@
       bindCommon();
       document.getElementById('new-scholar').addEventListener('click', () => { window.location.href = 'scholarship-editor.html'; });
       bindRowActions((id, action) => handleScholarshipAction(id, action));
+      bindCardOpens((id, action) => handleScholarshipAction(id, action));
       if (window.lucide) window.lucide.createIcons();
     }
 
@@ -1135,35 +1391,41 @@
 
     function renderScholarshipRow(it) {
       const thumb = scholarshipThumb(it);
-      const location = scholarshipLocation(it) || [it.city, it.country].filter(Boolean).join(' · ');
-      const deadlineLabel = it.deadline ? ` · Deadline ${esc(formatTimestamp(it.deadline))}` : '';
-      return `<div class="item-row" data-row-id="${it.id}">
-        <div class="user-avatar" style="border-radius:10px;width:56px;height:56px;background:#FFFFFF;border:1px solid var(--c-border);${thumb ? `background-image:url(${esc(thumb)});background-size:contain;background-repeat:no-repeat;background-position:center;` : ''}">
-          ${!thumb ? '<i data-lucide="graduation-cap" style="color:#E24A4A"></i>' : ''}
-        </div>
-        <div class="row-body">
-          <div class="row-title">${esc(it.title || 'Untitled')}</div>
-          <div class="row-sub">${esc(it.provider || '—')}${location ? ' · ' + esc(location) : ''}${deadlineLabel}</div>
-          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">
-            ${it.fundingType ? `<span class="badge"><i data-lucide="wallet"></i>${esc(it.fundingType)}</span>` : ''}
-            ${it.amount ? `<span class="badge"><i data-lucide="coins"></i>${esc(it.amount)}</span>` : ''}
-            ${it.level ? `<span class="badge">${esc(it.level)}</span>` : ''}
-            ${scholarshipFeatured(it) ? '<span class="badge badge-warning"><i data-lucide="star"></i>Featured</span>' : ''}
-            ${it.isHidden ? '<span class="badge badge-danger"><i data-lucide="eye-off"></i>Hidden</span>' : ''}
-          </div>
-        </div>
-        <div class="row-actions">
-          <button class="btn btn-sm" data-id="${it.id}" data-action="toggle-hide" title="${it.isHidden ? 'Unhide' : 'Hide'}"><i data-lucide="${it.isHidden ? 'eye' : 'eye-off'}"></i></button>
-          <button class="btn btn-sm" data-id="${it.id}" data-action="edit" title="Edit"><i data-lucide="pencil"></i></button>
-          <button class="btn btn-sm btn-danger" data-id="${it.id}" data-action="delete" title="Delete"><i data-lucide="trash-2"></i></button>
-        </div>
-      </div>`;
+      const location = scholarshipLocation(it) || [it.city, it.country].filter(Boolean).join(' • ');
+      return contentCard({
+        id: it.id,
+        tone: 'scholarship',
+        mediaHtml: thumb ? `<img src="${esc(thumb)}" alt="" loading="lazy">` : `<i data-lucide="graduation-cap"></i>`,
+        title: it.title || 'Untitled',
+        subtitle: [it.provider, location].filter(Boolean).join(' • '),
+        description: it.description || '',
+        badges: [
+          it.fundingType ? badge(capitalizeLabel(it.fundingType), '', 'wallet') : '',
+          it.amount ? badge(it.amount, '', 'coins') : '',
+          it.level ? badge(it.level) : '',
+          scholarshipFeatured(it) ? badge('Featured', 'badge-warning', 'star') : '',
+          it.isHidden ? badge('Hidden', 'badge-danger', 'eye-off') : '',
+        ],
+        meta: formatTimestamp(it.deadline || it.createdAt) || '',
+        actions: [
+          iconAction(it.id, 'details', 'eye', 'Open details'),
+          scholarshipLink(it) ? `<a class="btn btn-sm btn-icon" href="${esc(scholarshipLink(it))}" target="_blank" rel="noopener" title="Open application link" aria-label="Open application link"><i data-lucide="external-link"></i></a>` : '',
+          iconAction(it.id, 'toggle-hide', it.isHidden ? 'eye' : 'eye-off', it.isHidden ? 'Show scholarship' : 'Hide scholarship'),
+          iconAction(it.id, 'edit', 'pencil', 'Edit scholarship'),
+          iconAction(it.id, 'delete', 'trash-2', 'Delete scholarship', 'btn-danger'),
+        ],
+      });
     }
 
     async function handleScholarshipAction(id, action) {
       const ref = doc(db, 'scholarships', id);
       const item = state.scholarships.find((entry) => entry.id === id);
+      if (!item) return;
       try {
+        if (action === 'details') {
+          openScholarshipDetails(item);
+          return;
+        }
         if (action === 'toggle-hide') {
           const next = !item.isHidden;
           await updateDoc(ref, { isHidden: next, updatedAt: serverTimestamp() });
@@ -1183,6 +1445,34 @@
         console.error(e);
         showToast('Action failed.', 'error');
       }
+    }
+
+    function openScholarshipDetails(it) {
+      document.getElementById('editor-title').textContent = it.title || 'Scholarship details';
+      document.getElementById('editor-body').innerHTML = `
+        ${section('Summary', 'graduation-cap', `
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;">
+            ${it.fundingType ? badge(capitalizeLabel(it.fundingType), '', 'wallet') : ''}
+            ${it.amount ? badge(it.amount, '', 'coins') : ''}
+            ${it.level ? badge(it.level) : ''}
+            ${scholarshipFeatured(it) ? badge('Featured', 'badge-warning', 'star') : ''}
+            ${it.isHidden ? badge('Hidden', 'badge-danger', 'eye-off') : ''}
+          </div>
+          <div class="profile-grid">
+            <div class="profile-block"><div class="profile-block-label">Provider</div><div class="profile-block-value">${esc(it.provider || '—')}</div></div>
+            <div class="profile-block"><div class="profile-block-label">Location</div><div class="profile-block-value">${esc((scholarshipLocation(it) || [it.city, it.country].filter(Boolean).join(', ')) || '—')}</div></div>
+            <div class="profile-block"><div class="profile-block-label">Deadline</div><div class="profile-block-value">${esc(formatTimestamp(it.deadline) || '—')}</div></div>
+            <div class="profile-block"><div class="profile-block-label">Created</div><div class="profile-block-value">${esc(formatTimestamp(it.createdAt) || '—')}</div></div>
+          </div>
+        `)}
+        ${it.description ? section('Description', 'file-text', `<p style="white-space:pre-wrap;margin:0;">${esc(it.description)}</p>`) : ''}
+        ${Array.isArray(it.eligibilityItems) && it.eligibilityItems.length ? section('Eligibility', 'list-checks', `<ul style="margin:0;padding-left:18px;">${it.eligibilityItems.map((item) => `<li>${esc(item)}</li>`).join('')}</ul>`) : ''}
+        ${Array.isArray(it.tags) && it.tags.length ? section('Tags', 'tags', `<div class="tag-list">${it.tags.map((item) => badge(item)).join('')}</div>`) : ''}
+      `;
+      const saveBtn = document.getElementById('editor-save');
+      if (saveBtn) saveBtn.style.display = 'none';
+      openModal('editor-modal');
+      if (window.lucide) window.lucide.createIcons();
     }
 
     function openScholarEditor(it) {
@@ -1303,14 +1593,18 @@
         </div>
         <div id="lib-panel"></div>
       `;
-      document.querySelectorAll('[data-lib-source]').forEach((b) => {
-        b.addEventListener('click', () => {
-          state.librarySource = b.getAttribute('data-lib-source');
+      document.querySelectorAll('[data-lib-source]').forEach((button) => {
+        button.addEventListener('click', () => {
+          state.librarySource = button.getAttribute('data-lib-source');
+          state.libraryMode = state.librarySource === 'overview' ? 'search' : state.libraryMode;
           renderTab();
         });
       });
-      if (state.librarySource === 'overview') renderLibraryOverview();
-      else renderImportPanel(state.librarySource);
+      if (state.librarySource === 'overview') {
+        renderLibraryOverview();
+      } else {
+        renderImportPanel(state.librarySource);
+      }
       if (window.lucide) window.lucide.createIcons();
     }
 
@@ -1318,96 +1612,206 @@
       const container = document.getElementById('lib-panel');
       let items = state.trainings.slice().sort(trainingSort);
       if (state.filter === 'featured') items = items.filter((x) => x.isFeatured === true);
-      if (state.filter === 'hidden')   items = items.filter((x) => x.isHidden === true);
-      if (state.filter === 'books')    items = items.filter((x) => (x.type || '').toLowerCase() === 'book' || (x.source || '').toLowerCase() === 'google_books');
-      if (state.filter === 'videos')   items = items.filter((x) => (x.type || '').toLowerCase() === 'video' || (x.source || '').toLowerCase() === 'youtube');
+      if (state.filter === 'hidden') items = items.filter((x) => x.isHidden === true);
+      if (state.filter === 'books') items = items.filter((x) => trainingSourceKind(x) === 'books');
+      if (state.filter === 'videos') items = items.filter((x) => trainingSourceKind(x) === 'youtube');
       items = items.filter((x) => matchesQuery(x, [x.title, x.provider, x.source, x.description, x.domain]));
 
       container.innerHTML = `
         ${chipFilterBar('trainings')}
         ${searchBar('Search library...')}
-        <div class="list-grid" id="list">${items.length ? items.map(renderTrainingRow).join('') : emptyStateHtml('Use Google Books or YouTube to import resources.', { title: 'Library is empty', icon: 'book-open' })}</div>
+        <div class="list-grid" id="list">${items.length ? items.map(renderTrainingOverviewRow).join('') : emptyStateHtml('Use Google Books or YouTube to import resources.', { title: 'Library is empty', icon: 'book-open' })}</div>
       `;
       bindCommon();
       bindRowActions((id, action) => handleTrainingAction(id, action));
+      bindCardOpens((id, action) => handleTrainingAction(id, action));
       if (window.lucide) window.lucide.createIcons();
     }
 
-    function renderTrainingRow(it) {
-      const isVideo = (it.type || '').toLowerCase() === 'video' || (it.source || '').toLowerCase() === 'youtube';
-      const thumb = it.thumbnailUrl || it.coverImage || it.image || '';
-      const sourceLabel = it.source === 'google_books' ? 'Google Books' : it.source === 'youtube' ? 'YouTube' : (it.source || '');
-      return `<div class="item-row" data-row-id="${it.id}">
-        <div class="user-avatar" style="border-radius:8px;width:72px;height:54px;background:#F8FAFF;${thumb ? `background-image:url(${esc(thumb)});background-size:cover;background-position:center;` : ''}">
-          ${!thumb ? `<i data-lucide="${isVideo ? 'video' : 'book'}"></i>` : ''}
-        </div>
-        <div class="row-body">
-          <div class="row-title">${esc(it.title || 'Untitled')}</div>
-          <div class="row-sub">${esc(it.provider || '—')}${sourceLabel ? ' · ' + esc(sourceLabel) : ''}${it.duration ? ' · ' + esc(it.duration) : ''}</div>
-          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">
-            <span class="badge ${isVideo?'badge-info':'badge-success'}"><i data-lucide="${isVideo?'video':'book'}"></i>${isVideo ? 'Video' : 'Book'}</span>
-            ${it.domain ? `<span class="badge"><i data-lucide="tag"></i>${esc(it.domain)}</span>` : ''}
-            ${it.level ? `<span class="badge">${esc(it.level)}</span>` : ''}
-            ${it.language ? `<span class="badge"><i data-lucide="languages"></i>${esc(it.language)}</span>` : ''}
-            ${it.rating ? `<span class="badge"><i data-lucide="star"></i>${esc(it.rating)}</span>` : ''}
-            ${it.learnerCount ? `<span class="badge"><i data-lucide="users"></i>${esc(it.learnerCount)}</span>` : ''}
-            ${it.hasCertificate ? `<span class="badge"><i data-lucide="award"></i>Certificate</span>` : ''}
-            ${it.isFeatured ? '<span class="badge badge-warning"><i data-lucide="star"></i>Featured</span>' : ''}
-            ${it.isHidden ? '<span class="badge badge-danger"><i data-lucide="eye-off"></i>Hidden</span>' : ''}
-            ${it.isApproved === false ? '<span class="badge badge-warning"><i data-lucide="clock"></i>Pending review</span>' : ''}
+    function renderTrainingOverviewRow(it) {
+      const kind = trainingSourceKind(it);
+      return contentCard({
+        id: it.id,
+        tone: kind === 'youtube' ? 'video' : 'resource',
+        mediaHtml: trainingMedia(it),
+        title: it.title || 'Untitled',
+        subtitle: [it.provider, trainingSourceLabel(it), it.domain].filter(Boolean).join(' • '),
+        description: it.description || '',
+        badges: [
+          badge(kind === 'youtube' ? 'Video' : 'Book', kind === 'youtube' ? 'badge-info' : 'badge-success', kind === 'youtube' ? 'video' : 'book-open'),
+          it.level ? badge(it.level) : '',
+          it.language ? badge(String(it.language).toUpperCase(), '', 'languages') : '',
+          it.isFeatured ? badge('Featured', 'badge-warning', 'star') : '',
+          it.isHidden ? badge('Hidden', 'badge-danger', 'eye-off') : '',
+        ],
+        meta: formatTimestamp(it.createdAt) || '',
+        actions: [
+          iconAction(it.id, 'details', 'eye', 'Open details'),
+          trainingDisplayLink(it) ? externalLinkAction(trainingDisplayLink(it), 'external-link', 'Open source') : '',
+          iconAction(it.id, 'toggle-hide', it.isHidden ? 'eye' : 'eye-off', it.isHidden ? 'Show resource' : 'Hide resource'),
+        ],
+      });
+    }
+
+    function openTrainingDetails(it) {
+      document.getElementById('editor-title').textContent = it.title || 'Resource details';
+      document.getElementById('editor-body').innerHTML = `
+        ${section('Summary', trainingSourceKind(it) === 'youtube' ? 'video' : 'book-open', `
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;">
+            ${badge(trainingSourceLabel(it), '', trainingSourceKind(it) === 'youtube' ? 'video' : 'book-open')}
+            ${it.level ? badge(it.level) : ''}
+            ${it.language ? badge(String(it.language).toUpperCase(), '', 'languages') : ''}
+            ${it.isFeatured ? badge('Featured', 'badge-warning', 'star') : ''}
+            ${it.isHidden ? badge('Hidden', 'badge-danger', 'eye-off') : ''}
           </div>
-        </div>
-        <div class="row-actions">
-          ${it.url ? `<a class="btn btn-sm" href="${esc(it.url)}" target="_blank" rel="noopener" title="Open source"><i data-lucide="external-link"></i></a>` : ''}
-          <button class="btn btn-sm" data-id="${it.id}" data-action="toggle-feature" title="${it.isFeatured ? 'Unfeature' : 'Feature'}"><i data-lucide="star"></i></button>
-          <button class="btn btn-sm" data-id="${it.id}" data-action="toggle-hide" title="${it.isHidden ? 'Unhide' : 'Hide'}"><i data-lucide="${it.isHidden ? 'eye' : 'eye-off'}"></i></button>
-          <button class="btn btn-sm btn-danger" data-id="${it.id}" data-action="delete" title="Delete"><i data-lucide="trash-2"></i></button>
-        </div>
-      </div>`;
+          <div class="profile-grid">
+            <div class="profile-block"><div class="profile-block-label">Provider</div><div class="profile-block-value">${esc(it.provider || '—')}</div></div>
+            <div class="profile-block"><div class="profile-block-label">Domain</div><div class="profile-block-value">${esc(it.domain || '—')}</div></div>
+            <div class="profile-block"><div class="profile-block-label">Level</div><div class="profile-block-value">${esc(it.level || '—')}</div></div>
+            <div class="profile-block"><div class="profile-block-label">Created</div><div class="profile-block-value">${esc(formatTimestamp(it.createdAt) || '—')}</div></div>
+          </div>
+          ${trainingDisplayLink(it) ? `<div style="margin-top:12px;"><a class="btn" href="${esc(trainingDisplayLink(it))}" target="_blank" rel="noopener"><i data-lucide="external-link"></i>Open source</a></div>` : ''}
+        `)}
+        ${it.description ? section('Description', 'file-text', `<p style="white-space:pre-wrap;margin:0;">${esc(it.description)}</p>`) : ''}
+      `;
+      const saveBtn = document.getElementById('editor-save');
+      if (saveBtn) saveBtn.style.display = 'none';
+      openModal('editor-modal');
+      if (window.lucide) window.lucide.createIcons();
     }
 
     async function handleTrainingAction(id, action) {
       const ref = doc(db, 'trainings', id);
       const it = state.trainings.find((x) => x.id === id);
+      if (!it) return;
       try {
-        if (action === 'toggle-feature') { const next = !it.isFeatured; await updateDoc(ref, { isFeatured: next }); it.isFeatured = next; showToast(next ? 'Featured.' : 'Unfeatured.', 'success'); }
-        else if (action === 'toggle-hide') { const next = !it.isHidden; await updateDoc(ref, { isHidden: next }); it.isHidden = next; showToast(next ? 'Hidden.' : 'Visible.', 'success'); }
-        else if (action === 'delete') {
-          if (!confirm('Delete this resource?')) return;
-          await deleteDoc(ref);
-          state.trainings = state.trainings.filter((x) => x.id !== id);
-          showToast('Resource deleted.', 'success');
+        if (action === 'details') {
+          openTrainingDetails(it);
+          return;
         }
-        renderStats(); renderTab();
-      } catch (e) { console.error(e); showToast('Action failed.', 'error'); }
+        if (action === 'toggle-hide') {
+          const next = !it.isHidden;
+          await updateDoc(ref, { isHidden: next });
+          it.isHidden = next;
+          showToast(next ? 'Hidden.' : 'Visible.', 'success');
+        }
+        renderStats();
+        renderTab();
+      } catch (e) {
+        console.error(e);
+        showToast('Action failed.', 'error');
+      }
     }
 
     function renderImportPanel(kind) {
       const container = document.getElementById('lib-panel');
       const domains = ['Informatique','Medecine','Droit','Economie','Ingenierie','Sciences','Langues','Arts'];
-      const levels = ['Bac','Licence','Master','Doctorat','General'];
+      const levels = ['Bac','Licence','Master','Doctorat','general'];
+      const searchMode = state.libraryMode === 'manage' ? 'manage' : 'search';
       container.innerHTML = `
-        <div class="filter-bar">
-          <div class="search-bar" style="flex:1;"><i data-lucide="search"></i><input id="lib-q" type="search" placeholder="Search ${kind==='books'?'Google Books':'YouTube'}..."/></div>
-          <select id="lib-domain"><option value="">Any domain</option>${domains.map((d) => `<option>${d}</option>`).join('')}</select>
-          <select id="lib-level"><option value="">Any level</option>${levels.map((l) => `<option>${l}</option>`).join('')}</select>
-          <select id="lib-lang"><option value="any">Any language</option><option value="fr">FR</option><option value="en">EN</option><option value="ar">AR</option></select>
-          <button class="btn btn-primary" id="lib-search-btn"><i data-lucide="search"></i>Search</button>
+        <div class="chip-row">
+          <div class="chip-group">
+            <button class="chip${searchMode==='search'?' active':''}" data-lib-mode="search"><i data-lucide="search"></i>Search</button>
+            <button class="chip${searchMode==='manage'?' active':''}" data-lib-mode="manage"><i data-lucide="settings-2"></i>Manage</button>
+          </div>
         </div>
-        <div id="lib-results" class="import-grid"></div>
+        <div id="lib-workspace"></div>
       `;
-      const run = () => (kind === 'books' ? runBooks() : runYoutube());
-      document.getElementById('lib-search-btn').addEventListener('click', run);
-      document.getElementById('lib-q').addEventListener('keydown', (e) => { if (e.key === 'Enter') run(); });
+      document.querySelectorAll('[data-lib-mode]').forEach((button) => {
+        button.addEventListener('click', () => {
+          state.libraryMode = button.getAttribute('data-lib-mode');
+          renderImportPanel(kind);
+        });
+      });
+      const workspace = document.getElementById('lib-workspace');
+      if (state.libraryMode === 'manage') {
+        renderLibraryManage(kind, workspace);
+      } else {
+        workspace.innerHTML = `
+          <div class="filter-bar">
+            <div class="search-bar" style="flex:1;"><i data-lucide="search"></i><input id="lib-q" type="search" placeholder="Search ${kind==='books'?'Google Books':'YouTube'}..."/></div>
+            <select id="lib-domain"><option value="">Any domain</option>${domains.map((d) => `<option>${d}</option>`).join('')}</select>
+            <select id="lib-level"><option value="">Any level</option>${levels.map((l) => `<option value="${l}">${capitalizeLabel(l)}</option>`).join('')}</select>
+            <select id="lib-lang"><option value="">Any language</option><option value="fr">FR</option><option value="en">EN</option><option value="ar">AR</option></select>
+            <button class="btn btn-primary" id="lib-search-btn"><i data-lucide="search"></i>Search</button>
+          </div>
+          <div id="lib-results" class="import-grid"></div>
+        `;
+        const run = () => (kind === 'books' ? runBooks() : runYoutube());
+        document.getElementById('lib-search-btn').addEventListener('click', run);
+        document.getElementById('lib-q').addEventListener('keydown', (e) => { if (e.key === 'Enter') run(); });
+      }
       if (window.lucide) window.lucide.createIcons();
     }
 
-    async function getToken() { return auth.currentUser ? auth.currentUser.getIdToken() : ''; }
+    function renderLibraryManage(kind, container) {
+      const items = state.trainings
+        .filter((item) => trainingSourceKind(item) === kind)
+        .sort(trainingSort);
+      container.innerHTML = items.length
+        ? `<div class="list-grid" id="list">${items.map(renderManagedTrainingRow).join('')}</div>`
+        : emptyStateHtml('Import a few resources first, then manage them here.', { title: 'Nothing to manage yet', icon: kind === 'books' ? 'book-open' : 'video' });
+      bindRowActions((id, action) => handleManagedTrainingAction(id, action));
+      bindCardOpens((id, action) => handleManagedTrainingAction(id, action));
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function renderManagedTrainingRow(it) {
+      return contentCard({
+        id: it.id,
+        tone: trainingSourceKind(it) === 'youtube' ? 'video' : 'resource',
+        mediaHtml: trainingMedia(it),
+        title: it.title || 'Untitled',
+        subtitle: [it.provider, trainingSourceLabel(it), it.domain].filter(Boolean).join(' • '),
+        description: it.description || '',
+        badges: [
+          it.level ? badge(it.level) : '',
+          it.language ? badge(String(it.language).toUpperCase(), '', 'languages') : '',
+          it.isFeatured ? badge('Featured', 'badge-warning', 'star') : '',
+          it.isHidden ? badge('Hidden', 'badge-danger', 'eye-off') : '',
+        ],
+        meta: formatTimestamp(it.createdAt) || '',
+        actions: [
+          iconAction(it.id, 'details', 'eye', 'Open details'),
+          trainingDisplayLink(it) ? externalLinkAction(trainingDisplayLink(it), 'external-link', 'Open source') : '',
+          iconAction(it.id, 'toggle-feature', 'star', it.isFeatured ? 'Remove featured' : 'Feature resource'),
+          iconAction(it.id, 'delete', 'trash-2', 'Delete resource', 'btn-danger'),
+        ],
+      });
+    }
+
+    async function handleManagedTrainingAction(id, action) {
+      const item = state.trainings.find((entry) => entry.id === id);
+      if (!item) return;
+      try {
+        if (action === 'details') {
+          openTrainingDetails(item);
+          return;
+        }
+        if (action === 'toggle-feature') {
+          const next = !item.isFeatured;
+          await workerRequest(`/api/trainings/${encodeURIComponent(id)}/featured`, { body: { isFeatured: next } });
+          item.isFeatured = next;
+          showToast(next ? 'Featured.' : 'Unfeatured.', 'success');
+        } else if (action === 'delete') {
+          if (!confirm('Delete this resource?')) return;
+          await workerRequest(`/api/trainings/${encodeURIComponent(id)}`, { method: 'DELETE' });
+          state.trainings = state.trainings.filter((entry) => entry.id !== id);
+          showToast('Resource deleted.', 'success');
+        }
+        renderStats();
+        renderImportPanel(state.librarySource);
+      } catch (e) {
+        console.error(e);
+        showToast('Action failed.', 'error');
+      }
+    }
+
     function importMeta() {
       return {
         domain: document.getElementById('lib-domain')?.value || '',
-        level: document.getElementById('lib-level')?.value || '',
-        language: document.getElementById('lib-lang')?.value || 'any',
+        level: document.getElementById('lib-level')?.value || 'general',
+        language: document.getElementById('lib-lang')?.value || '',
       };
     }
 
@@ -1417,24 +1821,31 @@
       if (!q) { results.innerHTML = ''; return; }
       results.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
       try {
-        const token = await getToken();
-        const items = await searchBooksViaWorker({ query: q, maxResults: 12, authToken: token });
-        if (!items.length) { results.innerHTML = emptyStateHtml('Try different keywords.', { title: 'No books found', icon: 'book' }); if (window.lucide) window.lucide.createIcons(); return; }
+        const meta = importMeta();
+        const response = await workerRequest('/api/search/google-books', {
+          body: { query: q, maxResults: 12, langRestrict: meta.language || '' },
+        });
+        const items = response.items || [];
+        if (!items.length) {
+          results.innerHTML = emptyStateHtml('Try different keywords.', { title: 'No books found', icon: 'book' });
+          if (window.lucide) window.lucide.createIcons();
+          return;
+        }
         state.booksResults = items;
-        results.innerHTML = items.map((b, i) => `
+        results.innerHTML = items.map((book, index) => `
           <div class="import-card">
-            <div class="import-card-thumb">${b.thumbnail ? `<img src="${esc(b.thumbnail)}" alt=""/>` : `<i data-lucide="book" class="placeholder"></i>`}</div>
+            <div class="import-card-thumb">${book.thumbnail ? `<img src="${esc(book.thumbnail)}" alt=""/>` : `<i data-lucide="book" class="placeholder"></i>`}</div>
             <div class="import-card-body">
-              <div class="import-card-title">${esc(b.title || 'Untitled')}</div>
-              <div class="import-card-meta">${esc((b.authors || []).join(', ') || '—')}</div>
+              <div class="import-card-title">${esc(book.title || 'Untitled')}</div>
+              <div class="import-card-meta">${esc((book.authors || []).join(', ') || '—')}</div>
             </div>
             <div class="import-card-footer">
-              ${b.previewLink ? `<a class="btn btn-sm" href="${esc(b.previewLink)}" target="_blank" rel="noopener"><i data-lucide="external-link"></i></a>` : ''}
-              <button class="btn btn-sm btn-primary" data-import-book="${i}" style="margin-left:auto;"><i data-lucide="download"></i>Import</button>
+              ${book.previewLink ? `<a class="btn btn-sm" href="${esc(book.previewLink)}" target="_blank" rel="noopener"><i data-lucide="external-link"></i></a>` : ''}
+              <button class="btn btn-sm btn-primary" data-import-book="${index}" style="margin-left:auto;"><i data-lucide="download"></i>Import</button>
             </div>
           </div>`).join('');
-        results.querySelectorAll('[data-import-book]').forEach((btn) => {
-          btn.addEventListener('click', () => importBook(state.booksResults[Number(btn.getAttribute('data-import-book'))]));
+        results.querySelectorAll('[data-import-book]').forEach((button) => {
+          button.addEventListener('click', () => importBook(state.booksResults[Number(button.getAttribute('data-import-book'))]));
         });
         if (window.lucide) window.lucide.createIcons();
       } catch (e) {
@@ -1447,23 +1858,27 @@
     async function importBook(book) {
       try {
         const meta = importMeta();
-        const ref = doc(collection(db, 'trainings'));
-        const payload = {
-          title: book.title || 'Untitled', description: book.description || '',
-          provider: (book.authors || []).join(', '),
-          source: 'google_books', type: 'book',
-          url: book.previewLink || book.infoLink || '',
-          thumbnailUrl: book.thumbnail || '',
-          domain: meta.domain, level: meta.level, language: meta.language === 'any' ? '' : meta.language,
-          isFeatured: false, isHidden: false, isApproved: true,
-          createdAt: serverTimestamp(),
-          createdBy: auth.currentUser?.uid || '',
-        };
-        await setDoc(ref, payload);
-        state.trainings.push({ id: ref.id, ...payload, createdAt: { toDate: () => new Date() } });
+        if (!meta.domain) {
+          showToast('Choose a domain before importing.', 'warning');
+          return;
+        }
+        await workerRequest('/api/trainings/import/google-book', {
+          body: {
+            selectedBook: book,
+            domain: meta.domain,
+            level: meta.level,
+            languageOverride: meta.language,
+            isFeatured: false,
+          },
+        });
+        await loadTrainings();
         renderStats();
+        renderImportPanel('books');
         showToast('Book imported to library.', 'success');
-      } catch (e) { console.error(e); showToast('Import failed.', 'error'); }
+      } catch (e) {
+        console.error(e);
+        showToast(e?.message || 'Import failed.', 'error');
+      }
     }
 
     async function runYoutube() {
@@ -1472,24 +1887,31 @@
       if (!q) { results.innerHTML = ''; return; }
       results.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
       try {
-        const token = await getToken();
-        const items = await searchYoutubeVideos({ query: q, maxResults: 12, authToken: token });
-        if (!items.length) { results.innerHTML = emptyStateHtml('Try different keywords.', { title: 'No videos found', icon: 'video-off' }); if (window.lucide) window.lucide.createIcons(); return; }
+        const meta = importMeta();
+        const response = await workerRequest('/api/search/youtube', {
+          body: { query: q, maxResults: 12, language: meta.language || '' },
+        });
+        const items = response.items || [];
+        if (!items.length) {
+          results.innerHTML = emptyStateHtml('Try different keywords.', { title: 'No videos found', icon: 'video-off' });
+          if (window.lucide) window.lucide.createIcons();
+          return;
+        }
         state.youtubeResults = items;
-        results.innerHTML = items.map((v_, i) => `
+        results.innerHTML = items.map((video, index) => `
           <div class="import-card">
-            <div class="import-card-thumb">${v_.thumbnail ? `<img src="${esc(v_.thumbnail)}" alt=""/>` : `<i data-lucide="video" class="placeholder"></i>`}</div>
+            <div class="import-card-thumb">${video.thumbnail ? `<img src="${esc(video.thumbnail)}" alt=""/>` : `<i data-lucide="video" class="placeholder"></i>`}</div>
             <div class="import-card-body">
-              <div class="import-card-title">${esc(v_.title || 'Untitled')}</div>
-              <div class="import-card-meta">${esc(v_.channelTitle || '—')}</div>
+              <div class="import-card-title">${esc(video.title || 'Untitled')}</div>
+              <div class="import-card-meta">${esc(video.channelTitle || video.provider || '—')}</div>
             </div>
             <div class="import-card-footer">
-              ${v_.url ? `<a class="btn btn-sm" href="${esc(v_.url)}" target="_blank" rel="noopener"><i data-lucide="play"></i></a>` : ''}
-              <button class="btn btn-sm btn-primary" data-import-vid="${i}" style="margin-left:auto;"><i data-lucide="download"></i>Import</button>
+              ${video.url || video.link ? `<a class="btn btn-sm" href="${esc(video.url || video.link)}" target="_blank" rel="noopener"><i data-lucide="play"></i></a>` : ''}
+              <button class="btn btn-sm btn-primary" data-import-vid="${index}" style="margin-left:auto;"><i data-lucide="download"></i>Import</button>
             </div>
           </div>`).join('');
-        results.querySelectorAll('[data-import-vid]').forEach((btn) => {
-          btn.addEventListener('click', () => importVideo(state.youtubeResults[Number(btn.getAttribute('data-import-vid'))]));
+        results.querySelectorAll('[data-import-vid]').forEach((button) => {
+          button.addEventListener('click', () => importVideo(state.youtubeResults[Number(button.getAttribute('data-import-vid'))]));
         });
         if (window.lucide) window.lucide.createIcons();
       } catch (e) {
@@ -1502,22 +1924,31 @@
     async function importVideo(video) {
       try {
         const meta = importMeta();
-        const ref = doc(collection(db, 'trainings'));
-        const payload = {
-          title: video.title || 'Untitled', description: video.description || '',
-          provider: video.channelTitle || '',
-          source: 'youtube', type: 'video',
-          url: video.url || '', thumbnailUrl: video.thumbnail || '',
-          domain: meta.domain, level: meta.level, language: meta.language === 'any' ? '' : meta.language,
-          isFeatured: false, isHidden: false, isApproved: true,
-          createdAt: serverTimestamp(),
-          createdBy: auth.currentUser?.uid || '',
-        };
-        await setDoc(ref, payload);
-        state.trainings.push({ id: ref.id, ...payload, createdAt: { toDate: () => new Date() } });
+        if (!meta.domain) {
+          showToast('Choose a domain before importing.', 'warning');
+          return;
+        }
+        if (!meta.language) {
+          showToast('Choose a language before importing a YouTube resource.', 'warning');
+          return;
+        }
+        await workerRequest('/api/trainings/import/youtube-video', {
+          body: {
+            selectedVideo: video,
+            domain: meta.domain,
+            level: meta.level,
+            language: meta.language,
+            isFeatured: false,
+          },
+        });
+        await loadTrainings();
         renderStats();
+        renderImportPanel('youtube');
         showToast('Video imported to library.', 'success');
-      } catch (e) { console.error(e); showToast('Import failed.', 'error'); }
+      } catch (e) {
+        console.error(e);
+        showToast(e?.message || 'Import failed.', 'error');
+      }
     }
 
     // =============== APPLICATIONS ===============
@@ -1620,3 +2051,4 @@
   </script>
 </body>
 </html>
+

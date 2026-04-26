@@ -23,6 +23,7 @@
       auth, db, collection, doc, getDoc, setDoc, updateDoc, serverTimestamp,
     } from './js/firebase-config.js';
     import { getQueryParam } from './js/admin-utils.js';
+    import { WORKER_BASE_URL } from './js/google-books-config.js';
 
     mountShell({ page: 'content' });
     checkAuth(async () => { await initPage(); });
@@ -45,6 +46,22 @@
     ];
     const WORK_MODES = [['onsite', 'On-site'], ['remote', 'Remote'], ['hybrid', 'Hybrid']];
     const CURRENCIES = ['DZD', 'EUR', 'USD'];
+
+    async function workerBestEffort(path, body) {
+      try {
+        const token = auth.currentUser ? await auth.currentUser.getIdToken() : '';
+        await fetch(`${WORKER_BASE_URL}${path}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(body || {}),
+        });
+      } catch (error) {
+        console.warn('Worker side effect failed:', path, error);
+      }
+    }
 
     async function initPage() {
       if (!isNew) {
@@ -401,9 +418,11 @@
             createdAt: serverTimestamp(),
           };
           await setDoc(ref, created);
+          await workerBestEffort('/api/notify/opportunity', { opportunityId: ref.id });
           showToast('Admin opportunity published.', 'success');
         } else {
           await updateDoc(doc(db, 'opportunities', id), payload);
+          await workerBestEffort('/api/notify/opportunity', { opportunityId: id });
           showToast('Admin opportunity updated.', 'success');
         }
         back();

@@ -23,6 +23,7 @@
       auth, db, collection, doc, getDoc, setDoc, updateDoc, serverTimestamp,
     } from './js/firebase-config.js';
     import { getQueryParam } from './js/admin-utils.js';
+    import { WORKER_BASE_URL } from './js/google-books-config.js';
 
     mountShell({ page: 'content' });
     checkAuth(async () => { await initPage(); });
@@ -39,6 +40,22 @@
       ['merit', 'Merit-based'],
       ['needs', 'Needs-based'],
     ];
+
+    async function workerBestEffort(path, body) {
+      try {
+        const token = auth.currentUser ? await auth.currentUser.getIdToken() : '';
+        await fetch(`${WORKER_BASE_URL}${path}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(body || {}),
+        });
+      } catch (error) {
+        console.warn('Worker side effect failed:', path, error);
+      }
+    }
 
     async function initPage() {
       if (!isNew) {
@@ -305,6 +322,7 @@
             createdAt: serverTimestamp(),
           };
           await setDoc(ref, created);
+          await workerBestEffort('/api/notify/scholarship', { scholarshipId: ref.id });
           showToast('Scholarship published.', 'success');
         } else {
           await updateDoc(doc(db, 'scholarships', id), payload);

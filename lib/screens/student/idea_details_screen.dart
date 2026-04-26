@@ -18,7 +18,6 @@ import '../../widgets/ideas/project_idea_cover_image.dart';
 import '../../widgets/ideas/idea_metrics_row.dart';
 import '../../widgets/ideas/innovation_hub_theme.dart';
 import '../../widgets/shared/app_content_system.dart';
-import '../../widgets/shared/content_translation_widgets.dart';
 import '../../widgets/shared/app_feedback.dart';
 import '../chat/user_profile_preview_screen.dart';
 import 'create_idea_screen.dart';
@@ -53,14 +52,6 @@ class IdeaDetailsScreen extends StatelessWidget {
     if (baseIdea != null) {
       _ensureTranslation(context, baseIdea);
     }
-    final hasTranslation =
-        baseIdea != null && _hasTranslation(baseIdea, translationProvider);
-    final showingTranslated =
-        baseIdea != null &&
-        translationProvider.isShowingTranslatedContent(
-          contentType: ContentTranslationType.idea,
-          contentId: baseIdea.id,
-        );
     final idea = baseIdea == null
         ? null
         : _displayIdea(baseIdea, translationProvider);
@@ -318,35 +309,6 @@ class IdeaDetailsScreen extends StatelessWidget {
                 ],
               ),
             ),
-            if (baseIdea != null &&
-                (translationProvider.statusForContent(
-                          contentType: ContentTranslationType.idea,
-                          contentId: baseIdea.id,
-                        ) ==
-                        TranslationStatus.loading ||
-                    hasTranslation)) ...<Widget>[
-              const SizedBox(height: 12),
-              ContentTranslationBanner(
-                isTranslating:
-                    translationProvider.statusForContent(
-                      contentType: ContentTranslationType.idea,
-                      contentId: baseIdea.id,
-                    ) ==
-                    TranslationStatus.loading,
-                hasTranslation: hasTranslation,
-                showingTranslated: showingTranslated,
-                originalLanguage: baseIdea.originalLanguage,
-                onToggle: () => translationProvider.toggleTranslatedContent(
-                  contentType: ContentTranslationType.idea,
-                  contentId: baseIdea.id,
-                ),
-                accentColor: _theme.accent,
-                surfaceColor: _theme.surface,
-                borderColor: _theme.border,
-                titleColor: _theme.textPrimary,
-                subtitleColor: _theme.textSecondary,
-              ),
-            ],
             const SizedBox(height: 16),
             AppInfoTileGrid(
               theme: _theme,

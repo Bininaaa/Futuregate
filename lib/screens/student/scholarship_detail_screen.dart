@@ -13,7 +13,6 @@ import '../../providers/saved_scholarship_provider.dart';
 import '../../services/opportunity_translation_service.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
 import '../../widgets/app_shell_background.dart';
-import '../../widgets/shared/content_translation_widgets.dart';
 
 typedef _P = OpportunityDashboardPalette;
 
@@ -332,19 +331,6 @@ class ScholarshipDetailScreen extends StatelessWidget {
     });
   }
 
-  bool _hasTranslation(OpportunityTranslationProvider provider) {
-    return provider.statusForContent(
-              contentType: ContentTranslationType.scholarship,
-              contentId: scholarship.id,
-            ) ==
-            TranslationStatus.ready &&
-        provider.translationForContent(
-              contentType: ContentTranslationType.scholarship,
-              contentId: scholarship.id,
-            ) !=
-            null;
-  }
-
   List<String> _translatedEligibilityItems(String value) {
     final normalized = value.replaceAll('\r', '\n').trim();
     if (normalized.isEmpty) {
@@ -482,11 +468,6 @@ class ScholarshipDetailScreen extends StatelessWidget {
     final fallbackEligibility = _eligibility(l10n);
     final fallbackDeadline = _deadlineText(l10n);
     final chips = _heroChips;
-    final hasTranslation = _hasTranslation(translationProvider);
-    final showingTranslated = translationProvider.isShowingTranslatedContent(
-      contentType: ContentTranslationType.scholarship,
-      contentId: scholarship.id,
-    );
     final displayTitle = translationProvider.resolvedField(
       contentType: ContentTranslationType.scholarship,
       contentId: scholarship.id,
@@ -637,36 +618,6 @@ class ScholarshipDetailScreen extends StatelessWidget {
                             : fallbackDeadline,
                         chips: chips,
                       ),
-                      if (translationProvider.statusForContent(
-                                contentType: ContentTranslationType.scholarship,
-                                contentId: scholarship.id,
-                              ) ==
-                              TranslationStatus.loading ||
-                          hasTranslation) ...[
-                        const SizedBox(height: 14),
-                        ContentTranslationBanner(
-                          isTranslating:
-                              translationProvider.statusForContent(
-                                contentType: ContentTranslationType.scholarship,
-                                contentId: scholarship.id,
-                              ) ==
-                              TranslationStatus.loading,
-                          hasTranslation: hasTranslation,
-                          showingTranslated: showingTranslated,
-                          originalLanguage: scholarship.originalLanguage,
-                          onToggle: () =>
-                              translationProvider.toggleTranslatedContent(
-                                contentType:
-                                    ContentTranslationType.scholarship,
-                                contentId: scholarship.id,
-                              ),
-                          accentColor: _P.primary,
-                          surfaceColor: _P.surface,
-                          borderColor: _P.border,
-                          titleColor: _P.textPrimary,
-                          subtitleColor: _P.textSecondary,
-                        ),
-                      ],
                       const SizedBox(height: 22),
                       _PageSectionHeading(
                         eyebrow: l10n.scholarshipAtAGlance,
@@ -1767,4 +1718,3 @@ class _ScholarshipProfileRowData {
     required this.value,
   });
 }
-

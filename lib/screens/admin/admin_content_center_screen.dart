@@ -619,19 +619,6 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
           final isPending =
               _normalizedIdeaStatus(idea.status) == _ideaFilterPending;
           final ideaFooterButtons = <Widget>[
-            if (canEditIdea)
-              FilledButton.icon(
-                onPressed: () => _openIdeaEditor(idea: idea),
-                icon: const Icon(Icons.edit_outlined, size: 16),
-                label: Text(AppLocalizations.of(context)!.uiEditIdea),
-                style: _compactFilledFooterStyle(_ideaAccentColor),
-              ),
-            OutlinedButton.icon(
-              onPressed: () => _showProjectIdeaDetails(idea),
-              icon: const Icon(Icons.open_in_new_rounded, size: 16),
-              label: Text(AppLocalizations.of(context)!.uiDetails),
-              style: _compactOutlinedFooterStyle(_ideaAccentColor),
-            ),
             if (isPending)
               FilledButton.icon(
                 onPressed: isIdeaBusy
@@ -1357,20 +1344,6 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               OpportunityMetadata.formatWorkMode(opportunityModel.workMode) ??
               '';
           final footerButtons = <Widget>[
-            if (canEditOpportunity)
-              FilledButton.icon(
-                onPressed: () =>
-                    _openOpportunityEditor(opportunity: opportunity),
-                icon: const Icon(Icons.edit_outlined, size: 16),
-                label: Text(l10n.uiEditOpportunity),
-                style: _compactFilledFooterStyle(AdminPalette.primary),
-              ),
-            OutlinedButton.icon(
-              onPressed: () => _showOpportunityDetails(opportunity),
-              icon: const Icon(Icons.open_in_new_rounded, size: 16),
-              label: Text(AppLocalizations.of(context)!.uiDetails),
-              style: _compactOutlinedFooterStyle(AdminPalette.primary),
-            ),
             if (applications.isNotEmpty)
               FilledButton.icon(
                 onPressed: () =>
@@ -1681,12 +1654,6 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                   scholarshipModel.country,
                 ]);
           final scholarshipFooterButtons = <Widget>[
-            OutlinedButton.icon(
-              onPressed: () => _showScholarshipDetails(scholarship),
-              icon: const Icon(Icons.open_in_new_rounded, size: 16),
-              label: Text(AppLocalizations.of(context)!.uiDetails),
-              style: _compactOutlinedFooterStyle(_scholarshipAccentColor),
-            ),
             if (scholarshipModel.link.trim().isNotEmpty)
               FilledButton.icon(
                 onPressed: () => _openExternalLink(scholarshipModel.link),
@@ -2635,20 +2602,6 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
 
         return Wrap(spacing: 8, runSpacing: 8, children: buttons);
       },
-    );
-  }
-
-  ButtonStyle _compactOutlinedFooterStyle(Color color) {
-    return OutlinedButton.styleFrom(
-      foregroundColor: color,
-      side: BorderSide(color: color.withValues(alpha: 0.28)),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      visualDensity: VisualDensity.compact,
-      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-      textStyle: AppTypography.product(
-        fontSize: 12,
-        fontWeight: FontWeight.w600,
-      ),
     );
   }
 
