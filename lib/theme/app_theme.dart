@@ -23,51 +23,27 @@ class AppTheme {
   static ThemeData _build(AppColors colors, {String? languageCode}) {
     final scheme = colors.toColorScheme();
     final isDark = colors.brightness == Brightness.dark;
-    final isArabic = languageCode == 'ar';
     final base = isDark
         ? ThemeData.dark(useMaterial3: true)
         : ThemeData.light(useMaterial3: true);
 
-    // Arabic fallback font family name (Noto Sans Arabic via google_fonts)
-    final notoArabicFamily = GoogleFonts.notoSansArabic().fontFamily;
+    final textTheme = GoogleFonts.cairoTextTheme(base.textTheme).apply(
+      bodyColor: colors.textPrimary,
+      displayColor: colors.textPrimary,
+    );
 
-    // Use Cairo (+ Noto Sans Arabic fallback) for Arabic; Poppins otherwise.
-    final textTheme = isArabic
-        ? GoogleFonts.cairoTextTheme(base.textTheme).apply(
-            bodyColor: colors.textPrimary,
-            displayColor: colors.textPrimary,
-            fontFamilyFallback: notoArabicFamily != null ? [notoArabicFamily] : [],
-          )
-        : GoogleFonts.poppinsTextTheme(base.textTheme).apply(
-            bodyColor: colors.textPrimary,
-            displayColor: colors.textPrimary,
-          );
-
-    // Inline font helper — picks Cairo (+ Noto fallback) or Poppins.
     TextStyle f({
       double? fontSize,
       FontWeight? fontWeight,
       Color? color,
       double? height,
     }) =>
-        isArabic
-            ? GoogleFonts.cairo(
-                fontSize: fontSize,
-                fontWeight: fontWeight,
-                color: color,
-                height: height,
-                textStyle: TextStyle(
-                  fontFamilyFallback: notoArabicFamily != null
-                      ? [notoArabicFamily]
-                      : null,
-                ),
-              )
-            : GoogleFonts.poppins(
-                fontSize: fontSize,
-                fontWeight: fontWeight,
-                color: color,
-                height: height,
-              );
+        GoogleFonts.cairo(
+          fontSize: fontSize,
+          fontWeight: fontWeight,
+          color: color,
+          height: height,
+        );
 
     return ThemeData(
       useMaterial3: true,
@@ -224,7 +200,7 @@ class AppTheme {
           ),
         ),
       ),
-      inputDecorationTheme: _inputTheme(colors, isArabic: isArabic),
+      inputDecorationTheme: _inputTheme(colors),
       filledButtonTheme: FilledButtonThemeData(
         style: ButtonStyle(
           minimumSize: const WidgetStatePropertyAll<Size>(Size(64, 48)),
@@ -424,36 +400,22 @@ class AppTheme {
     );
   }
 
-  static InputDecorationTheme _inputTheme(
-    AppColors colors, {
-    bool isArabic = false,
-  }) {
+  static InputDecorationTheme _inputTheme(AppColors colors) {
     final isDark = colors.isDarkMode;
     final fillColor = isDark ? colors.surfaceMuted : colors.surface;
 
-    final notoFamily = GoogleFonts.notoSansArabic().fontFamily;
     TextStyle inputFont({
       double? fontSize,
       FontWeight? fontWeight,
       Color? color,
       double? height,
     }) =>
-        isArabic
-            ? GoogleFonts.cairo(
-                fontSize: fontSize,
-                fontWeight: fontWeight,
-                color: color,
-                height: height,
-                textStyle: TextStyle(
-                  fontFamilyFallback: notoFamily != null ? [notoFamily] : null,
-                ),
-              )
-            : GoogleFonts.poppins(
-                fontSize: fontSize,
-                fontWeight: fontWeight,
-                color: color,
-                height: height,
-              );
+        GoogleFonts.cairo(
+          fontSize: fontSize,
+          fontWeight: fontWeight,
+          color: color,
+          height: height,
+        );
 
     OutlineInputBorder border(Color color, [double width = 1]) {
       return OutlineInputBorder(

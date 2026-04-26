@@ -195,7 +195,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 const Icon(Icons.error_outline, size: 48, color: Colors.red),
                 const SizedBox(height: 12),
                 Text(
-                  'Failed to load admin content',
+                  AppLocalizations.of(context)!.uiFailedToLoadAdminContent,
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     color: _primaryColor,
@@ -220,7 +220,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           AdminSectionHeader(
-                            eyebrow: 'Moderation',
+                            eyebrow: l10n.uiModeration,
                             title: l10n.uiContentWorkspace,
                             subtitle: l10n
                                 .uiReviewSubmissionsMonitorQueuesAndMoveBetweenContentTypesWithout,
@@ -484,18 +484,20 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               child: Column(
                 children: [
                   if (totalPendingIdeasCount > 0) ...[
-                    _buildPendingIdeasWarning(totalPendingIdeasCount),
+                    _buildPendingIdeasWarning(totalPendingIdeasCount, l10n),
                     const SizedBox(height: 12),
                   ],
                   _buildCollectionWorkspaceHeader(
                     title:
-                        '${_ideaFilterTitle(_ideaStatusFilter)} (${ideas.length})',
+                        '${_ideaFilterTitle(_ideaStatusFilter, l10n)} (${ideas.length})',
                     subtitle: searchQuery.isEmpty
-                        ? 'Review submitted ideas, keep the pending queue moving, and open details when you need the full picture.'
-                        : 'Showing filtered results for "$searchQuery".',
+                        ? l10n.uiReviewSubmittedIdeas
+                        : l10n.uiShowingFilteredResultsForSearchQuery(
+                            searchQuery,
+                          ),
                     primaryFilters: [
                       _CollectionHeaderFilter(
-                        label: 'All Ideas',
+                        label: l10n.uiAllIdeas,
                         selected: _ideaStatusFilter == _ideaFilterAll,
                         icon: Icons.grid_view_rounded,
                         badgeCount: allIdeas.length,
@@ -503,7 +505,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                             setState(() => _ideaStatusFilter = _ideaFilterAll),
                       ),
                       _CollectionHeaderFilter(
-                        label: 'Pending',
+                        label: l10n.uiPending,
                         selected: _ideaStatusFilter == _ideaFilterPending,
                         icon: Icons.hourglass_top_rounded,
                         badgeCount: pendingIdeasCount,
@@ -516,7 +518,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                         }),
                       ),
                       _CollectionHeaderFilter(
-                        label: 'Admin-Created Ideas',
+                        label: l10n.uiAdminCreatedIdeas,
                         selected: _ideaStatusFilter == _ideaFilterAdmin,
                         icon: Icons.admin_panel_settings_outlined,
                         badgeCount: adminIdeasCount,
@@ -529,7 +531,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                         }),
                       ),
                       _CollectionHeaderFilter(
-                        label: 'Approved',
+                        label: l10n.uiApproved,
                         selected: _ideaStatusFilter == _ideaFilterApproved,
                         icon: Icons.check_circle_outline_rounded,
                         badgeCount: approvedIdeasCount,
@@ -542,7 +544,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                         }),
                       ),
                       _CollectionHeaderFilter(
-                        label: 'Rejected',
+                        label: l10n.uiRejected,
                         selected: _ideaStatusFilter == _ideaFilterRejected,
                         icon: Icons.cancel_outlined,
                         badgeCount: rejectedIdeasCount,
@@ -557,7 +559,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                     ],
                     secondaryFilters: [
                       _CollectionHeaderFilter(
-                        label: 'Hidden',
+                        label: l10n.uiHiddenLabel,
                         selected: _ideaStatusFilter == _ideaFilterHidden,
                         icon: Icons.visibility_off_outlined,
                         badgeCount: hiddenIdeasCount,
@@ -597,7 +599,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               padding: const EdgeInsets.only(top: 6),
               child: _buildEmptyState(
                 Icons.search_off_outlined,
-                _ideaEmptyMessage(_ideaStatusFilter),
+                _ideaEmptyMessage(_ideaStatusFilter, l10n),
               ),
             );
           }
@@ -646,7 +648,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                         }
                       },
                 icon: const Icon(Icons.check_rounded, size: 16),
-                label: Text(isIdeaBusy ? 'Working...' : 'Approve'),
+                label: Text(isIdeaBusy ? l10n.uiWorking : l10n.uiApprove),
                 style: _compactFilledFooterStyle(AdminPalette.success),
               ),
             if (isPending)
@@ -667,7 +669,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                         }
                       },
                 icon: const Icon(Icons.close_rounded, size: 16),
-                label: Text(isIdeaBusy ? 'Working...' : 'Reject'),
+                label: Text(isIdeaBusy ? l10n.uiWorking : l10n.uiReject),
                 style: _compactFilledFooterStyle(AdminPalette.danger),
               ),
             if (idea.isHidden)
@@ -675,7 +677,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 onPressed: isIdeaVisibilityBusy
                     ? null
                     : () => _toggleItemVisibility(
-                        itemType: 'Idea',
+                        itemType: l10n.uiProjectIdea,
                         itemTitle: idea.title,
                         isHidden: idea.isHidden,
                         onToggle: (nextHidden) =>
@@ -688,11 +690,13 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             id: idea.id,
             leading: _buildIdeaLeading(idea),
             title: _formatIdeaTitle(idea.title),
-            subtitle:
-                'By ${DisplayText.capitalizeLeadingLabel(submitterLabel)}',
+            subtitle: l10n.uiByName(
+              DisplayText.capitalizeLeadingLabel(submitterLabel),
+            ),
             description: _formatIdeaDescription(idea.cardSummary),
             badges: [
-              if (idea.isHidden) _BadgeData('Hidden', Colors.blueGrey),
+              if (idea.isHidden)
+                _BadgeData(l10n.uiHiddenLabel, Colors.blueGrey),
               _BadgeData(
                 _formatIdeaBadgeValue(idea.status),
                 _statusColor(idea.status),
@@ -702,7 +706,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                   _formatIdeaBadgeValue(idea.displayCategory),
                   AdminPalette.textSecondary,
                 ),
-              if (canEditIdea) _BadgeData('Your Post', _ideaAccentColor),
+              if (canEditIdea) _BadgeData(l10n.uiYourPost, _ideaAccentColor),
             ],
             metaText: idea.lastUpdatedLabel,
             onTap: () => _showProjectIdeaDetails(idea),
@@ -724,7 +728,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 onTap: isIdeaVisibilityBusy
                     ? null
                     : () => _toggleItemVisibility(
-                        itemType: 'Idea',
+                        itemType: l10n.uiProjectIdea,
                         itemTitle: idea.title,
                         isHidden: idea.isHidden,
                         onToggle: (nextHidden) =>
@@ -735,8 +739,8 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 icon: Icons.delete_outline_rounded,
                 color: AdminPalette.danger,
                 onTap: () => _showDeleteDialog(
-                  'Delete Project Idea',
-                  'Are you sure you want to delete "${idea.title}"?',
+                  l10n.uiDeleteProjectIdea,
+                  l10n.uiDeleteItemConfirm(idea.title),
                   () async {
                     final error = await provider.deleteProjectIdea(idea.id);
                     if (error != null && context.mounted) {
@@ -757,7 +761,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     );
   }
 
-  Widget _buildPendingIdeasWarning(int pendingCount) {
+  Widget _buildPendingIdeasWarning(int pendingCount, AppLocalizations l10n) {
     return AdminSurface(
       radius: 20,
       padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
@@ -785,7 +789,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Pending ideas need review',
+                  l10n.uiPendingIdeasNeedReview,
                   style: AppTypography.product(
                     fontSize: 13.5,
                     fontWeight: FontWeight.w700,
@@ -838,7 +842,12 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     return FilledButton.icon(
       onPressed: onPressed,
       icon: const Icon(Icons.visibility_rounded, size: 16),
-      label: Text(onPressed == null ? 'Working...' : 'Unhide'),
+      label: Builder(
+        builder: (context) {
+          final l10n = AppLocalizations.of(context)!;
+          return Text(onPressed == null ? l10n.uiWorking : l10n.uiUnhide);
+        },
+      ),
       style: _compactFilledFooterStyle(AdminPalette.success),
     );
   }
@@ -865,7 +874,11 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     List<AdminApplicationItemModel> applications,
   ) {
     final l10n = AppLocalizations.of(context)!;
-    final opportunityTitle = (opportunity['title'] ?? 'Opportunity').toString();
+    final opportunityTitle =
+        (opportunity['title']?.toString().trim().isNotEmpty == true
+                ? opportunity['title']
+                : l10n.uiUntitledOpportunity)
+            .toString();
     final opportunityId = (opportunity['id'] ?? '').toString().trim();
     final adminId = context.read<AuthProvider>().userModel?.uid.trim() ?? '';
     final opportunityModel = OpportunityModel.fromMap(opportunity);
@@ -964,7 +977,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                       title: item.studentName,
                       subtitle: item.companyName.isNotEmpty
                           ? item.companyName
-                          : 'Application',
+                          : l10n.uiApplication,
                       badges: [
                         _BadgeData(
                           ApplicationStatus.label(item.status, l10n),
@@ -1127,11 +1140,11 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 title:
                     '${_opportunityWorkspaceTitle(_opportunityFilter, _opportunityTypeFilter, l10n)} (${opportunities.length})',
                 subtitle: searchQuery.isEmpty
-                    ? 'Review jobs, internships, and sponsored posts. Filter by source, status, or pending reviews.'
-                    : 'Showing filtered results for "$searchQuery".',
+                    ? l10n.uiReviewJobsDescription
+                    : l10n.uiShowingFilteredResultsForSearchQuery(searchQuery),
                 primaryFilters: [
                   _CollectionHeaderFilter(
-                    label: 'All',
+                    label: l10n.uiAll,
                     selected: _opportunityFilter == _opportunityFilterAll,
                     icon: Icons.grid_view_rounded,
                     badgeCount: allOpportunities.length,
@@ -1140,7 +1153,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                     ),
                   ),
                   _CollectionHeaderFilter(
-                    label: 'Admin Posts',
+                    label: l10n.uiAdminPosts,
                     selected: _opportunityFilter == _opportunityFilterAdmin,
                     icon: Icons.admin_panel_settings_outlined,
                     badgeCount: adminCount,
@@ -1156,7 +1169,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 secondaryFilters: [
                   if (pendingAppsCount > 0)
                     _CollectionHeaderFilter(
-                      label: 'Pending Apps',
+                      label: l10n.uiPendingApps,
                       selected:
                           _opportunityFilter == _opportunityFilterPendingApps,
                       icon: Icons.hourglass_top_rounded,
@@ -1170,7 +1183,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                       }),
                     ),
                   _CollectionHeaderFilter(
-                    label: 'Featured',
+                    label: l10n.uiFeatured,
                     selected: _opportunityFilter == _opportunityFilterFeatured,
                     icon: Icons.workspace_premium_outlined,
                     badgeCount: featuredCount,
@@ -1183,7 +1196,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                     }),
                   ),
                   _CollectionHeaderFilter(
-                    label: 'Closed',
+                    label: l10n.uiClosed,
                     selected: _opportunityFilter == _opportunityFilterClosed,
                     icon: Icons.pause_circle_outline_rounded,
                     badgeCount: closedCount,
@@ -1196,7 +1209,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                     }),
                   ),
                   _CollectionHeaderFilter(
-                    label: 'Hidden',
+                    label: l10n.uiHiddenLabel,
                     selected: _opportunityFilter == _opportunityFilterHidden,
                     icon: Icons.visibility_off_outlined,
                     badgeCount: hiddenCount,
@@ -1211,7 +1224,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 ],
                 tertiaryFilters: [
                   _CollectionHeaderFilter(
-                    label: 'All Types',
+                    label: l10n.uiAllTypes,
                     selected:
                         _opportunityTypeFilter == _opportunityTypeFilterAll,
                     icon: Icons.category_outlined,
@@ -1341,9 +1354,10 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
           final footerButtons = <Widget>[
             if (canEditOpportunity)
               FilledButton.icon(
-                onPressed: () => _openOpportunityEditor(opportunity: opportunity),
+                onPressed: () =>
+                    _openOpportunityEditor(opportunity: opportunity),
                 icon: const Icon(Icons.edit_outlined, size: 16),
-                label: const Text('Edit Opportunity'),
+                label: Text(l10n.uiEditOpportunity),
                 style: _compactFilledFooterStyle(AdminPalette.primary),
               ),
             OutlinedButton.icon(
@@ -1357,7 +1371,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 onPressed: () =>
                     _showOpportunityApplications(opportunity, applications),
                 icon: const Icon(Icons.assignment_outlined, size: 16),
-                label: Text('${applications.length} Apps'),
+                label: Text('${applications.length} ${l10n.uiApps}'),
                 style: _compactFilledFooterStyle(AdminPalette.primary),
               ),
           ];
@@ -1367,9 +1381,16 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 onPressed: isOpportunityVisibilityBusy
                     ? null
                     : () => _toggleItemVisibility(
-                        itemType: 'Opportunity',
-                        itemTitle: (opportunity['title'] ?? 'Opportunity')
-                            .toString(),
+                        itemType: l10n.uiOpportunity,
+                        itemTitle:
+                            (opportunity['title']
+                                            ?.toString()
+                                            .trim()
+                                            .isNotEmpty ==
+                                        true
+                                    ? opportunity['title']
+                                    : l10n.uiUntitledOpportunity)
+                                .toString(),
                         isHidden: opportunityModel.isHidden,
                         onToggle: (nextHidden) => provider.setOpportunityHidden(
                           opportunityId,
@@ -1383,31 +1404,35 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             DisplayText.capitalizeLeadingLabel(
               opportunityModel.companyName.isNotEmpty
                   ? opportunityModel.companyName
-                  : 'Unknown company',
+                  : l10n.uiUnknownCompany,
             ),
             if (opportunityModel.location.trim().isNotEmpty)
               DisplayText.capitalizeLeadingLabel(opportunityModel.location),
           ]);
           final deadlineLabel = _formatDateBadgeLabel(
             opportunityModel.applicationDeadline ?? opportunityModel.deadline,
-            prefix: 'Due',
+            l10n: l10n,
+            prefix: l10n.uiDue,
           );
           return _buildMapListTile(
             id: opportunityId,
             icon: OpportunityType.icon(opportunityType),
             iconColor: opportunityTypeColor,
             title: DisplayText.capitalizeWords(
-              (opportunity['title'] ?? 'Untitled opportunity').toString(),
+              (opportunity['title']?.toString().trim().isNotEmpty == true
+                      ? opportunity['title']
+                      : l10n.uiUntitledOpportunity)
+                  .toString(),
             ),
             subtitle: subtitle,
             description: _cleanCardDescription(
               opportunityModel.description.isNotEmpty
                   ? opportunityModel.description
                   : opportunityModel.requirements,
-              fallback:
-                  'Open this post to review the full role and requirements.',
+              fallback: l10n.uiOpenPostToReview,
             ),
             badges: _buildOpportunityBadges(
+              l10n: l10n,
               isHidden: opportunityModel.isHidden,
               isOpen: isOpen,
               typeLabel: OpportunityType.label(opportunityType, l10n),
@@ -1420,12 +1445,13 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             onTap: () => _showOpportunityDetails(opportunity),
             metaText: _joinCardSubtitleParts([
               _buildDateMetaLabel(
-                'Updated',
+                l10n.uiUpdated,
                 opportunityModel.updatedAt ?? opportunityModel.createdAt,
               ),
               if (applications.isNotEmpty)
-                '${applications.length} app${applications.length == 1 ? '' : 's'}',
-              if (pendingAppCount > 0) '$pendingAppCount pending',
+                '${applications.length} ${l10n.uiApps}',
+              if (pendingAppCount > 0)
+                '$pendingAppCount ${l10n.uiPending.toLowerCase()}',
             ]),
             footer: _buildResponsiveActionGroup(footerButtons),
             trailing: _buildCardActionRow([
@@ -1445,9 +1471,16 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 onTap: isOpportunityVisibilityBusy
                     ? null
                     : () => _toggleItemVisibility(
-                        itemType: 'Opportunity',
-                        itemTitle: (opportunity['title'] ?? 'Opportunity')
-                            .toString(),
+                        itemType: l10n.uiOpportunity,
+                        itemTitle:
+                            (opportunity['title']
+                                            ?.toString()
+                                            .trim()
+                                            .isNotEmpty ==
+                                        true
+                                    ? opportunity['title']
+                                    : l10n.uiUntitledOpportunity)
+                                .toString(),
                         isHidden: opportunityModel.isHidden,
                         onToggle: (nextHidden) => provider.setOpportunityHidden(
                           opportunityId,
@@ -1459,8 +1492,10 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 icon: Icons.delete_outline_rounded,
                 color: AdminPalette.danger,
                 onTap: () => _showDeleteDialog(
-                  'Delete Opportunity',
-                  'Are you sure you want to delete "${opportunity['title']}"?',
+                  l10n.uiDeleteOpportunity,
+                  l10n.uiDeleteItemConfirm(
+                    (opportunity['title'] ?? '').toString(),
+                  ),
                   () async {
                     final error = await provider.deleteOpportunity(
                       opportunityId,
@@ -1557,13 +1592,13 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               padding: const EdgeInsets.only(bottom: 16),
               child: _buildCollectionWorkspaceHeader(
                 title:
-                    '${_scholarshipFilterTitle(_scholarshipFilter)} (${scholarships.length})',
+                    '${_scholarshipFilterTitle(_scholarshipFilter, l10n)} (${scholarships.length})',
                 subtitle: searchQuery.isEmpty
-                    ? 'Keep funding calls clear, trustworthy, and easy to scan before students open the full details.'
-                    : 'Showing filtered results for "$searchQuery".',
+                    ? l10n.uiKeepFundingCallsClear
+                    : l10n.uiShowingFilteredResultsForSearchQuery(searchQuery),
                 primaryFilters: [
                   _CollectionHeaderFilter(
-                    label: 'All',
+                    label: l10n.uiAll,
                     selected: _scholarshipFilter == _scholarshipFilterAll,
                     icon: Icons.grid_view_rounded,
                     badgeCount: allScholarships.length,
@@ -1574,7 +1609,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 ],
                 secondaryFilters: [
                   _CollectionHeaderFilter(
-                    label: 'Featured',
+                    label: l10n.uiFeatured,
                     selected: _scholarshipFilter == _scholarshipFilterFeatured,
                     icon: Icons.workspace_premium_outlined,
                     badgeCount: featuredCount,
@@ -1587,7 +1622,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                     }),
                   ),
                   _CollectionHeaderFilter(
-                    label: 'Hidden',
+                    label: l10n.uiHiddenLabel,
                     selected: _scholarshipFilter == _scholarshipFilterHidden,
                     icon: Icons.visibility_off_outlined,
                     badgeCount: hiddenCount,
@@ -1619,7 +1654,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               padding: const EdgeInsets.only(top: 6),
               child: _buildEmptyState(
                 Icons.search_off_outlined,
-                _scholarshipEmptyMessage(_scholarshipFilter),
+                _scholarshipEmptyMessage(_scholarshipFilter, l10n),
               ),
             );
           }
@@ -1659,7 +1694,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 onPressed: isScholarshipVisibilityBusy
                     ? null
                     : () => _toggleItemVisibility(
-                        itemType: 'Scholarship',
+                        itemType: l10n.uiScholarshipLabel,
                         itemTitle: scholarshipModel.title,
                         isHidden: scholarshipModel.isHidden,
                         onToggle: (nextHidden) => provider.setScholarshipHidden(
@@ -1671,7 +1706,8 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
           ];
           final deadlineBadge = _formatDateBadgeLabel(
             scholarshipModel.deadline,
-            prefix: 'Due',
+            l10n: l10n,
+            prefix: l10n.uiDue,
           );
           final fundingLabel = (scholarshipModel.fundingType ?? '').trim();
           return _buildMapListTile(
@@ -1681,13 +1717,13 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             title: DisplayText.capitalizeWords(
               scholarshipModel.title.isNotEmpty
                   ? scholarshipModel.title
-                  : 'Untitled scholarship',
+                  : l10n.uiUntitledScholarship,
             ),
             subtitle: _joinCardSubtitleParts([
               DisplayText.capitalizeLeadingLabel(
                 scholarshipModel.provider.isNotEmpty
                     ? scholarshipModel.provider
-                    : 'Unknown provider',
+                    : l10n.uiUnknownProvider,
               ),
               if (locationText.isNotEmpty)
                 DisplayText.capitalizeLeadingLabel(locationText),
@@ -1696,12 +1732,11 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               scholarshipModel.description.isNotEmpty
                   ? scholarshipModel.description
                   : scholarshipModel.eligibility,
-              fallback:
-                  'Open this scholarship to review eligibility and access details.',
+              fallback: l10n.uiOpenScholarshipToReview,
             ),
             badges: [
               if (scholarshipModel.isHidden)
-                _BadgeData('Hidden', Colors.blueGrey),
+                _BadgeData(l10n.uiHiddenLabel, Colors.blueGrey),
               if (amountText.isNotEmpty)
                 _BadgeData(amountText, AdminPalette.success),
               if (fundingLabel.isNotEmpty && amountText.isEmpty)
@@ -1715,12 +1750,18 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                   AdminPalette.info,
                 ),
               if (deadlineBadge != null)
-                _BadgeData(deadlineBadge, _deadlineBadgeColor(deadlineBadge)),
+                _BadgeData(
+                  deadlineBadge,
+                  _deadlineBadgeColor(deadlineBadge, l10n),
+                ),
               if (scholarshipModel.isFeatured)
-                _BadgeData('Featured', _accentColor),
+                _BadgeData(l10n.uiFeatured, _accentColor),
             ],
             onTap: () => _showScholarshipDetails(scholarship),
-            metaText: _buildDateMetaLabel('Added', scholarshipModel.createdAt),
+            metaText: _buildDateMetaLabel(
+              l10n.uiAdded,
+              scholarshipModel.createdAt,
+            ),
             footer: _buildResponsiveActionGroup(scholarshipFooterButtons),
             trailing: _buildCardActionRow([
               _buildCompactCardAction(
@@ -1738,7 +1779,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 onTap: isScholarshipVisibilityBusy
                     ? null
                     : () => _toggleItemVisibility(
-                        itemType: 'Scholarship',
+                        itemType: l10n.uiScholarshipLabel,
                         itemTitle: scholarshipModel.title,
                         isHidden: scholarshipModel.isHidden,
                         onToggle: (nextHidden) => provider.setScholarshipHidden(
@@ -1751,8 +1792,10 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 icon: Icons.delete_outline_rounded,
                 color: AdminPalette.danger,
                 onTap: () => _showDeleteDialog(
-                  'Delete Scholarship',
-                  'Are you sure you want to delete "${scholarship['title']}"?',
+                  l10n.uiDeleteScholarship,
+                  l10n.uiDeleteItemConfirm(
+                    (scholarship['title'] ?? '').toString(),
+                  ),
                   () async {
                     final error = await provider.deleteScholarship(
                       scholarship['id'].toString(),
@@ -1775,17 +1818,19 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
   }
 
   String _searchHintForCurrentTab() {
+    final l10n = AppLocalizations.of(context)!;
     switch (_tabController.index) {
       case AdminContentCenterScreen.projectIdeasTab:
-        return 'Search ideas by title, domain, submitter, or status...';
+        return l10n.uiSearchIdeasByTitleDomainSubmitterOrStatus;
       case AdminContentCenterScreen.opportunitiesTab:
-        return 'Search opportunities by title, company, location, status, or compensation...';
+        return l10n
+            .uiSearchOpportunitiesByTitleCompanyLocationStatusOrCompensation;
       case AdminContentCenterScreen.scholarshipsTab:
-        return 'Search scholarships by title, provider, or deadline...';
+        return l10n.uiSearchScholarshipsByTitleProviderOrDeadline;
       case AdminContentCenterScreen.libraryTab:
-        return 'Search library resources...';
+        return l10n.uiSearchLibraryResources;
       default:
-        return 'Search...';
+        return l10n.uiSearch;
     }
   }
 
@@ -1838,37 +1883,37 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     }
   }
 
-  String _ideaFilterTitle(String filter) {
+  String _ideaFilterTitle(String filter, AppLocalizations l10n) {
     switch (filter) {
       case _ideaFilterAdmin:
-        return 'Admin-Created Ideas';
+        return l10n.uiAdminCreatedIdeas;
       case _ideaFilterPending:
-        return 'Pending Ideas';
+        return l10n.uiPendingIdeas;
       case _ideaFilterApproved:
-        return 'Approved Ideas';
+        return l10n.uiApprovedIdeas;
       case _ideaFilterRejected:
-        return 'Rejected Ideas';
+        return l10n.uiRejectedIdeas;
       case _ideaFilterHidden:
-        return 'Hidden Ideas';
+        return l10n.uiHiddenIdeas;
       default:
-        return 'All Ideas';
+        return l10n.uiAllIdeas;
     }
   }
 
-  String _ideaEmptyMessage(String filter) {
+  String _ideaEmptyMessage(String filter, AppLocalizations l10n) {
     switch (filter) {
       case _ideaFilterAdmin:
-        return 'No admin-created ideas match this search';
+        return l10n.uiNoAdminIdeasMatch;
       case _ideaFilterPending:
-        return 'No pending ideas match this search';
+        return l10n.uiNoPendingIdeasMatch;
       case _ideaFilterApproved:
-        return 'No approved ideas match this search';
+        return l10n.uiNoApprovedIdeasMatch;
       case _ideaFilterRejected:
-        return 'No rejected ideas match this search';
+        return l10n.uiNoRejectedIdeasMatch;
       case _ideaFilterHidden:
-        return 'No hidden ideas match this search';
+        return l10n.uiNoHiddenIdeasMatch;
       default:
-        return 'No ideas match this search';
+        return l10n.uiNoIdeasMatch;
     }
   }
 
@@ -2014,20 +2059,20 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
         OpportunityType.parse(typeFilter);
   }
 
-  String _opportunityFilterTitle(String filter) {
+  String _opportunityFilterTitle(String filter, AppLocalizations l10n) {
     switch (filter) {
       case _opportunityFilterAdmin:
-        return 'Admin Opportunities';
+        return l10n.uiAdminOpportunities;
       case _opportunityFilterPendingApps:
-        return 'Pending Applications';
+        return l10n.uiPendingApplications;
       case _opportunityFilterClosed:
-        return 'Closed Opportunities';
+        return l10n.uiClosedOpportunities;
       case _opportunityFilterFeatured:
-        return 'Featured Opportunities';
+        return l10n.uiFeaturedOpportunities;
       case _opportunityFilterHidden:
-        return 'Hidden Opportunities';
+        return l10n.uiHiddenOpportunities;
       default:
-        return 'Opportunity Queue';
+        return l10n.uiOpportunityQueue;
     }
   }
 
@@ -2036,7 +2081,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     String typeFilter,
     AppLocalizations l10n,
   ) {
-    final baseTitle = _opportunityFilterTitle(filter);
+    final baseTitle = _opportunityFilterTitle(filter, l10n);
     if (typeFilter == _opportunityTypeFilterAll) {
       return baseTitle;
     }
@@ -2050,25 +2095,28 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     AppLocalizations l10n,
   ) {
     final opportunityLabel = typeFilter == _opportunityTypeFilterAll
-        ? 'opportunities'
-        : '${OpportunityType.label(typeFilter, l10n).toLowerCase()} opportunities';
+        ? l10n.uiOpportunities.toLowerCase()
+        : l10n.uiOpportunityTypeCollectionLabel(
+            OpportunityType.label(typeFilter, l10n).toLowerCase(),
+          );
     switch (filter) {
       case _opportunityFilterAdmin:
-        return 'No admin-posted $opportunityLabel match this search';
+        return l10n.uiNoAdminPostedItemsMatchSearch(opportunityLabel);
       case _opportunityFilterPendingApps:
-        return 'No $opportunityLabel with pending applications right now';
+        return l10n.uiNoItemsWithPendingApplicationsRightNow(opportunityLabel);
       case _opportunityFilterClosed:
-        return 'No closed $opportunityLabel match this search';
+        return l10n.uiNoClosedItemsMatchSearch(opportunityLabel);
       case _opportunityFilterFeatured:
-        return 'No featured $opportunityLabel match this search';
+        return l10n.uiNoFeaturedItemsMatchSearch(opportunityLabel);
       case _opportunityFilterHidden:
-        return 'No hidden $opportunityLabel match this search';
+        return l10n.uiNoHiddenItemsMatchSearch(opportunityLabel);
       default:
-        return 'No $opportunityLabel match this search';
+        return l10n.uiNoItemsMatchSearch(opportunityLabel);
     }
   }
 
   List<_BadgeData> _buildOpportunityBadges({
+    required AppLocalizations l10n,
     required bool isHidden,
     required bool isOpen,
     required String typeLabel,
@@ -2081,10 +2129,10 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     final badges = <_BadgeData>[
       _BadgeData(
         isHidden
-            ? 'Hidden'
+            ? l10n.uiHiddenLabel
             : isOpen
-            ? 'Open'
-            : 'Closed',
+            ? l10n.uiOpen
+            : l10n.uiClosed,
         isHidden
             ? Colors.blueGrey
             : isOpen
@@ -2095,7 +2143,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     ];
 
     final supportingLabel = isOwnedByAdmin
-        ? 'Your Post'
+        ? l10n.uiYourPost
         : workModeLabel.trim().isNotEmpty
         ? workModeLabel
         : (deadlineLabel?.trim().isNotEmpty ?? false)
@@ -2146,25 +2194,25 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     }
   }
 
-  String _scholarshipFilterTitle(String filter) {
+  String _scholarshipFilterTitle(String filter, AppLocalizations l10n) {
     switch (filter) {
       case _scholarshipFilterFeatured:
-        return 'Featured Scholarships';
+        return l10n.uiFeaturedScholarships;
       case _scholarshipFilterHidden:
-        return 'Hidden Scholarships';
+        return l10n.uiHiddenScholarships;
       default:
-        return 'Scholarship Listings';
+        return l10n.uiScholarshipListings;
     }
   }
 
-  String _scholarshipEmptyMessage(String filter) {
+  String _scholarshipEmptyMessage(String filter, AppLocalizations l10n) {
     switch (filter) {
       case _scholarshipFilterFeatured:
-        return 'No featured scholarships match this search';
+        return l10n.uiNoFeaturedScholarshipsMatch;
       case _scholarshipFilterHidden:
-        return 'No hidden scholarships match this search';
+        return l10n.uiNoHiddenScholarshipsMatch;
       default:
-        return 'No scholarships match this search';
+        return l10n.uiNoScholarshipsMatch;
     }
   }
 
@@ -2263,10 +2311,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     return idea.submittedBy.trim() == normalizedAdminId;
   }
 
-  bool _canAdminEditOpportunity(
-    OpportunityModel opportunity,
-    String adminId,
-  ) {
+  bool _canAdminEditOpportunity(OpportunityModel opportunity, String adminId) {
     final normalizedAdminId = adminId.trim();
     if (normalizedAdminId.isEmpty) {
       return false;
@@ -2346,11 +2391,13 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
 
     final normalizedTitle = itemTitle.trim().isEmpty ? itemType : itemTitle;
     final message = nextHidden
-        ? '$itemType "$normalizedTitle" hidden. You can restore it later.'
-        : '$itemType "$normalizedTitle" is visible again.';
+        ? l10n.uiItemHiddenMessage(itemType, normalizedTitle)
+        : l10n.uiItemVisibleMessage(itemType, normalizedTitle);
     context.showAppSnackBar(
       message,
-      title: nextHidden ? '$itemType hidden' : '$itemType visible',
+      title: nextHidden
+          ? l10n.uiItemHiddenTitle(itemType)
+          : l10n.uiItemVisibleTitle(itemType),
       type: AppFeedbackType.success,
     );
   }
@@ -2368,6 +2415,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     Widget? action,
     Widget? footer,
   }) {
+    final l10n = AppLocalizations.of(context)!;
     final isTarget = id == widget.initialTargetId;
     final resolvedAccentColor = accentColor ?? AdminPalette.primary;
     final highlightColor = isTarget ? _accentColor : resolvedAccentColor;
@@ -2397,10 +2445,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
           borderRadius: BorderRadius.circular(14),
           child: DecoratedBox(
             decoration: BoxDecoration(
-              border: Border.all(
-                color: borderColor,
-                width: isTarget ? 1.5 : 1,
-              ),
+              border: Border.all(color: borderColor, width: isTarget ? 1.5 : 1),
               borderRadius: BorderRadius.circular(14),
               boxShadow: isTarget
                   ? null
@@ -2438,7 +2483,8 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                       spacing: 6,
                       runSpacing: 6,
                       children: [
-                        if (isTarget) _statusBadge('Focused', highlightColor),
+                        if (isTarget)
+                          _statusBadge(l10n.uiFocused, highlightColor),
                         ...badges.map(
                           (badge) => _statusBadge(badge.label, badge.color),
                         ),
@@ -2608,6 +2654,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     Widget? action,
     String searchQuery = '',
   }) {
+    final l10n = AppLocalizations.of(context)!;
     return AdminSurface(
       radius: 22,
       padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
@@ -2677,7 +2724,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
           if (searchQuery.trim().isNotEmpty) ...[
             const SizedBox(height: 12),
             AdminPill(
-              label: 'Search: $searchQuery',
+              label: l10n.uiSearchQueryLabel(searchQuery),
               color: AdminPalette.textSecondary,
               icon: Icons.search_rounded,
             ),
@@ -2736,7 +2783,11 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     return DateFormat('MMM d, yyyy').format(dateTime);
   }
 
-  String? _formatDateBadgeLabel(dynamic value, {String prefix = 'Due'}) {
+  String? _formatDateBadgeLabel(
+    dynamic value, {
+    required AppLocalizations l10n,
+    String? prefix,
+  }) {
     if (value == null) {
       return null;
     }
@@ -2753,22 +2804,23 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     }
 
     final dateTime = OpportunityMetadata.normalizeDeadline(rawValue);
+    final resolvedPrefix = prefix ?? l10n.uiDue;
     if (dateTime != null) {
-      final resolvedPrefix = OpportunityMetadata.isDeadlineExpired(dateTime)
-          ? 'Expired'
-          : prefix;
-      return '$resolvedPrefix ${DateFormat('MMM d').format(dateTime)}';
+      final label = OpportunityMetadata.isDeadlineExpired(dateTime)
+          ? l10n.uiExpired
+          : resolvedPrefix;
+      return '$label ${DateFormat('MMM d').format(dateTime)}';
     }
 
     if (fallback.isEmpty) {
       return null;
     }
 
-    return '$prefix ${DisplayText.capitalizeLeadingLabel(fallback)}';
+    return '$resolvedPrefix ${DisplayText.capitalizeLeadingLabel(fallback)}';
   }
 
-  Color _deadlineBadgeColor(String label) {
-    return label.trim().toLowerCase().startsWith('expired')
+  Color _deadlineBadgeColor(String label, AppLocalizations l10n) {
+    return label.trim().toLowerCase().startsWith(l10n.uiExpired.toLowerCase())
         ? AdminPalette.danger
         : AdminPalette.info;
   }
@@ -2814,12 +2866,14 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
   }
 
   void _showProjectIdeaDetails(ProjectIdeaModel idea) {
+    final l10n = AppLocalizations.of(context)!;
     final submitterLabel = idea.submittedByName.trim().isNotEmpty
         ? idea.submittedByName
         : idea.submittedBy;
     final title = _formatIdeaTitle(idea.title);
-    final subtitle =
-        'Submitted By ${DisplayText.capitalizeLeadingLabel(submitterLabel)}';
+    final subtitle = l10n.uiSubmittedByValue1(
+      DisplayText.capitalizeLeadingLabel(submitterLabel),
+    );
     final summary = _formatIdeaDescription(idea.featuredSummary);
     final tagline = _formatIdeaDescription(idea.tagline);
     final targetAudience = _formatIdeaDescription(idea.targetAudience);
@@ -2912,7 +2966,9 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                         color: Colors.white,
                       ),
                       AdminActionChip(
-                        label: idea.isPublic ? 'Public' : 'Private',
+                        label: idea.isPublic
+                            ? l10n.ideaPublicLabel
+                            : l10n.ideaPrivateLabel,
                         icon: idea.isPublic
                             ? Icons.public_rounded
                             : Icons.lock_outline_rounded,
@@ -2934,7 +2990,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Overview',
+                      l10n.uiOverview,
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
@@ -2979,7 +3035,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 benefitsText.trim().isNotEmpty) ...[
               const SizedBox(height: 10),
               Text(
-                'Problem, Solution & Impact',
+                l10n.uiProblemSolutionImpact,
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
@@ -3015,7 +3071,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             ],
             const SizedBox(height: 10),
             Text(
-              'Audience & Metadata',
+              l10n.uiAudienceMetadata,
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w700,
@@ -3025,21 +3081,21 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             const SizedBox(height: 8),
             _buildIdeaMetadataGrid(<_IdeaDetailItem>[
               _IdeaDetailItem(
-                'Level',
+                l10n.uiLevel,
                 _formatIdeaBadgeValue(idea.level),
                 icon: Icons.school_outlined,
                 color: AdminPalette.primary,
               ),
               if (targetAudience.trim().isNotEmpty)
                 _IdeaDetailItem(
-                  'Audience',
+                  l10n.uiTargetAudience,
                   targetAudience,
                   icon: Icons.groups_2_outlined,
                   color: AdminPalette.secondary,
                 ),
               _IdeaDetailItem(
-                'Visibility',
-                idea.isPublic ? 'Public Idea' : 'Private Idea',
+                l10n.uiVisibility,
+                idea.isPublic ? l10n.uiPublicIdea : l10n.uiPrivateIdea,
                 icon: idea.isPublic
                     ? Icons.public_rounded
                     : Icons.lock_outline_rounded,
@@ -3048,7 +3104,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                     : AdminPalette.textMuted,
               ),
               _IdeaDetailItem(
-                'Submitted',
+                l10n.uiSubmitted,
                 _formatTimestamp(idea.createdAt),
                 icon: Icons.event_outlined,
                 color: AdminPalette.textMuted,
@@ -3065,7 +3121,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Team & Skill Signals',
+                      l10n.uiTeamSkillSignals,
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
@@ -3075,7 +3131,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                     if (skills.isNotEmpty) ...[
                       const SizedBox(height: 8),
                       _buildTagSection(
-                        'Skills Needed',
+                        l10n.uiSkillsNeeded,
                         skills,
                         _ideaAccentColor,
                       ),
@@ -3083,14 +3139,18 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                     if (teamNeeded.isNotEmpty) ...[
                       const SizedBox(height: 8),
                       _buildTagSection(
-                        'Team Needed',
+                        l10n.uiTeamNeeded,
                         teamNeeded,
                         AdminPalette.info,
                       ),
                     ],
                     if (tags.isNotEmpty) ...[
                       const SizedBox(height: 8),
-                      _buildTagSection('Tags', tags, AdminPalette.activity),
+                      _buildTagSection(
+                        l10n.uiTags,
+                        tags,
+                        AdminPalette.activity,
+                      ),
                     ],
                   ],
                 ),
@@ -3122,16 +3182,17 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     ProjectIdeaModel idea, {
     required Color statusColor,
   }) {
+    final l10n = AppLocalizations.of(context)!;
     final highlightItems = <_IdeaHighlightItem>[
       _IdeaHighlightItem(
         icon: _ideaStatusIcon(idea.status),
-        label: 'Status',
+        label: l10n.uiStatus,
         value: _formatIdeaBadgeValue(idea.status),
         color: statusColor,
       ),
       _IdeaHighlightItem(
         icon: Icons.groups_rounded,
-        label: 'Interested',
+        label: l10n.uiInterested,
         value: '${idea.interestedCount}',
         color: AdminPalette.info,
       ),
@@ -3513,6 +3574,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     AdminApplicationItemModel item, {
     required bool isBusy,
   }) {
+    final l10n = AppLocalizations.of(context)!;
     return [
       FilledButton.icon(
         onPressed: isBusy
@@ -3522,7 +3584,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 _updateAdminApplicationStatus(item, ApplicationStatus.accepted);
               },
         icon: const Icon(Icons.verified_outlined, size: 18),
-        label: Text(isBusy ? 'Working...' : 'Approve'),
+        label: Text(isBusy ? l10n.uiWorking : l10n.uiApprove),
         style: FilledButton.styleFrom(
           backgroundColor: AdminPalette.success,
           foregroundColor: Colors.white,
@@ -3585,6 +3647,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
   }
 
   void _showApplicantQuickActions(AdminApplicationItemModel item) {
+    final l10n = AppLocalizations.of(context)!;
     final applicantFuture = _adminService.getUserById(
       item.application.studentId,
     );
@@ -3610,7 +3673,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 ? university
                 : location.isNotEmpty
                 ? location
-                : 'Student profile and submitted documents.';
+                : l10n.uiStudentProfileDocumentsSubtitle;
 
             return DraggableScrollableSheet(
               initialChildSize: 0.58,
@@ -3671,8 +3734,8 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                               spacing: 8,
                               runSpacing: 8,
                               children: [
-                                const AdminPill(
-                                  label: 'Student',
+                                AdminPill(
+                                  label: l10n.uiStudent,
                                   color: Colors.white,
                                   icon: Icons.school_outlined,
                                 ),
@@ -3685,8 +3748,8 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                                     icon: Icons.workspace_premium_outlined,
                                   ),
                                 if ((applicant?.isActive ?? true) == false)
-                                  const AdminPill(
-                                    label: 'Blocked',
+                                  AdminPill(
+                                    label: l10n.uiBlocked,
                                     color: Colors.white,
                                     icon: Icons.block_outlined,
                                   ),
@@ -3706,7 +3769,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                           radius: 18,
                           padding: const EdgeInsets.all(14),
                           child: Text(
-                            'We could not load the full student profile right now. You can still open the application CV and the visible submitted applications.',
+                            l10n.uiCouldNotLoadFullStudentProfile,
                             style: TextStyle(
                               fontSize: 12.5,
                               height: 1.5,
@@ -3827,7 +3890,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                   child: Padding(
                     padding: const EdgeInsets.all(24),
                     child: Text(
-                      _documentErrorMessage(snapshot.error!),
+                      _documentErrorMessage(snapshot.error!, l10n),
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -3837,11 +3900,11 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
 
             final cv = snapshot.data;
             if (cv == null) {
-              return const SizedBox(
+              return SizedBox(
                 height: 220,
                 child: Center(
                   child: Text(
-                    'CV details are not available for this application',
+                    l10n.uiCvDetailsAreNotAvailableForThisApplication,
                   ),
                 ),
               );
@@ -3858,7 +3921,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                   padding: const EdgeInsets.all(20),
                   children: [
                     Text(
-                      cv.fullName.isNotEmpty ? cv.fullName : 'Applicant',
+                      cv.fullName.isNotEmpty ? cv.fullName : l10n.uiApplicant,
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.w700,
@@ -3888,11 +3951,17 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                     _buildApplicationDocumentCard(
                       title: l10n.uiPrimaryCvPdf,
                       subtitle: cv.hasUploadedCv
-                          ? 'File: ${cv.uploadedCvDisplayName}\nUploaded: ${_formatDocumentDate(cv.uploadedCvUploadedAt)}'
+                          ? l10n.uiFileUploadedAt(
+                              cv.uploadedCvDisplayName,
+                              _formatDocumentDate(
+                                cv.uploadedCvUploadedAt,
+                                l10n,
+                              ),
+                            )
                           : l10n.uiNoUploadedCv,
                       accentColor: _accentColor,
                       warningText: cv.hasUploadedCv && !cv.isUploadedCvPdf
-                          ? 'This uploaded file is not a valid PDF. Ask the user to replace it with a PDF version.'
+                          ? l10n.uiUploadedFileInvalidPdfAskReplace
                           : null,
                       onView: cv.hasUploadedCv && cv.isUploadedCvPdf
                           ? () => _openApplicationDocument(
@@ -3935,12 +4004,12 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                     ),
                     if (cv.summary.isNotEmpty) ...[
                       const SizedBox(height: 18),
-                      _buildCvSection('Summary', [cv.summary]),
+                      _buildCvSection(l10n.uiSummary, [cv.summary]),
                     ],
                     if (cv.education.isNotEmpty) ...[
                       const SizedBox(height: 18),
                       _buildCvSection(
-                        'Education',
+                        l10n.uiEducation,
                         cv.education
                             .map(
                               (item) =>
@@ -3952,7 +4021,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                     if (cv.experience.isNotEmpty) ...[
                       const SizedBox(height: 18),
                       _buildCvSection(
-                        'Experience',
+                        l10n.uiExperience,
                         cv.experience
                             .map(
                               (item) =>
@@ -3963,12 +4032,12 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                     ],
                     if (cv.skills.isNotEmpty) ...[
                       const SizedBox(height: 18),
-                      _buildTagSection('Skills', cv.skills, _accentColor),
+                      _buildTagSection(l10n.uiSkills, cv.skills, _accentColor),
                     ],
                     if (cv.languages.isNotEmpty) ...[
                       const SizedBox(height: 18),
                       _buildTagSection(
-                        'Languages',
+                        l10n.uiLanguages,
                         cv.languages,
                         _primaryColor,
                       ),
@@ -4029,7 +4098,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     } catch (e) {
       if (!mounted) return;
       context.showAppSnackBar(
-        _documentErrorMessage(e),
+        _documentErrorMessage(e, l10n),
         title: l10n.uiDocumentUnavailable,
         type: AppFeedbackType.error,
       );
@@ -4120,24 +4189,24 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     );
   }
 
-  String _formatDocumentDate(Timestamp? value) {
+  String _formatDocumentDate(Timestamp? value, AppLocalizations l10n) {
     if (value == null) {
-      return 'Not available';
+      return l10n.uiNotProvided;
     }
 
     return DateFormat('MMM d, yyyy').format(value.toDate());
   }
 
-  String _documentErrorMessage(Object error) {
+  String _documentErrorMessage(Object error, AppLocalizations l10n) {
     final message = error.toString();
     if (message.contains('permission') || message.contains('403')) {
-      return 'Permission denied while opening the document.';
+      return l10n.uiDocumentPermissionDenied;
     }
     if (message.contains('404') || message.contains('not found')) {
-      return 'The requested document is no longer available.';
+      return l10n.uiRequestedDocumentNoLongerAvailable;
     }
 
-    return 'We couldn\'t open the document right now.';
+    return l10n.uiCouldNotOpenTheDocumentRightNow;
   }
 
   void _showOpportunityDetails(Map<String, dynamic> opportunity) {
@@ -4218,9 +4287,17 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             _buildSheetHandle(),
             const SizedBox(height: 16),
             _buildDetailHeroCard(
-              title: (opportunity['title'] ?? 'Opportunity').toString(),
-              subtitle: (opportunity['companyName'] ?? 'Unknown company')
-                  .toString(),
+              title:
+                  (opportunity['title']?.toString().trim().isNotEmpty == true
+                          ? opportunity['title']
+                          : l10n.uiUntitledOpportunity)
+                      .toString(),
+              subtitle:
+                  (opportunity['companyName']?.toString().trim().isNotEmpty ==
+                              true
+                          ? opportunity['companyName']
+                          : l10n.uiUnknownCompany)
+                      .toString(),
               icon: Icons.work_outline_rounded,
               accentColor: typeColor,
               chips: [
@@ -4241,8 +4318,8 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                     color: Colors.white,
                   ),
                 if (opportunityModel.isFeatured)
-                  const AdminActionChip(
-                    label: 'Featured',
+                  AdminActionChip(
+                    label: l10n.uiFeatured,
                     icon: Icons.workspace_premium_outlined,
                     color: Colors.white,
                   ),
@@ -4252,27 +4329,27 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             _buildDetailHighlightsGrid([
               _IdeaHighlightItem(
                 icon: Icons.assignment_outlined,
-                label: 'Applications',
+                label: l10n.uiApplications,
                 value: '${applications.length}',
                 color: AdminPalette.activity,
               ),
               if (opportunityModel.deadlineLabel.trim().isNotEmpty)
                 _IdeaHighlightItem(
                   icon: Icons.event_outlined,
-                  label: 'Deadline',
+                  label: l10n.uiDeadline,
                   value: opportunityModel.deadlineLabel,
                   color: _accentColor,
                 ),
               if ((compensationLabel ?? '').trim().isNotEmpty)
                 _IdeaHighlightItem(
                   icon: Icons.payments_outlined,
-                  label: 'Compensation',
+                  label: l10n.uiCompensation,
                   value: compensationLabel!,
                   color: AdminPalette.success,
                 ),
               _IdeaHighlightItem(
                 icon: Icons.badge_outlined,
-                label: 'Work Setup',
+                label: l10n.uiWorkSetup,
                 value: workModeLabel.isNotEmpty
                     ? workModeLabel
                     : employmentLabel.isNotEmpty
@@ -4292,7 +4369,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             ],
             const SizedBox(height: 10),
             Text(
-              'Location & Logistics',
+              l10n.uiLocationLogistics,
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w700,
@@ -4302,34 +4379,34 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             const SizedBox(height: 8),
             _buildIdeaMetadataGrid([
               _IdeaDetailItem(
-                'Company',
+                l10n.uiCompany,
                 opportunityModel.companyName,
                 icon: Icons.business_outlined,
                 color: typeColor,
               ),
               _IdeaDetailItem(
-                'Location',
+                l10n.uiLocation,
                 opportunityModel.location,
                 icon: Icons.location_on_outlined,
                 color: AdminPalette.info,
               ),
               if (employmentLabel.isNotEmpty)
                 _IdeaDetailItem(
-                  'Employment',
+                  l10n.uiEmployment,
                   employmentLabel,
                   icon: Icons.badge_outlined,
                   color: AdminPalette.primary,
                 ),
               if (paidLabel.isNotEmpty)
                 _IdeaDetailItem(
-                  'Paid Status',
+                  l10n.uiPaidStatus,
                   paidLabel,
                   icon: Icons.account_balance_wallet_outlined,
                   color: AdminPalette.success,
                 ),
               if ((opportunityModel.duration ?? '').trim().isNotEmpty)
                 _IdeaDetailItem(
-                  'Duration',
+                  l10n.uiDuration,
                   opportunityModel.duration!,
                   icon: Icons.schedule_outlined,
                   color: AdminPalette.textMuted,
@@ -4362,7 +4439,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Tags',
+                      l10n.uiTags,
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
@@ -4370,7 +4447,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                       ),
                     ),
                     const SizedBox(height: 8),
-                    _buildTagSection('Opportunity Tags', tags, typeColor),
+                    _buildTagSection(l10n.uiOpportunityTags, tags, typeColor),
                   ],
                 ),
               ),
@@ -4403,7 +4480,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                   _openOpportunityEditor(opportunity: opportunity);
                 },
                 icon: const Icon(Icons.edit_outlined),
-                label: const Text('Edit Opportunity'),
+                label: Text(l10n.uiEditOpportunity),
                 style: FilledButton.styleFrom(
                   backgroundColor: AdminPalette.primary,
                   foregroundColor: Colors.white,
@@ -4418,9 +4495,17 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
   }
 
   void _showScholarshipDetails(Map<String, dynamic> scholarship) {
-    final title = (scholarship['title'] ?? 'Scholarship').toString();
-    final providerName = (scholarship['provider'] ?? 'Unknown provider')
-        .toString();
+    final l10n = AppLocalizations.of(context)!;
+    final title =
+        (scholarship['title']?.toString().trim().isNotEmpty == true
+                ? scholarship['title']
+                : l10n.uiUntitledScholarship)
+            .toString();
+    final providerName =
+        (scholarship['provider']?.toString().trim().isNotEmpty == true
+                ? scholarship['provider']
+                : l10n.uiUnknownProvider)
+            .toString();
     final description = DisplayText.capitalizeLeadingLabel(
       (scholarship['description'] ?? '').toString(),
     );
@@ -4482,20 +4567,20 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               accentColor: _scholarshipAccentColor,
               chips: [
                 if (amountText.isNotEmpty)
-                  const AdminActionChip(
-                    label: 'Funding',
+                  AdminActionChip(
+                    label: l10n.uiFunding,
                     icon: Icons.savings_outlined,
                     color: Colors.white,
                   ),
                 if (deadlineText.trim().isNotEmpty)
-                  const AdminActionChip(
-                    label: 'Deadline Set',
+                  AdminActionChip(
+                    label: l10n.uiDeadlineSet,
                     icon: Icons.event_outlined,
                     color: Colors.white,
                   ),
                 if (link.isNotEmpty)
-                  const AdminActionChip(
-                    label: 'External Link',
+                  AdminActionChip(
+                    label: l10n.uiExternalLink,
                     icon: Icons.open_in_new_rounded,
                     color: Colors.white,
                   ),
@@ -4506,20 +4591,20 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               if (amountText.isNotEmpty)
                 _IdeaHighlightItem(
                   icon: Icons.payments_outlined,
-                  label: 'Amount',
+                  label: l10n.uiAmount,
                   value: amountText,
                   color: AdminPalette.success,
                 ),
               if (deadlineText.trim().isNotEmpty)
                 _IdeaHighlightItem(
                   icon: Icons.event_outlined,
-                  label: 'Deadline',
+                  label: l10n.uiDeadline,
                   value: deadlineText,
                   color: _scholarshipAccentColor,
                 ),
               _IdeaHighlightItem(
                 icon: Icons.business_outlined,
-                label: 'Provider',
+                label: l10n.uiProvider,
                 value: providerName,
                 color: _scholarshipAccentColor,
               ),
@@ -4527,10 +4612,10 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 icon: link.isNotEmpty
                     ? Icons.link_rounded
                     : Icons.link_off_rounded,
-                label: 'Access',
+                label: l10n.uiAccess,
                 value: link.isNotEmpty
-                    ? 'Application Link Ready'
-                    : 'Link not added',
+                    ? l10n.uiApplicationLinkReady
+                    : l10n.uiLinkNotAdded,
                 color: link.isNotEmpty
                     ? AdminPalette.info
                     : AdminPalette.textMuted,
@@ -4556,7 +4641,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             ],
             const SizedBox(height: 10),
             Text(
-              'Positioning & Access',
+              l10n.uiPositioningAccess,
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w700,
@@ -4567,30 +4652,30 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             _buildIdeaMetadataGrid([
               if (categoryText.trim().isNotEmpty)
                 _IdeaDetailItem(
-                  'Category',
+                  l10n.uiCategory,
                   DisplayText.capitalizeWords(categoryText),
                   icon: Icons.category_outlined,
                   color: AdminPalette.info,
                 ),
               if (levelText.trim().isNotEmpty)
                 _IdeaDetailItem(
-                  'Level',
+                  l10n.uiLevel,
                   DisplayText.capitalizeWords(levelText),
                   icon: Icons.school_outlined,
                   color: AdminPalette.primary,
                 ),
               if (locationText.trim().isNotEmpty)
                 _IdeaDetailItem(
-                  'Location',
+                  l10n.uiLocation,
                   DisplayText.capitalizeLeadingLabel(locationText),
                   icon: Icons.public_rounded,
                   color: AdminPalette.secondary,
                 ),
               _IdeaDetailItem(
-                'Access',
+                l10n.uiAccess,
                 link.isNotEmpty
-                    ? 'External Link Available'
-                    : 'Link unavailable',
+                    ? l10n.uiExternalLinkAvailable
+                    : l10n.uiLinkUnavailable,
                 icon: link.isNotEmpty
                     ? Icons.open_in_new_rounded
                     : Icons.link_off_rounded,
@@ -4605,7 +4690,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 radius: 16,
                 padding: const EdgeInsets.all(12),
                 child: _buildTagSection(
-                  'Scholarship Tags',
+                  l10n.uiScholarshipTags,
                   tags,
                   _scholarshipAccentColor,
                 ),
@@ -4633,13 +4718,14 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
   }
 
   void _showTrainingDetails(TrainingModel training) {
+    final l10n = AppLocalizations.of(context)!;
     final description = DisplayText.capitalizeLeadingLabel(
       training.description,
     );
     final trainingAccentColor = _trainingAccentColor(training.type);
     final providerName = training.provider.isNotEmpty
         ? training.provider
-        : 'Training';
+        : l10n.uiTraining;
     final typeLabel = DisplayText.capitalizeWords(training.type);
     final domainLabel = DisplayText.capitalizeWords(training.domain);
     final levelLabel = DisplayText.capitalizeWords(training.level);
@@ -4647,13 +4733,13 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     final accessLabel = training.isFree == null
         ? ''
         : training.isFree!
-        ? 'Free'
-        : 'Paid';
+        ? l10n.uiFree
+        : l10n.uiPaid;
     final certificateLabel = training.hasCertificate == null
         ? ''
         : training.hasCertificate!
-        ? 'Certificate Available'
-        : 'Certificate not included';
+        ? l10n.uiCertificateAvailable
+        : l10n.uiCertificateNotIncluded;
     final learnerLabel = training.learnerCountLabel.trim().isNotEmpty
         ? training.learnerCountLabel.trim()
         : training.learnerCount?.toString() ?? '';
@@ -4707,8 +4793,8 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                     color: Colors.white,
                   ),
                 if (training.isFeatured)
-                  const AdminActionChip(
-                    label: 'Featured',
+                  AdminActionChip(
+                    label: l10n.uiFeatured,
                     icon: Icons.workspace_premium_outlined,
                     color: Colors.white,
                   ),
@@ -4719,21 +4805,21 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               if (training.duration.trim().isNotEmpty)
                 _IdeaHighlightItem(
                   icon: Icons.schedule_outlined,
-                  label: 'Duration',
+                  label: l10n.uiDuration,
                   value: training.duration,
                   color: trainingAccentColor,
                 ),
               if (learnerLabel.isNotEmpty)
                 _IdeaHighlightItem(
                   icon: Icons.groups_rounded,
-                  label: 'Learners',
+                  label: l10n.uiLearners,
                   value: learnerLabel,
                   color: AdminPalette.info,
                 ),
               if (ratingLabel.isNotEmpty)
                 _IdeaHighlightItem(
                   icon: Icons.star_outline_rounded,
-                  label: 'Rating',
+                  label: l10n.uiRating,
                   value: ratingLabel,
                   color: _accentColor,
                 ),
@@ -4741,8 +4827,10 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 icon: training.isApproved
                     ? Icons.check_circle_outline_rounded
                     : Icons.hourglass_top_rounded,
-                label: 'Status',
-                value: training.isApproved ? 'Approved' : 'Pending Review',
+                label: l10n.uiStatus,
+                value: training.isApproved
+                    ? l10n.uiApproved
+                    : l10n.uiPendingReview,
                 color: training.isApproved
                     ? AdminPalette.success
                     : _ideaAccentColor,
@@ -4759,7 +4847,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             ],
             const SizedBox(height: 10),
             Text(
-              'Delivery & Access',
+              l10n.uiDeliveryAccess,
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w700,
@@ -4770,21 +4858,21 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             _buildIdeaMetadataGrid([
               if (sourceLabel.isNotEmpty)
                 _IdeaDetailItem(
-                  'Source',
+                  l10n.uiSource,
                   sourceLabel,
                   icon: Icons.cloud_outlined,
                   color: AdminPalette.secondary,
                 ),
               if (training.language.trim().isNotEmpty)
                 _IdeaDetailItem(
-                  'Language',
+                  l10n.uiLanguage,
                   DisplayText.capitalizeWords(training.language),
                   icon: Icons.translate_rounded,
                   color: AdminPalette.activity,
                 ),
               if (accessLabel.isNotEmpty)
                 _IdeaDetailItem(
-                  'Access',
+                  l10n.uiAccess,
                   accessLabel,
                   icon: Icons.payments_outlined,
                   color: training.isFree == true
@@ -4793,7 +4881,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 ),
               if (certificateLabel.isNotEmpty)
                 _IdeaDetailItem(
-                  'Certificate',
+                  l10n.uiCertificate,
                   certificateLabel,
                   icon: Icons.verified_outlined,
                   color: AdminPalette.success,
@@ -4805,7 +4893,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 radius: 16,
                 padding: const EdgeInsets.all(12),
                 child: _buildTagSection(
-                  'Authors',
+                  l10n.uiAuthors,
                   authors,
                   trainingAccentColor,
                 ),
@@ -5157,8 +5245,9 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
   }
 
   String _formatTimestamp(dynamic value) {
+    final l10n = AppLocalizations.of(context)!;
     if (value == null) {
-      return 'Unknown time';
+      return l10n.uiUnknownTime;
     }
 
     final dateTime = value is DateTime
@@ -5167,7 +5256,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
         ? value.toDate()
         : null;
     if (dateTime == null) {
-      return 'Unknown time';
+      return l10n.uiUnknownTime;
     }
 
     return DateFormat('MMM d, yyyy - HH:mm').format(dateTime);

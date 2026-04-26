@@ -3320,7 +3320,7 @@ abstract class AppLocalizations {
   /// No description provided for @uiDownload.
   ///
   /// In en, this message translates to:
-  /// **'Download Ø³Ø¬Ù ØªØ¬Ø§Ø±Ù'**
+  /// **'Download'**
   String get uiDownload;
 
   /// No description provided for @uiDownloadA479.
@@ -8393,7 +8393,7 @@ abstract class AppLocalizations {
   /// No description provided for @uiDownloada479c9.
   ///
   /// In en, this message translates to:
-  /// **'Download Ø³Ø¬Ù ØªØ¬Ø§Ø±Ù'**
+  /// **'Download'**
   String get uiDownloada479c9;
 
   /// No description provided for @uiValueMbSelected.
@@ -13184,6 +13184,784 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Press back again to exit the app.'**
   String get pressBackAgainToExitApp;
+
+  /// No description provided for @uiDashboardSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Platform pulse, moderation load, and quick control points.'**
+  String get uiDashboardSubtitle;
+
+  /// No description provided for @uiUsersSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Search users, review profiles, and manage account status.'**
+  String get uiUsersSubtitle;
+
+  /// No description provided for @uiContentSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Moderate ideas, applications, listings, scholarships, and library resources.'**
+  String get uiContentSubtitle;
+
+  /// No description provided for @uiActivitySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Track platform changes and jump straight into the right queue.'**
+  String get uiActivitySubtitle;
+
+  /// No description provided for @uiAdmins.
+  ///
+  /// In en, this message translates to:
+  /// **'Admins'**
+  String get uiAdmins;
+
+  /// No description provided for @uiAccountState.
+  ///
+  /// In en, this message translates to:
+  /// **'Account state'**
+  String get uiAccountState;
+
+  /// No description provided for @uiApprovalStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Approval Status'**
+  String get uiApprovalStatus;
+
+  /// No description provided for @uiDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get uiDescription;
+
+  /// No description provided for @uiPendingReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending review'**
+  String get uiPendingReview;
+
+  /// No description provided for @uiSelectedAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected account'**
+  String get uiSelectedAccount;
+
+  /// No description provided for @uiSelectedCompany.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected company'**
+  String get uiSelectedCompany;
+
+  /// No description provided for @uiBlockUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Block User'**
+  String get uiBlockUser;
+
+  /// No description provided for @uiUnblockUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Unblock User'**
+  String get uiUnblockUser;
+
+  /// No description provided for @uiBlockUserMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This will immediately remove access to the app until you restore the account later.'**
+  String get uiBlockUserMessage;
+
+  /// No description provided for @uiUnblockUserMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This will restore access and let the user sign in and use the app again.'**
+  String get uiUnblockUserMessage;
+
+  /// No description provided for @uiApproveCompanyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This will unlock the workspace and let the company use its approved features right away.'**
+  String get uiApproveCompanyMessage;
+
+  /// No description provided for @uiRejectCompanyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This will keep the company out of the workspace until the profile details are corrected.'**
+  String get uiRejectCompanyMessage;
+
+  /// No description provided for @uiMarkPendingCompanyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This will move the company back into the review queue for another moderation pass.'**
+  String get uiMarkPendingCompanyMessage;
+
+  /// No description provided for @uiApproveCompanySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock the company workspace and move it into the approved state.'**
+  String get uiApproveCompanySubtitle;
+
+  /// No description provided for @uiRejectCompanySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep the company out of the workspace until the profile is corrected.'**
+  String get uiRejectCompanySubtitle;
+
+  /// No description provided for @uiMarkPendingSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Move the company back into the review queue for another check.'**
+  String get uiMarkPendingSubtitle;
+
+  /// No description provided for @uiBlockUserSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Temporarily remove access to this account.'**
+  String get uiBlockUserSubtitle;
+
+  /// No description provided for @uiUnblockUserSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore access and let the user sign in again.'**
+  String get uiUnblockUserSubtitle;
+
+  /// No description provided for @uiApplicationsSuffix.
+  ///
+  /// In en, this message translates to:
+  /// **'applications'**
+  String get uiApplicationsSuffix;
+
+  /// No description provided for @uiSavesSuffix.
+  ///
+  /// In en, this message translates to:
+  /// **'saves'**
+  String get uiSavesSuffix;
+
+  /// No description provided for @uiUnknownTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown time'**
+  String get uiUnknownTime;
+
+  /// No description provided for @uiCompanyNameNotAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Company name not added'**
+  String get uiCompanyNameNotAdded;
+
+  /// No description provided for @uiPostedOpportunities.
+  ///
+  /// In en, this message translates to:
+  /// **'Posted Opportunities'**
+  String get uiPostedOpportunities;
+
+  /// No description provided for @uiViewOpportunities.
+  ///
+  /// In en, this message translates to:
+  /// **'View Opportunities'**
+  String get uiViewOpportunities;
+
+  /// No description provided for @uiOpportunitiesUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load opportunities right now.'**
+  String get uiOpportunitiesUnavailable;
+
+  /// No description provided for @uiNoOpportunitiesPostedYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No opportunities posted yet.'**
+  String get uiNoOpportunitiesPostedYet;
+
+  /// No description provided for @uiCompanyOpportunities.
+  ///
+  /// In en, this message translates to:
+  /// **'Company opportunities'**
+  String get uiCompanyOpportunities;
+
+  /// No description provided for @uiNoCompanyOpportunitiesYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No opportunities posted by this company yet.'**
+  String get uiNoCompanyOpportunitiesYet;
+
+  /// No description provided for @uiOpportunityHistoryUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Opportunity history unavailable'**
+  String get uiOpportunityHistoryUnavailable;
+
+  /// No description provided for @uiOpportunityHistoryUnavailableMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'We could not load this company\'s posted opportunities right now.'**
+  String get uiOpportunityHistoryUnavailableMessage;
+
+  /// No description provided for @uiNoOpportunitiesYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No opportunities yet'**
+  String get uiNoOpportunitiesYet;
+
+  /// No description provided for @uiNoOpportunitiesPostedByCompany.
+  ///
+  /// In en, this message translates to:
+  /// **'This company has not posted any opportunities yet.'**
+  String get uiNoOpportunitiesPostedByCompany;
+
+  /// No description provided for @uiCommercialRegisterUploaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Commercial Register uploaded'**
+  String get uiCommercialRegisterUploaded;
+
+  /// No description provided for @uiCommercialRegisterMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'Missing commercial register document.'**
+  String get uiCommercialRegisterMissing;
+
+  /// No description provided for @uiJustNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Just now'**
+  String get uiJustNow;
+
+  /// No description provided for @uiOlderActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Older Activity'**
+  String get uiOlderActivity;
+
+  /// No description provided for @uiEndOfActivityFeed.
+  ///
+  /// In en, this message translates to:
+  /// **'You have reached the end of the recent activity feed.'**
+  String get uiEndOfActivityFeed;
+
+  /// No description provided for @uiOlderActivityUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Older activity could not be loaded'**
+  String get uiOlderActivityUnavailable;
+
+  /// No description provided for @uiNeedMoreActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Need more activity?'**
+  String get uiNeedMoreActivity;
+
+  /// No description provided for @uiFetchingOlderUpdates.
+  ///
+  /// In en, this message translates to:
+  /// **'Fetching older updates from across the platform.'**
+  String get uiFetchingOlderUpdates;
+
+  /// No description provided for @uiLoadOlderUpdates.
+  ///
+  /// In en, this message translates to:
+  /// **'Load older updates from submissions, listings, trainings, scholarships, and project ideas.'**
+  String get uiLoadOlderUpdates;
+
+  /// No description provided for @uiAdminCreatedIdeas.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin-Created Ideas'**
+  String get uiAdminCreatedIdeas;
+
+  /// No description provided for @uiReviewSubmittedIdeas.
+  ///
+  /// In en, this message translates to:
+  /// **'Review submitted ideas, keep the pending queue moving, and open details when you need the full picture.'**
+  String get uiReviewSubmittedIdeas;
+
+  /// No description provided for @uiReviewJobsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Review jobs, internships, and sponsored posts. Filter by source, status, or pending reviews.'**
+  String get uiReviewJobsDescription;
+
+  /// No description provided for @uiAllTypes.
+  ///
+  /// In en, this message translates to:
+  /// **'All Types'**
+  String get uiAllTypes;
+
+  /// No description provided for @uiEditOpportunity.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Opportunity'**
+  String get uiEditOpportunity;
+
+  /// No description provided for @uiUnknownCompany.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown company'**
+  String get uiUnknownCompany;
+
+  /// No description provided for @uiOpenPostToReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Open this post to review the full role and requirements.'**
+  String get uiOpenPostToReview;
+
+  /// No description provided for @uiDeleteProjectIdea.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Project Idea'**
+  String get uiDeleteProjectIdea;
+
+  /// Confirmation message for deleting an item.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete \"{title}\"?'**
+  String uiDeleteItemConfirm(Object title);
+
+  /// Attributed label e.g. 'By John'.
+  ///
+  /// In en, this message translates to:
+  /// **'By {name}'**
+  String uiByName(Object name);
+
+  /// No description provided for @uiYourPost.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Post'**
+  String get uiYourPost;
+
+  /// No description provided for @uiApps.
+  ///
+  /// In en, this message translates to:
+  /// **'Apps'**
+  String get uiApps;
+
+  /// No description provided for @uiUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Updated'**
+  String get uiUpdated;
+
+  /// No description provided for @uiAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Added'**
+  String get uiAdded;
+
+  /// No description provided for @uiDue.
+  ///
+  /// In en, this message translates to:
+  /// **'Due'**
+  String get uiDue;
+
+  /// No description provided for @uiDeleteScholarship.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Scholarship'**
+  String get uiDeleteScholarship;
+
+  /// No description provided for @uiKeepFundingCallsClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep funding calls clear, trustworthy, and easy to scan before students open the full details.'**
+  String get uiKeepFundingCallsClear;
+
+  /// No description provided for @uiOpenScholarshipToReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Open this scholarship to review eligibility and access details.'**
+  String get uiOpenScholarshipToReview;
+
+  /// No description provided for @uiPendingIdeas.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending Ideas'**
+  String get uiPendingIdeas;
+
+  /// No description provided for @uiApprovedIdeas.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved Ideas'**
+  String get uiApprovedIdeas;
+
+  /// No description provided for @uiRejectedIdeas.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected Ideas'**
+  String get uiRejectedIdeas;
+
+  /// No description provided for @uiHiddenIdeas.
+  ///
+  /// In en, this message translates to:
+  /// **'Hidden Ideas'**
+  String get uiHiddenIdeas;
+
+  /// No description provided for @uiFeaturedScholarships.
+  ///
+  /// In en, this message translates to:
+  /// **'Featured Scholarships'**
+  String get uiFeaturedScholarships;
+
+  /// No description provided for @uiHiddenScholarships.
+  ///
+  /// In en, this message translates to:
+  /// **'Hidden Scholarships'**
+  String get uiHiddenScholarships;
+
+  /// No description provided for @uiScholarshipListings.
+  ///
+  /// In en, this message translates to:
+  /// **'Scholarship Listings'**
+  String get uiScholarshipListings;
+
+  /// No description provided for @uiNoAdminIdeasMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'No admin-created ideas match this search'**
+  String get uiNoAdminIdeasMatch;
+
+  /// No description provided for @uiNoPendingIdeasMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'No pending ideas match this search'**
+  String get uiNoPendingIdeasMatch;
+
+  /// No description provided for @uiNoApprovedIdeasMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'No approved ideas match this search'**
+  String get uiNoApprovedIdeasMatch;
+
+  /// No description provided for @uiNoRejectedIdeasMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'No rejected ideas match this search'**
+  String get uiNoRejectedIdeasMatch;
+
+  /// No description provided for @uiNoHiddenIdeasMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'No hidden ideas match this search'**
+  String get uiNoHiddenIdeasMatch;
+
+  /// No description provided for @uiNoIdeasMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'No ideas match this search'**
+  String get uiNoIdeasMatch;
+
+  /// No description provided for @uiNoFeaturedScholarshipsMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'No featured scholarships match this search'**
+  String get uiNoFeaturedScholarshipsMatch;
+
+  /// No description provided for @uiNoHiddenScholarshipsMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'No hidden scholarships match this search'**
+  String get uiNoHiddenScholarshipsMatch;
+
+  /// No description provided for @uiNoScholarshipsMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'No scholarships match this search'**
+  String get uiNoScholarshipsMatch;
+
+  /// No description provided for @uiAdminOpportunities.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin Opportunities'**
+  String get uiAdminOpportunities;
+
+  /// No description provided for @uiPendingApplications.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending Applications'**
+  String get uiPendingApplications;
+
+  /// No description provided for @uiClosedOpportunities.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed Opportunities'**
+  String get uiClosedOpportunities;
+
+  /// No description provided for @uiFeaturedOpportunities.
+  ///
+  /// In en, this message translates to:
+  /// **'Featured Opportunities'**
+  String get uiFeaturedOpportunities;
+
+  /// No description provided for @uiHiddenOpportunities.
+  ///
+  /// In en, this message translates to:
+  /// **'Hidden Opportunities'**
+  String get uiHiddenOpportunities;
+
+  /// No description provided for @uiOpportunityQueue.
+  ///
+  /// In en, this message translates to:
+  /// **'Opportunity Queue'**
+  String get uiOpportunityQueue;
+
+  /// No description provided for @uiExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired'**
+  String get uiExpired;
+
+  /// Collection label for an opportunity type, e.g. job opportunities.
+  ///
+  /// In en, this message translates to:
+  /// **'{type} opportunities'**
+  String uiOpportunityTypeCollectionLabel(Object type);
+
+  /// Empty state for admin-posted filtered content.
+  ///
+  /// In en, this message translates to:
+  /// **'No admin-posted {items} match this search'**
+  String uiNoAdminPostedItemsMatchSearch(Object items);
+
+  /// Empty state for content with pending applications.
+  ///
+  /// In en, this message translates to:
+  /// **'No {items} with pending applications right now'**
+  String uiNoItemsWithPendingApplicationsRightNow(Object items);
+
+  /// Empty state for closed filtered content.
+  ///
+  /// In en, this message translates to:
+  /// **'No closed {items} match this search'**
+  String uiNoClosedItemsMatchSearch(Object items);
+
+  /// Empty state for featured filtered content.
+  ///
+  /// In en, this message translates to:
+  /// **'No featured {items} match this search'**
+  String uiNoFeaturedItemsMatchSearch(Object items);
+
+  /// Empty state for hidden filtered content.
+  ///
+  /// In en, this message translates to:
+  /// **'No hidden {items} match this search'**
+  String uiNoHiddenItemsMatchSearch(Object items);
+
+  /// Generic empty state for filtered content.
+  ///
+  /// In en, this message translates to:
+  /// **'No {items} match this search'**
+  String uiNoItemsMatchSearch(Object items);
+
+  /// Snackbar message shown after hiding an item.
+  ///
+  /// In en, this message translates to:
+  /// **'{itemType} \"{title}\" hidden. You can restore it later.'**
+  String uiItemHiddenMessage(Object itemType, Object title);
+
+  /// Snackbar message shown after making an item visible.
+  ///
+  /// In en, this message translates to:
+  /// **'{itemType} \"{title}\" is visible again.'**
+  String uiItemVisibleMessage(Object itemType, Object title);
+
+  /// Snackbar title shown after hiding an item.
+  ///
+  /// In en, this message translates to:
+  /// **'{itemType} hidden'**
+  String uiItemHiddenTitle(Object itemType);
+
+  /// Snackbar title shown after making an item visible.
+  ///
+  /// In en, this message translates to:
+  /// **'{itemType} visible'**
+  String uiItemVisibleTitle(Object itemType);
+
+  /// No description provided for @uiPublicIdea.
+  ///
+  /// In en, this message translates to:
+  /// **'Public Idea'**
+  String get uiPublicIdea;
+
+  /// No description provided for @uiPrivateIdea.
+  ///
+  /// In en, this message translates to:
+  /// **'Private Idea'**
+  String get uiPrivateIdea;
+
+  /// No description provided for @uiSubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitted'**
+  String get uiSubmitted;
+
+  /// No description provided for @uiOpportunityTags.
+  ///
+  /// In en, this message translates to:
+  /// **'Opportunity Tags'**
+  String get uiOpportunityTags;
+
+  /// No description provided for @uiApplicationLinkReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Application Link Ready'**
+  String get uiApplicationLinkReady;
+
+  /// No description provided for @uiLinkNotAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Link not added'**
+  String get uiLinkNotAdded;
+
+  /// No description provided for @uiExternalLinkAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'External Link Available'**
+  String get uiExternalLinkAvailable;
+
+  /// No description provided for @uiScholarshipTags.
+  ///
+  /// In en, this message translates to:
+  /// **'Scholarship Tags'**
+  String get uiScholarshipTags;
+
+  /// No description provided for @uiCertificateAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Certificate Available'**
+  String get uiCertificateAvailable;
+
+  /// No description provided for @uiCertificateNotIncluded.
+  ///
+  /// In en, this message translates to:
+  /// **'Certificate not included'**
+  String get uiCertificateNotIncluded;
+
+  /// No description provided for @uiAuthors.
+  ///
+  /// In en, this message translates to:
+  /// **'Authors'**
+  String get uiAuthors;
+
+  /// No description provided for @uiStudentProfileDocumentsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Student profile and submitted documents.'**
+  String get uiStudentProfileDocumentsSubtitle;
+
+  /// No description provided for @uiCouldNotLoadFullStudentProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'We could not load the full student profile right now. You can still open the application CV and the visible submitted applications.'**
+  String get uiCouldNotLoadFullStudentProfile;
+
+  /// No description provided for @uiApplicant.
+  ///
+  /// In en, this message translates to:
+  /// **'Applicant'**
+  String get uiApplicant;
+
+  /// CV file name and upload date shown together.
+  ///
+  /// In en, this message translates to:
+  /// **'File: {fileName}\nUploaded: {uploadedAt}'**
+  String uiFileUploadedAt(Object fileName, Object uploadedAt);
+
+  /// No description provided for @uiUploadedFileInvalidPdfAskReplace.
+  ///
+  /// In en, this message translates to:
+  /// **'This uploaded file is not a valid PDF. Ask the user to replace it with a PDF version.'**
+  String get uiUploadedFileInvalidPdfAskReplace;
+
+  /// No description provided for @uiDocumentPermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Permission denied while opening the document.'**
+  String get uiDocumentPermissionDenied;
+
+  /// No description provided for @uiRequestedDocumentNoLongerAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'The requested document is no longer available.'**
+  String get uiRequestedDocumentNoLongerAvailable;
+
+  /// No description provided for @uiScholarshipLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Scholarship'**
+  String get uiScholarshipLabel;
+
+  /// No description provided for @uiSearchIdeasByTitleDomainSubmitterOrStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Search ideas by title, domain, submitter, or status...'**
+  String get uiSearchIdeasByTitleDomainSubmitterOrStatus;
+
+  /// No description provided for @uiSearchOpportunitiesByTitleCompanyLocationStatusOrCompensation.
+  ///
+  /// In en, this message translates to:
+  /// **'Search opportunities by title, company, location, status, or compensation...'**
+  String get uiSearchOpportunitiesByTitleCompanyLocationStatusOrCompensation;
+
+  /// No description provided for @uiSearchScholarshipsByTitleProviderOrDeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Search scholarships by title, provider, or deadline...'**
+  String get uiSearchScholarshipsByTitleProviderOrDeadline;
+
+  /// No description provided for @uiSearchLibraryResources.
+  ///
+  /// In en, this message translates to:
+  /// **'Search library resources...'**
+  String get uiSearchLibraryResources;
+
+  /// No description provided for @uiFocused.
+  ///
+  /// In en, this message translates to:
+  /// **'Focused'**
+  String get uiFocused;
+
+  /// Label for the active search query chip.
+  ///
+  /// In en, this message translates to:
+  /// **'Search: {query}'**
+  String uiSearchQueryLabel(Object query);
+
+  /// Compact relative time in minutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}m ago'**
+  String uiMinutesAgoShort(Object count);
+
+  /// Compact relative time in hours.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}h ago'**
+  String uiHoursAgoShort(Object count);
+
+  /// Compact relative time in days.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}d ago'**
+  String uiDaysAgoShort(Object count);
+
+  /// Dashboard application rate value.
+  ///
+  /// In en, this message translates to:
+  /// **'{rate} apps per opportunity'**
+  String uiAppsPerOpportunity(Object rate);
+
+  /// Dashboard CV completion rate value.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% ({totalCvs} of {students} students)'**
+  String uiCvCompletionRateValue(
+    Object percent,
+    Object totalCvs,
+    Object students,
+  );
+
+  /// Dashboard pending and approved idea counts.
+  ///
+  /// In en, this message translates to:
+  /// **'{pending} pending and {approved} approved'**
+  String uiPendingApprovedIdeasValue(Object pending, Object approved);
 }
 
 class _AppLocalizationsDelegate

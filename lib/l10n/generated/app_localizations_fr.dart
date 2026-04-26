@@ -1788,7 +1788,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiDomain => 'Domaine';
 
   @override
-  String get uiDownload => 'Télécharger Ø³Ø¬Ù ØªØ¬Ø§Ø±Ù';
+  String get uiDownload => 'Télécharger';
 
   @override
   String get uiDownloadA479 => 'Télécharger';
@@ -4768,7 +4768,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get uiDownloada479c9 => 'Télécharger Ø³Ø¬Ù ØªØ¬Ø§Ø±Ù';
+  String get uiDownloada479c9 => 'Télécharger';
 
   @override
   String uiValueMbSelected(Object value1) {
@@ -7571,4 +7571,484 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get pressBackAgainToExitApp =>
       'Appuyez encore sur retour pour quitter l\'application.';
+
+  @override
+  String get uiDashboardSubtitle =>
+      'Pulsation de la plateforme, charge de modération et points de contrôle rapides.';
+
+  @override
+  String get uiUsersSubtitle =>
+      'Recherchez des utilisateurs, consultez les profils et gérez le statut des comptes.';
+
+  @override
+  String get uiContentSubtitle =>
+      'Modérez les idées, candidatures, annonces, bourses et ressources de la bibliothèque.';
+
+  @override
+  String get uiActivitySubtitle =>
+      'Suivez les modifications de la plateforme et accédez directement à la bonne file d\'attente.';
+
+  @override
+  String get uiAdmins => 'Admins';
+
+  @override
+  String get uiAccountState => 'État du compte';
+
+  @override
+  String get uiApprovalStatus => 'Statut d\'approbation';
+
+  @override
+  String get uiDescription => 'Description';
+
+  @override
+  String get uiPendingReview => 'En attente de révision';
+
+  @override
+  String get uiSelectedAccount => 'Compte sélectionné';
+
+  @override
+  String get uiSelectedCompany => 'Entreprise sélectionnée';
+
+  @override
+  String get uiBlockUser => 'Bloquer l\'utilisateur';
+
+  @override
+  String get uiUnblockUser => 'Débloquer l\'utilisateur';
+
+  @override
+  String get uiBlockUserMessage =>
+      'Cela supprimera immédiatement l\'accès à l\'application jusqu\'à ce que vous restauriez le compte ultérieurement.';
+
+  @override
+  String get uiUnblockUserMessage =>
+      'Cela restaurera l\'accès et permettra à l\'utilisateur de se reconnecter et d\'utiliser l\'application.';
+
+  @override
+  String get uiApproveCompanyMessage =>
+      'Cela débloquera l\'espace de travail et permettra à l\'entreprise d\'utiliser ses fonctionnalités approuvées immédiatement.';
+
+  @override
+  String get uiRejectCompanyMessage =>
+      'Cela empêchera l\'entreprise d\'accéder à l\'espace de travail jusqu\'à ce que les détails du profil soient corrigés.';
+
+  @override
+  String get uiMarkPendingCompanyMessage =>
+      'Cela remettra l\'entreprise dans la file d\'attente de révision pour un autre passage de modération.';
+
+  @override
+  String get uiApproveCompanySubtitle =>
+      'Déverrouillez l\'espace de travail de l\'entreprise et faites-le passer à l\'état approuvé.';
+
+  @override
+  String get uiRejectCompanySubtitle =>
+      'Gardez l\'entreprise hors de l\'espace de travail jusqu\'à ce que le profil soit corrigé.';
+
+  @override
+  String get uiMarkPendingSubtitle =>
+      'Remettez l\'entreprise dans la file d\'attente de révision pour une autre vérification.';
+
+  @override
+  String get uiBlockUserSubtitle =>
+      'Supprimer temporairement l\'accès à ce compte.';
+
+  @override
+  String get uiUnblockUserSubtitle =>
+      'Restaurer l\'accès et permettre à l\'utilisateur de se reconnecter.';
+
+  @override
+  String get uiApplicationsSuffix => 'candidatures';
+
+  @override
+  String get uiSavesSuffix => 'sauvegardes';
+
+  @override
+  String get uiUnknownTime => 'Heure inconnue';
+
+  @override
+  String get uiCompanyNameNotAdded => 'Nom de l\'entreprise non ajouté';
+
+  @override
+  String get uiPostedOpportunities => 'Opportunités publiées';
+
+  @override
+  String get uiViewOpportunities => 'Voir les opportunités';
+
+  @override
+  String get uiOpportunitiesUnavailable =>
+      'Impossible de charger les opportunités pour le moment.';
+
+  @override
+  String get uiNoOpportunitiesPostedYet =>
+      'Aucune opportunité publiée pour le moment.';
+
+  @override
+  String get uiCompanyOpportunities => 'Opportunités de l\'entreprise';
+
+  @override
+  String get uiNoCompanyOpportunitiesYet =>
+      'Cette entreprise n\'a pas encore publié d\'opportunités.';
+
+  @override
+  String get uiOpportunityHistoryUnavailable =>
+      'Historique des opportunités indisponible';
+
+  @override
+  String get uiOpportunityHistoryUnavailableMessage =>
+      'Nous n\'avons pas pu charger les opportunités publiées par cette entreprise pour le moment.';
+
+  @override
+  String get uiNoOpportunitiesYet => 'Aucune opportunité pour l\'instant';
+
+  @override
+  String get uiNoOpportunitiesPostedByCompany =>
+      'Cette entreprise n\'a pas encore publié d\'opportunités.';
+
+  @override
+  String get uiCommercialRegisterUploaded => 'Registre commercial téléchargé';
+
+  @override
+  String get uiCommercialRegisterMissing =>
+      'Document de registre commercial manquant.';
+
+  @override
+  String get uiJustNow => 'À l\'instant';
+
+  @override
+  String get uiOlderActivity => 'Activité ancienne';
+
+  @override
+  String get uiEndOfActivityFeed =>
+      'Vous avez atteint la fin du fil d\'actualité récent.';
+
+  @override
+  String get uiOlderActivityUnavailable =>
+      'Impossible de charger les activités plus anciennes';
+
+  @override
+  String get uiNeedMoreActivity => 'Besoin de plus d\'activité ?';
+
+  @override
+  String get uiFetchingOlderUpdates =>
+      'Récupération des anciennes mises à jour depuis la plateforme.';
+
+  @override
+  String get uiLoadOlderUpdates =>
+      'Charger les anciennes mises à jour des candidatures, des offres, des formations, des bourses et des idées de projets.';
+
+  @override
+  String get uiAdminCreatedIdeas => 'Idées créées par l\'admin';
+
+  @override
+  String get uiReviewSubmittedIdeas =>
+      'Révisez les idées soumises, faites avancer la file d\'attente et ouvrez les détails si nécessaire.';
+
+  @override
+  String get uiReviewJobsDescription =>
+      'Révisez les emplois, stages et publications sponsorisées. Filtrez par source, statut ou révisions en attente.';
+
+  @override
+  String get uiAllTypes => 'Tous les types';
+
+  @override
+  String get uiEditOpportunity => 'Modifier l\'offre';
+
+  @override
+  String get uiUnknownCompany => 'Entreprise inconnue';
+
+  @override
+  String get uiOpenPostToReview =>
+      'Ouvrez ce post pour voir le rôle complet et les exigences.';
+
+  @override
+  String get uiDeleteProjectIdea => 'Supprimer l\'idée de projet';
+
+  @override
+  String uiDeleteItemConfirm(Object title) {
+    return 'Voulez-vous vraiment supprimer \"$title\" ?';
+  }
+
+  @override
+  String uiByName(Object name) {
+    return 'Par $name';
+  }
+
+  @override
+  String get uiYourPost => 'Votre publication';
+
+  @override
+  String get uiApps => 'Candidatures';
+
+  @override
+  String get uiUpdated => 'Mis à jour';
+
+  @override
+  String get uiAdded => 'Ajouté';
+
+  @override
+  String get uiDue => 'Échéance';
+
+  @override
+  String get uiDeleteScholarship => 'Supprimer la bourse';
+
+  @override
+  String get uiKeepFundingCallsClear =>
+      'Gardez les appels à financement clairs, fiables et faciles à parcourir avant que les étudiants n\'ouvrent les détails.';
+
+  @override
+  String get uiOpenScholarshipToReview =>
+      'Ouvrez cette bourse pour examiner les critères d\'éligibilité et les détails d\'accès.';
+
+  @override
+  String get uiPendingIdeas => 'Idées en attente';
+
+  @override
+  String get uiApprovedIdeas => 'Idées approuvées';
+
+  @override
+  String get uiRejectedIdeas => 'Idées rejetées';
+
+  @override
+  String get uiHiddenIdeas => 'Idées masquées';
+
+  @override
+  String get uiFeaturedScholarships => 'Bourses mises en avant';
+
+  @override
+  String get uiHiddenScholarships => 'Bourses masquées';
+
+  @override
+  String get uiScholarshipListings => 'Liste des bourses';
+
+  @override
+  String get uiNoAdminIdeasMatch =>
+      'Aucune idée créée par l\'admin ne correspond à cette recherche';
+
+  @override
+  String get uiNoPendingIdeasMatch =>
+      'Aucune idée en attente ne correspond à cette recherche';
+
+  @override
+  String get uiNoApprovedIdeasMatch =>
+      'Aucune idée approuvée ne correspond à cette recherche';
+
+  @override
+  String get uiNoRejectedIdeasMatch =>
+      'Aucune idée rejetée ne correspond à cette recherche';
+
+  @override
+  String get uiNoHiddenIdeasMatch =>
+      'Aucune idée masquée ne correspond à cette recherche';
+
+  @override
+  String get uiNoIdeasMatch => 'Aucune idée ne correspond à cette recherche';
+
+  @override
+  String get uiNoFeaturedScholarshipsMatch =>
+      'Aucune bourse mise en avant ne correspond à cette recherche';
+
+  @override
+  String get uiNoHiddenScholarshipsMatch =>
+      'Aucune bourse masquée ne correspond à cette recherche';
+
+  @override
+  String get uiNoScholarshipsMatch =>
+      'Aucune bourse ne correspond à cette recherche';
+
+  @override
+  String get uiAdminOpportunities => 'Offres de l\'admin';
+
+  @override
+  String get uiPendingApplications => 'Candidatures en attente';
+
+  @override
+  String get uiClosedOpportunities => 'Offres clôturées';
+
+  @override
+  String get uiFeaturedOpportunities => 'Offres mises en avant';
+
+  @override
+  String get uiHiddenOpportunities => 'Offres masquées';
+
+  @override
+  String get uiOpportunityQueue => 'File des offres';
+
+  @override
+  String get uiExpired => 'Expirée';
+
+  @override
+  String uiOpportunityTypeCollectionLabel(Object type) {
+    return 'offres de type $type';
+  }
+
+  @override
+  String uiNoAdminPostedItemsMatchSearch(Object items) {
+    return 'Aucun élément publié par l\'admin parmi $items ne correspond à cette recherche';
+  }
+
+  @override
+  String uiNoItemsWithPendingApplicationsRightNow(Object items) {
+    return 'Aucun élément parmi $items avec des candidatures en attente pour le moment';
+  }
+
+  @override
+  String uiNoClosedItemsMatchSearch(Object items) {
+    return 'Aucun élément clôturé parmi $items ne correspond à cette recherche';
+  }
+
+  @override
+  String uiNoFeaturedItemsMatchSearch(Object items) {
+    return 'Aucun élément mis en avant parmi $items ne correspond à cette recherche';
+  }
+
+  @override
+  String uiNoHiddenItemsMatchSearch(Object items) {
+    return 'Aucun élément masqué parmi $items ne correspond à cette recherche';
+  }
+
+  @override
+  String uiNoItemsMatchSearch(Object items) {
+    return 'Aucun élément parmi $items ne correspond à cette recherche';
+  }
+
+  @override
+  String uiItemHiddenMessage(Object itemType, Object title) {
+    return '$itemType \"$title\" est masqué. Vous pourrez le restaurer plus tard.';
+  }
+
+  @override
+  String uiItemVisibleMessage(Object itemType, Object title) {
+    return '$itemType \"$title\" est de nouveau visible.';
+  }
+
+  @override
+  String uiItemHiddenTitle(Object itemType) {
+    return '$itemType masqué';
+  }
+
+  @override
+  String uiItemVisibleTitle(Object itemType) {
+    return '$itemType visible';
+  }
+
+  @override
+  String get uiPublicIdea => 'Idée publique';
+
+  @override
+  String get uiPrivateIdea => 'Idée privée';
+
+  @override
+  String get uiSubmitted => 'Soumis';
+
+  @override
+  String get uiOpportunityTags => 'Tags de l\'offre';
+
+  @override
+  String get uiApplicationLinkReady => 'Lien de candidature prêt';
+
+  @override
+  String get uiLinkNotAdded => 'Lien non ajouté';
+
+  @override
+  String get uiExternalLinkAvailable => 'Lien externe disponible';
+
+  @override
+  String get uiScholarshipTags => 'Tags de bourse';
+
+  @override
+  String get uiCertificateAvailable => 'Certificat disponible';
+
+  @override
+  String get uiCertificateNotIncluded => 'Certificat non inclus';
+
+  @override
+  String get uiAuthors => 'Auteurs';
+
+  @override
+  String get uiStudentProfileDocumentsSubtitle =>
+      'Profil étudiant et documents soumis.';
+
+  @override
+  String get uiCouldNotLoadFullStudentProfile =>
+      'Impossible de charger le profil étudiant complet pour le moment. Vous pouvez toujours ouvrir le CV de candidature et les candidatures soumises visibles.';
+
+  @override
+  String get uiApplicant => 'Candidat';
+
+  @override
+  String uiFileUploadedAt(Object fileName, Object uploadedAt) {
+    return 'Fichier : $fileName\nTéléversé : $uploadedAt';
+  }
+
+  @override
+  String get uiUploadedFileInvalidPdfAskReplace =>
+      'Ce fichier téléversé n\'est pas un PDF valide. Demandez à l\'utilisateur de le remplacer par une version PDF.';
+
+  @override
+  String get uiDocumentPermissionDenied =>
+      'Autorisation refusée lors de l\'ouverture du document.';
+
+  @override
+  String get uiRequestedDocumentNoLongerAvailable =>
+      'Le document demandé n\'est plus disponible.';
+
+  @override
+  String get uiScholarshipLabel => 'Bourse';
+
+  @override
+  String get uiSearchIdeasByTitleDomainSubmitterOrStatus =>
+      'Rechercher des idées par titre, domaine, auteur ou statut...';
+
+  @override
+  String get uiSearchOpportunitiesByTitleCompanyLocationStatusOrCompensation =>
+      'Rechercher des offres par titre, entreprise, lieu, statut ou rémunération...';
+
+  @override
+  String get uiSearchScholarshipsByTitleProviderOrDeadline =>
+      'Rechercher des bourses par titre, organisme ou échéance...';
+
+  @override
+  String get uiSearchLibraryResources =>
+      'Rechercher des ressources de bibliothèque...';
+
+  @override
+  String get uiFocused => 'Ciblé';
+
+  @override
+  String uiSearchQueryLabel(Object query) {
+    return 'Recherche : $query';
+  }
+
+  @override
+  String uiMinutesAgoShort(Object count) {
+    return 'il y a $count min';
+  }
+
+  @override
+  String uiHoursAgoShort(Object count) {
+    return 'il y a $count h';
+  }
+
+  @override
+  String uiDaysAgoShort(Object count) {
+    return 'il y a $count j';
+  }
+
+  @override
+  String uiAppsPerOpportunity(Object rate) {
+    return '$rate candidatures par offre';
+  }
+
+  @override
+  String uiCvCompletionRateValue(
+    Object percent,
+    Object totalCvs,
+    Object students,
+  ) {
+    return '$percent % ($totalCvs sur $students étudiants)';
+  }
+
+  @override
+  String uiPendingApprovedIdeasValue(Object pending, Object approved) {
+    return '$pending en attente et $approved approuvées';
+  }
 }

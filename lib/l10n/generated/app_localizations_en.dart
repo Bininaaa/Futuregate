@@ -1763,7 +1763,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get uiDomain => 'Domain';
 
   @override
-  String get uiDownload => 'Download Ø³Ø¬Ù ØªØ¬Ø§Ø±Ù';
+  String get uiDownload => 'Download';
 
   @override
   String get uiDownloadA479 => 'Download';
@@ -4706,7 +4706,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get uiDownloada479c9 => 'Download Ø³Ø¬Ù ØªØ¬Ø§Ø±Ù';
+  String get uiDownloada479c9 => 'Download';
 
   @override
   String uiValueMbSelected(Object value1) {
@@ -7457,4 +7457,475 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pressBackAgainToExitApp => 'Press back again to exit the app.';
+
+  @override
+  String get uiDashboardSubtitle =>
+      'Platform pulse, moderation load, and quick control points.';
+
+  @override
+  String get uiUsersSubtitle =>
+      'Search users, review profiles, and manage account status.';
+
+  @override
+  String get uiContentSubtitle =>
+      'Moderate ideas, applications, listings, scholarships, and library resources.';
+
+  @override
+  String get uiActivitySubtitle =>
+      'Track platform changes and jump straight into the right queue.';
+
+  @override
+  String get uiAdmins => 'Admins';
+
+  @override
+  String get uiAccountState => 'Account state';
+
+  @override
+  String get uiApprovalStatus => 'Approval Status';
+
+  @override
+  String get uiDescription => 'Description';
+
+  @override
+  String get uiPendingReview => 'Pending review';
+
+  @override
+  String get uiSelectedAccount => 'Selected account';
+
+  @override
+  String get uiSelectedCompany => 'Selected company';
+
+  @override
+  String get uiBlockUser => 'Block User';
+
+  @override
+  String get uiUnblockUser => 'Unblock User';
+
+  @override
+  String get uiBlockUserMessage =>
+      'This will immediately remove access to the app until you restore the account later.';
+
+  @override
+  String get uiUnblockUserMessage =>
+      'This will restore access and let the user sign in and use the app again.';
+
+  @override
+  String get uiApproveCompanyMessage =>
+      'This will unlock the workspace and let the company use its approved features right away.';
+
+  @override
+  String get uiRejectCompanyMessage =>
+      'This will keep the company out of the workspace until the profile details are corrected.';
+
+  @override
+  String get uiMarkPendingCompanyMessage =>
+      'This will move the company back into the review queue for another moderation pass.';
+
+  @override
+  String get uiApproveCompanySubtitle =>
+      'Unlock the company workspace and move it into the approved state.';
+
+  @override
+  String get uiRejectCompanySubtitle =>
+      'Keep the company out of the workspace until the profile is corrected.';
+
+  @override
+  String get uiMarkPendingSubtitle =>
+      'Move the company back into the review queue for another check.';
+
+  @override
+  String get uiBlockUserSubtitle =>
+      'Temporarily remove access to this account.';
+
+  @override
+  String get uiUnblockUserSubtitle =>
+      'Restore access and let the user sign in again.';
+
+  @override
+  String get uiApplicationsSuffix => 'applications';
+
+  @override
+  String get uiSavesSuffix => 'saves';
+
+  @override
+  String get uiUnknownTime => 'Unknown time';
+
+  @override
+  String get uiCompanyNameNotAdded => 'Company name not added';
+
+  @override
+  String get uiPostedOpportunities => 'Posted Opportunities';
+
+  @override
+  String get uiViewOpportunities => 'View Opportunities';
+
+  @override
+  String get uiOpportunitiesUnavailable =>
+      'Could not load opportunities right now.';
+
+  @override
+  String get uiNoOpportunitiesPostedYet => 'No opportunities posted yet.';
+
+  @override
+  String get uiCompanyOpportunities => 'Company opportunities';
+
+  @override
+  String get uiNoCompanyOpportunitiesYet =>
+      'No opportunities posted by this company yet.';
+
+  @override
+  String get uiOpportunityHistoryUnavailable =>
+      'Opportunity history unavailable';
+
+  @override
+  String get uiOpportunityHistoryUnavailableMessage =>
+      'We could not load this company\'s posted opportunities right now.';
+
+  @override
+  String get uiNoOpportunitiesYet => 'No opportunities yet';
+
+  @override
+  String get uiNoOpportunitiesPostedByCompany =>
+      'This company has not posted any opportunities yet.';
+
+  @override
+  String get uiCommercialRegisterUploaded => 'Commercial Register uploaded';
+
+  @override
+  String get uiCommercialRegisterMissing =>
+      'Missing commercial register document.';
+
+  @override
+  String get uiJustNow => 'Just now';
+
+  @override
+  String get uiOlderActivity => 'Older Activity';
+
+  @override
+  String get uiEndOfActivityFeed =>
+      'You have reached the end of the recent activity feed.';
+
+  @override
+  String get uiOlderActivityUnavailable => 'Older activity could not be loaded';
+
+  @override
+  String get uiNeedMoreActivity => 'Need more activity?';
+
+  @override
+  String get uiFetchingOlderUpdates =>
+      'Fetching older updates from across the platform.';
+
+  @override
+  String get uiLoadOlderUpdates =>
+      'Load older updates from submissions, listings, trainings, scholarships, and project ideas.';
+
+  @override
+  String get uiAdminCreatedIdeas => 'Admin-Created Ideas';
+
+  @override
+  String get uiReviewSubmittedIdeas =>
+      'Review submitted ideas, keep the pending queue moving, and open details when you need the full picture.';
+
+  @override
+  String get uiReviewJobsDescription =>
+      'Review jobs, internships, and sponsored posts. Filter by source, status, or pending reviews.';
+
+  @override
+  String get uiAllTypes => 'All Types';
+
+  @override
+  String get uiEditOpportunity => 'Edit Opportunity';
+
+  @override
+  String get uiUnknownCompany => 'Unknown company';
+
+  @override
+  String get uiOpenPostToReview =>
+      'Open this post to review the full role and requirements.';
+
+  @override
+  String get uiDeleteProjectIdea => 'Delete Project Idea';
+
+  @override
+  String uiDeleteItemConfirm(Object title) {
+    return 'Are you sure you want to delete \"$title\"?';
+  }
+
+  @override
+  String uiByName(Object name) {
+    return 'By $name';
+  }
+
+  @override
+  String get uiYourPost => 'Your Post';
+
+  @override
+  String get uiApps => 'Apps';
+
+  @override
+  String get uiUpdated => 'Updated';
+
+  @override
+  String get uiAdded => 'Added';
+
+  @override
+  String get uiDue => 'Due';
+
+  @override
+  String get uiDeleteScholarship => 'Delete Scholarship';
+
+  @override
+  String get uiKeepFundingCallsClear =>
+      'Keep funding calls clear, trustworthy, and easy to scan before students open the full details.';
+
+  @override
+  String get uiOpenScholarshipToReview =>
+      'Open this scholarship to review eligibility and access details.';
+
+  @override
+  String get uiPendingIdeas => 'Pending Ideas';
+
+  @override
+  String get uiApprovedIdeas => 'Approved Ideas';
+
+  @override
+  String get uiRejectedIdeas => 'Rejected Ideas';
+
+  @override
+  String get uiHiddenIdeas => 'Hidden Ideas';
+
+  @override
+  String get uiFeaturedScholarships => 'Featured Scholarships';
+
+  @override
+  String get uiHiddenScholarships => 'Hidden Scholarships';
+
+  @override
+  String get uiScholarshipListings => 'Scholarship Listings';
+
+  @override
+  String get uiNoAdminIdeasMatch => 'No admin-created ideas match this search';
+
+  @override
+  String get uiNoPendingIdeasMatch => 'No pending ideas match this search';
+
+  @override
+  String get uiNoApprovedIdeasMatch => 'No approved ideas match this search';
+
+  @override
+  String get uiNoRejectedIdeasMatch => 'No rejected ideas match this search';
+
+  @override
+  String get uiNoHiddenIdeasMatch => 'No hidden ideas match this search';
+
+  @override
+  String get uiNoIdeasMatch => 'No ideas match this search';
+
+  @override
+  String get uiNoFeaturedScholarshipsMatch =>
+      'No featured scholarships match this search';
+
+  @override
+  String get uiNoHiddenScholarshipsMatch =>
+      'No hidden scholarships match this search';
+
+  @override
+  String get uiNoScholarshipsMatch => 'No scholarships match this search';
+
+  @override
+  String get uiAdminOpportunities => 'Admin Opportunities';
+
+  @override
+  String get uiPendingApplications => 'Pending Applications';
+
+  @override
+  String get uiClosedOpportunities => 'Closed Opportunities';
+
+  @override
+  String get uiFeaturedOpportunities => 'Featured Opportunities';
+
+  @override
+  String get uiHiddenOpportunities => 'Hidden Opportunities';
+
+  @override
+  String get uiOpportunityQueue => 'Opportunity Queue';
+
+  @override
+  String get uiExpired => 'Expired';
+
+  @override
+  String uiOpportunityTypeCollectionLabel(Object type) {
+    return '$type opportunities';
+  }
+
+  @override
+  String uiNoAdminPostedItemsMatchSearch(Object items) {
+    return 'No admin-posted $items match this search';
+  }
+
+  @override
+  String uiNoItemsWithPendingApplicationsRightNow(Object items) {
+    return 'No $items with pending applications right now';
+  }
+
+  @override
+  String uiNoClosedItemsMatchSearch(Object items) {
+    return 'No closed $items match this search';
+  }
+
+  @override
+  String uiNoFeaturedItemsMatchSearch(Object items) {
+    return 'No featured $items match this search';
+  }
+
+  @override
+  String uiNoHiddenItemsMatchSearch(Object items) {
+    return 'No hidden $items match this search';
+  }
+
+  @override
+  String uiNoItemsMatchSearch(Object items) {
+    return 'No $items match this search';
+  }
+
+  @override
+  String uiItemHiddenMessage(Object itemType, Object title) {
+    return '$itemType \"$title\" hidden. You can restore it later.';
+  }
+
+  @override
+  String uiItemVisibleMessage(Object itemType, Object title) {
+    return '$itemType \"$title\" is visible again.';
+  }
+
+  @override
+  String uiItemHiddenTitle(Object itemType) {
+    return '$itemType hidden';
+  }
+
+  @override
+  String uiItemVisibleTitle(Object itemType) {
+    return '$itemType visible';
+  }
+
+  @override
+  String get uiPublicIdea => 'Public Idea';
+
+  @override
+  String get uiPrivateIdea => 'Private Idea';
+
+  @override
+  String get uiSubmitted => 'Submitted';
+
+  @override
+  String get uiOpportunityTags => 'Opportunity Tags';
+
+  @override
+  String get uiApplicationLinkReady => 'Application Link Ready';
+
+  @override
+  String get uiLinkNotAdded => 'Link not added';
+
+  @override
+  String get uiExternalLinkAvailable => 'External Link Available';
+
+  @override
+  String get uiScholarshipTags => 'Scholarship Tags';
+
+  @override
+  String get uiCertificateAvailable => 'Certificate Available';
+
+  @override
+  String get uiCertificateNotIncluded => 'Certificate not included';
+
+  @override
+  String get uiAuthors => 'Authors';
+
+  @override
+  String get uiStudentProfileDocumentsSubtitle =>
+      'Student profile and submitted documents.';
+
+  @override
+  String get uiCouldNotLoadFullStudentProfile =>
+      'We could not load the full student profile right now. You can still open the application CV and the visible submitted applications.';
+
+  @override
+  String get uiApplicant => 'Applicant';
+
+  @override
+  String uiFileUploadedAt(Object fileName, Object uploadedAt) {
+    return 'File: $fileName\nUploaded: $uploadedAt';
+  }
+
+  @override
+  String get uiUploadedFileInvalidPdfAskReplace =>
+      'This uploaded file is not a valid PDF. Ask the user to replace it with a PDF version.';
+
+  @override
+  String get uiDocumentPermissionDenied =>
+      'Permission denied while opening the document.';
+
+  @override
+  String get uiRequestedDocumentNoLongerAvailable =>
+      'The requested document is no longer available.';
+
+  @override
+  String get uiScholarshipLabel => 'Scholarship';
+
+  @override
+  String get uiSearchIdeasByTitleDomainSubmitterOrStatus =>
+      'Search ideas by title, domain, submitter, or status...';
+
+  @override
+  String get uiSearchOpportunitiesByTitleCompanyLocationStatusOrCompensation =>
+      'Search opportunities by title, company, location, status, or compensation...';
+
+  @override
+  String get uiSearchScholarshipsByTitleProviderOrDeadline =>
+      'Search scholarships by title, provider, or deadline...';
+
+  @override
+  String get uiSearchLibraryResources => 'Search library resources...';
+
+  @override
+  String get uiFocused => 'Focused';
+
+  @override
+  String uiSearchQueryLabel(Object query) {
+    return 'Search: $query';
+  }
+
+  @override
+  String uiMinutesAgoShort(Object count) {
+    return '${count}m ago';
+  }
+
+  @override
+  String uiHoursAgoShort(Object count) {
+    return '${count}h ago';
+  }
+
+  @override
+  String uiDaysAgoShort(Object count) {
+    return '${count}d ago';
+  }
+
+  @override
+  String uiAppsPerOpportunity(Object rate) {
+    return '$rate apps per opportunity';
+  }
+
+  @override
+  String uiCvCompletionRateValue(
+    Object percent,
+    Object totalCvs,
+    Object students,
+  ) {
+    return '$percent% ($totalCvs of $students students)';
+  }
+
+  @override
+  String uiPendingApprovedIdeasValue(Object pending, Object approved) {
+    return '$pending pending and $approved approved';
+  }
 }

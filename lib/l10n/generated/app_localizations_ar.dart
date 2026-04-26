@@ -1756,7 +1756,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiDomain => 'اِختِصاص';
 
   @override
-  String get uiDownload => 'تحميل Ø³Ø¬Ù ØªØ¬Ø§Ø±Ù';
+  String get uiDownload => 'تحميل';
 
   @override
   String get uiDownloadA479 => 'تحميل';
@@ -4690,7 +4690,7 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get uiDownloada479c9 => 'تحميل Ø³Ø¬Ù ØªØ¬Ø§Ø±Ù';
+  String get uiDownloada479c9 => 'تحميل';
 
   @override
   String uiValueMbSelected(Object value1) {
@@ -5360,7 +5360,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiSignOutTooltip => 'تسجيل الخروج';
 
   @override
-  String get uiCompanyInformation => 'معل��مات الشركة';
+  String get uiCompanyInformation => 'معلومات الشركة';
 
   @override
   String get uiAccountDetails => 'تفاصيل الحساب';
@@ -7402,4 +7402,466 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get pressBackAgainToExitApp => 'اضغط رجوع مرة أخرى للخروج من التطبيق.';
+
+  @override
+  String get uiDashboardSubtitle =>
+      'نبض المنصة وحمل الإشراف ونقاط التحكم السريعة.';
+
+  @override
+  String get uiUsersSubtitle =>
+      'ابحث عن المستخدمين وراجع الملفات الشخصية وأدر حالة الحساب.';
+
+  @override
+  String get uiContentSubtitle =>
+      'اعتدل الأفكار والطلبات والقوائم والمنح الدراسية وموارد المكتبة.';
+
+  @override
+  String get uiActivitySubtitle =>
+      'تتبع تغييرات المنصة وانتقل مباشرة إلى قائمة الانتظار الصحيحة.';
+
+  @override
+  String get uiAdmins => 'المسؤولون';
+
+  @override
+  String get uiAccountState => 'حالة الحساب';
+
+  @override
+  String get uiApprovalStatus => 'حالة الموافقة';
+
+  @override
+  String get uiDescription => 'الوصف';
+
+  @override
+  String get uiPendingReview => 'قيد المراجعة';
+
+  @override
+  String get uiSelectedAccount => 'الحساب المحدد';
+
+  @override
+  String get uiSelectedCompany => 'الشركة المحددة';
+
+  @override
+  String get uiBlockUser => 'حظر المستخدم';
+
+  @override
+  String get uiUnblockUser => 'رفع الحظر عن المستخدم';
+
+  @override
+  String get uiBlockUserMessage =>
+      'سيؤدي هذا إلى إزالة الوصول إلى التطبيق فوراً حتى تستعيد الحساب لاحقاً.';
+
+  @override
+  String get uiUnblockUserMessage =>
+      'سيستعيد هذا الوصول ويتيح للمستخدم تسجيل الدخول واستخدام التطبيق مرة أخرى.';
+
+  @override
+  String get uiApproveCompanyMessage =>
+      'سيفتح هذا مساحة العمل ويتيح للشركة استخدام ميزاتها المعتمدة على الفور.';
+
+  @override
+  String get uiRejectCompanyMessage =>
+      'سيبقي هذا الشركة خارج مساحة العمل حتى يتم تصحيح تفاصيل الملف الشخصي.';
+
+  @override
+  String get uiMarkPendingCompanyMessage =>
+      'سيعيد هذا الشركة إلى قائمة انتظار المراجعة لجولة إشراف أخرى.';
+
+  @override
+  String get uiApproveCompanySubtitle =>
+      'افتح مساحة عمل الشركة وانقلها إلى حالة الموافقة.';
+
+  @override
+  String get uiRejectCompanySubtitle =>
+      'أبقِ الشركة خارج مساحة العمل حتى يتم تصحيح الملف الشخصي.';
+
+  @override
+  String get uiMarkPendingSubtitle =>
+      'أعد الشركة إلى قائمة انتظار المراجعة لإجراء فحص آخر.';
+
+  @override
+  String get uiBlockUserSubtitle => 'إزالة الوصول إلى هذا الحساب مؤقتاً.';
+
+  @override
+  String get uiUnblockUserSubtitle =>
+      'استعادة الوصول والسماح للمستخدم بتسجيل الدخول مرة أخرى.';
+
+  @override
+  String get uiApplicationsSuffix => 'طلب';
+
+  @override
+  String get uiSavesSuffix => 'حفظ';
+
+  @override
+  String get uiUnknownTime => 'وقت غير معروف';
+
+  @override
+  String get uiCompanyNameNotAdded => 'لم يتم إضافة اسم الشركة';
+
+  @override
+  String get uiPostedOpportunities => 'الفرص المنشورة';
+
+  @override
+  String get uiViewOpportunities => 'عرض الفرص';
+
+  @override
+  String get uiOpportunitiesUnavailable => 'تعذّر تحميل الفرص في الوقت الحالي.';
+
+  @override
+  String get uiNoOpportunitiesPostedYet => 'لا توجد فرص منشورة بعد.';
+
+  @override
+  String get uiCompanyOpportunities => 'فرص الشركة';
+
+  @override
+  String get uiNoCompanyOpportunitiesYet => 'لم تنشر هذه الشركة أي فرص بعد.';
+
+  @override
+  String get uiOpportunityHistoryUnavailable => 'سجل الفرص غير متاح';
+
+  @override
+  String get uiOpportunityHistoryUnavailableMessage =>
+      'تعذّر تحميل الفرص المنشورة من هذه الشركة في الوقت الحالي.';
+
+  @override
+  String get uiNoOpportunitiesYet => 'لا توجد فرص بعد';
+
+  @override
+  String get uiNoOpportunitiesPostedByCompany =>
+      'لم تنشر هذه الشركة أي فرص حتى الآن.';
+
+  @override
+  String get uiCommercialRegisterUploaded => 'تم رفع السجل التجاري';
+
+  @override
+  String get uiCommercialRegisterMissing => 'وثيقة السجل التجاري مفقودة.';
+
+  @override
+  String get uiJustNow => 'الآن';
+
+  @override
+  String get uiOlderActivity => 'نشاط أقدم';
+
+  @override
+  String get uiEndOfActivityFeed => 'لقد وصلت إلى نهاية خلاصة النشاط الأخير.';
+
+  @override
+  String get uiOlderActivityUnavailable => 'تعذّر تحميل النشاط الأقدم';
+
+  @override
+  String get uiNeedMoreActivity => 'هل تريد المزيد من النشاط؟';
+
+  @override
+  String get uiFetchingOlderUpdates => 'جارٍ جلب التحديثات الأقدم من المنصة.';
+
+  @override
+  String get uiLoadOlderUpdates =>
+      'تحميل التحديثات الأقدم من الطلبات والعروض والتدريبات والمنح وأفكار المشاريع.';
+
+  @override
+  String get uiAdminCreatedIdeas => 'أفكار المسؤول';
+
+  @override
+  String get uiReviewSubmittedIdeas =>
+      'راجع الأفكار المُقدَّمة، وأبقِ قائمة الانتظار متحركة، وافتح التفاصيل عند الحاجة.';
+
+  @override
+  String get uiReviewJobsDescription =>
+      'راجع الوظائف والتدريبات والمنشورات المموّلة. صفّح حسب المصدر أو الحالة أو المراجعات المعلّقة.';
+
+  @override
+  String get uiAllTypes => 'جميع الأنواع';
+
+  @override
+  String get uiEditOpportunity => 'تعديل الفرصة';
+
+  @override
+  String get uiUnknownCompany => 'شركة غير معروفة';
+
+  @override
+  String get uiOpenPostToReview =>
+      'افتح هذا المنشور لمراجعة التفاصيل الكاملة للدور والمتطلبات.';
+
+  @override
+  String get uiDeleteProjectIdea => 'حذف فكرة المشروع';
+
+  @override
+  String uiDeleteItemConfirm(Object title) {
+    return 'هل أنت متأكد من حذف \"$title\"؟';
+  }
+
+  @override
+  String uiByName(Object name) {
+    return 'بواسطة $name';
+  }
+
+  @override
+  String get uiYourPost => 'منشورك';
+
+  @override
+  String get uiApps => 'طلبات';
+
+  @override
+  String get uiUpdated => 'تم التحديث';
+
+  @override
+  String get uiAdded => 'تمت الإضافة';
+
+  @override
+  String get uiDue => 'الموعد النهائي';
+
+  @override
+  String get uiDeleteScholarship => 'حذف المنحة';
+
+  @override
+  String get uiKeepFundingCallsClear =>
+      'حافظ على وضوح إعلانات التمويل وموثوقيتها وسهولة تصفّحها قبل أن يفتح الطلاب التفاصيل الكاملة.';
+
+  @override
+  String get uiOpenScholarshipToReview =>
+      'افتح هذه المنحة لمراجعة شروط الأهلية وتفاصيل التقديم.';
+
+  @override
+  String get uiPendingIdeas => 'الأفكار المعلّقة';
+
+  @override
+  String get uiApprovedIdeas => 'الأفكار المقبولة';
+
+  @override
+  String get uiRejectedIdeas => 'الأفكار المرفوضة';
+
+  @override
+  String get uiHiddenIdeas => 'الأفكار المخفية';
+
+  @override
+  String get uiFeaturedScholarships => 'المنح المميزة';
+
+  @override
+  String get uiHiddenScholarships => 'المنح المخفية';
+
+  @override
+  String get uiScholarshipListings => 'قائمة المنح';
+
+  @override
+  String get uiNoAdminIdeasMatch => 'لا توجد أفكار من المسؤول تطابق هذا البحث';
+
+  @override
+  String get uiNoPendingIdeasMatch => 'لا توجد أفكار معلّقة تطابق هذا البحث';
+
+  @override
+  String get uiNoApprovedIdeasMatch => 'لا توجد أفكار مقبولة تطابق هذا البحث';
+
+  @override
+  String get uiNoRejectedIdeasMatch => 'لا توجد أفكار مرفوضة تطابق هذا البحث';
+
+  @override
+  String get uiNoHiddenIdeasMatch => 'لا توجد أفكار مخفية تطابق هذا البحث';
+
+  @override
+  String get uiNoIdeasMatch => 'لا توجد أفكار تطابق هذا البحث';
+
+  @override
+  String get uiNoFeaturedScholarshipsMatch =>
+      'لا توجد منح مميزة تطابق هذا البحث';
+
+  @override
+  String get uiNoHiddenScholarshipsMatch => 'لا توجد منح مخفية تطابق هذا البحث';
+
+  @override
+  String get uiNoScholarshipsMatch => 'لا توجد منح تطابق هذا البحث';
+
+  @override
+  String get uiAdminOpportunities => 'فرص المسؤول';
+
+  @override
+  String get uiPendingApplications => 'الطلبات المعلّقة';
+
+  @override
+  String get uiClosedOpportunities => 'الفرص المغلقة';
+
+  @override
+  String get uiFeaturedOpportunities => 'الفرص المميزة';
+
+  @override
+  String get uiHiddenOpportunities => 'الفرص المخفية';
+
+  @override
+  String get uiOpportunityQueue => 'قائمة الفرص';
+
+  @override
+  String get uiExpired => 'منتهية';
+
+  @override
+  String uiOpportunityTypeCollectionLabel(Object type) {
+    return 'فرص $type';
+  }
+
+  @override
+  String uiNoAdminPostedItemsMatchSearch(Object items) {
+    return 'لا توجد $items نشرها المسؤول تطابق هذا البحث';
+  }
+
+  @override
+  String uiNoItemsWithPendingApplicationsRightNow(Object items) {
+    return 'لا توجد $items لديها طلبات معلّقة حالياً';
+  }
+
+  @override
+  String uiNoClosedItemsMatchSearch(Object items) {
+    return 'لا توجد $items مغلقة تطابق هذا البحث';
+  }
+
+  @override
+  String uiNoFeaturedItemsMatchSearch(Object items) {
+    return 'لا توجد $items مميزة تطابق هذا البحث';
+  }
+
+  @override
+  String uiNoHiddenItemsMatchSearch(Object items) {
+    return 'لا توجد $items مخفية تطابق هذا البحث';
+  }
+
+  @override
+  String uiNoItemsMatchSearch(Object items) {
+    return 'لا توجد $items تطابق هذا البحث';
+  }
+
+  @override
+  String uiItemHiddenMessage(Object itemType, Object title) {
+    return 'تم إخفاء $itemType \"$title\". يمكنك استعادته لاحقاً.';
+  }
+
+  @override
+  String uiItemVisibleMessage(Object itemType, Object title) {
+    return 'أصبح $itemType \"$title\" مرئياً مرة أخرى.';
+  }
+
+  @override
+  String uiItemHiddenTitle(Object itemType) {
+    return 'تم إخفاء $itemType';
+  }
+
+  @override
+  String uiItemVisibleTitle(Object itemType) {
+    return '$itemType مرئي';
+  }
+
+  @override
+  String get uiPublicIdea => 'فكرة عامة';
+
+  @override
+  String get uiPrivateIdea => 'فكرة خاصة';
+
+  @override
+  String get uiSubmitted => 'تم الإرسال';
+
+  @override
+  String get uiOpportunityTags => 'وسوم الفرصة';
+
+  @override
+  String get uiApplicationLinkReady => 'رابط التقديم جاهز';
+
+  @override
+  String get uiLinkNotAdded => 'لم تتم إضافة الرابط';
+
+  @override
+  String get uiExternalLinkAvailable => 'الرابط الخارجي متاح';
+
+  @override
+  String get uiScholarshipTags => 'وسوم المنحة';
+
+  @override
+  String get uiCertificateAvailable => 'الشهادة متاحة';
+
+  @override
+  String get uiCertificateNotIncluded => 'الشهادة غير متضمنة';
+
+  @override
+  String get uiAuthors => 'المؤلفون';
+
+  @override
+  String get uiStudentProfileDocumentsSubtitle =>
+      'ملف الطالب والمستندات المرسلة.';
+
+  @override
+  String get uiCouldNotLoadFullStudentProfile =>
+      'تعذّر تحميل ملف الطالب الكامل حالياً. لا يزال بإمكانك فتح السيرة الذاتية للطلب والطلبات المرسلة الظاهرة.';
+
+  @override
+  String get uiApplicant => 'المتقدم';
+
+  @override
+  String uiFileUploadedAt(Object fileName, Object uploadedAt) {
+    return 'الملف: $fileName\nتم الرفع: $uploadedAt';
+  }
+
+  @override
+  String get uiUploadedFileInvalidPdfAskReplace =>
+      'هذا الملف المرفوع ليس ملف PDF صالحاً. اطلب من المستخدم استبداله بنسخة PDF.';
+
+  @override
+  String get uiDocumentPermissionDenied => 'تم رفض الإذن أثناء فتح المستند.';
+
+  @override
+  String get uiRequestedDocumentNoLongerAvailable =>
+      'المستند المطلوب لم يعد متاحاً.';
+
+  @override
+  String get uiScholarshipLabel => 'منحة';
+
+  @override
+  String get uiSearchIdeasByTitleDomainSubmitterOrStatus =>
+      'ابحث في الأفكار حسب العنوان أو المجال أو المرسل أو الحالة...';
+
+  @override
+  String get uiSearchOpportunitiesByTitleCompanyLocationStatusOrCompensation =>
+      'ابحث في الفرص حسب العنوان أو الشركة أو الموقع أو الحالة أو التعويض...';
+
+  @override
+  String get uiSearchScholarshipsByTitleProviderOrDeadline =>
+      'ابحث في المنح حسب العنوان أو الجهة أو الموعد النهائي...';
+
+  @override
+  String get uiSearchLibraryResources => 'ابحث في موارد المكتبة...';
+
+  @override
+  String get uiFocused => 'مركّز';
+
+  @override
+  String uiSearchQueryLabel(Object query) {
+    return 'البحث: $query';
+  }
+
+  @override
+  String uiMinutesAgoShort(Object count) {
+    return 'قبل $count د';
+  }
+
+  @override
+  String uiHoursAgoShort(Object count) {
+    return 'قبل $count س';
+  }
+
+  @override
+  String uiDaysAgoShort(Object count) {
+    return 'قبل $count ي';
+  }
+
+  @override
+  String uiAppsPerOpportunity(Object rate) {
+    return '$rate طلب لكل فرصة';
+  }
+
+  @override
+  String uiCvCompletionRateValue(
+    Object percent,
+    Object totalCvs,
+    Object students,
+  ) {
+    return '$percent% ($totalCvs من $students طالب)';
+  }
+
+  @override
+  String uiPendingApprovedIdeasValue(Object pending, Object approved) {
+    return '$pending معلّقة و$approved مقبولة';
+  }
 }

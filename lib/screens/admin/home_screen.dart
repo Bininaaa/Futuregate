@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../l10n/generated/app_localizations.dart';
 import '../../providers/notification_provider.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_typography.dart';
@@ -30,51 +31,49 @@ class _HomeScreenState extends State<HomeScreen> {
   String _contentInitialTargetId = '';
   final Set<int> _visitedIndexes = <int>{0};
 
-  late final List<_AdminDestination> _destinations = [
-    const _AdminDestination(
-      title: 'Dashboard',
-      subtitle: 'Platform pulse, moderation load, and quick control points.',
+  List<_AdminDestination> _buildDestinations(AppLocalizations l10n) => [
+    _AdminDestination(
+      title: l10n.uiDashboard,
+      subtitle: l10n.uiDashboardSubtitle,
       icon: Icons.space_dashboard_rounded,
-      navLabel: 'Dashboard',
-      compactNavLabel: 'Dashboard',
+      navLabel: l10n.uiDashboard,
+      compactNavLabel: l10n.uiDashboard,
       navIcon: Icons.space_dashboard_outlined,
       activeNavIcon: Icons.space_dashboard_rounded,
     ),
-    const _AdminDestination(
-      title: 'Users',
-      subtitle: 'Search users, review profiles, and manage account status.',
+    _AdminDestination(
+      title: l10n.uiUsers,
+      subtitle: l10n.uiUsersSubtitle,
       icon: Icons.group_rounded,
-      navLabel: 'Users',
-      compactNavLabel: 'Users',
+      navLabel: l10n.uiUsers,
+      compactNavLabel: l10n.uiUsers,
       navIcon: Icons.groups_outlined,
       activeNavIcon: Icons.groups_rounded,
     ),
-    const _AdminDestination(
-      title: 'Content',
-      subtitle:
-          'Moderate ideas, applications, listings, scholarships, and library resources.',
+    _AdminDestination(
+      title: l10n.uiContent,
+      subtitle: l10n.uiContentSubtitle,
       icon: Icons.auto_awesome_mosaic_rounded,
-      navLabel: 'Content',
-      compactNavLabel: 'Content',
+      navLabel: l10n.uiContent,
+      compactNavLabel: l10n.uiContent,
       navIcon: Icons.view_quilt_outlined,
       activeNavIcon: Icons.view_quilt_rounded,
     ),
-    const _AdminDestination(
-      title: 'Activity',
-      subtitle:
-          'Track platform changes and jump straight into the right queue.',
+    _AdminDestination(
+      title: l10n.uiActivity,
+      subtitle: l10n.uiActivitySubtitle,
       icon: Icons.timeline_rounded,
-      navLabel: 'Activity',
-      compactNavLabel: 'Activity',
+      navLabel: l10n.uiActivity,
+      compactNavLabel: l10n.uiActivity,
       navIcon: Icons.timeline_outlined,
       activeNavIcon: Icons.timeline_rounded,
     ),
-    const _AdminDestination(
-      title: 'Settings',
-      subtitle: 'Theme, security, support, and account controls.',
+    _AdminDestination(
+      title: l10n.uiSettings,
+      subtitle: l10n.uiSettingsSubtitle,
       icon: Icons.settings_rounded,
-      navLabel: 'Settings',
-      compactNavLabel: 'Settings',
+      navLabel: l10n.uiSettings,
+      compactNavLabel: l10n.uiSettings,
       navIcon: Icons.settings_outlined,
       activeNavIcon: Icons.settings_rounded,
     ),
@@ -82,8 +81,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final destinations = _buildDestinations(l10n);
     final unreadCount = context.watch<NotificationProvider>().unreadCount;
-    final destination = _destinations[_currentIndex];
+    final destination = destinations[_currentIndex];
     final isCompactHeader = MediaQuery.sizeOf(context).width < 720;
     final keyboardVisible = MediaQuery.viewInsetsOf(context).bottom > 0;
 
@@ -121,7 +122,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           height: 44,
                           decoration: BoxDecoration(
                             gradient: AdminPalette.heroGradient(
-                              destination.title == 'Content'
+                              _currentIndex == 2
                                   ? AdminPalette.secondary
                                   : AdminPalette.accent,
                             ),
@@ -191,7 +192,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           AdminIconActionButton(
                             icon: Icons.notifications_outlined,
-                            tooltip: 'Notification Center',
+                            tooltip: l10n.uiNotificationCenter,
                             badgeCount: unreadCount,
                             onTap: () {
                               Navigator.push(
@@ -205,7 +206,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           const SizedBox(width: 8),
                           AdminIconActionButton(
                             icon: Icons.logout_rounded,
-                            tooltip: 'Sign out',
+                            tooltip: l10n.uiSignOutTooltip,
                             color: AdminPalette.danger,
                             onTap: _showLogoutDialog,
                           ),
@@ -222,7 +223,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     currentIndex: _currentIndex,
                     onIndexChanged: _selectIndex,
                     children: List<Widget>.generate(
-                      _destinations.length,
+                      destinations.length,
                       (index) => _visitedIndexes.contains(index)
                           ? _screenForIndex(index)
                           : const SizedBox.shrink(),
@@ -238,7 +239,7 @@ class _HomeScreenState extends State<HomeScreen> {
             : SafeArea(
                 top: false,
                 child: _AdminPillNavigationBar(
-                  destinations: _destinations,
+                  destinations: destinations,
                   currentIndex: _currentIndex,
                   onTap: _selectIndex,
                 ),

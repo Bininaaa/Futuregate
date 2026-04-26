@@ -83,9 +83,8 @@ class _AdminActivityCenterScreenState extends State<AdminActivityCenterScreen> {
                           AdminSectionHeader(
                             eyebrow: l10n.uiLiveFeed,
                             title: l10n.uiRecentPlatformActivity,
-                            subtitle:
-                                l10n
-                                    .uiReviewTheLatestModerationUpdatesPublishingChangesAndSubmissionsFrom,
+                            subtitle: l10n
+                                .uiReviewTheLatestModerationUpdatesPublishingChangesAndSubmissionsFrom,
                             trailing: IconButton(
                               tooltip: l10n.uiRefreshActivityFeed,
                               onPressed: provider.activityLoading
@@ -150,7 +149,9 @@ class _AdminActivityCenterScreenState extends State<AdminActivityCenterScreen> {
                           const SizedBox(width: 8),
                           Text(
                             query.isEmpty
-                                ? l10n.uiRecentActivitiesCount(activities.length)
+                                ? l10n.uiRecentActivitiesCount(
+                                    activities.length,
+                                  )
                                 : l10n.uiMatchingActivitiesCount(
                                     activities.length,
                                   ),
@@ -281,6 +282,7 @@ class _ActivityTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final accentColor = _colorForType(activity.type);
     final typeLabel = DisplayText.capitalizeLeadingLabel(
       activity.type.replaceAll('_', ' '),
@@ -394,7 +396,7 @@ class _ActivityTile extends StatelessWidget {
                             ),
                           _ActivityInlineInfo(
                             icon: Icons.schedule_rounded,
-                            label: _formatTimestamp(activity.createdAt),
+                            label: _formatTimestamp(activity.createdAt, l10n),
                           ),
                         ],
                       ),
@@ -417,9 +419,9 @@ class _ActivityTile extends StatelessWidget {
     );
   }
 
-  static String _formatTimestamp(Timestamp? createdAt) {
+  static String _formatTimestamp(Timestamp? createdAt, AppLocalizations l10n) {
     if (createdAt == null) {
-      return 'Unknown time';
+      return l10n.uiUnknownTime;
     }
 
     final date = createdAt.toDate();
@@ -427,19 +429,19 @@ class _ActivityTile extends StatelessWidget {
     final difference = now.difference(date);
 
     if (difference.inMinutes < 1) {
-      return 'Just now';
+      return l10n.uiJustNow;
     }
     if (difference.inHours < 1) {
-      return '${difference.inMinutes}m ago';
+      return l10n.uiMinutesAgoShort(difference.inMinutes);
     }
     if (difference.inDays < 1) {
-      return '${difference.inHours}h ago';
+      return l10n.uiHoursAgoShort(difference.inHours);
     }
     if (difference.inDays < 7) {
-      return '${difference.inDays}d ago';
+      return l10n.uiDaysAgoShort(difference.inDays);
     }
 
-    return DateFormat('MMM d, yyyy').format(date);
+    return DateFormat.yMMMd(l10n.localeName).format(date);
   }
 
   static IconData _iconForType(String type) {
@@ -612,7 +614,7 @@ class _ActivityOpenButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      tooltip: 'Open activity',
+      tooltip: AppLocalizations.of(context)!.uiOpenActivity,
       onPressed: onPressed,
       style: IconButton.styleFrom(
         foregroundColor: color,
@@ -633,12 +635,13 @@ class _ActivityFeedFooter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     if (!provider.activityHasMore && provider.activityError == null) {
       return Padding(
         padding: EdgeInsets.only(top: 6, bottom: 6),
         child: Center(
           child: Text(
-            'You have reached the end of the recent activity feed.',
+            l10n.uiEndOfActivityFeed,
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,
@@ -673,10 +676,10 @@ class _ActivityFeedFooter extends StatelessWidget {
                 ),
           label: Text(
             provider.activityLoadingMore
-                ? 'Loading...'
+                ? l10n.uiLoading
                 : isRetryState
-                ? 'Try Again'
-                : 'Older Activity',
+                ? l10n.retryLabel
+                : l10n.uiOlderActivity,
           ),
           style: FilledButton.styleFrom(
             foregroundColor: AdminPalette.primary,
@@ -694,8 +697,8 @@ class _ActivityFeedFooter extends StatelessWidget {
           children: [
             Text(
               isRetryState
-                  ? 'Older activity could not be loaded'
-                  : 'Need more activity?',
+                  ? l10n.uiOlderActivityUnavailable
+                  : l10n.uiNeedMoreActivity,
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
@@ -707,8 +710,8 @@ class _ActivityFeedFooter extends StatelessWidget {
               isRetryState
                   ? provider.activityError!
                   : provider.activityLoadingMore
-                  ? 'Fetching older updates from across the platform.'
-                  : 'Load older updates from submissions, listings, trainings, scholarships, and project ideas.',
+                  ? l10n.uiFetchingOlderUpdates
+                  : l10n.uiLoadOlderUpdates,
               style: TextStyle(
                 fontSize: 11.8,
                 fontWeight: FontWeight.w500,

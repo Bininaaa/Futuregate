@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../../l10n/generated/app_localizations.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/admin_activity_model.dart';
@@ -269,24 +270,34 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               icon: Icons.percent_rounded,
               iconColor: AdminPalette.info,
               title: l10n.uiApplicationRate,
-              value:
-                  '${((stats['applicationRate'] ?? 0.0) as double).toStringAsFixed(1)} apps per opportunity',
+              value: l10n.uiAppsPerOpportunity(
+                ((stats['applicationRate'] ?? 0.0) as double).toStringAsFixed(
+                  1,
+                ),
+              ),
             ),
             const SizedBox(height: 10),
             _InsightTile(
               icon: Icons.description_outlined,
               iconColor: AdminPalette.success,
               title: l10n.uiCvCompletionRate,
-              value:
-                  '${((stats['cvCompletionRate'] ?? 0.0) as double).toStringAsFixed(0)}% (${stats['totalCvs'] ?? 0} of ${stats['students'] ?? 0} students)',
+              value: l10n.uiCvCompletionRateValue(
+                ((stats['cvCompletionRate'] ?? 0.0) as double).toStringAsFixed(
+                  0,
+                ),
+                stats['totalCvs'] ?? 0,
+                stats['students'] ?? 0,
+              ),
             ),
             const SizedBox(height: 10),
             _InsightTile(
               icon: Icons.pending_actions_outlined,
               iconColor: AdminPalette.warning,
               title: l10n.uiPendingProjectIdeas,
-              value:
-                  '${stats['pendingIdeas'] ?? 0} pending and ${stats['approvedIdeas'] ?? 0} approved',
+              value: l10n.uiPendingApprovedIdeasValue(
+                stats['pendingIdeas'] ?? 0,
+                stats['approvedIdeas'] ?? 0,
+              ),
             ),
             const SizedBox(height: 24),
             _RankedListCard(
@@ -294,7 +305,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               icon: Icons.trending_up_rounded,
               color: AdminPalette.activity,
               items: (stats['topApplied'] as List<dynamic>?) ?? [],
-              suffixLabel: 'applications',
+              suffixLabel: l10n.uiApplicationsSuffix,
             ),
             const SizedBox(height: 16),
             _RankedListCard(
@@ -302,7 +313,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               icon: Icons.bookmark_outline_rounded,
               color: AdminPalette.accent,
               items: (stats['topSaved'] as List<dynamic>?) ?? [],
-              suffixLabel: 'saves',
+              suffixLabel: l10n.uiSavesSuffix,
             ),
             const SizedBox(height: 24),
             AdminSectionHeader(
@@ -949,11 +960,12 @@ class _RecentActivityCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return AdminSurface(
       radius: 22,
       child: activities.isEmpty
           ? Text(
-              'No recent activity yet',
+              l10n.uiNoRecentActivity,
               style: TextStyle(color: AdminPalette.textMuted),
             )
           : Column(
@@ -970,7 +982,7 @@ class _RecentActivityCard extends StatelessWidget {
                 final status = DisplayText.capitalizeLeadingLabel(
                   activity.status,
                 );
-                final dateLabel = _formatActivityDate(activity.createdAt);
+                final dateLabel = _formatActivityDate(activity.createdAt, l10n);
 
                 return Column(
                   children: [
@@ -1080,28 +1092,12 @@ class _RecentActivityCard extends StatelessWidget {
     );
   }
 
-  String _formatActivityDate(Timestamp? timestamp) {
+  String _formatActivityDate(Timestamp? timestamp, AppLocalizations l10n) {
     if (timestamp == null) {
-      return 'Unknown time';
+      return l10n.uiUnknownTime;
     }
 
-    final date = timestamp.toDate();
-    const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
-
-    return '${date.day} ${months[date.month - 1]} ${date.year}';
+    return DateFormat.yMMMd(l10n.localeName).format(timestamp.toDate());
   }
 }
 
@@ -1368,7 +1364,7 @@ class _RecentOpportunitiesCard extends StatelessWidget {
                                     child: Text(
                                       title.isNotEmpty
                                           ? title
-                                          : 'Untitled opportunity',
+                                          : l10n.uiUntitledOpportunity,
                                       maxLines: 2,
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
@@ -1391,7 +1387,7 @@ class _RecentOpportunitiesCard extends StatelessWidget {
                             Text(
                               companyName.isNotEmpty
                                   ? companyName
-                                  : 'Company name not added',
+                                  : l10n.uiCompanyNameNotAdded,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(

@@ -125,7 +125,7 @@ class _UsersScreenState extends State<UsersScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     AdminSectionHeader(
-                      eyebrow: 'Control',
+                      eyebrow: l10n.uiControl,
                       title: l10n.uiUserManagement,
                       subtitle: l10n
                           .uiSearchQuicklyFilterByRoleOrLevelAndReviewAccount,
@@ -136,28 +136,32 @@ class _UsersScreenState extends State<UsersScreen> {
                       runSpacing: 10,
                       children: [
                         AdminPill(
-                          label: '${provider.totalUsersCount} users',
+                          label:
+                              '${provider.totalUsersCount} ${l10n.uiUsers.toLowerCase()}',
                           color: AdminPalette.primary,
                           icon: Icons.people_alt_outlined,
                         ),
                         AdminPill(
-                          label: '${provider.activeUsersCount} active',
+                          label:
+                              '${provider.activeUsersCount} ${l10n.uiActive.toLowerCase()}',
                           color: AdminPalette.success,
                           icon: Icons.check_circle_outline_rounded,
                         ),
                         AdminPill(
-                          label: '${provider.blockedUsersCount} blocked',
+                          label:
+                              '${provider.blockedUsersCount} ${l10n.uiBlocked.toLowerCase()}',
                           color: AdminPalette.danger,
                           icon: Icons.block_outlined,
                         ),
                         AdminPill(
-                          label: '${provider.adminUsersCount} admins',
+                          label:
+                              '${provider.adminUsersCount} ${l10n.uiAdmins.toLowerCase()}',
                           color: AdminPalette.accent,
                           icon: Icons.admin_panel_settings_outlined,
                         ),
                         AdminPill(
                           label:
-                              '${provider.pendingCompanyUsersCount} company reviews',
+                              '${provider.pendingCompanyUsersCount} ${l10n.uiCompanyReview.toLowerCase()}',
                           color: AdminPalette.warning,
                           icon: Icons.pending_actions_rounded,
                         ),
@@ -189,13 +193,13 @@ class _UsersScreenState extends State<UsersScreen> {
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
-                    _buildRoleChip('All', 'all', provider),
+                    _buildRoleChip(l10n.uiAll, 'all', provider),
                     const SizedBox(width: 8),
-                    _buildRoleChip('Students', 'student', provider),
+                    _buildRoleChip(l10n.uiStudents, 'student', provider),
                     const SizedBox(width: 8),
-                    _buildRoleChip('Companies', 'company', provider),
+                    _buildRoleChip(l10n.uiCompanies, 'company', provider),
                     const SizedBox(width: 8),
-                    _buildRoleChip('Admins', 'admin', provider),
+                    _buildRoleChip(l10n.uiAdmins, 'admin', provider),
                     const SizedBox(width: 8),
                   ],
                 ),
@@ -210,16 +214,16 @@ class _UsersScreenState extends State<UsersScreen> {
                 child: Row(
                   children: [
                     AdminPill(
-                      label: 'Account state',
+                      label: l10n.uiAccountState,
                       color: AdminPalette.danger,
                       icon: Icons.shield_outlined,
                     ),
                     const SizedBox(width: 4),
-                    _buildAccessChip('All', 'all', provider),
+                    _buildAccessChip(l10n.uiAll, 'all', provider),
                     const SizedBox(width: 6),
-                    _buildAccessChip('Active', 'active', provider),
+                    _buildAccessChip(l10n.uiActive, 'active', provider),
                     const SizedBox(width: 6),
-                    _buildAccessChip('Blocked', 'blocked', provider),
+                    _buildAccessChip(l10n.uiBlocked, 'blocked', provider),
                   ],
                 ),
               ),
@@ -235,20 +239,32 @@ class _UsersScreenState extends State<UsersScreen> {
                   child: Row(
                     children: [
                       AdminPill(
-                        label: 'Level filters',
+                        label: l10n.uiLevelFilters,
                         color: AdminPalette.info,
                         icon: Icons.school_outlined,
                       ),
                       const SizedBox(width: 4),
-                      _buildLevelChip('All', 'all', provider),
+                      _buildLevelChip(l10n.uiAll, 'all', provider),
                       const SizedBox(width: 6),
-                      _buildLevelChip('Bac', 'bac', provider),
+                      _buildLevelChip(l10n.uiBac, 'bac', provider),
                       const SizedBox(width: 6),
-                      _buildLevelChip('Licence', 'licence', provider),
+                      _buildLevelChip(
+                        l10n.academicLevelLicence,
+                        'licence',
+                        provider,
+                      ),
                       const SizedBox(width: 6),
-                      _buildLevelChip('Master', 'master', provider),
+                      _buildLevelChip(
+                        l10n.academicLevelMaster,
+                        'master',
+                        provider,
+                      ),
                       const SizedBox(width: 6),
-                      _buildLevelChip('Doctorat', 'doctorat', provider),
+                      _buildLevelChip(
+                        l10n.academicLevelDoctorat,
+                        'doctorat',
+                        provider,
+                      ),
                     ],
                   ),
                 ),
@@ -279,18 +295,22 @@ class _UsersScreenState extends State<UsersScreen> {
                         ),
                         const SizedBox(width: 6),
                       ],
-                      _buildCompanyApprovalChip('All', 'all', provider),
-                      const SizedBox(width: 6),
-                      _buildCompanyApprovalChip('Pending', 'pending', provider),
+                      _buildCompanyApprovalChip(l10n.uiAll, 'all', provider),
                       const SizedBox(width: 6),
                       _buildCompanyApprovalChip(
-                        'Approved',
+                        l10n.uiPending,
+                        'pending',
+                        provider,
+                      ),
+                      const SizedBox(width: 6),
+                      _buildCompanyApprovalChip(
+                        l10n.uiApproved,
                         'approved',
                         provider,
                       ),
                       const SizedBox(width: 6),
                       _buildCompanyApprovalChip(
-                        'Rejected',
+                        l10n.uiRejected,
                         'rejected',
                         provider,
                       ),
@@ -679,11 +699,10 @@ class _UsersScreenState extends State<UsersScreen> {
 
   String _approvalDisplayLabel(String status) {
     final normalized = status.trim().toLowerCase();
-
     return switch (normalized) {
-      'pending' => 'Pending review',
-      'rejected' => 'Rejected',
-      _ => 'Approved',
+      'pending' => _l10n.uiPendingReview,
+      'rejected' => _l10n.uiRejected,
+      _ => _l10n.uiApproved,
     };
   }
 
@@ -928,7 +947,7 @@ class _UsersScreenState extends State<UsersScreen> {
 
   void _showUserActionsSheet(UserModel user, AdminProvider provider) {
     final l10n = _l10n;
-    final actionLabel = user.isActive ? 'Block User' : 'Unblock User';
+    final actionLabel = user.isActive ? l10n.uiBlockUser : l10n.uiUnblockUser;
     final actionColor = user.isActive
         ? AdminPalette.danger
         : AdminPalette.success;
@@ -980,8 +999,7 @@ class _UsersScreenState extends State<UsersScreen> {
                     _buildActionSheetTile(
                       icon: Icons.verified_rounded,
                       title: l10n.uiApproveCompany,
-                      subtitle:
-                          'Unlock the company workspace and move it into the approved state.',
+                      subtitle: l10n.uiApproveCompanySubtitle,
                       color: AdminPalette.success,
                       onTap: () {
                         Navigator.pop(sheetContext);
@@ -994,8 +1012,7 @@ class _UsersScreenState extends State<UsersScreen> {
                     _buildActionSheetTile(
                       icon: Icons.gpp_bad_outlined,
                       title: l10n.uiRejectCompany,
-                      subtitle:
-                          'Keep the company out of the workspace until the profile is corrected.',
+                      subtitle: l10n.uiRejectCompanySubtitle,
                       color: AdminPalette.danger,
                       onTap: () {
                         Navigator.pop(sheetContext);
@@ -1009,8 +1026,7 @@ class _UsersScreenState extends State<UsersScreen> {
                     _buildActionSheetTile(
                       icon: Icons.pending_actions_rounded,
                       title: l10n.uiMarkPendingReview,
-                      subtitle:
-                          'Move the company back into the review queue for another check.',
+                      subtitle: l10n.uiMarkPendingSubtitle,
                       color: AdminPalette.warning,
                       onTap: () {
                         Navigator.pop(sheetContext);
@@ -1025,8 +1041,8 @@ class _UsersScreenState extends State<UsersScreen> {
                         : Icons.check_circle_outline_rounded,
                     title: actionLabel,
                     subtitle: user.isActive
-                        ? 'Temporarily remove access to this account.'
-                        : 'Restore access and let the user sign in again.',
+                        ? l10n.uiBlockUserSubtitle
+                        : l10n.uiUnblockUserSubtitle,
                     color: actionColor,
                     onTap: () {
                       Navigator.pop(sheetContext);
@@ -1066,12 +1082,9 @@ class _UsersScreenState extends State<UsersScreen> {
       _ => Icons.pending_actions_rounded,
     };
     final message = switch (nextStatus) {
-      'approved' =>
-        'This will unlock the workspace and let the company use its approved features right away.',
-      'rejected' =>
-        'This will keep the company out of the workspace until the profile details are corrected.',
-      _ =>
-        'This will move the company back into the review queue for another moderation pass.',
+      'approved' => _l10n.uiApproveCompanyMessage,
+      'rejected' => _l10n.uiRejectCompanyMessage,
+      _ => _l10n.uiMarkPendingCompanyMessage,
     };
 
     _showConfirmationDialog(
@@ -1079,7 +1092,7 @@ class _UsersScreenState extends State<UsersScreen> {
       title: actionLabel,
       message: message,
       targetLabel: companyLabel,
-      targetHint: 'Selected company',
+      targetHint: _l10n.uiSelectedCompany,
       icon: actionIcon,
       accentColor: actionColor,
       confirmLabel: switch (nextStatus) {
@@ -1324,20 +1337,19 @@ class _UsersScreenState extends State<UsersScreen> {
   }
 
   void _showToggleDialog(UserModel user, AdminProvider provider) {
-    final action = user.isActive ? 'Block' : 'Unblock';
     _showConfirmationDialog(
-      eyebrow: 'Account access',
-      title: '$action User',
+      eyebrow: _l10n.uiAccountAccess,
+      title: user.isActive ? _l10n.uiBlockUser : _l10n.uiUnblockUser,
       message: user.isActive
-          ? 'This will immediately remove access to the app until you restore the account later.'
-          : 'This will restore access and let the user sign in and use the app again.',
+          ? _l10n.uiBlockUserMessage
+          : _l10n.uiUnblockUserMessage,
       targetLabel: user.fullName,
-      targetHint: 'Selected account',
+      targetHint: _l10n.uiSelectedAccount,
       icon: user.isActive
           ? Icons.block_outlined
           : Icons.check_circle_outline_rounded,
       accentColor: user.isActive ? AdminPalette.danger : AdminPalette.success,
-      confirmLabel: action,
+      confirmLabel: user.isActive ? _l10n.uiBlockUser : _l10n.uiUnblockUser,
       onConfirm: () => provider.toggleUserActive(user.uid, !user.isActive),
     );
   }
@@ -1415,79 +1427,79 @@ class _UsersScreenState extends State<UsersScreen> {
                     const SizedBox(height: 12),
                     _buildDetailRow(
                       Icons.email_outlined,
-                      'Email',
+                      _l10n.uiEmail,
                       liveUser.email,
                       singleLineValue: true,
                     ),
                     _buildOptionalDetailRow(
                       Icons.phone_outlined,
-                      'Phone',
+                      _l10n.uiPhone,
                       liveUser.phone,
-                      'Not provided',
+                      _l10n.uiNotProvided,
                     ),
                     _buildOptionalDetailRow(
                       Icons.location_on_outlined,
-                      'Location',
+                      _l10n.uiLocation,
                       liveUser.location,
-                      'Not provided',
+                      _l10n.uiNotProvided,
                     ),
                     if (liveUser.role == 'student') ...[
                       _buildOptionalDetailRow(
                         Icons.school_outlined,
-                        'Academic Level',
+                        _l10n.uiAcademicLevel,
                         liveUser.academicLevel,
-                        'Not provided',
+                        _l10n.uiNotProvided,
                       ),
                       _buildOptionalDetailRow(
                         Icons.account_balance_outlined,
-                        'University',
+                        _l10n.uiUniversity,
                         liveUser.university,
-                        'Not provided',
+                        _l10n.uiNotProvided,
                       ),
                       _buildOptionalDetailRow(
                         Icons.subject_outlined,
-                        'Field of Study',
+                        _l10n.uiFieldOfStudy81e26d,
                         liveUser.fieldOfStudy,
-                        'Not provided',
+                        _l10n.uiNotProvided,
                       ),
                     ],
                     if (liveUser.role == 'student' &&
                         liveUser.academicLevel == 'doctorat') ...[
                       _buildOptionalDetailRow(
                         Icons.science_outlined,
-                        'Research Topic',
+                        _l10n.uiResearchTopic,
                         liveUser.researchTopic,
-                        'Not provided',
+                        _l10n.uiNotProvided,
                       ),
                       _buildOptionalDetailRow(
                         Icons.biotech_outlined,
-                        'Laboratory',
+                        _l10n.uiLaboratory,
                         liveUser.laboratory,
-                        'Not provided',
+                        _l10n.uiNotProvided,
                       ),
                       _buildOptionalDetailRow(
                         Icons.person_outline_rounded,
-                        'Supervisor',
+                        _l10n.uiSupervisor,
                         liveUser.supervisor,
-                        'Not provided',
+                        _l10n.uiNotProvided,
                       ),
                       _buildOptionalDetailRow(
                         Icons.category_outlined,
-                        'Research Domain',
+                        _l10n.uiResearchDomain,
                         liveUser.researchDomain,
-                        'Not provided',
+                        _l10n.uiNotProvided,
                       ),
                     ],
                     if (liveUser.role == 'company') ...[
                       _buildOptionalDetailRow(
                         Icons.business_outlined,
-                        'Company',
+                        _l10n.uiCompanyName,
                         liveUser.companyName,
-                        'Not provided',
+                        _l10n.uiNotProvided,
                       ),
                       _buildDetailRow(
                         Icons.verified_user_outlined,
-                        'Approval Status',
+                        _l10n.uiApprovalStatus,
                         _approvalDisplayLabel(
                           liveUser.normalizedApprovalStatus,
                         ),
@@ -1495,20 +1507,20 @@ class _UsersScreenState extends State<UsersScreen> {
                       _buildCompanyModerationPanel(liveUser, provider),
                       _buildOptionalDetailRow(
                         Icons.category_outlined,
-                        'Sector',
+                        _l10n.uiSector,
                         liveUser.sector,
-                        'Not provided',
+                        _l10n.uiNotProvided,
                       ),
                       _buildOptionalDetailRow(
                         Icons.language_outlined,
-                        'Website',
+                        _l10n.uiWebsite,
                         liveUser.website,
-                        'Not provided',
+                        _l10n.uiNotProvided,
                       ),
                       if ((liveUser.description ?? '').trim().isNotEmpty)
                         _buildDetailRow(
                           Icons.description_outlined,
-                          'Description',
+                          _l10n.uiDescription,
                           liveUser.description!.trim(),
                         ),
                       if (companyPostingFuture != null)
@@ -1524,7 +1536,7 @@ class _UsersScreenState extends State<UsersScreen> {
                     if (liveUser.bio?.isNotEmpty == true)
                       _buildDetailRow(
                         Icons.person_outline_rounded,
-                        'Bio',
+                        _l10n.uiBio,
                         liveUser.bio!,
                       ),
                   ],
@@ -1545,12 +1557,14 @@ class _UsersScreenState extends State<UsersScreen> {
       future: future,
       builder: (context, snapshot) {
         final opportunities = snapshot.data ?? const <OpportunityModel>[];
+        final l10n = AppLocalizations.of(context)!;
         final summaryLabel = switch (snapshot.connectionState) {
-          ConnectionState.waiting => 'Loading posted opportunities...',
-          _ when snapshot.hasError => 'Could not load opportunities right now.',
-          _ when opportunities.isEmpty => 'No opportunities posted yet.',
-          _ when opportunities.length == 1 => '1 opportunity',
-          _ => '${opportunities.length} opportunities',
+          ConnectionState.waiting => l10n.uiLoadingOpportunities,
+          _ when snapshot.hasError => l10n.uiOpportunitiesUnavailable,
+          _ when opportunities.isEmpty => l10n.uiNoOpportunitiesPostedYet,
+          _ when opportunities.length == 1 =>
+            '1 ${l10n.uiOpportunities.toLowerCase()}',
+          _ => '${opportunities.length} ${l10n.uiOpportunities.toLowerCase()}',
         };
 
         return AdminSurface(
@@ -1560,7 +1574,7 @@ class _UsersScreenState extends State<UsersScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const AdminSectionHeader(title: 'Posted Opportunities'),
+              AdminSectionHeader(title: l10n.uiPostedOpportunities),
               const SizedBox(height: 14),
               Text(
                 summaryLabel,
@@ -1574,7 +1588,7 @@ class _UsersScreenState extends State<UsersScreen> {
               SizedBox(
                 width: double.infinity,
                 child: _buildDocumentButton(
-                  label: 'View Opportunities',
+                  label: l10n.uiViewOpportunities,
                   icon: Icons.work_outline_rounded,
                   onPressed: () => _showCompanyPostedOpportunitiesSheet(user),
                   color: AdminPalette.secondary,
@@ -1730,9 +1744,10 @@ class _UsersScreenState extends State<UsersScreen> {
   }
 
   Widget _buildCompanyCommercialRegisterSection(UserModel user) {
+    final l10n = AppLocalizations.of(context)!;
     final uploadedAt = user.commercialRegisterUploadedAt;
     final uploadedAtLabel = uploadedAt == null
-        ? 'Not available'
+        ? _l10n.uiNotProvided
         : DateFormat('MMM d, yyyy').format(uploadedAt.toDate());
 
     return Container(
@@ -1748,7 +1763,7 @@ class _UsersScreenState extends State<UsersScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'سجل تجاري',
+            l10n.uiCommercialRegister,
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w700,
@@ -1760,12 +1775,12 @@ class _UsersScreenState extends State<UsersScreen> {
             Text(
               user.commercialRegisterFileName.isNotEmpty
                   ? user.commercialRegisterFileName
-                  : 'Commercial Register uploaded',
+                  : l10n.uiCommercialRegisterUploaded,
               style: TextStyle(fontSize: 12, color: AdminPalette.textSecondary),
             ),
             const SizedBox(height: 4),
             Text(
-              'Uploaded: $uploadedAtLabel',
+              l10n.uiUploadedUploadedatlabel(uploadedAtLabel),
               style: TextStyle(fontSize: 12, color: AdminPalette.textSecondary),
             ),
             const SizedBox(height: 12),
@@ -1775,7 +1790,7 @@ class _UsersScreenState extends State<UsersScreen> {
                   child: ElevatedButton.icon(
                     onPressed: () => _openCommercialRegister(user.uid),
                     icon: const Icon(Icons.visibility_outlined, size: 18),
-                    label: const Text('View سجل تجاري'),
+                    label: Text('${l10n.uiView} ${l10n.uiCommercialRegister}'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AdminPalette.accent,
                       foregroundColor: Colors.white,
@@ -1788,7 +1803,9 @@ class _UsersScreenState extends State<UsersScreen> {
                     onPressed: () =>
                         _openCommercialRegister(user.uid, download: true),
                     icon: const Icon(Icons.download_outlined, size: 18),
-                    label: const Text('Download سجل تجاري'),
+                    label: Text(
+                      '${l10n.uiDownload} ${l10n.uiCommercialRegister}',
+                    ),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AdminPalette.accent,
                       side: BorderSide(
@@ -1801,7 +1818,7 @@ class _UsersScreenState extends State<UsersScreen> {
             ),
           ] else
             Text(
-              'Missing commercial register document.',
+              l10n.uiCommercialRegisterMissing,
               style: TextStyle(
                 fontSize: 12,
                 color: AdminPalette.danger,
@@ -1843,23 +1860,23 @@ class _UsersScreenState extends State<UsersScreen> {
     } catch (e) {
       if (!mounted) return;
       context.showAppSnackBar(
-        _documentErrorMessage(e),
+        _documentErrorMessage(e, l10n),
         title: l10n.uiDocumentUnavailable,
         type: AppFeedbackType.error,
       );
     }
   }
 
-  String _documentErrorMessage(Object error) {
+  String _documentErrorMessage(Object error, AppLocalizations l10n) {
     final message = error.toString();
     if (message.contains('permission') || message.contains('403')) {
-      return 'Permission denied while opening the document.';
+      return l10n.uiDocumentPermissionDenied;
     }
     if (message.contains('404') || message.contains('not found')) {
-      return 'The requested document is no longer available.';
+      return l10n.uiRequestedDocumentNoLongerAvailable;
     }
 
-    return 'We couldn\'t open the document right now.';
+    return l10n.uiCouldNotOpenTheDocumentRightNow;
   }
 
   Widget _buildOptionalDetailRow(
@@ -2036,13 +2053,11 @@ class _AdminCompanyOpportunitiesSheetState
                 final opportunities =
                     snapshot.data ?? const <OpportunityModel>[];
                 final headline = switch (snapshot.connectionState) {
-                  ConnectionState.waiting => 'Loading posted opportunities...',
+                  ConnectionState.waiting => l10n.uiLoadingOpportunities,
                   _ when opportunities.isEmpty =>
-                    'No opportunities posted by this company yet.',
-                  _ when opportunities.length == 1 =>
-                    '1 opportunity posted by this company.',
+                    l10n.uiNoCompanyOpportunitiesYet,
                   _ =>
-                    '${opportunities.length} opportunities posted by this company.',
+                    '${opportunities.length} ${l10n.uiPostedOpportunities.toLowerCase()}',
                 };
 
                 return ListView(
@@ -2070,7 +2085,7 @@ class _AdminCompanyOpportunitiesSheetState
                           const SizedBox(height: 10),
                           Text(
                             widget.companyName.trim().isEmpty
-                                ? 'Company opportunities'
+                                ? l10n.uiCompanyOpportunities
                                 : widget.companyName,
                             style: const TextStyle(
                               fontSize: 18,
@@ -2098,9 +2113,8 @@ class _AdminCompanyOpportunitiesSheetState
                     else if (snapshot.hasError)
                       AdminEmptyState(
                         icon: Icons.work_off_outlined,
-                        title: 'Opportunity history unavailable',
-                        message:
-                            'We could not load this company\'s posted opportunities right now.',
+                        title: l10n.uiOpportunityHistoryUnavailable,
+                        message: l10n.uiOpportunityHistoryUnavailableMessage,
                         action: FilledButton.icon(
                           onPressed: _retry,
                           icon: const Icon(Icons.refresh_rounded),
@@ -2108,11 +2122,10 @@ class _AdminCompanyOpportunitiesSheetState
                         ),
                       )
                     else if (opportunities.isEmpty)
-                      const AdminEmptyState(
+                      AdminEmptyState(
                         icon: Icons.work_outline_rounded,
-                        title: 'No opportunities yet',
-                        message:
-                            'This company has not posted any opportunities yet.',
+                        title: l10n.uiNoOpportunitiesYet,
+                        message: l10n.uiNoOpportunitiesPostedByCompany,
                       )
                     else
                       ...opportunities.map(
@@ -2142,6 +2155,7 @@ class _AdminCompanyOpportunitiesSheetState
   }
 
   Widget _buildOpportunityCard(OpportunityModel opportunity) {
+    final l10n = AppLocalizations.of(context)!;
     final status = opportunity.effectiveStatus();
     final statusColor = status == 'open'
         ? AdminPalette.success
@@ -2175,7 +2189,7 @@ class _AdminCompanyOpportunitiesSheetState
               children: [
                 Text(
                   opportunity.title.trim().isEmpty
-                      ? 'Untitled opportunity'
+                      ? l10n.uiUntitledOpportunity
                       : opportunity.title.trim(),
                   style: TextStyle(
                     fontSize: 14,
@@ -2208,7 +2222,7 @@ class _AdminCompanyOpportunitiesSheetState
                       icon: OpportunityType.icon(opportunity.type),
                     ),
                     AdminPill(
-                      label: status == 'open' ? 'Open' : 'Closed',
+                      label: status == 'open' ? l10n.uiOpen : l10n.uiClosed,
                       color: statusColor,
                       icon: status == 'open'
                           ? Icons.check_circle_outline_rounded
@@ -2216,7 +2230,7 @@ class _AdminCompanyOpportunitiesSheetState
                     ),
                     if (opportunity.isHidden)
                       AdminPill(
-                        label: 'Hidden',
+                        label: l10n.uiHiddenLabel,
                         color: AdminPalette.warning,
                         icon: Icons.visibility_off_outlined,
                       ),

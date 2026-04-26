@@ -639,7 +639,7 @@
   "uiDocumentUnavailable": "Document unavailable",
   "uiDocuments": "Documents",
   "uiDomain": "Domain",
-  "uiDownload": "Download Ø³Ø¬Ù ØªØ¬Ø§Ø±Ù",
+  "uiDownload": "Download",
   "uiDownloadA479": "Download",
   "uiDownloadBuiltCv": "Download Built CV",
   "uiDownloadCv": "Download CV",
@@ -1969,7 +1969,7 @@
       "value1": {}
     }
   },
-  "uiDownloada479c9": "Download Ø³Ø¬Ù ØªØ¬Ø§Ø±Ù",
+  "uiDownloada479c9": "Download",
   "uiValueMbSelected": "{value1} MB selected",
   "@uiValueMbSelected": {
     "placeholders": {
@@ -3896,5 +3896,266 @@
   "uiApprovedCompanies": "Approved companies",
   "uiNoApplicantsMatchYourSearch": "No applicants match your search.",
   "uiNoApprovedCompaniesMatchYourSearch": "No approved companies match your search.",
-  "pressBackAgainToExitApp": "Press back again to exit the app."
+  "pressBackAgainToExitApp": "Press back again to exit the app.",
+  "uiDashboardSubtitle": "Platform pulse, moderation load, and quick control points.",
+  "uiUsersSubtitle": "Search users, review profiles, and manage account status.",
+  "uiContentSubtitle": "Moderate ideas, applications, listings, scholarships, and library resources.",
+  "uiActivitySubtitle": "Track platform changes and jump straight into the right queue.",
+  "uiAdmins": "Admins",
+  "uiAccountState": "Account state",
+  "uiApprovalStatus": "Approval Status",
+  "uiDescription": "Description",
+  "uiPendingReview": "Pending review",
+  "uiSelectedAccount": "Selected account",
+  "uiSelectedCompany": "Selected company",
+  "uiBlockUser": "Block User",
+  "uiUnblockUser": "Unblock User",
+  "uiBlockUserMessage": "This will immediately remove access to the app until you restore the account later.",
+  "uiUnblockUserMessage": "This will restore access and let the user sign in and use the app again.",
+  "uiApproveCompanyMessage": "This will unlock the workspace and let the company use its approved features right away.",
+  "uiRejectCompanyMessage": "This will keep the company out of the workspace until the profile details are corrected.",
+  "uiMarkPendingCompanyMessage": "This will move the company back into the review queue for another moderation pass.",
+  "uiApproveCompanySubtitle": "Unlock the company workspace and move it into the approved state.",
+  "uiRejectCompanySubtitle": "Keep the company out of the workspace until the profile is corrected.",
+  "uiMarkPendingSubtitle": "Move the company back into the review queue for another check.",
+  "uiBlockUserSubtitle": "Temporarily remove access to this account.",
+  "uiUnblockUserSubtitle": "Restore access and let the user sign in again.",
+  "uiApplicationsSuffix": "applications",
+  "uiSavesSuffix": "saves",
+  "uiUnknownTime": "Unknown time",
+  "uiCompanyNameNotAdded": "Company name not added",
+  "uiPostedOpportunities": "Posted Opportunities",
+  "uiViewOpportunities": "View Opportunities",
+  "uiOpportunitiesUnavailable": "Could not load opportunities right now.",
+  "uiNoOpportunitiesPostedYet": "No opportunities posted yet.",
+  "uiCompanyOpportunities": "Company opportunities",
+  "uiNoCompanyOpportunitiesYet": "No opportunities posted by this company yet.",
+  "uiOpportunityHistoryUnavailable": "Opportunity history unavailable",
+  "uiOpportunityHistoryUnavailableMessage": "We could not load this company's posted opportunities right now.",
+  "uiNoOpportunitiesYet": "No opportunities yet",
+  "uiNoOpportunitiesPostedByCompany": "This company has not posted any opportunities yet.",
+  "uiCommercialRegisterUploaded": "Commercial Register uploaded",
+  "uiCommercialRegisterMissing": "Missing commercial register document.",
+  "uiJustNow": "Just now",
+  "uiOlderActivity": "Older Activity",
+  "uiEndOfActivityFeed": "You have reached the end of the recent activity feed.",
+  "uiOlderActivityUnavailable": "Older activity could not be loaded",
+  "uiNeedMoreActivity": "Need more activity?",
+  "uiFetchingOlderUpdates": "Fetching older updates from across the platform.",
+  "uiLoadOlderUpdates": "Load older updates from submissions, listings, trainings, scholarships, and project ideas.",
+  "uiAdminCreatedIdeas": "Admin-Created Ideas",
+  "uiReviewSubmittedIdeas": "Review submitted ideas, keep the pending queue moving, and open details when you need the full picture.",
+  "uiReviewJobsDescription": "Review jobs, internships, and sponsored posts. Filter by source, status, or pending reviews.",
+  "uiAllTypes": "All Types",
+  "uiEditOpportunity": "Edit Opportunity",
+  "uiUnknownCompany": "Unknown company",
+  "uiOpenPostToReview": "Open this post to review the full role and requirements.",
+  "uiDeleteProjectIdea": "Delete Project Idea",
+  "uiDeleteItemConfirm": "Are you sure you want to delete \"{title}\"?",
+  "@uiDeleteItemConfirm": {
+    "description": "Confirmation message for deleting an item.",
+    "placeholders": {
+      "title": {}
+    }
+  },
+  "uiByName": "By {name}",
+  "@uiByName": {
+    "description": "Attributed label e.g. 'By John'.",
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "uiYourPost": "Your Post",
+  "uiApps": "Apps",
+  "uiUpdated": "Updated",
+  "uiAdded": "Added",
+  "uiDue": "Due",
+  "uiDeleteScholarship": "Delete Scholarship",
+  "uiKeepFundingCallsClear": "Keep funding calls clear, trustworthy, and easy to scan before students open the full details.",
+  "uiOpenScholarshipToReview": "Open this scholarship to review eligibility and access details.",
+  "uiPendingIdeas": "Pending Ideas",
+  "uiApprovedIdeas": "Approved Ideas",
+  "uiRejectedIdeas": "Rejected Ideas",
+  "uiHiddenIdeas": "Hidden Ideas",
+  "uiFeaturedScholarships": "Featured Scholarships",
+  "uiHiddenScholarships": "Hidden Scholarships",
+  "uiScholarshipListings": "Scholarship Listings",
+  "uiNoAdminIdeasMatch": "No admin-created ideas match this search",
+  "uiNoPendingIdeasMatch": "No pending ideas match this search",
+  "uiNoApprovedIdeasMatch": "No approved ideas match this search",
+  "uiNoRejectedIdeasMatch": "No rejected ideas match this search",
+  "uiNoHiddenIdeasMatch": "No hidden ideas match this search",
+  "uiNoIdeasMatch": "No ideas match this search",
+  "uiNoFeaturedScholarshipsMatch": "No featured scholarships match this search",
+  "uiNoHiddenScholarshipsMatch": "No hidden scholarships match this search",
+  "uiNoScholarshipsMatch": "No scholarships match this search",
+  "uiAdminOpportunities": "Admin Opportunities",
+  "uiPendingApplications": "Pending Applications",
+  "uiClosedOpportunities": "Closed Opportunities",
+  "uiFeaturedOpportunities": "Featured Opportunities",
+  "uiHiddenOpportunities": "Hidden Opportunities",
+  "uiOpportunityQueue": "Opportunity Queue",
+  "uiExpired": "Expired",
+  "uiOpportunityTypeCollectionLabel": "{type} opportunities",
+  "@uiOpportunityTypeCollectionLabel": {
+    "description": "Collection label for an opportunity type, e.g. job opportunities.",
+    "placeholders": {
+      "type": {}
+    }
+  },
+  "uiNoAdminPostedItemsMatchSearch": "No admin-posted {items} match this search",
+  "@uiNoAdminPostedItemsMatchSearch": {
+    "description": "Empty state for admin-posted filtered content.",
+    "placeholders": {
+      "items": {}
+    }
+  },
+  "uiNoItemsWithPendingApplicationsRightNow": "No {items} with pending applications right now",
+  "@uiNoItemsWithPendingApplicationsRightNow": {
+    "description": "Empty state for content with pending applications.",
+    "placeholders": {
+      "items": {}
+    }
+  },
+  "uiNoClosedItemsMatchSearch": "No closed {items} match this search",
+  "@uiNoClosedItemsMatchSearch": {
+    "description": "Empty state for closed filtered content.",
+    "placeholders": {
+      "items": {}
+    }
+  },
+  "uiNoFeaturedItemsMatchSearch": "No featured {items} match this search",
+  "@uiNoFeaturedItemsMatchSearch": {
+    "description": "Empty state for featured filtered content.",
+    "placeholders": {
+      "items": {}
+    }
+  },
+  "uiNoHiddenItemsMatchSearch": "No hidden {items} match this search",
+  "@uiNoHiddenItemsMatchSearch": {
+    "description": "Empty state for hidden filtered content.",
+    "placeholders": {
+      "items": {}
+    }
+  },
+  "uiNoItemsMatchSearch": "No {items} match this search",
+  "@uiNoItemsMatchSearch": {
+    "description": "Generic empty state for filtered content.",
+    "placeholders": {
+      "items": {}
+    }
+  },
+  "uiItemHiddenMessage": "{itemType} \"{title}\" hidden. You can restore it later.",
+  "@uiItemHiddenMessage": {
+    "description": "Snackbar message shown after hiding an item.",
+    "placeholders": {
+      "itemType": {},
+      "title": {}
+    }
+  },
+  "uiItemVisibleMessage": "{itemType} \"{title}\" is visible again.",
+  "@uiItemVisibleMessage": {
+    "description": "Snackbar message shown after making an item visible.",
+    "placeholders": {
+      "itemType": {},
+      "title": {}
+    }
+  },
+  "uiItemHiddenTitle": "{itemType} hidden",
+  "@uiItemHiddenTitle": {
+    "description": "Snackbar title shown after hiding an item.",
+    "placeholders": {
+      "itemType": {}
+    }
+  },
+  "uiItemVisibleTitle": "{itemType} visible",
+  "@uiItemVisibleTitle": {
+    "description": "Snackbar title shown after making an item visible.",
+    "placeholders": {
+      "itemType": {}
+    }
+  },
+  "uiPublicIdea": "Public Idea",
+  "uiPrivateIdea": "Private Idea",
+  "uiSubmitted": "Submitted",
+  "uiOpportunityTags": "Opportunity Tags",
+  "uiApplicationLinkReady": "Application Link Ready",
+  "uiLinkNotAdded": "Link not added",
+  "uiExternalLinkAvailable": "External Link Available",
+  "uiScholarshipTags": "Scholarship Tags",
+  "uiCertificateAvailable": "Certificate Available",
+  "uiCertificateNotIncluded": "Certificate not included",
+  "uiAuthors": "Authors",
+  "uiStudentProfileDocumentsSubtitle": "Student profile and submitted documents.",
+  "uiCouldNotLoadFullStudentProfile": "We could not load the full student profile right now. You can still open the application CV and the visible submitted applications.",
+  "uiApplicant": "Applicant",
+  "uiFileUploadedAt": "File: {fileName}\nUploaded: {uploadedAt}",
+  "@uiFileUploadedAt": {
+    "description": "CV file name and upload date shown together.",
+    "placeholders": {
+      "fileName": {},
+      "uploadedAt": {}
+    }
+  },
+  "uiUploadedFileInvalidPdfAskReplace": "This uploaded file is not a valid PDF. Ask the user to replace it with a PDF version.",
+  "uiDocumentPermissionDenied": "Permission denied while opening the document.",
+  "uiRequestedDocumentNoLongerAvailable": "The requested document is no longer available.",
+  "uiScholarshipLabel": "Scholarship",
+  "uiSearchIdeasByTitleDomainSubmitterOrStatus": "Search ideas by title, domain, submitter, or status...",
+  "uiSearchOpportunitiesByTitleCompanyLocationStatusOrCompensation": "Search opportunities by title, company, location, status, or compensation...",
+  "uiSearchScholarshipsByTitleProviderOrDeadline": "Search scholarships by title, provider, or deadline...",
+  "uiSearchLibraryResources": "Search library resources...",
+  "uiFocused": "Focused",
+  "uiSearchQueryLabel": "Search: {query}",
+  "@uiSearchQueryLabel": {
+    "description": "Label for the active search query chip.",
+    "placeholders": {
+      "query": {}
+    }
+  },
+  "uiMinutesAgoShort": "{count}m ago",
+  "@uiMinutesAgoShort": {
+    "description": "Compact relative time in minutes.",
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "uiHoursAgoShort": "{count}h ago",
+  "@uiHoursAgoShort": {
+    "description": "Compact relative time in hours.",
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "uiDaysAgoShort": "{count}d ago",
+  "@uiDaysAgoShort": {
+    "description": "Compact relative time in days.",
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "uiAppsPerOpportunity": "{rate} apps per opportunity",
+  "@uiAppsPerOpportunity": {
+    "description": "Dashboard application rate value.",
+    "placeholders": {
+      "rate": {}
+    }
+  },
+  "uiCvCompletionRateValue": "{percent}% ({totalCvs} of {students} students)",
+  "@uiCvCompletionRateValue": {
+    "description": "Dashboard CV completion rate value.",
+    "placeholders": {
+      "percent": {},
+      "totalCvs": {},
+      "students": {}
+    }
+  },
+  "uiPendingApprovedIdeasValue": "{pending} pending and {approved} approved",
+  "@uiPendingApprovedIdeasValue": {
+    "description": "Dashboard pending and approved idea counts.",
+    "placeholders": {
+      "pending": {},
+      "approved": {}
+    }
+  }
 }
