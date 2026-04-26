@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../../theme/app_typography.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -155,7 +156,7 @@ class _AdminActivityCenterScreenState extends State<AdminActivityCenterScreen> {
                                 : l10n.uiMatchingActivitiesCount(
                                     activities.length,
                                   ),
-                            style: TextStyle(
+                            style: AppTypography.product(
                               fontSize: 12.5,
                               fontWeight: FontWeight.w700,
                               color: AdminPalette.textPrimary,
@@ -164,7 +165,7 @@ class _AdminActivityCenterScreenState extends State<AdminActivityCenterScreen> {
                           const Spacer(),
                           Text(
                             l10n.uiNewestFirst,
-                            style: TextStyle(
+                            style: AppTypography.product(
                               fontSize: 11.5,
                               fontWeight: FontWeight.w600,
                               color: AdminPalette.textMuted,
@@ -347,7 +348,7 @@ class _ActivityTile extends StatelessWidget {
                             title,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
+                            style: AppTypography.product(
                               fontWeight: FontWeight.w700,
                               fontSize: 14.3,
                               color: AdminPalette.textPrimary,
@@ -360,7 +361,7 @@ class _ActivityTile extends StatelessWidget {
                               description,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
+                              style: AppTypography.product(
                                 fontSize: 12.5,
                                 color: AdminPalette.textSecondary,
                                 height: 1.35,
@@ -506,7 +507,7 @@ class _ActivityInlineInfo extends StatelessWidget {
           label,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: TextStyle(
+          style: AppTypography.product(
             fontSize: 11.4,
             fontWeight: FontWeight.w600,
             color: AdminPalette.textMuted,
@@ -544,7 +545,7 @@ class _ActivityHeaderLine extends StatelessWidget {
               typeLabel.toUpperCase(),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(
+              style: AppTypography.product(
                 fontSize: 10.2,
                 fontWeight: FontWeight.w800,
                 letterSpacing: 0.45,
@@ -560,7 +561,7 @@ class _ActivityHeaderLine extends StatelessWidget {
               actorName,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(
+              style: AppTypography.product(
                 fontSize: 11.3,
                 fontWeight: FontWeight.w600,
                 color: AdminPalette.textMuted,
@@ -590,7 +591,7 @@ class _ActivityStatusBadge extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: TextStyle(
+        style: AppTypography.product(
           fontSize: 10.8,
           fontWeight: FontWeight.w700,
           color: color,
@@ -642,7 +643,7 @@ class _ActivityFeedFooter extends StatelessWidget {
         child: Center(
           child: Text(
             l10n.uiEndOfActivityFeed,
-            style: TextStyle(
+            style: AppTypography.product(
               fontSize: 12,
               fontWeight: FontWeight.w600,
               color: AdminPalette.textMuted,
@@ -699,7 +700,7 @@ class _ActivityFeedFooter extends StatelessWidget {
               isRetryState
                   ? l10n.uiOlderActivityUnavailable
                   : l10n.uiNeedMoreActivity,
-              style: TextStyle(
+              style: AppTypography.product(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
                 color: AdminPalette.textPrimary,
@@ -712,7 +713,7 @@ class _ActivityFeedFooter extends StatelessWidget {
                   : provider.activityLoadingMore
                   ? l10n.uiFetchingOlderUpdates
                   : l10n.uiLoadOlderUpdates,
-              style: TextStyle(
+              style: AppTypography.product(
                 fontSize: 11.8,
                 fontWeight: FontWeight.w500,
                 color: isRetryState

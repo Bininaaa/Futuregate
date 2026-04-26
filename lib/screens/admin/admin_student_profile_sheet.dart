@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../l10n/generated/app_localizations.dart';
+import '../../theme/app_typography.dart';
 import '../../models/cv_model.dart';
 import '../../models/student_application_item_model.dart';
 import '../../models/user_model.dart';
@@ -274,7 +275,7 @@ class _AdminStudentProfileSheetState extends State<_AdminStudentProfileSheet> {
               const SizedBox(height: 10),
               Text(
                 l10n.uiTheUploadedFileIsNotAValidPdf,
-                style: TextStyle(
+                style: AppTypography.product(
                   fontSize: 12,
                   color: AdminPalette.warning,
                   fontWeight: FontWeight.w600,
@@ -343,7 +344,7 @@ class _AdminStudentProfileSheetState extends State<_AdminStudentProfileSheet> {
             const SizedBox(height: 10),
             Text(
               'We could not load the application summary right now, but you can still open the full history and try again.',
-              style: TextStyle(
+              style: AppTypography.product(
                 fontSize: 12,
                 height: 1.45,
                 color: AdminPalette.warning,
@@ -533,7 +534,7 @@ class _AdminStudentApplicationsSheetState
                                 : l10n.uiApplicationsForValue(
                                     widget.studentName,
                                   ),
-                            style: const TextStyle(
+                            style: AppTypography.product(
                               fontSize: 18,
                               fontWeight: FontWeight.w700,
                               color: Colors.white,
@@ -548,7 +549,7 @@ class _AdminStudentApplicationsSheetState
                                 : items.length == 1
                                 ? '1 submitted application available for review'
                                 : '${items.length} submitted applications available for review',
-                            style: const TextStyle(
+                            style: AppTypography.product(
                               fontSize: 12.5,
                               color: Colors.white70,
                             ),
@@ -633,7 +634,7 @@ class _AdminStudentApplicationsSheetState
                 children: [
                   Text(
                     item.title,
-                    style: TextStyle(
+                    style: AppTypography.product(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
                       color: AdminPalette.textPrimary,
@@ -642,7 +643,7 @@ class _AdminStudentApplicationsSheetState
                   const SizedBox(height: 3),
                   Text(
                     item.companyName,
-                    style: TextStyle(
+                    style: AppTypography.product(
                       fontSize: 12.2,
                       color: AdminPalette.textSecondary,
                       fontWeight: FontWeight.w600,
@@ -674,7 +675,7 @@ class _AdminStudentApplicationsSheetState
                   const SizedBox(height: 10),
                   Text(
                     appliedLabel,
-                    style: TextStyle(
+                    style: AppTypography.product(
                       fontSize: 11.8,
                       color: AdminPalette.textMuted,
                       fontWeight: FontWeight.w600,
@@ -713,7 +714,7 @@ class _StudentHeroCard extends StatelessWidget {
           Text(
             user.fullName,
             textAlign: TextAlign.center,
-            style: const TextStyle(
+            style: AppTypography.product(
               fontSize: 22,
               fontWeight: FontWeight.w700,
               color: Colors.white,
@@ -725,7 +726,7 @@ class _StudentHeroCard extends StatelessWidget {
                 ? university
                 : l10n.uiStudentProfileAvailableForAdminReview,
             textAlign: TextAlign.center,
-            style: const TextStyle(
+            style: AppTypography.product(
               fontSize: 12.8,
               color: Colors.white70,
               height: 1.45,
@@ -761,7 +762,7 @@ class _StudentHeroCard extends StatelessWidget {
           _SingleLineText(
             user.email,
             textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 13, color: Colors.white70),
+            style: AppTypography.product(fontSize: 13, color: Colors.white70),
           ),
         ],
       ),
@@ -795,7 +796,7 @@ class _DetailRow extends StatelessWidget {
               ? trimmedValue
               : DisplayText.capitalizeLeadingLabel(trimmedValue))
         : (placeholder ?? l10n.uiNotProvided);
-    final valueStyle = TextStyle(
+    final valueStyle = AppTypography.product(
       fontSize: trimmedValue.isEmpty ? 13.2 : 14,
       height: 1.4,
       color: trimmedValue.isEmpty
@@ -827,7 +828,7 @@ class _DetailRow extends StatelessWidget {
               children: [
                 Text(
                   label,
-                  style: TextStyle(
+                  style: AppTypography.product(
                     fontSize: 11.5,
                     color: AdminPalette.textMuted,
                     fontWeight: FontWeight.w600,
@@ -918,7 +919,7 @@ class _LongFormCard extends StatelessWidget {
               const SizedBox(width: 12),
               Text(
                 title,
-                style: TextStyle(
+                style: AppTypography.product(
                   fontSize: 13.5,
                   fontWeight: FontWeight.w700,
                   color: AdminPalette.textPrimary,
@@ -929,7 +930,7 @@ class _LongFormCard extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             value,
-            style: TextStyle(
+            style: AppTypography.product(
               fontSize: 13,
               height: 1.55,
               color: AdminPalette.textSecondary,
@@ -954,7 +955,7 @@ class _SectionCopy extends StatelessWidget {
       children: [
         Text(
           title,
-          style: TextStyle(
+          style: AppTypography.product(
             fontSize: 14,
             fontWeight: FontWeight.w700,
             color: AdminPalette.textPrimary,
@@ -963,7 +964,7 @@ class _SectionCopy extends StatelessWidget {
         const SizedBox(height: 8),
         Text(
           value,
-          style: TextStyle(
+          style: AppTypography.product(
             fontSize: 12.5,
             height: 1.5,
             color: AdminPalette.textSecondary,

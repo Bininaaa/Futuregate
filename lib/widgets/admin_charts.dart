@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
+import '../theme/app_typography.dart';
 import '../utils/admin_palette.dart';
 
 class UsersByLevelBarChart extends StatelessWidget {
@@ -49,7 +50,7 @@ class UsersByLevelBarChart extends StatelessWidget {
                   SizedBox(width: 8),
                   Text(
                     'Students by Level',
-                    style: TextStyle(
+                    style: AppTypography.product(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: AdminPalette.textPrimary,
@@ -86,7 +87,9 @@ class UsersByLevelBarChart extends StatelessWidget {
                             padding: const EdgeInsets.only(top: 8),
                             child: Text(
                               _barLabel(value.toInt(), isCompact: isCompact),
-                              style: TextStyle(fontSize: isCompact ? 10 : 11),
+                              style: AppTypography.product(
+                                fontSize: isCompact ? 10 : 11,
+                              ),
                             ),
                           ),
                         ),
@@ -208,7 +211,7 @@ class UsersRolePieChart extends StatelessWidget {
                   SizedBox(width: 8),
                   Text(
                     'Users Distribution',
-                    style: TextStyle(
+                    style: AppTypography.product(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: AdminPalette.textPrimary,
@@ -231,7 +234,7 @@ class UsersRolePieChart extends StatelessWidget {
                             ? '0%'
                             : '${((students / total) * 100).toStringAsFixed(0)}%',
                         radius: isCompact ? 52 : 58,
-                        titleStyle: TextStyle(
+                        titleStyle: AppTypography.product(
                           color: Colors.white,
                           fontSize: isCompact ? 11 : 12,
                           fontWeight: FontWeight.bold,
@@ -244,7 +247,7 @@ class UsersRolePieChart extends StatelessWidget {
                             ? '0%'
                             : '${((companies / total) * 100).toStringAsFixed(0)}%',
                         radius: isCompact ? 52 : 58,
-                        titleStyle: TextStyle(
+                        titleStyle: AppTypography.product(
                           color: Colors.white,
                           fontSize: isCompact ? 11 : 12,
                           fontWeight: FontWeight.bold,
@@ -257,7 +260,7 @@ class UsersRolePieChart extends StatelessWidget {
                             ? '0%'
                             : '${((admins / total) * 100).toStringAsFixed(0)}%',
                         radius: isCompact ? 52 : 58,
-                        titleStyle: TextStyle(
+                        titleStyle: AppTypography.product(
                           color: Colors.white,
                           fontSize: isCompact ? 11 : 12,
                           fontWeight: FontWeight.bold,
@@ -335,7 +338,7 @@ class MonthlyRegistrationsLineChart extends StatelessWidget {
                   SizedBox(width: 8),
                   Text(
                     'Monthly Registrations',
-                    style: TextStyle(
+                    style: AppTypography.product(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: AdminPalette.textPrimary,
@@ -383,7 +386,7 @@ class MonthlyRegistrationsLineChart extends StatelessWidget {
                               child: Text(
                                 value.toInt().toString(),
                                 textAlign: TextAlign.right,
-                                style: TextStyle(
+                                style: AppTypography.product(
                                   fontSize: isCompact ? 10 : 11,
                                   color: AdminPalette.textSecondary,
                                   fontWeight: FontWeight.w500,
@@ -418,7 +421,9 @@ class MonthlyRegistrationsLineChart extends StatelessWidget {
                               padding: const EdgeInsets.only(top: 8),
                               child: Text(
                                 label,
-                                style: TextStyle(fontSize: isCompact ? 9 : 10),
+                                style: AppTypography.product(
+                                  fontSize: isCompact ? 9 : 10,
+                                ),
                               ),
                             );
                           },

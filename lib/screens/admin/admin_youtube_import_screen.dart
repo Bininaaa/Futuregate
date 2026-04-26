@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../l10n/generated/app_localizations.dart';
+import '../../theme/app_typography.dart';
 import '../../models/training_model.dart';
 import '../../providers/admin_provider.dart';
 import '../../providers/auth_provider.dart';
@@ -324,7 +325,7 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
                 onPressed: () => Navigator.pop(dialogContext, true),
                 child: Text(
                   _l10n.uiDelete,
-                  style: TextStyle(color: Colors.red),
+                  style: AppTypography.product(color: Colors.red),
                 ),
               ),
             ],
@@ -771,7 +772,7 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
           video.title,
           maxLines: 3,
           overflow: TextOverflow.ellipsis,
-          style: TextStyle(
+          style: AppTypography.product(
             fontSize: 15,
             fontWeight: FontWeight.w700,
             color: AdminPalette.textPrimary,
@@ -782,7 +783,10 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
           video.provider,
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
-          style: TextStyle(color: AdminPalette.textSecondary, fontSize: 13),
+          style: AppTypography.product(
+            color: AdminPalette.textSecondary,
+            fontSize: 13,
+          ),
         ),
         const SizedBox(height: 6),
         if (video.description.trim().isNotEmpty)
@@ -790,7 +794,10 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
             video.description,
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(color: AdminPalette.textSecondary, fontSize: 13),
+            style: AppTypography.product(
+              color: AdminPalette.textSecondary,
+              fontSize: 13,
+            ),
           ),
         const SizedBox(height: 8),
         Wrap(
@@ -870,7 +877,7 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
                     Expanded(
                       child: Text(
                         training.title,
-                        style: const TextStyle(
+                        style: AppTypography.product(
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
                         ),
@@ -889,7 +896,7 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
                   training.authors.isNotEmpty
                       ? training.authors.join(', ')
                       : training.provider,
-                  style: TextStyle(
+                  style: AppTypography.product(
                     color: AdminPalette.textSecondary,
                     fontSize: 13,
                   ),
@@ -986,7 +993,10 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
       minimumSize: const Size(0, 34),
       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
       visualDensity: const VisualDensity(horizontal: -2, vertical: -2),
-      textStyle: const TextStyle(fontSize: 12.2, fontWeight: FontWeight.w600),
+      textStyle: AppTypography.product(
+        fontSize: 12.2,
+        fontWeight: FontWeight.w600,
+      ),
     );
   }
 
@@ -1116,7 +1126,7 @@ class _AdminChip extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: TextStyle(
+        style: AppTypography.product(
           color: color,
           fontWeight: FontWeight.w700,
           fontSize: 11,

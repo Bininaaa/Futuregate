@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../l10n/generated/app_localizations.dart';
+import '../../theme/app_typography.dart';
 import '../../models/opportunity_model.dart';
 import '../../providers/admin_provider.dart';
 import '../../utils/admin_palette.dart';
@@ -69,7 +70,10 @@ class _ModerateScreenState extends State<ModerateScreen>
                   children: [
                     const Icon(Icons.lightbulb, size: 14),
                     const SizedBox(width: 3),
-                    Text(l10n.uiIdeas, style: const TextStyle(fontSize: 11)),
+                    Text(
+                      l10n.uiIdeas,
+                      style: AppTypography.product(fontSize: 11),
+                    ),
                     if (provider.allProjectIdeas
                         .where((i) => i.status == 'pending')
                         .isNotEmpty) ...[
@@ -85,7 +89,7 @@ class _ModerateScreenState extends State<ModerateScreen>
                         ),
                         child: Text(
                           '${provider.allProjectIdeas.where((i) => i.status == 'pending').length}',
-                          style: const TextStyle(
+                          style: AppTypography.product(
                             color: Colors.white,
                             fontSize: 9,
                             fontWeight: FontWeight.bold,
@@ -103,7 +107,10 @@ class _ModerateScreenState extends State<ModerateScreen>
                   children: [
                     const Icon(Icons.work, size: 14),
                     const SizedBox(width: 3),
-                    Text(l10n.uiOffers, style: const TextStyle(fontSize: 11)),
+                    Text(
+                      l10n.uiOffers,
+                      style: AppTypography.product(fontSize: 11),
+                    ),
                   ],
                 ),
               ),
@@ -114,7 +121,10 @@ class _ModerateScreenState extends State<ModerateScreen>
                   children: [
                     const Icon(Icons.card_giftcard, size: 14),
                     const SizedBox(width: 3),
-                    Text(l10n.uiScholarships, style: const TextStyle(fontSize: 11)),
+                    Text(
+                      l10n.uiScholarships,
+                      style: AppTypography.product(fontSize: 11),
+                    ),
                   ],
                 ),
               ),
@@ -169,7 +179,7 @@ class _ModerateScreenState extends State<ModerateScreen>
                     _showPendingOnly
                         ? 'Pending Ideas (${ideas.length})'
                         : 'All Ideas (${ideas.length})',
-                    style: TextStyle(
+                    style: AppTypography.product(
                       fontWeight: FontWeight.w600,
                       color: AdminPalette.textPrimary,
                     ),
@@ -189,7 +199,7 @@ class _ModerateScreenState extends State<ModerateScreen>
                       ),
                       child: Text(
                         _showPendingOnly ? 'Show All' : 'Pending Only',
-                        style: TextStyle(
+                        style: AppTypography.product(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                           color: AdminPalette.primary,
@@ -243,7 +253,7 @@ class _ModerateScreenState extends State<ModerateScreen>
                       Expanded(
                         child: Text(
                           idea.title,
-                          style: TextStyle(
+                          style: AppTypography.product(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                             color: AdminPalette.textPrimary,
@@ -266,7 +276,7 @@ class _ModerateScreenState extends State<ModerateScreen>
                             const SizedBox(width: 4),
                             Text(
                               idea.status,
-                              style: TextStyle(
+                              style: AppTypography.product(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w600,
                                 color: statusColor,
@@ -280,7 +290,7 @@ class _ModerateScreenState extends State<ModerateScreen>
                   const SizedBox(height: 8),
                   Text(
                     idea.description,
-                    style: TextStyle(
+                    style: AppTypography.product(
                       fontSize: 13,
                       color: AdminPalette.textSecondary,
                     ),
@@ -301,7 +311,7 @@ class _ModerateScreenState extends State<ModerateScreen>
                   const SizedBox(height: 10),
                   Text(
                     'Submitted by: ${idea.submittedBy}',
-                    style: TextStyle(
+                    style: AppTypography.product(
                       fontSize: 11,
                       color: AdminPalette.textMuted,
                     ),
@@ -431,7 +441,7 @@ class _ModerateScreenState extends State<ModerateScreen>
               ),
               title: Text(
                 opp['title'] ?? 'Untitled opportunity',
-                style: TextStyle(
+                style: AppTypography.product(
                   fontWeight: FontWeight.w600,
                   fontSize: 15,
                   color: AdminPalette.textPrimary,
@@ -442,7 +452,7 @@ class _ModerateScreenState extends State<ModerateScreen>
                 children: [
                   Text(
                     opp['companyName'] ?? 'Unknown company',
-                    style: TextStyle(
+                    style: AppTypography.product(
                       fontSize: 12,
                       color: AdminPalette.textMuted,
                     ),
@@ -465,7 +475,7 @@ class _ModerateScreenState extends State<ModerateScreen>
                         ),
                         child: Text(
                           opp['type'] ?? '',
-                          style: TextStyle(
+                          style: AppTypography.product(
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
                             color: opp['type'] == 'job'
@@ -490,7 +500,7 @@ class _ModerateScreenState extends State<ModerateScreen>
                         ),
                         child: Text(
                           effectiveStatus,
-                          style: TextStyle(
+                          style: AppTypography.product(
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
                             color: effectiveStatus == 'open'
@@ -517,7 +527,9 @@ class _ModerateScreenState extends State<ModerateScreen>
                     if (error != null && context.mounted) {
                       context.showAppSnackBar(
                         error,
-                        title: AppLocalizations.of(context)!.uiDeleteUnavailable,
+                        title: AppLocalizations.of(
+                          context,
+                        )!.uiDeleteUnavailable,
                         type: AppFeedbackType.error,
                       );
                     }
@@ -576,7 +588,7 @@ class _ModerateScreenState extends State<ModerateScreen>
               ),
               title: Text(
                 sch['title'] ?? 'Untitled scholarship',
-                style: TextStyle(
+                style: AppTypography.product(
                   fontWeight: FontWeight.w600,
                   fontSize: 15,
                   color: AdminPalette.textPrimary,
@@ -587,7 +599,7 @@ class _ModerateScreenState extends State<ModerateScreen>
                 children: [
                   Text(
                     sch['provider'] ?? 'Unknown provider',
-                    style: TextStyle(
+                    style: AppTypography.product(
                       fontSize: 12,
                       color: AdminPalette.textMuted,
                     ),
@@ -609,7 +621,7 @@ class _ModerateScreenState extends State<ModerateScreen>
                           ),
                           child: Text(
                             '${sch['amount']} DA',
-                            style: TextStyle(
+                            style: AppTypography.product(
                               fontSize: 11,
                               fontWeight: FontWeight.w600,
                               color: AdminPalette.success,
@@ -628,7 +640,7 @@ class _ModerateScreenState extends State<ModerateScreen>
                           ),
                           child: Text(
                             'Due: ${sch['deadline']}',
-                            style: TextStyle(
+                            style: AppTypography.product(
                               fontSize: 11,
                               fontWeight: FontWeight.w600,
                               color: AdminPalette.warning,
@@ -653,7 +665,9 @@ class _ModerateScreenState extends State<ModerateScreen>
                     if (error != null && context.mounted) {
                       context.showAppSnackBar(
                         error,
-                        title: AppLocalizations.of(context)!.uiDeleteUnavailable,
+                        title: AppLocalizations.of(
+                          context,
+                        )!.uiDeleteUnavailable,
                         type: AppFeedbackType.error,
                       );
                     }
@@ -676,7 +690,7 @@ class _ModerateScreenState extends State<ModerateScreen>
       ),
       child: Text(
         label,
-        style: TextStyle(
+        style: AppTypography.product(
           fontSize: 11,
           fontWeight: FontWeight.w500,
           color: color,
@@ -694,7 +708,10 @@ class _ModerateScreenState extends State<ModerateScreen>
           const SizedBox(height: 12),
           Text(
             message,
-            style: TextStyle(fontSize: 16, color: AdminPalette.textMuted),
+            style: AppTypography.product(
+              fontSize: 16,
+              color: AdminPalette.textMuted,
+            ),
           ),
         ],
       ),
@@ -708,10 +725,13 @@ class _ModerateScreenState extends State<ModerateScreen>
         backgroundColor: AdminPalette.surface,
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-        title: Text(title, style: TextStyle(color: AdminPalette.textPrimary)),
+        title: Text(
+          title,
+          style: AppTypography.product(color: AdminPalette.textPrimary),
+        ),
         content: Text(
           content,
-          style: TextStyle(color: AdminPalette.textSecondary),
+          style: AppTypography.product(color: AdminPalette.textSecondary),
         ),
         actions: [
           TextButton(
@@ -724,9 +744,9 @@ class _ModerateScreenState extends State<ModerateScreen>
               onConfirm();
             },
             style: TextButton.styleFrom(foregroundColor: AdminPalette.danger),
-            child: const Text(
+            child: Text(
               'Delete',
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: AppTypography.product(fontWeight: FontWeight.bold),
             ),
           ),
         ],

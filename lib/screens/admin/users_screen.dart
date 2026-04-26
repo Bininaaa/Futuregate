@@ -12,6 +12,7 @@ import '../../utils/admin_palette.dart';
 import '../../utils/display_text.dart';
 import '../../utils/opportunity_type.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../../theme/app_typography.dart';
 import '../../widgets/admin/admin_ui.dart';
 import '../../widgets/profile_avatar.dart';
 import '../../widgets/shared/app_feedback.dart';
@@ -481,7 +482,7 @@ class _UsersScreenState extends State<UsersScreen> {
                                         user.fullName,
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
+                                        style: AppTypography.product(
                                           fontWeight: FontWeight.w700,
                                           fontSize: 14.2,
                                           color: AdminPalette.textPrimary,
@@ -507,7 +508,7 @@ class _UsersScreenState extends State<UsersScreen> {
                                       ),
                                       child: Text(
                                         roleLabel,
-                                        style: TextStyle(
+                                        style: AppTypography.product(
                                           fontSize: 10.3,
                                           fontWeight: FontWeight.w700,
                                           color: roleColor,
@@ -521,7 +522,7 @@ class _UsersScreenState extends State<UsersScreen> {
                                   user.email,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
+                                  style: AppTypography.product(
                                     fontSize: 11.5,
                                     color: AdminPalette.textMuted,
                                     fontWeight: FontWeight.w500,
@@ -684,7 +685,10 @@ class _UsersScreenState extends State<UsersScreen> {
           child: Text(
             label,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
+            style: AppTypography.product(
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+            ),
           ),
         ),
       ],
@@ -794,7 +798,7 @@ class _UsersScreenState extends State<UsersScreen> {
                     children: [
                       Text(
                         eyebrow,
-                        style: const TextStyle(
+                        style: AppTypography.product(
                           fontSize: 11,
                           fontWeight: FontWeight.w700,
                           letterSpacing: 0.7,
@@ -804,7 +808,7 @@ class _UsersScreenState extends State<UsersScreen> {
                       const SizedBox(height: 4),
                       Text(
                         user.fullName,
-                        style: const TextStyle(
+                        style: AppTypography.product(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
                           color: Colors.white,
@@ -813,7 +817,7 @@ class _UsersScreenState extends State<UsersScreen> {
                       const SizedBox(height: 4),
                       Text(
                         subtitle,
-                        style: const TextStyle(
+                        style: AppTypography.product(
                           fontSize: 12.2,
                           color: Colors.white70,
                           height: 1.4,
@@ -830,7 +834,7 @@ class _UsersScreenState extends State<UsersScreen> {
               children: [
                 Text(
                   eyebrow,
-                  style: const TextStyle(
+                  style: AppTypography.product(
                     fontSize: 11,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.8,
@@ -843,7 +847,7 @@ class _UsersScreenState extends State<UsersScreen> {
                 Text(
                   user.fullName,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
+                  style: AppTypography.product(
                     fontSize: 22,
                     fontWeight: FontWeight.w700,
                     color: Colors.white,
@@ -853,7 +857,7 @@ class _UsersScreenState extends State<UsersScreen> {
                 Text(
                   subtitle,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
+                  style: AppTypography.product(
                     fontSize: 12.8,
                     color: Colors.white70,
                     height: 1.45,
@@ -870,7 +874,10 @@ class _UsersScreenState extends State<UsersScreen> {
                 _buildSingleLineText(
                   user.email,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 13, color: Colors.white70),
+                  style: AppTypography.product(
+                    fontSize: 13,
+                    color: Colors.white70,
+                  ),
                 ),
               ],
             ),
@@ -1159,7 +1166,7 @@ class _UsersScreenState extends State<UsersScreen> {
                       ),
                       child: Text(
                         eyebrow,
-                        style: TextStyle(
+                        style: AppTypography.product(
                           fontSize: 11,
                           fontWeight: FontWeight.w700,
                           color: AdminPalette.textMuted,
@@ -1171,7 +1178,7 @@ class _UsersScreenState extends State<UsersScreen> {
                 const SizedBox(height: 16),
                 Text(
                   title,
-                  style: TextStyle(
+                  style: AppTypography.product(
                     fontSize: 22,
                     fontWeight: FontWeight.w700,
                     color: AdminPalette.textPrimary,
@@ -1180,7 +1187,7 @@ class _UsersScreenState extends State<UsersScreen> {
                 const SizedBox(height: 8),
                 Text(
                   message,
-                  style: TextStyle(
+                  style: AppTypography.product(
                     fontSize: 13,
                     height: 1.5,
                     color: AdminPalette.textSecondary,
@@ -1215,7 +1222,7 @@ class _UsersScreenState extends State<UsersScreen> {
                           children: [
                             Text(
                               targetHint,
-                              style: TextStyle(
+                              style: AppTypography.product(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w600,
                                 color: AdminPalette.textMuted,
@@ -1226,7 +1233,7 @@ class _UsersScreenState extends State<UsersScreen> {
                               targetLabel,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
+                              style: AppTypography.product(
                                 fontSize: 13.5,
                                 fontWeight: FontWeight.w700,
                                 color: AdminPalette.textPrimary,
@@ -1309,7 +1316,7 @@ class _UsersScreenState extends State<UsersScreen> {
                   children: [
                     Text(
                       title,
-                      style: TextStyle(
+                      style: AppTypography.product(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
                         color: AdminPalette.textPrimary,
@@ -1318,7 +1325,7 @@ class _UsersScreenState extends State<UsersScreen> {
                     const SizedBox(height: 4),
                     Text(
                       subtitle,
-                      style: TextStyle(
+                      style: AppTypography.product(
                         fontSize: 12,
                         color: AdminPalette.textMuted,
                         height: 1.45,
@@ -1578,7 +1585,7 @@ class _UsersScreenState extends State<UsersScreen> {
               const SizedBox(height: 14),
               Text(
                 summaryLabel,
-                style: TextStyle(
+                style: AppTypography.product(
                   fontSize: 12.5,
                   height: 1.5,
                   color: AdminPalette.textSecondary,
@@ -1698,7 +1705,7 @@ class _UsersScreenState extends State<UsersScreen> {
         children: [
           Text(
             _l10n.uiCompanyReview,
-            style: TextStyle(
+            style: AppTypography.product(
               fontSize: 13.5,
               fontWeight: FontWeight.w700,
               color: AdminPalette.textPrimary,
@@ -1764,7 +1771,7 @@ class _UsersScreenState extends State<UsersScreen> {
         children: [
           Text(
             l10n.uiCommercialRegister,
-            style: TextStyle(
+            style: AppTypography.product(
               fontSize: 14,
               fontWeight: FontWeight.w700,
               color: AdminPalette.textPrimary,
@@ -1776,12 +1783,18 @@ class _UsersScreenState extends State<UsersScreen> {
               user.commercialRegisterFileName.isNotEmpty
                   ? user.commercialRegisterFileName
                   : l10n.uiCommercialRegisterUploaded,
-              style: TextStyle(fontSize: 12, color: AdminPalette.textSecondary),
+              style: AppTypography.product(
+                fontSize: 12,
+                color: AdminPalette.textSecondary,
+              ),
             ),
             const SizedBox(height: 4),
             Text(
               l10n.uiUploadedUploadedatlabel(uploadedAtLabel),
-              style: TextStyle(fontSize: 12, color: AdminPalette.textSecondary),
+              style: AppTypography.product(
+                fontSize: 12,
+                color: AdminPalette.textSecondary,
+              ),
             ),
             const SizedBox(height: 12),
             Row(
@@ -1819,7 +1832,7 @@ class _UsersScreenState extends State<UsersScreen> {
           ] else
             Text(
               l10n.uiCommercialRegisterMissing,
-              style: TextStyle(
+              style: AppTypography.product(
                 fontSize: 12,
                 color: AdminPalette.danger,
                 fontWeight: FontWeight.w600,
@@ -1902,7 +1915,7 @@ class _UsersScreenState extends State<UsersScreen> {
     bool mutedValue = false,
     bool singleLineValue = false,
   }) {
-    final valueStyle = TextStyle(
+    final valueStyle = AppTypography.product(
       fontSize: mutedValue ? 13.2 : 14,
       height: 1.4,
       color: mutedValue ? AdminPalette.textMuted : AdminPalette.textPrimary,
@@ -1932,7 +1945,7 @@ class _UsersScreenState extends State<UsersScreen> {
               children: [
                 Text(
                   label,
-                  style: TextStyle(
+                  style: AppTypography.product(
                     fontSize: 11.5,
                     color: AdminPalette.textMuted,
                     fontWeight: FontWeight.w600,
@@ -2087,7 +2100,7 @@ class _AdminCompanyOpportunitiesSheetState
                             widget.companyName.trim().isEmpty
                                 ? l10n.uiCompanyOpportunities
                                 : widget.companyName,
-                            style: const TextStyle(
+                            style: AppTypography.product(
                               fontSize: 18,
                               fontWeight: FontWeight.w700,
                               color: Colors.white,
@@ -2096,7 +2109,7 @@ class _AdminCompanyOpportunitiesSheetState
                           const SizedBox(height: 4),
                           Text(
                             headline,
-                            style: const TextStyle(
+                            style: AppTypography.product(
                               fontSize: 12.5,
                               color: Colors.white70,
                             ),
@@ -2191,7 +2204,7 @@ class _AdminCompanyOpportunitiesSheetState
                   opportunity.title.trim().isEmpty
                       ? l10n.uiUntitledOpportunity
                       : opportunity.title.trim(),
-                  style: TextStyle(
+                  style: AppTypography.product(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
                     color: AdminPalette.textPrimary,
@@ -2201,7 +2214,7 @@ class _AdminCompanyOpportunitiesSheetState
                   const SizedBox(height: 4),
                   Text(
                     opportunity.location.trim(),
-                    style: TextStyle(
+                    style: AppTypography.product(
                       fontSize: 12.2,
                       color: AdminPalette.textSecondary,
                       fontWeight: FontWeight.w600,

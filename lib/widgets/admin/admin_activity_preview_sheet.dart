@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../l10n/generated/app_localizations.dart';
+import '../../theme/app_typography.dart';
 import '../../models/admin_activity_model.dart';
 import '../../models/admin_activity_preview_model.dart';
 import '../../models/application_model.dart';
@@ -201,7 +202,7 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
           children: [
             Text(
               'Description',
-              style: TextStyle(
+              style: AppTypography.product(
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
                 color: AdminPalette.textPrimary,
@@ -210,7 +211,7 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
             const SizedBox(height: 8),
             Text(
               description,
-              style: TextStyle(
+              style: AppTypography.product(
                 fontSize: 13,
                 height: 1.5,
                 color: AdminPalette.textSecondary,
@@ -450,7 +451,7 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
             children: [
               Text(
                 'Tags',
-                style: TextStyle(
+                style: AppTypography.product(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
                   color: AdminPalette.textPrimary,
@@ -876,7 +877,7 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
             children: [
               Text(
                 'Overview',
-                style: TextStyle(
+                style: AppTypography.product(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
                   color: AdminPalette.textPrimary,
@@ -885,7 +886,7 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
               const SizedBox(height: 8),
               Text(
                 summary,
-                style: TextStyle(
+                style: AppTypography.product(
                   fontSize: 13.2,
                   height: 1.6,
                   color: AdminPalette.textSecondary,
@@ -902,7 +903,7 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
                   ),
                   child: Text(
                     tagline,
-                    style: TextStyle(
+                    style: AppTypography.product(
                       fontSize: 12.8,
                       fontWeight: FontWeight.w600,
                       height: 1.5,
@@ -1084,7 +1085,7 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
             const SizedBox(height: 12),
             Text(
               title,
-              style: const TextStyle(
+              style: AppTypography.product(
                 fontSize: 21,
                 fontWeight: FontWeight.w700,
                 color: Colors.white,
@@ -1094,7 +1095,7 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
               const SizedBox(height: 6),
               Text(
                 subtitle,
-                style: const TextStyle(
+                style: AppTypography.product(
                   fontSize: 13,
                   color: Colors.white70,
                   height: 1.45,
@@ -1154,7 +1155,7 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
           const SizedBox(height: 10),
           Text(
             item.label,
-            style: TextStyle(
+            style: AppTypography.product(
               fontSize: 11.5,
               fontWeight: FontWeight.w700,
               color: AdminPalette.textMuted,
@@ -1168,7 +1169,7 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
                 item.value,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(
+                style: AppTypography.product(
                   fontSize: 14.5,
                   fontWeight: FontWeight.w700,
                   color: AdminPalette.textPrimary,
@@ -1210,7 +1211,7 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
                 Expanded(
                   child: Text(
                     title,
-                    style: TextStyle(
+                    style: AppTypography.product(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
                       color: AdminPalette.textPrimary,
@@ -1222,7 +1223,7 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
             const SizedBox(height: 12),
             Text(
               value,
-              style: TextStyle(
+              style: AppTypography.product(
                 fontSize: 13.2,
                 height: 1.6,
                 color: AdminPalette.textSecondary,
@@ -1275,7 +1276,7 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
                     children: [
                       Text(
                         title,
-                        style: TextStyle(
+                        style: AppTypography.product(
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
                           color: AdminPalette.textPrimary,
@@ -1285,7 +1286,7 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
                         const SizedBox(height: 2),
                         Text(
                           subtitle!,
-                          style: TextStyle(
+                          style: AppTypography.product(
                             fontSize: 12,
                             color: AdminPalette.textMuted,
                             height: 1.45,
@@ -1318,7 +1319,7 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
                     Expanded(
                       child: Text(
                         entry.value,
-                        style: TextStyle(
+                        style: AppTypography.product(
                           fontSize: 13.2,
                           height: 1.55,
                           color: AdminPalette.textSecondary,
@@ -1389,7 +1390,7 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
                   item.label,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
+                  style: AppTypography.product(
                     fontSize: 11.5,
                     fontWeight: FontWeight.w700,
                     color: AdminPalette.textMuted,
@@ -1406,7 +1407,7 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
                 item.value,
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(
+                style: AppTypography.product(
                   fontSize: 13.4,
                   height: 1.45,
                   color: AdminPalette.textPrimary,
@@ -1425,7 +1426,7 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
       children: [
         Text(
           title,
-          style: TextStyle(
+          style: AppTypography.product(
             fontSize: 15,
             fontWeight: FontWeight.w600,
             color: AdminPalette.textPrimary,
@@ -1448,7 +1449,7 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
                   ),
                   child: Text(
                     item,
-                    style: TextStyle(
+                    style: AppTypography.product(
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
                       color: color,
@@ -1473,7 +1474,7 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
           children: [
             Text(
               label,
-              style: TextStyle(
+              style: AppTypography.product(
                 fontSize: 11.5,
                 fontWeight: FontWeight.w700,
                 color: AdminPalette.textMuted,
@@ -1482,7 +1483,7 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
             const SizedBox(height: 6),
             Text(
               value.trim().isEmpty ? 'Not available' : value,
-              style: TextStyle(
+              style: AppTypography.product(
                 fontSize: 13.5,
                 height: 1.45,
                 color: AdminPalette.textPrimary,
@@ -1720,7 +1721,7 @@ class _UnavailableCard extends StatelessWidget {
           const SizedBox(height: 14),
           Text(
             'Details unavailable',
-            style: TextStyle(
+            style: AppTypography.product(
               fontSize: 16,
               fontWeight: FontWeight.w700,
               color: AdminPalette.textPrimary,
@@ -1730,7 +1731,7 @@ class _UnavailableCard extends StatelessWidget {
           Text(
             'We couldn\'t load the linked ${activity.type.replaceAll('_', ' ')} record right now.',
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: AppTypography.product(
               fontSize: 13,
               height: 1.5,
               color: AdminPalette.textSecondary,

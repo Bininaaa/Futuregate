@@ -198,7 +198,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 const SizedBox(height: 12),
                 Text(
                   AppLocalizations.of(context)!.uiFailedToLoadAdminContent,
-                  style: TextStyle(
+                  style: AppTypography.product(
                     fontWeight: FontWeight.w600,
                     color: _primaryColor,
                   ),
@@ -408,7 +408,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               ),
               child: Text(
                 '$badgeCount',
-                style: const TextStyle(
+                style: AppTypography.product(
                   color: Colors.white,
                   fontSize: 9,
                   fontWeight: FontWeight.bold,
@@ -918,7 +918,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                         l10n.uiApplicationsForOpportunitytitle(
                           opportunityTitle,
                         ),
-                        style: const TextStyle(
+                        style: AppTypography.product(
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
                           color: Colors.white,
@@ -927,7 +927,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                       const SizedBox(height: 4),
                       Text(
                         '${liveApplications.length} application${liveApplications.length == 1 ? '' : 's'} linked to this opportunity.',
-                        style: const TextStyle(
+                        style: AppTypography.product(
                           fontSize: 12.5,
                           color: Colors.white70,
                         ),
@@ -2954,7 +2954,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                   const SizedBox(height: 12),
                   Text(
                     title,
-                    style: const TextStyle(
+                    style: AppTypography.product(
                       fontSize: 21,
                       fontWeight: FontWeight.w700,
                       color: Colors.white,
@@ -2963,7 +2963,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                   const SizedBox(height: 6),
                   Text(
                     subtitle,
-                    style: const TextStyle(
+                    style: AppTypography.product(
                       fontSize: 13,
                       color: Colors.white70,
                       height: 1.45,
@@ -3015,7 +3015,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                   children: [
                     Text(
                       l10n.uiOverview,
-                      style: TextStyle(
+                      style: AppTypography.product(
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
                         color: AdminPalette.textPrimary,
@@ -3024,7 +3024,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                     const SizedBox(height: 6),
                     Text(
                       summary,
-                      style: TextStyle(
+                      style: AppTypography.product(
                         fontSize: 12.8,
                         height: 1.5,
                         color: AdminPalette.textSecondary,
@@ -3041,7 +3041,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                         ),
                         child: Text(
                           tagline,
-                          style: TextStyle(
+                          style: AppTypography.product(
                             fontSize: 12.8,
                             fontWeight: FontWeight.w600,
                             height: 1.5,
@@ -3060,7 +3060,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               const SizedBox(height: 10),
               Text(
                 l10n.uiProblemSolutionImpact,
-                style: TextStyle(
+                style: AppTypography.product(
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
                   color: AdminPalette.textPrimary,
@@ -3096,7 +3096,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             const SizedBox(height: 10),
             Text(
               l10n.uiAudienceMetadata,
-              style: TextStyle(
+              style: AppTypography.product(
                 fontSize: 15,
                 fontWeight: FontWeight.w700,
                 color: AdminPalette.textPrimary,
@@ -3146,7 +3146,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                   children: [
                     Text(
                       l10n.uiTeamSkillSignals,
-                      style: TextStyle(
+                      style: AppTypography.product(
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
                         color: AdminPalette.textPrimary,
@@ -3296,7 +3296,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
           const SizedBox(height: 10),
           Text(
             item.label,
-            style: TextStyle(
+            style: AppTypography.product(
               fontSize: 11.5,
               fontWeight: FontWeight.w700,
               color: AdminPalette.textMuted,
@@ -3310,7 +3310,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 item.value,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(
+                style: AppTypography.product(
                   fontSize: 14.5,
                   fontWeight: FontWeight.w700,
                   color: AdminPalette.textPrimary,
@@ -3349,7 +3349,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               Expanded(
                 child: Text(
                   title,
-                  style: TextStyle(
+                  style: AppTypography.product(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
                     color: AdminPalette.textPrimary,
@@ -3361,7 +3361,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
           const SizedBox(height: 12),
           Text(
             value,
-            style: TextStyle(
+            style: AppTypography.product(
               fontSize: 13.2,
               height: 1.6,
               color: AdminPalette.textSecondary,
@@ -3410,7 +3410,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                   children: [
                     Text(
                       title,
-                      style: TextStyle(
+                      style: AppTypography.product(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
                         color: AdminPalette.textPrimary,
@@ -3420,7 +3420,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                       const SizedBox(height: 2),
                       Text(
                         subtitle!,
-                        style: TextStyle(
+                        style: AppTypography.product(
                           fontSize: 12,
                           color: AdminPalette.textMuted,
                           height: 1.45,
@@ -3457,7 +3457,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                   Expanded(
                     child: Text(
                       item,
-                      style: TextStyle(
+                      style: AppTypography.product(
                         fontSize: 13.2,
                         height: 1.55,
                         color: AdminPalette.textSecondary,
@@ -3491,7 +3491,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
           const SizedBox(height: 12),
           Text(
             title,
-            style: const TextStyle(
+            style: AppTypography.product(
               fontSize: 21,
               fontWeight: FontWeight.w700,
               color: Colors.white,
@@ -3501,7 +3501,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             const SizedBox(height: 6),
             Text(
               subtitle,
-              style: const TextStyle(
+              style: AppTypography.product(
                 fontSize: 13,
                 color: Colors.white70,
                 height: 1.45,
@@ -3761,7 +3761,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                             Text(
                               item.studentName,
                               textAlign: TextAlign.center,
-                              style: const TextStyle(
+                              style: AppTypography.product(
                                 fontSize: 20,
                                 fontWeight: FontWeight.w700,
                                 color: Colors.white,
@@ -3771,7 +3771,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                             Text(
                               subtitle,
                               textAlign: TextAlign.center,
-                              style: const TextStyle(
+                              style: AppTypography.product(
                                 fontSize: 12.5,
                                 color: Colors.white70,
                                 height: 1.45,
@@ -3819,7 +3819,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                           padding: const EdgeInsets.all(14),
                           child: Text(
                             l10n.uiCouldNotLoadFullStudentProfile,
-                            style: TextStyle(
+                            style: AppTypography.product(
                               fontSize: 12.5,
                               height: 1.5,
                               color: AdminPalette.textSecondary,
@@ -3971,7 +3971,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                   children: [
                     Text(
                       cv.fullName.isNotEmpty ? cv.fullName : l10n.uiApplicant,
-                      style: TextStyle(
+                      style: AppTypography.product(
                         fontSize: 22,
                         fontWeight: FontWeight.w700,
                         color: _primaryColor,
@@ -3981,7 +3981,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                     if (cv.email.isNotEmpty)
                       Text(
                         cv.email,
-                        style: TextStyle(
+                        style: AppTypography.product(
                           fontSize: 13,
                           color: AdminPalette.textMuted,
                         ),
@@ -3990,7 +3990,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                       const SizedBox(height: 2),
                       Text(
                         cv.phone,
-                        style: TextStyle(
+                        style: AppTypography.product(
                           fontSize: 13,
                           color: AdminPalette.textMuted,
                         ),
@@ -4177,7 +4177,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
         children: [
           Text(
             title,
-            style: TextStyle(
+            style: AppTypography.product(
               fontSize: 14,
               fontWeight: FontWeight.w700,
               color: _primaryColor,
@@ -4186,7 +4186,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
           const SizedBox(height: 6),
           Text(
             subtitle,
-            style: TextStyle(
+            style: AppTypography.product(
               fontSize: 12,
               height: 1.5,
               color: AdminPalette.textSecondary,
@@ -4196,7 +4196,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             const SizedBox(height: 10),
             Text(
               warningText,
-              style: TextStyle(
+              style: AppTypography.product(
                 fontSize: 12,
                 height: 1.5,
                 color: AdminPalette.activity,
@@ -4419,7 +4419,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             const SizedBox(height: 10),
             Text(
               l10n.uiLocationLogistics,
-              style: TextStyle(
+              style: AppTypography.product(
                 fontSize: 15,
                 fontWeight: FontWeight.w700,
                 color: AdminPalette.textPrimary,
@@ -4489,7 +4489,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                   children: [
                     Text(
                       l10n.uiTags,
-                      style: TextStyle(
+                      style: AppTypography.product(
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
                         color: AdminPalette.textPrimary,
@@ -4721,7 +4721,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             const SizedBox(height: 10),
             Text(
               l10n.uiPositioningAccess,
-              style: TextStyle(
+              style: AppTypography.product(
                 fontSize: 15,
                 fontWeight: FontWeight.w700,
                 color: AdminPalette.textPrimary,
@@ -4927,7 +4927,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             const SizedBox(height: 10),
             Text(
               l10n.uiDeliveryAccess,
-              style: TextStyle(
+              style: AppTypography.product(
                 fontSize: 15,
                 fontWeight: FontWeight.w700,
                 color: AdminPalette.textPrimary,
@@ -5011,7 +5011,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       children: [
         Text(
           title,
-          style: TextStyle(
+          style: AppTypography.product(
             fontSize: 15,
             fontWeight: FontWeight.w600,
             color: _primaryColor,
@@ -5023,7 +5023,10 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             padding: const EdgeInsets.only(bottom: 4),
             child: Text(
               item,
-              style: TextStyle(fontSize: 13, color: AdminPalette.textSecondary),
+              style: AppTypography.product(
+                fontSize: 13,
+                color: AdminPalette.textSecondary,
+              ),
             ),
           ),
         ),
@@ -5037,7 +5040,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       children: [
         Text(
           title,
-          style: TextStyle(
+          style: AppTypography.product(
             fontSize: 15,
             fontWeight: FontWeight.w600,
             color: _primaryColor,
@@ -5060,7 +5063,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                   ),
                   child: Text(
                     item,
-                    style: TextStyle(
+                    style: AppTypography.product(
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
                       color: color,
@@ -5261,7 +5264,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                   children: [
                     Text(
                       title,
-                      style: TextStyle(
+                      style: AppTypography.product(
                         fontSize: 17,
                         fontWeight: FontWeight.w700,
                         color: AdminPalette.textPrimary,
@@ -5270,7 +5273,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                     const SizedBox(height: 10),
                     Text(
                       content,
-                      style: TextStyle(
+                      style: AppTypography.product(
                         fontSize: 13.2,
                         height: 1.5,
                         color: AdminPalette.textSecondary,

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
+import '../theme/app_typography.dart';
 import '../utils/admin_palette.dart';
 
 class StatCard extends StatelessWidget {
@@ -113,7 +113,7 @@ class StatCard extends StatelessWidget {
                             Text(
                               title,
                               softWrap: true,
-                              style: GoogleFonts.poppins(
+                              style: AppTypography.product(
                                 fontSize: titleFontSize,
                                 color: AdminPalette.textSecondary,
                                 fontWeight: FontWeight.w600,
@@ -132,7 +132,7 @@ class StatCard extends StatelessWidget {
                                       alignment: Alignment.centerLeft,
                                       child: Text(
                                         value,
-                                        style: GoogleFonts.poppins(
+                                        style: AppTypography.product(
                                           fontSize: valueFontSize,
                                           fontWeight: FontWeight.w700,
                                           color: AdminPalette.textPrimary,

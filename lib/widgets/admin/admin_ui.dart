@@ -13,32 +13,74 @@ class AdminShellBackground extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     AppColors.of(context);
+    final theme = Theme.of(context);
+    final adminTheme = theme.copyWith(
+      textTheme: _adminProductTextTheme(theme.textTheme),
+      primaryTextTheme: _adminProductTextTheme(theme.primaryTextTheme),
+    );
 
-    return DecoratedBox(
-      decoration: BoxDecoration(gradient: AdminPalette.shellGradient),
-      child: Stack(
-        children: [
-          Positioned(
-            top: -120,
-            right: -40,
-            child: _GlowOrb(
-              size: 240,
-              color: AdminPalette.primary.withValues(alpha: 0.08),
-            ),
+    return Theme(
+      data: adminTheme,
+      child: DefaultTextStyle.merge(
+        style: AppTypography.product(
+          textStyle: DefaultTextStyle.of(context).style,
+          color: AdminPalette.textPrimary,
+        ),
+        child: DecoratedBox(
+          decoration: BoxDecoration(gradient: AdminPalette.shellGradient),
+          child: Stack(
+            children: [
+              Positioned(
+                top: -120,
+                right: -40,
+                child: _GlowOrb(
+                  size: 240,
+                  color: AdminPalette.primary.withValues(alpha: 0.08),
+                ),
+              ),
+              Positioned(
+                left: -80,
+                bottom: -120,
+                child: _GlowOrb(
+                  size: 220,
+                  color: AdminPalette.secondary.withValues(alpha: 0.08),
+                ),
+              ),
+              child,
+            ],
           ),
-          Positioned(
-            left: -80,
-            bottom: -120,
-            child: _GlowOrb(
-              size: 220,
-              color: AdminPalette.secondary.withValues(alpha: 0.08),
-            ),
-          ),
-          child,
-        ],
+        ),
       ),
     );
   }
+}
+
+TextTheme _adminProductTextTheme(TextTheme base) {
+  return base.copyWith(
+    displayLarge: _adminProductStyle(base.displayLarge),
+    displayMedium: _adminProductStyle(base.displayMedium),
+    displaySmall: _adminProductStyle(base.displaySmall),
+    headlineLarge: _adminProductStyle(base.headlineLarge),
+    headlineMedium: _adminProductStyle(base.headlineMedium),
+    headlineSmall: _adminProductStyle(base.headlineSmall),
+    titleLarge: _adminProductStyle(base.titleLarge),
+    titleMedium: _adminProductStyle(base.titleMedium),
+    titleSmall: _adminProductStyle(base.titleSmall),
+    bodyLarge: _adminProductStyle(base.bodyLarge),
+    bodyMedium: _adminProductStyle(base.bodyMedium),
+    bodySmall: _adminProductStyle(base.bodySmall),
+    labelLarge: _adminProductStyle(base.labelLarge),
+    labelMedium: _adminProductStyle(base.labelMedium),
+    labelSmall: _adminProductStyle(base.labelSmall),
+  );
+}
+
+TextStyle? _adminProductStyle(TextStyle? style) {
+  if (style == null) {
+    return null;
+  }
+
+  return AppTypography.product(textStyle: style);
 }
 
 class AdminSurface extends StatelessWidget {

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../l10n/generated/app_localizations.dart';
+import '../../theme/app_typography.dart';
 import '../../models/training_model.dart';
 import '../../providers/admin_provider.dart';
 import '../../providers/auth_provider.dart';
@@ -316,7 +317,7 @@ class _AdminGoogleBooksImportScreenState
                 onPressed: () => Navigator.pop(dialogContext, true),
                 child: Text(
                   _l10n.uiDelete,
-                  style: TextStyle(color: Colors.red),
+                  style: AppTypography.product(color: Colors.red),
                 ),
               ),
             ],
@@ -760,7 +761,7 @@ class _AdminGoogleBooksImportScreenState
           book.title,
           maxLines: 3,
           overflow: TextOverflow.ellipsis,
-          style: TextStyle(
+          style: AppTypography.product(
             fontSize: 15,
             fontWeight: FontWeight.w700,
             color: AdminPalette.textPrimary,
@@ -771,7 +772,10 @@ class _AdminGoogleBooksImportScreenState
           book.authors.isNotEmpty ? book.authors.join(', ') : book.provider,
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
-          style: TextStyle(color: AdminPalette.textSecondary, fontSize: 13),
+          style: AppTypography.product(
+            color: AdminPalette.textSecondary,
+            fontSize: 13,
+          ),
         ),
         const SizedBox(height: 6),
         if (book.description.trim().isNotEmpty)
@@ -779,7 +783,10 @@ class _AdminGoogleBooksImportScreenState
             book.description,
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(color: AdminPalette.textSecondary, fontSize: 13),
+            style: AppTypography.product(
+              color: AdminPalette.textSecondary,
+              fontSize: 13,
+            ),
           ),
         const SizedBox(height: 8),
         Wrap(
@@ -863,7 +870,7 @@ class _AdminGoogleBooksImportScreenState
                     Expanded(
                       child: Text(
                         training.title,
-                        style: const TextStyle(
+                        style: AppTypography.product(
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
                         ),
@@ -882,7 +889,7 @@ class _AdminGoogleBooksImportScreenState
                   training.authors.isNotEmpty
                       ? training.authors.join(', ')
                       : training.provider,
-                  style: TextStyle(
+                  style: AppTypography.product(
                     color: AdminPalette.textSecondary,
                     fontSize: 13,
                   ),
@@ -979,7 +986,10 @@ class _AdminGoogleBooksImportScreenState
       minimumSize: const Size(0, 34),
       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
       visualDensity: const VisualDensity(horizontal: -2, vertical: -2),
-      textStyle: const TextStyle(fontSize: 12.2, fontWeight: FontWeight.w600),
+      textStyle: AppTypography.product(
+        fontSize: 12.2,
+        fontWeight: FontWeight.w600,
+      ),
     );
   }
 
@@ -1109,7 +1119,7 @@ class _AdminChip extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: TextStyle(
+        style: AppTypography.product(
           color: color,
           fontWeight: FontWeight.w700,
           fontSize: 11,

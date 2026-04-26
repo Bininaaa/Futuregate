@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import '../../models/admin_activity_model.dart';
 import '../../providers/admin_provider.dart';
 import '../../providers/notification_provider.dart';
+import '../../theme/app_typography.dart';
 import '../../utils/admin_palette.dart';
 import '../../utils/display_text.dart';
 import '../../utils/opportunity_type.dart';
@@ -557,7 +558,7 @@ class _InsightTile extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: TextStyle(
+                      style: AppTypography.product(
                         fontSize: 13,
                         color: AdminPalette.textMuted,
                         fontWeight: FontWeight.w500,
@@ -567,7 +568,7 @@ class _InsightTile extends StatelessWidget {
                     Text(
                       value,
                       softWrap: true,
-                      style: TextStyle(
+                      style: AppTypography.product(
                         fontSize: isCompact ? 15 : 16,
                         fontWeight: FontWeight.bold,
                         color: AdminPalette.textPrimary,
@@ -617,7 +618,7 @@ class _RankedListCard extends StatelessWidget {
                   title,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
+                  style: AppTypography.product(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
                     color: AdminPalette.textPrimary,
@@ -630,7 +631,7 @@ class _RankedListCard extends StatelessWidget {
           if (items.isEmpty)
             Text(
               l10n.uiNoHighlightsAvailableYet,
-              style: TextStyle(color: AdminPalette.textMuted),
+              style: AppTypography.product(color: AdminPalette.textMuted),
             ),
           ...items.asMap().entries.map((entry) {
             final item = entry.value as Map<String, dynamic>;
@@ -658,7 +659,7 @@ class _RankedListCard extends StatelessWidget {
                     ),
                     child: Text(
                       countLabel,
-                      style: TextStyle(
+                      style: AppTypography.product(
                         fontSize: 11.3,
                         fontWeight: FontWeight.w700,
                         color: color,
@@ -683,7 +684,7 @@ class _RankedListCard extends StatelessWidget {
                         alignment: Alignment.center,
                         child: Text(
                           '#${entry.key + 1}',
-                          style: TextStyle(
+                          style: AppTypography.product(
                             fontSize: 12,
                             fontWeight: FontWeight.w700,
                             color: color,
@@ -699,7 +700,7 @@ class _RankedListCard extends StatelessWidget {
                               normalizedTitle,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
+                              style: AppTypography.product(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
                                 color: AdminPalette.textPrimary,
@@ -884,7 +885,7 @@ class _QuickAccessGrid extends StatelessWidget {
                                       item.badgeCount > 9
                                           ? '9+'
                                           : '${item.badgeCount}',
-                                      style: TextStyle(
+                                      style: AppTypography.product(
                                         fontSize: 10,
                                         fontWeight: FontWeight.w700,
                                         color: AdminPalette.accent,
@@ -898,7 +899,7 @@ class _QuickAccessGrid extends StatelessWidget {
                               item.title,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
+                              style: AppTypography.product(
                                 fontSize: isCompact ? 13.2 : 14.0,
                                 fontWeight: FontWeight.w700,
                                 color: AdminPalette.textPrimary,
@@ -910,7 +911,7 @@ class _QuickAccessGrid extends StatelessWidget {
                               item.subtitle,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
+                              style: AppTypography.product(
                                 fontSize: isCompact ? 10.9 : 11.2,
                                 color: AdminPalette.textSecondary,
                                 height: 1.26,
@@ -966,7 +967,7 @@ class _RecentActivityCard extends StatelessWidget {
       child: activities.isEmpty
           ? Text(
               l10n.uiNoRecentActivity,
-              style: TextStyle(color: AdminPalette.textMuted),
+              style: AppTypography.product(color: AdminPalette.textMuted),
             )
           : Column(
               children: activities.asMap().entries.map((entry) {
@@ -1030,7 +1031,7 @@ class _RecentActivityCard extends StatelessWidget {
                                     title,
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
+                                    style: AppTypography.product(
                                       fontSize: 13.6,
                                       fontWeight: FontWeight.w700,
                                       color: AdminPalette.textPrimary,
@@ -1042,7 +1043,7 @@ class _RecentActivityCard extends StatelessWidget {
                                     description,
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
+                                    style: AppTypography.product(
                                       fontSize: 12,
                                       color: AdminPalette.textSecondary,
                                       height: 1.35,
@@ -1070,7 +1071,7 @@ class _RecentActivityCard extends StatelessWidget {
                                         ),
                                       Text(
                                         dateLabel,
-                                        style: TextStyle(
+                                        style: AppTypography.product(
                                           fontSize: 11.2,
                                           fontWeight: FontWeight.w500,
                                           color: AdminPalette.textMuted,
@@ -1130,7 +1131,7 @@ class _ActivityMetaChip extends StatelessWidget {
           ],
           Text(
             label,
-            style: TextStyle(
+            style: AppTypography.product(
               fontSize: 10.8,
               fontWeight: FontWeight.w600,
               color: color,
@@ -1160,7 +1161,7 @@ class _RecentUsersCard extends StatelessWidget {
               SizedBox(width: 8),
               Text(
                 AppLocalizations.of(context)!.uiRecentUsers,
-                style: TextStyle(
+                style: AppTypography.product(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
                   color: AdminPalette.textPrimary,
@@ -1172,7 +1173,7 @@ class _RecentUsersCard extends StatelessWidget {
           if (users.isEmpty)
             Text(
               AppLocalizations.of(context)!.uiNoRecentUsersYet,
-              style: TextStyle(color: AdminPalette.textMuted),
+              style: AppTypography.product(color: AdminPalette.textMuted),
             ),
           ...users.asMap().entries.map((entry) {
             final user = entry.value;
@@ -1233,7 +1234,7 @@ class _RecentUsersCard extends StatelessWidget {
                                           user.fullName,
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
+                                          style: AppTypography.product(
                                             fontSize: 14.2,
                                             fontWeight: FontWeight.w700,
                                             color: AdminPalette.textPrimary,
@@ -1254,7 +1255,7 @@ class _RecentUsersCard extends StatelessWidget {
                                   email,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
+                                  style: AppTypography.product(
                                     fontSize: 11.8,
                                     color: AdminPalette.textMuted,
                                   ),
@@ -1295,7 +1296,7 @@ class _RecentOpportunitiesCard extends StatelessWidget {
               SizedBox(width: 8),
               Text(
                 l10n.uiRecentOpportunities,
-                style: TextStyle(
+                style: AppTypography.product(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
                   color: AdminPalette.textPrimary,
@@ -1307,7 +1308,7 @@ class _RecentOpportunitiesCard extends StatelessWidget {
           if (opportunities.isEmpty)
             Text(
               l10n.uiNoOpportunitiesPublishedYet,
-              style: TextStyle(color: AdminPalette.textMuted),
+              style: AppTypography.product(color: AdminPalette.textMuted),
             ),
           ...opportunities.asMap().entries.map((entry) {
             final offer = entry.value;
@@ -1367,7 +1368,7 @@ class _RecentOpportunitiesCard extends StatelessWidget {
                                           : l10n.uiUntitledOpportunity,
                                       maxLines: 2,
                                       overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
+                                      style: AppTypography.product(
                                         fontSize: 14.2,
                                         fontWeight: FontWeight.w700,
                                         color: AdminPalette.textPrimary,
@@ -1390,7 +1391,7 @@ class _RecentOpportunitiesCard extends StatelessWidget {
                                   : l10n.uiCompanyNameNotAdded,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
+                              style: AppTypography.product(
                                 fontSize: 11.8,
                                 color: AdminPalette.textMuted,
                               ),
