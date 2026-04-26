@@ -12,8 +12,21 @@ import {
 
 let unreadNotificationsUnsubscribe = null;
 let chromeInitialized = false;
+let authListenerStarted = false;
+let pageshowListenerStarted = false;
+let verifiedAdminSession = null;
+let workspaceNavigationId = 0;
 
 const THEME_STORAGE_KEY = 'futuregate-admin-theme';
+const SIDEBAR_STORAGE_KEY = 'futuregate-admin-sidebar-collapsed';
+const WORKSPACE_ROUTE_FILES = new Set([
+  '',
+  'index.html',
+  'users.html',
+  'moderation.html',
+  'activity.html',
+  'notifications.html',
+]);
 
 function resolveInitialTheme() {
   try {
@@ -66,6 +79,52 @@ function toggleTheme() {
   applyTheme(nextTheme);
 }
 
+function readSidebarCollapsedPreference() {
+  try {
+    return window.localStorage.getItem(SIDEBAR_STORAGE_KEY) === 'true';
+  } catch (error) {
+    console.warn('Sidebar preference could not be read:', error);
+    return false;
+  }
+}
+
+function persistSidebarCollapsedPreference(isCollapsed) {
+  try {
+    window.localStorage.setItem(SIDEBAR_STORAGE_KEY, isCollapsed ? 'true' : 'false');
+  } catch (error) {
+    console.warn('Sidebar preference could not be saved:', error);
+  }
+}
+
+function updateSidebarCollapseControls(isCollapsed) {
+  const label = isCollapsed ? 'Expand sidebar' : 'Collapse sidebar';
+  const icon = isCollapsed ? 'panel-left-open' : 'panel-left-close';
+
+  document.querySelectorAll('[data-sidebar-collapse-toggle]').forEach((button) => {
+    button.setAttribute('aria-label', label);
+    button.setAttribute('aria-pressed', isCollapsed ? 'true' : 'false');
+    button.setAttribute('title', label);
+    button.innerHTML = `<i data-lucide="${icon}"></i>`;
+  });
+
+  if (window.lucide) window.lucide.createIcons();
+}
+
+function applySidebarCollapsed(isCollapsed) {
+  const layout = document.querySelector('.layout');
+  if (layout) {
+    layout.classList.toggle('sidebar-collapsed', Boolean(isCollapsed));
+  }
+  updateSidebarCollapseControls(Boolean(isCollapsed));
+}
+
+function toggleSidebarCollapsed() {
+  const layout = document.querySelector('.layout');
+  const nextState = !layout?.classList.contains('sidebar-collapsed');
+  persistSidebarCollapsedPreference(nextState);
+  applySidebarCollapsed(nextState);
+}
+
 function setNavOpen(isOpen) {
   const layout = document.querySelector('.layout');
   if (!layout) {
@@ -84,18 +143,234 @@ function closeNavIfMobile() {
   }
 }
 
+function routeFileName(url) {
+  return url.pathname.split('/').pop() || '';
+}
+
+function routeDirectory(url) {
+  const index = url.pathname.lastIndexOf('/');
+  return index >= 0 ? url.pathname.slice(0, index + 1) : '/';
+}
+
+function isWorkspaceRouteUrl(url) {
+  const currentUrl = new URL(window.location.href);
+  return (
+    url.origin === currentUrl.origin &&
+    routeDirectory(url) === routeDirectory(currentUrl) &&
+    WORKSPACE_ROUTE_FILES.has(routeFileName(url))
+  );
+}
+
+function shouldHandleWorkspaceNavigation(event, anchor) {
+  if (!anchor || event.defaultPrevented || event.button !== 0) return false;
+  if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return false;
+  if (anchor.hasAttribute('download') || anchor.hasAttribute('data-router-ignore')) return false;
+
+  const target = (anchor.getAttribute('target') || '').trim().toLowerCase();
+  if (target && target !== '_self') return false;
+
+  const href = anchor.getAttribute('href');
+  if (!href || href.startsWith('#')) return false;
+
+  const url = new URL(href, window.location.href);
+  return isWorkspaceRouteUrl(url);
+}
+
+function setWorkspaceRouteLoading() {
+  const layout = document.querySelector('.layout');
+  const loading = document.getElementById('loading');
+  const content = document.getElementById('page-content');
+
+  layout?.classList.add('workspace-navigating', 'auth-ready');
+  if (content) {
+    content.style.display = 'none';
+    content.innerHTML = '';
+  }
+  if (loading) {
+    loading.innerHTML = '<div class="spinner"></div>';
+    loading.style.display = 'flex';
+  }
+}
+
+function clearRouteFragments() {
+  document.querySelectorAll('[data-route-fragment], body > .modal-backdrop').forEach((element) => {
+    element.remove();
+  });
+  document.querySelectorAll('script[data-workspace-route-script]').forEach((script) => {
+    script.remove();
+  });
+  document.body.style.overflow = '';
+}
+
+function importRouteFragments(nextDoc) {
+  const fragments = Array.from(nextDoc.body.children).filter((element) => {
+    if (element.matches('script')) return false;
+    if (element.id === 'auth-gate' || element.id === 'shell') return false;
+    return true;
+  });
+
+  fragments.forEach((fragment) => {
+    const imported = document.importNode(fragment, true);
+    imported.setAttribute('data-route-fragment', '');
+    document.body.appendChild(imported);
+  });
+}
+
+function scriptAssetKey(url) {
+  const normalized = new URL(url, window.location.href);
+  normalized.hash = '';
+  return normalized.href;
+}
+
+function hasScriptAsset(url) {
+  const key = scriptAssetKey(url);
+  return Array.from(document.scripts).some((script) => {
+    if (!script.src || script.dataset.workspaceRouteScript === 'true') return false;
+    return scriptAssetKey(script.src) === key;
+  });
+}
+
+function loadScriptAsset(url, sourceScript) {
+  return new Promise((resolve, reject) => {
+    if (hasScriptAsset(url)) {
+      resolve();
+      return;
+    }
+
+    const script = document.createElement('script');
+    sourceScript.getAttributeNames().forEach((name) => {
+      if (name !== 'src') script.setAttribute(name, sourceScript.getAttribute(name));
+    });
+    script.src = url;
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error(`Could not load ${url}`));
+    document.head.appendChild(script);
+  });
+}
+
+async function loadRouteHeadScripts(nextDoc, targetUrl) {
+  const scripts = Array.from(nextDoc.head.querySelectorAll('script[src]'));
+  for (const sourceScript of scripts) {
+    const src = new URL(sourceScript.getAttribute('src'), targetUrl).href;
+    if (src.endsWith('/js/theme-init.js')) continue;
+    await loadScriptAsset(src, sourceScript);
+  }
+}
+
+function executeRouteScripts(nextDoc, targetUrl) {
+  const scripts = Array.from(nextDoc.body.querySelectorAll('script'));
+  scripts.forEach((sourceScript, index) => {
+    const script = document.createElement('script');
+    sourceScript.getAttributeNames().forEach((name) => {
+      if (name !== 'src') script.setAttribute(name, sourceScript.getAttribute(name));
+    });
+    script.dataset.workspaceRouteScript = 'true';
+
+    const src = sourceScript.getAttribute('src');
+    if (src) {
+      const scriptUrl = new URL(src, targetUrl);
+      if ((sourceScript.type || '').toLowerCase() === 'module') {
+        scriptUrl.searchParams.set('workspaceNav', `${Date.now()}-${workspaceNavigationId}-${index}`);
+      }
+      script.src = scriptUrl.href;
+    } else {
+      script.textContent = sourceScript.textContent;
+    }
+
+    document.body.appendChild(script);
+  });
+}
+
+async function navigateWorkspace(target, options = {}) {
+  const targetUrl = new URL(target, window.location.href);
+  if (!isWorkspaceRouteUrl(targetUrl)) return false;
+
+  const currentUrl = new URL(window.location.href);
+  if (!options.fromPopState && targetUrl.href === currentUrl.href) {
+    closeNavIfMobile();
+    return true;
+  }
+
+  const navigationId = ++workspaceNavigationId;
+  closeNavIfMobile();
+  setWorkspaceRouteLoading();
+
+  try {
+    const response = await fetch(targetUrl.href, {
+      headers: { 'X-Requested-With': 'FutureGate-Workspace' },
+    });
+    if (!response.ok) throw new Error(`Navigation failed: ${response.status}`);
+
+    const html = await response.text();
+    if (navigationId !== workspaceNavigationId) return true;
+
+    const nextDoc = new DOMParser().parseFromString(html, 'text/html');
+    await loadRouteHeadScripts(nextDoc, targetUrl);
+    if (navigationId !== workspaceNavigationId) return true;
+
+    if (!options.fromPopState) {
+      const method = options.replace ? 'replaceState' : 'pushState';
+      window.history[method]({ futuregateWorkspace: true }, '', targetUrl.href);
+    }
+
+    document.title = nextDoc.title || document.title;
+    document.body.dataset.page = nextDoc.body.dataset.page || '';
+    document.getElementById('auth-gate')?.classList.add('hidden');
+    clearRouteFragments();
+    importRouteFragments(nextDoc);
+    window.scrollTo(0, 0);
+    executeRouteScripts(nextDoc, targetUrl);
+    return true;
+  } catch (error) {
+    console.warn('Workspace navigation fell back to a full page load:', error);
+    window.location.href = targetUrl.href;
+    return false;
+  }
+}
+
+function initializeWorkspaceRouter() {
+  window.FutureGateWorkspace = {
+    ...(window.FutureGateWorkspace || {}),
+    navigate: navigateWorkspace,
+  };
+
+  const currentUrl = new URL(window.location.href);
+  if (isWorkspaceRouteUrl(currentUrl)) {
+    const currentState = window.history.state || {};
+    if (!currentState.futuregateWorkspace) {
+      window.history.replaceState({ ...currentState, futuregateWorkspace: true }, '', currentUrl.href);
+    }
+  }
+
+  window.addEventListener('popstate', () => {
+    const url = new URL(window.location.href);
+    if (isWorkspaceRouteUrl(url)) {
+      navigateWorkspace(url.href, { fromPopState: true });
+    } else {
+      window.location.reload();
+    }
+  });
+}
+
 function initializeChrome() {
   applyTheme(resolveInitialTheme());
+  applySidebarCollapsed(readSidebarCollapsedPreference());
 
   if (chromeInitialized) {
     return;
   }
 
   chromeInitialized = true;
+  initializeWorkspaceRouter();
 
   document.addEventListener('click', (event) => {
     if (event.target.closest('[data-theme-toggle]')) {
       toggleTheme();
+      return;
+    }
+
+    if (event.target.closest('[data-sidebar-collapse-toggle]')) {
+      toggleSidebarCollapsed();
       return;
     }
 
@@ -107,6 +382,13 @@ function initializeChrome() {
 
     if (event.target.closest('[data-shell-backdrop]')) {
       setNavOpen(false);
+      return;
+    }
+
+    const workspaceLink = event.target.closest('a[href]');
+    if (shouldHandleWorkspaceNavigation(event, workspaceLink)) {
+      event.preventDefault();
+      navigateWorkspace(workspaceLink.href);
       return;
     }
 
@@ -186,76 +468,135 @@ function startUnreadNotificationsWatcher(userId) {
   );
 }
 
-function checkAuth(callback) {
+async function validateAdminUser(user) {
+  const userDoc = await getDoc(doc(db, 'users', user.uid));
+  if (
+    !userDoc.exists() ||
+    userDoc.data().role !== 'admin' ||
+    userDoc.data().isActive === false
+  ) {
+    throw new Error('Current user is not an active admin.');
+  }
+  return userDoc.data();
+}
+
+function applyAuthenticatedSession(user, userData) {
   const layout = document.querySelector('.layout');
   const gate = document.getElementById('auth-gate');
 
-  initializeChrome();
-  resetToGatedState();
+  verifiedAdminSession = { user, userData };
+  setupSidebar(userData, user);
+  startUnreadNotificationsWatcher(user.uid);
+  applySidebarCollapsed(readSidebarCollapsedPreference());
 
-  window.addEventListener('pageshow', (e) => {
-    if (e.persisted) {
-      resetToGatedState();
-      const currentUser = auth.currentUser;
-      if (!currentUser) {
-        window.setTimeout(() => {
-          if (!auth.currentUser) redirectToLogin();
-        }, 300);
-      } else {
-        getDoc(doc(db, 'users', currentUser.uid)).then((userDoc) => {
-          if (
-            !userDoc.exists() ||
-            userDoc.data().role !== 'admin' ||
-            userDoc.data().isActive === false
-          ) {
-            stopUnreadNotificationsWatcher();
-            auth.signOut().then(() => {
-              redirectToLogin();
-            });
-          } else {
-            const userData = userDoc.data();
-            setupSidebar(userData, currentUser);
-            startUnreadNotificationsWatcher(currentUser.uid);
-            if (gate) gate.classList.add('hidden');
-            if (layout) layout.classList.add('auth-ready');
-          }
-        }).catch(() => {
-          stopUnreadNotificationsWatcher();
-          redirectToLogin();
-        });
-      }
+  if (gate) gate.classList.add('hidden');
+  if (layout) layout.classList.add('auth-ready');
+}
+
+function runAuthCallback(callback, user, userData) {
+  if (typeof callback !== 'function') return;
+  Promise.resolve()
+    .then(() => callback(user, userData))
+    .catch((error) => {
+      console.error('Admin page callback failed:', error);
+    });
+}
+
+async function rejectInvalidSession() {
+  verifiedAdminSession = null;
+  stopUnreadNotificationsWatcher();
+  await auth.signOut().catch(() => {});
+  redirectToLogin();
+}
+
+function ensurePageshowListener() {
+  if (pageshowListenerStarted) return;
+  pageshowListenerStarted = true;
+
+  window.addEventListener('pageshow', (event) => {
+    if (!event.persisted) return;
+
+    const currentUser = auth.currentUser;
+    if (!currentUser) {
+      window.setTimeout(() => {
+        if (!auth.currentUser) redirectToLogin();
+      }, 300);
+      return;
     }
+
+    validateAdminUser(currentUser)
+      .then((userData) => applyAuthenticatedSession(currentUser, userData))
+      .catch((error) => {
+        console.error('Auth restore error:', error);
+        rejectInvalidSession();
+      });
   });
+}
+
+function startAuthListener() {
+  if (authListenerStarted) return;
+  authListenerStarted = true;
 
   onAuthStateChanged(auth, async (user) => {
     if (!user) {
+      verifiedAdminSession = null;
       stopUnreadNotificationsWatcher();
       redirectToLogin();
       return;
     }
+
     try {
-      const userDoc = await getDoc(doc(db, 'users', user.uid));
-      if (
-        !userDoc.exists() ||
-        userDoc.data().role !== 'admin' ||
-        userDoc.data().isActive === false
-      ) {
-        stopUnreadNotificationsWatcher();
-        await auth.signOut();
-        redirectToLogin();
-        return;
-      }
-      const userData = userDoc.data();
-      setupSidebar(userData, user);
-      startUnreadNotificationsWatcher(user.uid);
-      if (gate) gate.classList.add('hidden');
-      if (layout) layout.classList.add('auth-ready');
-      if (callback) callback(user, userData);
-    } catch (e) {
-      console.error('Auth check error:', e);
-      stopUnreadNotificationsWatcher();
-      redirectToLogin();
+      const userData = await validateAdminUser(user);
+      applyAuthenticatedSession(user, userData);
+    } catch (error) {
+      console.error('Auth check error:', error);
+      rejectInvalidSession();
     }
+  });
+}
+
+function checkAuth(callback) {
+  initializeChrome();
+  ensurePageshowListener();
+
+  if (
+    verifiedAdminSession &&
+    auth.currentUser &&
+    verifiedAdminSession.user.uid === auth.currentUser.uid
+  ) {
+    applyAuthenticatedSession(verifiedAdminSession.user, verifiedAdminSession.userData);
+    runAuthCallback(callback, verifiedAdminSession.user, verifiedAdminSession.userData);
+    return;
+  }
+
+  resetToGatedState();
+  startAuthListener();
+
+  if (auth.currentUser) {
+    validateAdminUser(auth.currentUser)
+      .then((userData) => {
+        applyAuthenticatedSession(auth.currentUser, userData);
+        runAuthCallback(callback, auth.currentUser, userData);
+      })
+      .catch((error) => {
+        console.error('Auth check error:', error);
+        rejectInvalidSession();
+      });
+    return;
+  }
+
+  const unsubscribe = onAuthStateChanged(auth, (user) => {
+    unsubscribe();
+    if (!user) return;
+    validateAdminUser(user)
+      .then((userData) => {
+        applyAuthenticatedSession(user, userData);
+        runAuthCallback(callback, user, userData);
+      })
+      .catch((error) => {
+        console.error('Auth check error:', error);
+        rejectInvalidSession();
+      });
   });
 }
 
@@ -276,12 +617,14 @@ function setupSidebar(userData, user) {
     };
   }
 
-  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+  const currentPage = routeFileName(new URL(window.location.href)) || 'index.html';
   document.querySelectorAll('.nav-item').forEach(item => {
-    const href = item.getAttribute('href');
-    if (href === currentPage || (currentPage === '' && href === 'index.html')) {
-      item.classList.add('active');
-    }
+    const href = item.getAttribute('href') || '';
+    const hrefPage = routeFileName(new URL(href, window.location.href)) || 'index.html';
+    const isActive = hrefPage === currentPage || (currentPage === '' && hrefPage === 'index.html');
+    item.classList.toggle('active', isActive);
+    if (isActive) item.setAttribute('aria-current', 'page');
+    else item.removeAttribute('aria-current');
   });
 }
 

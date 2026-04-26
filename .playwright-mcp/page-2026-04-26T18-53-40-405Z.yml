@@ -1,0 +1,53 @@
+- generic [active] [ref=e1]:
+  - paragraph [ref=e4]: Verifying session…
+  - generic [ref=e5]:
+    - complementary [ref=e6]:
+      - generic [ref=e7]:
+        - generic [ref=e8]:
+          - img [ref=e10]
+          - generic [ref=e13]:
+            - heading "FutureGate" [level=2] [ref=e14]
+            - paragraph [ref=e15]: Admin workspace
+        - button "Collapse sidebar" [ref=e16] [cursor=pointer]:
+          - img [ref=e17]
+      - generic [ref=e20]: Workspace
+      - navigation [ref=e21]:
+        - link "Dashboard" [ref=e22] [cursor=pointer]:
+          - /url: index.html
+          - img [ref=e24]
+          - generic [ref=e29]: Dashboard
+        - link "Users" [ref=e30] [cursor=pointer]:
+          - /url: users.html
+          - img [ref=e32]
+          - generic [ref=e37]: Users
+        - link "Content" [ref=e38] [cursor=pointer]:
+          - /url: moderation.html
+          - img [ref=e40]
+          - generic [ref=e44]: Content
+        - link "Activity" [ref=e45] [cursor=pointer]:
+          - /url: activity.html
+          - img [ref=e47]
+          - generic [ref=e49]: Activity
+        - link "Notifications" [ref=e50] [cursor=pointer]:
+          - /url: notifications.html
+          - img [ref=e52]
+          - generic [ref=e55]: Notifications
+      - generic [ref=e56]:
+        - generic [ref=e57]:
+          - generic [ref=e58]: A
+          - generic [ref=e60]: Admin
+        - button "Sign out" [ref=e61] [cursor=pointer]:
+          - img [ref=e62]
+          - generic [ref=e65]: Sign out
+    - generic [ref=e66]:
+      - banner [ref=e67]:
+        - generic [ref=e68]:
+          - generic [ref=e69]: Overview
+          - heading "Dashboard" [level=1] [ref=e70]
+        - generic [ref=e71]:
+          - button "Toggle theme" [ref=e72] [cursor=pointer]:
+            - img [ref=e73]
+          - link "Notifications" [ref=e79] [cursor=pointer]:
+            - /url: notifications.html
+            - img [ref=e80]
+      - main [ref=e83]

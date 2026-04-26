@@ -18,20 +18,64 @@ const PAGE_META = {
   notifications: { title: 'Notifications', eyebrow: 'Inbox'       },
 };
 
-export function mountShell({ page = 'dashboard', actions = '' } = {}) {
-  const meta    = PAGE_META[page] || { title: 'Admin', eyebrow: '' };
-  const navHtml = NAV_ITEMS.map((item) => {
+function navHtmlForPage(page) {
+  return NAV_ITEMS.map((item) => {
     const active = item.id === page ? ' active' : '';
-    const badge  = item.badge
+    const current = item.id === page ? ' aria-current="page"' : '';
+    const badge = item.badge
       ? `<span class="nav-badge" data-notification-badge hidden>0</span>`
       : '';
     return `
-      <a href="${item.href}" class="nav-item${active}" data-page="${item.id}">
+      <a href="${item.href}" class="nav-item${active}" data-page="${item.id}" title="${item.label}"${current}>
         <span class="nav-icon"><i data-lucide="${item.icon}"></i></span>
-        <span>${item.label}</span>
+        <span class="nav-label">${item.label}</span>
         ${badge}
       </a>`;
   }).join('');
+}
+
+function workspaceActionsHtml(actions = '') {
+  return `
+    <button class="toolbar-action" type="button" data-theme-toggle aria-label="Toggle theme">
+      <i data-lucide="sun"></i>
+    </button>
+    <a class="toolbar-action" href="notifications.html" aria-label="Notifications" style="position:relative">
+      <i data-lucide="bell"></i>
+      <span class="toolbar-pill-badge" data-notification-badge hidden>0</span>
+    </a>
+    ${actions}
+  `;
+}
+
+function loadingShellHtml() {
+  return `
+    <div id="loading" class="loading"><div class="spinner"></div></div>
+    <div id="page-content" style="display:none;flex-direction:column;gap:20px;"></div>
+  `;
+}
+
+export function mountShell({ page = 'dashboard', actions = '' } = {}) {
+  const meta    = PAGE_META[page] || { title: 'Admin', eyebrow: '' };
+  const navHtml = navHtmlForPage(page);
+  const existingLayout = document.querySelector('.layout');
+
+  if (existingLayout && !document.getElementById('shell')) {
+    const nav = existingLayout.querySelector('.sidebar-nav');
+    const eyebrow = existingLayout.querySelector('.workspace-eyebrow');
+    const title = existingLayout.querySelector('.workspace-heading h1');
+    const actionsEl = existingLayout.querySelector('.workspace-actions');
+    const main = existingLayout.querySelector('#page-main');
+
+    if (nav) nav.innerHTML = navHtml;
+    if (eyebrow) eyebrow.textContent = meta.eyebrow;
+    if (title) title.textContent = meta.title;
+    if (actionsEl) actionsEl.innerHTML = workspaceActionsHtml(actions);
+    if (main) main.innerHTML = loadingShellHtml();
+    existingLayout.classList.remove('workspace-navigating');
+
+    if (window.lucide) window.lucide.createIcons();
+    return;
+  }
 
   const html = `
     <div class="shell-backdrop" data-shell-backdrop></div>
@@ -48,6 +92,10 @@ export function mountShell({ page = 'dashboard', actions = '' } = {}) {
             <p>Admin workspace</p>
           </div>
         </div>
+        <button class="sidebar-collapse-btn" type="button" data-sidebar-collapse-toggle
+          aria-label="Collapse sidebar" aria-pressed="false" title="Collapse sidebar">
+          <i data-lucide="panel-left-close"></i>
+        </button>
       </div>
 
       <div class="sidebar-section-label">Workspace</div>
@@ -56,7 +104,7 @@ export function mountShell({ page = 'dashboard', actions = '' } = {}) {
       <div class="sidebar-footer">
         <div class="admin-info">
           <div class="admin-avatar" id="admin-avatar">A</div>
-          <div style="min-width:0">
+          <div class="admin-meta" style="min-width:0">
             <div class="admin-name"  id="admin-name">Admin</div>
             <div class="admin-email" id="admin-email"></div>
           </div>
@@ -82,20 +130,12 @@ export function mountShell({ page = 'dashboard', actions = '' } = {}) {
         </div>
 
         <div class="workspace-actions">
-          <button class="toolbar-action" type="button" data-theme-toggle aria-label="Toggle theme">
-            <i data-lucide="sun"></i>
-          </button>
-          <a class="toolbar-action" href="notifications.html" aria-label="Notifications" style="position:relative">
-            <i data-lucide="bell"></i>
-            <span class="toolbar-pill-badge" data-notification-badge hidden>0</span>
-          </a>
-          ${actions}
+          ${workspaceActionsHtml(actions)}
         </div>
       </header>
 
       <main class="main-content page-shell" id="page-main">
-        <div id="loading" class="loading"><div class="spinner"></div></div>
-        <div id="page-content" style="display:none;flex-direction:column;gap:20px;"></div>
+        ${loadingShellHtml()}
       </main>
     </div>
   `;
@@ -116,12 +156,15 @@ export function showPage() {
   const content = document.getElementById('page-content');
   if (loading) loading.style.display = 'none';
   if (content) content.style.display = 'flex';
-  document.querySelector('.layout')?.classList.add('auth-ready');
+  const layout = document.querySelector('.layout');
+  layout?.classList.add('auth-ready');
+  layout?.classList.remove('workspace-navigating');
 }
 
 export function setLoading(isLoading) {
   const loading = document.getElementById('loading');
   const content = document.getElementById('page-content');
   if (loading) loading.style.display = isLoading ? 'flex' : 'none';
-  if (content && !isLoading) content.style.display = 'flex';
+  if (content) content.style.display = isLoading ? 'none' : 'flex';
+  document.querySelector('.layout')?.classList.toggle('workspace-navigating', Boolean(isLoading));
 }
