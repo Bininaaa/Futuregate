@@ -75,7 +75,7 @@
               <div class="surface-heading-copy">${esc(message)}</div>
             </div>
           </div>
-          <a href="moderation.html?tab=ideas" class="btn btn-primary"><i data-lucide="arrow-left"></i>Back to ideas</a>
+          <a href="moderation?tab=ideas" class="btn btn-primary"><i data-lucide="arrow-left"></i>Back to ideas</a>
         </section>
       `;
       if (window.lucide) window.lucide.createIcons();
@@ -113,7 +113,7 @@
 
       root.innerHTML = `
         <div class="page-breadcrumb">
-          <a href="moderation.html?tab=ideas" class="btn btn-ghost"><i data-lucide="arrow-left"></i>Back to content</a>
+          <a href="moderation?tab=ideas" class="btn btn-ghost"><i data-lucide="arrow-left"></i>Back to content</a>
         </div>
         <header class="page-hero">
           <div>
@@ -195,7 +195,7 @@
     }
 
     function back() {
-      window.location.href = 'moderation.html?tab=ideas';
+      window.location.href = 'moderation?tab=ideas';
     }
 
     function validatePayload(payload) {

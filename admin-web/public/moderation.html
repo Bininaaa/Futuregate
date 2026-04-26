@@ -135,6 +135,26 @@
         : 'all';
     }
 
+    function normalizeSalaryPeriod(value) {
+      const normalized = String(value || '').trim().toLowerCase().replace(/[-\s]+/g, '_');
+      const aliases = {
+        hourly: 'hour',
+        per_hour: 'hour',
+        daily: 'day',
+        per_day: 'day',
+        weekly: 'week',
+        per_week: 'week',
+        monthly: 'month',
+        per_month: 'month',
+        yearly: 'year',
+        annually: 'year',
+        annual: 'year',
+        per_year: 'year',
+      };
+      const canonical = aliases[normalized] || normalized;
+      return ['hour', 'day', 'week', 'month', 'year'].includes(canonical) ? canonical : '';
+    }
+
     function normalizeLibrarySource(value) {
       const normalized = String(value || '').trim();
       return ['overview', 'books', 'youtube'].includes(normalized)
@@ -726,7 +746,7 @@
       }
 
       const targets = {
-        ideas:         { p: 'ideaId',         list: state.ideas,         open: (it) => { window.location.href = 'idea-editor.html?id=' + encodeURIComponent(it.id); } },
+        ideas:         { p: 'ideaId',         list: state.ideas,         open: (it) => { window.location.href = 'idea-editor?id=' + encodeURIComponent(it.id); } },
         opportunities: { p: 'opportunityId',  list: state.opportunities, open: (it) => openOppEditor(it) },
         scholarships:  { p: 'scholarshipId',  list: state.scholarships,  open: (it) => openScholarEditor(it) },
         trainings:     { p: 'trainingId',     list: state.trainings,     open: null },
@@ -878,7 +898,7 @@
         <div class="list-grid" id="list">${items.length ? items.map(renderIdeaRow).join('') : emptyStateHtml('Try a different filter.', { title: 'No project ideas', icon: 'lightbulb' })}</div>
       `;
       bindCommon();
-      document.getElementById('new-idea').addEventListener('click', () => { window.location.href = 'idea-editor.html'; });
+      document.getElementById('new-idea').addEventListener('click', () => { window.location.href = 'idea-editor'; });
       bindRowActions((id, action) => handleIdeaAction(id, action));
       bindCardOpens((id, action) => handleIdeaAction(id, action));
       if (window.lucide) window.lucide.createIcons();
@@ -943,7 +963,7 @@
             showToast('You can only edit ideas you posted as admin.', 'warning');
             return;
           }
-          window.location.href = 'idea-editor.html?id=' + encodeURIComponent(id);
+          window.location.href = 'idea-editor?id=' + encodeURIComponent(id);
           return;
         } else if (action === 'delete') {
           if (!confirm('Delete this idea?')) return;
@@ -983,7 +1003,7 @@
           </div>
           <div class="details-inline-actions">
             ${profileLinkAction(it.submittedBy, 'Publisher profile')}
-            ${isOwnAdminIdea(it) ? `<a class="btn btn-sm" href="idea-editor.html?id=${encodeURIComponent(it.id)}"><i data-lucide="pencil"></i>Edit Admin post</a>` : ''}
+            ${isOwnAdminIdea(it) ? `<a class="btn btn-sm" href="idea-editor?id=${encodeURIComponent(it.id)}"><i data-lucide="pencil"></i>Edit Admin post</a>` : ''}
           </div>
           <div class="detail-metrics">
             ${detailMetric('Created', formatTimestamp(it.createdAt))}
@@ -1157,7 +1177,7 @@
       document.querySelectorAll('[data-opptype]').forEach((b) => {
         b.addEventListener('click', () => { state.oppType = b.getAttribute('data-opptype'); renderTab(); });
       });
-      document.getElementById('new-opp').addEventListener('click', () => { window.location.href = 'opp-editor.html'; });
+      document.getElementById('new-opp').addEventListener('click', () => { window.location.href = 'opp-editor'; });
       bindRowActions((id, action) => handleOpportunityAction(id, action));
       bindCardOpens((id, action) => handleOpportunityAction(id, action));
       if (window.lucide) window.lucide.createIcons();
@@ -1235,7 +1255,7 @@
         btn.addEventListener('click', async () => {
           const appId = btn.getAttribute('data-app');
           const act = btn.getAttribute('data-app-action');
-          if (act === 'cv') { window.location.href = 'cv-viewer.html?cvId=' + encodeURIComponent(appId); return; }
+          if (act === 'cv') { window.location.href = 'cv-viewer?cvId=' + encodeURIComponent(appId); return; }
           try {
             await updateDoc(doc(db, 'applications', appId), { status: act === 'accept' ? 'accepted' : 'rejected' });
             const appObj = state.applications.find((x) => x.id === appId);
@@ -1356,7 +1376,7 @@
           <div class="details-inline-actions">
             ${profileLinkAction(it.companyId, 'Publisher profile')}
             ${it.createdByRole === 'company' ? '<button class="btn btn-sm" id="view-register-btn"><i data-lucide="file-check-2"></i>View register</button><button class="btn btn-sm" id="download-register-btn"><i data-lucide="download"></i>Download register</button>' : ''}
-            ${canEditOpportunity(it) ? `<a class="btn btn-sm" href="opp-editor.html?id=${encodeURIComponent(it.id)}"><i data-lucide="pencil"></i>Edit Admin post</a>` : ''}
+            ${canEditOpportunity(it) ? `<a class="btn btn-sm" href="opp-editor?id=${encodeURIComponent(it.id)}"><i data-lucide="pencil"></i>Edit Admin post</a>` : ''}
           </div>
           <div class="detail-metrics">
             ${detailMetric('Location', it.location)}
@@ -1442,7 +1462,7 @@
     }
 
     function openOppEditor(it) {
-      window.location.href = 'opp-editor.html' + (it?.id ? ('?id=' + encodeURIComponent(it.id)) : '');
+      window.location.href = 'opp-editor' + (it?.id ? ('?id=' + encodeURIComponent(it.id)) : '');
     }
     function _legacyOppEditor_unused(it) {
       document.getElementById('editor-title').textContent = it ? 'Edit opportunity' : 'New opportunity';
@@ -1497,6 +1517,7 @@
         const t = document.getElementById('f-type').value;
         const el = document.getElementById('opp-type-fields');
         const currency = it?.salaryCurrency || it?.fundingCurrency || 'DZD';
+        const salaryPeriod = normalizeSalaryPeriod(it?.salaryPeriod) || 'month';
         if (t === 'job' || t === 'contract' || t === 'freelance') {
           el.innerHTML = `
             <div class="form-grid-2" style="margin-top:12px;">
@@ -1509,7 +1530,7 @@
               </div>
               <div class="form-row"><label>Salary period</label>
                 <select id="f-salaryPeriod">
-                  ${[['monthly','Monthly'],['yearly','Yearly'],['hourly','Hourly'],['daily','Daily']].map(([v,l]) => `<option value="${v}" ${(it?.salaryPeriod||'monthly')===v?'selected':''}>${l}</option>`).join('')}
+                  ${[['month','Monthly'],['year','Yearly'],['week','Weekly'],['day','Daily'],['hour','Hourly']].map(([v,l]) => `<option value="${v}" ${salaryPeriod===v?'selected':''}>${l}</option>`).join('')}
                 </select>
               </div>
               <div class="form-row"><label>Employment type</label>
@@ -1573,7 +1594,7 @@
         if (t === 'job') {
           Object.assign(payload, {
             salaryMin: numOrNull('f-salaryMin'), salaryMax: numOrNull('f-salaryMax'),
-            salaryCurrency: v('f-currency'), salaryPeriod: v('f-salaryPeriod'),
+            salaryCurrency: v('f-currency'), salaryPeriod: normalizeSalaryPeriod(v('f-salaryPeriod')) || 'month',
             employmentType: v('f-employment'), workMode: v('f-workmode'),
           });
         } else if (t === 'internship') {
@@ -1653,7 +1674,7 @@
         <div class="list-grid" id="list">${items.length ? items.map(renderScholarshipRow).join('') : emptyStateHtml('No scholarships yet.', { title: 'Empty', icon: 'graduation-cap' })}</div>
       `;
       bindCommon();
-      document.getElementById('new-scholar').addEventListener('click', () => { window.location.href = 'scholarship-editor.html'; });
+      document.getElementById('new-scholar').addEventListener('click', () => { window.location.href = 'scholarship-editor'; });
       bindRowActions((id, action) => handleScholarshipAction(id, action));
       bindCardOpens((id, action) => handleScholarshipAction(id, action));
       if (window.lucide) window.lucide.createIcons();
@@ -1793,7 +1814,7 @@
           </div>
           <div class="details-inline-actions">
             ${scholarshipLink(it) ? `<a class="btn btn-sm" href="${esc(normalizeExternalUrl(scholarshipLink(it)))}" target="_blank" rel="noopener"><i data-lucide="external-link"></i>Open application link</a>` : ''}
-            <a class="btn btn-sm" href="scholarship-editor.html?id=${encodeURIComponent(it.id)}"><i data-lucide="pencil"></i>Edit post</a>
+            <a class="btn btn-sm" href="scholarship-editor?id=${encodeURIComponent(it.id)}"><i data-lucide="pencil"></i>Edit post</a>
           </div>
           <div class="detail-metrics">
             ${detailMetric('Provider', it.provider)}
@@ -1816,7 +1837,7 @@
     }
 
     function openScholarEditor(it) {
-      window.location.href = 'scholarship-editor.html' + (it?.id ? ('?id=' + encodeURIComponent(it.id)) : '');
+      window.location.href = 'scholarship-editor' + (it?.id ? ('?id=' + encodeURIComponent(it.id)) : '');
     }
     function _legacyScholarEditor_unused(it) {
       document.getElementById('editor-title').textContent = it ? 'Edit scholarship' : 'New scholarship';

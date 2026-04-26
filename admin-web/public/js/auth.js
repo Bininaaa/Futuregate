@@ -16,16 +16,22 @@ let authListenerStarted = false;
 let pageshowListenerStarted = false;
 let verifiedAdminSession = null;
 let workspaceNavigationId = 0;
+const AUTH_STATE_TIMEOUT_MS = 12000;
 
 const THEME_STORAGE_KEY = 'futuregate-admin-theme';
 const SIDEBAR_STORAGE_KEY = 'futuregate-admin-sidebar-collapsed';
-const WORKSPACE_ROUTE_FILES = new Set([
+const WORKSPACE_ROUTE_NAMES = new Set([
   '',
-  'index.html',
-  'users.html',
-  'moderation.html',
-  'activity.html',
-  'notifications.html',
+  'index',
+  'users',
+  'moderation',
+  'activity',
+  'notifications',
+  'idea-editor',
+  'opp-editor',
+  'scholarship-editor',
+  'scolarship-editor',
+  'cv-viewer',
 ]);
 
 function resolveInitialTheme() {
@@ -147,6 +153,11 @@ function routeFileName(url) {
   return url.pathname.split('/').pop() || '';
 }
 
+function routeName(url) {
+  const fileName = routeFileName(url).toLowerCase();
+  return fileName.endsWith('.html') ? fileName.slice(0, -5) : fileName;
+}
+
 function routeDirectory(url) {
   const index = url.pathname.lastIndexOf('/');
   return index >= 0 ? url.pathname.slice(0, index + 1) : '/';
@@ -157,7 +168,7 @@ function isWorkspaceRouteUrl(url) {
   return (
     url.origin === currentUrl.origin &&
     routeDirectory(url) === routeDirectory(currentUrl) &&
-    WORKSPACE_ROUTE_FILES.has(routeFileName(url))
+    WORKSPACE_ROUTE_NAMES.has(routeName(url))
   );
 }
 
@@ -425,7 +436,7 @@ function resetToGatedState() {
 }
 
 function redirectToLogin() {
-  window.location.replace('/login.html');
+  window.location.replace('/login');
 }
 
 function updateNotificationBadges(count) {
@@ -502,6 +513,36 @@ function runAuthCallback(callback, user, userData) {
     });
 }
 
+function waitForAuthState(timeoutMs = AUTH_STATE_TIMEOUT_MS) {
+  if (auth.currentUser) {
+    return Promise.resolve(auth.currentUser);
+  }
+
+  return new Promise((resolve) => {
+    let settled = false;
+    let unsubscribe = null;
+
+    function finish(user) {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(timer);
+      if (typeof unsubscribe === 'function') {
+        unsubscribe();
+      }
+      resolve(user || null);
+    }
+
+    const timer = window.setTimeout(() => {
+      finish(auth.currentUser || null);
+    }, timeoutMs);
+
+    unsubscribe = onAuthStateChanged(auth, finish);
+    if (settled && typeof unsubscribe === 'function') {
+      unsubscribe();
+    }
+  });
+}
+
 async function rejectInvalidSession() {
   verifiedAdminSession = null;
   stopUnreadNotificationsWatcher();
@@ -555,7 +596,7 @@ function startAuthListener() {
   });
 }
 
-function checkAuth(callback) {
+async function checkAuth(callback) {
   initializeChrome();
   ensurePageshowListener();
 
@@ -572,32 +613,20 @@ function checkAuth(callback) {
   resetToGatedState();
   startAuthListener();
 
-  if (auth.currentUser) {
-    validateAdminUser(auth.currentUser)
-      .then((userData) => {
-        applyAuthenticatedSession(auth.currentUser, userData);
-        runAuthCallback(callback, auth.currentUser, userData);
-      })
-      .catch((error) => {
-        console.error('Auth check error:', error);
-        rejectInvalidSession();
-      });
+  const user = await waitForAuthState();
+  if (!user) {
+    redirectToLogin();
     return;
   }
 
-  const unsubscribe = onAuthStateChanged(auth, (user) => {
-    unsubscribe();
-    if (!user) return;
-    validateAdminUser(user)
-      .then((userData) => {
-        applyAuthenticatedSession(user, userData);
-        runAuthCallback(callback, user, userData);
-      })
-      .catch((error) => {
-        console.error('Auth check error:', error);
-        rejectInvalidSession();
-      });
-  });
+  try {
+    const userData = await validateAdminUser(user);
+    applyAuthenticatedSession(user, userData);
+    runAuthCallback(callback, user, userData);
+  } catch (error) {
+    console.error('Auth check error:', error);
+    rejectInvalidSession();
+  }
 }
 
 function setupSidebar(userData, user) {
@@ -617,11 +646,11 @@ function setupSidebar(userData, user) {
     };
   }
 
-  const currentPage = routeFileName(new URL(window.location.href)) || 'index.html';
+  const currentPage = routeName(new URL(window.location.href)) || 'index';
   document.querySelectorAll('.nav-item').forEach(item => {
     const href = item.getAttribute('href') || '';
-    const hrefPage = routeFileName(new URL(href, window.location.href)) || 'index.html';
-    const isActive = hrefPage === currentPage || (currentPage === '' && hrefPage === 'index.html');
+    const hrefPage = routeName(new URL(href, window.location.href)) || 'index';
+    const isActive = hrefPage === currentPage;
     item.classList.toggle('active', isActive);
     if (isActive) item.setAttribute('aria-current', 'page');
     else item.removeAttribute('aria-current');

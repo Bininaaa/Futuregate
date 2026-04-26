@@ -132,26 +132,26 @@ function adminTargetUrl(type, targetId = '') {
   switch (type) {
     case 'application':
       return safeTargetId
-        ? `moderation.html?tab=opportunities&filter=pending_apps&applicationId=${safeTargetId}`
-        : 'moderation.html?tab=opportunities&filter=pending_apps';
+        ? `moderation?tab=opportunities&filter=pending_apps&applicationId=${safeTargetId}`
+        : 'moderation?tab=opportunities&filter=pending_apps';
     case 'opportunity':
       return safeTargetId
-        ? `moderation.html?tab=opportunities&opportunityId=${safeTargetId}`
-        : 'moderation.html?tab=opportunities';
+        ? `moderation?tab=opportunities&opportunityId=${safeTargetId}`
+        : 'moderation?tab=opportunities';
     case 'scholarship':
       return safeTargetId
-        ? `moderation.html?tab=scholarships&scholarshipId=${safeTargetId}`
-        : 'moderation.html?tab=scholarships';
+        ? `moderation?tab=scholarships&scholarshipId=${safeTargetId}`
+        : 'moderation?tab=scholarships';
     case 'training':
       return safeTargetId
-        ? `moderation.html?tab=trainings&trainingId=${safeTargetId}`
-        : 'moderation.html?tab=trainings';
+        ? `moderation?tab=trainings&trainingId=${safeTargetId}`
+        : 'moderation?tab=trainings';
     case 'project_idea':
       return safeTargetId
-        ? `moderation.html?tab=ideas&ideaId=${safeTargetId}`
-        : 'moderation.html?tab=ideas';
+        ? `moderation?tab=ideas&ideaId=${safeTargetId}`
+        : 'moderation?tab=ideas';
     default:
-      return 'moderation.html';
+      return 'moderation';
   }
 }
 

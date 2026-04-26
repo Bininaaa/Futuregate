@@ -132,23 +132,23 @@
               </div>
             </div>
             <div class="dash-hero-actions">
-              <a class="dash-hero-btn dash-hero-btn--primary" href="users.html?role=company&status=pending">
+              <a class="dash-hero-btn dash-hero-btn--primary" href="users?role=company&status=pending">
                 <i data-lucide="building-2"></i>
                 Companies${pendingCompanies > 0 ? ` <span style="background:rgba(255,255,255,.28);border-radius:99px;padding:1px 7px;font-size:11px">${pendingCompanies}</span>` : ''}
               </a>
-              <a class="dash-hero-btn" href="moderation.html?tab=ideas">
+              <a class="dash-hero-btn" href="moderation?tab=ideas">
                 <i data-lucide="lightbulb"></i>
                 Project ideas${pendingIdeas > 0 ? ` <span style="background:rgba(255,255,255,.22);border-radius:99px;padding:1px 7px;font-size:11px">${pendingIdeas}</span>` : ''}
               </a>
-              <a class="dash-hero-btn" href="moderation.html?tab=opportunities&filter=pending_apps">
+              <a class="dash-hero-btn" href="moderation?tab=opportunities&filter=pending_apps">
                 <i data-lucide="file-text"></i>
                 Applications${pendingApps > 0 ? ` <span style="background:rgba(255,255,255,.22);border-radius:99px;padding:1px 7px;font-size:11px">${pendingApps}</span>` : ''}
               </a>
-              <a class="dash-hero-btn" href="activity.html">
+              <a class="dash-hero-btn" href="activity">
                 <i data-lucide="activity"></i>
                 Activity
               </a>
-              <a class="dash-hero-btn" href="moderation.html?tab=trainings">
+              <a class="dash-hero-btn" href="moderation?tab=trainings">
                 <i data-lucide="library"></i>
                 Library
               </a>
@@ -164,11 +164,11 @@
               </div>
             </div>
             <div class="control-room">
-              ${controlCard({ count: pendingIdeas,    label: 'Project ideas awaiting review',   icon: 'lightbulb',    color: '#F59E0B', href: 'moderation.html?tab=ideas' })}
-              ${controlCard({ count: pendingApps,     label: 'Pending applications',            icon: 'file-text',    color: '#7C3AED', href: 'moderation.html?tab=opportunities&filter=pending_apps' })}
-              ${controlCard({ count: pendingCompanies,label: 'Companies awaiting approval',     icon: 'building-2',   color: '#14B8A6', href: 'users.html?role=company&status=pending' })}
-              ${controlCard({ count: blockedUsers,    label: 'Blocked users',                   icon: 'shield-alert', color: '#E24A4A', href: 'users.html?status=blocked' })}
-              ${controlCard({ count: hiddenOpps,      label: 'Hidden opportunities',            icon: 'eye-off',      color: '#64748B', href: 'moderation.html?tab=opportunities' })}
+              ${controlCard({ count: pendingIdeas,    label: 'Project ideas awaiting review',   icon: 'lightbulb',    color: '#F59E0B', href: 'moderation?tab=ideas' })}
+              ${controlCard({ count: pendingApps,     label: 'Pending applications',            icon: 'file-text',    color: '#7C3AED', href: 'moderation?tab=opportunities&filter=pending_apps' })}
+              ${controlCard({ count: pendingCompanies,label: 'Companies awaiting approval',     icon: 'building-2',   color: '#14B8A6', href: 'users?role=company&status=pending' })}
+              ${controlCard({ count: blockedUsers,    label: 'Blocked users',                   icon: 'shield-alert', color: '#E24A4A', href: 'users?status=blocked' })}
+              ${controlCard({ count: hiddenOpps,      label: 'Hidden opportunities',            icon: 'eye-off',      color: '#64748B', href: 'moderation?tab=opportunities' })}
             </div>
           </section>
 
@@ -269,14 +269,14 @@
               <div class="surface-heading-copy">Jump directly into any moderation queue.</div>
             </div></div>
             <div class="quick-access-grid">
-              ${quick('briefcase',    'Opportunities',  'moderation.html?tab=opportunities',                     'var(--c-accent)',    'Review jobs, internships, and sponsoring posts.')}
-              ${quick('file-text',    'Pending apps',   'moderation.html?tab=opportunities&filter=pending_apps', 'var(--c-activity)', 'Review applications inside Admin posts.')}
-              ${quick('graduation-cap','Scholarships',  'moderation.html?tab=scholarships',                      'var(--c-danger)',    'Publish and curate scholarships.')}
-              ${quick('video',        'Trainings',      'moderation.html?tab=trainings&librarySource=youtube&libraryMode=search&filter=videos', 'var(--c-secondary)','Import and manage training videos.')}
-              ${quick('library',      'Library',        'moderation.html?tab=trainings&librarySource=books&libraryMode=search&filter=books',    'var(--c-info)',      'Import and manage book resources.')}
-              ${quick('lightbulb',    'Project ideas',  'moderation.html?tab=ideas',                             'var(--c-warning)',   'Approve student submissions.')}
-              ${quick('users',        'Users',          'users.html',                                            'var(--c-primary)',   'Approve companies, manage accounts.')}
-              ${quick('activity',     'Activity',       'activity.html',                                         'var(--c-success)',   'See the latest platform events.')}
+              ${quick('briefcase',    'Opportunities',  'moderation?tab=opportunities',                     'var(--c-accent)',    'Review jobs, internships, and sponsoring posts.')}
+              ${quick('file-text',    'Pending apps',   'moderation?tab=opportunities&filter=pending_apps', 'var(--c-activity)', 'Review applications inside Admin posts.')}
+              ${quick('graduation-cap','Scholarships',  'moderation?tab=scholarships',                      'var(--c-danger)',    'Publish and curate scholarships.')}
+              ${quick('video',        'Trainings',      'moderation?tab=trainings&librarySource=youtube&libraryMode=search&filter=videos', 'var(--c-secondary)','Import and manage training videos.')}
+              ${quick('library',      'Library',        'moderation?tab=trainings&librarySource=books&libraryMode=search&filter=books',    'var(--c-info)',      'Import and manage book resources.')}
+              ${quick('lightbulb',    'Project ideas',  'moderation?tab=ideas',                             'var(--c-warning)',   'Approve student submissions.')}
+              ${quick('users',        'Users',          'users',                                            'var(--c-primary)',   'Approve companies, manage accounts.')}
+              ${quick('activity',     'Activity',       'activity',                                         'var(--c-success)',   'See the latest platform events.')}
             </div>
           </section>
 
@@ -284,7 +284,7 @@
           <section class="surface-panel">
             <div class="section-card-header">
               <h3>Recent activity</h3>
-              <a class="section-link" href="activity.html">View all <i data-lucide="arrow-right" class="sm"></i></a>
+              <a class="section-link" href="activity">View all <i data-lucide="arrow-right" class="sm"></i></a>
             </div>
             <div id="activity-feed" class="list-grid"></div>
           </section>
@@ -293,7 +293,7 @@
           <section class="surface-panel">
             <div class="section-card-header">
               <h3>Recent users</h3>
-              <a class="section-link" href="users.html">All users <i data-lucide="arrow-right" class="sm"></i></a>
+              <a class="section-link" href="users">All users <i data-lucide="arrow-right" class="sm"></i></a>
             </div>
             <div id="recent-users" class="list-grid"></div>
           </section>
@@ -302,7 +302,7 @@
           <section class="surface-panel">
             <div class="section-card-header">
               <h3>Recent opportunities</h3>
-              <a class="section-link" href="moderation.html?tab=opportunities">All <i data-lucide="arrow-right" class="sm"></i></a>
+              <a class="section-link" href="moderation?tab=opportunities">All <i data-lucide="arrow-right" class="sm"></i></a>
             </div>
             <div id="recent-opps" class="list-grid"></div>
           </section>

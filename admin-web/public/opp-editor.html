@@ -35,7 +35,7 @@
     const ADMIN_NAME = 'FutureGate Editorial Desk';
     const TYPES = [['job', 'Job'], ['internship', 'Internship'], ['sponsoring', 'Sponsoring / Funding']];
     const LANGS = [['fr', 'French'], ['en', 'English'], ['ar', 'Arabic']];
-    const PERIODS = [['monthly', 'Monthly'], ['yearly', 'Yearly'], ['hourly', 'Hourly'], ['daily', 'Daily']];
+    const PERIODS = [['month', 'Monthly'], ['year', 'Yearly'], ['week', 'Weekly'], ['day', 'Daily'], ['hour', 'Hourly']];
     const EMPLOYMENT = [
       ['full_time', 'Full-time'],
       ['part_time', 'Part-time'],
@@ -98,7 +98,7 @@
               <div class="surface-heading-copy">${esc(message)}</div>
             </div>
           </div>
-          <a href="moderation.html?tab=opportunities" class="btn btn-primary"><i data-lucide="arrow-left"></i>Back to opportunities</a>
+          <a href="moderation?tab=opportunities" class="btn btn-primary"><i data-lucide="arrow-left"></i>Back to opportunities</a>
         </section>
       `;
       if (window.lucide) window.lucide.createIcons();
@@ -106,6 +106,26 @@
 
     function val(id) {
       return (document.getElementById(id)?.value || '').trim();
+    }
+
+    function normalizeSalaryPeriod(value) {
+      const normalized = String(value || '').trim().toLowerCase().replace(/[-\s]+/g, '_');
+      const aliases = {
+        hourly: 'hour',
+        per_hour: 'hour',
+        daily: 'day',
+        per_day: 'day',
+        weekly: 'week',
+        per_week: 'week',
+        monthly: 'month',
+        per_month: 'month',
+        yearly: 'year',
+        annually: 'year',
+        annual: 'year',
+        per_year: 'year',
+      };
+      const canonical = aliases[normalized] || normalized;
+      return PERIODS.some(([value]) => value === canonical) ? canonical : '';
     }
 
     function splitLines(text) {
@@ -176,7 +196,7 @@
 
       root.innerHTML = `
         <div class="page-breadcrumb">
-          <a href="moderation.html?tab=opportunities" class="btn btn-ghost"><i data-lucide="arrow-left"></i>Back to content</a>
+          <a href="moderation?tab=opportunities" class="btn btn-ghost"><i data-lucide="arrow-left"></i>Back to content</a>
         </div>
         <header class="page-hero">
           <div>
@@ -250,7 +270,7 @@
       const type = val('f-type') || 'job';
       const target = document.getElementById('type-fields');
       const salaryCurrency = item?.salaryCurrency || item?.fundingCurrency || CURRENCIES[0];
-      const salaryPeriod = item?.salaryPeriod || PERIODS[0][0];
+      const salaryPeriod = normalizeSalaryPeriod(item?.salaryPeriod) || PERIODS[0][0];
       const employmentType = item?.employmentType || (type === 'internship' ? 'internship' : EMPLOYMENT[0][0]);
       const workMode = item?.workMode || WORK_MODES[0][0];
       const isPaid = item?.isPaid;
@@ -299,7 +319,7 @@
     }
 
     function back() {
-      window.location.href = 'moderation.html?tab=opportunities';
+      window.location.href = 'moderation?tab=opportunities';
     }
 
     function validatePayload(basePayload) {
@@ -399,7 +419,7 @@
         payload.salaryMin = parseNumber(val('f-salaryMin'));
         payload.salaryMax = parseNumber(val('f-salaryMax'));
         payload.salaryCurrency = val('f-salaryCurrency') || CURRENCIES[0];
-        payload.salaryPeriod = val('f-salaryPeriod') || PERIODS[0][0];
+        payload.salaryPeriod = normalizeSalaryPeriod(val('f-salaryPeriod')) || PERIODS[0][0];
         payload.compensationText = val('f-compensationText');
         payload.employmentType = type === 'internship'
           ? (val('f-employmentType') || 'internship')

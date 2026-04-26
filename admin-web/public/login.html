@@ -57,7 +57,7 @@
       try {
         const userDoc = await getDoc(doc(db, 'users', user.uid));
         if (userDoc.exists() && userDoc.data().role === 'admin' && userDoc.data().isActive !== false) {
-          window.location.replace('/index.html');
+          window.location.replace('/');
         }
       } catch (error) {
         console.warn('Existing admin session check failed:', error);
@@ -85,7 +85,7 @@
           await auth.signOut();
           throw new Error('Your admin account is inactive.');
         }
-        window.location.replace('/index.html');
+        window.location.replace('/');
       } catch (err) {
         const code = err?.code || '';
         let msg = err?.message || 'Could not sign in.';

@@ -3,11 +3,11 @@
 // Pages mount it via: mountShell({ page, actions })
 
 const NAV_ITEMS = [
-  { id: 'dashboard',     href: 'index.html',         icon: 'layout-dashboard', label: 'Dashboard'     },
-  { id: 'users',         href: 'users.html',          icon: 'users',            label: 'Users'         },
-  { id: 'content',       href: 'moderation.html',     icon: 'layers',           label: 'Content'       },
-  { id: 'activity',      href: 'activity.html',       icon: 'activity',         label: 'Activity'      },
-  { id: 'notifications', href: 'notifications.html',  icon: 'bell',             label: 'Notifications', badge: true },
+  { id: 'dashboard',     href: '/',             icon: 'layout-dashboard', label: 'Dashboard'     },
+  { id: 'users',         href: 'users',          icon: 'users',            label: 'Users'         },
+  { id: 'content',       href: 'moderation',     icon: 'layers',           label: 'Content'       },
+  { id: 'activity',      href: 'activity',       icon: 'activity',         label: 'Activity'      },
+  { id: 'notifications', href: 'notifications',  icon: 'bell',             label: 'Notifications', badge: true },
 ];
 
 const PAGE_META = {
@@ -39,7 +39,7 @@ function workspaceActionsHtml(actions = '') {
     <button class="toolbar-action" type="button" data-theme-toggle aria-label="Toggle theme">
       <i data-lucide="sun"></i>
     </button>
-    <a class="toolbar-action" href="notifications.html" aria-label="Notifications" style="position:relative">
+    <a class="toolbar-action" href="notifications" aria-label="Notifications" style="position:relative">
       <i data-lucide="bell"></i>
       <span class="toolbar-pill-badge" data-notification-badge hidden>0</span>
     </a>

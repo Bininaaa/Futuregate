@@ -74,7 +74,7 @@
 
       root.innerHTML = `
         <div class="page-breadcrumb">
-          <a href="moderation.html?tab=scholarships" class="btn btn-ghost"><i data-lucide="arrow-left"></i>Back to content</a>
+          <a href="moderation?tab=scholarships" class="btn btn-ghost"><i data-lucide="arrow-left"></i>Back to content</a>
         </div>
         <header class="page-hero">
           <div>
@@ -149,7 +149,7 @@
       if (window.lucide) window.lucide.createIcons();
     }
 
-    function back() { window.location.href = 'moderation.html?tab=scholarships'; }
+    function back() { window.location.href = 'moderation?tab=scholarships'; }
 
     async function save() {
       const dl = val('f-deadline');

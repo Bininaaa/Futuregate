@@ -74,6 +74,7 @@
     {
       "target": "admin",
       "public": "admin-web/public",
+      "cleanUrls": true,
       "ignore": [
         "firebase.json",
         "**/.*",

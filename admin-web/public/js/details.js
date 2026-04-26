@@ -200,7 +200,7 @@ async function renderOpportunity(id) {
   setFooter(`
     <button class="btn" data-close-modal="${MODAL_ID}"><i data-lucide="x"></i>Close</button>
     ${publisherId ? `<button class="btn btn-ghost" id="view-publisher-btn" data-user-id="${esc(publisherId)}"><i data-lucide="user"></i>Publisher profile</button>` : ''}
-    ${editLink(canEditOpportunity(it), `opp-editor.html?id=${encodeURIComponent(id)}`)}
+    ${editLink(canEditOpportunity(it), `opp-editor?id=${encodeURIComponent(id)}`)}
   `);
   bindPublisherBtn();
   if (window.lucide) window.lucide.createIcons();
@@ -242,7 +242,7 @@ async function renderScholarship(id) {
   setFooter(`
     <button class="btn" data-close-modal="${MODAL_ID}"><i data-lucide="x"></i>Close</button>
     ${publisherId ? `<button class="btn btn-ghost" id="view-publisher-btn" data-user-id="${esc(publisherId)}"><i data-lucide="user"></i>Publisher profile</button>` : ''}
-    ${editLink(canEditScholarship(it), `scholarship-editor.html?id=${encodeURIComponent(id)}`)}
+    ${editLink(canEditScholarship(it), `scholarship-editor?id=${encodeURIComponent(id)}`)}
   `);
   bindPublisherBtn();
   if (window.lucide) window.lucide.createIcons();
@@ -278,7 +278,7 @@ async function renderIdea(id) {
   setFooter(`
     <button class="btn" data-close-modal="${MODAL_ID}"><i data-lucide="x"></i>Close</button>
     ${publisherId ? `<button class="btn btn-ghost" id="view-publisher-btn" data-user-id="${esc(publisherId)}"><i data-lucide="user"></i>Publisher profile</button>` : ''}
-    ${editLink(canEditIdea(it), `idea-editor.html?id=${encodeURIComponent(id)}`)}
+    ${editLink(canEditIdea(it), `idea-editor?id=${encodeURIComponent(id)}`)}
   `);
   bindPublisherBtn();
   if (window.lucide) window.lucide.createIcons();
@@ -302,7 +302,7 @@ async function renderTraining(id) {
   `);
   setFooter(`
     <button class="btn" data-close-modal="${MODAL_ID}"><i data-lucide="x"></i>Close</button>
-    <a class="btn btn-primary" href="moderation.html?tab=trainings&trainingId=${encodeURIComponent(id)}"><i data-lucide="pencil"></i>Edit in moderation</a>
+    <a class="btn btn-primary" href="moderation?tab=trainings&trainingId=${encodeURIComponent(id)}"><i data-lucide="pencil"></i>Edit in moderation</a>
   `);
   if (window.lucide) window.lucide.createIcons();
 }
@@ -326,7 +326,7 @@ async function renderApplication(id) {
   `);
   setFooter(`
     <button class="btn" data-close-modal="${MODAL_ID}"><i data-lucide="x"></i>Close</button>
-    <a class="btn btn-primary" href="moderation.html?tab=opportunities&filter=pending_apps&applicationId=${encodeURIComponent(id)}"><i data-lucide="file"></i>Review CV</a>
+    <a class="btn btn-primary" href="moderation?tab=opportunities&filter=pending_apps&applicationId=${encodeURIComponent(id)}"><i data-lucide="file"></i>Review CV</a>
   `);
   if (window.lucide) window.lucide.createIcons();
 }

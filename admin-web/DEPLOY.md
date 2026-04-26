@@ -68,5 +68,5 @@ npm run deploy:hosting:all
 
 - Main restricted site: `https://futuregate.tech`
 - Email action page: `https://futuregate.tech/auth/action`
-- Admin login: `https://admin.futuregate.tech/login.html`
-- Admin dashboard after sign-in: `https://admin.futuregate.tech/index.html`
+- Admin login: `https://admin.futuregate.tech/login`
+- Admin dashboard after sign-in: `https://admin.futuregate.tech`
