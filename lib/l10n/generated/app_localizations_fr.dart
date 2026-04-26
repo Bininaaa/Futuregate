@@ -9,7 +9,7 @@ class AppLocalizationsFr extends AppLocalizations {
   AppLocalizationsFr([String locale = 'fr']) : super(locale);
 
   @override
-  String get appTitle => 'Porte du futur';
+  String get appTitle => 'FutureGate';
 
   @override
   String get languageEnglish => 'Anglais';
@@ -18,7 +18,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get languageFrench => 'Français';
 
   @override
-  String get languageArabic => 'arabe';
+  String get languageArabic => 'Arabe';
 
   @override
   String get unknownLanguage => 'Inconnu';
@@ -33,7 +33,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get cancelLabel => 'Annuler';
 
   @override
-  String get saveLabel => 'Sauvegarder';
+  String get saveLabel => 'Enregistrer';
 
   @override
   String get saveChangesLabel => 'Enregistrer les modifications';
@@ -48,19 +48,19 @@ class AppLocalizationsFr extends AppLocalizations {
   String get removeLabel => 'Retirer';
 
   @override
-  String get changeLabel => 'Changement';
+  String get changeLabel => 'Modifier';
 
   @override
   String get continueLabel => 'Continuer';
 
   @override
-  String get uploadLabel => 'Télécharger';
+  String get uploadLabel => 'Téléverser';
 
   @override
   String get changeImageLabel => 'Changer l\'image';
 
   @override
-  String get uploadImageLabel => 'Télécharger une image';
+  String get uploadImageLabel => 'Téléverser une image';
 
   @override
   String get removeImageLabel => 'Supprimer l\'image';
@@ -76,7 +76,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get languagePickerSubtitle =>
-      'Appliquez instantanément l\'anglais, le français ou l\'arabe dans l\'application.';
+      'Appliquez la langue choisie instantanément dans toute l\'application.';
 
   @override
   String get languageUpdatedTitle => 'Langue mise à jour';
@@ -100,7 +100,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get translatedContentFallbackLabel =>
-      'Traduction indisponible, affichant le contenu original.';
+      'Traduction indisponible, affichage du contenu original.';
 
   @override
   String get unknownOriginalLanguage => 'Langue originale inconnue';
@@ -113,7 +113,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get accountBlockedMessage =>
-      'Votre compte a été bloqué par un administrateur. Vous ne pouvez plus accéder à la plateforme. Si vous pensez qu\'il s\'agit d\'une erreur, veuillez contacter l\'assistance.';
+      'Votre compte a été bloqué par un administrateur. Vous ne pouvez plus utiliser l\'application. Si vous pensez qu\'il s\'agit d\'une erreur, contactez l\'assistance.';
 
   @override
   String get backToSignInLabel => 'Retour pour vous connecter';
@@ -136,7 +136,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get experienceSubtitle =>
-      'Gardez l’expérience soignée, cohérente et facile à naviguer.';
+      'Gardez l\'expérience claire, cohérente et facile à parcourir.';
 
   @override
   String get accountTitle => 'Compte';
@@ -150,7 +150,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get workspaceSubtitle =>
-      'Accédez directement aux domaines clés qui façonnent la présence de votre entreprise.';
+      'Accédez rapidement aux outils clés qui structurent la présence de votre entreprise.';
 
   @override
   String get supportTitle => 'Soutien';
@@ -172,15 +172,15 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get companyDashboardTabSubtitle =>
-      'Suivez l\'activité en direct, les nouvelles candidatures et ce qui demande votre attention en premier.';
+      'Suivez l\'activité en direct, les nouvelles candidatures et les priorités à traiter.';
 
   @override
   String get companyOpportunitiesTabSubtitle =>
-      'Publiez des postes, suivez vos annonces et gardez une vision claire du recrutement.';
+      'Publiez des offres, suivez vos annonces et gardez un recrutement bien organisé.';
 
   @override
   String get companyApplicationsTabSubtitle =>
-      'Examinez les candidats, les filtres et les décisions depuis une file ciblée.';
+      'Examinez les candidats, les filtres et les décisions depuis une vue centralisée.';
 
   @override
   String get companyMessagesTabSubtitle =>
@@ -390,19 +390,19 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get originalLanguageFieldHint =>
-      'Sélectionnez la langue source de ce contenu';
+      'Choisissez la langue source de ce contenu';
 
   @override
   String get openStatusLabel => 'Ouvrir';
 
   @override
-  String get openStatusSubtitle => 'Visible par les étudiants';
+  String get openStatusSubtitle => 'Visible pour les étudiants';
 
   @override
   String get closedStatusLabel => 'Fermé';
 
   @override
-  String get closedStatusSubtitle => 'Enregistré en privé';
+  String get closedStatusSubtitle => 'Non visible par les étudiants';
 
   @override
   String get savedHiddenLabel => 'Enregistré mais caché';
@@ -429,7 +429,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get scholarshipTitleHint =>
-      'par ex. Bourse mondiale des futurs constructeurs';
+      'ex. : Bourse mondiale des bâtisseurs de demain';
 
   @override
   String get opportunityTitleHintJob => 'par ex. Développeur Flutter Junior';
@@ -443,17 +443,17 @@ class AppLocalizationsFr extends AppLocalizations {
       'par ex. Programme de parrainage de l\'innovation étudiante';
 
   @override
-  String get opportunityLocationHintDefault => 'par ex. Alger, Algérie';
+  String get opportunityLocationHintDefault => 'ex. : Alger, Algérie';
 
   @override
   String get opportunityLocationHintSponsoring =>
-      'par ex. Dans toute l\'Algérie ou Alger';
+      'ex. : partout en Algérie ou à Alger';
 
   @override
   String get eligibilityLabel => 'Admissibilité';
 
   @override
-  String get requirementsLabel => 'Exigences';
+  String get requirementsLabel => 'Prérequis';
 
   @override
   String get programDescriptionLabel => 'Descriptif du programme';
@@ -482,19 +482,19 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get featureScholarshipSubtitle =>
-      'Utilisez-le pour les opportunités de bourses hautement prioritaires ou particulièrement intéressantes.';
+      'Utilisez cette option pour les bourses prioritaires ou particulièrement importantes.';
 
   @override
   String get scholarshipEditorSubtitle =>
-      'Organisez les bourses dans la même application où les étudiants les découvrent, avec suffisamment de structure pour des cartes plus riches et un filtrage plus utile.';
+      'Gérez les bourses dans l\'application où les étudiants les découvrent, avec des cartes plus claires et des filtres plus utiles.';
 
   @override
   String get scholarshipPublishingSubtitle =>
-      'Les bourses en vedette bénéficient d’une présence plus forte dans le flux de découverte des étudiants.';
+      'Les bourses mises en avant sont plus visibles dans le parcours de découverte des étudiants.';
 
   @override
   String get scholarshipBasicInfoSubtitle =>
-      'Commencez par l’identité principale de la bourse afin que l’opportunité se lise clairement sur les cartes et les détails.';
+      'Commencez par les informations essentielles afin que la bourse soit claire dans les cartes et les détails.';
 
   @override
   String get scholarshipDescriptionSubtitle =>
@@ -510,7 +510,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get scholarshipAdditionalInfoSubtitle =>
-      'Utilisez ces champs facultatifs pour améliorer la découverte, le filtrage et la clarté des applications sortantes.';
+      'Utilisez ces champs facultatifs pour améliorer la découverte, le filtrage et la clarté des candidatures externes.';
 
   @override
   String get publishScholarshipTitle => 'Publier une bourse';
@@ -523,22 +523,20 @@ class AppLocalizationsFr extends AppLocalizations {
       'Enregistrer les modifications apportées aux bourses';
 
   @override
-  String get publishOpportunityTitle => 'Créer une opportunité';
+  String get publishOpportunityTitle => 'Créer une offre';
 
   @override
-  String get editOpportunityTitle => 'Modifier l\'opportunité';
+  String get editOpportunityTitle => 'Modifier l\'offre';
 
   @override
   String get saveOpportunityChangesLabel =>
-      'Enregistrer les modifications d\'opportunité';
+      'Enregistrer les modifications de l\'offre';
 
   @override
-  String get publishAdminOpportunityTitle =>
-      'Publier une opportunité d\'administration';
+  String get publishAdminOpportunityTitle => 'Publier une offre admin';
 
   @override
-  String get editAdminOpportunityTitle =>
-      'Modifier l\'opportunité d\'administration';
+  String get editAdminOpportunityTitle => 'Modifier l\'offre admin';
 
   @override
   String get futureGateAdminLabel => 'Administrateur FutureGate';
@@ -550,7 +548,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get refineIdeaTitle => 'Affinez votre idée';
 
   @override
-  String get launchBreakthroughTitle => 'Lancez votre prochaine avancée';
+  String get launchBreakthroughTitle => 'Lancez votre prochaine grande idée';
 
   @override
   String get editLockedTitle => 'Modification verrouillée';
@@ -585,14 +583,15 @@ class AppLocalizationsFr extends AppLocalizations {
   String get ideaUpdatedMessage => 'Idée mise à jour avec succès.';
 
   @override
-  String get submissionUnavailableTitle => 'Soumission indisponible';
+  String get submissionUnavailableTitle => 'Envoi indisponible';
 
   @override
-  String get readyForPublicDiscoveryTitle => 'Prêt pour la découverte publique';
+  String get readyForPublicDiscoveryTitle =>
+      'Prête pour la découverte publique';
 
   @override
   String get readyForPublicDiscoverySubtitle =>
-      'Les idées approuvées apparaissent dans Discover. Les idées en attente restent visibles dans Mes idées.';
+      'Les idées approuvées apparaissent dans Découvrir. Les idées en attente restent visibles dans Mes idées.';
 
   @override
   String get coverImageReadyTitle => 'Image de couverture prête';
@@ -606,14 +605,14 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get uploadCoverImageSubtitle =>
-      'Choisissez une image JPG, PNG ou WebP pour que l\'idée soit peaufinée dès le premier coup d\'œil.';
+      'Choisissez une image JPG, PNG ou WebP pour valoriser l\'idée dès le premier regard.';
 
   @override
   String get coverImageUploadedLabel => 'Image de couverture téléchargée';
 
   @override
   String get strongVisualHint =>
-      'Un visuel fort rend les cartes présentées et le héros des détails beaucoup plus vivants.';
+      'Un bon visuel rend les cartes et la page de détail plus claires et plus attractives.';
 
   @override
   String get bestResultsImageHint =>
@@ -682,7 +681,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get validationEligibilityItemRequired =>
-      'Ajouter au moins un élément d\'éligibilité';
+      'Ajoutez au moins un critère d\'éligibilité';
 
   @override
   String get validationRequirementItemRequired =>
@@ -771,7 +770,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get academicLevelBachelor => 'Célibataire';
+  String get academicLevelBachelor => 'Licence';
 
   @override
   String get academicLevelBachelorDescription =>
@@ -784,7 +783,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get academicLevelLicenceDescription => 'Programme de licence';
 
   @override
-  String get academicLevelMaster => 'Maître';
+  String get academicLevelMaster => 'Master';
 
   @override
   String get academicLevelMasterDescription =>
@@ -795,7 +794,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get academicLevelDoctoratDescription =>
-      'Recherches doctorales et travaux de thèse';
+      'Recherche doctorale et travail de thèse';
 
   @override
   String get jobLabel => 'Emploi';
@@ -816,10 +815,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get sponsoredLowercaseLabel => 'sponsorisé';
 
   @override
-  String get opportunityHeadlineJob => 'Embaucher pour un vrai rôle';
+  String get opportunityHeadlineJob => 'Recruter pour un vrai poste';
 
   @override
-  String get opportunityHeadlineInternship => 'Faites venir les futurs talents';
+  String get opportunityHeadlineInternship => 'Former les talents de demain';
 
   @override
   String get opportunityHeadlineSponsoring =>
@@ -831,7 +830,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get opportunitySubtitleInternship =>
-      'Apprentissage et expérience professionnelle';
+      'Apprentissage et expérience terrain';
 
   @override
   String get opportunitySubtitleSponsoring =>
@@ -871,7 +870,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get employmentTypeInternship => 'Stage';
 
   @override
-  String get employmentTypeContract => 'Contracter';
+  String get employmentTypeContract => 'Contrat';
 
   @override
   String get employmentTypeTemporary => 'Temporaire';
@@ -883,7 +882,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get workModeOnsite => 'Sur place';
 
   @override
-  String get workModeRemote => 'Télécommande';
+  String get workModeRemote => 'À distance';
 
   @override
   String get workModeHybrid => 'Hybride';
@@ -901,10 +900,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get benefitPaidOpportunity => 'Opportunité payante';
 
   @override
-  String get benefitRemoteFriendly => 'Configuration conviviale à distance';
+  String get benefitRemoteFriendly => 'Compatible avec le travail à distance';
 
   @override
-  String get benefitHybridFormat => 'Format de travail hybride';
+  String get benefitHybridFormat => 'Mode de travail hybride';
 
   @override
   String get benefitFeaturedSponsored => 'Placement sponsorisé en vedette';
@@ -928,11 +927,11 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get uiACurrentCommercialRegisterReinforcesTrustAndHelpsKeepThe =>
-      'Un registre du commerce à jour renforce la confiance et permet de maintenir le profil de l\'entreprise prêt à être révisé.';
+      'Un registre du commerce à jour renforce la confiance et garde le profil de l\'entreprise prêt pour la révision.';
 
   @override
   String get uiAFocusedOverviewSoTheOpportunityFeelsEasyToScan =>
-      'Un aperçu ciblé pour que l\'opportunité soit facile à analyser.';
+      'Un aperçu ciblé pour comprendre l\'offre rapidement.';
 
   @override
   String get uiAPublicWebsiteAndSocialChannelsAreNotLinkedInside =>
@@ -944,11 +943,11 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get uiAQuickHighlightPickedFromTheScholarships =>
-      'Un petit moment choisi parmi les bourses';
+      'Un aperçu rapide d\'une bourse sélectionnée';
 
   @override
   String get uiAQuickPulseOnImportedResourcesSoAdminsCanCurate =>
-      'Une impulsion rapide sur les ressources importées afin que les administrateurs puissent organiser au lieu de deviner.';
+      'Un aperçu rapide des ressources importées pour aider les admins à les organiser sans tâtonner.';
 
   @override
   String get uiAReadyCvMakesJobsInternshipsAndScholarshipsMuchQuicker =>
@@ -956,7 +955,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get uiASharperCompanyStoryMakesTheProfileFeelMoreConfident =>
-      'Une histoire d’entreprise plus précise rend le profil plus confiant et digne de confiance.';
+      'Une présentation plus claire de l\'entreprise rend le profil plus crédible et plus fiable.';
 
   @override
   String get uiAStrongLogoOrCompanyPhotoMakesTheProfileFeel =>
@@ -992,7 +991,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Formats acceptés : JPG, PNG ou WebP. Taille maximale : 5 Mo.';
 
   @override
-  String get uiAccess => 'Accéder';
+  String get uiAccess => 'Accès';
 
   @override
   String get uiAccountAccess => 'Accès au compte';
@@ -1010,8 +1009,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiAccountSecurity => 'Sécurité du compte';
 
   @override
-  String get uiActBeforeDeadlinesClose =>
-      'Agissez avant la clôture des délais.';
+  String get uiActBeforeDeadlinesClose => 'Agissez avant la fin des échéances.';
 
   @override
   String uiActionUser(Object action) {
@@ -1019,7 +1017,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get uiActions => 'Actes';
+  String get uiActions => 'Actions';
 
   @override
   String get uiActive => 'Actif';
@@ -1051,7 +1049,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get uiAddAPlatformCuratedIdeaWithAStrongStoryClear =>
-      'Ajoutez une idée organisée par la plateforme avec une histoire forte, des métadonnées claires et la même structure raffinée que les utilisateurs reconnaissent déjà dans le fil d\'innovation.';
+      'Ajoutez une idée sélectionnée par la plateforme, avec un récit solide, des métadonnées claires et une structure familière dans le fil Innovation.';
 
   @override
   String get uiAddASkill => 'Ajouter une compétence';
@@ -1062,7 +1060,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get uiAddEmailAndPasswordSignIn =>
-      'Ajouter une connexion par e-mail et par mot de passe';
+      'Ajouter une connexion par e-mail et mot de passe';
 
   @override
   String get uiAddItem => 'Ajouter un article';
@@ -1102,7 +1100,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiAiActionUnavailable => 'Action IA indisponible';
 
   @override
-  String get uiAiIsProcessing => 'L\'IA traite...';
+  String get uiAiIsProcessing => 'L\'IA traite la demande...';
 
   @override
   String get uiAiTrainer => 'Formateur IA';
@@ -1114,7 +1112,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiAlexFromTechcorp => 'Alex de TechCorp';
 
   @override
-  String get uiAll => 'Tous';
+  String get uiAll => 'Tout';
 
   @override
   String get uiAllIdeas => 'Toutes les idées';
@@ -1153,16 +1151,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiApplicants => 'Candidats';
 
   @override
-  String get uiApplicationActivity => 'Activité des applications';
+  String get uiApplicationActivity => 'Activité des candidatures';
 
   @override
-  String get uiApplicationApproved => 'Demande\nApprouvé';
+  String get uiApplicationApproved => 'Candidature\napprouvée';
 
   @override
-  String get uiApplicationApprovedB0Cb => 'Demande approuvée';
+  String get uiApplicationApprovedB0Cb => 'Candidature approuvée';
 
   @override
-  String get uiApplicationBlocked => 'Application bloquée';
+  String get uiApplicationBlocked => 'Candidature bloquée';
 
   @override
   String get uiApplicationDataIsUnavailable =>
@@ -1170,73 +1168,73 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get uiApplicationDataIsUnavailableRightNow =>
-      'Les données d\'application ne sont pas disponibles pour le moment.';
+      'Les données de candidature ne sont pas disponibles pour le moment.';
 
   @override
   String get uiApplicationDetails => 'Détails de la candidature';
 
   @override
-  String get uiApplicationHelp => 'Aide sur les applications';
+  String get uiApplicationHelp => 'Aide candidatures';
 
   @override
-  String get uiApplicationLink => 'Lien d\'application';
+  String get uiApplicationLink => 'Lien de candidature';
 
   @override
-  String get uiApplicationPipeline => 'Pipeline d\'applications';
+  String get uiApplicationPipeline => 'Pipeline de candidatures';
 
   @override
   String get uiApplicationProcess => 'Processus de candidature';
 
   @override
-  String get uiApplicationRate => 'Taux d\'application';
+  String get uiApplicationRate => 'Taux de candidature';
 
   @override
-  String get uiApplicationStatus => 'Statut de la demande';
+  String get uiApplicationStatus => 'Statut de la candidature';
 
   @override
-  String get uiApplicationUnavailable => 'Application indisponible';
+  String get uiApplicationUnavailable => 'Candidature indisponible';
 
   @override
-  String get uiApplicationUpdated => 'Application mise à jour';
+  String get uiApplicationUpdated => 'Candidature mise à jour';
 
   @override
-  String get uiApplications => 'Applications';
+  String get uiApplications => 'Candidatures';
 
   @override
   String uiApplicationsForOpportunitytitle(Object opportunityTitle) {
-    return 'Applications pour $opportunityTitle';
+    return 'Candidatures pour $opportunityTitle';
   }
 
   @override
   String get uiApplicationsReceived => 'Candidatures reçues';
 
   @override
-  String get uiApplied => 'Appliqué';
+  String get uiApplied => 'Candidature envoyée';
 
   @override
   String uiAppliedAppliedtext(Object appliedText) {
-    return '$appliedText appliqué';
+    return 'Candidature envoyée $appliedText';
   }
 
   @override
-  String get uiAppliedOpportunities => 'Opportunités postulées';
+  String get uiAppliedOpportunities => 'Offres auxquelles vous avez postulé';
 
   @override
   String uiAppliedRelativeappliedlabel(Object relativeAppliedLabel) {
-    return 'Appliqué $relativeAppliedLabel';
+    return 'Candidature envoyée $relativeAppliedLabel';
   }
 
   @override
-  String get uiApply => 'Appliquer';
+  String get uiApply => 'Postuler';
 
   @override
-  String get uiApplyLink => 'Appliquer le lien';
+  String get uiApplyLink => 'Lien de candidature';
 
   @override
-  String get uiApplyNow => 'Postulez maintenant';
+  String get uiApplyNow => 'Postuler maintenant';
 
   @override
-  String get uiApplyTemplate => 'Appliquer le modèle';
+  String get uiApplyTemplate => 'Utiliser ce modèle';
 
   @override
   String get uiApprove => 'Approuver';
@@ -1267,7 +1265,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Êtes-vous sûr de vouloir supprimer cette conversation ? Cette action ne peut pas être annulée.';
 
   @override
-  String get uiAtAGlance => 'EN UN COUP D\'OEIL';
+  String get uiAtAGlance => 'EN BREF';
 
   @override
   String get uiAttach => 'Attacher';
@@ -1303,13 +1301,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiAvailableScholarships => 'Bourses\ndisponibles';
 
   @override
-  String get uiAvatarUnavailable => 'Avatar indisponible';
+  String get uiAvatarUnavailable => 'Photo de profil indisponible';
 
   @override
-  String get uiAvenirCloudSupport => 'Avenir Cloud • Assistance';
+  String get uiAvenirCloudSupport => 'FutureGate Cloud • Assistance';
 
   @override
-  String get uiBac => 'Bac';
+  String get uiBac => 'Baccalauréat';
 
   @override
   String get uiBack => 'Dos';
@@ -1321,7 +1319,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiBackToLoginB5Cd => 'Retour à la connexion';
 
   @override
-  String get uiBackendSupport => 'Prise en charge du back-end';
+  String get uiBackendSupport => 'Support backend';
 
   @override
   String uiBadgecount(Object badgeCount) {
@@ -1366,10 +1364,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiBooks => 'Livres';
 
   @override
-  String get uiBrandStory => 'Histoire de la marque';
+  String get uiBrandStory => 'Histoire de l\'entreprise';
 
   @override
-  String get uiBrightStudioGrowth => 'Bright Studio · Croissance';
+  String get uiBrightStudioGrowth => 'Bright Studio • Croissance';
 
   @override
   String get uiBrowseCategories => 'Parcourir les catégories';
@@ -1388,23 +1386,23 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get uiBuildSkillsAndGrowYourCareerWithCuratedLearningPaths =>
-      'Développez vos compétences et développez votre carrière grâce à des parcours d\'apprentissage sélectionnés.';
+      'Développez vos compétences et votre carrière grâce à des parcours d\'apprentissage sélectionnés.';
 
   @override
-  String get uiBuildStory => 'Construire une histoire';
+  String get uiBuildStory => 'Construire le récit';
 
   @override
   String get uiBuildUploadAndExportYourCv =>
-      'Créez, téléchargez et exportez votre CV.';
+      'Créez, importez et exportez votre CV.';
 
   @override
-  String get uiBuildYourCvFirst => 'Construisez d’abord votre CV.';
+  String get uiBuildYourCvFirst => 'Créez d\'abord votre CV.';
 
   @override
   String get uiBuildYourNextSkill => 'Développez votre prochaine compétence';
 
   @override
-  String get uiBuiltCv => 'CV construit';
+  String get uiBuiltCv => 'CV généré';
 
   @override
   String get uiBusiness => 'Entreprise';
@@ -1440,7 +1438,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get uiCheckBackSoonForFreshCuratedOpportunities =>
-      'Revenez bientôt pour de nouvelles opportunités organisées.';
+      'Revenez bientôt pour de nouvelles offres sélectionnées.';
 
   @override
   String get uiCheckTheCoreEligibilitySignalsBeforeMovingForward =>
@@ -1491,10 +1489,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiClearSearch => 'Effacer la recherche';
 
   @override
-  String get uiClosingSoon => 'Bientôt fermé';
+  String get uiClosingSoon => 'Clôture bientôt';
 
   @override
-  String get uiClosingSoonC287 => 'Fermeture prochaine';
+  String get uiClosingSoonC287 => 'Clôture bientôt';
 
   @override
   String get uiCloudSupportEngineer => 'Ingénieur support cloud';
@@ -1537,7 +1535,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiCompanyReview => 'Examen de l\'entreprise';
 
   @override
-  String get uiCompanyReviews => 'Avis sur les entreprises';
+  String get uiCompanyReviews => 'Révision des entreprises';
 
   @override
   String get uiCompensation => 'Compensation';
@@ -1553,7 +1551,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String uiCompletedOfTotalSectionsComplete(Object completed, Object total) {
-    return '$completed des sections $total terminées';
+    return '$completed sur $total sections terminées';
   }
 
   @override
@@ -1573,7 +1571,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiContact => 'Contact';
 
   @override
-  String get uiContactPresence => 'Contact & Présence';
+  String get uiContactPresence => 'Contact et présence';
 
   @override
   String get uiContactSupport => 'Contacter l\'assistance';
@@ -1582,14 +1580,14 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiContent => 'Contenu';
 
   @override
-  String get uiContentNeeded => 'Contenu nécessaire';
+  String get uiContentNeeded => 'Contenu requis';
 
   @override
   String get uiContentWorkspace => 'Espace de travail de contenu';
 
   @override
   String get uiContinueWithConfidenceOnTheOfficialDestination =>
-      'Continuez en toute confiance sur la destination officielle.';
+      'Continuez en confiance vers la destination officielle.';
 
   @override
   String get uiControl => 'Contrôle';
@@ -1645,14 +1643,14 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get uiCurateImportedBooksAndVideoResourcesFromOnePlace =>
-      'Organisez les livres et les ressources vidéo importés à partir d’un seul endroit.';
+      'Gérez les livres et ressources vidéo importés depuis un seul endroit.';
 
   @override
-  String get uiCurateResourceHub => 'Organiser un centre de ressources';
+  String get uiCurateResourceHub => 'Gérer le centre de ressources';
 
   @override
   String get uiCuratedFundingPathsDeadlinesAndGlobalStudyOptions =>
-      'Voies de financement, délais et options d\'études mondiales organisées.';
+      'Financements sélectionnés, échéances et options d\'études à l\'international.';
 
   @override
   String get uiCurrency => 'Devise';
@@ -1698,7 +1696,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiDataPermissions => 'Autorisations de données';
 
   @override
-  String get uiDataSciencePro => 'Professionnel de la science des données';
+  String get uiDataSciencePro => 'Data Science Pro';
 
   @override
   String get uiDeadlineExpired => 'Délai expiré';
@@ -1710,7 +1708,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiDeckDemoLink => 'Lien Deck / Démo';
 
   @override
-  String get uiDegree => 'Degré';
+  String get uiDegree => 'Diplôme';
 
   @override
   String get uiDelete => 'Supprimer';
@@ -1743,11 +1741,11 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String uiDeleteValue1IfItAlreadyHasApplicationsItWillBe(Object value1) {
-    return 'Supprimer \"$value1\" ? S\'il contient déjà des applications, il sera fermé afin de préserver l\'historique.';
+    return 'Supprimer \"$value1\" ? Si des candidatures existent déjà, l\'offre sera fermée afin de préserver l\'historique.';
   }
 
   @override
-  String get uiDeliveryAccess => 'Livraison et accès';
+  String get uiDeliveryAccess => 'Accès et modalités';
 
   @override
   String get uiDesign => 'Conception';
@@ -1770,7 +1768,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get uiDiscoverPremiumOpenRolesFromTrustedEmployersAndRemoteReady =>
-      'Découvrez des postes vacants premium proposés par des employeurs de confiance et des équipes prêtes à travailler à distance.';
+      'Découvrez des offres premium proposées par des employeurs fiables et des équipes prêtes au travail à distance.';
 
   @override
   String get uiDoctorate => 'Doctorat';
@@ -1801,7 +1799,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get uiEachSourceKeepsItsOwnSearchWorkflowAndManagementTools =>
-      'Chaque source conserve son propre flux de travail de recherche et ses propres outils de gestion, mais ils résident désormais sous une seule destination de bibliothèque.';
+      'Chaque source garde son propre flux de recherche et ses outils de gestion, désormais réunis dans une seule bibliothèque.';
 
   @override
   String get uiEdit => 'Modifier';
@@ -1860,10 +1858,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get uiEverythingImportantIsSurfacedHereBeforeYouOpenTheFull =>
-      'Tout ce qui est important est exposé ici avant que vous n\'ouvriez l\'appel de candidature complet.';
+      'Les informations essentielles apparaissent ici avant d\'ouvrir l\'appel à candidatures complet.';
 
   @override
-  String get uiExternalApplication => 'Application externe';
+  String get uiExternalApplication => 'Candidature externe';
 
   @override
   String get uiExternalLink => 'Lien externe';
@@ -1886,7 +1884,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get uiFeaturedFreshAndHighSignalPicksFromLiveData =>
-      'Sélections en vedette, récentes et à signal élevé à partir de données en direct';
+      'Sélections mises en avant, récentes et à forte valeur issues des données en direct';
 
   @override
   String get uiFeaturedInternships => 'Stages en vedette';
@@ -1898,7 +1896,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiFeaturedListUpdated => 'Liste en vedette mise à jour';
 
   @override
-  String get uiFeaturedScholarship => 'En vedette\nBourse';
+  String get uiFeaturedScholarship => 'Bourse\nen vedette';
 
   @override
   String uiFeaturedcountFeaturedResources(Object featuredCount) {
@@ -1906,7 +1904,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get uiFeed => 'Alimentation';
+  String get uiFeed => 'Fil';
 
   @override
   String get uiFieldOfStudy => 'Domaine d\'études';
@@ -1915,7 +1913,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiFieldOfStudy81E2 => 'Domaine d\'études';
 
   @override
-  String get uiFile => 'Déposer';
+  String get uiFile => 'Fichier';
 
   @override
   String get uiFilterOpportunities => 'Filtrer les opportunités';
@@ -1926,7 +1924,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get uiFindYourNextBestOpportunity =>
-      'Trouvez votre prochaine meilleure opportunité.';
+      'Trouvez votre prochaine opportunité.';
 
   @override
   String get uiFindYourNextMove => 'Trouvez votre prochain mouvement.';
@@ -1944,20 +1942,20 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiFocusSearch => 'Recherche ciblée';
 
   @override
-  String get uiFocusedApplicationView => 'Vue ciblée des applications';
+  String get uiFocusedApplicationView => 'Vue ciblée des candidatures';
 
   @override
   String get uiForgotPassword => 'Mot de passe oublié ?';
 
   @override
-  String get uiFormalize => 'Formaliser';
+  String get uiFormalize => 'Rendre plus formel';
 
   @override
   String get uiFree => 'Gratuit';
 
   @override
   String get uiFreshRecommendationsAreHighlightedAsNewListingsGoLive =>
-      'De nouvelles recommandations sont mises en évidence au fur et à mesure que de nouvelles annonces sont mises en ligne.';
+      'Les nouvelles recommandations sont mises en avant dès la publication de nouvelles offres.';
 
   @override
   String get uiFullDescription => 'Descriptif complet';
@@ -2047,7 +2045,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiHiringInsights => 'Informations sur l\'embauche';
 
   @override
-  String get uiHome => 'Maison';
+  String get uiHome => 'Accueil';
 
   @override
   String get uiHowCanWeHelp => 'Comment pouvons-nous vous aider ?';
@@ -2092,11 +2090,11 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get uiImportAFewGoogleBooksResultsFirstThenManageFeaturing =>
-      'Importez d\'abord quelques résultats Google Livres, puis gérez la présentation, l\'ouverture et la suppression à partir d\'ici.';
+      'Importez d\'abord quelques résultats Google Books, puis gérez la mise en avant, l\'ouverture et la suppression ici.';
 
   @override
   String get uiImportAFewYoutubeResultsFirstThenManageFeaturingOpening =>
-      'Importez d’abord quelques résultats YouTube, puis gérez la mise en avant, l’ouverture et la suppression à partir d’ici.';
+      'Importez d\'abord quelques résultats YouTube, puis gérez la mise en avant, l\'ouverture et la suppression ici.';
 
   @override
   String get uiImportBooks => 'Importer des livres';
@@ -2108,7 +2106,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiImportGoogleBooks => 'Importer des livres Google';
 
   @override
-  String get uiImportPipelines => 'Importer des pipelines';
+  String get uiImportPipelines => 'Flux d\'importation';
 
   @override
   String get uiImportTheFirstLearningResourceToStartBuildingTheTraining =>
@@ -2144,7 +2142,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiInstitution => 'Institution';
 
   @override
-  String get uiInterestSnapshot => 'Aperçu des intérêts';
+  String get uiInterestSnapshot => 'Aperçu de l\'intérêt';
 
   @override
   String get uiInterested => 'Intéressé';
@@ -2176,11 +2174,11 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get uiJumpBackIntoEverythingYouBookmarked =>
-      'Revenez à tout ce que vous avez mis en signet.';
+      'Retrouvez rapidement tout ce que vous avez enregistré.';
 
   @override
   String get uiJumpStraightIntoTheAdminAreasYouOpenMostOften =>
-      'Accédez directement aux zones d\'administration que vous ouvrez le plus souvent.';
+      'Accédez directement aux espaces admin que vous utilisez le plus.';
 
   @override
   String get uiJuniorFrontendDeveloper => 'Développeur Frontend Junior';
@@ -2191,7 +2189,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get uiKeepAFewStrongOptionsMovingWhileYouWaitFor =>
-      'Gardez quelques options fortes en mouvement pendant que vous attendez les réponses.';
+      'Gardez quelques bonnes pistes actives pendant que vous attendez les réponses.';
 
   @override
   String get uiKeepApplyingWhileTeamsAreAlreadyEngagingWithYourProfile =>
@@ -2199,13 +2197,13 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get uiKeepGoogleSignInAndAddEmailPasswordToo =>
-      'Gardez la connexion Google et ajoutez également une adresse e-mail/un mot de passe';
+      'Conserver la connexion Google et ajouter aussi e-mail/mot de passe';
 
   @override
-  String get uiKeepItOutOfDiscovery => 'Gardez-le hors de la découverte';
+  String get uiKeepItOutOfDiscovery => 'Ne pas l\'afficher dans Découvrir';
 
   @override
-  String get uiKeepOutOfDiscovery => 'Rester à l\'écart de la découverte';
+  String get uiKeepOutOfDiscovery => 'Masquer dans Découvrir';
 
   @override
   String get uiKeepTheCompanyOutOfTheWorkspaceUntilTheProfile =>
@@ -2217,7 +2215,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get uiKeepTheHeadlineAndOverviewCrispSoTheIdeaReads =>
-      'Gardez le titre et la présentation clairs afin que l\'idée soit clairement lisible dans les cartes et les vues détaillées complètes.';
+      'Gardez un titre et une présentation nets pour que l\'idée soit forte dans les cartes comme dans les détails.';
 
   @override
   String get uiKeepThePageGroundedInTheCurrentAppBehaviorInstead =>
@@ -2237,7 +2235,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get uiKeepYourStudentContextCurrentSoOpportunityMatchingStaysUseful =>
-      'Gardez le contexte de vos étudiants à jour afin que la correspondance des opportunités reste utile.';
+      'Gardez votre profil étudiant à jour pour conserver des recommandations utiles.';
 
   @override
   String get uiKeySkills => 'Compétences clés';
@@ -2316,10 +2314,10 @@ class AppLocalizationsFr extends AppLocalizations {
       'Chargement de vos éléments enregistrés...';
 
   @override
-  String get uiLocationAndLogistics => 'Localisation et logistique';
+  String get uiLocationAndLogistics => 'Lieu et logistique';
 
   @override
-  String get uiLocationLogistics => 'Localisation et logistique';
+  String get uiLocationLogistics => 'Lieu et logistique';
 
   @override
   String get uiLogin => 'Se connecter';
@@ -2334,7 +2332,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiLogoVisualIdentity => 'Logo & Identité Visuelle';
 
   @override
-  String get uiLoomStudioDesign => 'Loom Studio™ Conception';
+  String get uiLoomStudioDesign => 'Loom Studio • Design';
 
   @override
   String get uiMakeItEasyForStudentsToUnderstandWhereYourCompany =>
@@ -2359,13 +2357,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiManageYourListings => 'Gérez vos annonces';
 
   @override
-  String get uiManagedInventory => 'Inventaire géré';
+  String get uiManagedInventory => 'Contenu géré';
 
   @override
-  String get uiMarkPendingReview => 'Marquer en attente de révision';
+  String get uiMarkPendingReview => 'Marquer comme en attente de révision';
 
   @override
-  String get uiMarketing => 'Commercialisation';
+  String get uiMarketing => 'Marketing';
 
   @override
   String get uiMarketingAnalyst => 'Analyste marketing';
@@ -2404,7 +2402,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get uiModerateIdeaQueue => 'File d\'attente d\'idées modérée';
+  String get uiModerateIdeaQueue => 'Modérer la file des idées';
 
   @override
   String get uiModerateIdeasApplicationsListingsScholarshipsAndTraining =>
@@ -2423,7 +2421,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiMoreInformation => 'Plus d\'informations';
 
   @override
-  String get uiMostAppliedOpportunities => 'Opportunités les plus appliquées';
+  String get uiMostAppliedOpportunities => 'Offres les plus demandées';
 
   @override
   String get uiMostRecentStudentApplicationsFromYourRealData =>
@@ -2583,7 +2581,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Aucune vidéo ne correspond à cette recherche';
 
   @override
-  String get uiNorthMetricsAnalytics => 'North Metrics · Analyses';
+  String get uiNorthMetricsAnalytics => 'North Metrics • Analytics';
 
   @override
   String get uiNotSignedIn => 'Non connecté';
@@ -2611,7 +2609,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String uiOpenCandidateProfileForStudentname(Object studentName) {
-    return 'Profil de candidat ouvert pour $studentName';
+    return 'Ouvrir le profil du candidat $studentName';
   }
 
   @override
@@ -2630,20 +2628,20 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiOpenResource => 'Ressource ouverte';
 
   @override
-  String get uiOpenRoles => 'Rôles ouverts';
+  String get uiOpenRoles => 'Postes ouverts';
 
   @override
   String get uiOpenScholarshipLink => 'Lien de bourse ouvert';
 
   @override
-  String get uiOpenStudio => 'Studio ouvert';
+  String get uiOpenStudio => 'Ouvrir le studio';
 
   @override
   String get uiOpenTheFullAdminProfileSheetForThisUser =>
-      'Ouvrez la feuille de profil d\'administrateur complète pour cet utilisateur.';
+      'Ouvrez le profil administrateur complet de cet utilisateur.';
 
   @override
-  String get uiOpenUnavailable => 'Ouvert indisponible';
+  String get uiOpenUnavailable => 'Ouverture indisponible';
 
   @override
   String get uiOpenYourCompanyWorkspaceHub =>
@@ -2662,7 +2660,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get uiOpportunitiesNearingTheirDeadlinesAreHighlightedHere =>
-      'Les opportunités proches de leur échéance sont mises en évidence ici.';
+      'Les offres proches de leur échéance sont mises en avant ici.';
 
   @override
   String get uiOpportunitiesScholarshipsTraining =>
@@ -2694,7 +2692,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiOrUploadYourOwn => 'ou téléchargez le vôtre';
 
   @override
-  String get uiOrbitAiAiOps => 'Orbit AI – Opérations IA';
+  String get uiOrbitAiAiOps => 'Orbit AI • AIOps';
 
   @override
   String get uiOverview => 'Aperçu';
@@ -2703,7 +2701,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiWorkspace => 'Espace de travail';
 
   @override
-  String get uiPaidOnly => 'Payé uniquement';
+  String get uiPaidOnly => 'Offres rémunérées uniquement';
 
   @override
   String get uiPartnerBackedSupport => 'Support soutenu par les partenaires';
@@ -2742,7 +2740,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Comptes en attente, approuvés et rejetés de vos candidatures en direct.';
 
   @override
-  String get uiPendingApps => 'Applications en attente';
+  String get uiPendingApps => 'Candidatures en attente';
 
   @override
   String get uiPendingIdeasNeedReview =>
@@ -2750,7 +2748,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get uiPendingOpportunitiesNeedAttention =>
-      'Les opportunités en attente nécessitent une attention particulière';
+      'Les offres en attente nécessitent votre attention';
 
   @override
   String get uiPendingProjectIdeas => 'Idées de projets en attente';
@@ -2765,7 +2763,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String uiPendingapplicationsPendingApps(Object pendingApplications) {
-    return '$pendingApplications applications en attente';
+    return '$pendingApplications candidatures en attente';
   }
 
   @override
@@ -2805,7 +2803,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Choisissez le style de CV qui correspond le mieux au rôle que vous souhaitez.';
 
   @override
-  String get uiPixelFoundryEngineering => 'Pixel Foundry · Ingénierie';
+  String get uiPixelFoundryEngineering => 'Pixel Foundry • Ingénierie';
 
   @override
   String get uiPlatformMissionAndVersionDetails =>
@@ -2816,7 +2814,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get uiPlatformPulseModerationLoadAndQuickControlPoints =>
-      'Impulsion de la plate-forme, charge de modération et points de contrôle rapides.';
+      'Vue d\'ensemble de la plateforme, charge de modération et points de contrôle rapides.';
 
   @override
   String get uiPlatformStory => 'Histoire de la plateforme';
@@ -2830,7 +2828,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Améliorez la présence de votre entreprise publique';
 
   @override
-  String get uiPosition => 'Position';
+  String get uiPosition => 'Poste';
 
   @override
   String get uiPositioning => 'Positionnement';
@@ -2848,14 +2846,14 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiPostOpportunity2F1A => 'Publier\nOpportunité';
 
   @override
-  String get uiPostScholarship => 'Post-bourse';
+  String get uiPostScholarship => 'Publier une bourse';
 
   @override
   String get uiPosted => 'Publié';
 
   @override
   String get uiPreferencesDisplayAndAppChoices =>
-      'Préférences, affichage et choix d\'applications.';
+      'Préférences, affichage et choix de l\'application.';
 
   @override
   String get uiPreview => 'Aperçu';
@@ -2901,14 +2899,14 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get uiProfileCvAndApplicationDataAreUsedToPowerOpportunities =>
-      'Les données de profil, de CV et de candidature sont utilisées pour alimenter les opportunités et les flux d\'évaluation des recruteurs.';
+      'Les données de profil, de CV et de candidature alimentent les recommandations d\'offres et les flux de revue des recruteurs.';
 
   @override
   String get uiProfileCvNotificationAndApplicationDataAreUsedOnlyTo =>
       'Les données de profil, de CV, de notification et de candidature sont utilisées uniquement pour fournir les fonctionnalités de correspondance, d\'évaluation et de communication qui alimentent l\'expérience FutureGate.';
 
   @override
-  String get uiProfileNext => 'Profil suivant';
+  String get uiProfileNext => 'Profil plus tard';
 
   @override
   String get uiProfileOverview => 'Aperçu du profil';
@@ -2953,18 +2951,18 @@ class AppLocalizationsFr extends AppLocalizations {
       'Les liens publics sont ajoutés ici au fur et à mesure de leur mise en ligne';
 
   @override
-  String get uiPublicSpeaking => 'Art oratoire';
+  String get uiPublicSpeaking => 'Prise de parole en public';
 
   @override
-  String get uiPublishOpportunities => 'Publier des opportunités';
+  String get uiPublishOpportunities => 'Publier des offres';
 
   @override
   String get uiPublishTheFirstOpportunityToStartPopulatingTheStudentDiscovery =>
-      'Publiez la première opportunité de commencer à enrichir l’expérience de découverte des étudiants.';
+      'Publiez la première offre pour commencer à alimenter l\'expérience de découverte des étudiants.';
 
   @override
   String get uiPublishTheFirstScholarshipToStartShapingTheStudentDiscovery =>
-      'Publiez la première bourse pour commencer à façonner le catalogue de découverte des étudiants.';
+      'Publiez la première bourse pour commencer à structurer le catalogue de découverte des étudiants.';
 
   @override
   String get uiPublisherName => 'Nom de l\'éditeur';
@@ -2972,12 +2970,12 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String
   get uiPullingTogetherYourSavedOpportunitiesScholarshipsTrainingsAndIdeas =>
-      'Rassembler vos opportunités, bourses, formations et idées enregistrées.';
+      'Nous rassemblons vos offres, bourses, formations et idées enregistrées.';
 
   @override
   String
   get uiPullingTogetherYourSubmittedOpportunitiesAndTheirLatestStatuses =>
-      'Rassembler vos opportunités soumises et leurs derniers statuts.';
+      'Nous rassemblons vos offres soumises et leurs derniers statuts.';
 
   @override
   String get uiQuickAccess => 'Accès rapide';
@@ -2990,7 +2988,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiQuickActions => 'Actions rapides';
 
   @override
-  String get uiQuickCuration => 'Conservation rapide';
+  String get uiQuickCuration => 'Tri rapide';
 
   @override
   String get uiQuickFilters => 'Filtres rapides';
@@ -3006,7 +3004,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get uiReachOutWithContextSoTheTeamCanHelpFaster =>
-      'Contactez-le avec le contexte afin que l\'équipe puisse vous aider plus rapidement.';
+      'Ajoutez du contexte à votre demande pour que l\'équipe vous aide plus vite.';
 
   @override
   String get uiReadAll => 'Lire tout';
@@ -3030,7 +3028,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiRecentActivity => 'Activité récente';
 
   @override
-  String get uiRecentApplications => 'Applications récentes';
+  String get uiRecentApplications => 'Candidatures récentes';
 
   @override
   String get uiRecentContacts => 'Contacts récents';
@@ -3054,21 +3052,21 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiRefreshActivityFeed => 'Actualiser le flux d\'activité';
 
   @override
-  String get uiRefreshApplications => 'Actualiser les applications';
+  String get uiRefreshApplications => 'Actualiser les candidatures';
 
   @override
   String get uiRefreshSavedItems => 'Actualiser les éléments enregistrés';
 
   @override
   String get uiRefreshYourDetailsSwitchAvatarsOrUploadANewPhoto =>
-      'Actualisez vos informations, changez d\'avatar ou téléchargez une nouvelle photo sans affecter la logique de votre compte existant.';
+      'Mettez à jour vos informations, changez de photo de profil ou importez une nouvelle photo sans modifier les paramètres actuels de votre compte.';
 
   @override
   String get uiRefreshYourStoryContactDetailsAndAssets =>
-      'Actualisez votre histoire, vos coordonnées et vos ressources';
+      'Mettez à jour votre présentation, vos coordonnées et vos fichiers';
 
   @override
-  String get uiRegister => 'Registre';
+  String get uiRegister => 'S\'inscrire';
 
   @override
   String get uiRegisterCompany => 'Enregistrer la société';
@@ -3076,7 +3074,7 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String
   get uiRegisterYourOrganizationToPostOpportunitiesAndConnectWithTalent =>
-      'Enregistrez votre organisation pour publier\nopportunités et entrer en contact avec des talents.';
+      'Enregistrez votre organisation pour publier des offres et entrer en contact avec des talents.';
 
   @override
   String get uiRegistrationUnavailable => 'Inscription indisponible';
@@ -3101,7 +3099,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiRemovePhoto => 'Supprimer la photo';
 
   @override
-  String get uiRemoveUnavailable => 'Supprimer indisponible';
+  String get uiRemoveUnavailable => 'Suppression indisponible';
 
   @override
   String get uiReplace => 'Remplacer';
@@ -3144,7 +3142,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiResourceDeleted => 'Ressource supprimée';
 
   @override
-  String get uiResourceDetails => 'Détails des ressources';
+  String get uiResourceDetails => 'Détails de la ressource';
 
   @override
   String get uiResourceLibrary => 'Bibliothèque de ressources';
@@ -3157,10 +3155,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiResources => 'Ressources';
 
   @override
-  String get uiResourcesNeeded => 'Ressources nécessaires';
+  String get uiResourcesNeeded => 'Ressources requises';
 
   @override
-  String get uiResourcesNeeds => 'Ressources / Besoins';
+  String get uiResourcesNeeds => 'Ressources / besoins';
 
   @override
   String get uiResourcesOrNeeds => 'Ressources ou besoins';
@@ -3172,7 +3170,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiRetrySync => 'Réessayez la synchronisation';
 
   @override
-  String get uiReviewApplications => 'Examen\nApplications';
+  String get uiReviewApplications => 'Examiner\nles candidatures';
 
   @override
   String get uiReviewCompanies => 'Examiner les entreprises';
@@ -3184,7 +3182,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get uiReviewContactInfoAccountStatusAndRoleSpecificDetailsIn =>
-      'Consultez les informations de contact, l’état du compte et les détails spécifiques au rôle dans une vue de profil claire.';
+      'Consultez les coordonnées, l\'état du compte et les détails propres au rôle dans une vue de profil claire.';
 
   @override
   String get uiReviewContent => 'Vérifier le contenu';
@@ -3194,12 +3192,11 @@ class AppLocalizationsFr extends AppLocalizations {
       'Examiner l\'utilisation prévue de la plateforme';
 
   @override
-  String get uiReviewFundingQueue =>
-      'Examiner la file d\'attente de financement';
+  String get uiReviewFundingQueue => 'Examiner les demandes de financement';
 
   @override
   String get uiReviewIdentityStatusAndSubmittedInformationInOnePlace =>
-      'Vérifiez l’identité, le statut et les informations soumises en un seul endroit.';
+      'Consultez l\'identité, le statut et les informations soumises au même endroit.';
 
   @override
   String get uiReviewOfferSubmissions => 'Examiner les soumissions d\'offres';
@@ -3216,7 +3213,7 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String
   get uiReviewTheLatestModerationUpdatesPublishingChangesAndSubmissionsFrom =>
-      'Consultez les dernières mises à jour de modération, les modifications de publication et les soumissions à partir d’une file d’attente propre.';
+      'Consultez les dernières mises à jour de modération, les changements de publication et les soumissions depuis une seule file claire.';
 
   @override
   String get uiReviewTheUploadedCvAndTheBuiltCvExportWithout =>
@@ -3231,7 +3228,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get uiRevisitSavedPicksBeforeTheStrongestDeadlinesSlipBy =>
-      'Revisitez les choix enregistrés avant que les délais les plus serrés ne passent.';
+      'Revoyez vos sélections enregistrées avant les échéances les plus importantes.';
 
   @override
   String get uiRole => 'Rôle';
@@ -3252,7 +3249,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiSaveCv => 'Enregistrer le CV';
 
   @override
-  String get uiSaveUnavailable => 'Enregistrer indisponible';
+  String get uiSaveUnavailable => 'Enregistrement indisponible';
 
   @override
   String get uiSaved => 'Enregistré';
@@ -3276,7 +3273,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiSavedScholarships => 'Bourses sauvegardées';
 
   @override
-  String get uiSavedShortlist => 'Liste restreinte enregistrée';
+  String get uiSavedShortlist => 'Sélection enregistrée';
 
   @override
   String get uiSavedTraining => 'Formation enregistrée';
@@ -3363,7 +3360,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get uiSearchQuicklyFilterByRoleOrLevelAndReviewAccount =>
-      'Recherchez rapidement, filtrez par rôle ou par niveau et examinez l\'état du compte sans avoir à parcourir la zone d\'administration.';
+      'Recherchez rapidement, filtrez par rôle ou niveau et consultez le statut du compte sans naviguer dans toute la zone admin.';
 
   @override
   String get uiSearchRequired => 'Recherche requise';
@@ -3444,11 +3441,11 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get uiSetTheCoreHeadlineCategoryAndStageSoTheIdea =>
-      'Définissez le titre principal, la catégorie et la scène afin que l\'idée soit claire dès le début.';
+      'Définissez le titre principal, la catégorie et l\'étape pour que l\'idée soit claire dès le départ.';
 
   @override
   String get uiShapeTheFirstImpressionStudentsGetFromYourCompany =>
-      'Façonnez la première impression que les étudiants ont de votre entreprise.';
+      'Soignez la première impression que les étudiants auront de votre entreprise.';
 
   @override
   String get uiShare => 'Partager';
@@ -3482,7 +3479,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiShowArchived => 'Afficher archivé';
 
   @override
-  String get uiShowInDiscovery => 'Spectacle en découverte';
+  String get uiShowInDiscovery => 'Afficher dans Découvrir';
 
   @override
   String get uiShowInbox => 'Afficher la boîte de réception';
@@ -3499,7 +3496,7 @@ class AppLocalizationsFr extends AppLocalizations {
     Object resultsCount,
     Object totalApplications,
   ) {
-    return 'Affichage de $resultsCount sur $totalApplications applications';
+    return 'Affichage de $resultsCount sur $totalApplications candidatures';
   }
 
   @override
@@ -3578,7 +3575,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiStackHarborPlatform => 'Stack Harbor ™ Plateforme';
 
   @override
-  String get uiStage => 'Scène';
+  String get uiStage => 'Étape';
 
   @override
   String get uiStart => 'Commencer';
@@ -3632,7 +3629,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiStudentCv => 'CV étudiant';
 
   @override
-  String get uiStudentSnapshot => 'Aperçu de l\'élève';
+  String get uiStudentSnapshot => 'Aperçu étudiant';
 
   @override
   String get uiStudentSpace => 'ESPACE ÉTUDIANT';
@@ -3853,7 +3850,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Suivez les rôles dont vous avez besoin et l’intérêt suscité par cette idée.';
 
   @override
-  String get uiTraining => 'Entraînement';
+  String get uiTraining => 'Formation';
 
   @override
   String get uiTrainingMenu => 'Menu de formation';
@@ -3915,7 +3912,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiTwoStepVerification => 'Vérification en deux étapes';
 
   @override
-  String get uiType => 'Taper';
+  String get uiType => 'Type';
 
   @override
   String get uiUiDesignIntern =>
@@ -3941,14 +3938,14 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get uiUpdateCredentialsReviewPrivacyTouchpointsAndKeepAccessToYour =>
-      'Mettez à jour vos informations d\'identification, examinez les points de contact en matière de confidentialité et sécurisez l\'accès à votre profil FutureGate.';
+      'Mettez à jour vos identifiants, vérifiez les points de confidentialité et sécurisez l\'accès à votre profil FutureGate.';
 
   @override
   String get uiUpdateProfile => 'Mettre à jour le profil';
 
   @override
   String get uiUpdateTheCompanyApprovalStateFromHereWithoutLeavingThe =>
-      'Mettez à jour l’état d’approbation de l’entreprise à partir d’ici sans quitter le profil.';
+      'Mettez à jour le statut d\'approbation de l\'entreprise depuis ce profil.';
 
   @override
   String get uiUpdateYourProfile => 'Mettez à jour votre profil';
@@ -3984,7 +3981,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get uiUrgentApplicationsThatNeedAttentionBeforeTheyExpire =>
-      'Applications urgentes qui nécessitent une attention avant leur expiration';
+      'Candidatures urgentes à traiter avant leur expiration';
 
   @override
   String get uiUseAStrongPasswordWithAMixOfLettersNumbers =>
@@ -4001,7 +3998,7 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String
   get uiUseFuturegateResponsiblyKeepAccountInformationAccurateAndAvoidSubmitting =>
-      'Utilisez FutureGate de manière responsable, veillez à ce que les informations de compte soient exactes et évitez de soumettre des applications trompeuses ou du contenu qui enfreint les règles de la plateforme.';
+      'Utilisez FutureGate de manière responsable, gardez les informations de compte exactes et évitez de soumettre des candidatures trompeuses ou du contenu contraire aux règles de la plateforme.';
 
   @override
   String get uiUseGracefulFallbacksWhereDataIsMissingAndKeepEmail =>
@@ -4075,7 +4072,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String uiValue1Apps(Object value1) {
-    return 'Applications $value1';
+    return '$value1 candidatures';
   }
 
   @override
@@ -4440,7 +4437,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String uiValuePendingApps(Object value1) {
-    return '$value1 Applications en attente';
+    return '$value1 candidatures en attente';
   }
 
   @override
@@ -4498,7 +4495,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String uiValueApps(Object value1) {
-    return 'Applications $value1';
+    return '$value1 candidatures';
   }
 
   @override
@@ -4679,7 +4676,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiStatus716883 => 'Statut';
 
   @override
-  String get uiType6e9816 => 'Taper';
+  String get uiType6e9816 => 'Type';
 
   @override
   String get uiRolesdd8b65 => 'Rôles';
@@ -4694,7 +4691,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String uiAppliedValue(Object value1) {
-    return 'Appliqué $value1';
+    return 'Candidature envoyée $value1';
   }
 
   @override
@@ -4722,12 +4719,12 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String uiOpenCandidateProfileForValue(Object value1) {
-    return 'Profil de candidat ouvert pour $value1';
+    return 'Ouvrir le profil du candidat $value1';
   }
 
   @override
   String uiAppliedValue051b93(Object value1) {
-    return 'Applied $value1';
+    return 'Candidature envoyée $value1';
   }
 
   @override
@@ -4749,7 +4746,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String uiDeleteValueIfItAlreadyHasApplicationsItWillBe(Object value1) {
-    return 'Supprimer \"$value1\" ? S\'il contient déjà des applications, il sera fermé afin de préserver l\'historique.';
+    return 'Supprimer \"$value1\" ? Si des candidatures existent déjà, l\'offre sera fermée afin de préserver l\'historique.';
   }
 
   @override
@@ -4764,7 +4761,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String uiValueApplicants(Object value1) {
-    return '$value1 Candidats';
+    return '$value1 candidats';
   }
 
   @override
@@ -4776,7 +4773,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get uiText85 => 'Texte85';
+  String get uiText85 => 'Texte 85';
 
   @override
   String get uiInternship => 'Stages';
@@ -4792,7 +4789,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get uiPasswordAddedSuccessfullyYouCanNowSignInWithGoogle =>
-      'Mot de passe ajouté avec succès, vous pouvez maintenant vous connecter avec Google';
+      'Mot de passe ajouté avec succès. Vous pouvez maintenant vous connecter aussi avec e-mail et mot de passe.';
 
   @override
   String get uiYourPasswordHasBeenUpdatedSuccessfully =>
@@ -4800,7 +4797,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get uiVerificationEmailSentConfirmYourNewAddressToCompleteThe =>
-      'E-mail de vérification envoyé Confirmez votre nouvelle adresse pour compléter le';
+      'E-mail de vérification envoyé. Confirmez votre nouvelle adresse pour terminer la mise à jour.';
 
   @override
   String get uiNoEmailAppIsAvailableOnThisDevice =>
@@ -4808,7 +4805,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get uiThisOpportunityIsNoLongerAvailableToOpen =>
-      'Cette opportunité n\'est plus disponible pour ouvrir';
+      'Cette offre n\'est plus disponible.';
 
   @override
   String get uiCoverImageUploadedSuccessfully =>
@@ -4819,7 +4816,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get uiExplainTheConceptTheProblemBehindItAndTheSolution =>
-      'Expliquez le concept, le problème derrière et la solution';
+      'Expliquez le concept, le problème qu\'il traite et la solution proposée.';
 
   @override
   String get uiTargetAudience5cc631 => 'Public cible';
@@ -4887,7 +4884,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get uiSignInToSaveOpportunitiesForLater =>
-      'Connectez-vous pour enregistrer des opportunités pour plus tard';
+      'Connectez-vous pour enregistrer des offres pour plus tard';
 
   @override
   String get uiFullTime => 'À temps plein';
@@ -4906,10 +4903,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get uiCreateYourCvBeforeApplyingToThisOpportunity =>
-      'Créez votre CV avant de postuler à cette opportunité';
+      'Créez votre CV avant de postuler à cette offre';
 
   @override
-  String get uiApplicationApprovedb0cb9c => 'Demande\nApprouvé';
+  String get uiApplicationApprovedb0cb9c => 'Candidature\napprouvée';
 
   @override
   String get uiSignInToChatWithTheCompany =>
@@ -4945,7 +4942,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get uiThisOpportunityIsNoLongerAvailable =>
-      'This Opportunity Is No Longer Available To Open';
+      'Cette offre n\'est plus disponible';
 
   @override
   String get uiThisScholarshipIsNoLongerAvailable =>
@@ -4976,13 +4973,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiExploreScholarship => 'Explorer la bourse';
 
   @override
-  String get uiScholarship => 'Scholarship Unavailable';
+  String get uiScholarship => 'Bourse indisponible';
 
   @override
   String get uiScholarshipProfile => 'Profil de bourse';
 
   @override
-  String get uiTexte21a07 => 'Text';
+  String get uiTexte21a07 => 'Texte';
 
   @override
   String get uiCompleteYourProfile9a4b2b => 'Complétez votre profil';
@@ -5062,14 +5059,14 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiAndOur => ' et notre ';
 
   @override
-  String get uiCertified => 'Certifi?';
+  String get uiCertified => 'Certifié';
 
   @override
   String get authGoogleMissingToken =>
       'La connexion Google n\'a pas pu récupérer le jeton de compte requis.';
 
   @override
-  String get authGoogleSignInFailedShort => 'La connexion Google a ?chou?.';
+  String get authGoogleSignInFailedShort => 'La connexion Google a échoué.';
 
   @override
   String get authInvalidEmailMessage => 'L\'adresse e-mail n\'est pas valide.';
@@ -5103,11 +5100,11 @@ class AppLocalizationsFr extends AppLocalizations {
       'Le changement de mot de passe est disponible uniquement pour les comptes avec connexion e-mail et mot de passe.';
 
   @override
-  String get workerNotAuthenticatedMessage => 'Non authentifi?';
+  String get workerNotAuthenticatedMessage => 'Non authentifié';
 
   @override
   String uiSearchFailedValue(Object value1) {
-    return 'La recherche a ?chou? : $value1';
+    return 'La recherche a échoué : $value1';
   }
 
   @override
@@ -5122,7 +5119,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String uiValueDeleted(Object value1) {
-    return '? $value1 ? a ?t? supprim?.';
+    return '\"$value1\" a été supprimé.';
   }
 
   @override
@@ -5198,7 +5195,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get documentPrimaryCvMustBePdf =>
-      'Le CV principal doit ?tre import? en fichier PDF.';
+      'Le CV principal doit être importé au format PDF.';
 
   @override
   String get documentCommercialRegisterRequired =>
@@ -5214,7 +5211,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get documentCommercialRegisterInvalidType =>
-      'Le registre du commerce doit ?tre un fichier PDF, JPG ou PNG.';
+      'Le registre du commerce doit être un fichier PDF, JPG ou PNG.';
 
   @override
   String get applicationStatusApprovedSentence => 'approuvée';
@@ -6260,25 +6257,25 @@ class AppLocalizationsFr extends AppLocalizations {
       'Remplissez les champs ci-dessous puis publiez.';
 
   @override
-  String get uiBookLibrary => 'Bibliotheque de livres';
+  String get uiBookLibrary => 'Bibliothèque de livres';
 
   @override
   String get uiFeaturedResources => 'Ressources mises en avant';
 
   @override
-  String get uiHiddenResources => 'Ressources masquees';
+  String get uiHiddenResources => 'Ressources masquées';
 
   @override
   String get uiNoFeaturedResourcesMatchThisSearch =>
-      'Aucune ressource mise en avant ne correspond a cette recherche';
+      'Aucune ressource mise en avant ne correspond à cette recherche';
 
   @override
   String get uiNoHiddenResourcesMatchThisSearch =>
-      'Aucune ressource masquee ne correspond a cette recherche';
+      'Aucune ressource masquée ne correspond à cette recherche';
 
   @override
   String get uiNoLibraryResourcesMatchThisSearch =>
-      'Aucune ressource de la bibliotheque ne correspond a cette recherche';
+      'Aucune ressource de la bibliothèque ne correspond à cette recherche';
 
   @override
   String get uiThisResourceLinkIsInvalid =>
@@ -6290,13 +6287,13 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get uiThisResourceWasHiddenYouCanRestoreItLater =>
-      'Cette ressource a ete masquee. Vous pourrez la restaurer plus tard.';
+      'Cette ressource a été masquée. Vous pourrez la restaurer plus tard.';
 
   @override
   String get uiResourceVisible => 'Ressource visible';
 
   @override
-  String get uiResourceHidden => 'Ressource masquee';
+  String get uiResourceHidden => 'Ressource masquée';
 
   @override
   String get uiUnknownProvider => 'Fournisseur inconnu';
@@ -6304,21 +6301,21 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String
   get uiKeepBooksAndVideoResourcesInOneAdminFriendlyLibraryThenOpenTheSourceStudiosOnlyWhenYouNeedNewImports =>
-      'Gardez les livres et les ressources video dans une bibliotheque admin unique, puis ouvrez les studios source seulement quand vous avez besoin de nouveaux imports.';
+      'Gardez les livres et les ressources vidéo dans une bibliothèque admin unique, puis ouvrez les studios source seulement quand vous avez besoin de nouveaux imports.';
 
   @override
   String
   get uiLibraryNowHoldsAllLearningResourcesSearchFilterReviewDetailsAndJumpIntoImportStudiosWhenYouNeedToAddMore =>
-      'La bibliotheque contient maintenant toutes les ressources d\'apprentissage. Recherchez, filtrez, consultez les details et ouvrez les studios d\'import quand vous devez en ajouter.';
+      'La bibliothèque contient maintenant toutes les ressources d\'apprentissage. Recherchez, filtrez, consultez les détails et ouvrez les studios d\'importation quand vous devez en ajouter.';
 
   @override
   String uiShowingFilteredResultsForSearchQuery(Object searchQuery) {
-    return 'Affichage des resultats filtres pour \"$searchQuery\".';
+    return 'Affichage des résultats filtrés pour \"$searchQuery\".';
   }
 
   @override
   String get uiSearchLibraryByTitleProviderDomainLevelOrSource =>
-      'Rechercher dans la bibliotheque par titre, fournisseur, domaine, niveau ou source...';
+      'Rechercher dans la bibliothèque par titre, fournisseur, domaine, niveau ou source...';
 
   @override
   String get uiHide => 'Masquer';
@@ -6327,7 +6324,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiUnhide => 'Afficher';
 
   @override
-  String get uiLibraryUnavailable => 'Bibliotheque indisponible';
+  String get uiLibraryUnavailable => 'Bibliothèque indisponible';
 
   @override
   String get uiLanguage => 'Langue';
@@ -6348,21 +6345,21 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiSynced => 'Synchronise';
 
   @override
-  String get uiStudentDetails => 'Details de l\'etudiant';
+  String get uiStudentDetails => 'Détails de l\'étudiant';
 
   @override
   String
   get uiReviewIdentityAcademicDetailsCvDocumentsAndVisibleSubmittedApplicationsInOnePlace =>
-      'Consultez l\'identite, les informations academiques, les CV et les candidatures visibles au meme endroit.';
+      'Consultez l\'identité, les informations académiques, les CV et les candidatures visibles au même endroit.';
 
   @override
   String
   get uiReviewTheUploadedCvAndTheBuiltCvExportWithoutLeavingTheStudentProfile =>
-      'Consultez le CV importe et l\'export du CV genere sans quitter le profil etudiant.';
+      'Consultez le CV importé et l\'export du CV généré sans quitter le profil étudiant.';
 
   @override
   String get uiNoCvHasBeenCreatedForThisStudent =>
-      'Aucun CV n\'a ete cree pour cet etudiant.';
+      'Aucun CV n\'a été créé pour cet étudiant.';
 
   @override
   String uiPrimaryCvValue(Object value) {
@@ -6370,17 +6367,17 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get uiPrimaryCvNotUploaded => 'CV principal non importe';
+  String get uiPrimaryCvNotUploaded => 'CV principal non importé';
 
   @override
-  String get uiBuiltCvUnavailable => 'CV genere indisponible';
+  String get uiBuiltCvUnavailable => 'CV généré indisponible';
 
   @override
-  String get uiBuiltCvPdfAvailable => 'PDF du CV genere disponible';
+  String get uiBuiltCvPdfAvailable => 'PDF du CV généré disponible';
 
   @override
   String get uiBuiltCvInformationAvailable =>
-      'Informations du CV genere disponibles';
+      'Informations du CV généré disponibles';
 
   @override
   String get uiLoadingVisibleApplications =>
@@ -6392,7 +6389,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get uiNoVisibleApplicationsAvailableForThisStudent =>
-      'Aucune candidature visible n\'est disponible pour cet etudiant.';
+      'Aucune candidature visible n\'est disponible pour cet étudiant.';
 
   @override
   String get uiOneVisibleApplication => '1 candidature visible';
@@ -6403,12 +6400,12 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get uiStudentApplications => 'Candidatures de l\'etudiant';
+  String get uiStudentApplications => 'Candidatures de l\'étudiant';
 
   @override
   String
   get uiReviewTheStudentApplicationHistoryUsingTheSameVisibleOpportunityRuleShownInTheApp =>
-      'Ouvrez l\'historique des candidatures etudiantes avec la meme regle de visibilite des opportunites que dans l\'application.';
+      'Ouvrez l\'historique des candidatures étudiantes avec la même règle de visibilité des offres que dans l\'application.';
 
   @override
   String get uiVisibleSubmissions => 'Soumissions visibles';
@@ -6416,11 +6413,11 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String
   get uiCouldNotLoadApplicationCountRightNowYouCanStillOpenTheApplicationsSheetAndTryAgain =>
-      'Impossible de charger le nombre de candidatures pour le moment. Vous pouvez quand meme ouvrir la feuille des candidatures et reessayer.';
+      'Impossible de charger le nombre de candidatures pour le moment. Vous pouvez quand même ouvrir la feuille des candidatures et réessayer.';
 
   @override
   String get uiStudentProfileAvailableForAdminReview =>
-      'Profil etudiant disponible pour revue admin.';
+      'Profil étudiant disponible pour revue admin.';
 
   @override
   String get uiApplicationHistoryUnavailable =>
@@ -6431,7 +6428,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get uiLoadingVisibleOpportunityApplications =>
-      'Chargement des candidatures liees aux opportunites visibles.';
+      'Chargement des candidatures liées aux offres visibles.';
 
   @override
   String uiVisibleApplicationsAvailableForReviewCount(Object count) {
@@ -6440,12 +6437,12 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get uiCouldNotLoadThisStudentsVisibleApplicationsRightNow =>
-      'Impossible de charger les candidatures visibles de cet etudiant pour le moment.';
+      'Impossible de charger les candidatures visibles de cet étudiant pour le moment.';
 
   @override
   String
   get uiThisStudentHasNoApplicationsLinkedToOpenAndVisibleOpportunitiesRightNow =>
-      'Cet etudiant n\'a aucune candidature liee a des opportunites ouvertes et visibles pour le moment.';
+      'Cet étudiant n\'a aucune candidature liée à des offres ouvertes et visibles pour le moment.';
 
   @override
   String get uiAppliedDateUnavailable => 'Date de candidature indisponible';
@@ -6456,34 +6453,34 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get uiTheRequestedDocumentIsNoLongerAvailable =>
-      'Le document demande n\'est plus disponible.';
+      'Le document demandé n\'est plus disponible.';
 
   @override
   String get uiNotProvided => 'Non renseigne';
 
   @override
-  String get uiStudent => 'Etudiant';
+  String get uiStudent => 'Étudiant';
 
   @override
   String get uiBlocked => 'Bloque';
 
   @override
   String get uiUseATopicDomainOrLanguageFilterToBringInCuratedBooksForReview =>
-      'Utilisez un theme, un domaine ou un filtre de langue pour afficher des livres selectionnes a examiner.';
+      'Utilisez un thème, un domaine ou un filtre de langue pour afficher des livres sélectionnés à examiner.';
 
   @override
   String
   get uiTryABroaderQueryOrChangeTheLanguageAndDomainFiltersBeforeSearchingAgain =>
-      'Essayez une requete plus large ou modifiez les filtres de langue et de domaine avant de relancer la recherche.';
+      'Essayez une requête plus large ou modifiez les filtres de langue et de domaine avant de relancer la recherche.';
 
   @override
   String
   get uiThisWorkspaceIsDedicatedToGoogleBooksImportsSoBookCurationStaysFocused =>
-      'Cet espace est dedie aux imports Google Books, pour garder la selection des livres bien ciblee.';
+      'Cet espace est dédié aux imports Google Books, pour garder la sélection des livres bien ciblée.';
 
   @override
   String get uiUseATopicSearchToBringBackImportReadyVideosForReview =>
-      'Utilisez une recherche par sujet pour afficher des videos pretes a etre importees.';
+      'Utilisez une recherche par sujet pour afficher des vidéos prêtes à être importées.';
 
   @override
   String
@@ -6493,10 +6490,10 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String
   get uiThisWorkspaceIsDedicatedToYouTubeImportsSoVideoCurationStaysFocused =>
-      'Cet espace est dedie aux imports YouTube, pour garder la selection des videos bien ciblee.';
+      'Cet espace est dédié aux imports YouTube, pour garder la sélection des vidéos bien ciblée.';
 
   @override
-  String get uiVideoLibrary => 'Bibliotheque video';
+  String get uiVideoLibrary => 'Bibliothèque vidéo';
 
   @override
   String get uiLearningResources => 'Ressources d\'apprentissage';
@@ -6506,16 +6503,16 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get uiTryAnotherSearchOrRelaxTheCurrentRoleAndLevelFilters =>
-      'Essayez une autre recherche ou assouplissez les filtres de role et de niveau.';
+      'Essayez une autre recherche ou assouplissez les filtres de rôle et de niveau.';
 
   @override
   String
   get uiReviewContactInfoAccountStatusAndRoleSpecificDetailsInOneCleanProfileView =>
-      'Consultez les coordonnees, le statut du compte et les details propres au role dans une vue claire.';
+      'Consultez les coordonnées, le statut du compte et les détails propres au rôle dans une vue claire.';
 
   @override
   String get uiUpdateTheCompanyApprovalStateFromHereWithoutLeavingTheProfile =>
-      'Mettez a jour l\'etat d\'approbation de l\'entreprise ici sans quitter le profil.';
+      'Mettez à jour l\'état d\'approbation de l\'entreprise ici sans quitter le profil.';
 
   @override
   String get languageDeviceDefault => 'Par défaut';
@@ -6545,7 +6542,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiTrain => 'Formation';
 
   @override
-  String get uiCategory => 'Categorie';
+  String get uiCategory => 'Catégorie';
 
   @override
   String get uiDeadline => 'Date limite';
@@ -6569,13 +6566,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiLoginRequired => 'Connexion requise';
 
   @override
-  String get uiUploadUnavailable => 'Telechargement indisponible';
+  String get uiUploadUnavailable => 'Téléversement indisponible';
 
   @override
-  String get uiUploadInProgress => 'Telechargement en cours';
+  String get uiUploadInProgress => 'Téléversement en cours';
 
   @override
-  String get uiUpdateUnavailable => 'Mise a jour indisponible';
+  String get uiUpdateUnavailable => 'Mise à jour indisponible';
 
   @override
   String get uiEditingLocked => 'Modification verrouillee';
@@ -6584,28 +6581,27 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiSubmissionUnavailable => 'Soumission indisponible';
 
   @override
-  String get uiNoUrgentDeadlines => 'Aucune echeance urgente pour l\'instant';
+  String get uiNoUrgentDeadlines => 'Aucune échéance urgente pour l\'instant';
 
   @override
   String get uiNoRecommendations => 'Aucune recommandation pour l\'instant';
 
   @override
-  String get uiCheckBackSoon =>
-      'Revenez bientot pour de nouvelles opportunites.';
+  String get uiCheckBackSoon => 'Revenez bientôt pour de nouvelles offres.';
 
   @override
-  String get uiNoRecentActivity => 'Aucune activite recente';
+  String get uiNoRecentActivity => 'Aucune activité récente';
 
   @override
   String get uiNoTrendingOpportunities =>
-      'Aucune opportunite tendance pour l\'instant';
+      'Aucune offre tendance pour l\'instant';
 
   @override
   String get uiNoOpportunitiesMatchView =>
-      'Aucune opportunite ne correspond a cette vue';
+      'Aucune offre ne correspond à cette vue';
 
   @override
-  String get uiNoIdeasMatchView => 'Aucune idee ne correspond a cette vue';
+  String get uiNoIdeasMatchView => 'Aucune idée ne correspond à cette vue';
 
   @override
   String get uiNoTrainingAvailableNow =>
@@ -6619,55 +6615,55 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiLoadingApplications => 'Chargement de vos candidatures...';
 
   @override
-  String get uiLoadingSavedItems => 'Chargement de vos elements sauvegardes...';
+  String get uiLoadingSavedItems => 'Chargement de vos éléments enregistrés...';
 
   @override
-  String get uiBuildCvFirst => 'Creez d\'abord votre CV.';
+  String get uiBuildCvFirst => 'Créez d\'abord votre CV.';
 
   @override
   String get uiCompleteProfile => 'Completez votre profil.';
 
   @override
-  String get uiActBeforeDeadlines => 'Agissez avant la cloture des delais.';
+  String get uiActBeforeDeadlines => 'Agissez avant la clôture des échéances.';
 
   @override
-  String get uiShortlistReady => 'Votre liste restreinte est prete.';
+  String get uiShortlistReady => 'Votre sélection est prête.';
 
   @override
   String get uiRevisitSavedPicks =>
-      'Revisitez vos selections avant que les meilleurs delais ne passent.';
+      'Revoyez vos sélections avant les meilleures échéances.';
 
   @override
-  String get uiFindNextOpportunity => 'Trouvez votre prochaine opportunite.';
+  String get uiFindNextOpportunity => 'Trouvez votre prochaine opportunité.';
 
   @override
   String get uiJumpBackBookmarked =>
       'Retrouvez tout ce que vous avez mis en favori.';
 
   @override
-  String get uiRemote => 'A distance';
+  String get uiRemote => 'À distance';
 
   @override
-  String get uiPaid => 'Remunere';
+  String get uiPaid => 'Rémunéré';
 
   @override
   String get uiNotifications => 'Notifications';
 
   @override
-  String get uiSettings => 'Parametres';
+  String get uiSettings => 'Paramètres';
 
   @override
-  String get uiAboutFutureGate => 'A propos de FutureGate';
+  String get uiAboutFutureGate => 'À propos de FutureGate';
 
   @override
   String get uiSettingsSubtitle =>
-      'Preferences, affichage et choix de l\'application.';
+      'Préférences, affichage et choix de l\'application.';
 
   @override
   String get uiSecuritySubtitle => 'Mot de passe et protection du compte.';
 
   @override
-  String get uiHelpCenterSubtitle => 'Reponses, conseils et assistance.';
+  String get uiHelpCenterSubtitle => 'Réponses, conseils et assistance.';
 
   @override
   String get uiAboutSubtitle => 'En savoir plus sur la plateforme.';
@@ -6677,17 +6673,17 @@ class AppLocalizationsFr extends AppLocalizations {
       'Terminer cette session sur l\'appareil actuel.';
 
   @override
-  String get uiExperience => 'Experience';
+  String get uiExperience => 'Expérience';
 
   @override
-  String get uiBriefSummary => 'Un bref resume de votre profil';
+  String get uiBriefSummary => 'Un bref résumé de votre profil';
 
   @override
   String get uiAddSkill => 'Ajouter une competence';
 
   @override
   String get uiCvPreviewSubtitle =>
-      'Verifiez la mise en page finale avant de l\'enregistrer ou de le telecharger.';
+      'Vérifiez la mise en page finale avant de l\'enregistrer ou de le télécharger.';
 
   @override
   String get uiChooseTemplateSubtitle =>
@@ -6709,16 +6705,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiSearchCourses => 'Rechercher des cours...';
 
   @override
-  String get uiSelectCategory => 'Selectionner une categorie';
+  String get uiSelectCategory => 'Sélectionner une catégorie';
 
   @override
-  String get uiSelectStage => 'Selectionner une etape';
+  String get uiSelectStage => 'Sélectionner une étape';
 
   @override
   String get uiPublish => 'Publier';
 
   @override
-  String get uiHiddenLabel => 'Masque';
+  String get uiHiddenLabel => 'Masqué';
 
   @override
   String get uiSearchPrograms => 'Rechercher des programmes, partenaires...';
@@ -6981,7 +6977,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get ideaManageTeamLabel => 'Gérer l\'équipe';
 
   @override
-  String get ideaContactCreator => 'Voir le profil du createur';
+  String get ideaContactCreator => 'Voir le profil du créateur';
 
   @override
   String get ideaSavedLabel => 'Sauvegardé';
@@ -6993,7 +6989,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get ideaShareLabel => 'Partager l\'idée';
 
   @override
-  String get trainingRecommendedForYou => 'Recommande pour vous';
+  String get trainingRecommendedForYou => 'Recommandé pour vous';
 
   @override
   String trainingNoProgramsForDomain(Object domain) {
@@ -7018,16 +7014,16 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get trainingRemovedSavedMessage =>
-      'Retire des ressources enregistrees';
+      'Retiré des ressources enregistrées';
 
   @override
-  String get trainingSavedMessage => 'Ressource enregistree';
+  String get trainingSavedMessage => 'Ressource enregistrée';
 
   @override
-  String get trainingSavedUpdatedTitle => 'Elements enregistres mis a jour';
+  String get trainingSavedUpdatedTitle => 'Éléments enregistrés mis à jour';
 
   @override
-  String get trainingUpdateUnavailableTitle => 'Mise a jour indisponible';
+  String get trainingUpdateUnavailableTitle => 'Mise à jour indisponible';
 
   @override
   String get trainingProviderFallback => 'Fournisseur de formation';
@@ -7039,10 +7035,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get trainingAllLevelsLabel => 'Tous les niveaux';
 
   @override
-  String get trainingCareerCourseLabel => 'Cours de carriere';
+  String get trainingCareerCourseLabel => 'Cours de carrière';
 
   @override
-  String get trainingVideoLessonLabel => 'Lecon video';
+  String get trainingVideoLessonLabel => 'Leçon vidéo';
 
   @override
   String get trainingReadingTrackLabel => 'Parcours de lecture';
@@ -7054,41 +7050,40 @@ class AppLocalizationsFr extends AppLocalizations {
   String get trainingLearningPathLabel => 'Parcours d\'apprentissage';
 
   @override
-  String get trainingGeneralDomainLabel => 'General';
+  String get trainingGeneralDomainLabel => 'Général';
 
   @override
   String get opportunityFutureGatePartner => 'Partenaire FutureGate';
 
   @override
-  String get opportunityStudentInternshipFallback =>
-      'Opportunite de stage etudiant';
+  String get opportunityStudentInternshipFallback => 'Offre de stage étudiant';
 
   @override
-  String get opportunitySponsoredFallback => 'Opportunite sponsorisee';
+  String get opportunitySponsoredFallback => 'Offre sponsorisée';
 
   @override
   String get opportunityOpenJobFallback => 'Offre d\'emploi ouverte';
 
   @override
-  String get opportunityOpenFallback => 'Opportunite ouverte';
+  String get opportunityOpenFallback => 'Offre ouverte';
 
   @override
   String get scholarshipExploreLabel => 'Explorer la bourse';
 
   @override
-  String get ideaCreateCta => 'Creer une idee';
+  String get ideaCreateCta => 'Créer une idée';
 
   @override
-  String get ideaCreateFirstCta => 'Creez votre premiere idee';
+  String get ideaCreateFirstCta => 'Créez votre première idée';
 
   @override
   String get ideaPublicLabel => 'Public';
 
   @override
-  String get ideaPrivateLabel => 'Prive';
+  String get ideaPrivateLabel => 'Privé';
 
   @override
-  String get ideaSharedFromHub => 'Partagee depuis le Hub d\'Innovation';
+  String get ideaSharedFromHub => 'Partagée depuis le Hub d\'Innovation';
 
   @override
   String get ideaCategoryInnovation => 'Innovation';
@@ -7103,7 +7098,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get ideaCategoryEdTech => 'EdTech';
 
   @override
-  String get ideaCategorySustainability => 'Durabilite';
+  String get ideaCategorySustainability => 'Durabilité';
 
   @override
   String get ideaCategorySocialImpact => 'Impact social';
@@ -7122,10 +7117,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get scholarshipRemovedSavedMessage =>
-      'Retire des bourses enregistrees';
+      'Retiré des bourses enregistrées';
 
   @override
-  String get scholarshipSavedMessage => 'Bourse enregistree';
+  String get scholarshipSavedMessage => 'Bourse enregistrée';
 
   @override
   String get scholarshipSnapshotSubtitle =>
@@ -7133,7 +7128,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get scholarshipOverviewSubtitle =>
-      'Un apercu clair pour parcourir l\'opportunite facilement.';
+      'Un aperçu clair pour parcourir cette bourse facilement.';
 
   @override
   String get uiNoArchivedConversations => 'Aucune conversation archivée';
