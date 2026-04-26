@@ -18,6 +18,7 @@ import '../../services/admin_service.dart';
 import '../../services/company_service.dart';
 import '../../services/document_access_service.dart';
 import '../../theme/app_typography.dart';
+import '../../utils/admin_identity.dart';
 import '../../utils/admin_palette.dart';
 import '../../utils/application_status.dart';
 import '../../utils/display_text.dart';
@@ -30,6 +31,7 @@ import '../../widgets/shared/app_loading.dart';
 import 'admin_student_profile_sheet.dart';
 import 'admin_library_screen.dart';
 import 'admin_opportunity_editor_screen.dart';
+import '../chat/user_profile_preview_screen.dart';
 import '../student/create_idea_screen.dart';
 import 'admin_scholarship_editor_screen.dart';
 
@@ -1330,6 +1332,9 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             opportunityModel,
             adminId,
           );
+          final isOwnedByCurrentAdmin =
+              opportunityModel.isAdminPosted &&
+              opportunityModel.companyId.trim() == adminId;
           final effectiveStatus = opportunityModel.effectiveStatus();
           final opportunityType = OpportunityType.parse(
             (opportunity['type'] ?? '').toString(),
@@ -1437,7 +1442,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               isOpen: isOpen,
               typeLabel: OpportunityType.label(opportunityType, l10n),
               typeColor: opportunityTypeColor,
-              isOwnedByAdmin: canEditOpportunity,
+              isOwnedByAdmin: isOwnedByCurrentAdmin,
               workModeLabel: workModeLabel,
               deadlineLabel: deadlineLabel,
               compensationLabel: compensationLabel,
@@ -2291,6 +2296,69 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     );
   }
 
+  void _openPublisherProfileAfterClosingSheet(
+    BuildContext sheetContext, {
+    required String userId,
+    required String fallbackName,
+    required String fallbackRole,
+    String fallbackHeadline = '',
+    String fallbackAbout = '',
+    String fallbackLocation = '',
+    String fallbackWebsite = '',
+    String contextLabel = '',
+  }) {
+    Navigator.pop(sheetContext);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
+
+      _openPublisherProfile(
+        userId: userId,
+        fallbackName: fallbackName,
+        fallbackRole: fallbackRole,
+        fallbackHeadline: fallbackHeadline,
+        fallbackAbout: fallbackAbout,
+        fallbackLocation: fallbackLocation,
+        fallbackWebsite: fallbackWebsite,
+        contextLabel: contextLabel,
+      );
+    });
+  }
+
+  void _openPublisherProfile({
+    required String userId,
+    required String fallbackName,
+    required String fallbackRole,
+    String fallbackHeadline = '',
+    String fallbackAbout = '',
+    String fallbackLocation = '',
+    String fallbackWebsite = '',
+    String contextLabel = '',
+  }) {
+    final normalizedUserId = userId.trim();
+    if (normalizedUserId.isEmpty) {
+      context.showAppSnackBar(
+        AppLocalizations.of(context)!.ideaNotAvailable,
+        title: 'Profile unavailable',
+        type: AppFeedbackType.warning,
+      );
+      return;
+    }
+
+    showFloatingUserProfilePreview(
+      context,
+      userId: normalizedUserId,
+      fallbackName: fallbackName.trim(),
+      fallbackRole: fallbackRole.trim(),
+      fallbackHeadline: fallbackHeadline.trim(),
+      fallbackAbout: fallbackAbout.trim(),
+      fallbackLocation: fallbackLocation.trim(),
+      fallbackWebsite: fallbackWebsite.trim(),
+      contextLabel: contextLabel.trim(),
+    );
+  }
+
   Future<void> _openScholarshipEditor({
     Map<String, dynamic>? scholarship,
   }) async {
@@ -2313,12 +2381,15 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
 
   bool _canAdminEditOpportunity(OpportunityModel opportunity, String adminId) {
     final normalizedAdminId = adminId.trim();
-    if (normalizedAdminId.isEmpty) {
+    final currentUser = context.read<AuthProvider>().userModel;
+    if (normalizedAdminId.isEmpty ||
+        currentUser == null ||
+        currentUser.uid.trim() != normalizedAdminId ||
+        !currentUser.isAdmin) {
       return false;
     }
 
-    return opportunity.isAdminPosted &&
-        opportunity.companyId.trim() == normalizedAdminId;
+    return opportunity.isAdminPosted;
   }
 
   Widget _buildCardActionRow(List<Widget> actions) {
@@ -3153,6 +3224,31 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                       ),
                     ],
                   ],
+                ),
+              ),
+            ],
+            if (idea.submittedBy.trim().isNotEmpty) ...[
+              const SizedBox(height: 10),
+              OutlinedButton.icon(
+                onPressed: () => _openPublisherProfileAfterClosingSheet(
+                  context,
+                  userId: idea.submittedBy,
+                  fallbackName: idea.creatorName,
+                  fallbackRole: idea.creatorName == AdminIdentity.publicName
+                      ? 'admin'
+                      : 'student',
+                  fallbackHeadline: idea.creatorHeadline,
+                  fallbackAbout: idea.overviewText,
+                  contextLabel: idea.title,
+                ),
+                icon: const Icon(Icons.person_search_outlined),
+                label: Text(l10n.uiViewProfile),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: _ideaAccentColor,
+                  side: BorderSide(
+                    color: _ideaAccentColor.withValues(alpha: 0.28),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 15),
                 ),
               ),
             ],
@@ -4449,6 +4545,36 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                     const SizedBox(height: 8),
                     _buildTagSection(l10n.uiOpportunityTags, tags, typeColor),
                   ],
+                ),
+              ),
+            ],
+            if (opportunityModel.companyId.trim().isNotEmpty) ...[
+              const SizedBox(height: 10),
+              OutlinedButton.icon(
+                onPressed: () => _openPublisherProfileAfterClosingSheet(
+                  context,
+                  userId: opportunityModel.companyId,
+                  fallbackName: opportunityModel.companyName.isNotEmpty
+                      ? opportunityModel.companyName
+                      : l10n.uiUnknownCompany,
+                  fallbackRole: opportunityModel.isAdminPosted
+                      ? 'admin'
+                      : 'company',
+                  fallbackHeadline: employmentLabel.isNotEmpty
+                      ? employmentLabel
+                      : typeLabel,
+                  fallbackAbout: description,
+                  fallbackLocation: opportunityModel.location,
+                  contextLabel: opportunityModel.title.trim().isNotEmpty
+                      ? opportunityModel.title
+                      : l10n.uiUntitledOpportunity,
+                ),
+                icon: const Icon(Icons.person_search_outlined),
+                label: Text(l10n.uiViewProfile),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: typeColor,
+                  side: BorderSide(color: typeColor.withValues(alpha: 0.28)),
+                  padding: const EdgeInsets.symmetric(vertical: 15),
                 ),
               ),
             ],

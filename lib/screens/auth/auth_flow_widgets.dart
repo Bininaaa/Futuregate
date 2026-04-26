@@ -803,6 +803,7 @@ class AuthTextField extends StatelessWidget {
   final Iterable<String>? autofillHints;
   final ValueChanged<String>? onFieldSubmitted;
   final AutovalidateMode? autovalidateMode;
+  final bool companyTone;
 
   const AuthTextField({
     super.key,
@@ -823,21 +824,28 @@ class AuthTextField extends StatelessWidget {
     this.autofillHints,
     this.onFieldSubmitted,
     this.autovalidateMode,
+    this.companyTone = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    final fieldRadius = companyTone ? 14.0 : 20.0;
+    final iconColor = companyTone
+        ? authFlowTheme.accent
+        : authFlowTheme.textMuted;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
           label,
           style: authFlowTheme.label(
-            size: 12.1,
+            size: companyTone ? 13 : 12.1,
             color: authFlowTheme.textPrimary,
+            weight: companyTone ? FontWeight.w700 : FontWeight.w600,
           ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: companyTone ? 6 : 8),
         TextFormField(
           controller: controller,
           keyboardType: keyboardType,
@@ -863,33 +871,68 @@ class AuthTextField extends StatelessWidget {
               size: 12.6,
               color: authFlowTheme.textMuted,
             ),
-            prefixIcon: Icon(icon, size: 20, color: authFlowTheme.textMuted),
+            prefixIcon: Icon(icon, size: 20, color: iconColor),
             suffixIcon: suffixIcon,
             filled: true,
             fillColor: authFlowTheme.surfaceMuted,
             contentPadding: const EdgeInsets.symmetric(
-              horizontal: 18,
-              vertical: 16,
+              horizontal: 16,
+              vertical: 14,
             ),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(fieldRadius),
               borderSide: BorderSide(color: authFlowTheme.border),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(fieldRadius),
               borderSide: BorderSide(color: authFlowTheme.border),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20),
-              borderSide: BorderSide(color: authFlowTheme.accent, width: 1.4),
+              borderRadius: BorderRadius.circular(fieldRadius),
+              borderSide: BorderSide(color: authFlowTheme.accent, width: 1.5),
             ),
             errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(fieldRadius),
               borderSide: BorderSide(color: authFlowTheme.error),
             ),
             focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20),
-              borderSide: BorderSide(color: authFlowTheme.error, width: 1.4),
+              borderRadius: BorderRadius.circular(fieldRadius),
+              borderSide: BorderSide(color: authFlowTheme.error, width: 1.5),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class AuthSectionLabel extends StatelessWidget {
+  final String text;
+
+  const AuthSectionLabel(this.text, {super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: <Widget>[
+        Container(
+          width: 4,
+          height: 18,
+          decoration: BoxDecoration(
+            color: authFlowTheme.accent,
+            borderRadius: BorderRadius.circular(2),
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Text(
+            text,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: authFlowTheme.section(
+              size: 15,
+              weight: FontWeight.w700,
+              color: authFlowTheme.textPrimary,
             ),
           ),
         ),

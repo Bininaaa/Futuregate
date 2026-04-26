@@ -35,6 +35,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _obscureConfirm = true;
   String _selectedRole = 'bac';
   String _passwordText = '';
+  bool _submitted = false;
 
   @override
   void initState() {
@@ -59,6 +60,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future<void> _register() async {
     FocusScope.of(context).unfocus();
+    setState(() => _submitted = true);
 
     if (!_formKey.currentState!.validate()) {
       return;
@@ -127,96 +129,115 @@ class _RegisterScreenState extends State<RegisterScreen> {
           constraints: const BoxConstraints(maxWidth: 580),
           child: AuthPanelCard(
             padding: const EdgeInsets.all(28),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  AuthCompactHeader(
-                    icon: Icons.person_add_alt_1_rounded,
-                    title: l10n.uiCreateAccount,
-                    subtitle: l10n.uiStartYourStudentProfileSubtitle,
-                    stickers: <AuthStickerSpec>[
-                      AuthStickerSpec(
-                        icon: Icons.school_rounded,
-                        color: AuthFlowPalette.orange,
-                      ),
-                      AuthStickerSpec(
-                        icon: Icons.bolt_rounded,
-                        color: Color(0xFF14B8A6),
-                      ),
-                      AuthStickerSpec(
-                        icon: Icons.workspace_premium_rounded,
-                        color: Color(0xFF3B22F6),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-                  AuthGoogleButton(
-                    onPressed: authProvider.isLoading ? null : _onGoogleSignIn,
-                  ),
-                  const SizedBox(height: 18),
-                  const AuthDivider(),
-                  const SizedBox(height: 18),
-                  LayoutBuilder(
-                    builder: (context, constraints) {
-                      final isWide = constraints.maxWidth >= 490;
+            child: AutofillGroup(
+              child: Form(
+                key: _formKey,
+                autovalidateMode: _submitted
+                    ? AutovalidateMode.onUserInteraction
+                    : AutovalidateMode.disabled,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>[
+                    AuthCompactHeader(
+                      icon: Icons.person_add_alt_1_rounded,
+                      title: l10n.uiCreateAccount,
+                      subtitle: l10n.uiStartYourStudentProfileSubtitle,
+                      stickers: const <AuthStickerSpec>[
+                        AuthStickerSpec(
+                          icon: Icons.school_outlined,
+                          color: Color(0xFF3B22F6),
+                        ),
+                        AuthStickerSpec(
+                          icon: Icons.bolt_outlined,
+                          color: Color(0xFF14B8A6),
+                        ),
+                        AuthStickerSpec(
+                          icon: Icons.workspace_premium_rounded,
+                          color: Color(0xFF2563EB),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    AuthGoogleButton(
+                      onPressed: authProvider.isLoading
+                          ? null
+                          : _onGoogleSignIn,
+                    ),
+                    const SizedBox(height: 18),
+                    const AuthDivider(),
+                    const SizedBox(height: 18),
+                    AuthSectionLabel(l10n.uiAccountDetails),
+                    const SizedBox(height: 14),
+                    LayoutBuilder(
+                      builder: (context, constraints) {
+                        final isWide = constraints.maxWidth >= 490;
 
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: <Widget>[
-                          if (isWide)
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Expanded(child: _buildFullNameField()),
-                                const SizedBox(width: 12),
-                                Expanded(child: _buildEmailField()),
-                              ],
-                            )
-                          else ...<Widget>[
-                            _buildFullNameField(),
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: <Widget>[
+                            if (isWide)
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Expanded(child: _buildFullNameField()),
+                                  const SizedBox(width: 12),
+                                  Expanded(child: _buildEmailField()),
+                                ],
+                              )
+                            else ...<Widget>[
+                              _buildFullNameField(),
+                              const SizedBox(height: 14),
+                              _buildEmailField(),
+                            ],
                             const SizedBox(height: 14),
-                            _buildEmailField(),
+                            if (isWide)
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Expanded(child: _buildPasswordFieldGroup()),
+                                  const SizedBox(width: 12),
+                                  Expanded(child: _buildConfirmPasswordField()),
+                                ],
+                              )
+                            else ...<Widget>[
+                              _buildPasswordFieldGroup(),
+                              const SizedBox(height: 14),
+                              _buildConfirmPasswordField(),
+                            ],
                           ],
-                          const SizedBox(height: 14),
-                          if (isWide)
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Expanded(child: _buildPasswordFieldGroup()),
-                                const SizedBox(width: 12),
-                                Expanded(child: _buildConfirmPasswordField()),
-                              ],
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    _buildProfileSelection(),
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 180),
+                      switchInCurve: Curves.easeOut,
+                      switchOutCurve: Curves.easeIn,
+                      child: _selectedRole == 'doctorat'
+                          ? Padding(
+                              key: const ValueKey<String>('doctorat-fields'),
+                              padding: const EdgeInsets.only(top: 16),
+                              child: _buildDoctoratFields(),
                             )
-                          else ...<Widget>[
-                            _buildPasswordFieldGroup(),
-                            const SizedBox(height: 14),
-                            _buildConfirmPasswordField(),
-                          ],
-                        ],
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 20),
-                  _buildProfileSelection(),
-                  if (_selectedRole == 'doctorat') ...<Widget>[
+                          : const SizedBox.shrink(
+                              key: ValueKey<String>('no-doctorat-fields'),
+                            ),
+                    ),
+                    const SizedBox(height: 24),
+                    AppPrimaryButton(
+                      theme: authFlowTheme,
+                      label: l10n.uiCreateAccountEff4,
+                      icon: Icons.arrow_forward_rounded,
+                      isBusy: authProvider.isLoading,
+                      onPressed: authProvider.isLoading ? null : _register,
+                    ),
                     const SizedBox(height: 16),
-                    _buildDoctoratFields(),
+                    _buildLoginLink(),
+                    const SizedBox(height: 12),
+                    _buildTermsText(),
                   ],
-                  const SizedBox(height: 24),
-                  AppPrimaryButton(
-                    theme: authFlowTheme,
-                    label: l10n.uiCreateAccountEff4,
-                    icon: Icons.arrow_forward_rounded,
-                    isBusy: authProvider.isLoading,
-                    onPressed: authProvider.isLoading ? null : _register,
-                  ),
-                  const SizedBox(height: 16),
-                  _buildLoginLink(),
-                  const SizedBox(height: 12),
-                  _buildTermsText(),
-                ],
+                ),
               ),
             ),
           ),
@@ -234,6 +255,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
       icon: Icons.person_outline_rounded,
       validator: Validators.fullName(l10n),
       textInputAction: TextInputAction.next,
+      autofillHints: const <String>[AutofillHints.name],
+      companyTone: true,
     );
   }
 
@@ -247,7 +270,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
       keyboardType: TextInputType.emailAddress,
       validator: Validators.email(l10n),
       textInputAction: TextInputAction.next,
-      autofillHints: const <String>[AutofillHints.email],
+      autofillHints: const <String>[
+        AutofillHints.email,
+        AutofillHints.username,
+      ],
+      companyTone: true,
     );
   }
 
@@ -262,6 +289,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       validator: Validators.password(l10n),
       textInputAction: TextInputAction.next,
       autofillHints: const <String>[AutofillHints.newPassword],
+      companyTone: true,
       suffixIcon: IconButton(
         icon: Icon(
           _obscurePassword
@@ -296,6 +324,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
       autovalidateMode: AutovalidateMode.onUserInteraction,
       textInputAction: TextInputAction.done,
       autofillHints: const <String>[AutofillHints.newPassword],
+      onFieldSubmitted: (_) => _register(),
+      companyTone: true,
       suffixIcon: IconButton(
         icon: Icon(
           _obscureConfirm
@@ -315,21 +345,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: authFlowTheme.surface.withValues(alpha: 0.78),
-        borderRadius: BorderRadius.circular(22),
+        color: authFlowTheme.surfaceMuted.withValues(alpha: 0.88),
+        borderRadius: BorderRadius.circular(18),
         border: Border.all(color: authFlowTheme.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text(
-            l10n.uiAcademicLevel,
-            style: authFlowTheme.section(
-              size: 14.4,
-              weight: FontWeight.w700,
-              color: authFlowTheme.textPrimary,
-            ),
-          ),
+          AuthSectionLabel(l10n.uiAcademicLevel),
           const SizedBox(height: 12),
           LayoutBuilder(
             builder: (context, constraints) {
@@ -349,74 +372,82 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   final option = levels[index];
                   final isSelected = _selectedRole == option.value;
 
-                  return Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(20),
-                      onTap: () => setState(() => _selectedRole = option.value),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 180),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 10,
-                        ),
-                        decoration: BoxDecoration(
-                          color: isSelected
-                              ? authFlowTheme.accentSoft.withValues(alpha: 0.82)
-                              : authFlowTheme.surfaceMuted,
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: isSelected
-                                ? authFlowTheme.accent
-                                : authFlowTheme.border,
-                            width: isSelected ? 1.5 : 1,
+                  return Semantics(
+                    button: true,
+                    selected: isSelected,
+                    label: option.label,
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(16),
+                        onTap: () =>
+                            setState(() => _selectedRole = option.value),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 180),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 11,
                           ),
-                        ),
-                        child: Row(
-                          children: <Widget>[
-                            Container(
-                              width: 32,
-                              height: 32,
-                              decoration: BoxDecoration(
-                                color: isSelected
-                                    ? authFlowTheme.accent.withValues(
-                                        alpha: 0.12,
-                                      )
-                                    : Colors.white,
-                                borderRadius: BorderRadius.circular(11),
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? authFlowTheme.accentSoft.withValues(
+                                    alpha: 0.82,
+                                  )
+                                : authFlowTheme.surface,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: isSelected
+                                  ? authFlowTheme.accent
+                                  : authFlowTheme.border,
+                              width: isSelected ? 1.5 : 1,
+                            ),
+                          ),
+                          child: Row(
+                            children: <Widget>[
+                              Container(
+                                width: 36,
+                                height: 36,
+                                decoration: BoxDecoration(
+                                  color: isSelected
+                                      ? authFlowTheme.accent.withValues(
+                                          alpha: 0.12,
+                                        )
+                                      : authFlowTheme.surfaceMuted,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Icon(
+                                  option.icon,
+                                  color: isSelected
+                                      ? authFlowTheme.accent
+                                      : authFlowTheme.textMuted,
+                                  size: 18,
+                                ),
                               ),
-                              child: Icon(
-                                option.icon,
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Text(
+                                  option.label,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: authFlowTheme.section(
+                                    size: 12.8,
+                                    weight: FontWeight.w800,
+                                    color: authFlowTheme.textPrimary,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              Icon(
+                                isSelected
+                                    ? Icons.check_circle_rounded
+                                    : Icons.radio_button_unchecked_rounded,
                                 color: isSelected
                                     ? authFlowTheme.accent
                                     : authFlowTheme.textMuted,
-                                size: 17,
+                                size: 18,
                               ),
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                option.label,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: authFlowTheme.section(
-                                  size: 12.8,
-                                  weight: FontWeight.w700,
-                                  color: authFlowTheme.textPrimary,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 6),
-                            Icon(
-                              isSelected
-                                  ? Icons.check_circle_rounded
-                                  : Icons.radio_button_unchecked_rounded,
-                              color: isSelected
-                                  ? authFlowTheme.accent
-                                  : authFlowTheme.textMuted,
-                              size: 17,
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -438,13 +469,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
         gradient: LinearGradient(
           colors: <Color>[
             authFlowTheme.accentSoft.withValues(alpha: 0.82),
-            authFlowTheme.secondary.withValues(alpha: 0.08),
+            authFlowTheme.secondary.withValues(alpha: 0.07),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: authFlowTheme.accent.withValues(alpha: 0.2)),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: authFlowTheme.accent.withValues(alpha: 0.22)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -483,6 +514,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             label: l10n.uiResearchTopic,
             hint: l10n.uiResearchTopicHint,
             icon: Icons.topic_outlined,
+            companyTone: true,
           ),
           const SizedBox(height: 12),
           AuthTextField(
@@ -490,6 +522,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             label: l10n.uiLaboratory,
             hint: l10n.uiLaboratoryHint,
             icon: Icons.biotech_outlined,
+            companyTone: true,
           ),
           const SizedBox(height: 12),
           AuthTextField(
@@ -497,6 +530,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             label: l10n.uiSupervisor,
             hint: l10n.uiSupervisorHint,
             icon: Icons.person_outline_rounded,
+            companyTone: true,
           ),
           const SizedBox(height: 12),
           AuthTextField(
@@ -504,6 +538,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             label: l10n.uiResearchDomain,
             hint: l10n.uiResearchDomainHint,
             icon: Icons.category_outlined,
+            companyTone: true,
           ),
         ],
       ),
@@ -526,7 +561,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               text: l10n.uiLogIn,
               style: authFlowTheme.label(
                 size: 13.2,
-                color: AuthFlowPalette.orange,
+                color: authFlowTheme.accent,
                 weight: FontWeight.w800,
               ),
               recognizer: TapGestureRecognizer()

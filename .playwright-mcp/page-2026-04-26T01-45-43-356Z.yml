@@ -1,0 +1,16 @@
+- generic [ref=e3]:
+  - generic [ref=e4]:
+    - img [ref=e6]
+    - heading "FutureGate Admin" [level=1] [ref=e9]
+    - paragraph [ref=e10]: Sign in with your admin account.
+  - generic [ref=e11]:
+    - generic [ref=e12]: Email
+    - textbox "Email" [ref=e13]:
+      - /placeholder: you@futuregate.com
+  - generic [ref=e14]:
+    - generic [ref=e15]: Password
+    - textbox "Password" [ref=e16]:
+      - /placeholder: ••••••••
+  - button "Sign in" [ref=e17] [cursor=pointer]:
+    - img [ref=e18]
+    - generic [ref=e21]: Sign in

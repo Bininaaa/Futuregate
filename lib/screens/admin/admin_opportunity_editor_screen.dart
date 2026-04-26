@@ -545,16 +545,32 @@ class _AdminOpportunityEditorScreenState
     final deadline =
         _applicationDeadline ??
         OpportunityMetadata.parseDateTimeLike(_deadlineController.text);
-    final companyLogo = (auth.logo ?? '').trim().isNotEmpty
+    final currentAdminLogo = (auth.logo ?? '').trim().isNotEmpty
         ? (auth.logo ?? '').trim()
         : auth.profileImage.trim();
+    final existingOpportunity =
+        widget.initialOpportunity ?? const <String, dynamic>{};
+    String existingString(String key) =>
+        (existingOpportunity[key] ?? '').toString().trim();
+    final publisherUserId = _isEditing && existingString('companyId').isNotEmpty
+        ? existingString('companyId')
+        : auth.uid;
+    final publisherLogo = _isEditing
+        ? existingString('companyLogo')
+        : currentAdminLogo;
+    final creatorId = _isEditing && existingString('createdBy').isNotEmpty
+        ? existingString('createdBy')
+        : publisherUserId;
+    final creatorRole = _isEditing && existingString('createdByRole').isNotEmpty
+        ? existingString('createdByRole')
+        : 'admin';
     final requirementText = _requirementItems.join('\n');
     final payload = <String, dynamic>{
-      'companyId': auth.uid,
+      'companyId': publisherUserId,
       'companyName': AdminIdentity.publisherLabel(_publisherController.text),
-      'companyLogo': companyLogo,
-      'createdBy': auth.uid,
-      'createdByRole': 'admin',
+      'companyLogo': publisherLogo,
+      'createdBy': creatorId,
+      'createdByRole': creatorRole,
       'title': _titleController.text.trim(),
       'description': _descriptionController.text.trim(),
       'type': _type,

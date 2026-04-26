@@ -240,6 +240,16 @@ async function getUserCvDocument(userId, { variant = 'primary' } = {}) {
     : null;
 }
 
+async function getCompanyCommercialRegisterDocument(companyId) {
+  const payload = await workerGet(
+    `/api/companies/${encodeURIComponent(companyId)}/commercial-register/access`,
+  );
+
+  return payload.document && typeof payload.document === 'object'
+    ? payload.document
+    : null;
+}
+
 async function loadStudentCvSummary(userId) {
   const trimmedUserId = trim(userId);
   if (!trimmedUserId) {
@@ -313,6 +323,7 @@ export {
   friendlyDocumentErrorMessage,
   getApplicationCv,
   getApplicationCvDocument,
+  getCompanyCommercialRegisterDocument,
   getUserCvDocument,
   hasBuilderContent,
   isPdfDocument,

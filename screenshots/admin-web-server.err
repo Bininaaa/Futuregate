@@ -16,3 +16,15 @@
 127.0.0.1 - - [26/Apr/2026 02:04:02] "GET /js/shell.js HTTP/1.1" 200 -
 127.0.0.1 - - [26/Apr/2026 02:04:02] "GET /js/details.js HTTP/1.1" 200 -
 127.0.0.1 - - [26/Apr/2026 02:04:02] "GET /css/app.css?v=2026042401 HTTP/1.1" 304 -
+127.0.0.1 - - [26/Apr/2026 02:44:56] "GET /users.html?role=company&status=pending HTTP/1.1" 200 -
+127.0.0.1 - - [26/Apr/2026 02:44:56] "GET /css/app.css?v=2026042601 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Apr/2026 02:44:56] "GET /js/users-page.js HTTP/1.1" 200 -
+127.0.0.1 - - [26/Apr/2026 02:44:56] "GET /js/document-access.js HTTP/1.1" 200 -
+127.0.0.1 - - [26/Apr/2026 02:44:56] "GET /js/shell.js HTTP/1.1" 304 -
+127.0.0.1 - - [26/Apr/2026 02:44:56] "GET /js/google-books-config.js HTTP/1.1" 200 -
+127.0.0.1 - - [26/Apr/2026 02:44:56] "GET /login.html HTTP/1.1" 200 -
+127.0.0.1 - - [26/Apr/2026 02:45:15] "GET /js/users-page.js HTTP/1.1" 200 -
+127.0.0.1 - - [26/Apr/2026 02:45:15] "GET /users.html HTTP/1.1" 200 -
+127.0.0.1 - - [26/Apr/2026 02:45:42] "GET /users.html?role=company&status=pending HTTP/1.1" 200 -
+127.0.0.1 - - [26/Apr/2026 02:45:42] "GET /js/users-page.js HTTP/1.1" 304 -
+127.0.0.1 - - [26/Apr/2026 02:45:49] "GET /users.html HTTP/1.1" 200 -
