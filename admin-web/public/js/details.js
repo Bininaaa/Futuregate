@@ -1,7 +1,12 @@
-import { db, doc, getDoc, collection, getDocs, query, where } from './firebase-config.js';
-import { esc, emptyStateHtml, feedbackCardHtml, formatTimestamp } from './auth.js';
+import { auth, db, doc, getDoc, collection, getDocs, query, where } from './firebase-config.js';
+import { esc, emptyStateHtml, feedbackCardHtml, formatTimestamp, showToast } from './auth.js';
 import { openModal, closeModal } from './ui.js';
 import { typeColor, typeIcon, activityTypeLabel, formatFullTimestamp } from './admin-utils.js';
+import {
+  friendlyDocumentErrorMessage,
+  getCompanyCommercialRegisterDocument,
+  openDocumentUrl,
+} from './document-access.js';
 
 const MODAL_ID = 'details-modal';
 
@@ -83,8 +88,43 @@ function paragraphs(text) {
 
 function statusBadge(status) {
   if (!status) return '';
-  const map = { approved: 'success', active: 'success', pending: 'warning', draft: 'warning', closed: 'danger', rejected: 'danger', reviewed: 'info', accepted: 'success' };
-  return `<span class="badge badge-${map[status] || 'primary'}">${esc(status)}</span>`;
+  const map = { approved: 'success', active: 'success', pending: 'warning', draft: 'warning', closed: 'danger', rejected: 'danger', reviewed: 'info', accepted: 'success', blocked: 'danger', open: 'success' };
+  const label = String(status).replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+  return `<span class="badge badge-${map[status] || 'primary'}">${esc(label)}</span>`;
+}
+
+function capitalizeFirst(str) {
+  if (!str) return '';
+  return String(str).charAt(0).toUpperCase() + String(str).slice(1);
+}
+
+function activeAdminId() {
+  return String(auth.currentUser?.uid || '').trim();
+}
+
+function canEditOpportunity(item) {
+  const adminId = activeAdminId();
+  return !!adminId &&
+    String(item?.createdByRole || '').trim().toLowerCase() === 'admin' &&
+    String(item?.companyId || '').trim() === adminId;
+}
+
+function canEditIdea(item) {
+  const adminId = activeAdminId();
+  return !!adminId && String(item?.submittedBy || '').trim() === adminId;
+}
+
+function canEditScholarship(item) {
+  const adminId = activeAdminId();
+  const createdBy = String(item?.createdBy || '').trim();
+  const createdByRole = String(item?.createdByRole || '').trim().toLowerCase();
+  return !!adminId && createdBy === adminId && (!createdByRole || createdByRole === 'admin');
+}
+
+function editLink(canEdit, href, label = 'Edit admin post') {
+  return canEdit
+    ? `<a class="btn btn-primary" href="${href}"><i data-lucide="pencil"></i>${esc(label)}</a>`
+    : '';
 }
 
 export function closeDetailsModal() { closeModal(MODAL_ID); }
@@ -123,35 +163,45 @@ async function renderOpportunity(id) {
   const requirements = Array.isArray(it.requirementItems) && it.requirementItems.length
     ? it.requirementItems.join('\n')
     : it.requirements;
-  // Count applications for this opportunity
+
   let appCount = 0;
   try {
     const snap = await getDocs(query(collection(db, 'applications'), where('opportunityId', '==', id)));
     appCount = snap.size;
   } catch {}
+
+  const typeLabel = capitalizeFirst(it.type || it.opportunityType || 'Job');
+  const salaryRange = buildSalaryRange(it);
+  const publisherId = String(it.companyId || '').trim();
+
   setHeader({ icon: 'briefcase', color: typeColor('opportunity'), eyebrow: 'Opportunity', title: it.title || 'Untitled' });
   setBody(`
     ${kvGrid([
-      { label: 'Company', value: it.companyName, icon: 'building-2' },
+      { label: 'Publisher', value: it.companyName, icon: 'building-2' },
       { label: 'Location', value: it.location, icon: 'map-pin' },
-      { label: 'Type', value: it.type || it.opportunityType, icon: 'tag' },
-      { label: 'Status', value: statusBadge(it.status || 'active'), html: true, icon: 'circle-dot' },
+      { label: 'Type', value: typeLabel, icon: 'tag' },
+      { label: 'Status', value: statusBadge(it.status || 'open'), html: true, icon: 'circle-dot' },
+      { label: 'Work Mode', value: capitalizeFirst(it.workMode || ''), icon: 'monitor' },
+      { label: 'Employment', value: capitalizeFirst((it.employmentType || '').replace(/_/g, ' ')), icon: 'briefcase' },
+      { label: 'Compensation', value: salaryRange || (it.isPaid === false ? 'Unpaid' : ''), icon: 'coins' },
+      { label: 'Deadline', value: formatFullTimestamp(it.applicationDeadline || it.deadline), icon: 'calendar-clock' },
       { label: 'Applications', value: `${appCount}`, icon: 'file-text' },
       { label: 'Posted', value: formatFullTimestamp(it.createdAt), icon: 'calendar' },
-      { label: 'Apply URL', value: it.applyUrl ? `<a href="${esc(it.applyUrl)}" target="_blank" rel="noopener">${esc(it.applyUrl)}</a>` : '', html: true, icon: 'external-link' },
     ])}
     ${section('Description', paragraphs(it.description), 'align-left')}
     ${section('Requirements', paragraphs(requirements), 'list-checks')}
-    ${section('Skills', chips(it.skills, 'rgba(59,34,246,0.1)'), 'sparkles')}
+    ${section('Skills', chips(it.skills, 'rgba(59,130,246,0.1)'), 'sparkles')}
     <div class="details-flags">
       ${it.isFeatured ? '<span class="badge badge-warning"><i data-lucide="star"></i>Featured</span>' : ''}
       ${it.isHidden ? '<span class="badge badge-danger"><i data-lucide="eye-off"></i>Hidden</span>' : ''}
     </div>
   `);
   setFooter(`
-    <button class="btn" data-close-modal="${MODAL_ID}">Close</button>
-    <a class="btn btn-primary" href="moderation.html?tab=opportunities&opportunityId=${encodeURIComponent(id)}"><i data-lucide="pencil"></i>Open in moderation</a>
+    <button class="btn" data-close-modal="${MODAL_ID}"><i data-lucide="x"></i>Close</button>
+    ${publisherId ? `<button class="btn btn-ghost" id="view-publisher-btn" data-user-id="${esc(publisherId)}"><i data-lucide="user"></i>Publisher profile</button>` : ''}
+    ${editLink(canEditOpportunity(it), `opp-editor.html?id=${encodeURIComponent(id)}`)}
   `);
+  bindPublisherBtn();
   if (window.lucide) window.lucide.createIcons();
 }
 
@@ -163,28 +213,37 @@ async function renderScholarship(id) {
     ? it.eligibilityItems.join('\n')
     : it.eligibility;
   const isFeatured = it.featured === true || it.isFeatured === true;
+  const fundingLabel = (it.fundingType || '').replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+  const publisherId = String(it.createdBy || '').trim();
+
   setHeader({ icon: 'graduation-cap', color: typeColor('scholarship'), eyebrow: 'Scholarship', title: it.title || 'Untitled' });
   setBody(`
     ${kvGrid([
       { label: 'Provider', value: it.provider || it.organization, icon: 'building-2' },
       { label: 'Country', value: it.country, icon: 'map-pin' },
+      { label: 'City', value: it.city, icon: 'map-pin' },
       { label: 'Amount', value: it.amount, icon: 'coins' },
-      { label: 'Level', value: it.level || it.academicLevel, icon: 'graduation-cap' },
+      { label: 'Funding Type', value: fundingLabel, icon: 'tag' },
+      { label: 'Level', value: capitalizeFirst(it.level || it.academicLevel || ''), icon: 'graduation-cap' },
+      { label: 'Category', value: capitalizeFirst(it.category || ''), icon: 'folder' },
       { label: 'Deadline', value: formatFullTimestamp(it.deadline), icon: 'calendar-clock' },
       { label: 'Apply URL', value: applyLink ? `<a href="${esc(applyLink)}" target="_blank" rel="noopener">${esc(applyLink)}</a>` : '', html: true, icon: 'external-link' },
       { label: 'Posted', value: formatFullTimestamp(it.createdAt), icon: 'calendar' },
     ])}
     ${section('Description', paragraphs(it.description), 'align-left')}
     ${section('Eligibility', paragraphs(eligibility), 'list-checks')}
+    ${section('Tags', chips(it.tags, 'rgba(180,83,9,0.1)'), 'tag')}
     <div class="details-flags">
       ${isFeatured ? '<span class="badge badge-warning"><i data-lucide="star"></i>Featured</span>' : ''}
       ${it.isHidden ? '<span class="badge badge-danger"><i data-lucide="eye-off"></i>Hidden</span>' : ''}
     </div>
   `);
   setFooter(`
-    <button class="btn" data-close-modal="${MODAL_ID}">Close</button>
-    <a class="btn btn-primary" href="moderation.html?tab=scholarships&scholarshipId=${encodeURIComponent(id)}"><i data-lucide="pencil"></i>Open in moderation</a>
+    <button class="btn" data-close-modal="${MODAL_ID}"><i data-lucide="x"></i>Close</button>
+    ${publisherId ? `<button class="btn btn-ghost" id="view-publisher-btn" data-user-id="${esc(publisherId)}"><i data-lucide="user"></i>Publisher profile</button>` : ''}
+    ${editLink(canEditScholarship(it), `scholarship-editor.html?id=${encodeURIComponent(id)}`)}
   `);
+  bindPublisherBtn();
   if (window.lucide) window.lucide.createIcons();
 }
 
@@ -192,23 +251,36 @@ async function renderIdea(id) {
   const it = await fetchDoc('projectIdeas', id);
   if (!it) return renderError('Project idea not found.');
   const summary = it.shortDescription || it.tagline || it.summary;
-  setHeader({ icon: 'lightbulb', color: typeColor('project_idea'), eyebrow: 'Project idea', title: it.title || 'Untitled' });
+  const tools = Array.isArray(it.tools) ? it.tools : String(it.tools || '').split(',').map((t) => t.trim()).filter(Boolean);
+  const publisherId = String(it.submittedBy || '').trim();
+
+  setHeader({ icon: 'lightbulb', color: typeColor('project_idea'), eyebrow: 'Project Idea', title: it.title || 'Untitled' });
   setBody(`
     ${kvGrid([
-      { label: 'Domain', value: it.domain, icon: 'tag' },
+      { label: 'Domain', value: capitalizeFirst(it.domain || ''), icon: 'tag' },
+      { label: 'Stage', value: capitalizeFirst(it.stage || ''), icon: 'flag' },
+      { label: 'Level', value: capitalizeFirst(it.level || ''), icon: 'graduation-cap' },
+      { label: 'Category', value: capitalizeFirst(it.category || ''), icon: 'folder' },
       { label: 'Status', value: statusBadge(it.status || 'pending'), html: true, icon: 'circle-dot' },
       { label: 'Submitted by', value: it.submittedByName || '—', icon: 'user' },
       { label: 'Submitted', value: formatFullTimestamp(it.createdAt), icon: 'calendar' },
+      { label: 'Collaboration', value: it.isPublic !== false ? 'Open' : 'Private', icon: 'users' },
     ])}
     ${section('Summary', paragraphs(summary), 'align-left')}
     ${section('Description', paragraphs(it.description), 'text')}
-    ${section('Skills', chips(it.skills, 'rgba(37,99,235,0.1)'), 'sparkles')}
+    ${it.problemStatement ? section('Problem Statement', paragraphs(it.problemStatement), 'alert-circle') : ''}
+    ${it.solution ? section('Solution', paragraphs(it.solution), 'lightbulb') : ''}
+    ${section('Tools & Stack', chips(tools, 'rgba(245,158,11,0.1)'), 'code-2')}
+    ${section('Skills Needed', chips(it.skillsNeeded, 'rgba(59,130,246,0.1)'), 'sparkles')}
+    ${section('Tags', chips(it.tags, 'rgba(245,158,11,0.08)'), 'tag')}
     <div class="details-flags">${it.isHidden ? '<span class="badge badge-danger"><i data-lucide="eye-off"></i>Hidden</span>' : ''}</div>
   `);
   setFooter(`
-    <button class="btn" data-close-modal="${MODAL_ID}">Close</button>
-    <a class="btn btn-primary" href="moderation.html?tab=ideas&ideaId=${encodeURIComponent(id)}"><i data-lucide="pencil"></i>Open in moderation</a>
+    <button class="btn" data-close-modal="${MODAL_ID}"><i data-lucide="x"></i>Close</button>
+    ${publisherId ? `<button class="btn btn-ghost" id="view-publisher-btn" data-user-id="${esc(publisherId)}"><i data-lucide="user"></i>Publisher profile</button>` : ''}
+    ${editLink(canEditIdea(it), `idea-editor.html?id=${encodeURIComponent(id)}`)}
   `);
+  bindPublisherBtn();
   if (window.lucide) window.lucide.createIcons();
 }
 
@@ -219,18 +291,18 @@ async function renderTraining(id) {
   setBody(`
     ${kvGrid([
       { label: 'Author', value: it.author || it.provider, icon: 'user' },
-      { label: 'Source', value: it.source || (it.videoId ? 'YouTube' : it.isbn ? 'Book' : '—'), icon: 'tag' },
-      { label: 'Level', value: it.level, icon: 'graduation-cap' },
-      { label: 'Link', value: it.url ? `<a href="${esc(it.url)}" target="_blank" rel="noopener">Open resource</a>` : '', html: true, icon: 'external-link' },
+      { label: 'Source', value: capitalizeFirst(it.source || (it.videoId ? 'YouTube' : it.isbn ? 'Book' : '')), icon: 'tag' },
+      { label: 'Level', value: capitalizeFirst(it.level || ''), icon: 'graduation-cap' },
       { label: 'Added', value: formatFullTimestamp(it.createdAt), icon: 'calendar' },
+      { label: 'Link', value: it.url ? `<a href="${esc(it.url)}" target="_blank" rel="noopener">Open resource</a>` : '', html: true, icon: 'external-link' },
     ])}
     ${it.thumbnail ? `<img src="${esc(it.thumbnail)}" alt="" style="width:100%;max-height:260px;object-fit:cover;border-radius:12px;margin-bottom:14px;" />` : ''}
     ${section('Description', paragraphs(it.description), 'align-left')}
-    ${section('Tags', chips(it.tags, 'rgba(20,184,166,0.1)'), 'sparkles')}
+    ${section('Tags', chips(it.tags, 'rgba(20,184,166,0.1)'), 'tag')}
   `);
   setFooter(`
-    <button class="btn" data-close-modal="${MODAL_ID}">Close</button>
-    <a class="btn btn-primary" href="moderation.html?tab=trainings&trainingId=${encodeURIComponent(id)}"><i data-lucide="pencil"></i>Open in moderation</a>
+    <button class="btn" data-close-modal="${MODAL_ID}"><i data-lucide="x"></i>Close</button>
+    <a class="btn btn-primary" href="moderation.html?tab=trainings&trainingId=${encodeURIComponent(id)}"><i data-lucide="pencil"></i>Edit in moderation</a>
   `);
   if (window.lucide) window.lucide.createIcons();
 }
@@ -250,11 +322,11 @@ async function renderApplication(id) {
       { label: 'Status', value: statusBadge(it.status || 'pending'), html: true, icon: 'circle-dot' },
       { label: 'Applied', value: formatFullTimestamp(it.appliedAt), icon: 'calendar' },
     ])}
-    ${section('Cover letter', paragraphs(it.coverLetter), 'message-square')}
+    ${section('Cover Letter', paragraphs(it.coverLetter), 'message-square')}
   `);
   setFooter(`
-    <button class="btn" data-close-modal="${MODAL_ID}">Close</button>
-    <a class="btn btn-primary" href="moderation.html?tab=opportunities&filter=pending_apps&applicationId=${encodeURIComponent(id)}"><i data-lucide="file"></i>Open CV & review</a>
+    <button class="btn" data-close-modal="${MODAL_ID}"><i data-lucide="x"></i>Close</button>
+    <a class="btn btn-primary" href="moderation.html?tab=opportunities&filter=pending_apps&applicationId=${encodeURIComponent(id)}"><i data-lucide="file"></i>Review CV</a>
   `);
   if (window.lucide) window.lucide.createIcons();
 }
@@ -263,25 +335,155 @@ async function renderUser(id) {
   const it = await fetchDoc('users', id);
   if (!it) return renderError('User not found.');
   const name = it.fullName || it.companyName || 'Unknown';
-  setHeader({ icon: 'user', color: 'var(--c-primary)', eyebrow: it.role || 'User', title: name });
-  setBody(`
-    ${kvGrid([
-      { label: 'Email', value: it.email, icon: 'mail' },
-      { label: 'Phone', value: it.phone, icon: 'phone' },
-      { label: 'Role', value: it.role, icon: 'badge' },
-      { label: 'Level', value: it.academicLevel, icon: 'graduation-cap' },
+  const role = String(it.role || 'user').toLowerCase();
+  const isActive = it.isActive !== false;
+  const approval = String(it.approvalStatus || (role === 'company' ? 'approved' : '')).toLowerCase();
+
+  const iconName = role === 'company' ? 'building-2' : role === 'admin' ? 'shield' : 'user';
+  const headerColor = role === 'company' ? '#14B8A6' : role === 'admin' ? '#F59E0B' : 'var(--c-primary)';
+  const statusValue = !isActive ? 'blocked' : (approval || 'active');
+
+  setHeader({ icon: iconName, color: headerColor, eyebrow: capitalizeFirst(role), title: name });
+
+  const identityRows = [
+    { label: 'Email', value: it.email, icon: 'mail' },
+    { label: 'Phone', value: it.phone, icon: 'phone' },
+    { label: 'Location', value: it.location || it.address, icon: 'map-pin' },
+    { label: 'Status', value: statusBadge(statusValue), html: true, icon: 'circle-dot' },
+    { label: 'Joined', value: formatFullTimestamp(it.createdAt), icon: 'calendar' },
+    { label: 'Provider', value: capitalizeFirst(it.provider || 'email'), icon: 'key' },
+  ].filter(Boolean);
+
+  let roleSection = '';
+  if (role === 'student') {
+    const studentRows = [
+      { label: 'Academic Level', value: capitalizeFirst(it.academicLevel || ''), icon: 'graduation-cap' },
       { label: 'University', value: it.university, icon: 'building-2' },
-      { label: 'Field', value: it.fieldOfStudy, icon: 'book-open' },
-      { label: 'Company', value: it.companyName, icon: 'building-2' },
-      { label: 'Status', value: statusBadge(it.isActive === false ? 'blocked' : (it.approvalStatus || 'active')), html: true, icon: 'circle-dot' },
-      { label: 'Joined', value: formatFullTimestamp(it.createdAt), icon: 'calendar' },
-    ])}
-    ${section('Bio', paragraphs(it.bio), 'align-left')}
-    ${section('Skills', chips(it.skills, 'rgba(59,34,246,0.1)'), 'sparkles')}
+      { label: 'Field of Study', value: it.fieldOfStudy, icon: 'book-open' },
+      it.researchTopic ? { label: 'Research Topic', value: it.researchTopic, icon: 'microscope' } : null,
+      it.laboratory ? { label: 'Laboratory', value: it.laboratory, icon: 'flask-conical' } : null,
+      it.supervisor ? { label: 'Supervisor', value: it.supervisor, icon: 'user-check' } : null,
+    ].filter(Boolean);
+    if (studentRows.length) roleSection = section('Academic', kvGrid(studentRows), 'graduation-cap');
+  } else if (role === 'company') {
+    const website = String(it.website || '').trim();
+    const companyRows = [
+      { label: 'Approval', value: statusBadge(approval || 'approved'), html: true, icon: 'badge-check' },
+      { label: 'Sector', value: it.sector || it.industry, icon: 'tag' },
+      { label: 'Company Size', value: it.companySize, icon: 'users' },
+      { label: 'Registration #', value: it.registrationNumber, icon: 'hash' },
+      website ? { label: 'Website', value: `<a href="${esc(/^https?:\/\//i.test(website) ? website : 'https://' + website)}" target="_blank" rel="noopener">${esc(website)}</a>`, html: true, icon: 'globe' } : null,
+    ].filter(Boolean);
+    if (companyRows.length) roleSection = section('Company', kvGrid(companyRows), 'building-2');
+  }
+
+  const bioText = String(it.bio || it.description || '').trim();
+
+  setBody(`
+    ${kvGrid(identityRows)}
+    ${roleSection}
+    ${bioText ? section(role === 'company' ? 'About' : 'Bio', paragraphs(bioText), 'align-left') : ''}
+    ${role === 'company' ? commercialRegisterSection(it) : ''}
+    ${section('Skills', chips(it.skills, 'rgba(99,102,241,0.1)'), 'sparkles')}
   `);
+
   setFooter(`
-    <button class="btn" data-close-modal="${MODAL_ID}">Close</button>
-    <a class="btn btn-primary" href="users.html?userId=${encodeURIComponent(id)}"><i data-lucide="external-link"></i>Open profile</a>
+    <button class="btn" data-close-modal="${MODAL_ID}"><i data-lucide="x"></i>Close</button>
   `);
+  bindCommercialRegisterButtons(id);
   if (window.lucide) window.lucide.createIcons();
+}
+
+function commercialRegisterSection(user) {
+  const hasRegister = hasCommercialRegister(user);
+  const uploaded = formatFullTimestamp(user?.commercialRegisterUploadedAt) ||
+    formatTimestamp(user?.commercialRegisterUploadedAt) ||
+    'Not provided';
+  const fileName = String(user?.commercialRegisterFileName || '').trim() || 'Commercial register';
+  const body = hasRegister
+    ? `
+      <div class="details-kv-row">
+        <div class="details-kv-label"><i data-lucide="file-check-2"></i>Document</div>
+        <div class="details-kv-value">
+          <div style="font-weight:700;margin-bottom:4px;">${esc(fileName)}</div>
+          <div style="color:var(--c-text-faint);font-size:12px;margin-bottom:12px;">Uploaded ${esc(uploaded)}</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;">
+            <button class="btn btn-sm" data-commercial-register="view"><i data-lucide="eye"></i>View register</button>
+            <button class="btn btn-sm" data-commercial-register="download"><i data-lucide="download"></i>Download register</button>
+          </div>
+        </div>
+      </div>`
+    : `
+      <div class="details-kv-row">
+        <div class="details-kv-label"><i data-lucide="file-x-2"></i>Document</div>
+        <div class="details-kv-value" style="color:var(--c-danger);font-weight:700;">Commercial register missing.</div>
+      </div>`;
+  return section('Commercial register', `<div class="details-kv">${body}</div>`, 'file-check-2');
+}
+
+function hasCommercialRegister(user) {
+  return Boolean(
+    String(
+      user?.commercialRegisterStoragePath ||
+      user?.commercialRegisterObjectKey ||
+      user?.commercialRegisterAccessPath ||
+      user?.commercialRegisterUrl ||
+      user?.commercialRegisterAccessUrl ||
+      user?.commercialRegisterSignedUrl ||
+      '',
+    ).trim(),
+  );
+}
+
+function bindCommercialRegisterButtons(companyId) {
+  document.querySelectorAll('[data-commercial-register]').forEach((button) => {
+    button.addEventListener('click', () => {
+      openCommercialRegister(companyId, {
+        download: button.getAttribute('data-commercial-register') === 'download',
+      });
+    });
+  });
+}
+
+async function openCommercialRegister(companyId, { download = false } = {}) {
+  try {
+    const document = await getCompanyCommercialRegisterDocument(companyId);
+    const url = download
+      ? document?.downloadUrl || document?.url || document?.viewUrl
+      : document?.viewUrl || document?.url || document?.downloadUrl;
+    if (!url) throw new Error('Document unavailable');
+    openDocumentUrl(url, { download, fileName: document?.fileName || '' });
+  } catch (error) {
+    showToast(friendlyDocumentErrorMessage(error), 'error');
+  }
+}
+
+function bindPublisherBtn() {
+  const btn = document.getElementById('view-publisher-btn');
+  if (!btn) return;
+  btn.addEventListener('click', async () => {
+    const userId = btn.getAttribute('data-user-id');
+    if (!userId) return;
+    btn.disabled = true;
+    renderLoading();
+    if (window.lucide) window.lucide.createIcons();
+    try {
+      await renderUser(userId);
+    } catch (e) {
+      console.error('publisher profile load failed', e);
+      renderError('Could not load publisher profile.');
+    }
+  });
+}
+
+function buildSalaryRange(it) {
+  const min = it.salaryMin ?? it.fundingAmount;
+  const max = it.salaryMax;
+  const currency = it.salaryCurrency || it.fundingCurrency || '';
+  const period = it.salaryPeriod ? `/${it.salaryPeriod}` : '';
+  if (min != null && max != null) return `${min}–${max} ${currency}${period}`.trim();
+  if (min != null) return `From ${min} ${currency}${period}`.trim();
+  if (it.compensationText) return it.compensationText;
+  if (it.fundingNote) return it.fundingNote;
+  return '';
 }

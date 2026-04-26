@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard · FutureGate Admin</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/app.css?v=2026042601">
+  <link rel="stylesheet" href="css/app.css?v=2026042602">
   <script src="js/theme-init.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
@@ -272,8 +272,8 @@
               ${quick('briefcase',    'Opportunities',  'moderation.html?tab=opportunities',                     'var(--c-accent)',    'Review jobs, internships, and sponsoring posts.')}
               ${quick('file-text',    'Pending apps',   'moderation.html?tab=opportunities&filter=pending_apps', 'var(--c-activity)', 'Review applications inside admin-posted opportunities.')}
               ${quick('graduation-cap','Scholarships',  'moderation.html?tab=scholarships',                      'var(--c-danger)',    'Publish and curate scholarships.')}
-              ${quick('book-open',    'Trainings',      'moderation.html?tab=trainings',                         'var(--c-secondary)','Curate the training catalog.')}
-              ${quick('library',      'Library',        'moderation.html?tab=trainings',                         'var(--c-info)',      'Import books and videos.')}
+              ${quick('video',        'Trainings',      'moderation.html?tab=trainings&librarySource=youtube&libraryMode=search&filter=videos', 'var(--c-secondary)','Import and manage training videos.')}
+              ${quick('library',      'Library',        'moderation.html?tab=trainings&librarySource=books&libraryMode=search&filter=books',    'var(--c-info)',      'Import and manage book resources.')}
               ${quick('lightbulb',    'Project ideas',  'moderation.html?tab=ideas',                             'var(--c-warning)',   'Approve student submissions.')}
               ${quick('users',        'Users',          'users.html',                                            'var(--c-primary)',   'Approve companies, manage accounts.')}
               ${quick('activity',     'Activity',       'activity.html',                                         'var(--c-success)',   'See the latest platform events.')}

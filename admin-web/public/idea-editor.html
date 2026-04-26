@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/app.css?v=2026042601">
+  <link rel="stylesheet" href="css/app.css?v=2026042602">
   <script src="js/theme-init.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
 </head>
@@ -118,44 +118,49 @@
         </div>
         <header class="page-hero">
           <div>
-            <h1 class="page-hero__title">${isNew ? 'Publish editorial idea' : 'Refine editorial idea'}</h1>
-            <p class="page-hero__subtitle">Shape a polished innovation post with stronger discovery copy, cleaner structure, and publisher details that feel ready for production.</p>
+            <div class="editor-mode-badge ${isNew ? '' : 'is-edit'}"><i data-lucide="${isNew ? 'plus' : 'pencil'}"></i>${isNew ? 'New post' : 'Editing post'}</div>
+            <h1 class="page-hero__title">${isNew ? 'Publish Idea' : 'Edit Idea'}</h1>
+            <p class="page-hero__subtitle">${isNew ? 'Create a project idea post students can discover, follow, and collaborate on.' : 'Refine this idea with cleaner copy, stronger discovery metadata, and sharper structure.'}</p>
           </div>
           <div class="page-hero__actions">
             <button class="btn" id="cancel-btn"><i data-lucide="x"></i>Cancel</button>
-            <button class="btn btn-primary" id="save-btn"><i data-lucide="save"></i>${isNew ? 'Publish' : 'Save changes'}</button>
+            <button class="btn btn-primary" id="save-btn"><i data-lucide="save"></i>${isNew ? 'Publish' : 'Save Changes'}</button>
           </div>
         </header>
 
         <div class="editor-grid">
           ${sectionBlock('Publishing', 'eye', `
-            <div class="form-grid-2">
-              <label class="form-row" style="display:flex;align-items:center;gap:10px;">
+            <div class="toggle-group">
+              <label class="toggle-option ${!isHidden ? 'is-active' : ''}">
                 <input id="f-visible" type="radio" name="idea-visibility" ${!isHidden ? 'checked' : ''}>
-                <span>Visible</span>
+                <i data-lucide="eye"></i>Visible
               </label>
-              <label class="form-row" style="display:flex;align-items:center;gap:10px;">
+              <label class="toggle-option ${isHidden ? 'is-active' : ''}">
                 <input id="f-hidden" type="radio" name="idea-visibility" ${isHidden ? 'checked' : ''}>
-                <span>Hidden</span>
+                <i data-lucide="eye-off"></i>Hidden
               </label>
             </div>
-            <label style="display:flex;align-items:center;gap:10px;margin-top:14px;">
+            <label class="checkbox-card" style="margin-top:10px;">
               <input id="f-public" type="checkbox" ${isPublic ? 'checked' : ''}>
-              <span>Public collaboration allowed</span>
+              <i data-lucide="users"></i>
+              <div>
+                <strong>Open collaboration</strong>
+                <div class="form-hint">Students can request to join this project.</div>
+              </div>
             </label>
           `)}
 
-          ${sectionBlock('Core story', 'book-open', `
-            <div class="form-row"><label>Idea title *</label><input id="f-title" type="text" placeholder="Campus Innovation Partner Program" value="${esc(item?.title || '')}"></div>
-            <div class="form-row"><label>Tagline</label><input id="f-tagline" type="text" placeholder="Short hook for the hero section" value="${esc(item?.tagline || '')}"></div>
-            <div class="form-row"><label>Short description</label><textarea id="f-shortDescription" rows="3" placeholder="A tight one-paragraph summary">${esc(item?.shortDescription || '')}</textarea></div>
-            <div class="form-row"><label>Full description *</label><textarea id="f-description" rows="6" placeholder="Describe the idea clearly and with enough depth">${esc(item?.description || '')}</textarea></div>
+          ${sectionBlock('Core Story', 'book-open', `
+            <div class="form-row"><label>Idea Title *</label><input id="f-title" type="text" placeholder="e.g. Campus Innovation Partner Program" value="${esc(item?.title || '')}"></div>
+            <div class="form-row"><label>Tagline</label><input id="f-tagline" type="text" placeholder="One-line hook shown in the discovery feed" value="${esc(item?.tagline || '')}"></div>
+            <div class="form-row"><label>Short Description</label><textarea id="f-shortDescription" rows="3" placeholder="A tight summary — shown in cards and previews.">${esc(item?.shortDescription || '')}</textarea></div>
+            <div class="form-row"><label>Full Description *</label><textarea id="f-description" rows="6" placeholder="Describe the idea clearly with enough context for students to understand and join.">${esc(item?.description || '')}</textarea></div>
           `)}
 
-          ${sectionBlock('Metadata and collaboration', 'tag', `
+          ${sectionBlock('Metadata & Collaboration', 'tag', `
             <div class="form-grid-2">
               <div class="form-row"><label>Domain *</label><input id="f-domain" type="text" placeholder="e.g. EdTech, AI, Sustainability" value="${esc(item?.domain || '')}"></div>
-              <div class="form-row"><label>Academic level</label>
+              <div class="form-row"><label>Academic Level</label>
                 <select id="f-level">${LEVELS.map(([value, label]) => `<option value="${value}" ${level === value ? 'selected' : ''}>${label}</option>`).join('')}</select>
               </div>
               <div class="form-row"><label>Language</label>
@@ -163,22 +168,22 @@
               </div>
               <div class="form-row"><label>Category</label><input id="f-category" type="text" placeholder="e.g. Innovation, Startup, Research" value="${esc(item?.category || '')}"></div>
               <div class="form-row"><label>Stage</label><input id="f-stage" type="text" placeholder="e.g. Concept, Prototype, Pilot" value="${esc(item?.stage || '')}"></div>
-              <div class="form-row"><label>Tools or stack *</label><input id="f-tools" type="text" placeholder="e.g. Flutter, Firebase, Figma" value="${esc(item?.tools || '')}"></div>
+              <div class="form-row"><label>Tools & Stack *</label><input id="f-tools" type="text" placeholder="e.g. Flutter, Firebase, Figma" value="${esc(item?.tools || '')}"></div>
               <div class="form-row"><label>Tags</label><input id="f-tags" type="text" placeholder="Comma-separated tags" value="${esc(joinCsv(item?.tags))}"></div>
-              <div class="form-row"><label>Skills needed</label><input id="f-skillsNeeded" type="text" placeholder="Comma-separated skills" value="${esc(joinCsv(item?.skillsNeeded))}"></div>
-              <div class="form-row"><label>Team roles needed</label><input id="f-teamNeeded" type="text" placeholder="Comma-separated roles" value="${esc(joinCsv(item?.teamNeeded))}"></div>
-              <div class="form-row" style="grid-column:1/-1;"><label>Target audience</label><textarea id="f-targetAudience" rows="3" placeholder="Who benefits most from this idea?">${esc(item?.targetAudience || '')}</textarea></div>
-              <div class="form-row" style="grid-column:1/-1;"><label>Problem statement</label><textarea id="f-problemStatement" rows="4" placeholder="What challenge does this solve?">${esc(item?.problemStatement || '')}</textarea></div>
-              <div class="form-row" style="grid-column:1/-1;"><label>Solution</label><textarea id="f-solution" rows="4" placeholder="How does the idea solve the problem?">${esc(item?.solution || '')}</textarea></div>
-              <div class="form-row" style="grid-column:1/-1;"><label>Resources needed</label><textarea id="f-resourcesNeeded" rows="3" placeholder="What support, partners, or assets are required?">${esc(item?.resourcesNeeded || '')}</textarea></div>
-              <div class="form-row" style="grid-column:1/-1;"><label>Benefits or impact</label><textarea id="f-benefits" rows="3" placeholder="What outcomes make this valuable?">${esc(item?.benefits || '')}</textarea></div>
+              <div class="form-row"><label>Skills Needed</label><input id="f-skillsNeeded" type="text" placeholder="Comma-separated skills" value="${esc(joinCsv(item?.skillsNeeded))}"></div>
+              <div class="form-row"><label>Team Roles Needed</label><input id="f-teamNeeded" type="text" placeholder="Comma-separated roles" value="${esc(joinCsv(item?.teamNeeded))}"></div>
+              <div class="form-row" style="grid-column:1/-1;"><label>Target Audience</label><textarea id="f-targetAudience" rows="3" placeholder="Who benefits most from this idea?">${esc(item?.targetAudience || '')}</textarea></div>
+              <div class="form-row" style="grid-column:1/-1;"><label>Problem Statement</label><textarea id="f-problemStatement" rows="4" placeholder="What specific challenge does this idea solve?">${esc(item?.problemStatement || '')}</textarea></div>
+              <div class="form-row" style="grid-column:1/-1;"><label>Proposed Solution</label><textarea id="f-solution" rows="4" placeholder="How does the idea address the problem?">${esc(item?.solution || '')}</textarea></div>
+              <div class="form-row" style="grid-column:1/-1;"><label>Resources Needed</label><textarea id="f-resourcesNeeded" rows="3" placeholder="What support, partners, or assets are required?">${esc(item?.resourcesNeeded || '')}</textarea></div>
+              <div class="form-row" style="grid-column:1/-1;"><label>Benefits & Impact</label><textarea id="f-benefits" rows="3" placeholder="What outcomes make this idea worth pursuing?">${esc(item?.benefits || '')}</textarea></div>
             </div>
           `)}
         </div>
 
         <div class="page-hero__actions" style="justify-content:flex-end;margin-top:18px;">
           <button class="btn" id="cancel-btn-2"><i data-lucide="x"></i>Cancel</button>
-          <button class="btn btn-primary" id="save-btn-2"><i data-lucide="save"></i>${isNew ? 'Publish' : 'Save changes'}</button>
+          <button class="btn btn-primary" id="save-btn-2"><i data-lucide="save"></i>${isNew ? 'Publish' : 'Save Changes'}</button>
         </div>
       `;
 
@@ -186,16 +191,15 @@
       document.getElementById('cancel-btn-2').onclick = back;
       document.getElementById('save-btn').onclick = save;
       document.getElementById('save-btn-2').onclick = save;
-      document.getElementById('f-visible').addEventListener('change', () => {
-        if (document.getElementById('f-visible').checked) {
+
+      document.querySelectorAll('.toggle-option').forEach((opt) => {
+        opt.addEventListener('click', () => {
+          document.querySelectorAll('.toggle-option').forEach((o) => o.classList.remove('is-active'));
+          opt.classList.add('is-active');
           ideaStatus = 'approved';
-        }
+        });
       });
-      document.getElementById('f-hidden').addEventListener('change', () => {
-        if (document.getElementById('f-hidden').checked) {
-          ideaStatus = 'approved';
-        }
-      });
+
       if (window.lucide) window.lucide.createIcons();
     }
 

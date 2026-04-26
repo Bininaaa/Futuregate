@@ -142,6 +142,10 @@ function resetToGatedState() {
   if (gate) gate.classList.remove('hidden');
 }
 
+function redirectToLogin() {
+  window.location.replace('/login.html');
+}
+
 function updateNotificationBadges(count) {
   const badges = document.querySelectorAll('[data-notification-badge]');
   const safeCount = Number.isFinite(count) ? Math.max(0, count) : 0;
@@ -194,7 +198,9 @@ function checkAuth(callback) {
       resetToGatedState();
       const currentUser = auth.currentUser;
       if (!currentUser) {
-        window.location.href = '/login.html';
+        window.setTimeout(() => {
+          if (!auth.currentUser) redirectToLogin();
+        }, 300);
       } else {
         getDoc(doc(db, 'users', currentUser.uid)).then((userDoc) => {
           if (
@@ -204,7 +210,7 @@ function checkAuth(callback) {
           ) {
             stopUnreadNotificationsWatcher();
             auth.signOut().then(() => {
-              window.location.href = '/login.html';
+              redirectToLogin();
             });
           } else {
             const userData = userDoc.data();
@@ -215,7 +221,7 @@ function checkAuth(callback) {
           }
         }).catch(() => {
           stopUnreadNotificationsWatcher();
-          window.location.href = '/login.html';
+          redirectToLogin();
         });
       }
     }
@@ -224,7 +230,7 @@ function checkAuth(callback) {
   onAuthStateChanged(auth, async (user) => {
     if (!user) {
       stopUnreadNotificationsWatcher();
-      window.location.href = '/login.html';
+      redirectToLogin();
       return;
     }
     try {
@@ -236,7 +242,7 @@ function checkAuth(callback) {
       ) {
         stopUnreadNotificationsWatcher();
         await auth.signOut();
-        window.location.href = '/login.html';
+        redirectToLogin();
         return;
       }
       const userData = userDoc.data();
@@ -248,7 +254,7 @@ function checkAuth(callback) {
     } catch (e) {
       console.error('Auth check error:', e);
       stopUnreadNotificationsWatcher();
-      window.location.href = '/login.html';
+      redirectToLogin();
     }
   });
 }
@@ -266,7 +272,7 @@ function setupSidebar(userData, user) {
     logoutBtn.onclick = async () => {
       stopUnreadNotificationsWatcher();
       await auth.signOut();
-      window.location.href = '/login.html';
+      redirectToLogin();
     };
   }
 

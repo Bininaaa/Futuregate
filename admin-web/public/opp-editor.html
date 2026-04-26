@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/app.css?v=2026042601">
+  <link rel="stylesheet" href="css/app.css?v=2026042602">
   <script src="js/theme-init.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
 </head>
@@ -180,55 +180,60 @@
         </div>
         <header class="page-hero">
           <div>
-            <h1 class="page-hero__title">${isNew ? 'Publish editorial opportunity' : 'Refine editorial opportunity'}</h1>
-            <p class="page-hero__subtitle">${isNew ? 'Publish a professional opportunity post with the same structured fields the app already understands.' : 'Improve the published opportunity with cleaner structure, sharper requirements, and stronger student-facing detail.'}</p>
+            <div class="editor-mode-badge ${isNew ? '' : 'is-edit'}"><i data-lucide="${isNew ? 'plus' : 'pencil'}"></i>${isNew ? 'New post' : 'Editing post'}</div>
+            <h1 class="page-hero__title">${isNew ? 'Publish Opportunity' : 'Edit Opportunity'}</h1>
+            <p class="page-hero__subtitle">${isNew ? 'Create a professional opportunity post students will discover in the app.' : 'Refine this opportunity with cleaner structure and stronger student-facing detail.'}</p>
           </div>
           <div class="page-hero__actions">
             <button class="btn" id="cancel-btn"><i data-lucide="x"></i>Cancel</button>
-            <button class="btn btn-primary" id="save-btn"><i data-lucide="save"></i>${isNew ? 'Publish' : 'Save changes'}</button>
+            <button class="btn btn-primary" id="save-btn"><i data-lucide="save"></i>${isNew ? 'Publish' : 'Save Changes'}</button>
           </div>
         </header>
 
         <div class="editor-grid">
-          ${sectionBlock('Basic information', 'info', `
+          ${sectionBlock('Basic Information', 'info', `
             <div class="form-grid-2">
-              <div class="form-row"><label>Publisher name *</label><input id="f-company" type="text" placeholder="${ADMIN_NAME}" value="${esc(defaultPublisher)}"></div>
+              <div class="form-row"><label>Publisher Name *</label><input id="f-company" type="text" placeholder="${ADMIN_NAME}" value="${esc(defaultPublisher)}"></div>
               <div class="form-row"><label>Status *</label>
                 <select id="f-status">
                   <option value="open" ${(item?.status || 'open') === 'open' ? 'selected' : ''}>Open</option>
                   <option value="closed" ${item?.status === 'closed' ? 'selected' : ''}>Closed</option>
                 </select>
               </div>
-              <div class="form-row"><label>Title *</label><input id="f-title" type="text" placeholder="Frontend Developer Internship" value="${esc(item?.title || '')}"></div>
+              <div class="form-row"><label>Title *</label><input id="f-title" type="text" placeholder="e.g. Frontend Developer Internship" value="${esc(item?.title || '')}"></div>
               <div class="form-row"><label>Language</label>
                 <select id="f-lang">${LANGS.map(([value, label]) => `<option value="${value}" ${((item?.originalLanguage || 'fr') === value) ? 'selected' : ''}>${label}</option>`).join('')}</select>
               </div>
               <div class="form-row"><label>Type *</label>
                 <select id="f-type">${TYPES.map(([value, label]) => `<option value="${value}" ${opportunityType === value ? 'selected' : ''}>${label}</option>`).join('')}</select>
               </div>
-              <div class="form-row"><label>Location *</label><input id="f-location" type="text" placeholder="Algiers / Hybrid" value="${esc(item?.location || '')}"></div>
+              <div class="form-row"><label>Location *</label><input id="f-location" type="text" placeholder="e.g. Algiers / Remote" value="${esc(item?.location || '')}"></div>
             </div>
           `)}
 
           ${sectionBlock('Description', 'file-text', `
-            <div class="form-row"><label>Description *</label><textarea id="f-description" rows="6" placeholder="Describe the role, scope, and value clearly.">${esc(item?.description || '')}</textarea></div>
+            <div class="form-row"><label>Description *</label><textarea id="f-description" rows="6" placeholder="Describe the role, its scope, and what the candidate will gain.">${esc(item?.description || '')}</textarea></div>
           `)}
 
           ${sectionBlock('Requirements', 'list-checks', `
-            <div class="form-row"><label>Requirements or eligibility *</label><textarea id="f-requirements" rows="5" placeholder="Type one requirement per line">${esc(joinLines(requirements))}</textarea></div>
+            <div class="form-row">
+              <label>Requirements *</label>
+              <textarea id="f-requirements" rows="5" placeholder="One requirement per line&#10;e.g. Bachelor's degree in Computer Science&#10;Strong communication skills">${esc(joinLines(requirements))}</textarea>
+              <div class="form-hint">Enter each requirement on a new line.</div>
+            </div>
           `)}
 
-          ${sectionBlock('Logistics', 'calendar', `
+          ${sectionBlock('Logistics & Compensation', 'calendar', `
             <div class="form-grid-2">
-              <div class="form-row"><label>Application deadline *</label><input id="f-deadline" type="date" value="${esc(deadline)}"></div>
+              <div class="form-row"><label>Application Deadline *</label><input id="f-deadline" type="date" value="${esc(deadline)}"></div>
             </div>
-            <div id="type-fields" style="margin-top:12px;"></div>
+            <div id="type-fields" style="margin-top:14px;"></div>
           `)}
         </div>
 
         <div class="page-hero__actions" style="justify-content:flex-end;margin-top:18px;">
           <button class="btn" id="cancel-btn-2"><i data-lucide="x"></i>Cancel</button>
-          <button class="btn btn-primary" id="save-btn-2"><i data-lucide="save"></i>${isNew ? 'Publish' : 'Save changes'}</button>
+          <button class="btn btn-primary" id="save-btn-2"><i data-lucide="save"></i>${isNew ? 'Publish' : 'Save Changes'}</button>
         </div>
       `;
 
@@ -253,31 +258,31 @@
       if (type === 'sponsoring') {
         target.innerHTML = `
           <div class="form-grid-2">
-            <div class="form-row"><label>Funding amount</label><input id="f-fundingAmount" type="text" placeholder="e.g. 250000" value="${esc(item?.fundingAmount ?? item?.salaryMin ?? '')}"></div>
-            <div class="form-row"><label>Funding currency</label>
+            <div class="form-row"><label>Funding Amount</label><input id="f-fundingAmount" type="text" placeholder="e.g. 250000" value="${esc(item?.fundingAmount ?? item?.salaryMin ?? '')}"></div>
+            <div class="form-row"><label>Funding Currency</label>
               <select id="f-fundingCurrency">${CURRENCIES.map((currency) => `<option value="${currency}" ${salaryCurrency === currency ? 'selected' : ''}>${currency}</option>`).join('')}</select>
             </div>
-            <div class="form-row" style="grid-column:1/-1;"><label>Funding note</label><textarea id="f-fundingNote" rows="3" placeholder="Optional support details shown to students">${esc(item?.fundingNote || item?.compensationText || '')}</textarea></div>
+            <div class="form-row" style="grid-column:1/-1;"><label>Funding Note</label><textarea id="f-fundingNote" rows="3" placeholder="Optional support details shown to students">${esc(item?.fundingNote || item?.compensationText || '')}</textarea></div>
           </div>
         `;
       } else {
         target.innerHTML = `
           <div class="form-grid-2">
-            <div class="form-row"><label>Salary minimum</label><input id="f-salaryMin" type="text" placeholder="e.g. 60000" value="${esc(item?.salaryMin ?? '')}"></div>
-            <div class="form-row"><label>Salary maximum</label><input id="f-salaryMax" type="text" placeholder="e.g. 90000" value="${esc(item?.salaryMax ?? '')}"></div>
+            <div class="form-row"><label>Salary Minimum</label><input id="f-salaryMin" type="text" placeholder="e.g. 60 000" value="${esc(item?.salaryMin ?? '')}"></div>
+            <div class="form-row"><label>Salary Maximum</label><input id="f-salaryMax" type="text" placeholder="e.g. 90 000" value="${esc(item?.salaryMax ?? '')}"></div>
             <div class="form-row"><label>Currency</label>
               <select id="f-salaryCurrency">${CURRENCIES.map((currency) => `<option value="${currency}" ${salaryCurrency === currency ? 'selected' : ''}>${currency}</option>`).join('')}</select>
             </div>
-            <div class="form-row"><label>Salary period</label>
+            <div class="form-row"><label>Salary Period</label>
               <select id="f-salaryPeriod">${PERIODS.map(([value, label]) => `<option value="${value}" ${salaryPeriod === value ? 'selected' : ''}>${label}</option>`).join('')}</select>
             </div>
-            <div class="form-row"><label>Employment type</label>
+            <div class="form-row"><label>Employment Type</label>
               <select id="f-employmentType">${EMPLOYMENT.map(([value, label]) => `<option value="${value}" ${employmentType === value ? 'selected' : ''}>${label}</option>`).join('')}</select>
             </div>
-            <div class="form-row"><label>Work mode</label>
+            <div class="form-row"><label>Work Mode</label>
               <select id="f-workMode">${WORK_MODES.map(([value, label]) => `<option value="${value}" ${workMode === value ? 'selected' : ''}>${label}</option>`).join('')}</select>
             </div>
-            <div class="form-row"><label>Paid status</label>
+            <div class="form-row"><label>Paid Status</label>
               <select id="f-isPaid">
                 <option value="" ${isPaid === undefined || isPaid === null ? 'selected' : ''}>Select status</option>
                 <option value="true" ${isPaid === true ? 'selected' : ''}>Paid</option>
@@ -285,7 +290,7 @@
               </select>
             </div>
             ${type === 'internship' ? `<div class="form-row"><label>Duration</label><input id="f-duration" type="text" placeholder="e.g. 3 months" value="${esc(item?.duration || '')}"></div>` : ''}
-            <div class="form-row" style="grid-column:1/-1;"><label>Compensation note</label><textarea id="f-compensationText" rows="3" placeholder="Optional note shown to students">${esc(item?.compensationText || '')}</textarea></div>
+            <div class="form-row" style="grid-column:1/-1;"><label>Compensation Note</label><textarea id="f-compensationText" rows="3" placeholder="Optional details shown to students (e.g. benefits, allowances)">${esc(item?.compensationText || '')}</textarea></div>
           </div>
         `;
       }

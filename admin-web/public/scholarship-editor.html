@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/app.css?v=2026042601">
+  <link rel="stylesheet" href="css/app.css?v=2026042602">
   <script src="js/theme-init.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
 </head>
@@ -176,28 +176,32 @@
         </div>
         <header class="page-hero">
           <div>
-            <h1 class="page-hero__title">${isNew ? 'Publish editorial scholarship' : 'Refine scholarship post'}</h1>
-            <p class="page-hero__subtitle">Shape the scholarship exactly the way students will see it in the app, with cleaner structure, stronger scanning, and a more polished publisher voice.</p>
+            <div class="editor-mode-badge ${isNew ? '' : 'is-edit'}"><i data-lucide="${isNew ? 'plus' : 'pencil'}"></i>${isNew ? 'New post' : 'Editing post'}</div>
+            <h1 class="page-hero__title">${isNew ? 'Publish Scholarship' : 'Edit Scholarship'}</h1>
+            <p class="page-hero__subtitle">${isNew ? 'Create a scholarship post students will discover in the app.' : 'Refine this scholarship with cleaner structure and stronger eligibility detail.'}</p>
           </div>
           <div class="page-hero__actions">
             <button class="btn" id="cancel-btn"><i data-lucide="x"></i>Cancel</button>
-            <button class="btn btn-primary" id="save-btn"><i data-lucide="save"></i>${isNew ? 'Publish' : 'Save changes'}</button>
+            <button class="btn btn-primary" id="save-btn"><i data-lucide="save"></i>${isNew ? 'Publish' : 'Save Changes'}</button>
           </div>
         </header>
 
         <div class="editor-grid">
           ${sectionBlock('Publishing', 'star', `
-            <label style="display:flex;align-items:center;gap:10px;">
+            <label class="checkbox-card">
               <input id="f-featured" type="checkbox" ${scholarshipFeatured(item) ? 'checked' : ''}>
-              <span>Feature this scholarship</span>
+              <i data-lucide="star"></i>
+              <div>
+                <strong>Feature this scholarship</strong>
+                <div class="form-hint">Stronger placement in the student discovery flow.</div>
+              </div>
             </label>
-            <p class="row-sub" style="margin-top:10px;">Featured scholarships get stronger placement in the student discovery flow.</p>
           `)}
 
-          ${sectionBlock('Basic information', 'info', `
+          ${sectionBlock('Basic Information', 'info', `
             <div class="form-grid-2">
-              <div class="form-row"><label>Scholarship title *</label><input id="f-title" type="text" placeholder="Future Builders Global Scholarship" value="${esc(item?.title || '')}"></div>
-              <div class="form-row"><label>Provider *</label><input id="f-provider" type="text" placeholder="Who offers this scholarship?" value="${esc(item?.provider || '')}"></div>
+              <div class="form-row"><label>Scholarship Title *</label><input id="f-title" type="text" placeholder="e.g. Future Builders Global Scholarship" value="${esc(item?.title || '')}"></div>
+              <div class="form-row"><label>Provider *</label><input id="f-provider" type="text" placeholder="Organization offering the scholarship" value="${esc(item?.provider || '')}"></div>
               <div class="form-row"><label>Language</label>
                 <select id="f-lang">${LANGS.map(([value, label]) => `<option value="${value}" ${((item?.originalLanguage || 'fr') === value) ? 'selected' : ''}>${label}</option>`).join('')}</select>
               </div>
@@ -205,40 +209,44 @@
           `)}
 
           ${sectionBlock('Description', 'file-text', `
-            <div class="form-row"><label>Description *</label><textarea id="f-description" rows="5" placeholder="Explain the scholarship and what it supports">${esc(item?.description || '')}</textarea></div>
+            <div class="form-row"><label>Description *</label><textarea id="f-description" rows="5" placeholder="Explain what the scholarship supports and who it is for.">${esc(item?.description || '')}</textarea></div>
           `)}
 
-          ${sectionBlock('Eligibility requirements', 'list-checks', `
-            <div class="form-row"><label>Eligibility items *</label><textarea id="f-eligibility" rows="5" placeholder="Type one eligibility item per line">${esc(joinLines(eligibility))}</textarea></div>
+          ${sectionBlock('Eligibility Requirements', 'list-checks', `
+            <div class="form-row">
+              <label>Eligibility Items *</label>
+              <textarea id="f-eligibility" rows="5" placeholder="One item per line&#10;e.g. Enrolled in a Master's programme&#10;GPA of 3.0 or above">${esc(joinLines(eligibility))}</textarea>
+              <div class="form-hint">Enter each eligibility condition on a new line.</div>
+            </div>
           `)}
 
           ${sectionBlock('Logistics', 'map-pin', `
             <div class="form-grid-2">
-              <div class="form-row"><label>Amount *</label><input id="f-amount" type="text" placeholder="e.g. 250000" value="${esc(item?.amount ?? '')}"></div>
+              <div class="form-row"><label>Amount *</label><input id="f-amount" type="text" placeholder="e.g. 250 000" value="${esc(item?.amount ?? '')}"></div>
               <div class="form-row"><label>Deadline *</label><input id="f-deadline" type="date" value="${esc(toDateInput(item?.deadline))}"></div>
               <div class="form-row"><label>Country</label><input id="f-country" type="text" placeholder="e.g. France" value="${esc(item?.country || '')}"></div>
               <div class="form-row"><label>City</label><input id="f-city" type="text" placeholder="e.g. Paris" value="${esc(item?.city || '')}"></div>
-              <div class="form-row" style="grid-column:1/-1;"><label>Location label</label><input id="f-location" type="text" placeholder="Fallback location text" value="${esc(scholarshipLocation(item))}"></div>
+              <div class="form-row" style="grid-column:1/-1;"><label>Location Label</label><input id="f-location" type="text" placeholder="Displayed location text (if different from city/country)" value="${esc(scholarshipLocation(item))}"></div>
             </div>
           `)}
 
-          ${sectionBlock('Additional information', 'link', `
+          ${sectionBlock('Additional Information', 'link', `
             <div class="form-grid-2">
-              <div class="form-row"><label>Application link</label><input id="f-link" type="url" placeholder="https://..." value="${esc(scholarshipLink(item))}"></div>
-              <div class="form-row"><label>Funding type</label>
+              <div class="form-row"><label>Application Link</label><input id="f-link" type="url" placeholder="https://..." value="${esc(scholarshipLink(item))}"></div>
+              <div class="form-row"><label>Funding Type</label>
                 <select id="f-fundingType">
                   <option value="">Select funding type</option>
                   ${FUNDING_TYPES.map(([value, label]) => `<option value="${value}" ${item?.fundingType === value ? 'selected' : ''}>${label}</option>`).join('')}
                 </select>
               </div>
               <div class="form-row"><label>Category</label><input id="f-category" type="text" placeholder="e.g. Masters, Research, Exchange" value="${esc(item?.category || '')}"></div>
-              <div class="form-row"><label>Level</label>
+              <div class="form-row"><label>Academic Level</label>
                 <select id="f-level">
                   <option value="">Select level</option>
                   ${LEVELS.map((level) => `<option value="${level}" ${item?.level === level ? 'selected' : ''}>${level}</option>`).join('')}
                 </select>
               </div>
-              <div class="form-row"><label>Image URL</label><input id="f-imageUrl" type="url" placeholder="https://..." value="${esc(scholarshipImage(item))}"></div>
+              <div class="form-row"><label>Cover Image URL</label><input id="f-imageUrl" type="url" placeholder="https://..." value="${esc(scholarshipImage(item))}"></div>
               <div class="form-row"><label>Tags</label><input id="f-tags" type="text" placeholder="Comma-separated tags" value="${esc(joinCsv(item?.tags))}"></div>
             </div>
           `)}
@@ -246,7 +254,7 @@
 
         <div class="page-hero__actions" style="justify-content:flex-end;margin-top:18px;">
           <button class="btn" id="cancel-btn-2"><i data-lucide="x"></i>Cancel</button>
-          <button class="btn btn-primary" id="save-btn-2"><i data-lucide="save"></i>${isNew ? 'Publish' : 'Save changes'}</button>
+          <button class="btn btn-primary" id="save-btn-2"><i data-lucide="save"></i>${isNew ? 'Publish' : 'Save Changes'}</button>
         </div>
       `;
 

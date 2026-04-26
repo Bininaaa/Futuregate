@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sign in · FutureGate Admin</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/app.css?v=2026042601">
+  <link rel="stylesheet" href="css/app.css?v=2026042602">
   <script src="js/theme-init.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
 </head>
@@ -37,13 +37,14 @@
   </div>
 
   <script type="module">
-    import { auth, db, signInWithEmailAndPassword, doc, getDoc } from './js/firebase-config.js';
+    import { auth, db, signInWithEmailAndPassword, onAuthStateChanged, doc, getDoc } from './js/firebase-config.js';
     import { feedbackCardHtml } from './js/auth.js';
     import './js/ui.js';
 
     const form = document.getElementById('login-form');
     const errorBox = document.getElementById('error');
     const submitBtn = document.getElementById('submit-btn');
+    let submitting = false;
 
     function showError(message) {
       errorBox.style.display = 'block';
@@ -51,9 +52,22 @@
       if (window.lucide) window.lucide.createIcons();
     }
 
+    onAuthStateChanged(auth, async (user) => {
+      if (!user || submitting) return;
+      try {
+        const userDoc = await getDoc(doc(db, 'users', user.uid));
+        if (userDoc.exists() && userDoc.data().role === 'admin' && userDoc.data().isActive !== false) {
+          window.location.replace('/index.html');
+        }
+      } catch (error) {
+        console.warn('Existing admin session check failed:', error);
+      }
+    });
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       errorBox.style.display = 'none';
+      submitting = true;
       submitBtn.disabled = true;
       submitBtn.querySelector('span').textContent = 'Signing in...';
 
@@ -71,7 +85,7 @@
           await auth.signOut();
           throw new Error('Your admin account is inactive.');
         }
-        window.location.href = '/index.html';
+        window.location.replace('/index.html');
       } catch (err) {
         const code = err?.code || '';
         let msg = err?.message || 'Could not sign in.';
@@ -83,6 +97,7 @@
           msg = 'Network error. Check your connection.';
         }
         showError(msg);
+        submitting = false;
         submitBtn.disabled = false;
         submitBtn.querySelector('span').textContent = 'Sign in';
       }
