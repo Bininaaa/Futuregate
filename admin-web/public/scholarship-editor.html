@@ -140,6 +140,14 @@
       return String(value?.link || value?.applyUrl || '').trim();
     }
 
+    function normalizeExternalUrl(value) {
+      const href = String(value || '').trim();
+      if (!href) return '';
+      if (/^(https?:|mailto:|tel:)/i.test(href)) return href;
+      if (href.startsWith('//')) return `https:${href}`;
+      return `https://${href.replace(/^\/+/, '')}`;
+    }
+
     function scholarshipImage(value) {
       return String(value?.imageUrl || value?.image || value?.coverImage || value?.bannerUrl || '').trim();
     }
@@ -168,8 +176,8 @@
         </div>
         <header class="page-hero">
           <div>
-            <h1 class="page-hero__title">${isNew ? 'Publish scholarship' : 'Edit scholarship'}</h1>
-            <p class="page-hero__subtitle">Use the same scholarship fields the app already understands, without extra web-only controls.</p>
+            <h1 class="page-hero__title">${isNew ? 'Publish editorial scholarship' : 'Refine scholarship post'}</h1>
+            <p class="page-hero__subtitle">Shape the scholarship exactly the way students will see it in the app, with cleaner structure, stronger scanning, and a more polished publisher voice.</p>
           </div>
           <div class="page-hero__actions">
             <button class="btn" id="cancel-btn"><i data-lucide="x"></i>Cancel</button>
@@ -288,7 +296,7 @@
         eligibilityItems,
         amount: parseAmount(val('f-amount')),
         deadline: val('f-deadline'),
-        link: val('f-link'),
+        link: normalizeExternalUrl(val('f-link')),
         country: val('f-country'),
         city: val('f-city'),
         location: val('f-location'),

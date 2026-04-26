@@ -48,8 +48,9 @@
     } from './js/firebase-config.js';
     import { matchesSearch, getQueryParam, timestampToDate, updateUrlParams } from './js/admin-utils.js';
     import { WORKER_BASE_URL } from './js/google-books-config.js';
-    import { getApplicationCv, getApplicationCvDocument, openDocumentUrl, friendlyDocumentErrorMessage } from './js/document-access.js';
+    import { getApplicationCv, getApplicationCvDocument, getCompanyCommercialRegisterDocument, openDocumentUrl, friendlyDocumentErrorMessage } from './js/document-access.js';
     import { openModal, closeModal } from './js/ui.js';
+    const ADMIN_PUBLISHER_NAME = 'FutureGate Editorial Desk';
 
     const TABS = [
       { id: 'ideas',        label: 'Project ideas', icon: 'lightbulb' },
@@ -202,6 +203,19 @@
       return String(value || '').trim();
     }
 
+    function normalizeList(value) {
+      if (Array.isArray(value)) {
+        return value.map((item) => cleanText(item)).filter(Boolean);
+      }
+      if (typeof value === 'string') {
+        return value
+          .split(/[\n,]/)
+          .map((item) => cleanText(item))
+          .filter(Boolean);
+      }
+      return [];
+    }
+
     function capitalizeLabel(value) {
       return cleanText(value)
         .replace(/[_-]+/g, ' ')
@@ -233,9 +247,28 @@
     }
 
     function externalLinkAction(url, icon, title) {
-      const href = cleanText(url);
+      const href = normalizeExternalUrl(url);
       if (!href) return '';
       return `<a class="btn btn-sm btn-icon" href="${esc(href)}" target="_blank" rel="noopener" title="${esc(title)}" aria-label="${esc(title)}"><i data-lucide="${esc(icon)}"></i></a>`;
+    }
+
+    function normalizeExternalUrl(value) {
+      const href = cleanText(value);
+      if (!href) return '';
+      if (/^(https?:|mailto:|tel:)/i.test(href)) return href;
+      if (href.startsWith('//')) return `https:${href}`;
+      return `https://${href.replace(/^\/+/, '')}`;
+    }
+
+    function publisherProfileHref(userId) {
+      const id = cleanText(userId);
+      return id ? `users.html?userId=${encodeURIComponent(id)}` : '';
+    }
+
+    function profileLinkAction(userId, label = 'Publisher profile') {
+      const href = publisherProfileHref(userId);
+      if (!href) return '';
+      return `<a class="btn btn-sm" href="${esc(href)}"><i data-lucide="user"></i>${esc(label)}</a>`;
     }
 
     function contentCard({
@@ -274,6 +307,11 @@
         </div>
         ${visibleFooterActions ? `<div class="content-card__footer">${visibleFooterActions}</div>` : ''}
       </article>`;
+    }
+
+    function detailMetric(label, value) {
+      const text = cleanText(value) || '—';
+      return `<div class="detail-metric"><div class="detail-metric__label">${esc(label)}</div><div class="detail-metric__value">${esc(text)}</div></div>`;
     }
 
     function bindCardOpens(handler) {
@@ -600,23 +638,25 @@
         tone: 'idea',
         icon: 'lightbulb',
         title: it.title || 'Untitled idea',
-        subtitle: [it.domain, it.academicLevel].filter(Boolean).join(' • '),
+        subtitle: [it.domain, it.academicLevel || it.level].filter(Boolean).join(' • '),
         description: it.tagline || it.shortDescription || it.description || '',
         badges: [
           badge(status, `badge-${statusBadgeClass(status)}`),
           it.isHidden ? badge('Hidden', 'badge-danger', 'eye-off') : '',
           it.domain ? badge(it.domain, '', 'tag') : '',
           it.submittedByName ? badge(it.submittedByName, '', 'user') : '',
-          canEdit ? badge('Your post', 'badge-info', 'shield') : '',
+          canEdit ? badge('Editorial Post', 'badge-info', 'shield') : '',
         ],
         meta: formatTimestamp(it.createdAt) || '',
         actions: [
-          iconAction(it.id, 'details', 'eye', 'Open details'),
           status !== 'approved' ? iconAction(it.id, 'approve', 'check', 'Approve', 'btn-success') : '',
-          status !== 'rejected' ? iconAction(it.id, 'reject', 'x', 'Reject', 'btn-danger') : '',
+          status === 'pending' ? iconAction(it.id, 'reject', 'x', 'Reject', 'btn-danger') : '',
           iconAction(it.id, 'toggle-hide', it.isHidden ? 'eye' : 'eye-off', it.isHidden ? 'Show idea' : 'Hide idea'),
           canEdit ? iconAction(it.id, 'edit', 'pencil', 'Edit idea') : '',
           iconAction(it.id, 'delete', 'trash-2', 'Delete idea', 'btn-danger'),
+        ],
+        footerActions: [
+          profileLinkAction(it.submittedBy, 'Publisher profile'),
         ],
       });
     }
@@ -667,36 +707,56 @@
     }
 
     function openIdeaDetails(it) {
+      const toolItems = normalizeList(it.tools);
+      const tagItems = normalizeList(it.tags);
+      const skillItems = normalizeList(it.skillsNeeded);
+      const roleItems = normalizeList(it.teamNeeded || it.teamRoles);
       document.getElementById('editor-title').textContent = it.title || 'Idea details';
       document.getElementById('editor-body').innerHTML = `
         ${section('Summary', 'lightbulb', `
-          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;">
-            ${badge(it.status || 'pending', `badge-${statusBadgeClass(it.status || 'pending')}`)}
-            ${it.isHidden ? badge('Hidden', 'badge-danger', 'eye-off') : ''}
-            ${it.domain ? badge(it.domain, '', 'tag') : ''}
-            ${it.academicLevel ? badge(it.academicLevel) : ''}
-            ${it.stage ? badge(capitalizeLabel(it.stage)) : ''}
-            ${it.submittedByName ? badge(it.submittedByName, '', 'user') : ''}
+          <div class="detail-hero">
+            <div class="detail-hero__copy">
+              <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;">
+                ${badge(it.status || 'pending', `badge-${statusBadgeClass(it.status || 'pending')}`)}
+                ${it.isHidden ? badge('Hidden', 'badge-danger', 'eye-off') : ''}
+                ${it.domain ? badge(it.domain, '', 'tag') : ''}
+                ${it.academicLevel || it.level ? badge(it.academicLevel || it.level) : ''}
+                ${it.stage ? badge(capitalizeLabel(it.stage)) : ''}
+                ${it.submittedByName ? badge(it.submittedByName, '', 'user') : ''}
+              </div>
+              ${it.tagline ? `<p class="detail-hero__headline">${esc(it.tagline)}</p>` : ''}
+              <p class="detail-hero__subline">${esc(it.shortDescription || it.description || 'No additional summary provided yet.')}</p>
+            </div>
           </div>
-          ${it.tagline ? `<p style="margin:0 0 8px 0;">${esc(it.tagline)}</p>` : ''}
-          <div class="row-sub">${esc(formatTimestamp(it.createdAt) || '—')}</div>
+          <div class="details-inline-actions">
+            ${profileLinkAction(it.submittedBy, 'Publisher profile')}
+            ${isOwnAdminIdea(it) ? `<a class="btn btn-sm" href="idea-editor.html?id=${encodeURIComponent(it.id)}"><i data-lucide="pencil"></i>Edit admin post</a>` : ''}
+          </div>
+          <div class="detail-metrics">
+            ${detailMetric('Created', formatTimestamp(it.createdAt))}
+            ${detailMetric('Category', it.category)}
+            ${detailMetric('Stage', capitalizeLabel(it.stage))}
+            ${detailMetric('Language', (it.originalLanguage || '').toUpperCase())}
+            ${detailMetric('Academic level', it.academicLevel || it.level)}
+            ${detailMetric('Collaboration', it.openForCollab ? 'Open to collaboration' : 'Not open')}
+          </div>
         `)}
         ${it.shortDescription ? section('Overview', 'file-text', `<p style="white-space:pre-wrap;margin:0;">${esc(it.shortDescription)}</p>`) : ''}
         ${it.description ? section('Description', 'align-left', `<p style="white-space:pre-wrap;margin:0;">${esc(it.description)}</p>`) : ''}
         ${section('Details', 'layers', `
           <div class="profile-grid">
-            <div class="profile-block"><div class="profile-block-label">Domain</div><div class="profile-block-value">${esc(it.domain || '—')}</div></div>
-            <div class="profile-block"><div class="profile-block-label">Category</div><div class="profile-block-value">${esc(it.category || '—')}</div></div>
-            <div class="profile-block"><div class="profile-block-label">Stage</div><div class="profile-block-value">${esc(capitalizeLabel(it.stage || '') || '—')}</div></div>
-            <div class="profile-block"><div class="profile-block-label">Academic level</div><div class="profile-block-value">${esc(it.academicLevel || '—')}</div></div>
-            <div class="profile-block"><div class="profile-block-label">Language</div><div class="profile-block-value">${esc((it.originalLanguage || '').toUpperCase() || '—')}</div></div>
-            <div class="profile-block"><div class="profile-block-label">Collaboration</div><div class="profile-block-value">${it.openForCollab ? 'Open to collaboration' : 'Not open'}</div></div>
+            <div class="profile-block"><div class="profile-block-label">Domain</div><div class="profile-block-value">${esc(it.domain || '-')}</div></div>
+            <div class="profile-block"><div class="profile-block-label">Category</div><div class="profile-block-value">${esc(it.category || '-')}</div></div>
+            <div class="profile-block"><div class="profile-block-label">Stage</div><div class="profile-block-value">${esc(capitalizeLabel(it.stage || '') || '-')}</div></div>
+            <div class="profile-block"><div class="profile-block-label">Academic level</div><div class="profile-block-value">${esc(it.academicLevel || it.level || '-')}</div></div>
+            <div class="profile-block"><div class="profile-block-label">Language</div><div class="profile-block-value">${esc((it.originalLanguage || '').toUpperCase() || '-')}</div></div>
+            <div class="profile-block"><div class="profile-block-label">Publisher</div><div class="profile-block-value">${esc(it.submittedByName || '-')}</div></div>
           </div>
         `)}
-        ${Array.isArray(it.tags) && it.tags.length ? section('Tags', 'tags', `<div class="tag-list">${it.tags.map((item) => badge(item)).join('')}</div>`) : ''}
-        ${Array.isArray(it.tools) && it.tools.length ? section('Tools', 'wrench', `<div class="tag-list">${it.tools.map((item) => badge(item)).join('')}</div>`) : ''}
-        ${Array.isArray(it.skillsNeeded) && it.skillsNeeded.length ? section('Skills needed', 'sparkles', `<div class="tag-list">${it.skillsNeeded.map((item) => badge(item)).join('')}</div>`) : ''}
-        ${Array.isArray(it.teamRoles) && it.teamRoles.length ? section('Roles needed', 'users', `<div class="tag-list">${it.teamRoles.map((item) => badge(item)).join('')}</div>`) : ''}
+        ${tagItems.length ? section('Tags', 'tags', `<div class="tag-list">${tagItems.map((item) => badge(item)).join('')}</div>`) : ''}
+        ${toolItems.length ? section('Tools', 'wrench', `<div class="tag-list">${toolItems.map((item) => badge(item)).join('')}</div>`) : ''}
+        ${skillItems.length ? section('Skills needed', 'sparkles', `<div class="tag-list">${skillItems.map((item) => badge(item)).join('')}</div>`) : ''}
+        ${roleItems.length ? section('Roles needed', 'users', `<div class="tag-list">${roleItems.map((item) => badge(item)).join('')}</div>`) : ''}
         ${it.problemStatement ? section('Problem', 'triangle-alert', `<p style="white-space:pre-wrap;margin:0;">${esc(it.problemStatement)}</p>`) : ''}
         ${it.solution ? section('Solution', 'rocket', `<p style="white-space:pre-wrap;margin:0;">${esc(it.solution)}</p>`) : ''}
         ${it.resourcesNeeded ? section('Resources needed', 'package', `<p style="white-space:pre-wrap;margin:0;">${esc(it.resourcesNeeded)}</p>`) : ''}
@@ -785,7 +845,7 @@
             showToast('Idea updated.', 'success');
           } else {
             const ref = doc(collection(db, 'projectIdeas'));
-            const created = { ...payload, createdAt: serverTimestamp(), submittedBy: auth.currentUser?.uid || '', submittedByName: 'Admin' };
+            const created = { ...payload, createdAt: serverTimestamp(), submittedBy: auth.currentUser?.uid || '', submittedByName: ADMIN_PUBLISHER_NAME };
             await setDoc(ref, created);
             state.ideas.unshift({ id: ref.id, ...created, createdAt: { toDate: () => new Date() } });
             showToast('Idea created.', 'success');
@@ -978,17 +1038,16 @@
           it.isHidden ? badge('Hidden', 'badge-danger', 'eye-off') : '',
           pendingCount ? badge(`${pendingCount} pending`, 'badge-info', 'hourglass') : '',
           it.workMode ? badge(capitalizeLabel(it.workMode), '', 'map-pinned') : '',
-          canEdit ? badge('Your post', 'badge-info', 'shield') : '',
+          canEdit ? badge('Editorial Post', 'badge-info', 'shield') : '',
         ],
         meta: formatTimestamp(it.updatedAt || it.createdAt) || '',
         actions: [
-          iconAction(it.id, 'details', 'eye', 'Open details'),
           iconAction(it.id, 'toggle-hide', it.isHidden ? 'eye' : 'eye-off', it.isHidden ? 'Show opportunity' : 'Hide opportunity'),
           canEdit ? iconAction(it.id, 'edit', 'pencil', 'Edit opportunity') : '',
           iconAction(it.id, 'delete', 'trash-2', 'Delete opportunity', 'btn-danger'),
         ],
         footerActions: [
-          it.applicationDeadline ? `<span class="content-card__footer-note"><i data-lucide="calendar-range"></i>Deadline ${esc(formatTimestamp(it.applicationDeadline) || '')}</span>` : '',
+          profileLinkAction(it.companyId, 'Publisher profile'),
           it.type === 'sponsoring' && (it.fundingAmount || it.fundingNote)
             ? `<span class="content-card__footer-note"><i data-lucide="coins"></i>${esc(it.fundingAmount ? `${it.fundingAmount} ${it.fundingCurrency || ''}`.trim() : it.fundingNote)}</span>`
             : '',
@@ -1031,7 +1090,7 @@
           <div class="activity-icon" style="background:rgba(59,34,246,0.14);color:#3B22F6"><i data-lucide="user"></i></div>
           <div class="row-body">
             <div class="row-title">${esc(application.studentName || application.studentId || 'Applicant')}</div>
-            <div class="row-sub">Applied ${esc(formatTimestamp(application.appliedAt) || '—')}</div>
+            <div class="row-sub">Applied ${esc(formatTimestamp(application.appliedAt) || '-')}</div>
             <div style="margin-top:6px;"><span class="badge badge-${statusClass}">${esc(status)}</span></div>
           </div>
           <div class="row-actions">
@@ -1044,12 +1103,25 @@
 
       document.getElementById('editor-body').innerHTML = `
         ${section('Summary', 'info', `
-          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;">${meta}</div>
-          <div class="profile-grid">
-            <div class="profile-block"><div class="profile-block-label">Company</div><div class="profile-block-value">${esc(it.companyName || '—')}</div></div>
-            <div class="profile-block"><div class="profile-block-label">Location</div><div class="profile-block-value">${esc(it.location || '—')}</div></div>
-            <div class="profile-block"><div class="profile-block-label">Deadline</div><div class="profile-block-value">${esc(formatTimestamp(it.applicationDeadline) || '—')}</div></div>
-            <div class="profile-block"><div class="profile-block-label">Created</div><div class="profile-block-value">${esc(formatTimestamp(it.createdAt) || '—')}</div></div>
+          <div class="detail-hero">
+            <div class="detail-hero__copy">
+              <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;">${meta}</div>
+              <p class="detail-hero__headline">${esc(it.companyName || 'Publisher unavailable')}</p>
+              <p class="detail-hero__subline">${esc(it.description || 'No opportunity description yet.')}</p>
+            </div>
+          </div>
+          <div class="details-inline-actions">
+            ${profileLinkAction(it.companyId, 'Publisher profile')}
+            ${it.createdByRole === 'company' ? '<button class="btn btn-sm" id="view-register-btn"><i data-lucide="file-check-2"></i>View register</button><button class="btn btn-sm" id="download-register-btn"><i data-lucide="download"></i>Download register</button>' : ''}
+            ${canEditOpportunity(it) ? `<a class="btn btn-sm" href="opp-editor.html?id=${encodeURIComponent(it.id)}"><i data-lucide="pencil"></i>Edit admin post</a>` : ''}
+          </div>
+          <div class="detail-metrics">
+            ${detailMetric('Location', it.location)}
+            ${detailMetric('Deadline', formatTimestamp(it.applicationDeadline || it.deadline))}
+            ${detailMetric('Created', formatTimestamp(it.createdAt))}
+            ${detailMetric('Employment', capitalizeLabel(it.employmentType || it.type))}
+            ${detailMetric('Work mode', capitalizeLabel(it.workMode))}
+            ${detailMetric('Status', capitalizeLabel(opportunityEffectiveStatus(it)))}
           </div>
           <div style="margin-top:12px;display:flex;gap:14px;flex-wrap:wrap;">
             <span class="badge badge-info"><i data-lucide="users"></i>${apps.length} total</span>
@@ -1058,7 +1130,7 @@
             <span class="badge badge-danger"><i data-lucide="x"></i>${rejected} rejected</span>
           </div>
         `)}
-        ${section('Description', 'file-text', `<p style="white-space:pre-wrap;margin:0;">${esc(it.description || '—')}</p>`)}
+        ${section('Description', 'file-text', `<p style="white-space:pre-wrap;margin:0;">${esc(it.description || '-')}</p>`)}
         ${requirementItems.length ? section('Requirements', 'list-checks', `<ul style="margin:0;padding-left:18px;">${requirementItems.map((item) => `<li>${esc(item)}</li>`).join('')}</ul>`) : ''}
         ${section('Applications (' + apps.length + ')', 'file-text', apps.length ? `<div class="list-grid">${apps.map(applyLine).join('')}</div>` : '<p class="row-sub" style="margin:0;">No applications yet.</p>')}
       `;
@@ -1093,6 +1165,8 @@
           }
         });
       });
+      document.getElementById('view-register-btn')?.addEventListener('click', () => openCommercialRegister(it.companyId, false));
+      document.getElementById('download-register-btn')?.addEventListener('click', () => openCommercialRegister(it.companyId, true));
       if (window.lucide) window.lucide.createIcons();
     }
 
@@ -1408,8 +1482,7 @@
         ],
         meta: formatTimestamp(it.deadline || it.createdAt) || '',
         actions: [
-          iconAction(it.id, 'details', 'eye', 'Open details'),
-          scholarshipLink(it) ? `<a class="btn btn-sm btn-icon" href="${esc(scholarshipLink(it))}" target="_blank" rel="noopener" title="Open application link" aria-label="Open application link"><i data-lucide="external-link"></i></a>` : '',
+          scholarshipLink(it) ? `<a class="btn btn-sm btn-icon" href="${esc(normalizeExternalUrl(scholarshipLink(it)))}" target="_blank" rel="noopener" title="Open application link" aria-label="Open application link"><i data-lucide="external-link"></i></a>` : '',
           iconAction(it.id, 'toggle-hide', it.isHidden ? 'eye' : 'eye-off', it.isHidden ? 'Show scholarship' : 'Hide scholarship'),
           iconAction(it.id, 'edit', 'pencil', 'Edit scholarship'),
           iconAction(it.id, 'delete', 'trash-2', 'Delete scholarship', 'btn-danger'),
@@ -1447,22 +1520,49 @@
       }
     }
 
+    async function openCommercialRegister(companyId, download = false) {
+      try {
+        const document = await getCompanyCommercialRegisterDocument(companyId);
+        const url = download
+          ? cleanText(document?.downloadUrl || document?.url || document?.viewUrl)
+          : cleanText(document?.viewUrl || document?.url || document?.downloadUrl);
+        if (!url) throw new Error('Document unavailable');
+        openDocumentUrl(url, { download, fileName: document?.fileName || '' });
+      } catch (error) {
+        showToast(friendlyDocumentErrorMessage(error), 'error');
+      }
+    }
+
     function openScholarshipDetails(it) {
       document.getElementById('editor-title').textContent = it.title || 'Scholarship details';
+      const imageUrl = scholarshipThumb(it);
       document.getElementById('editor-body').innerHTML = `
         ${section('Summary', 'graduation-cap', `
-          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;">
-            ${it.fundingType ? badge(capitalizeLabel(it.fundingType), '', 'wallet') : ''}
-            ${it.amount ? badge(it.amount, '', 'coins') : ''}
-            ${it.level ? badge(it.level) : ''}
-            ${scholarshipFeatured(it) ? badge('Featured', 'badge-warning', 'star') : ''}
-            ${it.isHidden ? badge('Hidden', 'badge-danger', 'eye-off') : ''}
+          <div class="detail-hero ${imageUrl ? 'detail-hero--with-media' : ''}">
+            ${imageUrl ? `<div class="detail-hero__media"><img src="${esc(imageUrl)}" alt=""></div>` : ''}
+            <div class="detail-hero__copy">
+              <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;">
+                ${it.fundingType ? badge(capitalizeLabel(it.fundingType), '', 'wallet') : ''}
+                ${it.amount ? badge(it.amount, '', 'coins') : ''}
+                ${it.level ? badge(it.level) : ''}
+                ${scholarshipFeatured(it) ? badge('Featured', 'badge-warning', 'star') : ''}
+                ${it.isHidden ? badge('Hidden', 'badge-danger', 'eye-off') : ''}
+              </div>
+              <p class="detail-hero__headline">${esc(it.provider || 'Scholarship provider')}</p>
+              <p class="detail-hero__subline">${esc(it.description || 'No scholarship description yet.')}</p>
+            </div>
           </div>
-          <div class="profile-grid">
-            <div class="profile-block"><div class="profile-block-label">Provider</div><div class="profile-block-value">${esc(it.provider || '—')}</div></div>
-            <div class="profile-block"><div class="profile-block-label">Location</div><div class="profile-block-value">${esc((scholarshipLocation(it) || [it.city, it.country].filter(Boolean).join(', ')) || '—')}</div></div>
-            <div class="profile-block"><div class="profile-block-label">Deadline</div><div class="profile-block-value">${esc(formatTimestamp(it.deadline) || '—')}</div></div>
-            <div class="profile-block"><div class="profile-block-label">Created</div><div class="profile-block-value">${esc(formatTimestamp(it.createdAt) || '—')}</div></div>
+          <div class="details-inline-actions">
+            ${scholarshipLink(it) ? `<a class="btn btn-sm" href="${esc(normalizeExternalUrl(scholarshipLink(it)))}" target="_blank" rel="noopener"><i data-lucide="external-link"></i>Open application link</a>` : ''}
+            <a class="btn btn-sm" href="scholarship-editor.html?id=${encodeURIComponent(it.id)}"><i data-lucide="pencil"></i>Edit post</a>
+          </div>
+          <div class="detail-metrics">
+            ${detailMetric('Provider', it.provider)}
+            ${detailMetric('Location', scholarshipLocation(it) || [it.city, it.country].filter(Boolean).join(', '))}
+            ${detailMetric('Deadline', formatTimestamp(it.deadline))}
+            ${detailMetric('Funding', capitalizeLabel(it.fundingType))}
+            ${detailMetric('Level', it.level)}
+            ${detailMetric('Created', formatTimestamp(it.createdAt))}
           </div>
         `)}
         ${it.description ? section('Description', 'file-text', `<p style="white-space:pre-wrap;margin:0;">${esc(it.description)}</p>`) : ''}
@@ -1646,7 +1746,6 @@
         ],
         meta: formatTimestamp(it.createdAt) || '',
         actions: [
-          iconAction(it.id, 'details', 'eye', 'Open details'),
           trainingDisplayLink(it) ? externalLinkAction(trainingDisplayLink(it), 'external-link', 'Open source') : '',
           iconAction(it.id, 'toggle-hide', it.isHidden ? 'eye' : 'eye-off', it.isHidden ? 'Show resource' : 'Hide resource'),
         ],
@@ -1655,22 +1754,34 @@
 
     function openTrainingDetails(it) {
       document.getElementById('editor-title').textContent = it.title || 'Resource details';
+      const imageUrl = trainingThumbnail(it);
       document.getElementById('editor-body').innerHTML = `
         ${section('Summary', trainingSourceKind(it) === 'youtube' ? 'video' : 'book-open', `
-          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;">
-            ${badge(trainingSourceLabel(it), '', trainingSourceKind(it) === 'youtube' ? 'video' : 'book-open')}
-            ${it.level ? badge(it.level) : ''}
-            ${it.language ? badge(String(it.language).toUpperCase(), '', 'languages') : ''}
-            ${it.isFeatured ? badge('Featured', 'badge-warning', 'star') : ''}
-            ${it.isHidden ? badge('Hidden', 'badge-danger', 'eye-off') : ''}
+          <div class="detail-hero ${imageUrl ? 'detail-hero--with-media' : ''}">
+            ${imageUrl ? `<div class="detail-hero__media"><img src="${esc(imageUrl)}" alt=""></div>` : ''}
+            <div class="detail-hero__copy">
+              <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;">
+                ${badge(trainingSourceLabel(it), '', trainingSourceKind(it) === 'youtube' ? 'video' : 'book-open')}
+                ${it.level ? badge(it.level) : ''}
+                ${it.language ? badge(String(it.language).toUpperCase(), '', 'languages') : ''}
+                ${it.isFeatured ? badge('Featured', 'badge-warning', 'star') : ''}
+                ${it.isHidden ? badge('Hidden', 'badge-danger', 'eye-off') : ''}
+              </div>
+              <p class="detail-hero__headline">${esc(it.provider || 'Resource provider')}</p>
+              <p class="detail-hero__subline">${esc(it.description || 'No resource description yet.')}</p>
+            </div>
           </div>
-          <div class="profile-grid">
-            <div class="profile-block"><div class="profile-block-label">Provider</div><div class="profile-block-value">${esc(it.provider || '—')}</div></div>
-            <div class="profile-block"><div class="profile-block-label">Domain</div><div class="profile-block-value">${esc(it.domain || '—')}</div></div>
-            <div class="profile-block"><div class="profile-block-label">Level</div><div class="profile-block-value">${esc(it.level || '—')}</div></div>
-            <div class="profile-block"><div class="profile-block-label">Created</div><div class="profile-block-value">${esc(formatTimestamp(it.createdAt) || '—')}</div></div>
+          <div class="details-inline-actions">
+            ${trainingDisplayLink(it) ? `<a class="btn btn-sm" href="${esc(trainingDisplayLink(it))}" target="_blank" rel="noopener"><i data-lucide="external-link"></i>Open source</a>` : ''}
           </div>
-          ${trainingDisplayLink(it) ? `<div style="margin-top:12px;"><a class="btn" href="${esc(trainingDisplayLink(it))}" target="_blank" rel="noopener"><i data-lucide="external-link"></i>Open source</a></div>` : ''}
+          <div class="detail-metrics">
+            ${detailMetric('Provider', it.provider)}
+            ${detailMetric('Domain', it.domain)}
+            ${detailMetric('Level', it.level)}
+            ${detailMetric('Language', String(it.language || '').toUpperCase())}
+            ${detailMetric('Source', trainingSourceLabel(it))}
+            ${detailMetric('Created', formatTimestamp(it.createdAt))}
+          </div>
         `)}
         ${it.description ? section('Description', 'file-text', `<p style="white-space:pre-wrap;margin:0;">${esc(it.description)}</p>`) : ''}
       `;
@@ -1772,7 +1883,6 @@
         ],
         meta: formatTimestamp(it.createdAt) || '',
         actions: [
-          iconAction(it.id, 'details', 'eye', 'Open details'),
           trainingDisplayLink(it) ? externalLinkAction(trainingDisplayLink(it), 'external-link', 'Open source') : '',
           iconAction(it.id, 'toggle-feature', 'star', it.isFeatured ? 'Remove featured' : 'Feature resource'),
           iconAction(it.id, 'delete', 'trash-2', 'Delete resource', 'btn-danger'),
@@ -2017,7 +2127,9 @@
         body.innerHTML = `
           <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
             <button class="btn" id="open-uploaded"><i data-lucide="file"></i>Open uploaded CV</button>
+            <button class="btn" id="download-uploaded"><i data-lucide="download"></i>Download uploaded CV</button>
             <button class="btn" id="open-built"><i data-lucide="file-text"></i>Open built CV</button>
+            <button class="btn" id="download-built"><i data-lucide="download"></i>Download built CV</button>
           </div>
           <div class="profile-grid">
             <div class="profile-block"><div class="profile-block-label">Full name</div><div class="profile-block-value">${esc(cv.fullName || '—')}</div></div>
@@ -2030,18 +2142,23 @@
           </div>
         `;
         body.querySelector('#open-uploaded')?.addEventListener('click', () => fetchAndOpenCv(applicationId, 'primary'));
+        body.querySelector('#download-uploaded')?.addEventListener('click', () => fetchAndOpenCv(applicationId, 'primary', true));
         body.querySelector('#open-built')?.addEventListener('click', () => fetchAndOpenCv(applicationId, 'built'));
+        body.querySelector('#download-built')?.addEventListener('click', () => fetchAndOpenCv(applicationId, 'built', true));
         if (window.lucide) window.lucide.createIcons();
       } catch (e) {
         body.innerHTML = feedbackCardHtml(friendlyDocumentErrorMessage(e), { type: 'error' });
         if (window.lucide) window.lucide.createIcons();
       }
     }
-    async function fetchAndOpenCv(applicationId, variant) {
+    async function fetchAndOpenCv(applicationId, variant, download = false) {
       try {
         const docResp = await getApplicationCvDocument(applicationId, { variant });
-        if (!docResp?.url) throw new Error('Document unavailable');
-        openDocumentUrl(docResp.url, { fileName: docResp.fileName });
+        const url = download
+          ? cleanText(docResp?.downloadUrl || docResp?.url || docResp?.viewUrl)
+          : cleanText(docResp?.viewUrl || docResp?.url || docResp?.downloadUrl);
+        if (!url) throw new Error('Document unavailable');
+        openDocumentUrl(url, { download, fileName: docResp.fileName });
       } catch (e) { showToast(friendlyDocumentErrorMessage(e), 'error'); }
     }
 

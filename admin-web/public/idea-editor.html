@@ -32,7 +32,7 @@
     let item = null;
     let ideaStatus = 'approved';
 
-    const ADMIN_NAME = 'FutureGate Admin';
+    const ADMIN_NAME = 'FutureGate Editorial Desk';
     const LANGS = [['fr', 'French'], ['en', 'English'], ['ar', 'Arabic']];
     const LEVELS = [
       ['bac', 'Bac'],
@@ -118,8 +118,8 @@
         </div>
         <header class="page-hero">
           <div>
-            <h1 class="page-hero__title">${isNew ? 'Publish admin idea' : 'Edit idea'}</h1>
-            <p class="page-hero__subtitle">Use the same admin-only idea editor structure the app already exposes.</p>
+            <h1 class="page-hero__title">${isNew ? 'Publish editorial idea' : 'Refine editorial idea'}</h1>
+            <p class="page-hero__subtitle">Shape a polished innovation post with stronger discovery copy, cleaner structure, and publisher details that feel ready for production.</p>
           </div>
           <div class="page-hero__actions">
             <button class="btn" id="cancel-btn"><i data-lucide="x"></i>Cancel</button>
@@ -235,7 +235,7 @@
         originalLanguage: val('f-lang') || 'fr',
         category: val('f-category'),
         stage: val('f-stage'),
-        tools: val('f-tools'),
+        tools: splitCsv(val('f-tools')),
         tags: splitCsv(val('f-tags')),
         skillsNeeded: splitCsv(val('f-skillsNeeded')),
         teamNeeded: splitCsv(val('f-teamNeeded')),

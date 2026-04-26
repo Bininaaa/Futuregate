@@ -6,16 +6,30 @@ service firebase.storage {
       return request.auth != null;
     }
 
+    function currentUserRecord() {
+      return firestore.get(
+        /databases/(default)/documents/users/$(request.auth.uid)
+      );
+    }
+
+    function isAdmin() {
+      return signedIn() &&
+        currentUserRecord().data.role == 'admin' &&
+        currentUserRecord().data.isActive == true;
+    }
+
     function isSelf(uid) {
       return signedIn() && request.auth.uid == uid;
     }
 
     match /users/{uid}/{allPaths=**} {
-      allow read, write: if isSelf(uid);
+      allow read: if isSelf(uid) || isAdmin();
+      allow write: if isSelf(uid);
     }
 
     match /companies/{uid}/{allPaths=**} {
-      allow read, write: if isSelf(uid);
+      allow read: if isSelf(uid) || isAdmin();
+      allow write: if isSelf(uid);
     }
 
     match /{allPaths=**} {
