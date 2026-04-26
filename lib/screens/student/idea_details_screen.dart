@@ -21,6 +21,7 @@ import '../../widgets/shared/app_content_system.dart';
 import '../../widgets/shared/app_feedback.dart';
 import '../chat/user_profile_preview_screen.dart';
 import 'create_idea_screen.dart';
+import '../settings/settings_flow_theme.dart';
 
 class IdeaDetailsScreen extends StatelessWidget {
   final String ideaId;
@@ -78,17 +79,33 @@ class IdeaDetailsScreen extends StatelessWidget {
     final hasAttachment = idea.attachmentUrl.trim().isNotEmpty;
     final hasImage = idea.imageUrl.trim().isNotEmpty;
     final showLeadingSecondaryAction = !isOwner || idea.canOwnerEdit;
+    final heroSubtitle = idea.tagline.trim().isNotEmpty
+        ? idea.tagline
+        : idea.creatorHeadline;
+    final heroSummary = _sameDisplayText(heroSubtitle, idea.overviewText)
+        ? null
+        : idea.overviewText;
 
     return AppShellBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
+          automaticallyImplyLeading: false,
+          centerTitle: false,
           backgroundColor: Colors.transparent,
-          foregroundColor: _theme.textPrimary,
+          surfaceTintColor: Colors.transparent,
           elevation: 0,
+          scrolledUnderElevation: 0,
+          leading: IconButton(
+            onPressed: () => Navigator.maybePop(context),
+            icon: Icon(
+              Icons.arrow_back_ios_new_rounded,
+              color: SettingsFlowPalette.textPrimary,
+            ),
+          ),
           title: Text(
             AppLocalizations.of(context)!.ideaHubTitle,
-            style: _theme.section(size: 18, weight: FontWeight.w700),
+            style: SettingsFlowTheme.appBarTitle(),
           ),
           actions: <Widget>[
             IconButton(
@@ -106,12 +123,16 @@ class IdeaDetailsScreen extends StatelessWidget {
                 idea.isSavedByCurrentUser
                     ? Icons.bookmark_rounded
                     : Icons.bookmark_outline_rounded,
+                color: SettingsFlowPalette.textPrimary,
               ),
             ),
             IconButton(
               tooltip: AppLocalizations.of(context)!.uiShareIdea,
               onPressed: () => _shareIdea(context, idea),
-              icon: const Icon(Icons.ios_share_rounded),
+              icon: Icon(
+                Icons.ios_share_rounded,
+                color: SettingsFlowPalette.textPrimary,
+              ),
             ),
             const SizedBox(width: 6),
           ],
@@ -236,10 +257,8 @@ class IdeaDetailsScreen extends StatelessWidget {
               icon: innovationCategoryIcon(idea.displayCategory),
               showLeading: false,
               title: idea.title,
-              subtitle: idea.tagline.trim().isNotEmpty
-                  ? idea.tagline
-                  : idea.creatorHeadline,
-              summary: idea.overviewText,
+              subtitle: heroSubtitle,
+              summary: heroSummary,
               imageUrl: hasImage ? idea.imageUrl : null,
               media: hasImage
                   ? ProjectIdeaCoverImage(
@@ -653,6 +672,15 @@ class IdeaDetailsScreen extends StatelessWidget {
             '${idea.title}\n\n${idea.overviewText}\n\n${AppLocalizations.of(context)!.ideaSharedFromHub}',
       ),
     );
+  }
+
+  bool _sameDisplayText(String first, String second) {
+    String normalize(String value) =>
+        value.trim().replaceAll(RegExp(r'\s+'), ' ').toLowerCase();
+
+    final normalizedFirst = normalize(first);
+    final normalizedSecond = normalize(second);
+    return normalizedFirst.isNotEmpty && normalizedFirst == normalizedSecond;
   }
 
   Future<void> _toggleInteraction(

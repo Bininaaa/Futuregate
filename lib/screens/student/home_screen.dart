@@ -205,12 +205,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ],
       2 => [
         StudentWorkspaceActionButton(
-          icon: Icons.notifications_outlined,
-          tooltip: l10n.notificationsTooltip,
-          badgeCount: unreadCount,
-          onTap: _openNotifications,
-        ),
-        StudentWorkspaceActionButton(
           icon: Icons.bookmark_outline_rounded,
           tooltip: l10n.savedScholarshipsTooltip,
           onTap: () => _openSavedFilter(SavedScreenFilter.scholarships),
