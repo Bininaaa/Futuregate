@@ -194,8 +194,16 @@
       if (window.lucide) window.lucide.createIcons();
     }
 
+    function navigateTo(target) {
+      if (typeof window.FutureGateWorkspace?.navigate === 'function') {
+        window.FutureGateWorkspace.navigate(target);
+        return;
+      }
+      window.location.href = target;
+    }
+
     function back() {
-      window.location.href = 'moderation?tab=ideas';
+      navigateTo('moderation?tab=ideas');
     }
 
     function validatePayload(payload) {

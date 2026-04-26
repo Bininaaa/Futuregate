@@ -318,8 +318,16 @@
       if (window.lucide) window.lucide.createIcons();
     }
 
+    function navigateTo(target) {
+      if (typeof window.FutureGateWorkspace?.navigate === 'function') {
+        window.FutureGateWorkspace.navigate(target);
+        return;
+      }
+      window.location.href = target;
+    }
+
     function back() {
-      window.location.href = 'moderation?tab=opportunities';
+      navigateTo('moderation?tab=opportunities');
     }
 
     function validatePayload(basePayload) {

@@ -285,6 +285,14 @@
       return `https://${href.replace(/^\/+/, '')}`;
     }
 
+    function navigateTo(target) {
+      if (typeof window.FutureGateWorkspace?.navigate === 'function') {
+        window.FutureGateWorkspace.navigate(target);
+        return;
+      }
+      window.location.href = target;
+    }
+
     function profileLinkAction(userId, label = 'Publisher profile') {
       const id = cleanText(userId);
       if (!id) return '';
@@ -746,7 +754,7 @@
       }
 
       const targets = {
-        ideas:         { p: 'ideaId',         list: state.ideas,         open: (it) => { window.location.href = 'idea-editor?id=' + encodeURIComponent(it.id); } },
+        ideas:         { p: 'ideaId',         list: state.ideas,         open: (it) => { navigateTo('idea-editor?id=' + encodeURIComponent(it.id)); } },
         opportunities: { p: 'opportunityId',  list: state.opportunities, open: (it) => openOppEditor(it) },
         scholarships:  { p: 'scholarshipId',  list: state.scholarships,  open: (it) => openScholarEditor(it) },
         trainings:     { p: 'trainingId',     list: state.trainings,     open: null },
@@ -898,7 +906,7 @@
         <div class="list-grid" id="list">${items.length ? items.map(renderIdeaRow).join('') : emptyStateHtml('Try a different filter.', { title: 'No project ideas', icon: 'lightbulb' })}</div>
       `;
       bindCommon();
-      document.getElementById('new-idea').addEventListener('click', () => { window.location.href = 'idea-editor'; });
+      document.getElementById('new-idea').addEventListener('click', () => { navigateTo('idea-editor'); });
       bindRowActions((id, action) => handleIdeaAction(id, action));
       bindCardOpens((id, action) => handleIdeaAction(id, action));
       if (window.lucide) window.lucide.createIcons();
@@ -963,7 +971,7 @@
             showToast('You can only edit ideas you posted as admin.', 'warning');
             return;
           }
-          window.location.href = 'idea-editor?id=' + encodeURIComponent(id);
+          navigateTo('idea-editor?id=' + encodeURIComponent(id));
           return;
         } else if (action === 'delete') {
           if (!confirm('Delete this idea?')) return;
@@ -1177,7 +1185,7 @@
       document.querySelectorAll('[data-opptype]').forEach((b) => {
         b.addEventListener('click', () => { state.oppType = b.getAttribute('data-opptype'); renderTab(); });
       });
-      document.getElementById('new-opp').addEventListener('click', () => { window.location.href = 'opp-editor'; });
+      document.getElementById('new-opp').addEventListener('click', () => { navigateTo('opp-editor'); });
       bindRowActions((id, action) => handleOpportunityAction(id, action));
       bindCardOpens((id, action) => handleOpportunityAction(id, action));
       if (window.lucide) window.lucide.createIcons();
@@ -1255,7 +1263,7 @@
         btn.addEventListener('click', async () => {
           const appId = btn.getAttribute('data-app');
           const act = btn.getAttribute('data-app-action');
-          if (act === 'cv') { window.location.href = 'cv-viewer?cvId=' + encodeURIComponent(appId); return; }
+          if (act === 'cv') { navigateTo('cv-viewer?cvId=' + encodeURIComponent(appId)); return; }
           try {
             await updateDoc(doc(db, 'applications', appId), { status: act === 'accept' ? 'accepted' : 'rejected' });
             const appObj = state.applications.find((x) => x.id === appId);
@@ -1462,7 +1470,7 @@
     }
 
     function openOppEditor(it) {
-      window.location.href = 'opp-editor' + (it?.id ? ('?id=' + encodeURIComponent(it.id)) : '');
+      navigateTo('opp-editor' + (it?.id ? ('?id=' + encodeURIComponent(it.id)) : ''));
     }
     function _legacyOppEditor_unused(it) {
       document.getElementById('editor-title').textContent = it ? 'Edit opportunity' : 'New opportunity';
@@ -1674,7 +1682,7 @@
         <div class="list-grid" id="list">${items.length ? items.map(renderScholarshipRow).join('') : emptyStateHtml('No scholarships yet.', { title: 'Empty', icon: 'graduation-cap' })}</div>
       `;
       bindCommon();
-      document.getElementById('new-scholar').addEventListener('click', () => { window.location.href = 'scholarship-editor'; });
+      document.getElementById('new-scholar').addEventListener('click', () => { navigateTo('scholarship-editor'); });
       bindRowActions((id, action) => handleScholarshipAction(id, action));
       bindCardOpens((id, action) => handleScholarshipAction(id, action));
       if (window.lucide) window.lucide.createIcons();
@@ -1837,7 +1845,7 @@
     }
 
     function openScholarEditor(it) {
-      window.location.href = 'scholarship-editor' + (it?.id ? ('?id=' + encodeURIComponent(it.id)) : '');
+      navigateTo('scholarship-editor' + (it?.id ? ('?id=' + encodeURIComponent(it.id)) : ''));
     }
     function _legacyScholarEditor_unused(it) {
       document.getElementById('editor-title').textContent = it ? 'Edit scholarship' : 'New scholarship';

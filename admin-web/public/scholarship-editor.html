@@ -265,8 +265,16 @@
       if (window.lucide) window.lucide.createIcons();
     }
 
+    function navigateTo(target) {
+      if (typeof window.FutureGateWorkspace?.navigate === 'function') {
+        window.FutureGateWorkspace.navigate(target);
+        return;
+      }
+      window.location.href = target;
+    }
+
     function back() {
-      window.location.href = 'moderation?tab=scholarships';
+      navigateTo('moderation?tab=scholarships');
     }
 
     function validatePayload(payload) {
