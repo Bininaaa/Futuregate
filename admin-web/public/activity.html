@@ -75,24 +75,45 @@
       }
     }
 
+    function displayLabel(value) {
+      return String(value || '')
+        .trim()
+        .replace(/[_-]+/g, ' ')
+        .replace(/\s+/g, ' ')
+        .replace(/\b\w/g, (letter) => letter.toUpperCase());
+    }
+
+    function activityIcon(item) {
+      if (item.type === 'opportunity') return typeIcon('opportunity', item.subType);
+      return typeIcon(item.type);
+    }
+
+    function activityIconColor(item) {
+      if (item.type !== 'opportunity') return typeColor(item.type);
+      if (item.subType === 'internship') return '#3B82F6';
+      if (item.subType === 'sponsoring') return '#14B8A6';
+      return typeColor(item.type);
+    }
+
     function render() {
       const list = document.getElementById('act-list');
       let items = state.items.slice();
       if (state.type !== 'all') items = items.filter((it) => it.type === state.type);
-      if (state.search.trim()) items = items.filter((it) => matchesSearch([it.title, it.actorName, it.status, it.typeLabel], state.search));
+      if (state.search.trim()) items = items.filter((it) => matchesSearch([it.title, it.actorName, it.status, it.typeLabel, it.subTypeLabel], state.search));
 
       if (!items.length) {
         list.innerHTML = emptyStateHtml('Try changing the type or clearing the search.', { title: 'No matching activity', icon: 'activity' });
       } else {
         list.innerHTML = items.map((it) => `
           <div class="activity-row" data-type="${esc(it.type)}" data-id="${esc(it.targetId || '')}" role="button" tabindex="0">
-            <div class="activity-icon" style="background:${typeColor(it.type)}1a;color:${typeColor(it.type)}"><i data-lucide="${typeIcon(it.type)}"></i></div>
+            <div class="activity-icon" style="background:${activityIconColor(it)}1a;color:${activityIconColor(it)}"><i data-lucide="${activityIcon(it)}"></i></div>
             <div class="row-body">
               <div class="row-title">${esc(it.title)}</div>
               <div class="row-sub">${esc(it.description)}</div>
               <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
                 <span class="badge">${esc(activityTypeLabel(it.type))}</span>
-                ${it.status ? `<span class="badge badge-info">${esc(it.status)}</span>` : ''}
+                ${it.subTypeLabel ? `<span class="badge"><i data-lucide="${typeIcon('opportunity', it.subType)}"></i>${esc(it.subTypeLabel)}</span>` : ''}
+                ${it.status ? `<span class="badge badge-info">${esc(displayLabel(it.status))}</span>` : ''}
               </div>
             </div>
             <div class="activity-time">${esc(formatTimestamp(it.timestamp))}</div>

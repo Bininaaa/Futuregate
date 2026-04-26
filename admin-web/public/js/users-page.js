@@ -549,28 +549,9 @@ async function viewUser(id) {
         profileBlock('Joined', formatTimestamp(user.createdAt) || 'Not provided', {
           muted: !formatTimestamp(user.createdAt),
         }),
+        profileBlock('Provider', capitalizeLabel(cleanText(user.provider) || 'email')),
       ].join(''),
     );
-
-    const accountRows = [
-      profileBlock('UID', uidForUser(user)),
-      profileBlock('Provider', cleanText(user.provider) || 'email'),
-      profileBlock('Posting language', cleanText(user.preferredPostingLanguage) || 'Not provided', {
-        muted: !cleanText(user.preferredPostingLanguage),
-      }),
-      profileBlock('Presence', user.isOnline === true ? 'Online' : lastSeenLabel(user.lastSeenAt), {
-        muted: user.isOnline !== true,
-      }),
-    ];
-    if (role === 'student') {
-      accountRows.push(
-        profileBlock('Onboarding', user.studentOnboardingPending === true ? 'Pending' : 'Complete'),
-      );
-    }
-    if (role === 'admin' && cleanText(user.adminLevel)) {
-      accountRows.push(profileBlock('Admin level', user.adminLevel));
-    }
-    const accountHtml = profileSection('shield-check', 'Account', accountRows.join(''));
 
     let roleSection = '';
     if (role === 'student') {
@@ -661,7 +642,6 @@ async function viewUser(id) {
     body.innerHTML =
       hero +
       contactHtml +
-      accountHtml +
       roleSection +
       bioSection +
       studentExtras +
@@ -854,7 +834,7 @@ async function openAppsList(docs) {
               <div class="row-sub">${esc(company)}${applied ? ` - ${esc(applied)}` : ''}</div>
             </div>
             <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">
-              <span class="badge ${applicationStatusClass(status)}">${esc(status || 'submitted')}</span>
+              <span class="badge ${applicationStatusClass(status)}">${esc(capitalizeLabel(status || 'submitted'))}</span>
               ${opportunityStateBadge(opportunity)}
             </div>
           </div>`;
@@ -874,23 +854,36 @@ async function loadCompanyOpportunitiesBlock(companyId, companyName) {
   if (!block) return;
   block.dataset.companyId = companyId;
   try {
-    const opportunities = await loadCompanyOpportunities(companyId);
+    const [opportunities, scholarships] = await Promise.all([
+      loadCompanyOpportunities(companyId),
+      loadCompanyScholarships(companyId, companyName),
+    ]);
     if (block.dataset.companyId !== companyId) return;
+    const counts = companyContentCounts(opportunities, scholarships);
     const countLabel =
       opportunities.length === 1
         ? '1 posted opportunity'
         : `${opportunities.length} posted opportunities`;
     block.innerHTML = `
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
-        <div>
-          <div class="profile-block-label">Posted opportunities</div>
-          <div class="profile-block-value">${opportunities.length ? esc(countLabel) : 'No opportunities posted yet.'}</div>
+      <div class="profile-content-metrics">
+        ${profileContentMetric('Jobs', counts.jobs, 'briefcase')}
+        ${profileContentMetric('Internships', counts.internships, 'badge-check')}
+        ${profileContentMetric('Sponsored', counts.sponsored, 'badge-dollar-sign')}
+        ${profileContentMetric('Scholarships', counts.scholarships, 'graduation-cap')}
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:12px;">
+        <div class="profile-block-value">${opportunities.length || scholarships.length ? `${esc(countLabel)}${scholarships.length ? ` · ${scholarships.length} scholarship${scholarships.length === 1 ? '' : 's'}` : ''}` : 'No published content yet.'}</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn btn-sm" id="view-company-opps-btn"><i data-lucide="briefcase"></i>View opportunities</button>
+          ${scholarships.length ? '<button class="btn btn-sm" id="view-company-scholarships-btn"><i data-lucide="graduation-cap"></i>View scholarships</button>' : ''}
         </div>
-        <button class="btn btn-sm" id="view-company-opps-btn"><i data-lucide="briefcase"></i>View opportunities</button>
       </div>`;
     document
       .getElementById('view-company-opps-btn')
       .addEventListener('click', () => openCompanyOpportunitiesList(companyName, opportunities));
+    document
+      .getElementById('view-company-scholarships-btn')
+      ?.addEventListener('click', () => openCompanyScholarshipsList(companyName, scholarships));
     if (window.lucide) window.lucide.createIcons();
   } catch (error) {
     console.warn('Company opportunities failed:', error);
@@ -904,6 +897,54 @@ async function loadCompanyOpportunities(companyId) {
   return snap.docs
     .map((item) => ({ id: item.id, ...item.data() }))
     .sort((left, right) => timestampMs(right.createdAt) - timestampMs(left.createdAt));
+}
+
+async function loadCompanyScholarships(companyId, companyName) {
+  const matches = new Map();
+  try {
+    const snap = await getDocs(query(collection(db, 'scholarships'), where('createdBy', '==', companyId)));
+    snap.docs.forEach((item) => matches.set(item.id, { id: item.id, ...item.data() }));
+  } catch (error) {
+    console.warn('Scholarships by owner failed:', error);
+  }
+
+  const providerName = cleanText(companyName).toLowerCase();
+  if (providerName) {
+    try {
+      const snap = await getDocs(collection(db, 'scholarships'));
+      snap.docs.forEach((item) => {
+        const data = item.data();
+        const provider = cleanText(data.provider || data.organization).toLowerCase();
+        if (provider && provider === providerName) {
+          matches.set(item.id, { id: item.id, ...data });
+        }
+      });
+    } catch (error) {
+      console.warn('Scholarships by provider failed:', error);
+    }
+  }
+
+  return Array.from(matches.values())
+    .sort((left, right) => timestampMs(right.createdAt) - timestampMs(left.createdAt));
+}
+
+function companyContentCounts(opportunities, scholarships) {
+  return {
+    jobs: opportunities.filter((item) => normalizedOpportunityType(item) === 'job').length,
+    internships: opportunities.filter((item) => normalizedOpportunityType(item) === 'internship').length,
+    sponsored: opportunities.filter((item) => normalizedOpportunityType(item) === 'sponsoring').length,
+    scholarships: scholarships.length,
+  };
+}
+
+function profileContentMetric(label, value, icon) {
+  return `<div class="profile-content-metric">
+    <div class="profile-content-metric__icon"><i data-lucide="${icon}"></i></div>
+    <div>
+      <div class="profile-content-metric__value">${Number(value || 0).toLocaleString()}</div>
+      <div class="profile-content-metric__label">${esc(label)}</div>
+    </div>
+  </div>`;
 }
 
 function openCompanyOpportunitiesList(companyName, opportunities) {
@@ -931,8 +972,44 @@ function openCompanyOpportunitiesList(companyName, opportunities) {
           </div>
           <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">
             <span class="badge badge-info"><i data-lucide="${opportunityTypeIcon(type)}"></i>${esc(capitalizeLabel(type))}</span>
+            ${opportunityAmountLabel(opportunity) ? `<span class="badge"><i data-lucide="coins"></i>${esc(opportunityAmountLabel(opportunity))}</span>` : ''}
             <span class="badge ${status === 'open' ? 'badge-success' : 'badge-warning'}">${esc(capitalizeLabel(status))}</span>
             ${opportunity.isHidden === true ? '<span class="badge badge-warning"><i data-lucide="eye-off"></i>Hidden</span>' : ''}
+          </div>
+        </div>`;
+      })
+      .join('')}</div>`;
+  }
+  if (window.lucide) window.lucide.createIcons();
+}
+
+function openCompanyScholarshipsList(companyName, scholarships) {
+  openModal('apps-modal');
+  document.getElementById('apps-title').textContent = cleanText(companyName)
+    ? `${companyName} scholarships`
+    : 'Publisher scholarships';
+  const body = document.getElementById('apps-body');
+  if (!scholarships.length) {
+    body.innerHTML = emptyStateHtml('This publisher has not posted any scholarships yet.', {
+      title: 'No scholarships',
+      icon: 'graduation-cap',
+    });
+  } else {
+    body.innerHTML = `<div class="list-grid">${scholarships
+      .map((scholarship) => {
+        const location = cleanText(scholarship.location || scholarship.locationLabel) ||
+          [scholarship.city, scholarship.country].map(cleanText).filter(Boolean).join(' - ');
+        const created = formatTimestamp(scholarship.createdAt);
+        return `<div class="item-row">
+          <div class="activity-icon" style="background:rgba(226,74,74,0.12);color:#E24A4A"><i data-lucide="graduation-cap"></i></div>
+          <div class="row-body">
+            <div class="row-title">${esc(cleanText(scholarship.title) || 'Untitled scholarship')}</div>
+            <div class="row-sub">${esc([location, created].filter(Boolean).join(' - '))}</div>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">
+            ${scholarship.amount ? `<span class="badge"><i data-lucide="coins"></i>${esc(scholarship.amount)}</span>` : ''}
+            ${scholarship.level ? `<span class="badge">${esc(scholarship.level)}</span>` : ''}
+            ${scholarship.isHidden === true ? '<span class="badge badge-warning"><i data-lucide="eye-off"></i>Hidden</span>' : ''}
           </div>
         </div>`;
       })
@@ -1000,7 +1077,7 @@ function accountModerationHtml(isActive) {
 function companyOpportunitiesHtml() {
   return `
     <div class="profile-section">
-      <div class="profile-section__title"><i data-lucide="briefcase"></i>Posted opportunities</div>
+      <div class="profile-section__title"><i data-lucide="briefcase"></i>Published content</div>
       <div id="company-opportunities-block" class="profile-block"><div class="loading" style="padding:10px;"><div class="spinner"></div></div></div>
     </div>`;
 }
@@ -1115,7 +1192,7 @@ function accountBadgeHtml(isActive) {
 function applicationStatusClass(status) {
   if (status === 'accepted') return 'badge-success';
   if (status === 'rejected' || status === 'withdrawn') return 'badge-danger';
-  if (status === 'reviewing') return 'badge-info';
+  if (status === 'reviewed' || status === 'reviewing') return 'badge-info';
   return 'badge-warning';
 }
 
@@ -1136,6 +1213,31 @@ function effectiveOpportunityStatus(opportunity) {
   const deadline = dateFromValue(opportunity?.applicationDeadline || opportunity?.deadline);
   if (deadline && deadline.getTime() < Date.now()) return 'closed';
   return 'open';
+}
+
+function normalizedOpportunityType(opportunity) {
+  return cleanText(opportunity?.type || opportunity?.opportunityType || 'job').toLowerCase();
+}
+
+function opportunityAmountLabel(opportunity) {
+  const type = normalizedOpportunityType(opportunity);
+  if (type === 'sponsoring') {
+    if (cleanText(opportunity?.fundingAmount)) {
+      return cleanText(`${opportunity.fundingAmount} ${opportunity.fundingCurrency || ''}`);
+    }
+    return cleanText(opportunity?.fundingNote || opportunity?.compensationText);
+  }
+  const currency = cleanText(opportunity?.salaryCurrency || opportunity?.fundingCurrency);
+  const period = cleanText(opportunity?.salaryPeriod);
+  const suffix = [currency, period ? `/${period}` : ''].filter(Boolean).join(' ');
+  if (opportunity?.salaryMin != null && opportunity?.salaryMax != null) {
+    return cleanText(`${opportunity.salaryMin}-${opportunity.salaryMax} ${suffix}`);
+  }
+  if (opportunity?.salaryMin != null) {
+    return cleanText(`From ${opportunity.salaryMin} ${suffix}`);
+  }
+  if (type === 'internship' && opportunity?.isPaid === false) return 'Unpaid';
+  return cleanText(opportunity?.compensationText || opportunity?.compensationNote);
 }
 
 function opportunityTypeIcon(type) {

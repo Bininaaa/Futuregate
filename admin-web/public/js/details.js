@@ -121,7 +121,7 @@ function canEditScholarship(item) {
   return !!adminId && createdBy === adminId && (!createdByRole || createdByRole === 'admin');
 }
 
-function editLink(canEdit, href, label = 'Edit admin post') {
+function editLink(canEdit, href, label = 'Edit Admin post') {
   return canEdit
     ? `<a class="btn btn-primary" href="${href}"><i data-lucide="pencil"></i>${esc(label)}</a>`
     : '';
@@ -164,11 +164,12 @@ async function renderOpportunity(id) {
     ? it.requirementItems.join('\n')
     : it.requirements;
 
-  let appCount = 0;
+  let applications = [];
   try {
     const snap = await getDocs(query(collection(db, 'applications'), where('opportunityId', '==', id)));
-    appCount = snap.size;
+    applications = snap.docs.map((item) => ({ id: item.id, ...item.data() }));
   } catch {}
+  const appCounts = applicationStatusCounts(applications);
 
   const typeLabel = capitalizeFirst(it.type || it.opportunityType || 'Job');
   const salaryRange = buildSalaryRange(it);
@@ -183,13 +184,13 @@ async function renderOpportunity(id) {
       { label: 'Status', value: statusBadge(it.status || 'open'), html: true, icon: 'circle-dot' },
       { label: 'Work Mode', value: capitalizeFirst(it.workMode || ''), icon: 'monitor' },
       { label: 'Employment', value: capitalizeFirst((it.employmentType || '').replace(/_/g, ' ')), icon: 'briefcase' },
-      { label: 'Compensation', value: salaryRange || (it.isPaid === false ? 'Unpaid' : ''), icon: 'coins' },
+      { label: 'Amount', value: salaryRange || (it.isPaid === false ? 'Unpaid' : ''), icon: 'coins' },
       { label: 'Deadline', value: formatFullTimestamp(it.applicationDeadline || it.deadline), icon: 'calendar-clock' },
-      { label: 'Applications', value: `${appCount}`, icon: 'file-text' },
       { label: 'Posted', value: formatFullTimestamp(it.createdAt), icon: 'calendar' },
     ])}
     ${section('Description', paragraphs(it.description), 'align-left')}
     ${section('Requirements', paragraphs(requirements), 'list-checks')}
+    ${section('Applications', applicationSummaryHtml(appCounts), 'file-text')}
     ${section('Skills', chips(it.skills, 'rgba(59,130,246,0.1)'), 'sparkles')}
     <div class="details-flags">
       ${it.isFeatured ? '<span class="badge badge-warning"><i data-lucide="star"></i>Featured</span>' : ''}
@@ -264,7 +265,6 @@ async function renderIdea(id) {
       { label: 'Status', value: statusBadge(it.status || 'pending'), html: true, icon: 'circle-dot' },
       { label: 'Submitted by', value: it.submittedByName || '—', icon: 'user' },
       { label: 'Submitted', value: formatFullTimestamp(it.createdAt), icon: 'calendar' },
-      { label: 'Collaboration', value: it.isPublic !== false ? 'Open' : 'Private', icon: 'users' },
     ])}
     ${section('Summary', paragraphs(summary), 'align-left')}
     ${section('Description', paragraphs(it.description), 'text')}
@@ -377,11 +377,15 @@ async function renderUser(id) {
     if (companyRows.length) roleSection = section('Company', kvGrid(companyRows), 'building-2');
   }
 
+  const publisherStats = role === 'company'
+    ? await loadPublisherStats(id, name)
+    : null;
   const bioText = String(it.bio || it.description || '').trim();
 
   setBody(`
     ${kvGrid(identityRows)}
     ${roleSection}
+    ${publisherStats ? publisherStatsSection(publisherStats) : ''}
     ${bioText ? section(role === 'company' ? 'About' : 'Bio', paragraphs(bioText), 'align-left') : ''}
     ${role === 'company' ? commercialRegisterSection(it) : ''}
     ${section('Skills', chips(it.skills, 'rgba(99,102,241,0.1)'), 'sparkles')}
@@ -392,6 +396,94 @@ async function renderUser(id) {
   `);
   bindCommercialRegisterButtons(id);
   if (window.lucide) window.lucide.createIcons();
+}
+
+function applicationStatusCounts(applications) {
+  const counts = { total: applications.length, pending: 0, accepted: 0, rejected: 0 };
+  applications.forEach((application) => {
+    const status = String(application.status || 'pending').trim().toLowerCase();
+    if (status === 'accepted') counts.accepted += 1;
+    else if (status === 'rejected') counts.rejected += 1;
+    else counts.pending += 1;
+  });
+  return counts;
+}
+
+function applicationSummaryHtml(counts) {
+  return `<div class="details-stat-row">
+    <span class="badge badge-info"><i data-lucide="users"></i>${counts.total} Total</span>
+    <span class="badge badge-warning"><i data-lucide="hourglass"></i>${counts.pending} Pending</span>
+    <span class="badge badge-success"><i data-lucide="check"></i>${counts.accepted} Accepted</span>
+    <span class="badge badge-danger"><i data-lucide="x"></i>${counts.rejected} Rejected</span>
+  </div>`;
+}
+
+async function loadPublisherStats(userId, publisherName) {
+  const [opportunities, scholarships] = await Promise.all([
+    loadPublisherOpportunities(userId),
+    loadPublisherScholarships(userId, publisherName),
+  ]);
+  return {
+    jobs: opportunities.filter((item) => normalizedOpportunityType(item) === 'job').length,
+    internships: opportunities.filter((item) => normalizedOpportunityType(item) === 'internship').length,
+    sponsored: opportunities.filter((item) => normalizedOpportunityType(item) === 'sponsoring').length,
+    scholarships: scholarships.length,
+  };
+}
+
+async function loadPublisherOpportunities(userId) {
+  try {
+    const snap = await getDocs(query(collection(db, 'opportunities'), where('companyId', '==', userId)));
+    return snap.docs.map((item) => ({ id: item.id, ...item.data() }));
+  } catch {
+    return [];
+  }
+}
+
+async function loadPublisherScholarships(userId, publisherName) {
+  const matches = new Map();
+  try {
+    const snap = await getDocs(query(collection(db, 'scholarships'), where('createdBy', '==', userId)));
+    snap.docs.forEach((item) => matches.set(item.id, { id: item.id, ...item.data() }));
+  } catch {}
+
+  const providerName = String(publisherName || '').trim().toLowerCase();
+  if (providerName) {
+    try {
+      const snap = await getDocs(collection(db, 'scholarships'));
+      snap.docs.forEach((item) => {
+        const data = item.data();
+        const provider = String(data.provider || data.organization || '').trim().toLowerCase();
+        if (provider && provider === providerName) {
+          matches.set(item.id, { id: item.id, ...data });
+        }
+      });
+    } catch {}
+  }
+  return Array.from(matches.values());
+}
+
+function publisherStatsSection(stats) {
+  return section('Published Content', `<div class="details-content-metrics">
+    ${contentMetric('Jobs', stats.jobs, 'briefcase')}
+    ${contentMetric('Internships', stats.internships, 'badge-check')}
+    ${contentMetric('Sponsored', stats.sponsored, 'badge-dollar-sign')}
+    ${contentMetric('Scholarships', stats.scholarships, 'graduation-cap')}
+  </div>`, 'bar-chart-3');
+}
+
+function contentMetric(label, value, icon) {
+  return `<div class="details-content-metric">
+    <div class="details-content-metric__icon"><i data-lucide="${icon}"></i></div>
+    <div>
+      <div class="details-content-metric__value">${Number(value || 0).toLocaleString()}</div>
+      <div class="details-content-metric__label">${esc(label)}</div>
+    </div>
+  </div>`;
+}
+
+function normalizedOpportunityType(item) {
+  return String(item?.type || item?.opportunityType || 'job').trim().toLowerCase();
 }
 
 function commercialRegisterSection(user) {

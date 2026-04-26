@@ -252,7 +252,7 @@
             <div>
               ${engagement('Application rate',        appRate.toFixed(1) + ' apps per opportunity',            'trending-up',   'var(--c-info)')}
               ${engagement('CV completion',           `${cvRate.toFixed(0)}% (${totalCvs} of ${students} students)`, 'file-check-2', 'var(--c-success)')}
-              ${engagement('Project ideas pipeline',  `${pendingIdeas} pending · ${approvedIdeas} approved`,   'lightbulb',     'var(--c-warning)')}
+              ${engagement('Project ideas pipeline',  `${pendingIdeas} Pending · ${approvedIdeas} Approved`,   'lightbulb',     'var(--c-warning)')}
             </div>
           </section>
 
@@ -270,7 +270,7 @@
             </div></div>
             <div class="quick-access-grid">
               ${quick('briefcase',    'Opportunities',  'moderation.html?tab=opportunities',                     'var(--c-accent)',    'Review jobs, internships, and sponsoring posts.')}
-              ${quick('file-text',    'Pending apps',   'moderation.html?tab=opportunities&filter=pending_apps', 'var(--c-activity)', 'Review applications inside admin-posted opportunities.')}
+              ${quick('file-text',    'Pending apps',   'moderation.html?tab=opportunities&filter=pending_apps', 'var(--c-activity)', 'Review applications inside Admin posts.')}
               ${quick('graduation-cap','Scholarships',  'moderation.html?tab=scholarships',                      'var(--c-danger)',    'Publish and curate scholarships.')}
               ${quick('video',        'Trainings',      'moderation.html?tab=trainings&librarySource=youtube&libraryMode=search&filter=videos', 'var(--c-secondary)','Import and manage training videos.')}
               ${quick('library',      'Library',        'moderation.html?tab=trainings&librarySource=books&libraryMode=search&filter=books',    'var(--c-info)',      'Import and manage book resources.')}
@@ -565,7 +565,7 @@
             <div class="row-title">${esc(name)}</div>
             <div class="row-sub">${esc(d.email || '')}</div>
           </div>
-          <div class="badge badge-${roleBadge(role)}">${esc(role)}</div>
+          <div class="badge badge-${roleBadge(role)}">${esc(typeLabel(role))}</div>
         </div>`;
       }).join('');
       el.querySelectorAll('.user-row').forEach((row) => {

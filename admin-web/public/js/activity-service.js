@@ -15,6 +15,18 @@ import {
   truncateText,
 } from './admin-utils.js';
 
+function displayLabel(value) {
+  return String(value || '')
+    .trim()
+    .replace(/[_-]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+function opportunitySubtype(data) {
+  return String(data?.type || data?.opportunityType || 'job').trim().toLowerCase();
+}
+
 const ACTIVITY_SOURCES = [
   {
     key: 'applications',
@@ -81,6 +93,7 @@ async function enrichApplicationActivities(docs) {
       const companyName = String(opportunity.companyName || data.companyName || '').trim();
       const studentName = String(data.studentName || data.applicantName || 'A student').trim();
       const status = String(data.status || '').trim();
+      const subType = opportunitySubtype(opportunity);
       const companyPart = companyName ? ` at ${companyName}` : '';
 
       return {
@@ -92,6 +105,8 @@ async function enrichApplicationActivities(docs) {
         title: opportunityTitle,
         actorName: studentName,
         status,
+        subType,
+        subTypeLabel: displayLabel(subType),
         description: `${studentName} applied to ${opportunityTitle}${companyPart}.`,
       };
     })
@@ -125,6 +140,7 @@ async function enrichOpportunityActivities(docs) {
     const title = String(data.title || 'New opportunity').trim();
     const actorName = String(data.companyName || '').trim();
     const status = String(data.status || '').trim();
+    const subType = opportunitySubtype(data);
 
     return {
       id: snapshot.id,
@@ -135,6 +151,8 @@ async function enrichOpportunityActivities(docs) {
       title,
       actorName,
       status,
+      subType,
+      subTypeLabel: displayLabel(subType),
       description: actorName ? `${actorName} published "${title}".` : `New opportunity: "${title}".`,
     };
   });

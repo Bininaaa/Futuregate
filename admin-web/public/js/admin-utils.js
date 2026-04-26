@@ -94,7 +94,8 @@ function activityTypeLabel(type) {
 function typeIcon(type, subType) {
   const subs = {
     job: 'briefcase',
-    internship: 'user-check',
+    internship: 'briefcase-business',
+    sponsoring: 'badge-dollar-sign',
     contract: 'file-signature',
     volunteer: 'heart-handshake',
     freelance: 'laptop',

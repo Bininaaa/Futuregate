@@ -50,7 +50,7 @@
     import { WORKER_BASE_URL } from './js/google-books-config.js';
     import { getApplicationCv, getApplicationCvDocument, getCompanyCommercialRegisterDocument, openDocumentUrl, friendlyDocumentErrorMessage } from './js/document-access.js';
     import { openModal, closeModal } from './js/ui.js';
-    const ADMIN_PUBLISHER_NAME = 'FutureGate Editorial Desk';
+    const ADMIN_PUBLISHER_NAME = 'FutureGate Content Team';
 
     const TABS = [
       { id: 'ideas',        label: 'Project ideas', icon: 'lightbulb' },
@@ -63,7 +63,7 @@
     const FILTERS = {
       ideas: [
         { v: 'all',      l: 'All',      i: 'list' },
-        { v: 'admin',    l: 'My admin posts', i: 'shield' },
+        { v: 'admin',    l: 'Admin posts', i: 'shield' },
         { v: 'pending',  l: 'Pending',  i: 'clock' },
         { v: 'approved', l: 'Approved', i: 'check' },
         { v: 'rejected', l: 'Rejected', i: 'x-circle' },
@@ -71,8 +71,8 @@
       ],
       opportunities: [
         { v: 'all',         l: 'All opportunities', i: 'list' },
-        { v: 'admin',       l: 'Posted by admin',   i: 'shield' },
-        { v: 'pendingApps', l: 'Has pending apps',  i: 'hourglass' },
+        { v: 'admin',       l: 'Admin posts',       i: 'shield' },
+        { v: 'pendingApps', l: 'Has Pending Apps',  i: 'hourglass' },
         { v: 'featured',    l: 'Featured',          i: 'star' },
         { v: 'closed',      l: 'Closed',            i: 'lock' },
         { v: 'hidden',      l: 'Hidden',            i: 'eye-off' },
@@ -223,6 +223,11 @@
         .replace(/\b\w/g, (letter) => letter.toUpperCase());
     }
 
+    function displayLabel(value) {
+      const text = cleanText(value);
+      return text ? capitalizeLabel(text) : '';
+    }
+
     function statusBadgeClass(status) {
       const normalized = cleanText(status).toLowerCase();
       if (['approved', 'accepted', 'open', 'visible'].includes(normalized)) return 'success';
@@ -233,7 +238,7 @@
     }
 
     function badge(label, className = '', icon = '') {
-      const text = cleanText(label);
+      const text = displayLabel(label);
       if (!text) return '';
       return `<span class="badge ${className}">${icon ? `<i data-lucide="${icon}"></i>` : ''}${esc(text)}</span>`;
     }
@@ -260,15 +265,10 @@
       return `https://${href.replace(/^\/+/, '')}`;
     }
 
-    function publisherProfileHref(userId) {
-      const id = cleanText(userId);
-      return id ? `users.html?userId=${encodeURIComponent(id)}` : '';
-    }
-
     function profileLinkAction(userId, label = 'Publisher profile') {
-      const href = publisherProfileHref(userId);
-      if (!href) return '';
-      return `<a class="btn btn-sm" href="${esc(href)}"><i data-lucide="user"></i>${esc(label)}</a>`;
+      const id = cleanText(userId);
+      if (!id) return '';
+      return `<button class="btn btn-sm" type="button" data-publisher-id="${esc(id)}"><i data-lucide="user"></i>${esc(label)}</button>`;
     }
 
     function contentCard({
@@ -314,6 +314,15 @@
       return `<div class="detail-metric"><div class="detail-metric__label">${esc(label)}</div><div class="detail-metric__value">${esc(text)}</div></div>`;
     }
 
+    function applicationSummaryHtml({ total, pending, accepted, rejected }) {
+      return `<div class="application-summary-row">
+        <span class="badge badge-info"><i data-lucide="users"></i>${Number(total || 0).toLocaleString()} Total</span>
+        <span class="badge badge-warning"><i data-lucide="hourglass"></i>${Number(pending || 0).toLocaleString()} Pending</span>
+        <span class="badge badge-success"><i data-lucide="check"></i>${Number(accepted || 0).toLocaleString()} Accepted</span>
+        <span class="badge badge-danger"><i data-lucide="x"></i>${Number(rejected || 0).toLocaleString()} Rejected</span>
+      </div>`;
+    }
+
     function bindCardOpens(handler) {
       document.getElementById('list')?.querySelectorAll('[data-open-details]').forEach((card) => {
         card.addEventListener('click', (event) => {
@@ -321,6 +330,250 @@
           handler(card.getAttribute('data-open-details'), card.getAttribute('data-action-open') || 'details');
         });
       });
+    }
+
+    function bindPublisherActions(root = document) {
+      root.querySelectorAll('[data-publisher-id]').forEach((button) => {
+        if (button.dataset.publisherBound === 'true') return;
+        button.dataset.publisherBound = 'true';
+        button.addEventListener('click', (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          openPublisherProfile(button.getAttribute('data-publisher-id'));
+        });
+      });
+    }
+
+    async function openPublisherProfile(userId) {
+      const id = cleanText(userId);
+      if (!id) return;
+      const saveBtn = document.getElementById('editor-save');
+      if (saveBtn) saveBtn.style.display = 'none';
+      document.getElementById('editor-title').textContent = 'Publisher profile';
+      document.getElementById('editor-body').innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+      openModal('editor-modal');
+      try {
+        const snap = await getDoc(doc(db, 'users', id));
+        if (!snap.exists()) throw new Error('Publisher not found');
+        const user = { id: snap.id, ...snap.data(), uid: cleanText(snap.data().uid || snap.id) };
+        document.getElementById('editor-title').textContent = displayNameForPublisher(user);
+        document.getElementById('editor-body').innerHTML = publisherProfileHtml(user);
+        bindPublisherProfileActions(user.id);
+        if (window.lucide) window.lucide.createIcons();
+      } catch (error) {
+        console.error('Publisher profile failed:', error);
+        document.getElementById('editor-body').innerHTML = feedbackCardHtml('Could not load publisher profile.', { type: 'error' });
+        if (window.lucide) window.lucide.createIcons();
+      }
+    }
+
+    function publisherProfileHtml(user) {
+      const role = cleanText(user.role || 'user').toLowerCase();
+      const name = displayNameForPublisher(user);
+      const initials = (name[0] || '?').toUpperCase();
+      const approval = cleanText(user.approvalStatus || (role === 'company' ? 'approved' : 'active')).toLowerCase();
+      const isActive = user.isActive !== false;
+      const stats = publisherContentCounts(user);
+      const logoUrl = cleanText(user.logo || user.companyLogo || user.logoUrl || user.companyLogoUrl || user.photoURL || user.photoUrl || user.profileImage);
+      const contactHtml = `
+        <div class="profile-grid">
+          ${profileBlockHtml('Email', cleanText(user.email) || 'Not provided', { muted: !cleanText(user.email) })}
+          ${profileBlockHtml('Phone', cleanText(user.phone) || 'Not provided', { muted: !cleanText(user.phone) })}
+          ${profileBlockHtml('Location', cleanText(user.location || user.address) || 'Not provided', { muted: !cleanText(user.location || user.address) })}
+          ${profileBlockHtml('Joined', formatTimestamp(user.createdAt) || 'Not provided', { muted: !formatTimestamp(user.createdAt) })}
+          ${profileBlockHtml('Provider', displayLabel(user.provider || 'email'))}
+          ${profileBlockHtml('Status', badge(isActive ? 'Active' : 'Blocked', isActive ? 'badge-success' : 'badge-danger', isActive ? 'check' : 'ban'), { html: true })}
+        </div>`;
+      const roleSection = publisherRoleSection(user, role, approval);
+      const skills = normalizeList(user.skills);
+      const bioText = cleanText(user.bio || user.description);
+      return `
+        <div class="details-profile-hero">
+          <div class="details-profile-avatar" style="background:${roleColor(role)}1a;color:${roleColor(role)}">
+            ${logoUrl ? `<img src="${esc(logoUrl)}" alt="" style="width:100%;height:100%;object-fit:contain;border-radius:inherit;background:#fff;" onerror="this.parentNode.textContent='${esc(initials)}';">` : esc(initials)}
+          </div>
+          <div>
+            <div class="details-profile-name">${esc(name)}</div>
+            <div class="row-sub">${esc(cleanText(user.sector || user.location || user.email) || displayLabel(role))}</div>
+            <div class="details-profile-badges">
+              ${badge(role, role === 'company' ? 'badge-success' : role === 'admin' ? 'badge-warning' : 'badge-info', role === 'company' ? 'building-2' : role === 'admin' ? 'shield' : 'user')}
+              ${role === 'company' ? badge(approval, `badge-${statusBadgeClass(approval)}`, approval === 'pending' ? 'clock' : approval === 'rejected' ? 'x-circle' : 'badge-check') : ''}
+              ${badge(isActive ? 'Active' : 'Blocked', isActive ? 'badge-success' : 'badge-danger', isActive ? 'check' : 'ban')}
+            </div>
+          </div>
+        </div>
+        ${section('Contact', 'contact', contactHtml)}
+        ${roleSection}
+        ${section('Published content', 'bar-chart-3', `
+          <div class="details-content-metrics">
+            ${detailsContentMetric('Jobs', stats.jobs, 'briefcase')}
+            ${detailsContentMetric('Internships', stats.internships, 'badge-check')}
+            ${detailsContentMetric('Sponsored', stats.sponsored, 'badge-dollar-sign')}
+            ${detailsContentMetric('Scholarships', stats.scholarships, 'graduation-cap')}
+          </div>
+        `)}
+        ${bioText ? section(role === 'company' ? 'About' : 'Bio', 'align-left', `<p style="white-space:pre-wrap;margin:0;">${esc(bioText)}</p>`) : ''}
+        ${role === 'company' ? publisherCommercialRegisterSection(user) : ''}
+        ${skills.length ? section('Skills', 'sparkles', `<div class="tag-list">${skills.map((item) => badge(item)).join('')}</div>`) : ''}
+      `;
+    }
+
+    function publisherRoleSection(user, role, approval) {
+      if (role === 'student') {
+        const academicLevel = cleanText(user.academicLevel);
+        const rows = [
+          profileBlockHtml('Academic level', academicLevel ? capitalizeLabel(academicLevel) : 'Not provided', { muted: !academicLevel }),
+          profileBlockHtml('University', cleanText(user.university) || 'Not provided', { muted: !cleanText(user.university) }),
+          profileBlockHtml('Field of study', cleanText(user.fieldOfStudy) || 'Not provided', { muted: !cleanText(user.fieldOfStudy) }),
+        ];
+        const isDoctorate = academicLevel.toLowerCase() === 'doctorat' || academicLevel.toLowerCase().includes('doctor');
+        if (isDoctorate) {
+          rows.push(
+            profileBlockHtml('Research topic', cleanText(user.researchTopic) || 'Not provided', { muted: !cleanText(user.researchTopic) }),
+            profileBlockHtml('Laboratory', cleanText(user.laboratory) || 'Not provided', { muted: !cleanText(user.laboratory) }),
+            profileBlockHtml('Supervisor', cleanText(user.supervisor) || 'Not provided', { muted: !cleanText(user.supervisor) }),
+            profileBlockHtml('Research domain', cleanText(user.researchDomain) || 'Not provided', { muted: !cleanText(user.researchDomain) }),
+          );
+        }
+        return section('Academic', 'graduation-cap', `<div class="profile-grid">${rows.join('')}</div>`);
+      }
+
+      if (role === 'company') {
+        const website = cleanText(user.website);
+        const rows = [
+          profileBlockHtml('Company name', cleanText(user.companyName) || cleanText(user.fullName) || 'Not provided', { muted: !cleanText(user.companyName || user.fullName) }),
+          profileBlockHtml('Approval status', badge(approval || 'approved', `badge-${statusBadgeClass(approval || 'approved')}`, approval === 'pending' ? 'clock' : approval === 'rejected' ? 'x-circle' : 'badge-check'), { html: true }),
+          profileBlockHtml('Sector', cleanText(user.sector || user.industry) || 'Not provided', { muted: !cleanText(user.sector || user.industry) }),
+          profileBlockHtml('Website', website ? externalLinkHtml(website) : 'Not provided', { html: Boolean(website), muted: !website }),
+        ];
+        if (cleanText(user.companySize)) rows.push(profileBlockHtml('Company size', user.companySize));
+        if (cleanText(user.registrationNumber)) rows.push(profileBlockHtml('Registration #', user.registrationNumber));
+        return section('Company', 'building-2', `<div class="profile-grid">${rows.join('')}</div>`);
+      }
+
+      if (role === 'admin') {
+        const rows = [
+          profileBlockHtml('Admin level', cleanText(user.adminLevel) || 'Not provided', { muted: !cleanText(user.adminLevel) }),
+          profileBlockHtml('Posting language', cleanText(user.preferredPostingLanguage) || 'Not provided', { muted: !cleanText(user.preferredPostingLanguage) }),
+        ];
+        return section('Admin', 'shield', `<div class="profile-grid">${rows.join('')}</div>`);
+      }
+
+      return '';
+    }
+
+    function profileBlockHtml(label, value, { html = false, muted = false } = {}) {
+      return `<div class="profile-block"><div class="profile-block-label">${esc(label)}</div><div class="profile-block-value" style="${muted ? 'color:var(--c-text-faint);font-weight:500;' : ''}">${html ? value : esc(value)}</div></div>`;
+    }
+
+    function externalLinkHtml(value) {
+      const label = cleanText(value);
+      return label ? `<a href="${esc(normalizeExternalUrl(label))}" target="_blank" rel="noopener">${esc(label)}</a>` : '';
+    }
+
+    function publisherCommercialRegisterSection(user) {
+      const hasRegister = hasCommercialRegister(user);
+      const uploaded = formatTimestamp(user.commercialRegisterUploadedAt) || 'Not provided';
+      const fileName = cleanText(user.commercialRegisterFileName) || 'Commercial register';
+      return section('Commercial register', 'file-check-2', `
+        <div class="profile-block">
+          ${hasRegister
+            ? `
+              <div class="profile-block-label">${esc(fileName)}</div>
+              <div class="profile-block-value" style="margin-bottom:12px;color:var(--c-text-faint);font-size:12px;">Uploaded ${esc(uploaded)}</div>
+              <div style="display:flex;flex-wrap:wrap;gap:8px;">
+                <button class="btn btn-sm" data-publisher-register="view"><i data-lucide="eye"></i>View register</button>
+                <button class="btn btn-sm" data-publisher-register="download"><i data-lucide="download"></i>Download register</button>
+              </div>`
+            : '<div class="profile-block-value" style="color:var(--c-danger);">Commercial register missing.</div>'
+          }
+        </div>`);
+    }
+
+    function hasCommercialRegister(user) {
+      return Boolean(cleanText(
+        user?.commercialRegisterStoragePath ||
+        user?.commercialRegisterObjectKey ||
+        user?.commercialRegisterAccessPath ||
+        user?.commercialRegisterUrl ||
+        user?.commercialRegisterAccessUrl ||
+        user?.commercialRegisterSignedUrl,
+      ));
+    }
+
+    function bindPublisherProfileActions(userId) {
+      document.querySelectorAll('[data-publisher-register]').forEach((button) => {
+        button.addEventListener('click', () => {
+          openCommercialRegister(userId, button.getAttribute('data-publisher-register') === 'download');
+        });
+      });
+    }
+
+    function publisherContentCounts(user) {
+      const ids = new Set([cleanText(user.id), cleanText(user.uid)].filter(Boolean));
+      const name = displayNameForPublisher(user).toLowerCase();
+      const opportunities = state.opportunities.filter((item) =>
+        ids.has(cleanText(item.companyId)) ||
+        (name && cleanText(item.companyName).toLowerCase() === name)
+      );
+      const scholarships = state.scholarships.filter((item) =>
+        ids.has(cleanText(item.createdBy)) ||
+        ids.has(cleanText(item.providerId)) ||
+        (name && cleanText(item.provider || item.organization).toLowerCase() === name)
+      );
+      return {
+        jobs: opportunities.filter((item) => normalizedOpportunityType(item) === 'job').length,
+        internships: opportunities.filter((item) => normalizedOpportunityType(item) === 'internship').length,
+        sponsored: opportunities.filter((item) => normalizedOpportunityType(item) === 'sponsoring').length,
+        scholarships: scholarships.length,
+      };
+    }
+
+    function detailsContentMetric(label, value, icon) {
+      return `<div class="details-content-metric">
+        <div class="details-content-metric__icon"><i data-lucide="${icon}"></i></div>
+        <div>
+          <div class="details-content-metric__value">${Number(value || 0).toLocaleString()}</div>
+          <div class="details-content-metric__label">${esc(label)}</div>
+        </div>
+      </div>`;
+    }
+
+    function displayNameForPublisher(user) {
+      return cleanText(user.companyName || user.fullName || user.displayName || user.email || 'Publisher');
+    }
+
+    function roleColor(role) {
+      if (role === 'student') return '#2563EB';
+      if (role === 'company') return '#14B8A6';
+      if (role === 'admin') return '#F59E0B';
+      return '#64748B';
+    }
+
+    function normalizedOpportunityType(item) {
+      return cleanText(item?.type || item?.opportunityType || 'job').toLowerCase();
+    }
+
+    function opportunityAmountLabel(item) {
+      const type = normalizedOpportunityType(item);
+      if (type === 'sponsoring') {
+        if (cleanText(item?.fundingAmount)) {
+          return cleanText(`${item.fundingAmount} ${item.fundingCurrency || ''}`);
+        }
+        return cleanText(item?.fundingNote || item?.compensationText);
+      }
+
+      const currency = cleanText(item?.salaryCurrency || item?.fundingCurrency);
+      const period = cleanText(item?.salaryPeriod);
+      const suffix = [currency, period ? `/${period}` : ''].filter(Boolean).join(' ');
+      if (item?.salaryMin != null && item?.salaryMax != null) {
+        return cleanText(`${item.salaryMin}-${item.salaryMax} ${suffix}`);
+      }
+      if (item?.salaryMin != null) {
+        return cleanText(`From ${item.salaryMin} ${suffix}`);
+      }
+      if (type === 'internship' && item?.isPaid === false) return 'Unpaid';
+      return cleanText(item?.compensationText || item?.compensationNote);
     }
 
     async function authToken() {
@@ -536,8 +789,8 @@
       const resources = state.trainings.length;
       el.innerHTML = `
         <span class="summary-pill is-primary"><i data-lucide="lightbulb"></i><strong>${state.ideas.length}</strong> ideas</span>
-        ${pendingIdeas ? `<span class="summary-pill is-warning"><i data-lucide="clock"></i><strong>${pendingIdeas}</strong> pending ideas</span>` : ''}
-        ${pendingApps ? `<span class="summary-pill is-danger"><i data-lucide="hourglass"></i><strong>${pendingApps}</strong> pending apps</span>` : ''}
+        ${pendingIdeas ? `<span class="summary-pill is-warning"><i data-lucide="clock"></i><strong>${pendingIdeas}</strong> Pending Ideas</span>` : ''}
+        ${pendingApps ? `<span class="summary-pill is-danger"><i data-lucide="hourglass"></i><strong>${pendingApps}</strong> Pending Apps</span>` : ''}
         <span class="summary-pill is-info"><i data-lucide="briefcase"></i><strong>${opps}</strong> opportunities</span>
         <span class="summary-pill"><i data-lucide="graduation-cap"></i><strong>${scholarships}</strong> scholarships</span>
         <span class="summary-pill is-success"><i data-lucide="book-open"></i><strong>${resources}</strong> resources</span>
@@ -577,6 +830,7 @@
       });
       const s = document.getElementById('search');
       if (s) s.addEventListener('input', (e) => { state.search = e.target.value; renderTab(); });
+      bindPublisherActions(document.getElementById('tab-panel') || document);
     }
     function matchesQuery(x, fields) {
       const q = state.search.trim();
@@ -645,7 +899,6 @@
           it.isHidden ? badge('Hidden', 'badge-danger', 'eye-off') : '',
           it.domain ? badge(it.domain, '', 'tag') : '',
           it.submittedByName ? badge(it.submittedByName, '', 'user') : '',
-          canEdit ? badge('Editorial Post', 'badge-info', 'shield') : '',
         ],
         meta: formatTimestamp(it.createdAt) || '',
         actions: [
@@ -674,12 +927,12 @@
           await updateDoc(ref, { status: 'approved' });
           it.status = 'approved';
           await workerBestEffort('/api/notify/idea-status-changed', { ideaId: id });
-          showToast('Idea approved.', 'success');
+          showToast('Idea Approved.', 'success');
         } else if (action === 'reject') {
           await updateDoc(ref, { status: 'rejected' });
           it.status = 'rejected';
           await workerBestEffort('/api/notify/idea-status-changed', { ideaId: id });
-          showToast('Idea rejected.', 'success');
+          showToast('Idea Rejected.', 'success');
         } else if (action === 'toggle-hide') {
           const next = !it.isHidden;
           await updateDoc(ref, { isHidden: next });
@@ -730,7 +983,7 @@
           </div>
           <div class="details-inline-actions">
             ${profileLinkAction(it.submittedBy, 'Publisher profile')}
-            ${isOwnAdminIdea(it) ? `<a class="btn btn-sm" href="idea-editor.html?id=${encodeURIComponent(it.id)}"><i data-lucide="pencil"></i>Edit admin post</a>` : ''}
+            ${isOwnAdminIdea(it) ? `<a class="btn btn-sm" href="idea-editor.html?id=${encodeURIComponent(it.id)}"><i data-lucide="pencil"></i>Edit Admin post</a>` : ''}
           </div>
           <div class="detail-metrics">
             ${detailMetric('Created', formatTimestamp(it.createdAt))}
@@ -738,7 +991,6 @@
             ${detailMetric('Stage', capitalizeLabel(it.stage))}
             ${detailMetric('Language', (it.originalLanguage || '').toUpperCase())}
             ${detailMetric('Academic level', it.academicLevel || it.level)}
-            ${detailMetric('Collaboration', it.openForCollab ? 'Open to collaboration' : 'Not open')}
           </div>
         `)}
         ${it.shortDescription ? section('Overview', 'file-text', `<p style="white-space:pre-wrap;margin:0;">${esc(it.shortDescription)}</p>`) : ''}
@@ -765,6 +1017,7 @@
       const saveBtn = document.getElementById('editor-save');
       if (saveBtn) saveBtn.style.display = 'none';
       openModal('editor-modal');
+      bindPublisherActions(document.getElementById('editor-body'));
       if (window.lucide) window.lucide.createIcons();
     }
 
@@ -800,12 +1053,12 @@
             </div>
             <div class="form-row"><label>Status</label>
               <select id="f-status">
-                ${['pending','approved','rejected'].map((s) => `<option value="${s}" ${(it?.status||'pending')===s?'selected':''}>${s}</option>`).join('')}
+                ${['pending','approved','rejected'].map((s) => `<option value="${s}" ${(it?.status||'pending')===s?'selected':''}>${capitalizeLabel(s)}</option>`).join('')}
               </select>
             </div>
           </div>
         `)}
-        ${section('Collaboration', 'users', `
+        ${section('Discovery', 'tag', `
           <div class="form-row"><label>Tools / stack (comma separated)</label><input id="f-tools" type="text" value="${esc(joinCsv(it?.tools))}"/></div>
           <div class="form-row"><label>Tags (comma separated)</label><input id="f-tags" type="text" value="${esc(joinCsv(it?.tags))}"/></div>
           <div class="form-row"><label>Skills needed (comma separated)</label><input id="f-skills" type="text" value="${esc(joinCsv(it?.skillsNeeded))}"/></div>
@@ -817,7 +1070,6 @@
           <div class="form-row"><label>Benefits / impact</label><textarea id="f-benefits" rows="2">${esc(it?.benefits || '')}</textarea></div>
           <div style="display:flex;gap:18px;flex-wrap:wrap;margin-top:10px;">
             <label style="display:flex;align-items:center;gap:8px;"><input id="f-hidden" type="checkbox" ${it?.isHidden?'checked':''}/> Hidden</label>
-            <label style="display:flex;align-items:center;gap:8px;"><input id="f-open" type="checkbox" ${it?.openForCollab?'checked':''}/> Open to collaboration</label>
           </div>
         `)}
       `;
@@ -835,7 +1087,6 @@
           solution: v('f-solution'), resourcesNeeded: v('f-resources'),
           benefits: v('f-benefits'),
           isHidden: document.getElementById('f-hidden').checked,
-          openForCollab: document.getElementById('f-open').checked,
         };
         if (!payload.title) { showToast('Title is required.', 'warning'); return; }
         try {
@@ -914,7 +1165,7 @@
 
     function renderOppRow(it) {
       {
-      const legacyPendingCount = oppPendingAppsCount(it.id);
+      const pendingCount = oppPendingAppsCount(it.id);
       const type = it.type || it.opportunityType || '—';
       return `<div class="item-row" data-row-id="${it.id}">
         <div class="activity-icon" style="background:rgba(245,158,11,0.14);color:#F59E0B"><i data-lucide="briefcase"></i></div>
@@ -922,9 +1173,9 @@
           <div class="row-title">${esc(it.title || 'Untitled')}</div>
           <div class="row-sub">${esc(it.companyName || '—')} · ${esc(it.location || '—')} · ${esc(type)}</div>
           <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">
-            ${it.status ? `<span class="badge">${esc(it.status)}</span>` : ''}
+            ${it.status ? `<span class="badge">${esc(displayLabel(it.status))}</span>` : ''}
             ${it.isHidden ? '<span class="badge badge-danger"><i data-lucide="eye-off"></i>Hidden</span>' : ''}
-            ${pendingCount ? `<span class="badge badge-info"><i data-lucide="hourglass"></i>${pendingCount} pending</span>` : ''}
+            ${pendingCount ? `<span class="badge badge-info"><i data-lucide="hourglass"></i>${pendingCount} Pending</span>` : ''}
             <span class="badge"><i data-lucide="calendar"></i>${esc(formatTimestamp(it.createdAt) || '—')}</span>
           </div>
         </div>
@@ -946,7 +1197,7 @@
       const rejected = apps.filter((a) => a.status === 'rejected').length;
       const meta = [];
       if (it.type) meta.push(`<span class="badge"><i data-lucide="layers"></i>${esc(it.type)}</span>`);
-      if (it.status) meta.push(`<span class="badge">${esc(it.status)}</span>`);
+      if (it.status) meta.push(`<span class="badge">${esc(displayLabel(it.status))}</span>`);
       if (it.isHidden) meta.push('<span class="badge badge-danger"><i data-lucide="eye-off"></i>Hidden</span>');
 
       const applyLine = (a) => {
@@ -957,7 +1208,7 @@
           <div class="row-body">
             <div class="row-title">${esc(a.studentName || a.studentId || 'Applicant')}</div>
             <div class="row-sub">Applied ${esc(formatTimestamp(a.appliedAt) || '—')}</div>
-            <div style="margin-top:6px;"><span class="badge badge-${sClass}">${esc(s)}</span></div>
+            <div style="margin-top:6px;"><span class="badge badge-${sClass}">${esc(displayLabel(s))}</span></div>
           </div>
           <div class="row-actions">
             ${s !== 'accepted' ? `<button class="btn btn-sm btn-success" data-app="${a.id}" data-app-action="accept"><i data-lucide="check"></i>Accept</button>` : ''}
@@ -971,16 +1222,10 @@
         ${section('Summary', 'info', `
           <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;">${meta.join('')}</div>
           <div class="row-sub">${esc(it.companyName || '—')} · ${esc(it.location || '—')}</div>
-          <div style="margin-top:10px;display:flex;gap:14px;flex-wrap:wrap;">
-            <span class="badge badge-info"><i data-lucide="users"></i>${apps.length} total</span>
-            <span class="badge badge-warning"><i data-lucide="hourglass"></i>${pending} pending</span>
-            <span class="badge badge-success"><i data-lucide="check"></i>${accepted} accepted</span>
-            <span class="badge badge-danger"><i data-lucide="x"></i>${rejected} rejected</span>
-          </div>
         `)}
         ${section('Description', 'file-text', `<p style="white-space:pre-wrap;margin:0;">${esc(it.description || '—')}</p>`)}
         ${Array.isArray(it.requirements) && it.requirements.length ? section('Requirements', 'list-checks', `<ul style="margin:0;padding-left:18px;">${it.requirements.map((r) => `<li>${esc(r)}</li>`).join('')}</ul>`) : ''}
-        ${section('Applications (' + apps.length + ')', 'file-text', apps.length ? `<div class="list-grid">${apps.map(applyLine).join('')}</div>` : '<p class="row-sub" style="margin:0;">No applications yet.</p>')}
+        ${section('Applications (' + apps.length + ')', 'file-text', `${applicationSummaryHtml({ total: apps.length, pending, accepted, rejected })}${apps.length ? `<div class="list-grid">${apps.map(applyLine).join('')}</div>` : '<p class="row-sub" style="margin:0;">No applications yet.</p>'}`)}
       `;
       const saveBtn = document.getElementById('editor-save');
       if (saveBtn) saveBtn.style.display = 'none';
@@ -995,7 +1240,7 @@
             await updateDoc(doc(db, 'applications', appId), { status: act === 'accept' ? 'accepted' : 'rejected' });
             const appObj = state.applications.find((x) => x.id === appId);
             if (appObj) appObj.status = act === 'accept' ? 'accepted' : 'rejected';
-            showToast('Application ' + (act === 'accept' ? 'accepted' : 'rejected') + '.', 'success');
+            showToast('Application ' + (act === 'accept' ? 'Accepted' : 'Rejected') + '.', 'success');
             openOppDetails(it);
           } catch (e) { console.error(e); showToast('Action failed: ' + (e?.message || e), 'error'); }
         });
@@ -1025,6 +1270,7 @@
       const type = it.type || it.opportunityType || '';
       const effectiveStatus = opportunityEffectiveStatus(it);
       const canEdit = canEditOpportunity(it);
+      const amountLabel = opportunityAmountLabel(it);
       return contentCard({
         id: it.id,
         tone: type === 'internship' ? 'internship' : type === 'sponsoring' ? 'scholarship' : 'opportunity',
@@ -1038,7 +1284,6 @@
           it.isHidden ? badge('Hidden', 'badge-danger', 'eye-off') : '',
           pendingCount ? badge(`${pendingCount} pending`, 'badge-info', 'hourglass') : '',
           it.workMode ? badge(capitalizeLabel(it.workMode), '', 'map-pinned') : '',
-          canEdit ? badge('Editorial Post', 'badge-info', 'shield') : '',
         ],
         meta: formatTimestamp(it.updatedAt || it.createdAt) || '',
         actions: [
@@ -1048,11 +1293,8 @@
         ],
         footerActions: [
           profileLinkAction(it.companyId, 'Publisher profile'),
-          it.type === 'sponsoring' && (it.fundingAmount || it.fundingNote)
-            ? `<span class="content-card__footer-note"><i data-lucide="coins"></i>${esc(it.fundingAmount ? `${it.fundingAmount} ${it.fundingCurrency || ''}`.trim() : it.fundingNote)}</span>`
-            : '',
-          it.type === 'internship' && it.compensationText
-            ? `<span class="content-card__footer-note"><i data-lucide="wallet"></i>${esc(it.compensationText)}</span>`
+          amountLabel
+            ? `<span class="content-card__footer-note"><i data-lucide="${type === 'sponsoring' ? 'coins' : 'wallet'}"></i>${esc(amountLabel)}</span>`
             : '',
         ],
       });
@@ -1071,6 +1313,7 @@
       const accepted = apps.filter((item) => item.status === 'accepted').length;
       const rejected = apps.filter((item) => item.status === 'rejected').length;
       const canManageApplications = canEditOpportunity(it);
+      const amountLabel = opportunityAmountLabel(it);
       const requirementItems = Array.isArray(it.requirementItems) && it.requirementItems.length
         ? it.requirementItems
         : splitLines(it.requirements);
@@ -1091,7 +1334,7 @@
           <div class="row-body">
             <div class="row-title">${esc(application.studentName || application.studentId || 'Applicant')}</div>
             <div class="row-sub">Applied ${esc(formatTimestamp(application.appliedAt) || '-')}</div>
-            <div style="margin-top:6px;"><span class="badge badge-${statusClass}">${esc(status)}</span></div>
+            <div style="margin-top:6px;"><span class="badge badge-${statusClass}">${esc(displayLabel(status))}</span></div>
           </div>
           <div class="row-actions">
             <button class="btn btn-sm" data-app="${application.id}" data-app-action="cv"><i data-lucide="file-text"></i>CV</button>
@@ -1113,7 +1356,7 @@
           <div class="details-inline-actions">
             ${profileLinkAction(it.companyId, 'Publisher profile')}
             ${it.createdByRole === 'company' ? '<button class="btn btn-sm" id="view-register-btn"><i data-lucide="file-check-2"></i>View register</button><button class="btn btn-sm" id="download-register-btn"><i data-lucide="download"></i>Download register</button>' : ''}
-            ${canEditOpportunity(it) ? `<a class="btn btn-sm" href="opp-editor.html?id=${encodeURIComponent(it.id)}"><i data-lucide="pencil"></i>Edit admin post</a>` : ''}
+            ${canEditOpportunity(it) ? `<a class="btn btn-sm" href="opp-editor.html?id=${encodeURIComponent(it.id)}"><i data-lucide="pencil"></i>Edit Admin post</a>` : ''}
           </div>
           <div class="detail-metrics">
             ${detailMetric('Location', it.location)}
@@ -1121,18 +1364,13 @@
             ${detailMetric('Created', formatTimestamp(it.createdAt))}
             ${detailMetric('Employment', capitalizeLabel(it.employmentType || it.type))}
             ${detailMetric('Work mode', capitalizeLabel(it.workMode))}
+            ${detailMetric(normalizedOpportunityType(it) === 'sponsoring' ? 'Sponsored amount' : 'Amount', amountLabel)}
             ${detailMetric('Status', capitalizeLabel(opportunityEffectiveStatus(it)))}
-          </div>
-          <div style="margin-top:12px;display:flex;gap:14px;flex-wrap:wrap;">
-            <span class="badge badge-info"><i data-lucide="users"></i>${apps.length} total</span>
-            <span class="badge badge-warning"><i data-lucide="hourglass"></i>${pending} pending</span>
-            <span class="badge badge-success"><i data-lucide="check"></i>${accepted} accepted</span>
-            <span class="badge badge-danger"><i data-lucide="x"></i>${rejected} rejected</span>
           </div>
         `)}
         ${section('Description', 'file-text', `<p style="white-space:pre-wrap;margin:0;">${esc(it.description || '-')}</p>`)}
         ${requirementItems.length ? section('Requirements', 'list-checks', `<ul style="margin:0;padding-left:18px;">${requirementItems.map((item) => `<li>${esc(item)}</li>`).join('')}</ul>`) : ''}
-        ${section('Applications (' + apps.length + ')', 'file-text', apps.length ? `<div class="list-grid">${apps.map(applyLine).join('')}</div>` : '<p class="row-sub" style="margin:0;">No applications yet.</p>')}
+        ${section('Applications (' + apps.length + ')', 'file-text', `${applicationSummaryHtml({ total: apps.length, pending, accepted, rejected })}${apps.length ? `<div class="list-grid">${apps.map(applyLine).join('')}</div>` : '<p class="row-sub" style="margin:0;">No applications yet.</p>'}`)}
       `;
       const saveBtn = document.getElementById('editor-save');
       if (saveBtn) saveBtn.style.display = 'none';
@@ -1157,7 +1395,7 @@
             const appObj = state.applications.find((item) => item.id === appId);
             if (appObj) appObj.status = nextStatus;
             await workerBestEffort('/api/notify/application-status-changed', { applicationId: appId });
-            showToast('Application ' + nextStatus + '.', 'success');
+            showToast('Application ' + displayLabel(nextStatus) + '.', 'success');
             openOpportunityDetails(it, appId);
           } catch (e) {
             console.error(e);
@@ -1167,6 +1405,7 @@
       });
       document.getElementById('view-register-btn')?.addEventListener('click', () => openCommercialRegister(it.companyId, false));
       document.getElementById('download-register-btn')?.addEventListener('click', () => openCommercialRegister(it.companyId, true));
+      bindPublisherActions(document.getElementById('editor-body'));
       if (window.lucide) window.lucide.createIcons();
     }
 
@@ -1559,6 +1798,7 @@
           <div class="detail-metrics">
             ${detailMetric('Provider', it.provider)}
             ${detailMetric('Location', scholarshipLocation(it) || [it.city, it.country].filter(Boolean).join(', '))}
+            ${detailMetric('Amount', it.amount)}
             ${detailMetric('Deadline', formatTimestamp(it.deadline))}
             ${detailMetric('Funding', capitalizeLabel(it.fundingType))}
             ${detailMetric('Level', it.level)}
@@ -2091,7 +2331,7 @@
           <div class="row-title">${esc(it.studentName || 'Student')} → ${esc(opp?.title || 'Opportunity')}</div>
           <div class="row-sub">${esc(opp?.companyName || '—')} · ${esc(formatTimestamp(it.appliedAt) || '')}</div>
           <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
-            <span class="badge badge-${badgeClass}">${esc(status)}</span>
+            <span class="badge badge-${badgeClass}">${esc(displayLabel(status))}</span>
             ${it.coverLetter ? '<span class="badge"><i data-lucide="message-square"></i>Cover letter</span>' : ''}
           </div>
         </div>
@@ -2112,7 +2352,7 @@
         const map = { accept: 'accepted', reject: 'rejected', reviewed: 'reviewed' };
         const next = map[action]; if (!next) return;
         await updateDoc(ref, { status: next }); it.status = next;
-        showToast(`Application ${next}.`, 'success');
+        showToast(`Application ${displayLabel(next)}.`, 'success');
         renderStats(); renderTab();
       } catch (e) { console.error(e); showToast('Action failed.', 'error'); }
     }
@@ -2168,4 +2408,3 @@
   </script>
 </body>
 </html>
-

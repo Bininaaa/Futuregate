@@ -109,7 +109,6 @@
     function render() {
       const root = document.getElementById('page-content');
       const isHidden = item?.isHidden === true || item?.status === 'rejected';
-      const isPublic = item?.isPublic !== false;
       const level = String(item?.level || 'licence').trim() || 'licence';
 
       root.innerHTML = `
@@ -120,7 +119,7 @@
           <div>
             <div class="editor-mode-badge ${isNew ? '' : 'is-edit'}"><i data-lucide="${isNew ? 'plus' : 'pencil'}"></i>${isNew ? 'New post' : 'Editing post'}</div>
             <h1 class="page-hero__title">${isNew ? 'Publish Idea' : 'Edit Idea'}</h1>
-            <p class="page-hero__subtitle">${isNew ? 'Create a project idea post students can discover, follow, and collaborate on.' : 'Refine this idea with cleaner copy, stronger discovery metadata, and sharper structure.'}</p>
+            <p class="page-hero__subtitle">${isNew ? 'Create a project idea post students can discover with clear context and strong discovery metadata.' : 'Refine this idea with cleaner copy, stronger discovery metadata, and sharper structure.'}</p>
           </div>
           <div class="page-hero__actions">
             <button class="btn" id="cancel-btn"><i data-lucide="x"></i>Cancel</button>
@@ -140,24 +139,16 @@
                 <i data-lucide="eye-off"></i>Hidden
               </label>
             </div>
-            <label class="checkbox-card" style="margin-top:10px;">
-              <input id="f-public" type="checkbox" ${isPublic ? 'checked' : ''}>
-              <i data-lucide="users"></i>
-              <div>
-                <strong>Open collaboration</strong>
-                <div class="form-hint">Students can request to join this project.</div>
-              </div>
-            </label>
           `)}
 
           ${sectionBlock('Core Story', 'book-open', `
             <div class="form-row"><label>Idea Title *</label><input id="f-title" type="text" placeholder="e.g. Campus Innovation Partner Program" value="${esc(item?.title || '')}"></div>
             <div class="form-row"><label>Tagline</label><input id="f-tagline" type="text" placeholder="One-line hook shown in the discovery feed" value="${esc(item?.tagline || '')}"></div>
             <div class="form-row"><label>Short Description</label><textarea id="f-shortDescription" rows="3" placeholder="A tight summary — shown in cards and previews.">${esc(item?.shortDescription || '')}</textarea></div>
-            <div class="form-row"><label>Full Description *</label><textarea id="f-description" rows="6" placeholder="Describe the idea clearly with enough context for students to understand and join.">${esc(item?.description || '')}</textarea></div>
+            <div class="form-row"><label>Full Description *</label><textarea id="f-description" rows="6" placeholder="Describe the idea clearly with enough context for students to understand its value.">${esc(item?.description || '')}</textarea></div>
           `)}
 
-          ${sectionBlock('Metadata & Collaboration', 'tag', `
+          ${sectionBlock('Metadata & Discovery', 'tag', `
             <div class="form-grid-2">
               <div class="form-row"><label>Domain *</label><input id="f-domain" type="text" placeholder="e.g. EdTech, AI, Sustainability" value="${esc(item?.domain || '')}"></div>
               <div class="form-row"><label>Academic Level</label>
@@ -248,7 +239,7 @@
         solution: val('f-solution'),
         resourcesNeeded: val('f-resourcesNeeded'),
         benefits: val('f-benefits'),
-        isPublic: document.getElementById('f-public').checked,
+        isPublic: item?.isPublic !== false,
         isHidden: document.getElementById('f-hidden').checked,
         status: ideaStatus,
         submittedBy: uid,
