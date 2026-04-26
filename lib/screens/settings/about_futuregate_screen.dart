@@ -36,8 +36,8 @@ class AboutFutureGateScreen extends StatelessWidget {
                       ],
                     ),
                     child: const AppLogoMark(
-                      size: 72,
-                      padding: 8,
+                      size: 76,
+                      padding: 5,
                       borderRadius: BorderRadius.all(Radius.circular(22)),
                     ),
                   ),

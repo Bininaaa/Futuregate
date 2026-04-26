@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'chat_theme.dart';
 
-class ChatSearchField extends StatelessWidget {
+class ChatSearchField extends StatefulWidget {
   final TextEditingController controller;
   final String hintText;
   final ValueChanged<String>? onChanged;
@@ -22,16 +22,60 @@ class ChatSearchField extends StatelessWidget {
   });
 
   @override
+  State<ChatSearchField> createState() => _ChatSearchFieldState();
+}
+
+class _ChatSearchFieldState extends State<ChatSearchField> {
+  late final FocusNode _internalFocusNode;
+
+  FocusNode get _focusNode => widget.focusNode ?? _internalFocusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _internalFocusNode = FocusNode();
+    _focusNode.addListener(_handleFocusChanged);
+  }
+
+  @override
+  void didUpdateWidget(covariant ChatSearchField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final oldFocusNode = oldWidget.focusNode ?? _internalFocusNode;
+    final nextFocusNode = widget.focusNode ?? _internalFocusNode;
+    if (oldFocusNode != nextFocusNode) {
+      oldFocusNode.removeListener(_handleFocusChanged);
+      nextFocusNode.addListener(_handleFocusChanged);
+    }
+  }
+
+  @override
+  void dispose() {
+    _focusNode.removeListener(_handleFocusChanged);
+    _internalFocusNode.dispose();
+    super.dispose();
+  }
+
+  void _handleFocusChanged() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: margin,
-      child: Container(
+      padding: widget.margin,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 160),
         height: 44,
         decoration: BoxDecoration(
           color: ChatThemePalette.surface,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: ChatThemePalette.border.withValues(alpha: 0.95),
+            color: _focusNode.hasFocus
+                ? ChatThemePalette.primary
+                : ChatThemePalette.border.withValues(alpha: 0.95),
+            width: _focusNode.hasFocus ? 1.4 : 1,
           ),
           boxShadow: [
             BoxShadow(
@@ -52,25 +96,30 @@ class ChatSearchField extends StatelessWidget {
             const SizedBox(width: 9),
             Expanded(
               child: TextField(
-                controller: controller,
-                focusNode: focusNode,
-                onChanged: onChanged,
+                controller: widget.controller,
+                focusNode: _focusNode,
+                onChanged: widget.onChanged,
                 textInputAction: TextInputAction.search,
                 style: ChatThemeStyles.body().copyWith(fontSize: 13),
                 cursorColor: ChatThemePalette.primary,
                 decoration: InputDecoration(
-                  hintText: hintText,
+                  hintText: widget.hintText,
                   hintStyle: ChatThemeStyles.body(
                     ChatThemePalette.textSecondary.withValues(alpha: 0.72),
                   ).copyWith(fontSize: 13),
                   border: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  disabledBorder: InputBorder.none,
+                  errorBorder: InputBorder.none,
+                  focusedErrorBorder: InputBorder.none,
                   isDense: true,
                   contentPadding: EdgeInsets.zero,
                 ),
               ),
             ),
             ValueListenableBuilder<TextEditingValue>(
-              valueListenable: controller,
+              valueListenable: widget.controller,
               builder: (context, value, _) {
                 if (value.text.trim().isEmpty) {
                   return const SizedBox(width: 12);
@@ -87,10 +136,10 @@ class ChatSearchField extends StatelessWidget {
                       height: 30,
                     ),
                     onPressed:
-                        onClear ??
+                        widget.onClear ??
                         () {
-                          controller.clear();
-                          onChanged?.call('');
+                          widget.controller.clear();
+                          widget.onChanged?.call('');
                         },
                     icon: Icon(
                       Icons.close_rounded,

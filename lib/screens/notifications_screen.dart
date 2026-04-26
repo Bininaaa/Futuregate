@@ -77,6 +77,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     return Scaffold(
       backgroundColor: SettingsFlowPalette.background,
       appBar: AppBar(
+        centerTitle: false,
+        titleSpacing: 0,
         title: Text(
           role == 'admin'
               ? l10n.notifAdminTitle
@@ -159,24 +161,12 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                         .map(
                           (filter) => Padding(
                             padding: const EdgeInsets.only(right: 8),
-                            child: ChoiceChip(
-                              label: Text(_filterLabel(l10n, filter)),
+                            child: _NotificationFilterChip(
+                              label: _filterLabel(l10n, filter),
+                              count: _unreadCountForFilter(provider, filter),
                               selected: _selectedFilter == filter,
-                              showCheckmark: false,
-                              labelStyle: SettingsFlowTheme.micro(
-                                _selectedFilter == filter
-                                    ? Colors.white
-                                    : SettingsFlowPalette.textPrimary,
-                              ),
                               selectedColor: SettingsFlowPalette.primary,
-                              backgroundColor: SettingsFlowPalette.surface,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: SettingsFlowTheme.radius(999),
-                                side: BorderSide(
-                                  color: SettingsFlowPalette.border,
-                                ),
-                              ),
-                              onSelected: (_) {
+                              onTap: () {
                                 setState(() {
                                   _selectedFilter = filter;
                                   if (filter !=
@@ -210,30 +200,20 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                                   .map(
                                     (filter) => Padding(
                                       padding: const EdgeInsets.only(right: 8),
-                                      child: ChoiceChip(
-                                        label: Text(
-                                          _contentFilterLabel(l10n, filter),
+                                      child: _NotificationFilterChip(
+                                        label: _contentFilterLabel(
+                                          l10n,
+                                          filter,
+                                        ),
+                                        count: _unreadCountForContentFilter(
+                                          provider,
+                                          filter,
                                         ),
                                         selected:
                                             _selectedContentFilter == filter,
-                                        showCheckmark: false,
-                                        labelStyle: SettingsFlowTheme.micro(
-                                          _selectedContentFilter == filter
-                                              ? Colors.white
-                                              : SettingsFlowPalette.textPrimary,
-                                        ),
                                         selectedColor:
                                             SettingsFlowPalette.primaryDark,
-                                        backgroundColor:
-                                            SettingsFlowPalette.surface,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              SettingsFlowTheme.radius(999),
-                                          side: BorderSide(
-                                            color: SettingsFlowPalette.border,
-                                          ),
-                                        ),
-                                        onSelected: (_) {
+                                        onTap: () {
                                           setState(() {
                                             _selectedContentFilter = filter;
                                             if (filter !=
@@ -274,34 +254,24 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                                   .map(
                                     (filter) => Padding(
                                       padding: const EdgeInsets.only(right: 8),
-                                      child: ChoiceChip(
-                                        label: Text(
-                                          _opportunityFilterLabel(l10n, filter),
+                                      child: _NotificationFilterChip(
+                                        label: _opportunityFilterLabel(
+                                          l10n,
+                                          filter,
+                                        ),
+                                        count: _unreadCountForOpportunityFilter(
+                                          provider,
+                                          filter,
                                         ),
                                         selected:
                                             _selectedOpportunityFilter ==
                                             filter,
-                                        showCheckmark: false,
-                                        labelStyle: SettingsFlowTheme.micro(
-                                          _selectedOpportunityFilter == filter
-                                              ? Colors.white
-                                              : SettingsFlowPalette.textPrimary,
-                                        ),
                                         selectedColor: OpportunityType.color(
                                           _accentOpportunityTypeForFilter(
                                             filter,
                                           ),
                                         ),
-                                        backgroundColor:
-                                            SettingsFlowPalette.surface,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              SettingsFlowTheme.radius(999),
-                                          side: BorderSide(
-                                            color: SettingsFlowPalette.border,
-                                          ),
-                                        ),
-                                        onSelected: (_) {
+                                        onTap: () {
                                           setState(
                                             () => _selectedOpportunityFilter =
                                                 filter,
@@ -368,6 +338,65 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     }
   }
 
+  int _unreadCountForFilter(
+    NotificationProvider provider,
+    _NotificationFilter filter,
+  ) {
+    return provider.notifications
+        .where(
+          (notification) =>
+              !notification.isRead &&
+              _matchesNotificationFilter(notification, filter),
+        )
+        .length;
+  }
+
+  int _unreadCountForContentFilter(
+    NotificationProvider provider,
+    _NotificationContentFilter filter,
+  ) {
+    return provider.notifications
+        .where(
+          (notification) =>
+              !notification.isRead &&
+              _isContentNotification(notification) &&
+              _matchesContentFilterValue(notification, filter),
+        )
+        .length;
+  }
+
+  int _unreadCountForOpportunityFilter(
+    NotificationProvider provider,
+    _OpportunityNotificationFilter filter,
+  ) {
+    return provider.notifications
+        .where(
+          (notification) =>
+              !notification.isRead &&
+              notification.type == 'opportunity' &&
+              _matchesOpportunityFilterValue(notification, filter),
+        )
+        .length;
+  }
+
+  bool _matchesNotificationFilter(
+    NotificationModel notification,
+    _NotificationFilter filter,
+  ) {
+    switch (filter) {
+      case _NotificationFilter.all:
+        return true;
+      case _NotificationFilter.newContent:
+        return _isContentNotification(notification);
+      case _NotificationFilter.unread:
+        return !notification.isRead;
+      case _NotificationFilter.applications:
+        return _isApplicationNotificationType(notification.type);
+      case _NotificationFilter.messages:
+        return notification.type == 'chat';
+    }
+  }
+
   bool _isApplicationNotificationType(String type) {
     return type == 'application' || type == 'rejected';
   }
@@ -411,7 +440,14 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   }
 
   bool _matchesContentFilter(NotificationModel notification) {
-    switch (_selectedContentFilter) {
+    return _matchesContentFilterValue(notification, _selectedContentFilter);
+  }
+
+  bool _matchesContentFilterValue(
+    NotificationModel notification,
+    _NotificationContentFilter filter,
+  ) {
+    switch (filter) {
       case _NotificationContentFilter.all:
         return true;
       case _NotificationContentFilter.opportunities:
@@ -441,7 +477,17 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   }
 
   bool _matchesOpportunityFilter(NotificationModel notification) {
-    switch (_selectedOpportunityFilter) {
+    return _matchesOpportunityFilterValue(
+      notification,
+      _selectedOpportunityFilter,
+    );
+  }
+
+  bool _matchesOpportunityFilterValue(
+    NotificationModel notification,
+    _OpportunityNotificationFilter filter,
+  ) {
+    switch (filter) {
       case _OpportunityNotificationFilter.all:
         return true;
       case _OpportunityNotificationFilter.jobs:
@@ -1388,6 +1434,74 @@ class _NotificationCard extends StatelessWidget {
       return '${diff.inDays}d ago';
     }
     return DateFormat.MMMd().format(dt);
+  }
+}
+
+class _NotificationFilterChip extends StatelessWidget {
+  final String label;
+  final int count;
+  final bool selected;
+  final Color selectedColor;
+  final VoidCallback onTap;
+
+  const _NotificationFilterChip({
+    required this.label,
+    required this.count,
+    required this.selected,
+    required this.selectedColor,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final foreground = selected
+        ? Colors.white
+        : SettingsFlowPalette.textPrimary;
+    final badgeColor = selected
+        ? Colors.white.withValues(alpha: 0.20)
+        : selectedColor.withValues(alpha: 0.12);
+    final badgeTextColor = selected ? Colors.white : selectedColor;
+
+    return ChoiceChip(
+      label: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(label),
+          if (count > 0) ...[
+            const SizedBox(width: 6),
+            Container(
+              constraints: const BoxConstraints(minWidth: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                color: badgeColor,
+                borderRadius: SettingsFlowTheme.radius(999),
+              ),
+              child: Text(
+                count > 99 ? '99+' : '$count',
+                textAlign: TextAlign.center,
+                style: SettingsFlowTheme.micro(
+                  badgeTextColor,
+                ).copyWith(fontSize: 9.5, fontWeight: FontWeight.w700),
+              ),
+            ),
+          ],
+        ],
+      ),
+      selected: selected,
+      showCheckmark: false,
+      labelStyle: SettingsFlowTheme.micro(foreground),
+      selectedColor: selectedColor,
+      backgroundColor: SettingsFlowPalette.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: SettingsFlowTheme.radius(999),
+        side: BorderSide(
+          color: selected
+              ? selectedColor.withValues(alpha: 0.42)
+              : SettingsFlowPalette.border,
+        ),
+      ),
+      onSelected: (_) => onTap(),
+    );
   }
 }
 

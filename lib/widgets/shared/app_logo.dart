@@ -17,6 +17,9 @@ class AppBrandAssets {
   /// Launch animation video asset.
   static const String animation = 'assets/pictures/ANIMATION.mp4';
 
+  /// Optimized FutureGate logo for small square badges and about cards.
+  static const String compact = 'assets/images/branding/futuregate_logo.png';
+
   /// First-open onboarding illustration: portal / journey.
   static const String getStartedPortal =
       'assets/pictures/get_started_portal.png';
@@ -137,7 +140,7 @@ class AppLogoMark extends StatelessWidget {
         borderRadius: borderRadius ?? BorderRadius.circular(size * 0.24),
       ),
       child: Image.asset(
-        AppBrandAssets.icon,
+        AppBrandAssets.compact,
         fit: BoxFit.contain,
         filterQuality: FilterQuality.high,
       ),

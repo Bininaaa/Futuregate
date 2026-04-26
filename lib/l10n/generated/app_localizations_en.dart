@@ -1639,7 +1639,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get uiCurrentPassword => 'Current Password';
 
   @override
-  String get uiCvBuilder => 'CV Builder';
+  String get uiCvBuilder => 'CV Studio';
 
   @override
   String get uiCvCompletionRate => 'CV Completion Rate';
@@ -5803,7 +5803,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Bookmark opportunities you want to revisit later and stay organized while you prepare applications.';
 
   @override
-  String get helpCvBuilderTitle => 'CV Builder';
+  String get helpCvBuilderTitle => 'CV Studio';
 
   @override
   String get helpCvBuilderCategory => 'CV';
@@ -7160,7 +7160,7 @@ class AppLocalizationsEn extends AppLocalizations {
     Object total,
     Object visible,
   ) {
-    return 'Showing $visible $filter from $total open listings.';
+    return 'Showing $visible matching $filter from $total open listings.';
   }
 
   @override

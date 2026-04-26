@@ -26,7 +26,7 @@ class AppliedOpportunitiesScreen extends StatefulWidget {
       _AppliedOpportunitiesScreenState();
 }
 
-enum _ApplicationFilter { all, pending, approved, rejected }
+enum _ApplicationFilter { all, pending, approved, rejected, withdrawn }
 
 class _AppliedOpportunitiesScreenState
     extends State<AppliedOpportunitiesScreen> {
@@ -126,6 +126,7 @@ class _AppliedOpportunitiesScreenState
       _ApplicationFilter.pending => status == ApplicationStatus.pending,
       _ApplicationFilter.approved => status == ApplicationStatus.accepted,
       _ApplicationFilter.rejected => status == ApplicationStatus.rejected,
+      _ApplicationFilter.withdrawn => status == ApplicationStatus.withdrawn,
     };
   }
 
@@ -137,6 +138,7 @@ class _AppliedOpportunitiesScreenState
         _ApplicationFilter.pending => status == ApplicationStatus.pending,
         _ApplicationFilter.approved => status == ApplicationStatus.accepted,
         _ApplicationFilter.rejected => status == ApplicationStatus.rejected,
+        _ApplicationFilter.withdrawn => status == ApplicationStatus.withdrawn,
       };
     }).length;
   }
@@ -147,6 +149,7 @@ class _AppliedOpportunitiesScreenState
       _ApplicationFilter.pending => 'Pending',
       _ApplicationFilter.approved => 'Approved',
       _ApplicationFilter.rejected => 'Rejected',
+      _ApplicationFilter.withdrawn => 'Withdrawn',
     };
   }
 
@@ -156,6 +159,7 @@ class _AppliedOpportunitiesScreenState
       _ApplicationFilter.pending => StudentOpportunityHubPalette.warning,
       _ApplicationFilter.approved => StudentOpportunityHubPalette.success,
       _ApplicationFilter.rejected => StudentOpportunityHubPalette.error,
+      _ApplicationFilter.withdrawn => StudentOpportunityHubPalette.textMuted,
     };
   }
 
@@ -196,6 +200,7 @@ class _AppliedOpportunitiesScreenState
     final pendingCount = _countFor(provider, _ApplicationFilter.pending);
     final approvedCount = _countFor(provider, _ApplicationFilter.approved);
     final rejectedCount = _countFor(provider, _ApplicationFilter.rejected);
+    final withdrawnCount = _countFor(provider, _ApplicationFilter.withdrawn);
     final hasFilters =
         _selectedFilter != _ApplicationFilter.all || _searchQuery.isNotEmpty;
 
@@ -250,6 +255,7 @@ class _AppliedOpportunitiesScreenState
                                 pending: pendingCount,
                                 approved: approvedCount,
                                 rejected: rejectedCount,
+                                withdrawn: withdrawnCount,
                               ),
                               const SizedBox(height: 12),
                               if ((provider.submittedApplicationsError ?? '')
@@ -402,12 +408,14 @@ class _AppliedCompactSummary extends StatelessWidget {
   final int pending;
   final int approved;
   final int rejected;
+  final int withdrawn;
 
   const _AppliedCompactSummary({
     required this.total,
     required this.pending,
     required this.approved,
     required this.rejected,
+    required this.withdrawn,
   });
 
   @override
@@ -514,6 +522,15 @@ class _AppliedCompactSummary extends StatelessWidget {
                       value: '$rejected',
                       color: StudentOpportunityHubPalette.error,
                       icon: Icons.cancel_outlined,
+                    ),
+                  ),
+                  SizedBox(
+                    width: tileWidth,
+                    child: _AppliedMiniStat(
+                      label: 'Withdrawn',
+                      value: '$withdrawn',
+                      color: StudentOpportunityHubPalette.textMuted,
+                      icon: Icons.undo_rounded,
                     ),
                   ),
                 ],

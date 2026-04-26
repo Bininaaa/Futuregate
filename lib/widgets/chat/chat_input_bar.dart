@@ -26,7 +26,7 @@ class PendingChatAttachment {
   bool get isImage => messageType == 'image';
 }
 
-class ChatInputBar extends StatelessWidget {
+class ChatInputBar extends StatefulWidget {
   final TextEditingController controller;
   final bool isSending;
   final bool isEditing;
@@ -61,6 +61,49 @@ class ChatInputBar extends StatelessWidget {
     required this.onAiCorrect,
     required this.onAiTranslate,
   });
+
+  @override
+  State<ChatInputBar> createState() => _ChatInputBarState();
+}
+
+class _ChatInputBarState extends State<ChatInputBar> {
+  final FocusNode _messageFocusNode = FocusNode();
+
+  TextEditingController get controller => widget.controller;
+  bool get isSending => widget.isSending;
+  bool get isEditing => widget.isEditing;
+  bool get isAiProcessing => widget.isAiProcessing;
+  PendingChatAttachment? get pendingAttachment => widget.pendingAttachment;
+  VoidCallback get onSend => widget.onSend;
+  VoidCallback get onPickImage => widget.onPickImage;
+  VoidCallback get onPickFile => widget.onPickFile;
+  VoidCallback get onCancelEdit => widget.onCancelEdit;
+  VoidCallback get onRemoveAttachment => widget.onRemoveAttachment;
+  VoidCallback get onEmojiTap => widget.onEmojiTap;
+  bool get showAiTools => widget.showAiTools;
+  VoidCallback get onAiFormalize => widget.onAiFormalize;
+  VoidCallback get onAiCorrect => widget.onAiCorrect;
+  VoidCallback get onAiTranslate => widget.onAiTranslate;
+
+  @override
+  void initState() {
+    super.initState();
+    _messageFocusNode.addListener(_handleFocusChanged);
+  }
+
+  @override
+  void dispose() {
+    _messageFocusNode
+      ..removeListener(_handleFocusChanged)
+      ..dispose();
+    super.dispose();
+  }
+
+  void _handleFocusChanged() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -155,7 +198,10 @@ class ChatInputBar extends StatelessWidget {
                               size: 20,
                             ),
                             const SizedBox(width: 10),
-                            Text(AppLocalizations.of(context)!.uiPhoto, style: ChatThemeStyles.body()),
+                            Text(
+                              AppLocalizations.of(context)!.uiPhoto,
+                              style: ChatThemeStyles.body(),
+                            ),
                           ],
                         ),
                       ),
@@ -169,7 +215,10 @@ class ChatInputBar extends StatelessWidget {
                               size: 20,
                             ),
                             const SizedBox(width: 10),
-                            Text(AppLocalizations.of(context)!.uiFile, style: ChatThemeStyles.body()),
+                            Text(
+                              AppLocalizations.of(context)!.uiFile,
+                              style: ChatThemeStyles.body(),
+                            ),
                           ],
                         ),
                       ),
@@ -190,13 +239,17 @@ class ChatInputBar extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: Container(
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 160),
                       padding: const EdgeInsets.symmetric(horizontal: 14),
                       decoration: BoxDecoration(
                         color: ChatThemePalette.surfaceMuted,
                         borderRadius: BorderRadius.circular(22),
                         border: Border.all(
-                          color: ChatThemePalette.border.withValues(alpha: 0.6),
+                          color: _messageFocusNode.hasFocus
+                              ? ChatThemePalette.primary
+                              : ChatThemePalette.border.withValues(alpha: 0.6),
+                          width: _messageFocusNode.hasFocus ? 1.4 : 1,
                         ),
                       ),
                       child: Row(
@@ -204,6 +257,7 @@ class ChatInputBar extends StatelessWidget {
                           Expanded(
                             child: TextField(
                               controller: controller,
+                              focusNode: _messageFocusNode,
                               minLines: 1,
                               maxLines: 5,
                               textCapitalization: TextCapitalization.sentences,
@@ -219,6 +273,11 @@ class ChatInputBar extends StatelessWidget {
                                   ChatThemePalette.textSecondary,
                                 ).copyWith(fontSize: 13.5),
                                 border: InputBorder.none,
+                                enabledBorder: InputBorder.none,
+                                focusedBorder: InputBorder.none,
+                                disabledBorder: InputBorder.none,
+                                errorBorder: InputBorder.none,
+                                focusedErrorBorder: InputBorder.none,
                                 contentPadding: const EdgeInsets.symmetric(
                                   vertical: 10,
                                 ),

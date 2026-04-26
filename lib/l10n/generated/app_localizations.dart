@@ -3086,7 +3086,7 @@ abstract class AppLocalizations {
   /// No description provided for @uiCvBuilder.
   ///
   /// In en, this message translates to:
-  /// **'CV Builder'**
+  /// **'CV Studio'**
   String get uiCvBuilder;
 
   /// No description provided for @uiCvCompletionRate.
@@ -10250,7 +10250,7 @@ abstract class AppLocalizations {
   /// No description provided for @helpCvBuilderTitle.
   ///
   /// In en, this message translates to:
-  /// **'CV Builder'**
+  /// **'CV Studio'**
   String get helpCvBuilderTitle;
 
   /// No description provided for @helpCvBuilderCategory.
@@ -12686,7 +12686,7 @@ abstract class AppLocalizations {
   /// No description provided for @uiShowingVisibleFilterFromTotalOpenListings.
   ///
   /// In en, this message translates to:
-  /// **'Showing {visible} {filter} from {total} open listings.'**
+  /// **'Showing {visible} matching {filter} from {total} open listings.'**
   String uiShowingVisibleFilterFromTotalOpenListings(
     Object filter,
     Object total,

@@ -1623,7 +1623,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiCurrentPassword => 'كلمة المرور الحالية';
 
   @override
-  String get uiCvBuilder => 'منشئ السيرة الذاتية';
+  String get uiCvBuilder => 'CV Studio';
 
   @override
   String get uiCvCompletionRate => 'معدل إكمال السيرة الذاتية';
@@ -5756,7 +5756,7 @@ class AppLocalizationsAr extends AppLocalizations {
       'احفظ الفرص التي تريد العودة إليها لاحقًا وابقَ منظمًا أثناء تحضير طلباتك.';
 
   @override
-  String get helpCvBuilderTitle => 'منشئ السيرة الذاتية';
+  String get helpCvBuilderTitle => 'CV Studio';
 
   @override
   String get helpCvBuilderCategory => 'السيرة الذاتية';
@@ -7092,7 +7092,7 @@ class AppLocalizationsAr extends AppLocalizations {
     Object total,
     Object visible,
   ) {
-    return 'عرض $visible من $filter من أصل $total إعلانات مفتوحة.';
+    return 'عرض $visible من $filter المطابقة من أصل $total إعلانات مفتوحة.';
   }
 
   @override

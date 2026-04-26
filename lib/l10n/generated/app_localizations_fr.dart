@@ -1662,7 +1662,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiCurrentPassword => 'Mot de passe actuel';
 
   @override
-  String get uiCvBuilder => 'Générateur de CV';
+  String get uiCvBuilder => 'CV Studio';
 
   @override
   String get uiCvCompletionRate => 'Taux de complétion des CV';
@@ -5889,7 +5889,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Ajoutez en favoris les opportunités à revoir plus tard et restez organisé pendant la préparation de vos candidatures.';
 
   @override
-  String get helpCvBuilderTitle => 'Créateur de CV';
+  String get helpCvBuilderTitle => 'CV Studio';
 
   @override
   String get helpCvBuilderCategory => 'CV';
@@ -7266,7 +7266,7 @@ class AppLocalizationsFr extends AppLocalizations {
     Object total,
     Object visible,
   ) {
-    return 'Affichage de $visible $filter sur $total annonces ouvertes.';
+    return 'Affichage de $visible $filter correspondant à $total annonces ouvertes.';
   }
 
   @override

@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 import '../../models/saved_scholarship_model.dart';
 import '../../models/scholarship_model.dart';
 import '../../providers/auth_provider.dart';
-import '../../providers/notification_provider.dart';
 import '../../providers/opportunity_translation_provider.dart';
 import '../../providers/saved_scholarship_provider.dart';
 import '../../providers/scholarship_provider.dart';
@@ -18,7 +17,6 @@ import '../../widgets/shared/app_loading.dart';
 import '../../widgets/shared/content_translation_widgets.dart';
 import '../../widgets/student/student_search_field.dart';
 import '../../widgets/student/student_workspace_shell.dart';
-import '../notifications_screen.dart';
 import 'saved_screen.dart';
 import 'scholarship_detail_screen.dart';
 
@@ -260,13 +258,6 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
     );
   }
 
-  Future<void> _openNotifications() async {
-    await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const NotificationsScreen()),
-    );
-  }
-
   Future<void> _openSavedScholarships() async {
     await Navigator.push(
       context,
@@ -281,7 +272,6 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
   Widget build(BuildContext context) {
     final provider = context.watch<ScholarshipProvider>();
     final savedProvider = context.watch<SavedScholarshipProvider>();
-    final unreadCount = context.watch<NotificationProvider>().unreadCount;
     final savedIds = savedProvider.savedScholarships
         .map((item) => item.scholarshipId)
         .toSet();
@@ -303,12 +293,6 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
               showBackButton: true,
               onBack: () => Navigator.maybePop(context),
               actions: [
-                StudentWorkspaceActionButton(
-                  icon: Icons.notifications_outlined,
-                  tooltip: AppLocalizations.of(context)!.uiNotifications,
-                  badgeCount: unreadCount,
-                  onTap: _openNotifications,
-                ),
                 StudentWorkspaceActionButton(
                   icon: Icons.bookmark_outline_rounded,
                   tooltip: AppLocalizations.of(context)!.uiSavedScholarships,

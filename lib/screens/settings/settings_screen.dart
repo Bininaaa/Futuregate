@@ -627,6 +627,177 @@ class _CompactPreferenceRow extends StatelessWidget {
   }
 }
 
+class _PreferenceOption<T> {
+  final T value;
+  final String label;
+  final IconData? icon;
+  final String? leadingText;
+  final Color color;
+
+  const _PreferenceOption({
+    required this.value,
+    required this.label,
+    required this.color,
+    this.icon,
+    this.leadingText,
+  });
+}
+
+class _PreferenceSelectorPill<T> extends StatelessWidget {
+  final String label;
+  final Color color;
+  final bool isBusy;
+  final List<_PreferenceOption<T>> options;
+  final Future<void> Function(T value) onSelected;
+
+  const _PreferenceSelectorPill({
+    required this.label,
+    required this.color,
+    required this.options,
+    required this.onSelected,
+    this.isBusy = false,
+  });
+
+  Future<void> _openSheet(BuildContext context) async {
+    if (isBusy) {
+      return;
+    }
+
+    final selectedIndex = await showModalBottomSheet<int>(
+      context: context,
+      backgroundColor: SettingsFlowPalette.surface,
+      shape: RoundedRectangleBorder(borderRadius: SettingsFlowTheme.radius(28)),
+      builder: (sheetContext) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(18, 14, 18, 18),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 44,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: SettingsFlowPalette.border,
+                    borderRadius: SettingsFlowTheme.radius(999),
+                  ),
+                ),
+                const SizedBox(height: 14),
+                for (var index = 0; index < options.length; index++) ...[
+                  _PreferenceOptionRow(
+                    option: options[index],
+                    onTap: () => Navigator.pop(sheetContext, index),
+                  ),
+                  if (index != options.length - 1) const SizedBox(height: 8),
+                ],
+              ],
+            ),
+          ),
+        );
+      },
+    );
+
+    if (selectedIndex == null || selectedIndex < 0) {
+      return;
+    }
+
+    await onSelected(options[selectedIndex].value);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () => _openSheet(context),
+      borderRadius: SettingsFlowTheme.radius(999),
+      child: Container(
+        constraints: const BoxConstraints(minWidth: 104, maxWidth: 148),
+        padding: const EdgeInsetsDirectional.only(
+          start: 12,
+          end: 8,
+          top: 8,
+          bottom: 8,
+        ),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.12),
+          borderRadius: SettingsFlowTheme.radius(999),
+          border: Border.all(color: color.withValues(alpha: 0.24)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Expanded(
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: SettingsFlowTheme.micro(color),
+              ),
+            ),
+            const SizedBox(width: 6),
+            isBusy
+                ? SizedBox(
+                    width: 14,
+                    height: 14,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: color,
+                    ),
+                  )
+                : Icon(
+                    Icons.keyboard_arrow_down_rounded,
+                    color: color,
+                    size: 18,
+                  ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _PreferenceOptionRow<T> extends StatelessWidget {
+  final _PreferenceOption<T> option;
+  final VoidCallback onTap;
+
+  const _PreferenceOptionRow({required this.option, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: SettingsFlowTheme.radius(18),
+        child: Ink(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          decoration: BoxDecoration(
+            color: option.color.withValues(alpha: 0.08),
+            borderRadius: SettingsFlowTheme.radius(18),
+            border: Border.all(color: option.color.withValues(alpha: 0.14)),
+          ),
+          child: Row(
+            children: [
+              if (option.leadingText != null)
+                Text(option.leadingText!, style: const TextStyle(fontSize: 18))
+              else if (option.icon != null)
+                Icon(option.icon, size: 20, color: option.color),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  option.label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: SettingsFlowTheme.body(),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _LaunchAnimationSettingsSection extends StatefulWidget {
   const _LaunchAnimationSettingsSection();
 
@@ -796,67 +967,20 @@ class _ThemeInlineSelect extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final accent = _themeAccent(selected);
 
-    return Container(
-      constraints: const BoxConstraints(minWidth: 104, maxWidth: 132),
-      padding: const EdgeInsetsDirectional.only(start: 10, end: 4),
-      decoration: BoxDecoration(
-        color: accent.withValues(alpha: 0.12),
-        borderRadius: SettingsFlowTheme.radius(999),
-        border: Border.all(color: accent.withValues(alpha: 0.24)),
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<AppThemePreference>(
-          value: selected,
-          isDense: true,
-          borderRadius: SettingsFlowTheme.radius(14),
-          dropdownColor: SettingsFlowPalette.surface,
-          icon: Icon(
-            Icons.keyboard_arrow_down_rounded,
-            color: accent,
-            size: 18,
-          ),
-          selectedItemBuilder: (context) => AppThemePreference.values
-              .map(
-                (option) => Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    _themeSelectLabel(option, l10n),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: SettingsFlowTheme.micro(accent),
-                  ),
-                ),
-              )
-              .toList(growable: false),
-          items: AppThemePreference.values
-              .map(
-                (option) => DropdownMenuItem<AppThemePreference>(
-                  value: option,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        _themeIcon(option),
-                        color: _themeAccent(option),
-                        size: 16,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        _themeSelectLabel(option, l10n),
-                        style: SettingsFlowTheme.body(),
-                      ),
-                    ],
-                  ),
-                ),
-              )
-              .toList(growable: false),
-          onChanged: (option) async {
-            if (option != null) {
-              await onChanged(option);
-            }
-          },
-        ),
-      ),
+    return _PreferenceSelectorPill<AppThemePreference>(
+      label: _themeSelectLabel(selected, l10n),
+      color: accent,
+      options: AppThemePreference.values
+          .map(
+            (option) => _PreferenceOption<AppThemePreference>(
+              value: option,
+              label: _themeSelectLabel(option, l10n),
+              icon: _themeIcon(option),
+              color: _themeAccent(option),
+            ),
+          )
+          .toList(growable: false),
+      onSelected: onChanged,
     );
   }
 }
@@ -965,100 +1089,42 @@ class _PostingLanguageSettingsPanelState
         iconColor: SettingsFlowPalette.accent,
         title: l10n.postingLanguageLabel,
         subtitle: l10n.postingLanguageHint,
-        trailing: Container(
-          constraints: const BoxConstraints(minWidth: 104, maxWidth: 148),
-          padding: const EdgeInsetsDirectional.only(start: 10, end: 4),
-          decoration: BoxDecoration(
-            color: SettingsFlowPalette.accent.withValues(alpha: 0.12),
-            borderRadius: SettingsFlowTheme.radius(999),
-            border: Border.all(
-              color: SettingsFlowPalette.accent.withValues(alpha: 0.24),
-            ),
-          ),
-          child: DropdownButtonHideUnderline(
-            child: DropdownButton<String>(
-              value: currentValue,
-              isDense: true,
-              borderRadius: SettingsFlowTheme.radius(14),
-              dropdownColor: SettingsFlowPalette.surface,
-              icon: _isSaving
-                  ? const SizedBox(
-                      width: 14,
-                      height: 14,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : Icon(
-                      Icons.keyboard_arrow_down_rounded,
-                      color: SettingsFlowPalette.accent,
-                      size: 18,
-                    ),
-              selectedItemBuilder: (_) => const ['fr', 'en', 'ar']
-                  .map(
-                    (value) => Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        _languageLabel(ContentLanguage.localeFor(value), l10n),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: SettingsFlowTheme.micro(
-                          SettingsFlowPalette.accent,
-                        ),
-                      ),
-                    ),
-                  )
-                  .toList(growable: false),
-              items: const ['fr', 'en', 'ar']
-                  .map(
-                    (value) => DropdownMenuItem<String>(
-                      value: value,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            _languageFlag(ContentLanguage.localeFor(value)),
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            _languageLabel(
-                              ContentLanguage.localeFor(value),
-                              l10n,
-                            ),
-                            style: SettingsFlowTheme.body(),
-                          ),
-                        ],
-                      ),
-                    ),
-                  )
-                  .toList(growable: false),
-              onChanged: _isSaving
-                  ? null
-                  : (value) async {
-                      if (value == null || value == currentValue) {
-                        return;
-                      }
+        trailing: _PreferenceSelectorPill<String>(
+          label: _languageLabel(ContentLanguage.localeFor(currentValue), l10n),
+          color: SettingsFlowPalette.accent,
+          isBusy: _isSaving,
+          options: const ['fr', 'en', 'ar']
+              .map(
+                (value) => _PreferenceOption<String>(
+                  value: value,
+                  label: _languageLabel(ContentLanguage.localeFor(value), l10n),
+                  leadingText: _languageFlag(ContentLanguage.localeFor(value)),
+                  color: SettingsFlowPalette.accent,
+                ),
+              )
+              .toList(growable: false),
+          onSelected: (value) async {
+            if (value == currentValue) {
+              return;
+            }
 
-                      setState(() => _isSaving = true);
-                      final error = await context
-                          .read<AuthProvider>()
-                          .updatePreferredPostingLanguage(value);
-                      if (!context.mounted) {
-                        return;
-                      }
+            setState(() => _isSaving = true);
+            final error = await context
+                .read<AuthProvider>()
+                .updatePreferredPostingLanguage(value);
+            if (!context.mounted) {
+              return;
+            }
 
-                      final messenger = ScaffoldMessenger.of(context);
-                      final updatedL10n = AppLocalizations.of(context)!;
-                      setState(() => _isSaving = false);
-                      messenger.showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            error ?? updatedL10n.languageUpdatedMessage,
-                          ),
-                        ),
-                      );
-                    },
-            ),
-          ),
+            final messenger = ScaffoldMessenger.of(context);
+            final updatedL10n = AppLocalizations.of(context)!;
+            setState(() => _isSaving = false);
+            messenger.showSnackBar(
+              SnackBar(
+                content: Text(error ?? updatedL10n.languageUpdatedMessage),
+              ),
+            );
+          },
         ),
       ),
     );
@@ -1107,66 +1173,20 @@ class _LanguageInlineSelect extends StatelessWidget {
     // null = follow device; explicit locales for each supported language
     const options = <Locale?>[null, Locale('en'), Locale('fr'), Locale('ar')];
 
-    return Container(
-      constraints: const BoxConstraints(minWidth: 104, maxWidth: 148),
-      padding: const EdgeInsetsDirectional.only(start: 10, end: 4),
-      decoration: BoxDecoration(
-        color: SettingsFlowPalette.secondary.withValues(alpha: 0.12),
-        borderRadius: SettingsFlowTheme.radius(999),
-        border: Border.all(
-          color: SettingsFlowPalette.secondary.withValues(alpha: 0.24),
-        ),
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<Locale?>(
-          value: selected,
-          isDense: true,
-          borderRadius: SettingsFlowTheme.radius(14),
-          dropdownColor: SettingsFlowPalette.surface,
-          icon: Icon(
-            Icons.keyboard_arrow_down_rounded,
-            color: SettingsFlowPalette.secondary,
-            size: 18,
-          ),
-          selectedItemBuilder: (_) => options
-              .map(
-                (opt) => Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    _languageLabel(opt, l10n),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: SettingsFlowTheme.micro(
-                      SettingsFlowPalette.secondary,
-                    ),
-                  ),
-                ),
-              )
-              .toList(growable: false),
-          items: options
-              .map(
-                (opt) => DropdownMenuItem<Locale?>(
-                  value: opt,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        _languageFlag(opt),
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        _languageLabel(opt, l10n),
-                        style: SettingsFlowTheme.body(),
-                      ),
-                    ],
-                  ),
-                ),
-              )
-              .toList(growable: false),
-          onChanged: (opt) => onChanged(opt),
-        ),
-      ),
+    return _PreferenceSelectorPill<Locale?>(
+      label: _languageLabel(selected, l10n),
+      color: SettingsFlowPalette.secondary,
+      options: options
+          .map(
+            (option) => _PreferenceOption<Locale?>(
+              value: option,
+              label: _languageLabel(option, l10n),
+              leadingText: _languageFlag(option),
+              color: SettingsFlowPalette.secondary,
+            ),
+          )
+          .toList(growable: false),
+      onSelected: onChanged,
     );
   }
 }

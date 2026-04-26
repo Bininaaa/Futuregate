@@ -1648,8 +1648,8 @@ class _SavedLabelChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final maxLabelWidth = (MediaQuery.sizeOf(context).width - 158)
-        .clamp(72.0, 132.0)
+    final maxLabelWidth = (MediaQuery.sizeOf(context).width - 220)
+        .clamp(64.0, 112.0)
         .toDouble();
     final resolvedTone = tone ?? StudentOpportunityHubPalette.textMuted;
 
@@ -1700,46 +1700,48 @@ class _SavedMetaChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final resolvedTone = tone ?? StudentOpportunityHubPalette.textMuted;
-    final maxLabelWidth = (MediaQuery.sizeOf(context).width - 142)
-        .clamp(76.0, 220.0)
+    final maxLabelWidth = (MediaQuery.sizeOf(context).width - 260)
+        .clamp(72.0, 156.0)
         .toDouble();
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
-      decoration: BoxDecoration(
-        color: tone == null
-            ? StudentOpportunityHubPalette.surface.withValues(
-                alpha: StudentOpportunityHubPalette.isDark ? 0.92 : 0.86,
-              )
-            : resolvedTone.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxWidth: maxLabelWidth + 45),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
+        decoration: BoxDecoration(
           color: tone == null
-              ? StudentOpportunityHubPalette.border.withValues(alpha: 0.90)
-              : resolvedTone.withValues(alpha: 0.14),
+              ? StudentOpportunityHubPalette.surface.withValues(
+                  alpha: StudentOpportunityHubPalette.isDark ? 0.92 : 0.86,
+                )
+              : resolvedTone.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(999),
+          border: Border.all(
+            color: tone == null
+                ? StudentOpportunityHubPalette.border.withValues(alpha: 0.90)
+                : resolvedTone.withValues(alpha: 0.14),
+          ),
         ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 13, color: resolvedTone),
-          const SizedBox(width: 5),
-          ConstrainedBox(
-            constraints: BoxConstraints(maxWidth: maxLabelWidth),
-            child: Text(
-              label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: GoogleFonts.poppins(
-                fontSize: 10.6,
-                fontWeight: FontWeight.w600,
-                color: tone == null
-                    ? StudentOpportunityHubPalette.textSecondary
-                    : resolvedTone,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 13, color: resolvedTone),
+            const SizedBox(width: 5),
+            Flexible(
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: GoogleFonts.poppins(
+                  fontSize: 10.6,
+                  fontWeight: FontWeight.w600,
+                  color: tone == null
+                      ? StudentOpportunityHubPalette.textSecondary
+                      : resolvedTone,
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

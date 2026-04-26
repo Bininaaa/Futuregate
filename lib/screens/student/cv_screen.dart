@@ -508,7 +508,9 @@ class _CvScreenState extends State<CvScreen> {
               children: [
                 _buildActiveCvPanel(cv, cvProvider),
                 const SizedBox(height: 16),
-                _buildReadinessPanel(cv),
+                cv != null && _isUploadedActive(cv)
+                    ? _buildUploadedCvStatusPanel(cv)
+                    : _buildReadinessPanel(cv),
                 const SizedBox(height: 16),
                 _buildBuilderPanel(cv, cvProvider),
                 const SizedBox(height: 24),
@@ -688,6 +690,85 @@ class _CvScreenState extends State<CvScreen> {
           ),
           const SizedBox(height: 12),
           for (final item in items) _ReadinessRow(item: item),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildUploadedCvStatusPanel(CvModel cv) {
+    return SettingsPanel(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SettingsIconBox(
+                icon: Icons.picture_as_pdf_outlined,
+                color: SettingsFlowPalette.secondary,
+                boxSize: 42,
+                size: 20,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Uploaded PDF active',
+                      style: SettingsFlowTheme.sectionTitle(),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '${cv.uploadedCvDisplayName} is the file companies receive with your applications.',
+                      style: SettingsFlowTheme.caption(),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 10),
+              SettingsStatusPill(
+                label: cv.isUploadedCvPdf ? 'PDF' : 'File',
+                color: SettingsFlowPalette.success,
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          _ReadinessRow(
+            item: _ReadinessItem(
+              icon: Icons.upload_file_rounded,
+              title: 'File uploaded',
+              subtitle: _uploadedDateLabel(cv),
+              isComplete: true,
+            ),
+          ),
+          _ReadinessRow(
+            item: _ReadinessItem(
+              icon: Icons.verified_outlined,
+              title: 'Application-ready',
+              subtitle: cv.isUploadedCvPdf
+                  ? 'The uploaded PDF is ready to attach.'
+                  : 'The uploaded file is saved, but PDF preview may be limited.',
+              isComplete: cv.hasUploadedCv,
+            ),
+          ),
+          const SizedBox(height: 8),
+          SettingsButtonGroup(
+            children: [
+              SettingsSecondaryButton(
+                label: 'Replace PDF',
+                icon: Icons.upload_file_rounded,
+                onPressed: _uploadExistingCv,
+              ),
+              SettingsSecondaryButton(
+                label: 'Build instead',
+                icon: Icons.edit_rounded,
+                onPressed: cv.hasExportedPdf
+                    ? () => _setPrimaryCvMode(cv, 'builder_pdf')
+                    : _navigateToEdit,
+              ),
+            ],
+          ),
         ],
       ),
     );

@@ -134,6 +134,113 @@ class _ConversationScreenState extends State<ConversationScreen> {
     });
   }
 
+  void _insertEmoji(String emoji) {
+    final selection = _messageController.selection;
+    final text = _messageController.text;
+    final start = selection.isValid ? selection.start : text.length;
+    final end = selection.isValid ? selection.end : text.length;
+    final normalizedStart = start.clamp(0, text.length).toInt();
+    final normalizedEnd = end.clamp(0, text.length).toInt();
+    final nextText = text.replaceRange(normalizedStart, normalizedEnd, emoji);
+    final nextOffset = normalizedStart + emoji.length;
+
+    _messageController.value = TextEditingValue(
+      text: nextText,
+      selection: TextSelection.collapsed(offset: nextOffset),
+    );
+  }
+
+  Future<void> _showEmojiPicker() async {
+    final emojis = const <String>[
+      '👍',
+      '🙏',
+      '😊',
+      '👏',
+      '✨',
+      '💼',
+      '📌',
+      '📎',
+      '✅',
+      '⏳',
+      '👋',
+      '🎯',
+      '💡',
+      '🚀',
+      '📄',
+      '📅',
+      '🔍',
+      '⭐',
+      '🙌',
+      '🤝',
+    ];
+
+    final selected = await showModalBottomSheet<String>(
+      context: context,
+      backgroundColor: ChatThemePalette.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (sheetContext) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(18, 14, 18, 22),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 44,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: ChatThemePalette.border,
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text('Emoji', style: ChatThemeStyles.cardTitle()),
+                const SizedBox(height: 14),
+                Wrap(
+                  spacing: 10,
+                  runSpacing: 10,
+                  children: emojis
+                      .map(
+                        (emoji) => InkWell(
+                          onTap: () => Navigator.pop(sheetContext, emoji),
+                          borderRadius: BorderRadius.circular(16),
+                          child: Container(
+                            width: 46,
+                            height: 46,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: ChatThemePalette.surfaceMuted,
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: ChatThemePalette.border,
+                              ),
+                            ),
+                            child: Text(
+                              emoji,
+                              style: const TextStyle(fontSize: 22),
+                            ),
+                          ),
+                        ),
+                      )
+                      .toList(growable: false),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+
+    if (selected != null) {
+      _insertEmoji(selected);
+    }
+  }
+
   Future<void> _sendMessage(ConversationModel? conversation) async {
     final auth = context.read<AuthProvider>().userModel;
     final provider = context.read<ChatProvider>();
@@ -391,9 +498,9 @@ class _ConversationScreenState extends State<ConversationScreen> {
       final confirmed = await showChatConfirmationDialog(
         context,
         title: AppLocalizations.of(context)!.uiArchiveConversation,
-        message:
-            AppLocalizations.of(context)!
-                .uiAreYouSureYouWantToArchiveThisConversation,
+        message: AppLocalizations.of(
+          context,
+        )!.uiAreYouSureYouWantToArchiveThisConversation,
         confirmLabel: 'Archive',
         icon: Icons.archive_outlined,
       );
@@ -452,9 +559,9 @@ class _ConversationScreenState extends State<ConversationScreen> {
     final confirmed = await showChatConfirmationDialog(
       context,
       title: AppLocalizations.of(context)!.uiDeleteConversation,
-      message:
-          AppLocalizations.of(context)!
-              .uiAreYouSureYouWantToDeleteThisConversationThis,
+      message: AppLocalizations.of(
+        context,
+      )!.uiAreYouSureYouWantToDeleteThisConversationThis,
       confirmLabel: AppLocalizations.of(context)!.uiDelete,
       destructive: true,
       icon: Icons.delete_outline_rounded,
@@ -704,7 +811,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                         onRemoveAttachment: () {
                           setState(() => _pendingAttachment = null);
                         },
-                        onEmojiTap: () {},
+                        onEmojiTap: _showEmojiPicker,
                         onAiFormalize: () => _handleAiTask('formal'),
                         onAiCorrect: () => _handleAiTask('correct'),
                         onAiTranslate: _showTranslateSheet,
@@ -957,12 +1064,17 @@ class _ConversationHeader extends StatelessWidget {
               itemBuilder: (context) => [
                 PopupMenuItem<String>(
                   value: 'profile',
-                  child: Text(AppLocalizations.of(context)!.uiViewProfile, style: ChatThemeStyles.body()),
+                  child: Text(
+                    AppLocalizations.of(context)!.uiViewProfile,
+                    style: ChatThemeStyles.body(),
+                  ),
                 ),
                 PopupMenuItem<String>(
                   value: 'mute',
                   child: Text(
-                    muted ? AppLocalizations.of(context)!.unmuteChatLabel : AppLocalizations.of(context)!.muteChatLabel,
+                    muted
+                        ? AppLocalizations.of(context)!.unmuteChatLabel
+                        : AppLocalizations.of(context)!.muteChatLabel,
                     style: ChatThemeStyles.body(),
                   ),
                 ),

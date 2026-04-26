@@ -193,10 +193,18 @@ class _ProfileAvatarState extends State<ProfileAvatar> {
       return Container(
         width: diameter,
         height: diameter,
-        padding: EdgeInsets.all(widget.radius * 0.18),
+        padding: EdgeInsets.all(widget.radius * 0.16),
         decoration: BoxDecoration(
-          color: _fallbackColor(role),
-          shape: BoxShape.circle,
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(diameter * 0.28),
+          border: Border.all(color: const Color(0xFFE2E8F0)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         clipBehavior: Clip.antiAlias,
         child: CachedNetworkImage(
@@ -210,8 +218,8 @@ class _ProfileAvatarState extends State<ProfileAvatar> {
             ),
           ),
           errorWidget: (context, url, error) => Icon(
-            Icons.business,
-            color: const Color(0xFF004E98),
+            Icons.business_center_outlined,
+            color: _fallbackColor(role),
             size: widget.radius,
           ),
         ),
@@ -237,13 +245,42 @@ class _ProfileAvatarState extends State<ProfileAvatar> {
 
   Widget _buildFallback(String name, String role) {
     if (role == 'company') {
-      return CircleAvatar(
-        radius: widget.radius,
-        backgroundColor: _fallbackColor(role),
-        child: Icon(
-          Icons.business,
-          color: _fallbackTextColor(role),
-          size: widget.radius,
+      final diameter = widget.radius * 2;
+      return Container(
+        width: diameter,
+        height: diameter,
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Color(0xFF0F4C81), Color(0xFF0EA5E9)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(diameter * 0.28),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.72)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.08),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        alignment: Alignment.center,
+        child: Padding(
+          padding: EdgeInsets.all(widget.radius * 0.20),
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              _fallbackInitials(name, role),
+              maxLines: 1,
+              style: GoogleFonts.poppins(
+                fontSize: widget.radius * 0.9,
+                height: 1,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
+            ),
+          ),
         ),
       );
     }
@@ -286,6 +323,24 @@ class _ProfileAvatarState extends State<ProfileAvatar> {
     }
 
     return role == 'admin' ? 'A' : '?';
+  }
+
+  String _fallbackInitials(String name, String role) {
+    final trimmed = name.trim();
+    if (trimmed.isEmpty) {
+      return role == 'admin' ? 'AD' : 'CO';
+    }
+
+    final parts = trimmed
+        .split(RegExp(r'\s+'))
+        .where((part) => part.trim().isNotEmpty)
+        .toList(growable: false);
+    if (parts.length == 1) {
+      return parts.first.substring(0, 1).toUpperCase();
+    }
+
+    return '${parts.first.substring(0, 1)}${parts.last.substring(0, 1)}'
+        .toUpperCase();
   }
 
   Color _fallbackColor(String role) {

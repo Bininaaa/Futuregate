@@ -22,6 +22,7 @@ import '../../utils/opportunity_type.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/shared/app_content_system.dart';
 import '../../widgets/shared/app_feedback.dart';
+import '../chat/user_profile_preview_screen.dart';
 import 'chat_screen.dart';
 import '../../l10n/generated/app_localizations.dart';
 
@@ -491,6 +492,35 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
     }
   }
 
+  Future<void> _openPublisherProfile() async {
+    final publisherId = widget.opportunity.companyId.trim();
+    if (publisherId.isEmpty) {
+      context.showAppSnackBar(
+        'The publisher profile is not available for this opportunity.',
+        title: 'Publisher unavailable',
+        type: AppFeedbackType.info,
+      );
+      return;
+    }
+
+    await showFloatingUserProfilePreview(
+      context,
+      userId: publisherId,
+      fallbackName: _companyName,
+      fallbackRole: widget.opportunity.isAdminPosted ? 'admin' : 'company',
+      fallbackHeadline: widget.opportunity.isAdminPosted
+          ? 'FutureGate publisher'
+          : 'Opportunity publisher',
+      fallbackAbout:
+          'Public profile for the publisher behind this opportunity.',
+      fallbackLocation: _locationValue,
+      contextLabel: OpportunityType.label(
+        _effectiveType,
+        AppLocalizations.of(context)!,
+      ),
+    );
+  }
+
   StudentApplicationItemModel? _submittedApplication(
     ApplicationProvider provider,
   ) {
@@ -896,9 +926,9 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
                       Expanded(
                         child: AppSecondaryButton(
                           theme: _theme,
-                          label: AppLocalizations.of(context)!.uiShare,
-                          icon: Icons.ios_share_rounded,
-                          onPressed: _shareOpportunity,
+                          label: 'Publisher',
+                          icon: Icons.account_circle_outlined,
+                          onPressed: _openPublisherProfile,
                         ),
                       ),
                     ],

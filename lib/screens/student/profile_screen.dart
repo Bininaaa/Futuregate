@@ -196,9 +196,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                   // ── Quick links ──────────────────────────────────────
                   final linksCard = _LinksCard(
+                    appliedCount: appliedCount,
                     unreadNotifications: unread,
                     onCv: () => _push(const CvScreen()),
                     onSaved: () => _push(const SavedScreen()),
+                    onApplied: () => _push(const AppliedOpportunitiesScreen()),
                     onNotifications: () => _push(const NotificationsScreen()),
                     onSettings: () => _push(const SettingsScreen()),
                     onSecurity: () => _push(const SecurityPrivacyScreen()),
@@ -1756,14 +1758,16 @@ class _FactRow extends StatelessWidget {
 
 // =============================================================================
 // 4. LINKS CARD
-//    Single unified list: CV Builder, Notifications, Settings,
+//    Single unified list: CV Studio, Notifications, Settings,
 //    Security, Help, About, Logout. No duplicate of anything in the header.
 // =============================================================================
 
 class _LinksCard extends StatelessWidget {
+  final int appliedCount;
   final int unreadNotifications;
   final VoidCallback onCv;
   final VoidCallback onSaved;
+  final VoidCallback onApplied;
   final VoidCallback onNotifications;
   final VoidCallback onSettings;
   final VoidCallback onSecurity;
@@ -1772,9 +1776,11 @@ class _LinksCard extends StatelessWidget {
   final VoidCallback onLogout;
 
   const _LinksCard({
+    required this.appliedCount,
     required this.unreadNotifications,
     required this.onCv,
     required this.onSaved,
+    required this.onApplied,
     required this.onNotifications,
     required this.onSettings,
     required this.onSecurity,
@@ -1807,7 +1813,6 @@ class _LinksCard extends StatelessWidget {
           const SizedBox(height: 16),
           LayoutBuilder(
             builder: (context, constraints) {
-              final stacked = constraints.maxWidth < 360;
               final cvCard = _FeaturedActionCard(
                 title: AppLocalizations.of(context)!.uiCvStudio,
                 subtitle: AppLocalizations.of(context)!.uiCvStudioSubtitle,
@@ -1822,19 +1827,27 @@ class _LinksCard extends StatelessWidget {
                 color: SettingsFlowPalette.primary,
                 onTap: onSaved,
               );
+              final appliedCard = _FeaturedActionCard(
+                title: AppLocalizations.of(context)!.uiApplied,
+                subtitle: appliedCount == 1
+                    ? '1 submitted opportunity'
+                    : '$appliedCount submitted opportunities',
+                icon: Icons.assignment_turned_in_outlined,
+                color: SettingsFlowPalette.accent,
+                onTap: onApplied,
+              );
 
-              if (stacked) {
-                return Column(
-                  children: [cvCard, const SizedBox(height: 10), savedCard],
-                );
-              }
+              final cards = [cvCard, savedCard, appliedCard];
+              final columns = constraints.maxWidth >= 720 ? 3 : 1;
+              final cardWidth =
+                  (constraints.maxWidth - (10 * (columns - 1))) / columns;
 
-              return Row(
-                children: [
-                  Expanded(child: cvCard),
-                  const SizedBox(width: 10),
-                  Expanded(child: savedCard),
-                ],
+              return Wrap(
+                spacing: 10,
+                runSpacing: 10,
+                children: cards
+                    .map((card) => SizedBox(width: cardWidth, child: card))
+                    .toList(growable: false),
               );
             },
           ),

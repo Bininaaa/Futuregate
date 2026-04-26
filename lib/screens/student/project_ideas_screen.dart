@@ -3,7 +3,6 @@ import '../../l10n/generated/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/project_idea_model.dart';
-import '../../models/user_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/project_idea_provider.dart';
 import '../../services/project_idea_service.dart';
@@ -12,13 +11,11 @@ import '../../widgets/ideas/idea_cards.dart';
 import '../../widgets/ideas/idea_metrics_row.dart';
 import '../../widgets/ideas/innovation_hub_theme.dart';
 import '../../widgets/ideas/my_ideas_toggle.dart';
-import '../../widgets/profile_avatar.dart';
 import '../../widgets/shared/app_feedback.dart';
 import '../../widgets/shared/app_loading.dart';
 import '../../widgets/student/student_search_field.dart';
 import 'create_idea_screen.dart';
 import 'idea_details_screen.dart';
-import 'profile_screen.dart';
 import 'saved_screen.dart';
 
 enum _IdeaFilter { all, approved, pending, rejected, interested }
@@ -84,9 +81,46 @@ class _ProjectIdeasScreenState extends State<ProjectIdeasScreen> {
 
     final scaffold = Scaffold(
       backgroundColor: Colors.transparent,
+      appBar: widget.embedded
+          ? null
+          : AppBar(
+              automaticallyImplyLeading: false,
+              centerTitle: false,
+              titleSpacing: 0,
+              backgroundColor: Colors.transparent,
+              surfaceTintColor: Colors.transparent,
+              elevation: 0,
+              leading: IconButton(
+                onPressed: () => Navigator.maybePop(context),
+                icon: Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  color: InnovationHubPalette.textPrimary,
+                ),
+              ),
+              title: Text(
+                AppLocalizations.of(context)!.ideaHubTitle,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: InnovationHubTypography.section(
+                  size: 20,
+                  color: InnovationHubPalette.primary,
+                ),
+              ),
+              actions: [
+                IconButton(
+                  tooltip: AppLocalizations.of(context)!.uiSaved,
+                  onPressed: _openSavedIdeas,
+                  icon: Icon(
+                    Icons.bookmark_outline_rounded,
+                    color: InnovationHubPalette.textPrimary,
+                  ),
+                ),
+                const SizedBox(width: 8),
+              ],
+            ),
       floatingActionButton: _buildFab(),
       body: SafeArea(
-        top: !widget.embedded,
+        top: false,
         child: provider.isLoading && discoverIdeas.isEmpty && myIdeas.isEmpty
             ? const AppLoadingView(density: AppLoadingDensity.compact)
             : RefreshIndicator(
@@ -99,13 +133,6 @@ class _ProjectIdeasScreenState extends State<ProjectIdeasScreen> {
                     parent: BouncingScrollPhysics(),
                   ),
                   slivers: [
-                    if (!widget.embedded)
-                      SliverToBoxAdapter(
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
-                          child: _buildHeader(auth),
-                        ),
-                      ),
                     SliverToBoxAdapter(
                       child: Padding(
                         padding: EdgeInsets.fromLTRB(
@@ -191,34 +218,6 @@ class _ProjectIdeasScreenState extends State<ProjectIdeasScreen> {
     }
 
     return AppShellBackground(child: scaffold);
-  }
-
-  Widget _buildHeader(UserModel? auth) {
-    return Row(
-      children: [
-        GestureDetector(
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const ProfileScreen()),
-          ),
-          child: ProfileAvatar(user: auth, radius: 18),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Text(
-            AppLocalizations.of(context)!.ideaHubTitle,
-            style: InnovationHubTypography.section(
-              size: 20,
-              color: InnovationHubPalette.primary,
-            ),
-          ),
-        ),
-        _HeaderActionButton(
-          icon: Icons.bookmark_outline_rounded,
-          onTap: _openSavedIdeas,
-        ),
-      ],
-    );
   }
 
   Widget _buildSearchBar() {
@@ -358,12 +357,24 @@ class _ProjectIdeasScreenState extends State<ProjectIdeasScreen> {
   }
 
   List<String> _buildCategoryList(ProjectIdeaProvider provider) {
-    return <String>[
+    final seen = <String>{};
+    final categories = <String>[];
+
+    for (final category in [
       ...innovationHubDefaultCategories,
-      ...provider.availableDomains.where(
-        (category) => !innovationHubDefaultCategories.contains(category),
-      ),
-    ];
+      ...provider.availableDomains,
+    ]) {
+      final normalized = category.trim().replaceAll(RegExp(r'\s+'), ' ');
+      if (normalized.isEmpty) {
+        continue;
+      }
+      final key = normalized.toLowerCase();
+      if (seen.add(key)) {
+        categories.add(normalized);
+      }
+    }
+
+    return categories;
   }
 
   List<ProjectIdeaModel> _searchIdeas(List<ProjectIdeaModel> source) {
@@ -784,29 +795,6 @@ class _EmptyState extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _HeaderActionButton extends StatelessWidget {
-  final IconData icon;
-  final VoidCallback onTap;
-
-  const _HeaderActionButton({required this.icon, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: InnovationHubPalette.surface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: InnovationHubPalette.border),
-      ),
-      child: IconButton(
-        onPressed: onTap,
-        icon: Icon(icon, color: InnovationHubPalette.textPrimary, size: 20),
-        visualDensity: VisualDensity.compact,
       ),
     );
   }
