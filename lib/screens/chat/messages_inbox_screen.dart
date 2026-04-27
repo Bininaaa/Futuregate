@@ -456,6 +456,7 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
       userId: conversation.otherParticipantId(currentUserId),
       fallbackName: conversation.displayNameFor(currentUserId),
       fallbackRole: conversation.otherParticipantRole(currentUserId),
+      presentation: UserProfilePreviewPresentation.bottomSheet,
     );
   }
 
@@ -476,6 +477,7 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
           : (user.bio ?? ''),
       fallbackLocation: user.location,
       fallbackWebsite: user.website ?? '',
+      presentation: UserProfilePreviewPresentation.bottomSheet,
     );
   }
 

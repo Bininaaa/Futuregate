@@ -1776,7 +1776,7 @@ class _CompanySettingsAppBar extends StatelessWidget
     return AppBar(
       automaticallyImplyLeading: false,
       centerTitle: false,
-      backgroundColor: Colors.transparent,
+      backgroundColor: SettingsFlowPalette.background,
       surfaceTintColor: Colors.transparent,
       scrolledUnderElevation: 0,
       elevation: 0,
@@ -1789,10 +1789,7 @@ class _CompanySettingsAppBar extends StatelessWidget
               ),
             )
           : null,
-      title: Text(
-        title,
-        style: SettingsFlowTheme.appBarTitle(SettingsFlowPalette.textPrimary),
-      ),
+      title: Text(title, style: SettingsFlowTheme.appBarTitle()),
     );
   }
 }

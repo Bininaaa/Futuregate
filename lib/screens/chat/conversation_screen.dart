@@ -479,6 +479,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
       fallbackLocation: fallbackLocation,
       fallbackWebsite: fallbackWebsite,
       contextLabel: contextLabel,
+      presentation: UserProfilePreviewPresentation.bottomSheet,
     );
   }
 

@@ -288,6 +288,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
                 : (contact.bio ?? ''),
             fallbackLocation: contact.location,
             fallbackWebsite: contact.website ?? '',
+            presentation: UserProfilePreviewPresentation.bottomSheet,
           ),
           child: Stack(
             clipBehavior: Clip.none,

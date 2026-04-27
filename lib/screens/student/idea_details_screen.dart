@@ -741,6 +741,7 @@ class IdeaDetailsScreen extends StatelessWidget {
       fallbackHeadline: idea.creatorHeadline,
       fallbackAbout: idea.overviewText,
       contextLabel: idea.title,
+      presentation: UserProfilePreviewPresentation.bottomSheet,
     );
   }
 
