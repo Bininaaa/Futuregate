@@ -272,26 +272,22 @@ class _NewChatScreenState extends State<NewChatScreen> {
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
         leading: GestureDetector(
-          onTap: () => Navigator.push(
+          onTap: () => showFloatingUserProfilePreview(
             context,
-            MaterialPageRoute(
-              builder: (_) => UserProfilePreviewScreen(
-                userId: contact.uid,
-                fallbackName: displayName,
-                fallbackRole: contact.role,
-                fallbackHeadline: contact.role == 'company'
-                    ? (contact.sector ?? '')
-                    : [
-                        (contact.fieldOfStudy ?? '').trim(),
-                        (contact.university ?? '').trim(),
-                      ].where((value) => value.isNotEmpty).join(' - '),
-                fallbackAbout: contact.role == 'company'
-                    ? (contact.description ?? '')
-                    : (contact.bio ?? ''),
-                fallbackLocation: contact.location,
-                fallbackWebsite: contact.website ?? '',
-              ),
-            ),
+            userId: contact.uid,
+            fallbackName: displayName,
+            fallbackRole: contact.role,
+            fallbackHeadline: contact.role == 'company'
+                ? (contact.sector ?? '')
+                : [
+                    (contact.fieldOfStudy ?? '').trim(),
+                    (contact.university ?? '').trim(),
+                  ].where((value) => value.isNotEmpty).join(' - '),
+            fallbackAbout: contact.role == 'company'
+                ? (contact.description ?? '')
+                : (contact.bio ?? ''),
+            fallbackLocation: contact.location,
+            fallbackWebsite: contact.website ?? '',
           ),
           child: Stack(
             clipBehavior: Clip.none,

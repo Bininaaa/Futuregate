@@ -1,0 +1,350 @@
+- generic [active] [ref=e1]:
+  - navigation "Main navigation" [ref=e2]:
+    - generic [ref=e4]:
+      - generic [ref=e5]:
+        - link "FutureGate" [ref=e6] [cursor=pointer]:
+          - /url: "#"
+          - img [ref=e8]
+          - generic [ref=e10]: FutureGate
+        - generic [ref=e11]:
+          - link "Features" [ref=e12] [cursor=pointer]:
+            - /url: "#features"
+          - link "How It Works" [ref=e13] [cursor=pointer]:
+            - /url: "#how-it-works"
+          - link "Why FutureGate" [ref=e14] [cursor=pointer]:
+            - /url: "#why"
+          - link "FAQ" [ref=e15] [cursor=pointer]:
+            - /url: "#faq"
+          - link "Download" [ref=e16] [cursor=pointer]:
+            - /url: "#download"
+        - generic [ref=e17]:
+          - generic [ref=e18]:
+            - button "English" [ref=e19] [cursor=pointer]: EN
+            - button "Français" [ref=e20] [cursor=pointer]: FR
+            - button "العربية" [ref=e21] [cursor=pointer]: AR
+          - button "Toggle theme" [ref=e22] [cursor=pointer]:
+            - img [ref=e23]
+          - link "Download APK" [ref=e26] [cursor=pointer]:
+            - /url: /futuregate.apk
+            - img [ref=e27]
+            - generic [ref=e30]: Download APK
+      - menu:
+        - generic [ref=e31]:
+          - menuitem "Features" [ref=e32] [cursor=pointer]
+          - menuitem "How It Works" [ref=e33] [cursor=pointer]
+          - menuitem "Why FutureGate" [ref=e34] [cursor=pointer]
+          - menuitem "FAQ" [ref=e35] [cursor=pointer]
+          - menuitem "Download" [ref=e36] [cursor=pointer]
+          - generic [ref=e37]:
+            - generic [ref=e38]:
+              - button "EN" [ref=e39] [cursor=pointer]
+              - button "FR" [ref=e40] [cursor=pointer]
+              - button "AR" [ref=e41] [cursor=pointer]
+            - link "Download APK" [ref=e42] [cursor=pointer]:
+              - /url: /futuregate.apk
+              - img [ref=e43]
+              - generic [ref=e46]: Download APK
+  - generic [ref=e47]:
+    - generic [ref=e50]:
+      - generic [ref=e51]:
+        - generic [ref=e52]:
+          - generic [ref=e53]:
+            - img [ref=e54]
+            - generic [ref=e56]: Android APK
+          - generic [ref=e57]:
+            - img [ref=e58]
+            - generic [ref=e61]: Version 1.0.0
+          - generic [ref=e62]:
+            - img [ref=e63]
+            - generic [ref=e65]: Free Download
+        - heading "Your Gateway to Opportunities" [level=1] [ref=e66]:
+          - generic [ref=e67]: Your Gateway to
+          - generic [ref=e68]: Opportunities
+        - paragraph [ref=e69]: Connect students with jobs, scholarships, trainings, and internships. Empower companies to discover top talent — all in one futuristic platform.
+        - generic [ref=e70]:
+          - link "Download FutureGate APK" [ref=e71] [cursor=pointer]:
+            - /url: /futuregate.apk
+            - img [ref=e72]
+            - generic [ref=e75]: Download APK
+          - link "Explore Features" [ref=e76] [cursor=pointer]:
+            - /url: "#features"
+            - img [ref=e77]
+            - generic [ref=e80]: Explore Features
+        - generic [ref=e81]:
+          - generic [ref=e82]:
+            - img [ref=e83]
+            - generic [ref=e85]: Android 6.0+
+          - generic [ref=e86]:
+            - img [ref=e87]
+            - generic [ref=e90]: Free Forever
+          - generic [ref=e91]:
+            - img [ref=e92]
+            - generic [ref=e94]: One-tap Apply
+      - generic [ref=e95]:
+        - generic [ref=e128]:
+          - img [ref=e130]
+          - generic [ref=e132]:
+            - generic [ref=e133]: New Job
+            - generic [ref=e134]: Software Dev
+        - generic [ref=e135]:
+          - img [ref=e137]
+          - generic [ref=e140]:
+            - generic [ref=e141]: Scholarship
+            - generic [ref=e142]: $5,000 Grant
+        - generic [ref=e143]:
+          - img [ref=e145]
+          - generic [ref=e148]:
+            - generic [ref=e149]: Training
+            - generic [ref=e150]: AI & ML
+        - generic [ref=e151]:
+          - img [ref=e153]
+          - generic [ref=e156]:
+            - generic [ref=e157]: CV Builder
+            - generic [ref=e158]: Auto Generate
+    - img [ref=e160]
+  - region "Built for Both Worlds" [ref=e162]:
+    - generic [ref=e163]:
+      - generic [ref=e164]:
+        - generic [ref=e165]: Platform Features
+        - heading "Built for Both Worlds" [level=2] [ref=e166]
+        - paragraph [ref=e167]: Whether you're a student hunting for your next opportunity or a company building your dream team — FutureGate has you covered.
+      - generic [ref=e168]:
+        - generic [ref=e169]:
+          - img [ref=e171]
+          - heading "For Students" [level=3] [ref=e174]
+        - generic [ref=e175]:
+          - generic [ref=e176]:
+            - img [ref=e178]
+            - heading "Job Opportunities" [level=4] [ref=e182]
+            - paragraph [ref=e183]: Browse curated job listings matched to your profile, skills, and location.
+          - generic [ref=e184]:
+            - img [ref=e186]
+            - heading "Scholarships" [level=4] [ref=e188]
+            - paragraph [ref=e189]: Discover grants, full scholarships, and financial aid from local and global sources.
+          - generic [ref=e190]:
+            - img [ref=e192]
+            - heading "Training & Courses" [level=4] [ref=e196]
+            - paragraph [ref=e197]: Access bootcamps, workshops, and certification programs to level up your skills.
+          - generic [ref=e198]:
+            - img [ref=e200]
+            - heading "Smart CV Builder" [level=4] [ref=e203]
+            - paragraph [ref=e204]: Auto-generate a professional CV from your profile and export it instantly.
+      - generic [ref=e205]:
+        - generic [ref=e206]:
+          - img [ref=e208]
+          - heading "For Companies" [level=3] [ref=e211]
+        - generic [ref=e212]:
+          - generic [ref=e213]:
+            - img [ref=e215]
+            - heading "Talent Discovery" [level=4] [ref=e219]
+            - paragraph [ref=e220]: Search verified student profiles and find the right candidates instantly.
+          - generic [ref=e221]:
+            - img [ref=e223]
+            - heading "Post Opportunities" [level=4] [ref=e226]
+            - paragraph [ref=e227]: Publish job offers, internships, and training programs in seconds.
+          - generic [ref=e228]:
+            - img [ref=e230]
+            - heading "Direct Messaging" [level=4] [ref=e232]
+            - paragraph [ref=e233]: Chat directly with candidates or students who apply to your listings.
+          - generic [ref=e234]:
+            - img [ref=e236]
+            - heading "Analytics Dashboard" [level=4] [ref=e238]
+            - paragraph [ref=e239]: Track application stats, profile views, and engagement metrics in real time.
+  - region "How It Works" [ref=e240]:
+    - generic [ref=e241]:
+      - generic [ref=e242]:
+        - generic [ref=e243]: Simple Process
+        - heading "How It Works" [level=2] [ref=e244]
+        - paragraph [ref=e245]: Get started in three simple steps and unlock a world of possibilities.
+      - generic [ref=e246]:
+        - generic [ref=e248]:
+          - generic [ref=e249]:
+            - generic [ref=e250]: "1"
+            - img [ref=e251]
+          - heading "Create Your Account" [level=3] [ref=e255]
+          - paragraph [ref=e256]: Sign up as a student or company, build your profile, and let FutureGate know what you're looking for.
+        - generic [ref=e257]:
+          - generic [ref=e258]:
+            - generic [ref=e259]: "2"
+            - img [ref=e260]
+          - heading "Explore Opportunities" [level=3] [ref=e264]
+          - paragraph [ref=e265]: Browse jobs, scholarships, trainings, and internships tailored to your interests and career goals.
+        - generic [ref=e266]:
+          - generic [ref=e267]:
+            - generic [ref=e268]: "3"
+            - img [ref=e269]
+          - heading "Apply and Connect" [level=3] [ref=e272]
+          - paragraph [ref=e273]: One-tap applications, real-time messaging with companies, and track your progress — all in one place.
+  - region "One Gate. Infinite Paths." [ref=e274]:
+    - generic [ref=e275]:
+      - generic [ref=e276]:
+        - generic [ref=e277]: Why FutureGate
+        - heading "One Gate. Infinite Paths." [level=2] [ref=e278]
+        - paragraph [ref=e279]: FutureGate brings together everything students need to launch their career — and everything companies need to find their next great hire.
+      - generic [ref=e280]:
+        - generic [ref=e281]:
+          - generic [ref=e283]:
+            - img [ref=e285]
+            - generic [ref=e288]:
+              - heading "Job Listings" [level=3] [ref=e289]
+              - paragraph [ref=e290]: Verified listings from real companies — filtered by your field, city, and experience level.
+              - generic [ref=e291]:
+                - generic [ref=e292]: Full-time
+                - generic [ref=e293]: Part-time
+                - generic [ref=e294]: Remote
+          - generic [ref=e296]:
+            - img [ref=e298]
+            - generic [ref=e300]:
+              - heading "Scholarships & Grants" [level=3] [ref=e301]
+              - paragraph [ref=e302]: Funding from local institutions, international organizations, and private sponsors — all in one feed.
+              - generic [ref=e303]:
+                - generic [ref=e304]: National
+                - generic [ref=e305]: International
+        - generic [ref=e313]: FG
+        - generic [ref=e316]:
+          - generic [ref=e318]:
+            - img [ref=e320]
+            - generic [ref=e323]:
+              - heading "Trainings & Courses" [level=3] [ref=e324]
+              - paragraph [ref=e325]: Bootcamps, workshops, and certifications curated by industry professionals to sharpen your skills.
+              - generic [ref=e326]:
+                - generic [ref=e327]: Tech
+                - generic [ref=e328]: Business
+                - generic [ref=e329]: Design
+          - generic [ref=e331]:
+            - img [ref=e333]
+            - generic [ref=e336]:
+              - heading "CV Builder + Messaging" [level=3] [ref=e337]
+              - paragraph [ref=e338]: Auto-generate your CV from your profile, export as PDF, and message companies directly — all inside the app.
+              - generic [ref=e339]:
+                - generic [ref=e340]: Auto-generate
+                - generic [ref=e341]: Export PDF
+      - generic [ref=e342]:
+        - paragraph [ref=e343]: The difference
+        - generic [ref=e344]:
+          - generic [ref=e345]:
+            - generic [ref=e346]:
+              - img [ref=e348]
+              - generic [ref=e350]: 5 apps, 5 logins, 5 profiles
+            - generic [ref=e351]:
+              - img [ref=e353]
+              - generic [ref=e355]: One app, one profile, everything
+          - generic [ref=e356]:
+            - generic [ref=e357]:
+              - img [ref=e359]
+              - generic [ref=e361]: Generic listings, no fit
+            - generic [ref=e362]:
+              - img [ref=e364]
+              - generic [ref=e366]: Matched to your exact profile
+          - generic [ref=e367]:
+            - generic [ref=e368]:
+              - img [ref=e370]
+              - generic [ref=e372]: Long, confusing apply process
+            - generic [ref=e373]:
+              - img [ref=e375]
+              - generic [ref=e377]: Apply in one tap, chat instantly
+  - region "Download FutureGate" [ref=e378]:
+    - generic [ref=e380]:
+      - img [ref=e382]
+      - generic [ref=e388]: Android Only
+      - heading "Download FutureGate" [level=2] [ref=e389]
+      - paragraph [ref=e390]: Version 1.0.0 · Free Forever
+      - paragraph [ref=e391]: No Play Store. No subscription. Just download, install, and unlock your future.
+      - link "Download FutureGate APK" [ref=e392] [cursor=pointer]:
+        - /url: /futuregate.apk
+        - img [ref=e393]
+        - generic [ref=e396]: Download APK — v1.0.0
+      - paragraph [ref=e397]: Free · Android 6.0+ · ~15 MB
+  - region "Install in 3 Steps" [ref=e398]:
+    - generic [ref=e399]:
+      - generic [ref=e400]:
+        - generic [ref=e401]: Installation
+        - heading "Install in 3 Steps" [level=2] [ref=e402]
+      - generic [ref=e403]:
+        - generic [ref=e404]:
+          - img [ref=e406]
+          - generic [ref=e409]: "01"
+          - heading "Download APK" [level=3] [ref=e410]
+          - paragraph [ref=e411]: Tap the Download button and save the APK file to your Android device.
+        - generic [ref=e412]:
+          - img [ref=e414]
+          - generic [ref=e417]: "02"
+          - heading "Allow Unknown Sources" [level=3] [ref=e418]
+          - paragraph [ref=e419]: Go to Settings → Security and enable "Install from unknown sources" when prompted.
+        - generic [ref=e420]:
+          - img [ref=e422]
+          - generic [ref=e424]: "03"
+          - heading "Open FutureGate" [level=3] [ref=e425]
+          - paragraph [ref=e426]: Open the downloaded APK, complete installation, and launch FutureGate. Your future awaits.
+  - region "Common Questions" [ref=e427]:
+    - generic [ref=e428]:
+      - generic [ref=e429]:
+        - generic [ref=e430]: FAQ
+        - heading "Common Questions" [level=2] [ref=e431]
+      - generic [ref=e432]:
+        - generic [ref=e433] [cursor=pointer]:
+          - button "Is FutureGate free?" [ref=e434]:
+            - generic [ref=e435]: Is FutureGate free?
+            - img [ref=e436]
+          - generic: Yes — FutureGate is completely free for students. Download the APK, create your account, and start exploring opportunities at zero cost. Companies benefit from a generous free tier for posting and discovering talent.
+        - generic [ref=e438] [cursor=pointer]:
+          - button "Is the APK safe to install?" [ref=e439]:
+            - generic [ref=e440]: Is the APK safe to install?
+            - img [ref=e441]
+          - generic: Absolutely. The APK is signed, verified, and served directly from futuregate.tech. It contains no malware, no ads, and no hidden permissions.
+        - generic [ref=e443] [cursor=pointer]:
+          - button "Why is it not on the Play Store yet?" [ref=e444]:
+            - generic [ref=e445]: Why is it not on the Play Store yet?
+            - img [ref=e446]
+          - generic: FutureGate is in its early-access phase. We're gathering user feedback and refining the experience before the full Play Store launch. Early adopters get exclusive features.
+        - generic [ref=e448] [cursor=pointer]:
+          - button "How do I install the APK?" [ref=e449]:
+            - generic [ref=e450]: How do I install the APK?
+            - img [ref=e451]
+          - generic: Download the APK from this page, go to Settings → Security → Install unknown apps, allow your browser, then open the file and tap Install. Under a minute.
+        - generic [ref=e453] [cursor=pointer]:
+          - button "Can companies use FutureGate?" [ref=e454]:
+            - generic [ref=e455]: Can companies use FutureGate?
+            - img [ref=e456]
+          - generic: Yes! Companies can register directly through the FutureGate app. Post jobs, internships, or trainings, search student profiles, and connect with candidates — all from one place.
+  - contentinfo [ref=e458]:
+    - generic [ref=e459]:
+      - generic [ref=e460]:
+        - generic [ref=e461]:
+          - link "FutureGate" [ref=e462] [cursor=pointer]:
+            - /url: "#"
+            - img [ref=e464]
+            - generic [ref=e466]: FutureGate
+          - paragraph [ref=e467]: Your gateway to opportunities. Connecting students with the future they deserve.
+        - generic [ref=e468]:
+          - generic [ref=e469]:
+            - heading "Product" [level=4] [ref=e470]
+            - list [ref=e471]:
+              - listitem [ref=e472]:
+                - link "Features" [ref=e473] [cursor=pointer]:
+                  - /url: "#features"
+              - listitem [ref=e474]:
+                - link "How It Works" [ref=e475] [cursor=pointer]:
+                  - /url: "#how-it-works"
+              - listitem [ref=e476]:
+                - link "Download" [ref=e477] [cursor=pointer]:
+                  - /url: "#download"
+              - listitem [ref=e478]:
+                - link "FAQ" [ref=e479] [cursor=pointer]:
+                  - /url: "#faq"
+          - generic [ref=e480]:
+            - heading "Platform" [level=4] [ref=e481]
+            - list [ref=e482]:
+              - listitem [ref=e483]:
+                - link "futuregate.tech" [ref=e484] [cursor=pointer]:
+                  - /url: https://futuregate.tech
+                  - img [ref=e485]
+                  - text: futuregate.tech
+              - listitem [ref=e488]:
+                - link "Download APK" [ref=e489] [cursor=pointer]:
+                  - /url: /futuregate.apk
+                  - img [ref=e490]
+                  - generic [ref=e493]: Download APK
+      - generic [ref=e494]:
+        - paragraph [ref=e495]: © 2025 FutureGate. All rights reserved.
+        - paragraph [ref=e496]: Made with purpose for students everywhere.

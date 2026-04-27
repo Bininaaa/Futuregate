@@ -451,39 +451,31 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
     ConversationModel conversation,
     String currentUserId,
   ) {
-    Navigator.push(
+    showFloatingUserProfilePreview(
       context,
-      MaterialPageRoute(
-        builder: (_) => UserProfilePreviewScreen(
-          userId: conversation.otherParticipantId(currentUserId),
-          fallbackName: conversation.displayNameFor(currentUserId),
-          fallbackRole: conversation.otherParticipantRole(currentUserId),
-        ),
-      ),
+      userId: conversation.otherParticipantId(currentUserId),
+      fallbackName: conversation.displayNameFor(currentUserId),
+      fallbackRole: conversation.otherParticipantRole(currentUserId),
     );
   }
 
   void _openProfile(UserModel user) {
-    Navigator.push(
+    showFloatingUserProfilePreview(
       context,
-      MaterialPageRoute(
-        builder: (_) => UserProfilePreviewScreen(
-          userId: user.uid,
-          fallbackName: user.companyName ?? user.fullName,
-          fallbackRole: user.role,
-          fallbackHeadline: user.role == 'company'
-              ? (user.sector ?? '')
-              : [
-                  (user.fieldOfStudy ?? '').trim(),
-                  (user.university ?? '').trim(),
-                ].where((value) => value.isNotEmpty).join(' - '),
-          fallbackAbout: user.role == 'company'
-              ? (user.description ?? '')
-              : (user.bio ?? ''),
-          fallbackLocation: user.location,
-          fallbackWebsite: user.website ?? '',
-        ),
-      ),
+      userId: user.uid,
+      fallbackName: user.companyName ?? user.fullName,
+      fallbackRole: user.role,
+      fallbackHeadline: user.role == 'company'
+          ? (user.sector ?? '')
+          : [
+              (user.fieldOfStudy ?? '').trim(),
+              (user.university ?? '').trim(),
+            ].where((value) => value.isNotEmpty).join(' - '),
+      fallbackAbout: user.role == 'company'
+          ? (user.description ?? '')
+          : (user.bio ?? ''),
+      fallbackLocation: user.location,
+      fallbackWebsite: user.website ?? '',
     );
   }
 

@@ -468,20 +468,16 @@ class _ConversationScreenState extends State<ConversationScreen> {
   }) {
     if (userId.trim().isEmpty) return;
 
-    Navigator.push(
+    showFloatingUserProfilePreview(
       context,
-      MaterialPageRoute(
-        builder: (_) => UserProfilePreviewScreen(
-          userId: userId,
-          fallbackName: fallbackName,
-          fallbackRole: fallbackRole,
-          fallbackHeadline: fallbackHeadline,
-          fallbackAbout: fallbackAbout,
-          fallbackLocation: fallbackLocation,
-          fallbackWebsite: fallbackWebsite,
-          contextLabel: contextLabel,
-        ),
-      ),
+      userId: userId,
+      fallbackName: fallbackName,
+      fallbackRole: fallbackRole,
+      fallbackHeadline: fallbackHeadline,
+      fallbackAbout: fallbackAbout,
+      fallbackLocation: fallbackLocation,
+      fallbackWebsite: fallbackWebsite,
+      contextLabel: contextLabel,
     );
   }
 

@@ -37,7 +37,7 @@ class SettingsPageScaffold extends StatelessWidget {
           ? AppBar(
               automaticallyImplyLeading: false,
               centerTitle: centerTitle,
-              backgroundColor: Colors.transparent,
+              backgroundColor: SettingsFlowPalette.background,
               surfaceTintColor: Colors.transparent,
               elevation: 0,
               scrolledUnderElevation: 0,

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="FutureGate — The gateway to opportunities for students and companies. Download the APK and start connecting today.">
-  <meta name="keywords" content="FutureGate, APK download, student jobs, scholarships, trainings, internships, opportunities">
+  <meta name="description" content="FutureGate — The gateway to opportunities for students and companies.">
+  <meta name="keywords" content="FutureGate, APK download, student jobs, scholarships, trainings, internships">
   <meta name="theme-color" content="#0A0E1A">
   <meta property="og:title" content="FutureGate — Download the App">
   <meta property="og:description" content="The gateway to opportunities for students and companies.">
@@ -14,7 +14,7 @@
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%234F46E5'/%3E%3Cpath d='M8 10h16M8 16h10M8 22h16' stroke='%2306B6D4' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Exo+2:wght@300;400;500;600;700&family=Tajawal:wght@300;400;500;700;800&family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -23,161 +23,418 @@
           fontFamily: {
             orbitron: ['Orbitron', 'sans-serif'],
             exo: ['Exo 2', 'sans-serif'],
-          },
-          colors: {
-            primary: '#4F46E5',
-            'primary-light': '#6366F1',
-            cyan: { DEFAULT: '#06B6D4', light: '#22D3EE' },
-            violet: { DEFAULT: '#8B5CF6', light: '#A78BFA' },
-            cta: '#F97316',
-            'dark-bg': '#0A0E1A',
-            'dark-card': '#0F1628',
-            'dark-border': 'rgba(99,102,241,0.2)',
-          },
-          animation: {
-            'float': 'float 3s ease-in-out infinite',
-            'float-delay': 'float 3s ease-in-out 1.5s infinite',
-            'pulse-glow': 'pulseGlow 2s ease-in-out infinite',
-            'spin-slow': 'spin 8s linear infinite',
-            'fade-in-up': 'fadeInUp 0.6s ease-out forwards',
-          },
-          keyframes: {
-            float: { '0%,100%': { transform: 'translateY(0px)' }, '50%': { transform: 'translateY(-12px)' } },
-            pulseGlow: { '0%,100%': { boxShadow: '0 0 20px rgba(79,70,229,0.4)' }, '50%': { boxShadow: '0 0 40px rgba(6,182,212,0.6)' } },
-            fadeInUp: { from: { opacity: '0', transform: 'translateY(30px)' }, to: { opacity: '1', transform: 'translateY(0)' } },
+            tajawal: ['Tajawal', 'sans-serif'],
+            cairo: ['Cairo', 'sans-serif'],
           }
         }
       }
     }
   </script>
   <style>
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body { font-family: 'Exo 2', sans-serif; background: #0A0E1A; color: #F8FAFC; overflow-x: hidden; }
-
-    /* Glass effect */
-    .glass { background: rgba(15,22,40,0.7); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(99,102,241,0.2); }
-    .glass-light { background: rgba(79,70,229,0.1); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(99,102,241,0.25); }
-
-    /* Gradient text */
-    .gradient-text { background: linear-gradient(135deg, #6366F1, #06B6D4, #8B5CF6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-    .gradient-text-cta { background: linear-gradient(135deg, #F97316, #FBBF24); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-
-    /* Hero gradient */
-    .hero-gradient { background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 30%, #0c1445 60%, #0a1628 100%); }
-
-    /* Glow effects */
-    .glow-primary { box-shadow: 0 0 30px rgba(79,70,229,0.35); }
-    .glow-cyan { box-shadow: 0 0 25px rgba(6,182,212,0.35); }
-    .glow-violet { box-shadow: 0 0 25px rgba(139,92,246,0.35); }
-    .btn-glow:hover { box-shadow: 0 0 25px rgba(79,70,229,0.6), 0 0 50px rgba(79,70,229,0.3); }
-    .btn-cta-glow:hover { box-shadow: 0 0 25px rgba(249,115,22,0.6), 0 0 50px rgba(249,115,22,0.3); }
-
-    /* Diagonal bottom for hero */
-    .hero-wave { position: absolute; bottom: -2px; left: 0; right: 0; }
-
-    /* Scroll reveal */
-    .reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.7s ease, transform 0.7s ease; }
-    .reveal.visible { opacity: 1; transform: translateY(0); }
-    .reveal-left { opacity: 0; transform: translateX(-40px); transition: opacity 0.7s ease, transform 0.7s ease; }
-    .reveal-left.visible { opacity: 1; transform: translateX(0); }
-    .reveal-right { opacity: 0; transform: translateX(40px); transition: opacity 0.7s ease, transform 0.7s ease; }
-    .reveal-right.visible { opacity: 1; transform: translateX(0); }
-
-    /* Phone mockup */
-    .phone-mockup { width: 200px; height: 380px; border-radius: 32px; border: 3px solid rgba(99,102,241,0.5); background: linear-gradient(180deg, #1e1b4b 0%, #0a0e1a 100%); position: relative; box-shadow: 0 0 40px rgba(79,70,229,0.4), inset 0 0 20px rgba(6,182,212,0.05); }
-    .phone-notch { width: 60px; height: 8px; background: #0A0E1A; border-radius: 4px; position: absolute; top: 10px; left: 50%; transform: translateX(-50%); }
-    .phone-screen { position: absolute; top: 28px; left: 6px; right: 6px; bottom: 12px; border-radius: 26px; overflow: hidden; background: linear-gradient(180deg, #1a1060 0%, #0d1a3a 50%, #061020 100%); }
-    .phone-home-btn { width: 40px; height: 4px; background: rgba(99,102,241,0.4); border-radius: 2px; position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); }
-
-    /* Floating card */
-    .float-card { position: absolute; background: rgba(15,22,40,0.85); backdrop-filter: blur(12px); border: 1px solid rgba(99,102,241,0.3); border-radius: 12px; padding: 8px 12px; display: flex; align-items: center; gap: 8px; font-family: 'Exo 2', sans-serif; font-size: 12px; color: #E2E8F0; white-space: nowrap; box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
-
-    /* Grid background */
-    .grid-bg { background-image: linear-gradient(rgba(99,102,241,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.07) 1px, transparent 1px); background-size: 40px 40px; }
-
-    /* Portal glow rings */
-    .portal-ring { position: absolute; border-radius: 50%; border: 1px solid; animation: portalPulse 2.5s ease-in-out infinite; }
-    @keyframes portalPulse { 0%,100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 0.7; transform: scale(1.05); } }
-
-    /* FAQ accordion */
-    .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.3s ease; }
-    .faq-answer.open { max-height: 300px; padding-bottom: 1rem; }
-    .faq-icon { transition: transform 0.3s ease; }
-    .faq-item.open .faq-icon { transform: rotate(45deg); }
-
-    /* Navbar */
-    .nav-link { position: relative; }
-    .nav-link::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 0; height: 2px; background: linear-gradient(90deg, #4F46E5, #06B6D4); transition: width 0.3s ease; border-radius: 1px; }
-    .nav-link:hover::after { width: 100%; }
-
-    /* Step connector */
-    .step-line { position: absolute; top: 24px; left: 50%; width: calc(100% - 48px); height: 2px; background: linear-gradient(90deg, #4F46E5, #06B6D4); z-index: 0; transform: translateX(0); }
-
-    @media (prefers-reduced-motion: reduce) {
-      .animate-float, .animate-float-delay, .animate-pulse-glow, .animate-spin-slow { animation: none; }
-      .reveal, .reveal-left, .reveal-right { opacity: 1; transform: none; transition: none; }
+    /* ── THEME TOKENS ─────────────────────────────────────── */
+    :root {
+      --bg:            #0A0E1A;
+      --bg2:           #0D1228;
+      --surface:       rgba(15,22,40,0.72);
+      --surface-solid: #0F1628;
+      --border:        rgba(99,102,241,0.2);
+      --text:          #F8FAFC;
+      --text-muted:    #94A3B8;
+      --text-sub:      #CBD5E1;
+      --nav-bg:        rgba(15,22,40,0.72);
+      --footer-bg:     #070B16;
+      --hero-a:        #1e1b4b;
+      --hero-b:        #0f172a;
+      --hero-c:        #0a1628;
+      --grid-line:     rgba(99,102,241,0.07);
+      --scratch:       rgba(239,68,68,0.15);
+      --scratch-b:     rgba(239,68,68,0.3);
+    }
+    html.light {
+      --bg:            #F0F4FF;
+      --bg2:           #EEF2FF;
+      --surface:       rgba(255,255,255,0.88);
+      --surface-solid: #ffffff;
+      --border:        rgba(99,102,241,0.28);
+      --text:          #0F172A;
+      --text-muted:    #64748B;
+      --text-sub:      #475569;
+      --nav-bg:        rgba(255,255,255,0.88);
+      --footer-bg:     #E0E7FF;
+      --hero-a:        #C7D2FE;
+      --hero-b:        #EEF2FF;
+      --hero-c:        #DDE5FF;
+      --grid-line:     rgba(99,102,241,0.12);
+      --scratch:       rgba(239,68,68,0.1);
+      --scratch-b:     rgba(239,68,68,0.25);
     }
 
-    /* Mobile menu */
-    #mobile-menu { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
-    #mobile-menu.open { max-height: 500px; }
+    /* ── RESET / BASE ─────────────────────────────────────── */
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Exo 2', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+    html[lang="ar"] body { font-family: 'Tajawal', sans-serif; }
 
-    /* Badge */
-    .badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(79,70,229,0.15); border: 1px solid rgba(99,102,241,0.3); border-radius: 50px; padding: 4px 12px; font-size: 12px; color: #A5B4FC; font-family: 'Exo 2', sans-serif; }
+    /* ── GLASS ───────────────────────────────────────────── */
+    .glass {
+      background: var(--surface);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      transition: background 0.3s ease, border-color 0.3s ease;
+    }
+    .glass-light {
+      background: rgba(79,70,229,0.1);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(99,102,241,0.25);
+    }
+    html.light .glass-light {
+      background: rgba(79,70,229,0.08);
+      border-color: rgba(99,102,241,0.3);
+    }
+
+    /* ── GRADIENT TEXT ───────────────────────────────────── */
+    .gradient-text {
+      background: linear-gradient(135deg,#6366F1,#06B6D4,#8B5CF6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .gradient-text-cta {
+      background: linear-gradient(135deg,#F97316,#FBBF24);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ── HERO ────────────────────────────────────────────── */
+    .hero-gradient {
+      background: linear-gradient(135deg, var(--hero-a) 0%, var(--hero-b) 30%, var(--hero-c) 100%);
+    }
+    .hero-wave { position: absolute; bottom:-2px; left:0; right:0; }
+
+    /* ── GLOWS ───────────────────────────────────────────── */
+    .glow-primary  { box-shadow: 0 0 30px rgba(79,70,229,0.35); }
+    .btn-glow:hover { box-shadow: 0 0 25px rgba(79,70,229,0.6),0 0 50px rgba(79,70,229,0.3); }
+    .btn-cta-glow:hover { box-shadow: 0 0 25px rgba(249,115,22,0.6),0 0 50px rgba(249,115,22,0.3); }
+
+    /* ── ANIMATIONS ──────────────────────────────────────── */
+    @keyframes float       { 0%,100%{transform:translateY(0)}  50%{transform:translateY(-12px)} }
+    @keyframes pulseGlow   { 0%,100%{box-shadow:0 0 20px rgba(79,70,229,.4)} 50%{box-shadow:0 0 40px rgba(6,182,212,.6)} }
+    @keyframes portalPulse { 0%,100%{opacity:.3;transform:scale(1)} 50%{opacity:.7;transform:scale(1.05)} }
+    .animate-float      { animation: float 3s ease-in-out infinite; }
+    .animate-float-d    { animation: float 3s ease-in-out 1.5s infinite; }
+    .animate-pulse-glow { animation: pulseGlow 2s ease-in-out infinite; }
+
+    /* ── SCROLL REVEAL ───────────────────────────────────── */
+    .reveal       { opacity:0; transform:translateY(40px);  transition:opacity .7s ease,transform .7s ease; }
+    .reveal-left  { opacity:0; transform:translateX(-40px); transition:opacity .7s ease,transform .7s ease; }
+    .reveal-right { opacity:0; transform:translateX(40px);  transition:opacity .7s ease,transform .7s ease; }
+    .reveal.visible,.reveal-left.visible,.reveal-right.visible { opacity:1; transform:none; }
+
+    /* ── GRID BG ─────────────────────────────────────────── */
+    .grid-bg {
+      background-image:
+        linear-gradient(var(--grid-line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    /* ── PHONE ───────────────────────────────────────────── */
+    .phone-mockup {
+      width:200px; height:380px; border-radius:32px;
+      border:3px solid rgba(99,102,241,0.5);
+      background:linear-gradient(180deg,#1e1b4b 0%,#0a0e1a 100%);
+      position:relative;
+      box-shadow:0 0 40px rgba(79,70,229,.4),inset 0 0 20px rgba(6,182,212,.05);
+    }
+    .phone-notch { width:60px;height:8px;background:#0A0E1A;border-radius:4px;position:absolute;top:10px;left:50%;transform:translateX(-50%); }
+    .phone-screen { position:absolute;top:28px;left:6px;right:6px;bottom:12px;border-radius:26px;overflow:hidden;background:linear-gradient(180deg,#1a1060 0%,#0d1a3a 50%,#061020 100%); }
+    .phone-home   { width:40px;height:4px;background:rgba(99,102,241,.4);border-radius:2px;position:absolute;bottom:4px;left:50%;transform:translateX(-50%); }
+    .float-card {
+      position:absolute;
+      background:rgba(15,22,40,0.85);
+      backdrop-filter:blur(12px);
+      border:1px solid rgba(99,102,241,0.3);
+      border-radius:12px;
+      padding:8px 12px;
+      display:flex;align-items:center;gap:8px;
+      font-size:12px;color:#E2E8F0;white-space:nowrap;
+      box-shadow:0 4px 20px rgba(0,0,0,.4);
+    }
+    .screen-bar  { height:6px;border-radius:3px;background:rgba(99,102,241,.4);margin-bottom:5px; }
+    .screen-card { border-radius:8px;background:rgba(79,70,229,.15);border:1px solid rgba(99,102,241,.2);padding:8px;margin-bottom:6px; }
+
+    /* ── NAVBAR ──────────────────────────────────────────── */
+    .nav-link { position:relative; }
+    .nav-link::after { content:'';position:absolute;bottom:-2px;left:0;width:0;height:2px;background:linear-gradient(90deg,#4F46E5,#06B6D4);transition:width .3s ease;border-radius:1px; }
+    .nav-link:hover::after { width:100%; }
+    #mobile-menu { max-height:0;overflow:hidden;transition:max-height .4s ease; }
+    #mobile-menu.open { max-height:600px; }
+
+    /* ── FAQ ─────────────────────────────────────────────── */
+    .faq-answer { max-height:0;overflow:hidden;transition:max-height .4s ease,padding .3s ease; }
+    .faq-answer.open { max-height:400px;padding-bottom:1rem; }
+    .faq-icon { transition:transform .3s ease; }
+    .faq-item.open .faq-icon { transform:rotate(45deg); }
+
+    /* ── BADGE ───────────────────────────────────────────── */
+    .badge {
+      display:inline-flex;align-items:center;gap:6px;
+      background:rgba(79,70,229,0.15);border:1px solid rgba(99,102,241,0.3);
+      border-radius:50px;padding:4px 12px;font-size:12px;color:#A5B4FC;
+    }
+    html.light .badge {
+      background:rgba(79,70,229,0.12);
+      color:#3730A3;
+      border-color:rgba(79,70,229,0.45);
+    }
+    /* green "Free Download" badge in light mode */
+    html.light .badge-green {
+      background:rgba(5,150,105,0.12) !important;
+      border-color:rgba(5,150,105,0.4) !important;
+      color:#065F46 !important;
+    }
+    html.light .badge-green svg path { stroke:#065F46 !important; }
+
+    /* ── LANG SWITCHER ───────────────────────────────────── */
+    .lang-btn {
+      padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700;
+      cursor:pointer;transition:all .2s ease;color:var(--text-muted);
+      background:transparent;border:1px solid transparent;
+      font-family:inherit;letter-spacing:.04em;
+    }
+    .lang-btn:hover { color:var(--text); }
+    .lang-btn.active {
+      background:rgba(79,70,229,0.2);
+      border-color:rgba(99,102,241,0.4);
+      color:#A5B4FC;
+    }
+    html.light .lang-btn.active { background:rgba(79,70,229,0.12);color:#4338CA; }
+
+    /* ── THEME TOGGLE ────────────────────────────────────── */
+    .theme-btn {
+      width:34px;height:34px;border-radius:10px;
+      display:flex;align-items:center;justify-content:center;
+      cursor:pointer;transition:all .2s ease;
+      background:transparent;border:1px solid var(--border);
+      color:var(--text-muted);
+    }
+    .theme-btn:hover { color:var(--text);border-color:rgba(99,102,241,0.5); }
+
+    /* ── LIGHT MODE TEXT OVERRIDES ───────────────────────── */
+    /* Hero info pills */
+    html.light .hero-pill-indigo { background:rgba(79,70,229,0.1) !important; border-color:rgba(79,70,229,0.35) !important; }
+    html.light .hero-pill-indigo span { color:#3730A3 !important; }
+    html.light .hero-pill-indigo svg path, html.light .hero-pill-indigo svg rect { stroke:#3730A3 !important; }
+    html.light .hero-pill-cyan { background:rgba(6,182,212,0.1) !important; border-color:rgba(6,182,212,0.4) !important; }
+    html.light .hero-pill-cyan span { color:#0E7490 !important; }
+    html.light .hero-pill-cyan svg path { stroke:#0E7490 !important; }
+    html.light .hero-pill-violet { background:rgba(139,92,246,0.1) !important; border-color:rgba(139,92,246,0.35) !important; }
+    html.light .hero-pill-violet span { color:#6D28D9 !important; }
+    html.light .hero-pill-violet svg path { stroke:#6D28D9 !important; }
+
+    html.light .text-slate-300 { color:#334155 !important; }
+    html.light .text-slate-400 { color:#64748B !important; }
+    html.light .text-slate-500 { color:#475569 !important; }
+    html.light .text-slate-600 { color:#334155 !important; }
+    html.light .text-white     { color:#0F172A !important; }
+    html.light .border-white\/10 { border-color:rgba(99,102,241,0.15) !important; }
+    html.light .bg-white\/10 { background:rgba(255,255,255,0.5) !important; }
+    html.light .hero-wave svg path { fill: var(--bg) !important; }
+
+    /* ── RTL HELPERS ─────────────────────────────────────── */
+    [dir="rtl"] .nav-link::after { left:auto;right:0; }
+    [dir="rtl"] .float-card { direction:rtl; }
+    [dir="rtl"] .faq-icon { margin-left:0;margin-right:1rem; }
+
+    /* Hero: flip row direction so text is on the right */
+    @media (min-width:1024px) {
+      [dir="rtl"] #hero .hero-inner { flex-direction: row-reverse; }
+    }
+    /* Right-align the hero text column in RTL */
+    [dir="rtl"] #hero .hero-text-col {
+      text-align: right;
+    }
+    /* Right-align badge row, CTA row, and pill row */
+    [dir="rtl"] #hero .hero-text-col .flex-wrap,
+    [dir="rtl"] #hero .hero-text-col > .flex {
+      justify-content: flex-end;
+    }
+    /* Keep center alignment on mobile for RTL hero */
+    @media (max-width:1023px) {
+      [dir="rtl"] #hero .hero-text-col,
+      [dir="rtl"] #hero .hero-text-col .flex-wrap,
+      [dir="rtl"] #hero .hero-text-col > .flex {
+        text-align: center;
+        justify-content: center;
+      }
+    }
+    /* All other sections: right-align section headings & text */
+    [dir="rtl"] .max-w-7xl .text-center,
+    [dir="rtl"] .max-w-5xl .text-center,
+    [dir="rtl"] .max-w-3xl .text-center,
+    [dir="rtl"] .max-w-4xl .text-center,
+    [dir="rtl"] .max-w-6xl .text-center {
+      text-align: center; /* keep section titles centered */
+    }
+    /* FAQ buttons: align text right */
+    [dir="rtl"] .faq-item button {
+      flex-direction: row-reverse;
+      text-align: right;
+    }
+    /* Steps: keep centered */
+    [dir="rtl"] #how-it-works .text-center { text-align: center; }
+    /* Feature cards: right-align */
+    [dir="rtl"] .glass h4,
+    [dir="rtl"] .glass p { text-align: right; }
+    /* Why hub cards */
+    [dir="rtl"] #why .flex.items-start { flex-direction: row-reverse; }
+    [dir="rtl"] #why .flex.items-start > div { text-align: right; }
+    /* Before/after diff rows */
+    [dir="rtl"] #why .space-y-3 .flex.items-center { flex-direction: row-reverse; }
+    /* Footer */
+    [dir="rtl"] footer .flex-col { align-items: flex-end; }
+    [dir="rtl"] footer ul { text-align: right; }
+    [dir="rtl"] footer ul li a { flex-direction: row-reverse; }
+
+    /* ── ARABIC FONT OVERRIDES ───────────────────────────── */
+    /* Replace Orbitron (no Arabic glyphs) with Cairo for AR */
+    html[lang="ar"] .font-orbitron {
+      font-family: 'Cairo', 'Tajawal', sans-serif !important;
+      letter-spacing: 0 !important;
+      line-height: 1.25 !important;
+    }
+    html[lang="ar"] body,
+    html[lang="ar"] p,
+    html[lang="ar"] span:not(.font-orbitron),
+    html[lang="ar"] li,
+    html[lang="ar"] div {
+      font-family: 'Tajawal', sans-serif;
+      line-height: 1.75;
+    }
+    /* Hero h1 size tweak for Arabic — Cairo is naturally wider */
+    html[lang="ar"] h1 .font-orbitron,
+    html[lang="ar"] h1 span {
+      font-size: clamp(1.75rem, 4.6vw, 3.25rem) !important;
+    }
+    html[lang="ar"] #hero h1 {
+      white-space: nowrap;
+    }
+    html[lang="ar"] #hero h1 span[data-i18n="hero.t1"],
+    html[lang="ar"] #hero h1 span[data-i18n="hero.t2"] {
+      display: inline !important;
+      margin-top: 0 !important;
+    }
+    /* Section headings */
+    html[lang="ar"] h2.font-orbitron,
+    html[lang="ar"] h2 span.font-orbitron,
+    html[lang="ar"] h3.font-orbitron {
+      font-size: clamp(1.4rem, 3.5vw, 2.4rem) !important;
+    }
+    /* Nav links and buttons in Arabic */
+    html[lang="ar"] .nav-link span,
+    html[lang="ar"] .lang-btn,
+    html[lang="ar"] button span,
+    html[lang="ar"] a span {
+      font-family: 'Tajawal', sans-serif;
+      letter-spacing: 0;
+    }
+    /* Badge text in Arabic */
+    html[lang="ar"] .badge span,
+    html[lang="ar"] .badge {
+      font-family: 'Tajawal', sans-serif;
+      font-size: 13px;
+      letter-spacing: 0;
+    }
+
+    /* ── REDUCED MOTION ──────────────────────────────────── */
+    @media (prefers-reduced-motion:reduce) {
+      .animate-float,.animate-float-d,.animate-pulse-glow { animation:none; }
+      .reveal,.reveal-left,.reveal-right { opacity:1;transform:none;transition:none; }
+    }
   </style>
 </head>
-<body class="font-exo">
+<body>
 
-<!-- ========== NAVBAR ========== -->
+<!-- ═══════════════════════════════════════════════════════
+     NAVBAR
+════════════════════════════════════════════════════════ -->
 <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300" role="navigation" aria-label="Main navigation">
-  <div class="glass border-b border-dark-border mx-0">
+  <div class="glass border-b" style="border-color:var(--border);">
     <div class="max-w-7xl mx-auto px-4 sm:px-6">
-      <div class="flex items-center justify-between h-16">
+      <div class="flex items-center justify-between h-16 gap-3">
+
         <!-- Logo -->
-        <a href="#" class="flex items-center gap-2 cursor-pointer" aria-label="FutureGate home">
-          <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background: linear-gradient(135deg, #4F46E5, #06B6D4);">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M4 6h16M4 12h10M4 18h16" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
-            </svg>
+        <a href="#" class="flex items-center gap-2 cursor-pointer flex-shrink-0" aria-label="FutureGate">
+          <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:linear-gradient(135deg,#4F46E5,#06B6D4);">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 6h16M4 12h10M4 18h16" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg>
           </div>
-          <span class="font-orbitron font-700 text-lg tracking-wide gradient-text">FutureGate</span>
+          <span class="font-orbitron font-bold text-lg tracking-wide gradient-text">FutureGate</span>
         </a>
 
         <!-- Desktop links -->
-        <div class="hidden md:flex items-center gap-7">
-          <a href="#features" class="nav-link text-sm text-slate-300 hover:text-white transition-colors duration-200 cursor-pointer">Features</a>
-          <a href="#how-it-works" class="nav-link text-sm text-slate-300 hover:text-white transition-colors duration-200 cursor-pointer">How It Works</a>
-          <a href="#why" class="nav-link text-sm text-slate-300 hover:text-white transition-colors duration-200 cursor-pointer">Why FutureGate</a>
-          <a href="#faq" class="nav-link text-sm text-slate-300 hover:text-white transition-colors duration-200 cursor-pointer">FAQ</a>
-          <a href="#download" class="nav-link text-sm text-slate-300 hover:text-white transition-colors duration-200 cursor-pointer">Download</a>
+        <div class="hidden lg:flex items-center gap-6">
+          <a href="#features" class="nav-link text-sm transition-colors duration-200 cursor-pointer" style="color:var(--text-muted);" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--text-muted)'"><span data-i18n="nav.features">Features</span></a>
+          <a href="#how-it-works" class="nav-link text-sm transition-colors duration-200 cursor-pointer" style="color:var(--text-muted);" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--text-muted)'"><span data-i18n="nav.how">How It Works</span></a>
+          <a href="#why" class="nav-link text-sm transition-colors duration-200 cursor-pointer" style="color:var(--text-muted);" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--text-muted)'"><span data-i18n="nav.why">Why FutureGate</span></a>
+          <a href="#faq" class="nav-link text-sm transition-colors duration-200 cursor-pointer" style="color:var(--text-muted);" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--text-muted)'"><span data-i18n="nav.faq">FAQ</span></a>
+          <a href="#download" class="nav-link text-sm transition-colors duration-200 cursor-pointer" style="color:var(--text-muted);" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--text-muted)'"><span data-i18n="nav.download">Download</span></a>
         </div>
 
-        <!-- CTA button + hamburger -->
-        <div class="flex items-center gap-3">
-          <a href="/futuregate.apk" class="hidden md:inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white cursor-pointer btn-glow transition-all duration-200" style="background: linear-gradient(135deg, #4F46E5, #06B6D4);" aria-label="Download FutureGate APK">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 15l-4-4h3V4h2v7h3l-4 4z" fill="currentColor"/><path d="M5 18h14v2H5v-2z" fill="currentColor"/></svg>
-            Download APK
+        <!-- Right controls -->
+        <div class="flex items-center gap-2 flex-shrink-0">
+          <!-- Language switcher -->
+          <div class="hidden sm:flex items-center gap-0.5 rounded-lg px-1 py-1" style="background:var(--surface);border:1px solid var(--border);">
+            <button class="lang-btn active" data-lang="en" aria-label="English">EN</button>
+            <button class="lang-btn" data-lang="fr" aria-label="Français">FR</button>
+            <button class="lang-btn" data-lang="ar" aria-label="العربية">AR</button>
+          </div>
+          <!-- Theme toggle -->
+          <button id="theme-toggle" class="theme-btn" aria-label="Toggle theme">
+            <!-- Sun (shown in dark) -->
+            <svg id="icon-sun" width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            <!-- Moon (shown in light) -->
+            <svg id="icon-moon" width="17" height="17" viewBox="0 0 24 24" fill="none" class="hidden" aria-hidden="true"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+          <!-- Download btn desktop -->
+          <a href="/futuregate.apk" class="hidden md:inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white cursor-pointer btn-glow transition-all duration-200" style="background:linear-gradient(135deg,#4F46E5,#06B6D4);" aria-label="Download APK">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 15l-4-4h3V4h2v7h3l-4 4z" fill="currentColor"/><rect x="4" y="19" width="16" height="2" rx="1" fill="currentColor"/></svg>
+            <span data-i18n="nav.dl_btn">Download APK</span>
           </a>
-          <button id="hamburger" class="md:hidden p-2 rounded-lg glass-light cursor-pointer" aria-label="Toggle menu" aria-expanded="false" aria-controls="mobile-menu">
-            <svg id="hamburger-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>
-            <svg id="close-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" class="hidden" aria-hidden="true"><path d="M6 6l12 12M6 18L18 6" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>
+          <!-- Hamburger -->
+          <button id="hamburger" class="lg:hidden p-2 rounded-lg glass-light cursor-pointer" aria-label="Toggle menu" aria-expanded="false" aria-controls="mobile-menu">
+            <svg id="ham-open"  width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            <svg id="ham-close" width="20" height="20" viewBox="0 0 24 24" fill="none" class="hidden" aria-hidden="true"><path d="M6 6l12 12M6 18L18 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
           </button>
         </div>
       </div>
 
       <!-- Mobile menu -->
       <div id="mobile-menu" role="menu">
-        <div class="py-3 space-y-1 border-t border-dark-border">
-          <a href="#features" class="mobile-link block px-3 py-2.5 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-lg transition-all duration-200 cursor-pointer" role="menuitem">Features</a>
-          <a href="#how-it-works" class="mobile-link block px-3 py-2.5 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-lg transition-all duration-200 cursor-pointer" role="menuitem">How It Works</a>
-          <a href="#why" class="mobile-link block px-3 py-2.5 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-lg transition-all duration-200 cursor-pointer" role="menuitem">Why FutureGate</a>
-          <a href="#faq" class="mobile-link block px-3 py-2.5 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-lg transition-all duration-200 cursor-pointer" role="menuitem">FAQ</a>
-          <a href="#download" class="mobile-link block px-3 py-2.5 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-lg transition-all duration-200 cursor-pointer" role="menuitem">Download</a>
-          <div class="pt-2 px-3">
-            <a href="/futuregate.apk" class="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-sm font-semibold text-white cursor-pointer" style="background: linear-gradient(135deg, #4F46E5, #06B6D4);">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 15l-4-4h3V4h2v7h3l-4 4z" fill="currentColor"/><path d="M5 18h14v2H5v-2z" fill="currentColor"/></svg>
-              Download APK
+        <div class="py-3 space-y-1 border-t" style="border-color:var(--border);">
+          <a href="#features"    class="mobile-link block px-3 py-2.5 text-sm rounded-lg transition-all duration-200 cursor-pointer" style="color:var(--text-muted);" role="menuitem"><span data-i18n="nav.features">Features</span></a>
+          <a href="#how-it-works" class="mobile-link block px-3 py-2.5 text-sm rounded-lg transition-all duration-200 cursor-pointer" style="color:var(--text-muted);" role="menuitem"><span data-i18n="nav.how">How It Works</span></a>
+          <a href="#why"         class="mobile-link block px-3 py-2.5 text-sm rounded-lg transition-all duration-200 cursor-pointer" style="color:var(--text-muted);" role="menuitem"><span data-i18n="nav.why">Why FutureGate</span></a>
+          <a href="#faq"         class="mobile-link block px-3 py-2.5 text-sm rounded-lg transition-all duration-200 cursor-pointer" style="color:var(--text-muted);" role="menuitem"><span data-i18n="nav.faq">FAQ</span></a>
+          <a href="#download"    class="mobile-link block px-3 py-2.5 text-sm rounded-lg transition-all duration-200 cursor-pointer" style="color:var(--text-muted);" role="menuitem"><span data-i18n="nav.download">Download</span></a>
+          <!-- Mobile lang + download -->
+          <div class="px-3 pt-2 flex items-center gap-2 flex-wrap">
+            <div class="flex items-center gap-0.5 rounded-lg px-1 py-1" style="background:var(--surface);border:1px solid var(--border);">
+              <button class="lang-btn active" data-lang="en">EN</button>
+              <button class="lang-btn" data-lang="fr">FR</button>
+              <button class="lang-btn" data-lang="ar">AR</button>
+            </div>
+            <a href="/futuregate.apk" class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold text-white cursor-pointer" style="background:linear-gradient(135deg,#4F46E5,#06B6D4);">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 15l-4-4h3V4h2v7h3l-4 4z" fill="currentColor"/><rect x="4" y="19" width="16" height="2" rx="1" fill="currentColor"/></svg>
+              <span data-i18n="nav.dl_btn">Download APK</span>
             </a>
           </div>
         </div>
@@ -186,762 +443,734 @@
   </div>
 </nav>
 
-<!-- ========== HERO SECTION ========== -->
+<!-- ═══════════════════════════════════════════════════════
+     HERO
+════════════════════════════════════════════════════════ -->
 <section id="hero" class="relative min-h-screen pt-16 flex items-center overflow-hidden hero-gradient grid-bg">
-  <!-- Background orbs -->
-  <div class="absolute top-20 left-1/4 w-96 h-96 rounded-full opacity-20 blur-3xl pointer-events-none" style="background: radial-gradient(circle, #4F46E5, transparent);"></div>
-  <div class="absolute bottom-32 right-1/4 w-80 h-80 rounded-full opacity-15 blur-3xl pointer-events-none" style="background: radial-gradient(circle, #06B6D4, transparent);"></div>
-  <div class="absolute top-1/2 right-10 w-60 h-60 rounded-full opacity-10 blur-3xl pointer-events-none" style="background: radial-gradient(circle, #8B5CF6, transparent);"></div>
+  <div class="absolute top-20 left-1/4 w-96 h-96 rounded-full opacity-20 blur-3xl pointer-events-none" style="background:radial-gradient(circle,#4F46E5,transparent);"></div>
+  <div class="absolute bottom-32 right-1/4 w-80 h-80 rounded-full opacity-15 blur-3xl pointer-events-none" style="background:radial-gradient(circle,#06B6D4,transparent);"></div>
+  <div class="absolute top-1/2 right-10 w-60 h-60 rounded-full opacity-10 blur-3xl pointer-events-none" style="background:radial-gradient(circle,#8B5CF6,transparent);"></div>
 
   <div class="max-w-7xl mx-auto px-4 sm:px-6 py-16 w-full">
-    <!-- Hero card -->
-    <div class="relative rounded-3xl overflow-hidden p-8 md:p-12 glow-primary" style="background: linear-gradient(135deg, rgba(79,70,229,0.18) 0%, rgba(6,182,212,0.08) 50%, rgba(139,92,246,0.12) 100%); border: 1px solid rgba(99,102,241,0.3);">
-      <!-- Inner glow -->
-      <div class="absolute inset-0 rounded-3xl pointer-events-none" style="background: radial-gradient(ellipse at 20% 50%, rgba(79,70,229,0.15) 0%, transparent 60%);"></div>
+    <div class="relative rounded-3xl overflow-hidden p-8 md:p-12 glow-primary" style="background:linear-gradient(135deg,rgba(79,70,229,.18) 0%,rgba(6,182,212,.08) 50%,rgba(139,92,246,.12) 100%);border:1px solid rgba(99,102,241,.3);">
+      <div class="absolute inset-0 rounded-3xl pointer-events-none" style="background:radial-gradient(ellipse at 20% 50%,rgba(79,70,229,.15) 0%,transparent 60%);"></div>
 
-      <div class="relative z-10 flex flex-col lg:flex-row items-center gap-12">
-        <!-- Left content -->
-        <div class="flex-1 text-center lg:text-left max-w-xl">
-          <!-- Badges -->
+      <div class="hero-inner relative z-10 flex flex-col lg:flex-row items-center gap-12">
+        <!-- Left -->
+        <div class="hero-text-col flex-1 text-center lg:text-left max-w-xl">
           <div class="flex flex-wrap justify-center lg:justify-start gap-2 mb-6">
-            <span class="badge">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2" stroke="#A5B4FC" stroke-width="2"/><path d="M12 18h.01" stroke="#A5B4FC" stroke-width="2" stroke-linecap="round"/></svg>
-              Android APK
-            </span>
-            <span class="badge">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="#A5B4FC" stroke-width="2"/><path d="M12 8v4l3 3" stroke="#A5B4FC" stroke-width="2" stroke-linecap="round"/></svg>
-              Version 1.0.0
-            </span>
-            <span class="badge" style="color: #6EE7B7; border-color: rgba(16,185,129,0.3); background: rgba(16,185,129,0.1);">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 7L9.99 17 4 11" stroke="#6EE7B7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              Free Download
-            </span>
+            <span class="badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2" stroke="#A5B4FC" stroke-width="2"/><path d="M12 18h.01" stroke="#A5B4FC" stroke-width="2" stroke-linecap="round"/></svg><span data-i18n="hero.b_android">Android APK</span></span>
+            <span class="badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="#A5B4FC" stroke-width="2"/><path d="M12 8v4l3 3" stroke="#A5B4FC" stroke-width="2" stroke-linecap="round"/></svg><span data-i18n="hero.b_version">Version 1.0.0</span></span>
+            <span class="badge badge-green" style="color:#6EE7B7;border-color:rgba(16,185,129,.3);background:rgba(16,185,129,.1);"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 7L9.99 17 4 11" stroke="#6EE7B7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span data-i18n="hero.b_free">Free Download</span></span>
           </div>
 
           <h1 class="font-orbitron font-black mb-5 leading-tight">
-            <span class="text-white text-4xl md:text-5xl lg:text-5xl xl:text-6xl block">Your Gateway to</span>
-            <span class="gradient-text text-4xl md:text-5xl lg:text-5xl xl:text-6xl block mt-1">Opportunities</span>
+            <span class="text-4xl md:text-5xl xl:text-6xl block" style="color:var(--text);" data-i18n="hero.t1">Your Gateway to</span>
+            <span class="gradient-text text-4xl md:text-5xl xl:text-6xl block mt-1" data-i18n="hero.t2">Opportunities</span>
           </h1>
 
-          <p class="text-slate-300 text-lg leading-relaxed mb-8 max-w-lg mx-auto lg:mx-0">
-            Connect students with jobs, scholarships, trainings, and internships. Empower companies to discover top talent — all in one futuristic platform.
-          </p>
+          <p class="text-lg leading-relaxed mb-8 max-w-lg mx-auto lg:mx-0" style="color:var(--text-sub);" data-i18n="hero.desc">Connect students with jobs, scholarships, trainings, and internships. Empower companies to discover top talent — all in one futuristic platform.</p>
 
-          <!-- CTA buttons -->
           <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-            <a href="/futuregate.apk" class="flex items-center justify-center gap-3 px-7 py-4 rounded-2xl font-bold text-white cursor-pointer btn-cta-glow transition-all duration-300 text-base" style="background: linear-gradient(135deg, #F97316, #FBBF24);" aria-label="Download FutureGate APK">
+            <a href="/futuregate.apk" class="flex items-center justify-center gap-3 px-7 py-4 rounded-2xl font-bold text-white cursor-pointer btn-cta-glow transition-all duration-300 text-base" style="background:linear-gradient(135deg,#F97316,#FBBF24);" aria-label="Download FutureGate APK">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 16l-5-5h3.5V4h3v7H17l-5 5z" fill="currentColor"/><rect x="4" y="19" width="16" height="2" rx="1" fill="currentColor"/></svg>
-              Download APK
+              <span data-i18n="hero.cta1">Download APK</span>
             </a>
-            <a href="#features" class="flex items-center justify-center gap-3 px-7 py-4 rounded-2xl font-semibold cursor-pointer transition-all duration-300 text-base text-white" style="background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15);" onmouseover="this.style.background='rgba(255,255,255,0.12)'" onmouseout="this.style.background='rgba(255,255,255,0.07)'">
+            <a href="#features" class="flex items-center justify-center gap-3 px-7 py-4 rounded-2xl font-semibold cursor-pointer transition-all duration-300 text-base" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);color:var(--text);" onmouseover="this.style.background='rgba(99,102,241,.15)'" onmouseout="this.style.background='rgba(255,255,255,.07)'">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="3" fill="currentColor"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.93 4.93l2.12 2.12M16.95 16.95l2.12 2.12M4.93 19.07l2.12-2.12M16.95 7.05l2.12-2.12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-              Explore Features
+              <span data-i18n="hero.cta2">Explore Features</span>
             </a>
           </div>
 
-          <!-- Stats row -->
-          <div class="flex flex-wrap justify-center lg:justify-start gap-6 mt-8 pt-6 border-t border-white/10">
-            <div class="text-center">
-              <div class="font-orbitron font-bold text-xl gradient-text">10K+</div>
-              <div class="text-slate-400 text-xs mt-1">Students</div>
+          <div class="flex flex-wrap justify-center lg:justify-start gap-3 mt-8 pt-6" style="border-top:1px solid var(--border);">
+            <div class="hero-pill-indigo flex items-center gap-2 px-4 py-2 rounded-xl" style="background:rgba(79,70,229,0.1);border:1px solid rgba(99,102,241,0.25);">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2" stroke="#818CF8" stroke-width="2"/><path d="M12 18h.01" stroke="#818CF8" stroke-width="2" stroke-linecap="round"/></svg>
+              <span class="font-orbitron font-bold text-sm" style="color:#818CF8;" data-i18n="pill.android">Android 6.0+</span>
             </div>
-            <div class="w-px bg-white/10"></div>
-            <div class="text-center">
-              <div class="font-orbitron font-bold text-xl gradient-text">500+</div>
-              <div class="text-slate-400 text-xs mt-1">Companies</div>
+            <div class="hero-pill-cyan flex items-center gap-2 px-4 py-2 rounded-xl" style="background:rgba(6,182,212,0.1);border:1px solid rgba(6,182,212,0.25);">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="#22D3EE" stroke-width="2" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" stroke="#22D3EE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="font-orbitron font-bold text-sm" style="color:#22D3EE;" data-i18n="pill.free">Free Forever</span>
             </div>
-            <div class="w-px bg-white/10"></div>
-            <div class="text-center">
-              <div class="font-orbitron font-bold text-xl gradient-text">5K+</div>
-              <div class="text-slate-400 text-xs mt-1">Opportunities</div>
+            <div class="hero-pill-violet flex items-center gap-2 px-4 py-2 rounded-xl" style="background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.25);">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="#A78BFA" stroke-width="2" stroke-linejoin="round"/></svg>
+              <span class="font-orbitron font-bold text-sm" style="color:#A78BFA;" data-i18n="pill.onetap">One-tap Apply</span>
             </div>
           </div>
         </div>
 
         <!-- Right: Illustration -->
-        <div class="flex-shrink-0 relative" style="width: 320px; height: 420px;">
-          <!-- Portal glow rings -->
+        <div class="flex-shrink-0 relative" style="width:320px;height:420px;">
           <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div class="portal-ring w-72 h-72 border-indigo-500/20" style="animation-delay: 0s;"></div>
-            <div class="portal-ring absolute w-56 h-56 border-cyan-400/25" style="animation-delay: 0.8s;"></div>
-            <div class="portal-ring absolute w-40 h-40 border-violet-500/30" style="animation-delay: 1.6s;"></div>
+            <div style="position:absolute;width:288px;height:288px;border-radius:50%;border:1px solid rgba(79,70,229,.2);animation:portalPulse 2.5s ease-in-out infinite;"></div>
+            <div style="position:absolute;width:224px;height:224px;border-radius:50%;border:1px solid rgba(6,182,212,.25);animation:portalPulse 2.5s ease-in-out .8s infinite;"></div>
+            <div style="position:absolute;width:160px;height:160px;border-radius:50%;border:1px solid rgba(139,92,246,.3);animation:portalPulse 2.5s ease-in-out 1.6s infinite;"></div>
           </div>
-
-          <!-- Phone mockup (centered) -->
+          <!-- Phone -->
           <div class="phone-mockup absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 animate-float">
             <div class="phone-notch"></div>
             <div class="phone-screen">
-              <!-- App screen content -->
               <div class="p-3">
-                <!-- App header bar -->
-                <div class="flex items-center justify-between mb-3">
-                  <div class="w-16 h-2 rounded bg-indigo-400/60"></div>
-                  <div class="w-5 h-5 rounded-full" style="background: linear-gradient(135deg, #4F46E5, #06B6D4);"></div>
-                </div>
-                <!-- Search bar -->
-                <div class="w-full h-6 rounded-lg mb-3 flex items-center px-2 gap-1" style="background: rgba(99,102,241,0.2); border: 1px solid rgba(99,102,241,0.3);">
-                  <div class="w-2 h-2 rounded-full bg-indigo-400/60"></div>
-                  <div class="flex-1 h-1.5 rounded bg-indigo-400/30"></div>
-                </div>
-                <!-- Cards -->
+                <div class="flex items-center justify-between mb-3"><div class="w-16 h-2 rounded bg-indigo-400/60"></div><div class="w-5 h-5 rounded-full" style="background:linear-gradient(135deg,#4F46E5,#06B6D4);"></div></div>
+                <div class="w-full h-6 rounded-lg mb-3 flex items-center px-2 gap-1" style="background:rgba(99,102,241,.2);border:1px solid rgba(99,102,241,.3);"><div class="w-2 h-2 rounded-full bg-indigo-400/60"></div><div class="flex-1 h-1.5 rounded bg-indigo-400/30"></div></div>
                 <div class="space-y-2">
-                  <div class="screen-ui-card flex items-center gap-2">
-                    <div class="w-6 h-6 rounded-lg flex-shrink-0" style="background: linear-gradient(135deg, #4F46E5, #7C3AED);"></div>
-                    <div class="flex-1"><div class="screen-ui-bar w-full"></div><div class="screen-ui-bar w-2/3 opacity-60"></div></div>
-                  </div>
-                  <div class="screen-ui-card flex items-center gap-2">
-                    <div class="w-6 h-6 rounded-lg flex-shrink-0" style="background: linear-gradient(135deg, #06B6D4, #0284C7);"></div>
-                    <div class="flex-1"><div class="screen-ui-bar w-full"></div><div class="screen-ui-bar w-3/4 opacity-60"></div></div>
-                  </div>
-                  <div class="screen-ui-card flex items-center gap-2">
-                    <div class="w-6 h-6 rounded-lg flex-shrink-0" style="background: linear-gradient(135deg, #8B5CF6, #EC4899);"></div>
-                    <div class="flex-1"><div class="screen-ui-bar w-full"></div><div class="screen-ui-bar w-1/2 opacity-60"></div></div>
-                  </div>
+                  <div class="screen-card flex items-center gap-2"><div class="w-6 h-6 rounded-lg flex-shrink-0" style="background:linear-gradient(135deg,#4F46E5,#7C3AED);"></div><div class="flex-1"><div class="screen-bar w-full"></div><div class="screen-bar w-2/3 opacity-60"></div></div></div>
+                  <div class="screen-card flex items-center gap-2"><div class="w-6 h-6 rounded-lg flex-shrink-0" style="background:linear-gradient(135deg,#06B6D4,#0284C7);"></div><div class="flex-1"><div class="screen-bar w-full"></div><div class="screen-bar w-3/4 opacity-60"></div></div></div>
+                  <div class="screen-card flex items-center gap-2"><div class="w-6 h-6 rounded-lg flex-shrink-0" style="background:linear-gradient(135deg,#8B5CF6,#EC4899);"></div><div class="flex-1"><div class="screen-bar w-full"></div><div class="screen-bar w-1/2 opacity-60"></div></div></div>
                 </div>
-                <!-- Bottom nav -->
-                <div class="absolute bottom-3 left-3 right-3 h-8 rounded-xl flex items-center justify-around px-2" style="background: rgba(15,22,40,0.9); border: 1px solid rgba(99,102,241,0.3);">
-                  <div class="w-3 h-3 rounded-sm" style="background: #4F46E5;"></div>
-                  <div class="w-3 h-3 rounded-sm opacity-40" style="background: #94A3B8;"></div>
-                  <div class="w-3 h-3 rounded-sm opacity-40" style="background: #94A3B8;"></div>
-                  <div class="w-3 h-3 rounded-full opacity-40" style="background: #94A3B8;"></div>
-                </div>
+                <div class="absolute bottom-3 left-3 right-3 h-8 rounded-xl flex items-center justify-around px-2" style="background:rgba(15,22,40,.9);border:1px solid rgba(99,102,241,.3);"><div class="w-3 h-3 rounded-sm" style="background:#4F46E5;"></div><div class="w-3 h-3 rounded-sm opacity-40" style="background:#94A3B8;"></div><div class="w-3 h-3 rounded-sm opacity-40" style="background:#94A3B8;"></div><div class="w-3 h-3 rounded-full opacity-40" style="background:#94A3B8;"></div></div>
               </div>
             </div>
-            <div class="phone-home-btn"></div>
+            <div class="phone-home"></div>
           </div>
-
           <!-- Floating cards -->
-          <div class="float-card animate-float" style="top: 15px; left: -10px; animation-delay: 0s;">
-            <div class="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0" style="background: rgba(79,70,229,0.3);">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2" stroke="#A5B4FC" stroke-width="2"/><path d="M3 10h18" stroke="#A5B4FC" stroke-width="2"/></svg>
-            </div>
-            <div>
-              <div class="text-white font-semibold leading-tight" style="font-size: 11px;">New Job</div>
-              <div class="text-indigo-300" style="font-size: 10px;">Software Dev</div>
-            </div>
-          </div>
-
-          <div class="float-card animate-float-delay" style="top: 70px; right: -15px;">
-            <div class="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0" style="background: rgba(6,182,212,0.25);">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 15l-4-5h8l-4 5z" stroke="#22D3EE" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="8" r="3" stroke="#22D3EE" stroke-width="2"/></svg>
-            </div>
-            <div>
-              <div class="text-white font-semibold leading-tight" style="font-size: 11px;">Scholarship</div>
-              <div style="color: #22D3EE; font-size: 10px;">$5,000 Grant</div>
-            </div>
-          </div>
-
-          <div class="float-card animate-float" style="bottom: 80px; left: -20px; animation-delay: 1s;">
-            <div class="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0" style="background: rgba(139,92,246,0.25);">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 19V7l8-4 8 4v12" stroke="#A78BFA" stroke-width="2" stroke-linejoin="round"/><rect x="9" y="13" width="6" height="6" stroke="#A78BFA" stroke-width="2"/></svg>
-            </div>
-            <div>
-              <div class="text-white font-semibold leading-tight" style="font-size: 11px;">Training</div>
-              <div style="color: #A78BFA; font-size: 10px;">AI & ML Bootcamp</div>
-            </div>
-          </div>
-
-          <div class="float-card animate-float-delay" style="bottom: 20px; right: -10px; animation-delay: 0.5s;">
-            <div class="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0" style="background: rgba(249,115,22,0.2);">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2" stroke="#FB923C" stroke-width="2"/><path d="M8 8h8M8 12h5" stroke="#FB923C" stroke-width="2" stroke-linecap="round"/></svg>
-            </div>
-            <div>
-              <div class="text-white font-semibold leading-tight" style="font-size: 11px;">CV Builder</div>
-              <div style="color: #FB923C; font-size: 10px;">Auto Generate</div>
-            </div>
-          </div>
+          <div class="float-card animate-float"   style="top:15px;left:-10px;animation-delay:0s;"><div class="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0" style="background:rgba(79,70,229,.3);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2" stroke="#A5B4FC" stroke-width="2"/><path d="M3 10h18" stroke="#A5B4FC" stroke-width="2"/></svg></div><div><div style="font-size:11px;font-weight:600;color:#fff;" data-i18n="fc.job">New Job</div><div style="font-size:10px;color:#A5B4FC;" data-i18n="fc.job_sub">Software Dev</div></div></div>
+          <div class="float-card animate-float-d"  style="top:70px;right:-15px;"><div class="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0" style="background:rgba(6,182,212,.25);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 15l-4-5h8l-4 5z" stroke="#22D3EE" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="8" r="3" stroke="#22D3EE" stroke-width="2"/></svg></div><div><div style="font-size:11px;font-weight:600;color:#fff;" data-i18n="fc.scholar">Scholarship</div><div style="font-size:10px;color:#22D3EE;" data-i18n="fc.scholar_sub">$5,000 Grant</div></div></div>
+          <div class="float-card animate-float"   style="bottom:80px;left:-20px;animation-delay:1s;"><div class="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0" style="background:rgba(139,92,246,.25);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 19V7l8-4 8 4v12" stroke="#A78BFA" stroke-width="2" stroke-linejoin="round"/><rect x="9" y="13" width="6" height="6" stroke="#A78BFA" stroke-width="2"/></svg></div><div><div style="font-size:11px;font-weight:600;color:#fff;" data-i18n="fc.training">Training</div><div style="font-size:10px;color:#A78BFA;" data-i18n="fc.training_sub">AI & ML</div></div></div>
+          <div class="float-card animate-float-d"  style="bottom:20px;right:-10px;animation-delay:.5s;"><div class="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0" style="background:rgba(249,115,22,.2);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2" stroke="#FB923C" stroke-width="2"/><path d="M8 8h8M8 12h5" stroke="#FB923C" stroke-width="2" stroke-linecap="round"/></svg></div><div><div style="font-size:11px;font-weight:600;color:#fff;" data-i18n="fc.cv">CV Builder</div><div style="font-size:10px;color:#FB923C;" data-i18n="fc.cv_sub">Auto Generate</div></div></div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Diagonal/wave bottom shape -->
-  <div class="hero-wave" style="height: 80px; overflow: hidden;">
+  <div class="hero-wave" style="height:80px;overflow:hidden;">
     <svg viewBox="0 0 1440 80" preserveAspectRatio="none" style="width:100%;height:100%;display:block;">
-      <path d="M0,40 C360,80 1080,0 1440,40 L1440,80 L0,80 Z" fill="#0A0E1A"/>
+      <path d="M0,40 C360,80 1080,0 1440,40 L1440,80 L0,80 Z" fill="var(--bg)"/>
     </svg>
   </div>
 </section>
 
-<!-- ========== FEATURES SECTION ========== -->
-<section id="features" class="py-20 px-4" aria-labelledby="features-heading">
+<!-- ═══════════════════════════════════════════════════════
+     FEATURES
+════════════════════════════════════════════════════════ -->
+<section id="features" class="py-20 px-4" style="background:var(--bg);" aria-labelledby="features-heading">
   <div class="max-w-7xl mx-auto">
     <div class="text-center mb-14 reveal">
-      <span class="badge mb-4">Platform Features</span>
-      <h2 id="features-heading" class="font-orbitron font-bold text-3xl md:text-4xl text-white mb-4">Built for <span class="gradient-text">Both Worlds</span></h2>
-      <p class="text-slate-400 text-lg max-w-2xl mx-auto leading-relaxed">Whether you're a student hunting for your next opportunity or a company building your dream team — FutureGate has you covered.</p>
+      <span class="badge mb-4" data-i18n="feat.badge">Platform Features</span>
+      <h2 id="features-heading" class="font-orbitron font-bold text-3xl md:text-4xl mb-4" style="color:var(--text);">
+        <span data-i18n="feat.t1">Built for</span> <span class="gradient-text" data-i18n="feat.t2">Both Worlds</span>
+      </h2>
+      <p class="text-lg max-w-2xl mx-auto leading-relaxed" style="color:var(--text-muted);" data-i18n="feat.desc">Whether you're a student hunting for your next opportunity or a company building your dream team — FutureGate has you covered.</p>
     </div>
 
-    <!-- Student features -->
+    <!-- Students -->
     <div class="mb-10">
       <div class="flex items-center gap-3 mb-6 reveal">
-        <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background: rgba(79,70,229,0.2); border: 1px solid rgba(99,102,241,0.3);">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3L2 8l10 5 10-5-10-5z" stroke="#A5B4FC" stroke-width="2" stroke-linejoin="round"/><path d="M2 16l10 5 10-5M2 12l10 5 10-5" stroke="#A5B4FC" stroke-width="2" stroke-linejoin="round"/></svg>
-        </div>
-        <h3 class="font-orbitron font-semibold text-lg text-white">For Students</h3>
-      </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        <!-- Job opportunities -->
-        <div class="glass rounded-2xl p-6 hover:border-indigo-500/50 transition-all duration-300 cursor-default reveal group" style="transition: box-shadow 0.3s, transform 0.3s, border 0.3s;">
-          <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300" style="background: linear-gradient(135deg, rgba(79,70,229,0.3), rgba(79,70,229,0.1)); border: 1px solid rgba(99,102,241,0.3);">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2" stroke="#818CF8" stroke-width="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2" stroke="#818CF8" stroke-width="2"/><path d="M12 12v4M10 14h4" stroke="#818CF8" stroke-width="2" stroke-linecap="round"/></svg>
-          </div>
-          <h4 class="font-semibold text-white mb-2">Job Opportunities</h4>
-          <p class="text-slate-400 text-sm leading-relaxed">Browse curated job listings matched to your profile, skills, and location.</p>
-        </div>
-        <!-- Scholarships -->
-        <div class="glass rounded-2xl p-6 hover:border-cyan-400/50 transition-all duration-300 cursor-default reveal group" style="transition: box-shadow 0.3s, transform 0.3s, border 0.3s; transition-delay: 0.1s;">
-          <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300" style="background: linear-gradient(135deg, rgba(6,182,212,0.3), rgba(6,182,212,0.1)); border: 1px solid rgba(6,182,212,0.3);">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21l1.18-6.86L2 9.27l6.91-1.01L12 2z" stroke="#22D3EE" stroke-width="2" stroke-linejoin="round"/></svg>
-          </div>
-          <h4 class="font-semibold text-white mb-2">Scholarships</h4>
-          <p class="text-slate-400 text-sm leading-relaxed">Discover grants, full scholarships, and financial aid from local and global sources.</p>
-        </div>
-        <!-- Trainings -->
-        <div class="glass rounded-2xl p-6 hover:border-violet-400/50 transition-all duration-300 cursor-default reveal group" style="transition: box-shadow 0.3s, transform 0.3s, border 0.3s; transition-delay: 0.2s;">
-          <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300" style="background: linear-gradient(135deg, rgba(139,92,246,0.3), rgba(139,92,246,0.1)); border: 1px solid rgba(139,92,246,0.3);">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 19V7l8-4 8 4v12" stroke="#A78BFA" stroke-width="2" stroke-linejoin="round"/><rect x="9" y="13" width="6" height="6" stroke="#A78BFA" stroke-width="2"/><circle cx="12" cy="7" r="2" stroke="#A78BFA" stroke-width="2"/></svg>
-          </div>
-          <h4 class="font-semibold text-white mb-2">Training & Courses</h4>
-          <p class="text-slate-400 text-sm leading-relaxed">Access bootcamps, workshops, and certification programs to level up your skills.</p>
-        </div>
-        <!-- CV Builder -->
-        <div class="glass rounded-2xl p-6 hover:border-orange-400/50 transition-all duration-300 cursor-default reveal group" style="transition: box-shadow 0.3s, transform 0.3s, border 0.3s; transition-delay: 0.3s;">
-          <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300" style="background: linear-gradient(135deg, rgba(249,115,22,0.3), rgba(249,115,22,0.1)); border: 1px solid rgba(249,115,22,0.3);">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4" y="2" width="16" height="20" rx="2" stroke="#FB923C" stroke-width="2"/><path d="M8 7h8M8 11h6M8 15h4" stroke="#FB923C" stroke-width="2" stroke-linecap="round"/></svg>
-          </div>
-          <h4 class="font-semibold text-white mb-2">Smart CV Builder</h4>
-          <p class="text-slate-400 text-sm leading-relaxed">Auto-generate a professional CV from your profile and export it instantly.</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Company features -->
-    <div>
-      <div class="flex items-center gap-3 mb-6 reveal">
-        <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background: rgba(6,182,212,0.2); border: 1px solid rgba(6,182,212,0.3);">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2" stroke="#22D3EE" stroke-width="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2" stroke="#22D3EE" stroke-width="2"/></svg>
-        </div>
-        <h3 class="font-orbitron font-semibold text-lg text-white">For Companies</h3>
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:rgba(79,70,229,.2);border:1px solid rgba(99,102,241,.3);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3L2 8l10 5 10-5-10-5z" stroke="#A5B4FC" stroke-width="2" stroke-linejoin="round"/><path d="M2 16l10 5 10-5M2 12l10 5 10-5" stroke="#A5B4FC" stroke-width="2" stroke-linejoin="round"/></svg></div>
+        <h3 class="font-orbitron font-semibold text-lg" style="color:var(--text);" data-i18n="feat.for_students">For Students</h3>
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         <div class="glass rounded-2xl p-6 hover:border-indigo-500/50 transition-all duration-300 cursor-default reveal group">
-          <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300" style="background: linear-gradient(135deg, rgba(79,70,229,0.3), rgba(79,70,229,0.1)); border: 1px solid rgba(99,102,241,0.3);">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="9" cy="7" r="4" stroke="#818CF8" stroke-width="2"/><path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2" stroke="#818CF8" stroke-width="2"/><path d="M19 8v6M22 11h-6" stroke="#818CF8" stroke-width="2" stroke-linecap="round"/></svg>
-          </div>
-          <h4 class="font-semibold text-white mb-2">Talent Discovery</h4>
-          <p class="text-slate-400 text-sm leading-relaxed">Search verified student profiles and find the right candidates instantly.</p>
+          <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300" style="background:linear-gradient(135deg,rgba(79,70,229,.3),rgba(79,70,229,.1));border:1px solid rgba(99,102,241,.3);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2" stroke="#818CF8" stroke-width="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2" stroke="#818CF8" stroke-width="2"/><path d="M12 12v4M10 14h4" stroke="#818CF8" stroke-width="2" stroke-linecap="round"/></svg></div>
+          <h4 class="font-semibold mb-2" style="color:var(--text);" data-i18n="feat.s_jobs_t">Job Opportunities</h4>
+          <p class="text-sm leading-relaxed" style="color:var(--text-muted);" data-i18n="feat.s_jobs_d">Browse curated job listings matched to your profile, skills, and location.</p>
         </div>
-        <div class="glass rounded-2xl p-6 hover:border-cyan-400/50 transition-all duration-300 cursor-default reveal group" style="transition-delay: 0.1s;">
-          <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300" style="background: linear-gradient(135deg, rgba(6,182,212,0.3), rgba(6,182,212,0.1)); border: 1px solid rgba(6,182,212,0.3);">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2z" stroke="#22D3EE" stroke-width="2"/><path d="M22 8l-10 6L2 8" stroke="#22D3EE" stroke-width="2"/></svg>
-          </div>
-          <h4 class="font-semibold text-white mb-2">Post Opportunities</h4>
-          <p class="text-slate-400 text-sm leading-relaxed">Publish job offers, internships, and training programs in seconds.</p>
+        <div class="glass rounded-2xl p-6 hover:border-cyan-400/50 transition-all duration-300 cursor-default reveal group" style="transition-delay:.1s;">
+          <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300" style="background:linear-gradient(135deg,rgba(6,182,212,.3),rgba(6,182,212,.1));border:1px solid rgba(6,182,212,.3);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21l1.18-6.86L2 9.27l6.91-1.01L12 2z" stroke="#22D3EE" stroke-width="2" stroke-linejoin="round"/></svg></div>
+          <h4 class="font-semibold mb-2" style="color:var(--text);" data-i18n="feat.s_scholar_t">Scholarships</h4>
+          <p class="text-sm leading-relaxed" style="color:var(--text-muted);" data-i18n="feat.s_scholar_d">Discover grants, full scholarships, and financial aid from local and global sources.</p>
         </div>
-        <div class="glass rounded-2xl p-6 hover:border-violet-400/50 transition-all duration-300 cursor-default reveal group" style="transition-delay: 0.2s;">
-          <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300" style="background: linear-gradient(135deg, rgba(139,92,246,0.3), rgba(139,92,246,0.1)); border: 1px solid rgba(139,92,246,0.3);">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2v10z" stroke="#A78BFA" stroke-width="2" stroke-linejoin="round"/></svg>
-          </div>
-          <h4 class="font-semibold text-white mb-2">Direct Messaging</h4>
-          <p class="text-slate-400 text-sm leading-relaxed">Chat directly with candidates or students who apply to your listings.</p>
+        <div class="glass rounded-2xl p-6 hover:border-violet-400/50 transition-all duration-300 cursor-default reveal group" style="transition-delay:.2s;">
+          <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300" style="background:linear-gradient(135deg,rgba(139,92,246,.3),rgba(139,92,246,.1));border:1px solid rgba(139,92,246,.3);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 19V7l8-4 8 4v12" stroke="#A78BFA" stroke-width="2" stroke-linejoin="round"/><rect x="9" y="13" width="6" height="6" stroke="#A78BFA" stroke-width="2"/><circle cx="12" cy="7" r="2" stroke="#A78BFA" stroke-width="2"/></svg></div>
+          <h4 class="font-semibold mb-2" style="color:var(--text);" data-i18n="feat.s_train_t">Training & Courses</h4>
+          <p class="text-sm leading-relaxed" style="color:var(--text-muted);" data-i18n="feat.s_train_d">Access bootcamps, workshops, and certification programs to level up your skills.</p>
         </div>
-        <div class="glass rounded-2xl p-6 hover:border-orange-400/50 transition-all duration-300 cursor-default reveal group" style="transition-delay: 0.3s;">
-          <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300" style="background: linear-gradient(135deg, rgba(249,115,22,0.3), rgba(249,115,22,0.1)); border: 1px solid rgba(249,115,22,0.3);">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" stroke="#FB923C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
-          <h4 class="font-semibold text-white mb-2">Analytics Dashboard</h4>
-          <p class="text-slate-400 text-sm leading-relaxed">Track application stats, profile views, and engagement metrics in real time.</p>
+        <div class="glass rounded-2xl p-6 hover:border-orange-400/50 transition-all duration-300 cursor-default reveal group" style="transition-delay:.3s;">
+          <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300" style="background:linear-gradient(135deg,rgba(249,115,22,.3),rgba(249,115,22,.1));border:1px solid rgba(249,115,22,.3);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4" y="2" width="16" height="20" rx="2" stroke="#FB923C" stroke-width="2"/><path d="M8 7h8M8 11h6M8 15h4" stroke="#FB923C" stroke-width="2" stroke-linecap="round"/></svg></div>
+          <h4 class="font-semibold mb-2" style="color:var(--text);" data-i18n="feat.s_cv_t">Smart CV Builder</h4>
+          <p class="text-sm leading-relaxed" style="color:var(--text-muted);" data-i18n="feat.s_cv_d">Auto-generate a professional CV from your profile and export it instantly.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Companies -->
+    <div>
+      <div class="flex items-center gap-3 mb-6 reveal">
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:rgba(6,182,212,.2);border:1px solid rgba(6,182,212,.3);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2" stroke="#22D3EE" stroke-width="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2" stroke="#22D3EE" stroke-width="2"/></svg></div>
+        <h3 class="font-orbitron font-semibold text-lg" style="color:var(--text);" data-i18n="feat.for_companies">For Companies</h3>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div class="glass rounded-2xl p-6 hover:border-indigo-500/50 transition-all duration-300 cursor-default reveal group">
+          <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300" style="background:linear-gradient(135deg,rgba(79,70,229,.3),rgba(79,70,229,.1));border:1px solid rgba(99,102,241,.3);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="9" cy="7" r="4" stroke="#818CF8" stroke-width="2"/><path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2" stroke="#818CF8" stroke-width="2"/><path d="M19 8v6M22 11h-6" stroke="#818CF8" stroke-width="2" stroke-linecap="round"/></svg></div>
+          <h4 class="font-semibold mb-2" style="color:var(--text);" data-i18n="feat.c_talent_t">Talent Discovery</h4>
+          <p class="text-sm leading-relaxed" style="color:var(--text-muted);" data-i18n="feat.c_talent_d">Search verified student profiles and find the right candidates instantly.</p>
+        </div>
+        <div class="glass rounded-2xl p-6 hover:border-cyan-400/50 transition-all duration-300 cursor-default reveal group" style="transition-delay:.1s;">
+          <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300" style="background:linear-gradient(135deg,rgba(6,182,212,.3),rgba(6,182,212,.1));border:1px solid rgba(6,182,212,.3);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2z" stroke="#22D3EE" stroke-width="2"/><path d="M22 8l-10 6L2 8" stroke="#22D3EE" stroke-width="2"/></svg></div>
+          <h4 class="font-semibold mb-2" style="color:var(--text);" data-i18n="feat.c_post_t">Post Opportunities</h4>
+          <p class="text-sm leading-relaxed" style="color:var(--text-muted);" data-i18n="feat.c_post_d">Publish job offers, internships, and training programs in seconds.</p>
+        </div>
+        <div class="glass rounded-2xl p-6 hover:border-violet-400/50 transition-all duration-300 cursor-default reveal group" style="transition-delay:.2s;">
+          <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300" style="background:linear-gradient(135deg,rgba(139,92,246,.3),rgba(139,92,246,.1));border:1px solid rgba(139,92,246,.3);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2v10z" stroke="#A78BFA" stroke-width="2" stroke-linejoin="round"/></svg></div>
+          <h4 class="font-semibold mb-2" style="color:var(--text);" data-i18n="feat.c_msg_t">Direct Messaging</h4>
+          <p class="text-sm leading-relaxed" style="color:var(--text-muted);" data-i18n="feat.c_msg_d">Chat directly with candidates or students who apply to your listings.</p>
+        </div>
+        <div class="glass rounded-2xl p-6 hover:border-orange-400/50 transition-all duration-300 cursor-default reveal group" style="transition-delay:.3s;">
+          <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300" style="background:linear-gradient(135deg,rgba(249,115,22,.3),rgba(249,115,22,.1));border:1px solid rgba(249,115,22,.3);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" stroke="#FB923C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <h4 class="font-semibold mb-2" style="color:var(--text);" data-i18n="feat.c_analytics_t">Analytics Dashboard</h4>
+          <p class="text-sm leading-relaxed" style="color:var(--text-muted);" data-i18n="feat.c_analytics_d">Track application stats, profile views, and engagement metrics in real time.</p>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ========== HOW IT WORKS ========== -->
-<section id="how-it-works" class="py-20 px-4 relative" aria-labelledby="how-heading" style="background: linear-gradient(180deg, #0A0E1A 0%, #0D1228 100%);">
+<!-- ═══════════════════════════════════════════════════════
+     HOW IT WORKS
+════════════════════════════════════════════════════════ -->
+<section id="how-it-works" class="py-20 px-4 relative" style="background:var(--bg2);" aria-labelledby="how-heading">
   <div class="absolute inset-0 grid-bg opacity-30 pointer-events-none"></div>
   <div class="max-w-5xl mx-auto relative z-10">
     <div class="text-center mb-14 reveal">
-      <span class="badge mb-4">Simple Process</span>
-      <h2 id="how-heading" class="font-orbitron font-bold text-3xl md:text-4xl text-white mb-4">How It <span class="gradient-text">Works</span></h2>
-      <p class="text-slate-400 text-lg max-w-xl mx-auto">Get started in three simple steps and unlock a world of possibilities.</p>
+      <span class="badge mb-4" data-i18n="how.badge">Simple Process</span>
+      <h2 id="how-heading" class="font-orbitron font-bold text-3xl md:text-4xl mb-4" style="color:var(--text);">
+        <span data-i18n="how.t1">How It</span> <span class="gradient-text" data-i18n="how.t2">Works</span>
+      </h2>
+      <p class="text-lg max-w-xl mx-auto" style="color:var(--text-muted);" data-i18n="how.desc">Get started in three simple steps and unlock a world of possibilities.</p>
     </div>
-
     <div class="relative grid grid-cols-1 md:grid-cols-3 gap-8">
-      <!-- Connector line (desktop only) -->
-      <div class="hidden md:block absolute top-12 left-1/6 right-1/6 h-0.5 z-0" style="background: linear-gradient(90deg, transparent, rgba(79,70,229,0.5), rgba(6,182,212,0.5), transparent); left: 16.67%; right: 16.67%;"></div>
-
-      <!-- Step 1 -->
+      <div class="hidden md:block absolute top-12 h-0.5 z-0" style="left:20%;right:20%;background:linear-gradient(90deg,transparent,rgba(79,70,229,.5),rgba(6,182,212,.5),transparent);"></div>
       <div class="relative z-10 text-center reveal">
-        <div class="w-24 h-24 rounded-2xl mx-auto mb-6 flex items-center justify-center relative" style="background: linear-gradient(135deg, rgba(79,70,229,0.2), rgba(79,70,229,0.05)); border: 1px solid rgba(99,102,241,0.4);">
-          <div class="absolute -top-3 -right-3 w-7 h-7 rounded-full flex items-center justify-center font-orbitron font-bold text-xs text-white" style="background: linear-gradient(135deg, #4F46E5, #06B6D4);">1</div>
+        <div class="w-24 h-24 rounded-2xl mx-auto mb-6 flex items-center justify-center relative" style="background:linear-gradient(135deg,rgba(79,70,229,.2),rgba(79,70,229,.05));border:1px solid rgba(99,102,241,.4);">
+          <div class="absolute -top-3 -right-3 w-7 h-7 rounded-full flex items-center justify-center font-orbitron font-bold text-xs text-white" style="background:linear-gradient(135deg,#4F46E5,#06B6D4);">1</div>
           <svg width="36" height="36" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="8" r="4" stroke="#818CF8" stroke-width="2"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="#818CF8" stroke-width="2" stroke-linecap="round"/><path d="M18 3l1.5 1.5L22 2" stroke="#22D3EE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
-        <h3 class="font-orbitron font-semibold text-white text-lg mb-3">Create Your Account</h3>
-        <p class="text-slate-400 text-sm leading-relaxed max-w-xs mx-auto">Sign up as a student or company, build your profile, and let FutureGate know what you're looking for.</p>
+        <h3 class="font-orbitron font-semibold text-lg mb-3" style="color:var(--text);" data-i18n="how.s1_t">Create Your Account</h3>
+        <p class="text-sm leading-relaxed max-w-xs mx-auto" style="color:var(--text-muted);" data-i18n="how.s1_d">Sign up as a student or company, build your profile, and let FutureGate know what you're looking for.</p>
       </div>
-
-      <!-- Step 2 -->
-      <div class="relative z-10 text-center reveal" style="transition-delay: 0.15s;">
-        <div class="w-24 h-24 rounded-2xl mx-auto mb-6 flex items-center justify-center relative" style="background: linear-gradient(135deg, rgba(6,182,212,0.2), rgba(6,182,212,0.05)); border: 1px solid rgba(6,182,212,0.4);">
-          <div class="absolute -top-3 -right-3 w-7 h-7 rounded-full flex items-center justify-center font-orbitron font-bold text-xs text-white" style="background: linear-gradient(135deg, #06B6D4, #8B5CF6);">2</div>
+      <div class="relative z-10 text-center reveal" style="transition-delay:.15s;">
+        <div class="w-24 h-24 rounded-2xl mx-auto mb-6 flex items-center justify-center relative" style="background:linear-gradient(135deg,rgba(6,182,212,.2),rgba(6,182,212,.05));border:1px solid rgba(6,182,212,.4);">
+          <div class="absolute -top-3 -right-3 w-7 h-7 rounded-full flex items-center justify-center font-orbitron font-bold text-xs text-white" style="background:linear-gradient(135deg,#06B6D4,#8B5CF6);">2</div>
           <svg width="36" height="36" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="7" stroke="#22D3EE" stroke-width="2"/><path d="M21 21l-4.35-4.35" stroke="#22D3EE" stroke-width="2" stroke-linecap="round"/><path d="M8 11h6M11 8v6" stroke="#A78BFA" stroke-width="2" stroke-linecap="round"/></svg>
         </div>
-        <h3 class="font-orbitron font-semibold text-white text-lg mb-3">Explore Opportunities</h3>
-        <p class="text-slate-400 text-sm leading-relaxed max-w-xs mx-auto">Browse jobs, scholarships, trainings, and internships tailored to your interests and career goals.</p>
+        <h3 class="font-orbitron font-semibold text-lg mb-3" style="color:var(--text);" data-i18n="how.s2_t">Explore Opportunities</h3>
+        <p class="text-sm leading-relaxed max-w-xs mx-auto" style="color:var(--text-muted);" data-i18n="how.s2_d">Browse jobs, scholarships, trainings, and internships tailored to your interests and career goals.</p>
       </div>
-
-      <!-- Step 3 -->
-      <div class="relative z-10 text-center reveal" style="transition-delay: 0.3s;">
-        <div class="w-24 h-24 rounded-2xl mx-auto mb-6 flex items-center justify-center relative" style="background: linear-gradient(135deg, rgba(139,92,246,0.2), rgba(139,92,246,0.05)); border: 1px solid rgba(139,92,246,0.4);">
-          <div class="absolute -top-3 -right-3 w-7 h-7 rounded-full flex items-center justify-center font-orbitron font-bold text-xs text-white" style="background: linear-gradient(135deg, #8B5CF6, #F97316);">3</div>
+      <div class="relative z-10 text-center reveal" style="transition-delay:.3s;">
+        <div class="w-24 h-24 rounded-2xl mx-auto mb-6 flex items-center justify-center relative" style="background:linear-gradient(135deg,rgba(139,92,246,.2),rgba(139,92,246,.05));border:1px solid rgba(139,92,246,.4);">
+          <div class="absolute -top-3 -right-3 w-7 h-7 rounded-full flex items-center justify-center font-orbitron font-bold text-xs text-white" style="background:linear-gradient(135deg,#8B5CF6,#F97316);">3</div>
           <svg width="36" height="36" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M22 11.08V12a10 10 0 11-5.93-9.14" stroke="#A78BFA" stroke-width="2" stroke-linecap="round"/><polyline points="22 4 12 14.01 9 11.01" stroke="#FB923C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
-        <h3 class="font-orbitron font-semibold text-white text-lg mb-3">Apply and Connect</h3>
-        <p class="text-slate-400 text-sm leading-relaxed max-w-xs mx-auto">One-tap applications, real-time messaging with companies, and track your progress — all in one place.</p>
+        <h3 class="font-orbitron font-semibold text-lg mb-3" style="color:var(--text);" data-i18n="how.s3_t">Apply and Connect</h3>
+        <p class="text-sm leading-relaxed max-w-xs mx-auto" style="color:var(--text-muted);" data-i18n="how.s3_d">One-tap applications, real-time messaging with companies, and track your progress — all in one place.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ========== WHY FUTUREGATE ========== -->
-<section id="why" class="py-20 px-4 relative overflow-hidden" aria-labelledby="why-heading">
+<!-- ═══════════════════════════════════════════════════════
+     WHY FUTUREGATE
+════════════════════════════════════════════════════════ -->
+<section id="why" class="py-20 px-4 relative overflow-hidden" style="background:var(--bg);" aria-labelledby="why-heading">
   <div class="absolute inset-0 grid-bg opacity-20 pointer-events-none"></div>
-  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-3xl pointer-events-none opacity-[0.06]" style="background: radial-gradient(circle, #4F46E5, #06B6D4, transparent);"></div>
+  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-3xl pointer-events-none opacity-[0.06]" style="background:radial-gradient(circle,#4F46E5,#06B6D4,transparent);"></div>
 
   <div class="max-w-6xl mx-auto relative z-10">
-
-    <!-- Header -->
     <div class="text-center mb-16 reveal">
-      <span class="badge mb-4">Why FutureGate</span>
-      <h2 id="why-heading" class="font-orbitron font-bold text-3xl md:text-4xl text-white mb-4">One Gate. <span class="gradient-text">Infinite Paths.</span></h2>
-      <p class="text-slate-400 text-lg max-w-xl mx-auto">FutureGate brings together everything students need to launch their career — and everything companies need to find their next great hire.</p>
+      <span class="badge mb-4" data-i18n="why.badge">Why FutureGate</span>
+      <h2 id="why-heading" class="font-orbitron font-bold text-3xl md:text-4xl mb-4" style="color:var(--text);">
+        <span data-i18n="why.t1">One Gate.</span> <span class="gradient-text" data-i18n="why.t2">Infinite Paths.</span>
+      </h2>
+      <p class="text-lg max-w-xl mx-auto" style="color:var(--text-muted);" data-i18n="why.desc">FutureGate brings together everything students need to launch their career — and everything companies need to find their next great hire.</p>
     </div>
 
-    <!-- Hub layout: 2 cards | portal | 2 cards -->
+    <!-- Hub -->
     <div class="grid grid-cols-1 lg:grid-cols-5 gap-5 items-center mb-14">
-
-      <!-- Left cards -->
+      <!-- Left -->
       <div class="lg:col-span-2 flex flex-col gap-5">
-
         <div class="glass rounded-2xl p-5 reveal reveal-left group cursor-default hover:border-indigo-500/40 transition-all duration-300">
           <div class="flex items-start gap-4">
-            <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300" style="background: linear-gradient(135deg, #4F46E5, #6366F1);">
-              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2" stroke="white" stroke-width="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2" stroke="white" stroke-width="2"/></svg>
-            </div>
+            <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300" style="background:linear-gradient(135deg,#4F46E5,#6366F1);"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2" stroke="white" stroke-width="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2" stroke="white" stroke-width="2"/></svg></div>
             <div>
-              <h3 class="font-orbitron font-semibold text-white text-sm mb-1">Job Listings</h3>
-              <p class="text-slate-400 text-sm leading-relaxed">Verified listings from real companies — filtered by your field, city, and experience level.</p>
+              <h3 class="font-orbitron font-semibold text-sm mb-1" style="color:var(--text);" data-i18n="why.c1_t">Job Listings</h3>
+              <p class="text-sm leading-relaxed" style="color:var(--text-muted);" data-i18n="why.c1_d">Verified listings from real companies — filtered by your field, city, and experience level.</p>
               <div class="flex flex-wrap gap-1.5 mt-3">
-                <span class="text-xs px-2 py-0.5 rounded-md font-medium" style="background: rgba(79,70,229,0.2); color: #A5B4FC;">Full-time</span>
-                <span class="text-xs px-2 py-0.5 rounded-md font-medium" style="background: rgba(79,70,229,0.2); color: #A5B4FC;">Part-time</span>
-                <span class="text-xs px-2 py-0.5 rounded-md font-medium" style="background: rgba(79,70,229,0.2); color: #A5B4FC;">Remote</span>
+                <span class="text-xs px-2 py-0.5 rounded-md font-medium" style="background:rgba(79,70,229,.2);color:#A5B4FC;" data-i18n="tag.fulltime">Full-time</span>
+                <span class="text-xs px-2 py-0.5 rounded-md font-medium" style="background:rgba(79,70,229,.2);color:#A5B4FC;" data-i18n="tag.parttime">Part-time</span>
+                <span class="text-xs px-2 py-0.5 rounded-md font-medium" style="background:rgba(79,70,229,.2);color:#A5B4FC;" data-i18n="tag.remote">Remote</span>
               </div>
             </div>
           </div>
         </div>
-
-        <div class="glass rounded-2xl p-5 reveal reveal-left group cursor-default hover:border-cyan-400/40 transition-all duration-300" style="transition-delay:0.1s;">
+        <div class="glass rounded-2xl p-5 reveal reveal-left group cursor-default hover:border-cyan-400/40 transition-all duration-300" style="transition-delay:.1s;">
           <div class="flex items-start gap-4">
-            <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300" style="background: linear-gradient(135deg, #06B6D4, #0284C7);">
-              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21l1.18-6.86L2 9.27l6.91-1.01L12 2z" stroke="white" stroke-width="2" stroke-linejoin="round"/></svg>
-            </div>
+            <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300" style="background:linear-gradient(135deg,#06B6D4,#0284C7);"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21l1.18-6.86L2 9.27l6.91-1.01L12 2z" stroke="white" stroke-width="2" stroke-linejoin="round"/></svg></div>
             <div>
-              <h3 class="font-orbitron font-semibold text-white text-sm mb-1">Scholarships & Grants</h3>
-              <p class="text-slate-400 text-sm leading-relaxed">Funding from local institutions, international organizations, and private sponsors — all in one feed.</p>
+              <h3 class="font-orbitron font-semibold text-sm mb-1" style="color:var(--text);" data-i18n="why.c2_t">Scholarships & Grants</h3>
+              <p class="text-sm leading-relaxed" style="color:var(--text-muted);" data-i18n="why.c2_d">Funding from local institutions, international organizations, and private sponsors — all in one feed.</p>
               <div class="flex flex-wrap gap-1.5 mt-3">
-                <span class="text-xs px-2 py-0.5 rounded-md font-medium" style="background: rgba(6,182,212,0.2); color: #22D3EE;">National</span>
-                <span class="text-xs px-2 py-0.5 rounded-md font-medium" style="background: rgba(6,182,212,0.2); color: #22D3EE;">International</span>
+                <span class="text-xs px-2 py-0.5 rounded-md font-medium" style="background:rgba(6,182,212,.2);color:#22D3EE;" data-i18n="tag.national">National</span>
+                <span class="text-xs px-2 py-0.5 rounded-md font-medium" style="background:rgba(6,182,212,.2);color:#22D3EE;" data-i18n="tag.intl">International</span>
               </div>
             </div>
           </div>
         </div>
-
       </div>
 
       <!-- Center portal -->
       <div class="lg:col-span-1 flex items-center justify-center py-8 lg:py-0 reveal">
-        <div class="relative flex items-center justify-center" style="width:160px; height:260px;">
-          <!-- Pulse rings -->
-          <div class="absolute rounded-full" style="width:150px;height:150px;border:1px solid rgba(79,70,229,0.25);animation:portalPulse 3s ease-in-out infinite;"></div>
-          <div class="absolute rounded-full" style="width:118px;height:118px;border:1px solid rgba(6,182,212,0.3);animation:portalPulse 3s ease-in-out 1s infinite;"></div>
-          <div class="absolute rounded-full" style="width:86px;height:86px;border:1px solid rgba(139,92,246,0.35);animation:portalPulse 3s ease-in-out 2s infinite;"></div>
-          <!-- Ambient glow -->
-          <div class="absolute rounded-full blur-2xl" style="width:70px;height:70px;background:radial-gradient(circle,rgba(79,70,229,0.6),rgba(6,182,212,0.4),transparent);"></div>
-          <!-- FG badge -->
+        <div class="relative flex items-center justify-center" style="width:160px;height:260px;">
+          <div style="position:absolute;width:150px;height:150px;border-radius:50%;border:1px solid rgba(79,70,229,.25);animation:portalPulse 3s ease-in-out infinite;"></div>
+          <div style="position:absolute;width:118px;height:118px;border-radius:50%;border:1px solid rgba(6,182,212,.3);animation:portalPulse 3s ease-in-out 1s infinite;"></div>
+          <div style="position:absolute;width:86px;height:86px;border-radius:50%;border:1px solid rgba(139,92,246,.35);animation:portalPulse 3s ease-in-out 2s infinite;"></div>
+          <div style="position:absolute;width:70px;height:70px;border-radius:50%;background:radial-gradient(circle,rgba(79,70,229,.6),rgba(6,182,212,.4),transparent);filter:blur(8px);"></div>
           <div class="relative z-10 w-16 h-16 rounded-2xl flex items-center justify-center animate-pulse-glow" style="background:linear-gradient(135deg,#4F46E5,#06B6D4,#8B5CF6);">
             <span class="font-orbitron font-black text-white text-xl tracking-tight">FG</span>
           </div>
-          <!-- Connector lines (desktop) -->
-          <div class="hidden lg:block absolute top-1/2 -translate-y-1/2" style="right:-20px;width:20px;height:1px;background:linear-gradient(90deg,rgba(99,102,241,0.5),transparent);"></div>
-          <div class="hidden lg:block absolute top-1/2 -translate-y-1/2" style="left:-20px;width:20px;height:1px;background:linear-gradient(270deg,rgba(99,102,241,0.5),transparent);"></div>
+          <div class="hidden lg:block absolute top-1/2 -translate-y-1/2" style="right:-20px;width:20px;height:1px;background:linear-gradient(90deg,rgba(99,102,241,.5),transparent);"></div>
+          <div class="hidden lg:block absolute top-1/2 -translate-y-1/2" style="left:-20px;width:20px;height:1px;background:linear-gradient(270deg,rgba(99,102,241,.5),transparent);"></div>
         </div>
       </div>
 
-      <!-- Right cards -->
+      <!-- Right -->
       <div class="lg:col-span-2 flex flex-col gap-5">
-
         <div class="glass rounded-2xl p-5 reveal reveal-right group cursor-default hover:border-violet-400/40 transition-all duration-300">
           <div class="flex items-start gap-4">
-            <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300" style="background: linear-gradient(135deg, #8B5CF6, #7C3AED);">
-              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 19V7l8-4 8 4v12" stroke="white" stroke-width="2" stroke-linejoin="round"/><rect x="9" y="13" width="6" height="6" stroke="white" stroke-width="2"/></svg>
-            </div>
+            <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300" style="background:linear-gradient(135deg,#8B5CF6,#7C3AED);"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 19V7l8-4 8 4v12" stroke="white" stroke-width="2" stroke-linejoin="round"/><rect x="9" y="13" width="6" height="6" stroke="white" stroke-width="2"/></svg></div>
             <div>
-              <h3 class="font-orbitron font-semibold text-white text-sm mb-1">Trainings & Courses</h3>
-              <p class="text-slate-400 text-sm leading-relaxed">Bootcamps, workshops, and certifications curated by industry professionals to sharpen your skills.</p>
+              <h3 class="font-orbitron font-semibold text-sm mb-1" style="color:var(--text);" data-i18n="why.c3_t">Trainings & Courses</h3>
+              <p class="text-sm leading-relaxed" style="color:var(--text-muted);" data-i18n="why.c3_d">Bootcamps, workshops, and certifications curated by industry professionals to sharpen your skills.</p>
               <div class="flex flex-wrap gap-1.5 mt-3">
-                <span class="text-xs px-2 py-0.5 rounded-md font-medium" style="background: rgba(139,92,246,0.2); color: #A78BFA;">Tech</span>
-                <span class="text-xs px-2 py-0.5 rounded-md font-medium" style="background: rgba(139,92,246,0.2); color: #A78BFA;">Business</span>
-                <span class="text-xs px-2 py-0.5 rounded-md font-medium" style="background: rgba(139,92,246,0.2); color: #A78BFA;">Design</span>
+                <span class="text-xs px-2 py-0.5 rounded-md font-medium" style="background:rgba(139,92,246,.2);color:#A78BFA;" data-i18n="tag.tech">Tech</span>
+                <span class="text-xs px-2 py-0.5 rounded-md font-medium" style="background:rgba(139,92,246,.2);color:#A78BFA;" data-i18n="tag.business">Business</span>
+                <span class="text-xs px-2 py-0.5 rounded-md font-medium" style="background:rgba(139,92,246,.2);color:#A78BFA;" data-i18n="tag.design">Design</span>
               </div>
             </div>
           </div>
         </div>
-
-        <div class="glass rounded-2xl p-5 reveal reveal-right group cursor-default hover:border-orange-400/40 transition-all duration-300" style="transition-delay:0.1s;">
+        <div class="glass rounded-2xl p-5 reveal reveal-right group cursor-default hover:border-orange-400/40 transition-all duration-300" style="transition-delay:.1s;">
           <div class="flex items-start gap-4">
-            <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300" style="background: linear-gradient(135deg, #F97316, #FBBF24);">
-              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4" y="2" width="16" height="20" rx="2" stroke="white" stroke-width="2"/><path d="M8 7h8M8 11h6M8 15h4" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>
-            </div>
+            <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300" style="background:linear-gradient(135deg,#F97316,#FBBF24);"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4" y="2" width="16" height="20" rx="2" stroke="white" stroke-width="2"/><path d="M8 7h8M8 11h6M8 15h4" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div>
             <div>
-              <h3 class="font-orbitron font-semibold text-white text-sm mb-1">CV Builder + Messaging</h3>
-              <p class="text-slate-400 text-sm leading-relaxed">Auto-generate your CV from your profile, export it as PDF, and message companies directly — all inside the app.</p>
+              <h3 class="font-orbitron font-semibold text-sm mb-1" style="color:var(--text);" data-i18n="why.c4_t">CV Builder + Messaging</h3>
+              <p class="text-sm leading-relaxed" style="color:var(--text-muted);" data-i18n="why.c4_d">Auto-generate your CV from your profile, export as PDF, and message companies directly — all inside the app.</p>
               <div class="flex flex-wrap gap-1.5 mt-3">
-                <span class="text-xs px-2 py-0.5 rounded-md font-medium" style="background: rgba(249,115,22,0.2); color: #FB923C;">Auto-generate</span>
-                <span class="text-xs px-2 py-0.5 rounded-md font-medium" style="background: rgba(249,115,22,0.2); color: #FB923C;">Export PDF</span>
+                <span class="text-xs px-2 py-0.5 rounded-md font-medium" style="background:rgba(249,115,22,.2);color:#FB923C;" data-i18n="tag.autogen">Auto-generate</span>
+                <span class="text-xs px-2 py-0.5 rounded-md font-medium" style="background:rgba(249,115,22,.2);color:#FB923C;" data-i18n="tag.pdf">Export PDF</span>
               </div>
             </div>
           </div>
         </div>
-
       </div>
     </div>
 
-    <!-- Before vs After strip -->
+    <!-- Before vs After -->
     <div class="reveal">
-      <div class="text-center mb-6">
-        <p class="text-slate-500 text-sm font-semibold uppercase tracking-widest">The difference</p>
-      </div>
+      <p class="text-center text-xs font-bold uppercase tracking-widest mb-6" style="color:var(--text-muted);" data-i18n="diff.label">The difference</p>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-
         <div class="glass rounded-2xl p-5 space-y-3">
-          <div class="flex items-center gap-3">
-            <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="#F87171" stroke-width="2.5" stroke-linecap="round"/></svg>
-            </div>
-            <span class="text-slate-500 text-sm line-through">5 apps, 5 logins, 5 profiles</span>
-          </div>
-          <div class="flex items-center gap-3">
-            <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.3);">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 7L9.99 17 4 11" stroke="#6EE7B7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </div>
-            <span class="text-white text-sm font-semibold">One app, one profile, everything</span>
-          </div>
+          <div class="flex items-center gap-3"><div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background:var(--scratch);border:1px solid var(--scratch-b);"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="#F87171" stroke-width="2.5" stroke-linecap="round"/></svg></div><span class="text-sm line-through" style="color:var(--text-muted);" data-i18n="diff.b1">5 apps, 5 logins, 5 profiles</span></div>
+          <div class="flex items-center gap-3"><div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.3);"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 7L9.99 17 4 11" stroke="#6EE7B7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="text-sm font-semibold" style="color:var(--text);" data-i18n="diff.a1">One app, one profile, everything</span></div>
         </div>
-
         <div class="glass rounded-2xl p-5 space-y-3">
-          <div class="flex items-center gap-3">
-            <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="#F87171" stroke-width="2.5" stroke-linecap="round"/></svg>
-            </div>
-            <span class="text-slate-500 text-sm line-through">Generic listings, no fit</span>
-          </div>
-          <div class="flex items-center gap-3">
-            <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.3);">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 7L9.99 17 4 11" stroke="#6EE7B7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </div>
-            <span class="text-white text-sm font-semibold">Matched to your exact profile</span>
-          </div>
+          <div class="flex items-center gap-3"><div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background:var(--scratch);border:1px solid var(--scratch-b);"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="#F87171" stroke-width="2.5" stroke-linecap="round"/></svg></div><span class="text-sm line-through" style="color:var(--text-muted);" data-i18n="diff.b2">Generic listings, no fit</span></div>
+          <div class="flex items-center gap-3"><div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.3);"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 7L9.99 17 4 11" stroke="#6EE7B7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="text-sm font-semibold" style="color:var(--text);" data-i18n="diff.a2">Matched to your exact profile</span></div>
         </div>
-
         <div class="glass rounded-2xl p-5 space-y-3">
-          <div class="flex items-center gap-3">
-            <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="#F87171" stroke-width="2.5" stroke-linecap="round"/></svg>
-            </div>
-            <span class="text-slate-500 text-sm line-through">Long, confusing apply process</span>
-          </div>
-          <div class="flex items-center gap-3">
-            <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.3);">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 7L9.99 17 4 11" stroke="#6EE7B7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </div>
-            <span class="text-white text-sm font-semibold">Apply in one tap, chat instantly</span>
-          </div>
+          <div class="flex items-center gap-3"><div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background:var(--scratch);border:1px solid var(--scratch-b);"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="#F87171" stroke-width="2.5" stroke-linecap="round"/></svg></div><span class="text-sm line-through" style="color:var(--text-muted);" data-i18n="diff.b3">Long, confusing apply process</span></div>
+          <div class="flex items-center gap-3"><div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.3);"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 7L9.99 17 4 11" stroke="#6EE7B7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="text-sm font-semibold" style="color:var(--text);" data-i18n="diff.a3">Apply in one tap, chat instantly</span></div>
         </div>
-
       </div>
     </div>
-
   </div>
 </section>
 
-<!-- ========== DOWNLOAD SECTION ========== -->
-<section id="download" class="py-20 px-4" aria-labelledby="download-heading" style="background: linear-gradient(180deg, #0A0E1A 0%, #0D1228 100%);">
+<!-- ═══════════════════════════════════════════════════════
+     DOWNLOAD
+════════════════════════════════════════════════════════ -->
+<section id="download" class="py-20 px-4" style="background:var(--bg2);" aria-labelledby="dl-heading">
   <div class="max-w-3xl mx-auto">
-    <div class="relative rounded-3xl overflow-hidden p-10 md:p-14 text-center reveal" style="background: linear-gradient(135deg, rgba(79,70,229,0.25) 0%, rgba(6,182,212,0.1) 50%, rgba(139,92,246,0.2) 100%); border: 1px solid rgba(99,102,241,0.4); box-shadow: 0 0 60px rgba(79,70,229,0.25);">
-      <!-- Glow top -->
-      <div class="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-32 blur-3xl pointer-events-none" style="background: radial-gradient(circle, rgba(79,70,229,0.4), transparent);"></div>
-      <!-- Android icon -->
-      <div class="w-20 h-20 rounded-3xl mx-auto mb-6 flex items-center justify-center animate-pulse-glow" style="background: linear-gradient(135deg, #4F46E5, #06B6D4);">
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M6 18V9h12v9a2 2 0 01-2 2H8a2 2 0 01-2-2z" fill="rgba(255,255,255,0.9)"/>
-          <path d="M6 9a6 6 0 0112 0" stroke="white" stroke-width="2"/>
-          <circle cx="9" cy="6.5" r="1" fill="white"/>
-          <circle cx="15" cy="6.5" r="1" fill="white"/>
-          <path d="M4 11h1M19 11h1M9 21v1M15 21v1" stroke="white" stroke-width="2" stroke-linecap="round"/>
-        </svg>
+    <div class="relative rounded-3xl overflow-hidden p-10 md:p-14 text-center reveal" style="background:linear-gradient(135deg,rgba(79,70,229,.25) 0%,rgba(6,182,212,.1) 50%,rgba(139,92,246,.2) 100%);border:1px solid rgba(99,102,241,.4);box-shadow:0 0 60px rgba(79,70,229,.25);">
+      <div class="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-32 blur-3xl pointer-events-none" style="background:radial-gradient(circle,rgba(79,70,229,.4),transparent);"></div>
+      <div class="w-20 h-20 rounded-3xl mx-auto mb-6 flex items-center justify-center animate-pulse-glow" style="background:linear-gradient(135deg,#4F46E5,#06B6D4);">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 18V9h12v9a2 2 0 01-2 2H8a2 2 0 01-2-2z" fill="rgba(255,255,255,.9)"/><path d="M6 9a6 6 0 0112 0" stroke="white" stroke-width="2"/><circle cx="9" cy="6.5" r="1" fill="white"/><circle cx="15" cy="6.5" r="1" fill="white"/><path d="M4 11h1M19 11h1M9 21v1M15 21v1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>
       </div>
-
-      <span class="badge mb-4 mx-auto inline-flex">Android Only</span>
-      <h2 id="download-heading" class="font-orbitron font-black text-3xl md:text-4xl text-white mb-3">Download FutureGate</h2>
-      <p class="text-slate-300 text-lg mb-2">Version 1.0.0 &nbsp;·&nbsp; Free Forever</p>
-      <p class="text-slate-400 text-sm mb-8 max-w-md mx-auto">No Play Store. No subscription. Just download, install, and unlock your future.</p>
-
-      <a href="/futuregate.apk" class="inline-flex items-center justify-center gap-3 px-10 py-5 rounded-2xl font-bold text-white text-lg cursor-pointer btn-cta-glow transition-all duration-300 mb-5" style="background: linear-gradient(135deg, #F97316, #FBBF24);" aria-label="Download FutureGate APK version 1.0.0">
+      <span class="badge mb-4 mx-auto inline-flex" data-i18n="dl.badge">Android Only</span>
+      <h2 id="dl-heading" class="font-orbitron font-black text-3xl md:text-4xl mb-3" style="color:var(--text);" data-i18n="dl.title">Download FutureGate</h2>
+      <p class="text-lg mb-2" style="color:var(--text-sub);" data-i18n="dl.version">Version 1.0.0 · Free Forever</p>
+      <p class="text-sm mb-8 max-w-md mx-auto" style="color:var(--text-muted);" data-i18n="dl.desc">No Play Store. No subscription. Just download, install, and unlock your future.</p>
+      <a href="/futuregate.apk" class="inline-flex items-center justify-center gap-3 px-10 py-5 rounded-2xl font-bold text-white text-lg cursor-pointer btn-cta-glow transition-all duration-300 mb-5" style="background:linear-gradient(135deg,#F97316,#FBBF24);" aria-label="Download FutureGate APK">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 16l-5-5h3.5V4h3v7H17l-5 5z" fill="currentColor"/><rect x="4" y="19" width="16" height="2" rx="1" fill="currentColor"/></svg>
-        Download APK — v1.0.0
+        <span data-i18n="dl.btn">Download APK — v1.0.0</span>
       </a>
-
-      <p class="text-slate-500 text-xs">Free · Android 6.0+ · ~15 MB</p>
+      <p class="text-xs" style="color:var(--text-muted);" data-i18n="dl.meta">Free · Android 6.0+ · ~15 MB</p>
     </div>
   </div>
 </section>
 
-<!-- ========== INSTALL INSTRUCTIONS ========== -->
-<section id="install" class="py-20 px-4" aria-labelledby="install-heading">
+<!-- ═══════════════════════════════════════════════════════
+     INSTALL INSTRUCTIONS
+════════════════════════════════════════════════════════ -->
+<section id="install" class="py-20 px-4" style="background:var(--bg);" aria-labelledby="install-heading">
   <div class="max-w-4xl mx-auto">
     <div class="text-center mb-12 reveal">
-      <span class="badge mb-4">Installation</span>
-      <h2 id="install-heading" class="font-orbitron font-bold text-3xl md:text-4xl text-white mb-4">Install in <span class="gradient-text">3 Steps</span></h2>
+      <span class="badge mb-4" data-i18n="inst.badge">Installation</span>
+      <h2 id="install-heading" class="font-orbitron font-bold text-3xl md:text-4xl mb-4" style="color:var(--text);">
+        <span data-i18n="inst.t1">Install in</span> <span class="gradient-text" data-i18n="inst.t2">3 Steps</span>
+      </h2>
     </div>
-
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <div class="glass rounded-2xl p-6 text-center reveal">
-        <div class="w-14 h-14 rounded-2xl mx-auto mb-4 flex items-center justify-center" style="background: linear-gradient(135deg, rgba(249,115,22,0.25), rgba(249,115,22,0.1)); border: 1px solid rgba(249,115,22,0.35);">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 16l-5-5h3.5V4h3v7H17l-5 5z" fill="#FB923C"/><rect x="4" y="19" width="16" height="2" rx="1" fill="#FB923C"/></svg>
-        </div>
-        <div class="font-orbitron font-bold text-2xl gradient-text-cta mb-2">01</div>
-        <h3 class="font-semibold text-white mb-2">Download APK</h3>
-        <p class="text-slate-400 text-sm leading-relaxed">Tap the Download button and save the APK file to your Android device.</p>
+        <div class="w-14 h-14 rounded-2xl mx-auto mb-4 flex items-center justify-center" style="background:linear-gradient(135deg,rgba(249,115,22,.25),rgba(249,115,22,.1));border:1px solid rgba(249,115,22,.35);"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 16l-5-5h3.5V4h3v7H17l-5 5z" fill="#FB923C"/><rect x="4" y="19" width="16" height="2" rx="1" fill="#FB923C"/></svg></div>
+        <div class="font-orbitron font-bold text-2xl gradient-text-cta mb-2" data-i18n="inst.n1">01</div>
+        <h3 class="font-semibold mb-2" style="color:var(--text);" data-i18n="inst.s1_t">Download APK</h3>
+        <p class="text-sm leading-relaxed" style="color:var(--text-muted);" data-i18n="inst.s1_d">Tap the Download button and save the APK file to your Android device.</p>
       </div>
-
-      <div class="glass rounded-2xl p-6 text-center reveal" style="transition-delay: 0.15s;">
-        <div class="w-14 h-14 rounded-2xl mx-auto mb-4 flex items-center justify-center" style="background: linear-gradient(135deg, rgba(79,70,229,0.25), rgba(79,70,229,0.1)); border: 1px solid rgba(99,102,241,0.35);">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 12l2 2 4-4" stroke="#818CF8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 3a9 9 0 100 18A9 9 0 0012 3z" stroke="#818CF8" stroke-width="2"/></svg>
-        </div>
-        <div class="font-orbitron font-bold text-2xl gradient-text mb-2">02</div>
-        <h3 class="font-semibold text-white mb-2">Allow Unknown Sources</h3>
-        <p class="text-slate-400 text-sm leading-relaxed">Go to <strong class="text-slate-300">Settings → Security</strong> and enable "Install from unknown sources" or tap "Allow" when prompted.</p>
+      <div class="glass rounded-2xl p-6 text-center reveal" style="transition-delay:.15s;">
+        <div class="w-14 h-14 rounded-2xl mx-auto mb-4 flex items-center justify-center" style="background:linear-gradient(135deg,rgba(79,70,229,.25),rgba(79,70,229,.1));border:1px solid rgba(99,102,241,.35);"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 12l2 2 4-4" stroke="#818CF8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 3a9 9 0 100 18A9 9 0 0012 3z" stroke="#818CF8" stroke-width="2"/></svg></div>
+        <div class="font-orbitron font-bold text-2xl gradient-text mb-2" data-i18n="inst.n2">02</div>
+        <h3 class="font-semibold mb-2" style="color:var(--text);" data-i18n="inst.s2_t">Allow Unknown Sources</h3>
+        <p class="text-sm leading-relaxed" style="color:var(--text-muted);" data-i18n="inst.s2_d">Go to Settings → Security and enable "Install from unknown sources" when prompted.</p>
       </div>
-
-      <div class="glass rounded-2xl p-6 text-center reveal" style="transition-delay: 0.3s;">
-        <div class="w-14 h-14 rounded-2xl mx-auto mb-4 flex items-center justify-center" style="background: linear-gradient(135deg, rgba(6,182,212,0.25), rgba(6,182,212,0.1)); border: 1px solid rgba(6,182,212,0.35);">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 3l14 9-14 9V3z" fill="#22D3EE"/></svg>
-        </div>
-        <div class="font-orbitron font-bold text-2xl mb-2" style="background: linear-gradient(135deg, #06B6D4, #8B5CF6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">03</div>
-        <h3 class="font-semibold text-white mb-2">Open FutureGate</h3>
-        <p class="text-slate-400 text-sm leading-relaxed">Open the downloaded APK, complete installation, and launch FutureGate. Your future awaits.</p>
+      <div class="glass rounded-2xl p-6 text-center reveal" style="transition-delay:.3s;">
+        <div class="w-14 h-14 rounded-2xl mx-auto mb-4 flex items-center justify-center" style="background:linear-gradient(135deg,rgba(6,182,212,.25),rgba(6,182,212,.1));border:1px solid rgba(6,182,212,.35);"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 3l14 9-14 9V3z" fill="#22D3EE"/></svg></div>
+        <div class="font-orbitron font-bold text-2xl mb-2" style="background:linear-gradient(135deg,#06B6D4,#8B5CF6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;" data-i18n="inst.n3">03</div>
+        <h3 class="font-semibold mb-2" style="color:var(--text);" data-i18n="inst.s3_t">Open FutureGate</h3>
+        <p class="text-sm leading-relaxed" style="color:var(--text-muted);" data-i18n="inst.s3_d">Open the downloaded APK, complete installation, and launch FutureGate. Your future awaits.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ========== FAQ SECTION ========== -->
-<section id="faq" class="py-20 px-4" style="background: linear-gradient(180deg, #0A0E1A 0%, #0D1228 100%);" aria-labelledby="faq-heading">
+<!-- ═══════════════════════════════════════════════════════
+     FAQ
+════════════════════════════════════════════════════════ -->
+<section id="faq" class="py-20 px-4" style="background:var(--bg2);" aria-labelledby="faq-heading">
   <div class="max-w-3xl mx-auto">
     <div class="text-center mb-12 reveal">
-      <span class="badge mb-4">FAQ</span>
-      <h2 id="faq-heading" class="font-orbitron font-bold text-3xl md:text-4xl text-white mb-4">Common <span class="gradient-text">Questions</span></h2>
+      <span class="badge mb-4" data-i18n="faq.badge">FAQ</span>
+      <h2 id="faq-heading" class="font-orbitron font-bold text-3xl md:text-4xl mb-4" style="color:var(--text);">
+        <span data-i18n="faq.t1">Common</span> <span class="gradient-text" data-i18n="faq.t2">Questions</span>
+      </h2>
     </div>
-
     <div class="space-y-3" id="faq-list">
-      <!-- FAQ 1 -->
-      <div class="faq-item glass rounded-2xl overflow-hidden reveal cursor-pointer" data-faq="0">
+      <div class="faq-item glass rounded-2xl overflow-hidden reveal cursor-pointer">
         <button class="w-full flex items-center justify-between p-5 text-left" aria-expanded="false">
-          <span class="font-semibold text-white">Is FutureGate free?</span>
-          <svg class="faq-icon flex-shrink-0 ml-4 text-indigo-400" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <span class="font-semibold" style="color:var(--text);" data-i18n="faq.q1">Is FutureGate free?</span>
+          <svg class="faq-icon flex-shrink-0 ml-4" width="20" height="20" viewBox="0 0 24 24" fill="none" style="color:#818CF8;" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         </button>
-        <div class="faq-answer px-5 text-slate-400 text-sm leading-relaxed">
-          Yes — FutureGate is completely free for students. Download the APK, create your account, and start exploring opportunities at zero cost. Companies benefit from a generous free tier for posting and discovering talent.
-        </div>
+        <div class="faq-answer px-5 text-sm leading-relaxed" style="color:var(--text-muted);" data-i18n="faq.a1">Yes — FutureGate is completely free for students. Download the APK, create your account, and start exploring opportunities at zero cost. Companies benefit from a generous free tier for posting and discovering talent.</div>
       </div>
-
-      <!-- FAQ 2 -->
-      <div class="faq-item glass rounded-2xl overflow-hidden reveal cursor-pointer" data-faq="1" style="transition-delay: 0.05s;">
+      <div class="faq-item glass rounded-2xl overflow-hidden reveal cursor-pointer" style="transition-delay:.05s;">
         <button class="w-full flex items-center justify-between p-5 text-left" aria-expanded="false">
-          <span class="font-semibold text-white">Is the APK safe to install?</span>
-          <svg class="faq-icon flex-shrink-0 ml-4 text-indigo-400" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <span class="font-semibold" style="color:var(--text);" data-i18n="faq.q2">Is the APK safe to install?</span>
+          <svg class="faq-icon flex-shrink-0 ml-4" width="20" height="20" viewBox="0 0 24 24" fill="none" style="color:#818CF8;" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         </button>
-        <div class="faq-answer px-5 text-slate-400 text-sm leading-relaxed">
-          Absolutely. The APK is signed, verified, and served directly from <strong class="text-slate-300">futuregate.tech</strong>. It contains no malware, no ads, and no hidden permissions. It only requests access to what the app needs to function.
-        </div>
+        <div class="faq-answer px-5 text-sm leading-relaxed" style="color:var(--text-muted);" data-i18n="faq.a2">Absolutely. The APK is signed, verified, and served directly from futuregate.tech. It contains no malware, no ads, and no hidden permissions. It only requests access to what the app needs to function.</div>
       </div>
-
-      <!-- FAQ 3 -->
-      <div class="faq-item glass rounded-2xl overflow-hidden reveal cursor-pointer" data-faq="2" style="transition-delay: 0.1s;">
+      <div class="faq-item glass rounded-2xl overflow-hidden reveal cursor-pointer" style="transition-delay:.1s;">
         <button class="w-full flex items-center justify-between p-5 text-left" aria-expanded="false">
-          <span class="font-semibold text-white">Why is it not on the Play Store yet?</span>
-          <svg class="faq-icon flex-shrink-0 ml-4 text-indigo-400" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <span class="font-semibold" style="color:var(--text);" data-i18n="faq.q3">Why is it not on the Play Store yet?</span>
+          <svg class="faq-icon flex-shrink-0 ml-4" width="20" height="20" viewBox="0 0 24 24" fill="none" style="color:#818CF8;" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         </button>
-        <div class="faq-answer px-5 text-slate-400 text-sm leading-relaxed">
-          FutureGate is in its early-access phase. We're gathering user feedback and refining the experience before the full Play Store launch. Early adopters get exclusive features and direct input into the product roadmap.
-        </div>
+        <div class="faq-answer px-5 text-sm leading-relaxed" style="color:var(--text-muted);" data-i18n="faq.a3">FutureGate is in its early-access phase. We're gathering user feedback and refining the experience before the full Play Store launch. Early adopters get exclusive features and direct input into the product roadmap.</div>
       </div>
-
-      <!-- FAQ 4 -->
-      <div class="faq-item glass rounded-2xl overflow-hidden reveal cursor-pointer" data-faq="3" style="transition-delay: 0.15s;">
+      <div class="faq-item glass rounded-2xl overflow-hidden reveal cursor-pointer" style="transition-delay:.15s;">
         <button class="w-full flex items-center justify-between p-5 text-left" aria-expanded="false">
-          <span class="font-semibold text-white">How do I install the APK?</span>
-          <svg class="faq-icon flex-shrink-0 ml-4 text-indigo-400" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <span class="font-semibold" style="color:var(--text);" data-i18n="faq.q4">How do I install the APK?</span>
+          <svg class="faq-icon flex-shrink-0 ml-4" width="20" height="20" viewBox="0 0 24 24" fill="none" style="color:#818CF8;" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         </button>
-        <div class="faq-answer px-5 text-slate-400 text-sm leading-relaxed">
-          Download the APK from this page, go to <strong class="text-slate-300">Settings → Security → Install unknown apps</strong>, allow your browser to install APKs, then open the downloaded file and tap Install. The whole process takes under a minute.
-        </div>
+        <div class="faq-answer px-5 text-sm leading-relaxed" style="color:var(--text-muted);" data-i18n="faq.a4">Download the APK from this page, go to Settings → Security → Install unknown apps, allow your browser to install APKs, then open the downloaded file and tap Install. The whole process takes under a minute.</div>
       </div>
-
-      <!-- FAQ 5 -->
-      <div class="faq-item glass rounded-2xl overflow-hidden reveal cursor-pointer" data-faq="4" style="transition-delay: 0.2s;">
+      <div class="faq-item glass rounded-2xl overflow-hidden reveal cursor-pointer" style="transition-delay:.2s;">
         <button class="w-full flex items-center justify-between p-5 text-left" aria-expanded="false">
-          <span class="font-semibold text-white">Can companies use FutureGate?</span>
-          <svg class="faq-icon flex-shrink-0 ml-4 text-indigo-400" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <span class="font-semibold" style="color:var(--text);" data-i18n="faq.q5">Can companies use FutureGate?</span>
+          <svg class="faq-icon flex-shrink-0 ml-4" width="20" height="20" viewBox="0 0 24 24" fill="none" style="color:#818CF8;" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         </button>
-        <div class="faq-answer px-5 text-slate-400 text-sm leading-relaxed">
-          Yes! Companies can register directly through the FutureGate app. Post job offers, internships, or training programs, search verified student profiles, and connect directly with candidates — all from one place.
-        </div>
+        <div class="faq-answer px-5 text-sm leading-relaxed" style="color:var(--text-muted);" data-i18n="faq.a5">Yes! Companies can register directly through the FutureGate app. Post job offers, internships, or training programs, search verified student profiles, and connect directly with candidates — all from one place.</div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ========== FOOTER ========== -->
-<footer class="border-t border-dark-border py-12 px-4" style="background: #070B16;" role="contentinfo">
+<!-- ═══════════════════════════════════════════════════════
+     FOOTER
+════════════════════════════════════════════════════════ -->
+<footer class="border-t py-12 px-4" style="background:var(--footer-bg);border-color:var(--border);" role="contentinfo">
   <div class="max-w-7xl mx-auto">
     <div class="flex flex-col md:flex-row items-start justify-between gap-8 mb-8">
-      <!-- Brand -->
       <div>
         <a href="#" class="flex items-center gap-2 mb-3 cursor-pointer" aria-label="FutureGate">
-          <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background: linear-gradient(135deg, #4F46E5, #06B6D4);">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 6h16M4 12h10M4 18h16" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg>
-          </div>
+          <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:linear-gradient(135deg,#4F46E5,#06B6D4);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 6h16M4 12h10M4 18h16" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg></div>
           <span class="font-orbitron font-bold text-lg gradient-text">FutureGate</span>
         </a>
-        <p class="text-slate-500 text-sm max-w-xs leading-relaxed">Your gateway to opportunities. Connecting students with the future they deserve.</p>
+        <p class="text-sm max-w-xs leading-relaxed" style="color:var(--text-muted);" data-i18n="footer.tagline">Your gateway to opportunities. Connecting students with the future they deserve.</p>
       </div>
-
-      <!-- Links -->
       <div class="grid grid-cols-2 gap-8 sm:gap-16">
         <div>
-          <h4 class="font-orbitron font-semibold text-white text-sm mb-4">Product</h4>
+          <h4 class="font-orbitron font-semibold text-sm mb-4" style="color:var(--text);" data-i18n="footer.product">Product</h4>
           <ul class="space-y-2.5">
-            <li><a href="#features" class="text-slate-400 hover:text-white text-sm transition-colors duration-200 cursor-pointer">Features</a></li>
-            <li><a href="#how-it-works" class="text-slate-400 hover:text-white text-sm transition-colors duration-200 cursor-pointer">How It Works</a></li>
-            <li><a href="#download" class="text-slate-400 hover:text-white text-sm transition-colors duration-200 cursor-pointer">Download APK</a></li>
-            <li><a href="#faq" class="text-slate-400 hover:text-white text-sm transition-colors duration-200 cursor-pointer">FAQ</a></li>
+            <li><a href="#features"    class="text-sm transition-colors duration-200 cursor-pointer" style="color:var(--text-muted);" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--text-muted)'"><span data-i18n="nav.features">Features</span></a></li>
+            <li><a href="#how-it-works" class="text-sm transition-colors duration-200 cursor-pointer" style="color:var(--text-muted);" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--text-muted)'"><span data-i18n="nav.how">How It Works</span></a></li>
+            <li><a href="#download"    class="text-sm transition-colors duration-200 cursor-pointer" style="color:var(--text-muted);" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--text-muted)'"><span data-i18n="nav.download">Download APK</span></a></li>
+            <li><a href="#faq"         class="text-sm transition-colors duration-200 cursor-pointer" style="color:var(--text-muted);" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--text-muted)'"><span data-i18n="nav.faq">FAQ</span></a></li>
           </ul>
         </div>
         <div>
-          <h4 class="font-orbitron font-semibold text-white text-sm mb-4">Platform</h4>
+          <h4 class="font-orbitron font-semibold text-sm mb-4" style="color:var(--text);" data-i18n="footer.platform">Platform</h4>
           <ul class="space-y-2.5">
-            <li>
-              <a href="https://futuregate.tech" class="text-slate-400 hover:text-white text-sm transition-colors duration-200 cursor-pointer flex items-center gap-1.5">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20" stroke="currentColor" stroke-width="2"/></svg>
-                futuregate.tech
-              </a>
-            </li>
-            <li>
-              <a href="/futuregate.apk" class="text-slate-400 hover:text-white text-sm transition-colors duration-200 cursor-pointer flex items-center gap-1.5">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 15l-4-4h3V4h2v7h3l-4 4z" fill="currentColor"/><rect x="4" y="19" width="16" height="2" rx="1" fill="currentColor"/></svg>
-                Download APK
-              </a>
-            </li>
+            <li><a href="https://futuregate.tech" class="text-sm transition-colors duration-200 cursor-pointer flex items-center gap-1.5" style="color:var(--text-muted);" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--text-muted)'"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20" stroke="currentColor" stroke-width="2"/></svg>futuregate.tech</a></li>
+            <li><a href="/futuregate.apk" class="text-sm transition-colors duration-200 cursor-pointer flex items-center gap-1.5" style="color:var(--text-muted);" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--text-muted)'"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 15l-4-4h3V4h2v7h3l-4 4z" fill="currentColor"/><rect x="4" y="19" width="16" height="2" rx="1" fill="currentColor"/></svg><span data-i18n="nav.dl_btn">Download APK</span></a></li>
           </ul>
         </div>
       </div>
     </div>
-
-    <div class="border-t border-dark-border pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
-      <p class="text-slate-600 text-sm text-center">© 2025 FutureGate. All rights reserved.</p>
-      <p class="text-slate-600 text-sm text-center">Made with purpose for students everywhere.</p>
+    <div class="border-t pt-6 flex flex-col sm:flex-row items-center justify-between gap-3" style="border-color:var(--border);">
+      <p class="text-sm text-center" style="color:var(--text-muted);" data-i18n="footer.copy">© 2025 FutureGate. All rights reserved.</p>
+      <p class="text-sm text-center" style="color:var(--text-muted);" data-i18n="footer.made">Made with purpose for students everywhere.</p>
     </div>
   </div>
 </footer>
 
-<!-- ========== JAVASCRIPT ========== -->
+<!-- ═══════════════════════════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════════════════════════ -->
 <script>
-  // Navbar scroll effect
+/* ── TRANSLATIONS ──────────────────────────────────────── */
+const T = {
+  en: {
+    'nav.features':'Features','nav.how':'How It Works','nav.why':'Why FutureGate','nav.faq':'FAQ','nav.download':'Download','nav.dl_btn':'Download APK',
+    'hero.b_android':'Android APK','hero.b_version':'Version 1.0.0','hero.b_free':'Free Download',
+    'hero.t1':'Your Gateway to','hero.t2':'Opportunities',
+    'hero.desc':'Connect students with jobs, scholarships, trainings, and internships. Empower companies to discover top talent — all in one futuristic platform.',
+    'hero.cta1':'Download APK','hero.cta2':'Explore Features',
+    'hero.s_students':'Students','hero.s_companies':'Companies','hero.s_opps':'Opportunities',
+    'pill.android':'Android 6.0+','pill.free':'Free Forever','pill.onetap':'One-tap Apply',
+    'fc.job':'New Job','fc.job_sub':'Software Dev','fc.scholar':'Scholarship','fc.scholar_sub':'$5,000 Grant','fc.training':'Training','fc.training_sub':'AI & ML','fc.cv':'CV Builder','fc.cv_sub':'Auto Generate',
+    'feat.badge':'Platform Features','feat.t1':'Built for','feat.t2':'Both Worlds',
+    'feat.desc':"Whether you're a student hunting for your next opportunity or a company building your dream team — FutureGate has you covered.",
+    'feat.for_students':'For Students','feat.for_companies':'For Companies',
+    'feat.s_jobs_t':'Job Opportunities','feat.s_jobs_d':'Browse curated job listings matched to your profile, skills, and location.',
+    'feat.s_scholar_t':'Scholarships','feat.s_scholar_d':'Discover grants, full scholarships, and financial aid from local and global sources.',
+    'feat.s_train_t':'Training & Courses','feat.s_train_d':'Access bootcamps, workshops, and certification programs to level up your skills.',
+    'feat.s_cv_t':'Smart CV Builder','feat.s_cv_d':'Auto-generate a professional CV from your profile and export it instantly.',
+    'feat.c_talent_t':'Talent Discovery','feat.c_talent_d':'Search verified student profiles and find the right candidates instantly.',
+    'feat.c_post_t':'Post Opportunities','feat.c_post_d':'Publish job offers, internships, and training programs in seconds.',
+    'feat.c_msg_t':'Direct Messaging','feat.c_msg_d':'Chat directly with candidates or students who apply to your listings.',
+    'feat.c_analytics_t':'Analytics Dashboard','feat.c_analytics_d':'Track application stats, profile views, and engagement metrics in real time.',
+    'how.badge':'Simple Process','how.t1':'How It','how.t2':'Works','how.desc':'Get started in three simple steps and unlock a world of possibilities.',
+    'how.s1_t':'Create Your Account','how.s1_d':"Sign up as a student or company, build your profile, and let FutureGate know what you're looking for.",
+    'how.s2_t':'Explore Opportunities','how.s2_d':'Browse jobs, scholarships, trainings, and internships tailored to your interests and career goals.',
+    'how.s3_t':'Apply and Connect','how.s3_d':'One-tap applications, real-time messaging with companies, and track your progress — all in one place.',
+    'why.badge':'Why FutureGate','why.t1':'One Gate.','why.t2':'Infinite Paths.',
+    'why.desc':'FutureGate brings together everything students need to launch their career — and everything companies need to find their next great hire.',
+    'why.c1_t':'Job Listings','why.c1_d':'Verified listings from real companies — filtered by your field, city, and experience level.',
+    'why.c2_t':'Scholarships & Grants','why.c2_d':'Funding from local institutions, international organizations, and private sponsors — all in one feed.',
+    'why.c3_t':'Trainings & Courses','why.c3_d':'Bootcamps, workshops, and certifications curated by industry professionals to sharpen your skills.',
+    'why.c4_t':'CV Builder + Messaging','why.c4_d':'Auto-generate your CV from your profile, export as PDF, and message companies directly — all inside the app.',
+    'tag.fulltime':'Full-time','tag.parttime':'Part-time','tag.remote':'Remote','tag.national':'National','tag.intl':'International','tag.tech':'Tech','tag.business':'Business','tag.design':'Design','tag.autogen':'Auto-generate','tag.pdf':'Export PDF',
+    'diff.label':'The difference','diff.b1':'5 apps, 5 logins, 5 profiles','diff.a1':'One app, one profile, everything','diff.b2':'Generic listings, no fit','diff.a2':'Matched to your exact profile','diff.b3':'Long, confusing apply process','diff.a3':'Apply in one tap, chat instantly',
+    'dl.badge':'Android Only','dl.title':'Download FutureGate','dl.version':'Version 1.0.0 · Free Forever','dl.desc':'No Play Store. No subscription. Just download, install, and unlock your future.','dl.btn':'Download APK — v1.0.0','dl.meta':'Free · Android 6.0+ · ~15 MB',
+    'inst.badge':'Installation','inst.t1':'Install in','inst.t2':'3 Steps','inst.n1':'01','inst.n2':'02','inst.n3':'03',
+    'inst.s1_t':'Download APK','inst.s1_d':'Tap the Download button and save the APK file to your Android device.',
+    'inst.s2_t':'Allow Unknown Sources','inst.s2_d':'Go to Settings → Security and enable "Install from unknown sources" when prompted.',
+    'inst.s3_t':'Open FutureGate','inst.s3_d':'Open the downloaded APK, complete installation, and launch FutureGate. Your future awaits.',
+    'faq.badge':'FAQ','faq.t1':'Common','faq.t2':'Questions',
+    'faq.q1':'Is FutureGate free?','faq.a1':'Yes — FutureGate is completely free for students. Download the APK, create your account, and start exploring opportunities at zero cost. Companies benefit from a generous free tier for posting and discovering talent.',
+    'faq.q2':'Is the APK safe to install?','faq.a2':'Absolutely. The APK is signed, verified, and served directly from futuregate.tech. It contains no malware, no ads, and no hidden permissions.',
+    'faq.q3':'Why is it not on the Play Store yet?','faq.a3':"FutureGate is in its early-access phase. We're gathering user feedback and refining the experience before the full Play Store launch. Early adopters get exclusive features.",
+    'faq.q4':'How do I install the APK?','faq.a4':'Download the APK from this page, go to Settings → Security → Install unknown apps, allow your browser, then open the file and tap Install. Under a minute.',
+    'faq.q5':'Can companies use FutureGate?','faq.a5':'Yes! Companies can register directly through the FutureGate app. Post jobs, internships, or trainings, search student profiles, and connect with candidates — all from one place.',
+    'footer.tagline':'Your gateway to opportunities. Connecting students with the future they deserve.',
+    'footer.product':'Product','footer.platform':'Platform','footer.copy':'© 2025 FutureGate. All rights reserved.','footer.made':'Made with purpose for students everywhere.'
+  },
+  fr: {
+    'nav.features':'Fonctionnalités','nav.how':'Comment ça marche','nav.why':'Pourquoi FutureGate','nav.faq':'FAQ','nav.download':'Télécharger','nav.dl_btn':'Télécharger APK',
+    'hero.b_android':'APK Android','hero.b_version':'Version 1.0.0','hero.b_free':'Gratuit',
+    'hero.t1':'Votre Porte vers les','hero.t2':'Opportunités',
+    'hero.desc':"Connectez les étudiants aux emplois, bourses, formations et stages. Permettez aux entreprises de découvrir les meilleurs talents — tout en un.",
+    'hero.cta1':'Télécharger APK','hero.cta2':'Découvrir les fonctionnalités',
+    'hero.s_students':'Étudiants','hero.s_companies':'Entreprises','hero.s_opps':'Opportunités',
+    'pill.android':'Android 6.0+','pill.free':'Gratuit à vie','pill.onetap':'Postuler en un clic',
+    'fc.job':'Nouveau poste','fc.job_sub':'Dév. logiciel','fc.scholar':'Bourse','fc.scholar_sub':'5 000 $ de subvention','fc.training':'Formation','fc.training_sub':'IA & ML','fc.cv':'Créateur CV','fc.cv_sub':'Auto-génération',
+    'feat.badge':'Fonctionnalités','feat.t1':'Conçu pour','feat.t2':'les deux',
+    'feat.desc':"Que vous soyez étudiant en recherche d'opportunités ou une entreprise en quête de talents — FutureGate est là pour vous.",
+    'feat.for_students':'Pour les Étudiants','feat.for_companies':'Pour les Entreprises',
+    'feat.s_jobs_t':"Offres d'emploi",'feat.s_jobs_d':"Parcourez des offres adaptées à votre profil, vos compétences et votre localisation.",
+    'feat.s_scholar_t':'Bourses','feat.s_scholar_d':'Découvrez des bourses et aides financières locales et internationales.',
+    'feat.s_train_t':'Formations','feat.s_train_d':'Accédez à des bootcamps, ateliers et certifications pour développer vos compétences.',
+    'feat.s_cv_t':'Créateur de CV','feat.s_cv_d':'Générez automatiquement un CV professionnel depuis votre profil et exportez-le.',
+    'feat.c_talent_t':'Découverte de Talents','feat.c_talent_d':'Recherchez des profils étudiants vérifiés et trouvez les bons candidats instantanément.',
+    'feat.c_post_t':'Publier des Offres','feat.c_post_d':"Publiez des offres d'emploi, stages et formations en quelques secondes.",
+    'feat.c_msg_t':'Messagerie Directe','feat.c_msg_d':'Discutez directement avec les candidats qui postulent à vos offres.',
+    'feat.c_analytics_t':'Tableau de Bord','feat.c_analytics_d':"Suivez les statistiques des candidatures et l'engagement en temps réel.",
+    'how.badge':'Processus Simple','how.t1':'Comment ça','how.t2':'marche','how.desc':'Démarrez en trois étapes simples et ouvrez-vous un monde de possibilités.',
+    'how.s1_t':'Créez votre compte','how.s1_d':"Inscrivez-vous en tant qu'étudiant ou entreprise, créez votre profil et indiquez ce que vous recherchez.",
+    'how.s2_t':'Explorez les opportunités','how.s2_d':'Parcourez les emplois, bourses, formations et stages adaptés à vos objectifs.',
+    'how.s3_t':'Postulez et Connectez','how.s3_d':'Candidatures en un clic, messagerie en temps réel, et suivi de progression — tout en un.',
+    'why.badge':'Pourquoi FutureGate','why.t1':'Une Porte.','why.t2':'Des Chemins Infinis.',
+    'why.desc':'FutureGate réunit tout ce dont les étudiants ont besoin pour lancer leur carrière — et tout ce dont les entreprises ont besoin pour trouver leur prochain talent.',
+    'why.c1_t':"Offres d'emploi",'why.c1_d':"Offres vérifiées de vraies entreprises — filtrées par domaine, ville et niveau d'expérience.",
+    'why.c2_t':'Bourses & Subventions','why.c2_d':'Financements locaux, internationaux et de sponsors privés — dans un seul fil.',
+    'why.c3_t':'Formations & Cours','why.c3_d':'Bootcamps, ateliers et certifications sélectionnés par des professionnels.',
+    'why.c4_t':'CV + Messagerie','why.c4_d':"Générez votre CV depuis votre profil, exportez-le en PDF, et envoyez des messages aux entreprises.",
+    'tag.fulltime':'Temps plein','tag.parttime':'Temps partiel','tag.remote':'À distance','tag.national':'National','tag.intl':'International','tag.tech':'Tech','tag.business':'Business','tag.design':'Design','tag.autogen':'Auto-génération','tag.pdf':'Export PDF',
+    'diff.label':'La différence','diff.b1':'5 applis, 5 comptes, 5 profils','diff.a1':'Une appli, un profil, tout dedans','diff.b2':'Offres génériques, sans pertinence','diff.a2':'Adapté exactement à votre profil','diff.b3':'Candidature longue et compliquée','diff.a3':'Postulez en un clic, chattez instantanément',
+    'dl.badge':'Android Uniquement','dl.title':'Télécharger FutureGate','dl.version':'Version 1.0.0 · Gratuit à vie',"dl.desc":"Pas de Play Store. Pas d'abonnement. Téléchargez, installez, et déverrouillez votre avenir.",'dl.btn':'Télécharger APK — v1.0.0','dl.meta':'Gratuit · Android 6.0+ · ~15 Mo',
+    'inst.badge':'Installation','inst.t1':'Installer en','inst.t2':'3 Étapes','inst.n1':'01','inst.n2':'02','inst.n3':'03',
+    'inst.s1_t':'Télécharger APK','inst.s1_d':'Appuyez sur le bouton Télécharger et enregistrez le fichier APK sur votre appareil.',
+    'inst.s2_t':'Autoriser les sources inconnues','inst.s2_d':'Allez dans Paramètres → Sécurité et activez l\'installation depuis des sources inconnues.',
+    'inst.s3_t':'Ouvrir FutureGate','inst.s3_d':"Ouvrez le fichier APK, terminez l'installation et lancez FutureGate. Votre avenir vous attend.",
+    'faq.badge':'FAQ','faq.t1':'Questions','faq.t2':'Fréquentes',
+    'faq.q1':'FutureGate est-il gratuit ?','faq.a1':"Oui — FutureGate est entièrement gratuit pour les étudiants. Téléchargez l'APK, créez votre compte et commencez à explorer sans frais.",
+    'faq.q2':"L'APK est-il sûr ?","faq.a2":"Absolument. L'APK est signé, vérifié et servi directement depuis futuregate.tech. Pas de malware, pas de pub, pas de permissions cachées.",
+    'faq.q3':"Pourquoi pas encore sur le Play Store ?","faq.a3":"FutureGate est en accès anticipé. Nous collectons les retours avant le lancement complet. Les premiers adoptants bénéficient de fonctionnalités exclusives.",
+    'faq.q4':"Comment installer l'APK ?","faq.a4":"Téléchargez l'APK, allez dans Paramètres → Sécurité, autorisez les sources inconnues, puis ouvrez le fichier et appuyez sur Installer.",
+    'faq.q5':'Les entreprises peuvent-elles utiliser FutureGate ?','faq.a5':"Oui ! Les entreprises peuvent s'inscrire via l'application. Publiez des offres, recherchez des profils étudiants et connectez-vous directement avec les candidats.",
+    'footer.tagline':"Votre porte vers les opportunités. Connecter les étudiants avec le futur qu'ils méritent.",
+    'footer.product':'Produit','footer.platform':'Plateforme','footer.copy':'© 2025 FutureGate. Tous droits réservés.','footer.made':'Fait avec passion pour les étudiants du monde entier.'
+  },
+  ar: {
+    'nav.features':'الميزات','nav.how':'كيف يعمل','nav.why':'لماذا FutureGate','nav.faq':'الأسئلة الشائعة','nav.download':'تحميل','nav.dl_btn':'تحميل APK',
+    'hero.b_android':'APK أندرويد','hero.b_version':'الإصدار 1.0.0','hero.b_free':'تحميل مجاني',
+    'hero.t1':'بوابتك نحو','hero.t2':'الفرص',
+    'hero.desc':'ربط الطلاب بفرص العمل والمنح والتدريبات والتربصات. تمكين الشركات من اكتشاف أفضل المواهب — كل ذلك في منصة واحدة.',
+    'hero.cta1':'تحميل APK','hero.cta2':'استكشاف الميزات',
+    'hero.s_students':'طالب','hero.s_companies':'شركة','hero.s_opps':'فرصة',
+    'pill.android':'Android 6.0+','pill.free':'مجاني للأبد','pill.onetap':'التقدم بنقرة واحدة',
+    'fc.job':'وظيفة جديدة','fc.job_sub':'مطور برمجيات','fc.scholar':'منحة دراسية','fc.scholar_sub':'5,000 دولار','fc.training':'تدريب','fc.training_sub':'AI & ML','fc.cv':'منشئ CV','fc.cv_sub':'توليد تلقائي',
+    'feat.badge':'ميزات المنصة','feat.t1':'مبني من أجل','feat.t2':'الجميع',
+    'feat.desc':'سواء كنت طالبًا يبحث عن فرصته أو شركة تبني فريقها — FutureGate يغطيك.',
+    'feat.for_students':'للطلاب','feat.for_companies':'للشركات',
+    'feat.s_jobs_t':'فرص العمل','feat.s_jobs_d':'تصفح قوائم الوظائف المنتقاة المطابقة لملفك الشخصي ومهاراتك وموقعك.',
+    'feat.s_scholar_t':'المنح الدراسية','feat.s_scholar_d':'اكتشف المنح والمساعدات المالية من مصادر محلية ودولية.',
+    'feat.s_train_t':'التدريب والدورات','feat.s_train_d':'الوصول إلى برامج التدريب المكثف وورش العمل وشهادات الاحتراف.',
+    'feat.s_cv_t':'منشئ السيرة الذاتية','feat.s_cv_d':'أنشئ سيرة ذاتية احترافية تلقائيًا من ملفك الشخصي وصدّرها فورًا.',
+    'feat.c_talent_t':'اكتشاف المواهب','feat.c_talent_d':'ابحث في ملفات الطلاب الموثقة وابحث عن المرشحين المناسبين على الفور.',
+    'feat.c_post_t':'نشر الفرص','feat.c_post_d':'انشر عروض العمل والتدريبات والبرامج في ثوانٍ.',
+    'feat.c_msg_t':'المراسلة المباشرة','feat.c_msg_d':'تواصل مباشرة مع المرشحين أو الطلاب الذين يتقدمون لعروضك.',
+    'feat.c_analytics_t':'لوحة التحليلات','feat.c_analytics_d':'تتبع إحصائيات الطلبات وزيارات الملف الشخصي ومقاييس التفاعل في الوقت الفعلي.',
+    'how.badge':'عملية بسيطة','how.t1':'كيف','how.t2':'يعمل','how.desc':'ابدأ بثلاث خطوات بسيطة وافتح عالمًا من الإمكانيات.',
+    'how.s1_t':'أنشئ حسابك','how.s1_d':'سجّل كطالب أو شركة، أنشئ ملفك الشخصي، وأخبر FutureGate بما تبحث عنه.',
+    'how.s2_t':'استكشف الفرص','how.s2_d':'تصفح الوظائف والمنح والتدريبات المصممة خصيصًا لاهتماماتك وأهدافك.',
+    'how.s3_t':'تقدّم وتواصل','how.s3_d':'تقديم بنقرة واحدة، مراسلة فورية مع الشركات، وتتبع تقدمك — كل ذلك في مكان واحد.',
+    'why.badge':'لماذا FutureGate','why.t1':'بوابة واحدة.','why.t2':'مسارات لا نهائية.',
+    'why.desc':'يجمع FutureGate كل ما يحتاجه الطلاب لإطلاق مسيرتهم المهنية — وكل ما تحتاجه الشركات للعثور على موهبتها القادمة.',
+    'why.c1_t':'قوائم الوظائف','why.c1_d':'إعلانات موثقة من شركات حقيقية — مصفاة حسب مجالك ومدينتك ومستوى خبرتك.',
+    'why.c2_t':'المنح والإعانات','why.c2_d':'تمويل من المؤسسات المحلية والمنظمات الدولية والرعاة الخاصين — كلها في تدفق واحد.',
+    'why.c3_t':'التدريبات والدورات','why.c3_d':'برامج تدريبية مكثفة وورش عمل وشهادات ينتقيها متخصصون في الصناعة.',
+    'why.c4_t':'السيرة الذاتية + المراسلة','why.c4_d':'أنشئ سيرتك الذاتية تلقائيًا، صدّرها كـ PDF، وراسل الشركات مباشرة — كل ذلك داخل التطبيق.',
+    'tag.fulltime':'دوام كامل','tag.parttime':'دوام جزئي','tag.remote':'عن بُعد','tag.national':'وطني','tag.intl':'دولي','tag.tech':'تقنية','tag.business':'أعمال','tag.design':'تصميم','tag.autogen':'توليد تلقائي','tag.pdf':'تصدير PDF',
+    'diff.label':'الفرق','diff.b1':'5 تطبيقات، 5 حسابات، 5 ملفات','diff.a1':'تطبيق واحد، ملف واحد، كل شيء','diff.b2':'قوائم عامة غير ملائمة','diff.a2':'مطابق تمامًا لملفك الشخصي','diff.b3':'عملية تقديم طويلة ومعقدة','diff.a3':'تقدّم بنقرة واحدة، تواصل فورًا',
+    'dl.badge':'أندرويد فقط','dl.title':'حمّل FutureGate','dl.version':'الإصدار 1.0.0 · مجاني للأبد','dl.desc':'بدون Play Store. بدون اشتراك. حمّل، ثبّت، وافتح بوابة مستقبلك.','dl.btn':'تحميل APK — v1.0.0','dl.meta':'مجاني · Android 6.0+ · ~15 MB',
+    'inst.badge':'التثبيت','inst.t1':'ثبّت في','inst.t2':'3 خطوات','inst.n1':'٠١','inst.n2':'٠٢','inst.n3':'٠٣',
+    'inst.s1_t':'تحميل APK','inst.s1_d':'اضغط على زر التحميل واحفظ ملف APK على جهازك.',
+    'inst.s2_t':'السماح بالمصادر المجهولة','inst.s2_d':'اذهب إلى الإعدادات ← الأمان وفعّل التثبيت من مصادر مجهولة عند الطلب.',
+    'inst.s3_t':'افتح FutureGate','inst.s3_d':'افتح ملف APK المحمّل، أكمل التثبيت وأطلق FutureGate. مستقبلك ينتظرك.',
+    'faq.badge':'الأسئلة الشائعة','faq.t1':'أسئلة','faq.t2':'شائعة',
+    'faq.q1':'هل FutureGate مجاني؟','faq.a1':'نعم — FutureGate مجاني تمامًا للطلاب. حمّل التطبيق، أنشئ حسابك، وابدأ في استكشاف الفرص بدون أي تكلفة.',
+    'faq.q2':'هل APK آمن للتثبيت؟','faq.a2':'بالتأكيد. الـ APK موقّع وموثّق ويُقدَّم مباشرة من futuregate.tech. لا يحتوي على برامج ضارة أو إعلانات أو أذونات مخفية.',
+    'faq.q3':'لماذا لم يُنشر على Play Store بعد؟','faq.a3':'FutureGate في مرحلة الوصول المبكر. نجمع ملاحظات المستخدمين قبل الإطلاق الكامل على Play Store. يحصل المعتمدون الأوائل على ميزات حصرية.',
+    'faq.q4':'كيف أثبّت الـ APK؟','faq.a4':'حمّل الـ APK، اذهب إلى الإعدادات ← الأمان ← تثبيت تطبيقات مجهولة، اسمح لمتصفحك، ثم افتح الملف واضغط تثبيت. أقل من دقيقة.',
+    'faq.q5':'هل يمكن للشركات استخدام FutureGate؟','faq.a5':'نعم! يمكن للشركات التسجيل مباشرة عبر التطبيق. انشر الوظائف والتربصات والبرامج، وتواصل مع المرشحين — كل ذلك من مكان واحد.',
+    'footer.tagline':'بوابتك نحو الفرص. نربط الطلاب بالمستقبل الذي يستحقونه.',
+    'footer.product':'المنتج','footer.platform':'المنصة','footer.copy':'© 2025 FutureGate. جميع الحقوق محفوظة.','footer.made':'صُنع بشغف من أجل الطلاب في كل مكان.'
+  }
+};
+
+/* ── STATE ─────────────────────────────────────────────── */
+let currentLang  = localStorage.getItem('fg-lang')  || 'en';
+let currentTheme = localStorage.getItem('fg-theme') || 'dark';
+
+/* ── APPLY LANGUAGE ────────────────────────────────────── */
+function applyLang(lang) {
+  currentLang = lang;
+  const t = T[lang];
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const k = el.getAttribute('data-i18n');
+    if (t[k] !== undefined) el.textContent = t[k];
+  });
+  const html = document.documentElement;
+  if (lang === 'ar') {
+    html.setAttribute('dir', 'rtl');
+    html.setAttribute('lang', 'ar');
+  } else {
+    html.setAttribute('dir', 'ltr');
+    html.setAttribute('lang', lang);
+  }
+  document.querySelectorAll('.lang-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.lang === lang);
+  });
+  localStorage.setItem('fg-lang', lang);
+}
+
+/* ── APPLY THEME ───────────────────────────────────────── */
+function applyTheme(theme) {
+  currentTheme = theme;
+  const html = document.documentElement;
+  html.classList.toggle('light', theme === 'light');
+  document.getElementById('icon-sun').classList.toggle('hidden',  theme === 'light');
+  document.getElementById('icon-moon').classList.toggle('hidden', theme === 'dark');
+  localStorage.setItem('fg-theme', theme);
+}
+
+/* ── INIT ──────────────────────────────────────────────── */
+applyTheme(currentTheme);
+document.addEventListener('DOMContentLoaded', () => {
+  applyLang(currentLang);
+
+  /* Theme toggle */
+  document.getElementById('theme-toggle').addEventListener('click', () => {
+    applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
+  });
+
+  /* Lang buttons (all instances) */
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.addEventListener('click', () => applyLang(btn.dataset.lang));
+  });
+
+  /* Navbar scroll shadow */
   const navbar = document.getElementById('navbar');
   window.addEventListener('scroll', () => {
-    if (window.scrollY > 20) {
-      navbar.querySelector('div').style.boxShadow = '0 4px 30px rgba(0,0,0,0.5)';
-    } else {
-      navbar.querySelector('div').style.boxShadow = 'none';
-    }
+    navbar.querySelector('div').style.boxShadow =
+      window.scrollY > 20 ? '0 4px 30px rgba(0,0,0,0.4)' : 'none';
   }, { passive: true });
 
-  // Hamburger menu
-  const hamburger = document.getElementById('hamburger');
-  const mobileMenu = document.getElementById('mobile-menu');
-  const hamburgerIcon = document.getElementById('hamburger-icon');
-  const closeIcon = document.getElementById('close-icon');
-  let menuOpen = false;
-
-  hamburger.addEventListener('click', () => {
-    menuOpen = !menuOpen;
-    mobileMenu.classList.toggle('open', menuOpen);
-    hamburgerIcon.classList.toggle('hidden', menuOpen);
-    closeIcon.classList.toggle('hidden', !menuOpen);
-    hamburger.setAttribute('aria-expanded', menuOpen);
+  /* Hamburger */
+  const ham  = document.getElementById('hamburger');
+  const menu = document.getElementById('mobile-menu');
+  const hOpen  = document.getElementById('ham-open');
+  const hClose = document.getElementById('ham-close');
+  let open = false;
+  ham.addEventListener('click', () => {
+    open = !open;
+    menu.classList.toggle('open', open);
+    hOpen.classList.toggle('hidden', open);
+    hClose.classList.toggle('hidden', !open);
+    ham.setAttribute('aria-expanded', open);
   });
-
-  // Close menu on mobile link click
-  document.querySelectorAll('.mobile-link').forEach(link => {
-    link.addEventListener('click', () => {
-      menuOpen = false;
-      mobileMenu.classList.remove('open');
-      hamburgerIcon.classList.remove('hidden');
-      closeIcon.classList.add('hidden');
-      hamburger.setAttribute('aria-expanded', 'false');
+  document.querySelectorAll('.mobile-link').forEach(l => {
+    l.addEventListener('click', () => {
+      open = false;
+      menu.classList.remove('open');
+      hOpen.classList.remove('hidden');
+      hClose.classList.add('hidden');
+      ham.setAttribute('aria-expanded', 'false');
     });
   });
 
-  // Scroll reveal with IntersectionObserver
-  const revealEls = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
-  const revealObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        revealObserver.unobserve(entry.target);
-      }
-    });
+  /* Scroll reveal */
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
   }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => obs.observe(el));
 
-  revealEls.forEach(el => revealObserver.observe(el));
-
-  // FAQ accordion
+  /* FAQ accordion */
   document.querySelectorAll('.faq-item').forEach(item => {
-    const btn = item.querySelector('button');
-    const answer = item.querySelector('.faq-answer');
-
-    btn.addEventListener('click', () => {
-      const isOpen = item.classList.contains('open');
-
-      // Close all
+    item.querySelector('button').addEventListener('click', () => {
+      const was = item.classList.contains('open');
       document.querySelectorAll('.faq-item').forEach(i => {
         i.classList.remove('open');
         i.querySelector('.faq-answer').classList.remove('open');
         i.querySelector('button').setAttribute('aria-expanded', 'false');
       });
-
-      // Toggle clicked
-      if (!isOpen) {
+      if (!was) {
         item.classList.add('open');
-        answer.classList.add('open');
-        btn.setAttribute('aria-expanded', 'true');
+        item.querySelector('.faq-answer').classList.add('open');
+        item.querySelector('button').setAttribute('aria-expanded', 'true');
       }
     });
   });
+});
 </script>
-
 </body>
 </html>

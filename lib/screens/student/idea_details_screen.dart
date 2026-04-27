@@ -733,20 +733,16 @@ class IdeaDetailsScreen extends StatelessWidget {
       return;
     }
 
-    Navigator.push(
+    showFloatingUserProfilePreview(
       context,
-      MaterialPageRoute(
-        builder: (_) => UserProfilePreviewScreen(
-          userId: idea.submittedBy,
-          fallbackName: idea.creatorName,
-          fallbackRole: idea.creatorName == AdminIdentity.publicName
-              ? 'admin'
-              : 'student',
-          fallbackHeadline: idea.creatorHeadline,
-          fallbackAbout: idea.overviewText,
-          contextLabel: idea.title,
-        ),
-      ),
+      userId: idea.submittedBy,
+      fallbackName: idea.creatorName,
+      fallbackRole: idea.creatorName == AdminIdentity.publicName
+          ? 'admin'
+          : 'student',
+      fallbackHeadline: idea.creatorHeadline,
+      fallbackAbout: idea.overviewText,
+      contextLabel: idea.title,
     );
   }
 

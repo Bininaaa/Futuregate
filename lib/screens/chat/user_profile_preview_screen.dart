@@ -4,7 +4,6 @@ import '../../models/user_model.dart';
 import '../../services/public_profile_service.dart';
 import '../../utils/admin_identity.dart';
 import '../../utils/display_text.dart';
-import '../../widgets/app_shell_background.dart';
 import '../../widgets/chat/chat_formatters.dart';
 import '../../widgets/chat/chat_theme.dart';
 import '../../widgets/profile_avatar.dart';
@@ -21,36 +20,35 @@ Future<void> showFloatingUserProfilePreview(
   String contextLabel = '',
 }) {
   final size = MediaQuery.sizeOf(context);
-  final horizontalInset = size.width < 480 ? 12.0 : 24.0;
-  final verticalInset = size.height < 720 ? 16.0 : 24.0;
+  final isCompact = size.width < 520;
+  final horizontalInset = isCompact ? 10.0 : 24.0;
+  final topInset = MediaQuery.viewPaddingOf(context).top + 16;
+  final bottomInset = MediaQuery.viewPaddingOf(context).bottom + 10;
 
   return showDialog<void>(
     context: context,
-    barrierColor: Colors.black.withValues(alpha: 0.34),
+    barrierColor: Colors.black.withValues(alpha: 0.30),
+    useSafeArea: false,
     builder: (dialogContext) {
-      return Dialog(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        insetPadding: EdgeInsets.symmetric(
-          horizontal: horizontalInset,
-          vertical: verticalInset,
-        ),
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 620),
-          child: Container(
-            height: size.height * 0.88,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(32),
-              border: Border.all(
-                color: ChatThemePalette.border.withValues(alpha: 0.92),
-              ),
-              boxShadow: ChatThemeStyles.softShadow(0.16),
-            ),
-            clipBehavior: Clip.antiAlias,
-            child: MediaQuery.removePadding(
-              context: dialogContext,
-              removeTop: true,
-              removeBottom: true,
+      final dialogSize = MediaQuery.sizeOf(dialogContext);
+      final viewInsets = MediaQuery.viewInsetsOf(dialogContext);
+      final maxHeight = dialogSize.height * (isCompact ? 0.78 : 0.74);
+
+      return Align(
+        alignment: isCompact ? Alignment.bottomCenter : Alignment.center,
+        child: AnimatedPadding(
+          duration: const Duration(milliseconds: 180),
+          curve: Curves.easeOutCubic,
+          padding: EdgeInsets.fromLTRB(
+            horizontalInset,
+            topInset,
+            horizontalInset,
+            bottomInset + viewInsets.bottom,
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: 460, maxHeight: maxHeight),
               child: UserProfilePreviewScreen(
                 userId: userId,
                 fallbackName: fallbackName,
@@ -109,238 +107,203 @@ class _UserProfilePreviewScreenState extends State<UserProfilePreviewScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return AppShellBackground(
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: SafeArea(
-          child: FutureBuilder<UserModel?>(
-            future: _profileFuture,
-            builder: (context, snapshot) {
-              final user = snapshot.data;
-              final about = _about(user);
-              final headline = _headline(user);
-              final title = _profileTitle(user);
+    return FutureBuilder<UserModel?>(
+      future: _profileFuture,
+      builder: (context, snapshot) {
+        final user = snapshot.data;
+        final details = _buildDetails(user);
+        final about = _about(user);
+        final title = _profileTitle(user);
 
-              return ListView(
-                padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
-                children: [
-                  Row(
+        return Container(
+          decoration: BoxDecoration(
+            color: ChatThemePalette.background,
+            borderRadius: BorderRadius.circular(28),
+            border: Border.all(
+              color: ChatThemePalette.border.withValues(alpha: 0.9),
+            ),
+            boxShadow: ChatThemeStyles.softShadow(0.22),
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(14, 10, 14, 18),
+            physics: const BouncingScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _FloatingHeader(
+                  title: title,
+                  onClose: () => Navigator.maybePop(context),
+                ),
+                const SizedBox(height: 10),
+                _ProfileIdentityBlock(
+                  user: user,
+                  userId: widget.userId,
+                  name: _displayName(user),
+                  roleLabel: _roleLabel(user),
+                  headline: _headline(user),
+                  fallbackName: widget.fallbackName,
+                  fallbackRole: widget.fallbackRole,
+                  contextLabel: widget.contextLabel,
+                ),
+                if (snapshot.connectionState == ConnectionState.waiting) ...[
+                  const SizedBox(height: 12),
+                  _InlineNotice(
+                    icon: Icons.sync_rounded,
+                    title: 'Refreshing profile',
+                    message: 'Getting the latest public details.',
+                  ),
+                ] else if (snapshot.hasError) ...[
+                  const SizedBox(height: 12),
+                  _InlineNotice(
+                    icon: Icons.sync_problem_outlined,
+                    title: 'Profile sync',
+                    message:
+                        'Live profile details could not be refreshed, so fallback information is shown.',
+                  ),
+                ],
+                if (about.isNotEmpty) ...[
+                  const SizedBox(height: 14),
+                  _FloatingSection(
+                    title: 'About',
+                    icon: Icons.notes_rounded,
+                    child: _TextPanel(
+                      text: DisplayText.capitalizeDisplayValue(about),
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 14),
+                _FloatingSection(
+                  title: 'Details',
+                  icon: Icons.badge_outlined,
+                  child: Column(
                     children: [
-                      _ToolbarButton(
-                        icon: Icons.arrow_back_ios_new_rounded,
-                        onTap: () => Navigator.pop(context),
-                      ),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: Text(
-                          title,
-                          style: ChatThemeStyles.cardTitle().copyWith(
-                            fontSize: 18,
-                          ),
-                        ),
-                      ),
+                      for (var index = 0; index < details.length; index++) ...[
+                        if (index > 0) const SizedBox(height: 10),
+                        _DetailRow(item: details[index]),
+                      ],
                     ],
                   ),
-                  const SizedBox(height: 14),
-                  Container(
-                    padding: const EdgeInsets.all(22),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          ChatThemePalette.primary.withValues(alpha: 0.12),
-                          ChatThemePalette.surface,
-                          ChatThemePalette.surface,
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(30),
-                      border: Border.all(color: ChatThemePalette.border),
-                      boxShadow: ChatThemeStyles.softShadow(0.05),
-                    ),
-                    child: Column(
-                      children: [
-                        ProfileAvatar(
-                          user: user,
-                          userId: widget.userId,
-                          radius: 42,
-                          fallbackName: widget.fallbackName,
-                          role: widget.fallbackRole,
-                        ),
-                        const SizedBox(height: 14),
-                        Text(
-                          DisplayText.capitalizeDisplayValue(
-                            _displayName(user),
-                          ),
-                          textAlign: TextAlign.center,
-                          style: ChatThemeStyles.title().copyWith(fontSize: 25),
-                        ),
-                        const SizedBox(height: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 7,
-                          ),
-                          decoration: BoxDecoration(
-                            color: _roleColor(user).withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(999),
-                          ),
-                          child: Text(
-                            _roleLabel(user),
-                            style: ChatThemeStyles.meta(
-                              _roleColor(user),
-                            ).copyWith(fontWeight: FontWeight.w600),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          ChatFormatters.presenceLabel(
-                            user?.lastSeenAt,
-                            isOnline: user?.isOnline ?? false,
-                          ),
-                          style: ChatThemeStyles.meta(
-                            (user?.isOnline ?? false)
-                                ? ChatThemePalette.success
-                                : ChatThemePalette.textSecondary,
-                          ).copyWith(fontWeight: FontWeight.w600),
-                        ),
-                        if (headline.isNotEmpty) ...[
-                          const SizedBox(height: 14),
-                          Text(
-                            DisplayText.capitalizeDisplayValue(headline),
-                            textAlign: TextAlign.center,
-                            style: ChatThemeStyles.body(
-                              ChatThemePalette.textSecondary,
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                  if (snapshot.hasError) ...[
-                    const SizedBox(height: 12),
-                    _InfoCard(
-                      title: 'Profile Sync',
-                      icon: Icons.sync_problem_outlined,
-                      child: Text(
-                        'Live profile details could not be refreshed, so you are seeing safe fallback information.',
-                        style: ChatThemeStyles.body(
-                          ChatThemePalette.textSecondary,
-                        ),
-                      ),
-                    ),
-                  ],
-                  if (about.isNotEmpty) ...[
-                    const SizedBox(height: 12),
-                    _InfoCard(
-                      title: 'About',
-                      icon: Icons.notes_rounded,
-                      child: Text(
-                        DisplayText.capitalizeDisplayValue(about),
-                        style: ChatThemeStyles.body(
-                          ChatThemePalette.textSecondary,
-                        ),
-                      ),
-                    ),
-                  ],
-                  const SizedBox(height: 12),
-                  ..._buildDetails(user),
-                ],
-              );
-            },
+                ),
+              ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
-  List<Widget> _buildDetails(UserModel? user) {
-    final items = <Widget>[];
+  List<_ProfileDetailItem> _buildDetails(UserModel? user) {
     final role = _resolvedRole(user);
+    final items = <_ProfileDetailItem>[
+      _ProfileDetailItem(
+        title: 'Role',
+        value: _roleLabel(user),
+        icon: Icons.verified_user_outlined,
+        preserveCase: true,
+      ),
+    ];
 
-    void addItem({
-      required String title,
-      required String value,
-      required IconData icon,
-    }) {
-      if (value.trim().isEmpty) {
-        return;
-      }
+    if (role == 'admin') {
+      return items;
+    }
 
-      if (items.isNotEmpty) {
-        items.add(const SizedBox(height: 12));
-      }
-
+    final email = (user?.email ?? '').trim();
+    if (email.isNotEmpty) {
       items.add(
-        _InfoCard(
-          title: title,
-          icon: icon,
-          child: Text(
-            DisplayText.capitalizeDisplayValue(value),
-            style: ChatThemeStyles.cardTitle().copyWith(fontSize: 14),
-          ),
+        _ProfileDetailItem(
+          title: 'Email',
+          value: email,
+          icon: Icons.email_outlined,
+          preserveCase: true,
         ),
       );
     }
 
-    addItem(
-      title: 'Role',
-      value: _roleLabel(user),
-      icon: Icons.verified_user_outlined,
-    );
-
-    if (role == 'company') {
-      addItem(
-        title: 'Sector',
-        value: (user?.sector ?? '').trim().isNotEmpty
-            ? (user?.sector ?? '').trim()
-            : widget.fallbackHeadline.trim(),
-        icon: Icons.business_center_outlined,
-      );
-    } else if (role == 'student') {
-      addItem(
-        title: 'Academic Level',
-        value: (user?.academicLevel ?? '').trim(),
-        icon: Icons.school_outlined,
-      );
-      addItem(
-        title: 'University',
-        value: (user?.university ?? '').trim(),
-        icon: Icons.apartment_outlined,
-      );
-      addItem(
-        title: 'Field Of Study',
-        value: (user?.fieldOfStudy ?? '').trim(),
-        icon: Icons.menu_book_outlined,
+    final phone = (user?.phone ?? '').trim();
+    if (phone.isNotEmpty) {
+      items.add(
+        _ProfileDetailItem(
+          title: 'Phone',
+          value: phone,
+          icon: Icons.phone_outlined,
+          preserveCase: true,
+        ),
       );
     }
 
-    addItem(
-      title: 'Location',
-      value: (user?.location ?? '').trim().isNotEmpty
-          ? (user?.location ?? '').trim()
-          : widget.fallbackLocation.trim(),
-      icon: Icons.location_on_outlined,
-    );
-    addItem(
-      title: 'Website',
-      value: (user?.website ?? '').trim().isNotEmpty
-          ? (user?.website ?? '').trim()
-          : widget.fallbackWebsite.trim(),
-      icon: Icons.language_outlined,
-    );
-
-    if (items.isEmpty) {
-      items.add(
-        _InfoCard(
-          title: 'Profile',
-          icon: Icons.person_outline_rounded,
-          child: Text(
-            user?.role == 'company'
-                ? 'This company has not published additional public details yet.'
-                : 'This user has not shared additional public profile details yet.',
-            style: ChatThemeStyles.body(ChatThemePalette.textSecondary),
+    if (role == 'company') {
+      final sector = (user?.sector ?? '').trim().isNotEmpty
+          ? (user?.sector ?? '').trim()
+          : widget.fallbackHeadline.trim();
+      if (sector.isNotEmpty) {
+        items.add(
+          _ProfileDetailItem(
+            title: 'Sector',
+            value: sector,
+            icon: Icons.business_center_outlined,
           ),
+        );
+      }
+    } else {
+      final academicLevel = (user?.academicLevel ?? '').trim();
+      if (academicLevel.isNotEmpty) {
+        items.add(
+          _ProfileDetailItem(
+            title: 'Academic Level',
+            value: academicLevel,
+            icon: Icons.school_outlined,
+          ),
+        );
+      }
+
+      final university = (user?.university ?? '').trim();
+      if (university.isNotEmpty) {
+        items.add(
+          _ProfileDetailItem(
+            title: 'University',
+            value: university,
+            icon: Icons.apartment_outlined,
+          ),
+        );
+      }
+
+      final fieldOfStudy = (user?.fieldOfStudy ?? '').trim();
+      if (fieldOfStudy.isNotEmpty) {
+        items.add(
+          _ProfileDetailItem(
+            title: 'Field Of Study',
+            value: fieldOfStudy,
+            icon: Icons.menu_book_outlined,
+          ),
+        );
+      }
+    }
+
+    final location = (user?.location ?? '').trim().isNotEmpty
+        ? (user?.location ?? '').trim()
+        : widget.fallbackLocation.trim();
+    if (location.isNotEmpty) {
+      items.add(
+        _ProfileDetailItem(
+          title: 'Location',
+          value: location,
+          icon: Icons.location_on_outlined,
+        ),
+      );
+    }
+
+    final website = (user?.website ?? '').trim().isNotEmpty
+        ? (user?.website ?? '').trim()
+        : widget.fallbackWebsite.trim();
+    if (website.isNotEmpty) {
+      items.add(
+        _ProfileDetailItem(
+          title: 'Website',
+          value: website,
+          icon: Icons.language_outlined,
+          preserveCase: true,
         ),
       );
     }
@@ -443,20 +406,223 @@ class _UserProfilePreviewScreenState extends State<UserProfilePreviewScreen> {
   String _resolvedRole(UserModel? user) {
     return (user?.role ?? widget.fallbackRole).trim().toLowerCase();
   }
+}
 
-  Color _roleColor(UserModel? user) {
-    return _resolvedRole(user) == 'company'
-        ? ChatThemePalette.secondary
-        : ChatThemePalette.primary;
+class _ProfileDetailItem {
+  final String title;
+  final String value;
+  final IconData icon;
+  final bool preserveCase;
+
+  const _ProfileDetailItem({
+    required this.title,
+    required this.value,
+    required this.icon,
+    this.preserveCase = false,
+  });
+}
+
+class _FloatingHeader extends StatelessWidget {
+  final String title;
+  final VoidCallback onClose;
+
+  const _FloatingHeader({required this.title, required this.onClose});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Center(
+          child: Container(
+            width: 42,
+            height: 4,
+            decoration: BoxDecoration(
+              color: ChatThemePalette.border,
+              borderRadius: BorderRadius.circular(999),
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                title,
+                style: ChatThemeStyles.cardTitle().copyWith(fontSize: 18),
+              ),
+            ),
+            _ToolbarButton(
+              icon: Icons.close_rounded,
+              tooltip: 'Close',
+              onTap: onClose,
+            ),
+          ],
+        ),
+      ],
+    );
   }
 }
 
-class _InfoCard extends StatelessWidget {
+class _ProfileIdentityBlock extends StatelessWidget {
+  final UserModel? user;
+  final String userId;
+  final String name;
+  final String roleLabel;
+  final String headline;
+  final String fallbackName;
+  final String fallbackRole;
+  final String contextLabel;
+
+  const _ProfileIdentityBlock({
+    required this.user,
+    required this.userId,
+    required this.name,
+    required this.roleLabel,
+    required this.headline,
+    required this.fallbackName,
+    required this.fallbackRole,
+    required this.contextLabel,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final presence = ChatFormatters.presenceLabel(
+      user?.lastSeenAt,
+      isOnline: user?.isOnline ?? false,
+    );
+    final resolvedHeadline = headline.trim();
+    final resolvedContext = contextLabel.trim();
+
+    return Container(
+      padding: const EdgeInsets.fromLTRB(18, 18, 18, 20),
+      decoration: BoxDecoration(
+        gradient: ChatThemePalette.fabGradient,
+        borderRadius: BorderRadius.circular(22),
+        boxShadow: ChatThemeStyles.softShadow(0.18),
+      ),
+      child: Column(
+        children: [
+          ProfileAvatar(
+            user: user,
+            userId: userId,
+            radius: 42,
+            fallbackName: fallbackName,
+            role: fallbackRole,
+          ),
+          const SizedBox(height: 14),
+          Text(
+            DisplayText.capitalizeDisplayValue(name),
+            textAlign: TextAlign.center,
+            style: ChatThemeStyles.title(Colors.white).copyWith(fontSize: 24),
+          ),
+          if (resolvedHeadline.isNotEmpty) ...[
+            const SizedBox(height: 6),
+            Text(
+              DisplayText.capitalizeDisplayValue(resolvedHeadline),
+              textAlign: TextAlign.center,
+              style: ChatThemeStyles.body(Colors.white.withValues(alpha: 0.82)),
+            ),
+          ],
+          const SizedBox(height: 12),
+          Wrap(
+            alignment: WrapAlignment.center,
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              _RolePill(label: roleLabel),
+              _PresencePill(label: presence, isOnline: user?.isOnline ?? false),
+              if (resolvedContext.isNotEmpty)
+                _ContextPill(label: resolvedContext),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _RolePill extends StatelessWidget {
+  final String label;
+
+  const _RolePill({required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return _HeroPill(icon: Icons.verified_outlined, label: label);
+  }
+}
+
+class _PresencePill extends StatelessWidget {
+  final String label;
+  final bool isOnline;
+
+  const _PresencePill({required this.label, required this.isOnline});
+
+  @override
+  Widget build(BuildContext context) {
+    return _HeroPill(
+      icon: isOnline ? Icons.circle : Icons.schedule_rounded,
+      label: label,
+      iconColor: isOnline ? ChatThemePalette.success : Colors.white,
+    );
+  }
+}
+
+class _ContextPill extends StatelessWidget {
+  final String label;
+
+  const _ContextPill({required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return _HeroPill(icon: Icons.label_outline_rounded, label: label);
+  }
+}
+
+class _HeroPill extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color? iconColor;
+
+  const _HeroPill({required this.icon, required this.label, this.iconColor});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      constraints: const BoxConstraints(maxWidth: 220),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.16),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.20)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 13, color: iconColor ?? Colors.white),
+          const SizedBox(width: 5),
+          Flexible(
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: ChatThemeStyles.meta(
+                Colors.white.withValues(alpha: 0.94),
+              ).copyWith(fontWeight: FontWeight.w700),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _FloatingSection extends StatelessWidget {
   final String title;
   final IconData icon;
   final Widget child;
 
-  const _InfoCard({
+  const _FloatingSection({
     required this.title,
     required this.icon,
     required this.child,
@@ -464,33 +630,140 @@ class _InfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 2),
+          child: Row(
+            children: [
+              Icon(icon, size: 15, color: ChatThemePalette.primary),
+              const SizedBox(width: 6),
+              Text(
+                title,
+                style: ChatThemeStyles.sectionLabel(
+                  ChatThemePalette.primary,
+                ).copyWith(fontSize: 12),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 8),
+        child,
+      ],
+    );
+  }
+}
+
+class _TextPanel extends StatelessWidget {
+  final String text;
+
+  const _TextPanel({required this.text});
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(18),
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: ChatThemePalette.surface,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: ChatThemePalette.border),
+      ),
+      child: Text(
+        text,
+        style: ChatThemeStyles.body(ChatThemePalette.textSecondary),
+      ),
+    );
+  }
+}
+
+class _InlineNotice extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String message;
+
+  const _InlineNotice({
+    required this.icon,
+    required this.title,
+    required this.message,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: ChatThemePalette.surface,
+        borderRadius: BorderRadius.circular(18),
         border: Border.all(color: ChatThemePalette.border),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: ChatThemePalette.primary.withValues(alpha: 0.08),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: Icon(icon, color: ChatThemePalette.primary, size: 20),
-          ),
-          const SizedBox(width: 14),
+          Icon(icon, color: ChatThemePalette.primary, size: 18),
+          const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: ChatThemeStyles.meta()),
+                Text(title, style: ChatThemeStyles.cardTitle()),
                 const SizedBox(height: 4),
-                child,
+                Text(
+                  message,
+                  style: ChatThemeStyles.body(ChatThemePalette.textSecondary),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DetailRow extends StatelessWidget {
+  final _ProfileDetailItem item;
+
+  const _DetailRow({required this.item});
+
+  @override
+  Widget build(BuildContext context) {
+    final displayValue = item.preserveCase
+        ? item.value
+        : DisplayText.capitalizeDisplayValue(item.value);
+
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: ChatThemePalette.surface,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: ChatThemePalette.border),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              color: ChatThemePalette.primary.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(13),
+            ),
+            child: Icon(item.icon, color: ChatThemePalette.primary, size: 19),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(item.title, style: ChatThemeStyles.meta()),
+                const SizedBox(height: 4),
+                Text(
+                  displayValue,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  style: ChatThemeStyles.cardTitle().copyWith(fontSize: 14),
+                ),
               ],
             ),
           ),
@@ -502,26 +775,30 @@ class _InfoCard extends StatelessWidget {
 
 class _ToolbarButton extends StatelessWidget {
   final IconData icon;
+  final String tooltip;
   final VoidCallback? onTap;
 
-  const _ToolbarButton({required this.icon, this.onTap});
+  const _ToolbarButton({required this.icon, required this.tooltip, this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Ink(
-          width: 42,
-          height: 42,
-          decoration: BoxDecoration(
-            color: ChatThemePalette.surface,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: ChatThemePalette.border),
+    return Tooltip(
+      message: tooltip,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16),
+          child: Ink(
+            width: 42,
+            height: 42,
+            decoration: BoxDecoration(
+              color: ChatThemePalette.surface,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: ChatThemePalette.border),
+            ),
+            child: Icon(icon, color: ChatThemePalette.textPrimary, size: 20),
           ),
-          child: Icon(icon, color: ChatThemePalette.textPrimary, size: 18),
         ),
       ),
     );

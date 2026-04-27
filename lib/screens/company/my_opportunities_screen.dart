@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -5,13 +6,17 @@ import 'package:provider/provider.dart';
 
 import '../../l10n/generated/app_localizations.dart';
 import '../../models/application_model.dart';
+import '../../models/cv_model.dart';
 import '../../models/opportunity_model.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/chat_provider.dart';
 import '../../providers/company_provider.dart';
 import '../../providers/notification_provider.dart';
+import '../../services/document_access_service.dart';
 import '../../theme/app_colors.dart';
 import '../../utils/application_status.dart';
 import '../../utils/company_dashboard_palette.dart';
+import '../../utils/document_launch_helper.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/app_shell_background.dart';
@@ -19,7 +24,10 @@ import '../../widgets/application_status_badge.dart';
 import '../../widgets/profile_avatar.dart';
 import '../../widgets/shared/app_feedback.dart';
 import '../../widgets/shared/app_loading.dart';
+import '../../widgets/shared/reviewer_cv_widgets.dart';
+import '../chat/user_profile_preview_screen.dart';
 import '../notifications_screen.dart';
+import 'chat_screen.dart';
 import 'profile_screen.dart';
 import 'publish_opportunity_screen.dart';
 
@@ -327,6 +335,13 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
     OpportunityModel opportunity,
     ApplicationModel application,
   ) {
+    final tone = _toneForType(opportunity.type);
+    final typeLabel = OpportunityType.label(opportunity.type, _l10n);
+    final appliedDateLabel = _applicationDateLabel(application);
+    final relativeAppliedLabel = _relativeAppliedLabel(application.appliedAt);
+    final status = ApplicationStatus.parse(application.status);
+    final isPending = status == ApplicationStatus.pending;
+
     return showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
@@ -336,11 +351,53 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
         alpha: AppColors.isDark ? 0.62 : 0.38,
       ),
       builder: (sheetContext) {
-        return _ApplicantDetailsSheet(
-          opportunity: opportunity,
-          application: application,
-          appliedDateLabel: _applicationDateLabel(application),
-          onClose: () => Navigator.pop(sheetContext),
+        return Consumer<CompanyProvider>(
+          builder: (_, provider, _) {
+            return _ApplicantDetailsSheet(
+              opportunity: opportunity,
+              application: application,
+              appliedDateLabel: appliedDateLabel,
+              relativeAppliedLabel: relativeAppliedLabel,
+              typeLabel: typeLabel,
+              tone: tone,
+              isBusy: provider.isAppBusy(application.id),
+              onClose: () => Navigator.pop(sheetContext),
+              onTapProfile: () {
+                Navigator.pop(sheetContext);
+                _openStudentProfile(application);
+              },
+              onTapMessage: () {
+                Navigator.pop(sheetContext);
+                _openChatWithStudent(application);
+              },
+              onTapCv: () {
+                Navigator.pop(sheetContext);
+                _showCvSheet(context, application, provider);
+              },
+              onApprove: isPending
+                  ? () {
+                      Navigator.pop(sheetContext);
+                      _updateApplicationStatus(
+                        context,
+                        application,
+                        ApplicationStatus.accepted,
+                        provider,
+                      );
+                    }
+                  : null,
+              onReject: isPending
+                  ? () {
+                      Navigator.pop(sheetContext);
+                      _updateApplicationStatus(
+                        context,
+                        application,
+                        ApplicationStatus.rejected,
+                        provider,
+                      );
+                    }
+                  : null,
+            );
+          },
         );
       },
     );
@@ -373,6 +430,339 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
     }
 
     return DateFormat('MMM d, yyyy').format(appliedAt);
+  }
+
+  String? _relativeAppliedLabel(Timestamp? value) {
+    if (value == null) {
+      return null;
+    }
+
+    final appliedAt = value.toDate();
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final target = DateTime(appliedAt.year, appliedAt.month, appliedAt.day);
+    final difference = today.difference(target).inDays;
+
+    if (difference <= 0) {
+      return _l10n.uiToday;
+    }
+    if (difference == 1) {
+      return _l10n.uiYesterday;
+    }
+    if (difference < 7) {
+      return _l10n.uiDaysAgo(difference);
+    }
+    if (difference < 30) {
+      return _l10n.uiWeeksAgo((difference / 7).ceil());
+    }
+
+    return DateFormat('MMM d').format(appliedAt);
+  }
+
+  void _openStudentProfile(ApplicationModel application) {
+    showFloatingUserProfilePreview(
+      context,
+      userId: application.studentId,
+      fallbackName: application.studentName,
+      fallbackRole: 'student',
+      contextLabel: _l10n.uiApplication,
+    );
+  }
+
+  Future<void> _openChatWithStudent(ApplicationModel application) async {
+    final authProvider = context.read<AuthProvider>();
+    final chatProvider = context.read<ChatProvider>();
+    final currentUser = authProvider.userModel;
+
+    if (currentUser == null) {
+      return;
+    }
+
+    try {
+      final conversation = await chatProvider.getOrCreateConversation(
+        studentId: application.studentId,
+        studentName: application.studentName,
+        companyId: currentUser.uid,
+        companyName: currentUser.companyName ?? currentUser.fullName,
+        contextType: 'application',
+        contextLabel: _l10n.uiApplicationConversation,
+        currentUserId: currentUser.uid,
+        currentUserRole: currentUser.role,
+      );
+
+      if (!mounted) {
+        return;
+      }
+
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => ChatScreen(
+            conversationId: conversation.id,
+            otherName: conversation.studentName,
+            recipientId: conversation.studentId,
+            otherRole: 'student',
+            contextLabel: _l10n.uiApplicationConversation,
+          ),
+        ),
+      );
+    } catch (error) {
+      if (!mounted) {
+        return;
+      }
+      context.showAppSnackBar(
+        _l10n.uiCouldNotOpenChatValue(error),
+        title: _l10n.uiChatUnavailable,
+        type: AppFeedbackType.error,
+      );
+    }
+  }
+
+  Future<void> _showCvSheet(
+    BuildContext context,
+    ApplicationModel application,
+    CompanyProvider provider,
+  ) async {
+    final documentAccessService = DocumentAccessService();
+
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) {
+        return FutureBuilder<CvModel?>(
+          future: provider.getApplicationCv(application.id),
+          builder: (ctx, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return SizedBox(
+                height: 220,
+                child: Center(
+                  child: CircularProgressIndicator(
+                    color: _OpportunityPalette.primary,
+                  ),
+                ),
+              );
+            }
+
+            if (snapshot.hasError) {
+              return SizedBox(
+                height: 220,
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Text(
+                      _l10n.uiCouldNotOpenTheDocumentRightNow,
+                      style: GoogleFonts.poppins(
+                        color: _OpportunityPalette.textSecondary,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+              );
+            }
+
+            final cv = snapshot.data;
+
+            return DraggableScrollableSheet(
+              initialChildSize: 0.72,
+              maxChildSize: 0.92,
+              minChildSize: 0.34,
+              expand: false,
+              builder: (_, scrollController) {
+                if (cv == null) {
+                  return Container(
+                    decoration: BoxDecoration(
+                      color: _OpportunityPalette.surface,
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(30),
+                      ),
+                    ),
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 46,
+                          height: 5,
+                          decoration: BoxDecoration(
+                            color: _OpportunityPalette.border,
+                            borderRadius: BorderRadius.circular(999),
+                          ),
+                        ),
+                        const SizedBox(height: 28),
+                        Icon(
+                          Icons.description_outlined,
+                          size: 48,
+                          color: _OpportunityPalette.primary,
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          _l10n.uiNoCvAvailableForValue(
+                            application.studentName,
+                          ),
+                          style: GoogleFonts.poppins(
+                            color: _OpportunityPalette.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                Future<void> openDoc(String variant, {bool download = false, bool requirePdf = false}) async {
+                  try {
+                    final doc = await documentAccessService.getApplicationCvDocument(
+                      applicationId: application.id,
+                      variant: variant,
+                    );
+                    if (!context.mounted) return;
+                    if (requirePdf && !doc.isPdf) {
+                      context.showAppSnackBar(
+                        _l10n.uiTheRequestedFileIsNotAValidPdf,
+                        title: _l10n.uiPreviewUnavailable,
+                        type: AppFeedbackType.warning,
+                      );
+                      return;
+                    }
+                    await DocumentLaunchHelper.openSecureDocument(
+                      context,
+                      document: doc,
+                      download: download,
+                      requirePdf: requirePdf,
+                      notPdfMessage: _l10n.uiTheRequestedFileIsNotAValidPdf,
+                      notPdfTitle: _l10n.uiPreviewUnavailable,
+                      unavailableMessage: _l10n.uiCouldNotOpenTheDocumentRightNow,
+                      unavailableTitle: _l10n.uiDocumentUnavailable,
+                    );
+                  } catch (e) {
+                    if (!context.mounted) return;
+                    context.showAppSnackBar(
+                      _l10n.uiCouldNotOpenTheDocumentRightNow,
+                      title: _l10n.uiDocumentUnavailable,
+                      type: AppFeedbackType.error,
+                    );
+                  }
+                }
+
+                return Container(
+                  decoration: BoxDecoration(
+                    color: _OpportunityPalette.surface,
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(30),
+                    ),
+                  ),
+                  child: ListView(
+                    controller: scrollController,
+                    padding: const EdgeInsets.all(20),
+                    children: [
+                      Center(
+                        child: Container(
+                          width: 46,
+                          height: 5,
+                          decoration: BoxDecoration(
+                            color: _OpportunityPalette.border,
+                            borderRadius: BorderRadius.circular(999),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      ReviewerCvHeader(
+                        name: cv.fullName.isNotEmpty
+                            ? cv.fullName
+                            : application.studentName,
+                        accentColor: _OpportunityPalette.primary,
+                        details: [cv.email, cv.phone, cv.address],
+                      ),
+                      const SizedBox(height: 18),
+                      ReviewerCvDocumentCard(
+                        title: _l10n.uiPrimaryCvPdf,
+                        subtitle: cv.hasUploadedCv
+                            ? '${_l10n.uiFile}: ${cv.uploadedCvDisplayName}'
+                            : _l10n.uiNoUploadedCv,
+                        accentColor: _OpportunityPalette.primary,
+                        viewLabel: _l10n.uiViewCv,
+                        downloadLabel: _l10n.uiDownloadCv,
+                        warningText: cv.hasUploadedCv && !cv.isUploadedCvPdf
+                            ? _l10n.uiTheRequestedFileIsNotAValidPdf
+                            : null,
+                        onView: cv.hasUploadedCv && cv.isUploadedCvPdf
+                            ? () => openDoc('primary', requirePdf: true)
+                            : null,
+                        onDownload: cv.hasUploadedCv
+                            ? () => openDoc('primary', download: true)
+                            : null,
+                      ),
+                      const SizedBox(height: 14),
+                      ReviewerCvDocumentCard(
+                        title: _l10n.uiBuiltCv,
+                        subtitle: cv.hasExportedPdf
+                            ? _l10n.uiBuiltCvPdfReadyForReview
+                            : cv.hasBuilderContent
+                            ? _l10n.uiBuiltCvDetailsAvailableNoPdfYet
+                            : _l10n.uiNoBuiltCvDetailsAvailable,
+                        accentColor: _OpportunityPalette.accent,
+                        viewLabel: _l10n.uiViewBuiltCv,
+                        downloadLabel: _l10n.uiDownloadBuiltCv,
+                        onView: cv.hasExportedPdf
+                            ? () => openDoc('built', requirePdf: true)
+                            : null,
+                        onDownload: cv.hasExportedPdf
+                            ? () => openDoc('built', download: true)
+                            : null,
+                      ),
+                      const SizedBox(height: 20),
+                    ],
+                  ),
+                );
+              },
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Future<void> _updateApplicationStatus(
+    BuildContext context,
+    ApplicationModel application,
+    String status,
+    CompanyProvider provider,
+  ) async {
+    final authProvider = context.read<AuthProvider>();
+    final currentUserId = authProvider.userModel?.uid;
+    final error = await provider.updateApplicationStatus(
+      appId: application.id,
+      status: status,
+    );
+
+    if (!context.mounted) {
+      return;
+    }
+
+    if (error != null) {
+      context.showAppSnackBar(
+        error,
+        title: _l10n.updateUnavailableTitle,
+        type: AppFeedbackType.error,
+      );
+      return;
+    }
+
+    if (currentUserId != null) {
+      await provider.loadApplications(currentUserId);
+    }
+
+    if (!context.mounted) {
+      return;
+    }
+
+    context.showAppSnackBar(
+      _l10n.uiApplicationStatusValue(
+        ApplicationStatus.sentenceLabel(status, _l10n),
+      ),
+      title: _l10n.uiApplicationUpdated,
+      type: AppFeedbackType.success,
+    );
   }
 
   Future<void> _toggleStatus(OpportunityModel opportunity) async {
@@ -926,7 +1316,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
     final opportunities = _filteredOpportunities(provider, applicationCounts);
     final totalApplicants = applicationCounts.values.fold<int>(
       0,
-      (total, count) => total + count,
+      (total, applicantCount) => total + applicantCount,
     );
     final openCount = provider.opportunities
         .where((item) => item.effectiveStatus() == 'open')
@@ -1981,13 +2371,31 @@ class _ApplicantDetailsSheet extends StatelessWidget {
   final OpportunityModel opportunity;
   final ApplicationModel application;
   final String appliedDateLabel;
+  final String? relativeAppliedLabel;
+  final String typeLabel;
+  final _OpportunityTone tone;
+  final bool isBusy;
   final VoidCallback onClose;
+  final VoidCallback onTapProfile;
+  final VoidCallback onTapMessage;
+  final VoidCallback onTapCv;
+  final VoidCallback? onApprove;
+  final VoidCallback? onReject;
 
   const _ApplicantDetailsSheet({
     required this.opportunity,
     required this.application,
     required this.appliedDateLabel,
+    required this.relativeAppliedLabel,
+    required this.typeLabel,
+    required this.tone,
+    required this.isBusy,
     required this.onClose,
+    required this.onTapProfile,
+    required this.onTapMessage,
+    required this.onTapCv,
+    this.onApprove,
+    this.onReject,
   });
 
   @override
@@ -1996,270 +2404,99 @@ class _ApplicantDetailsSheet extends StatelessWidget {
     final studentName = application.studentName.trim().isEmpty
         ? 'Student'
         : application.studentName.trim();
-    final statusLabel = ApplicationStatus.label(application.status, l10n);
-    final opportunityStatus = opportunity.effectiveStatus();
-    final hasCv = application.cvId.trim().isNotEmpty;
     final opportunityTitle = opportunity.title.trim().isEmpty
         ? l10n.uiUntitledOpportunity
         : opportunity.title.trim();
-    final opportunityLocation = opportunity.location.trim().isEmpty
-        ? l10n.uiLocationNotSpecified
-        : opportunity.location.trim();
+    final isPending = onApprove != null || onReject != null;
 
     return DraggableScrollableSheet(
       initialChildSize: 0.68,
-      minChildSize: 0.42,
+      minChildSize: 0.44,
       maxChildSize: 0.9,
       expand: false,
       builder: (context, scrollController) {
         return Container(
-          clipBehavior: Clip.antiAlias,
           decoration: BoxDecoration(
             color: _OpportunityPalette.surface,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(26)),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.16),
-                blurRadius: 30,
-                offset: const Offset(0, -8),
+                color: Colors.black.withValues(alpha: 0.12),
+                blurRadius: 28,
+                offset: const Offset(0, -6),
               ),
             ],
           ),
           child: ListView(
             controller: scrollController,
-            padding: const EdgeInsets.fromLTRB(18, 10, 18, 24),
+            padding: const EdgeInsets.fromLTRB(18, 10, 18, 28),
             children: [
-              Center(
-                child: Container(
-                  width: 38,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: _OpportunityPalette.border,
-                    borderRadius: BorderRadius.circular(999),
-                  ),
-                ),
+              _AppSheetHeaderBar(
+                title: l10n.uiApplicationDetails,
+                subtitle: isPending
+                    ? l10n.uiReviewTheCandidateBeforeMakingADecision
+                    : l10n.uiKeepTheCandidateContextCloseAtHand,
+                onClose: onClose,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 14),
+              _AppDetailHeroCard(
+                studentName: studentName,
+                opportunityTitle: opportunityTitle,
+                appliedLabel: appliedDateLabel,
+                relativeAppliedLabel: relativeAppliedLabel,
+                typeLabel: typeLabel,
+                tone: tone,
+                status: application.status,
+                studentId: application.studentId,
+                onTapProfile: onTapProfile,
+                l10n: l10n,
+              ),
+              const SizedBox(height: 14),
               Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ProfileAvatar(
-                    radius: 28,
-                    userId: application.studentId,
-                    fallbackName: studentName,
-                    role: 'student',
-                  ),
-                  const SizedBox(width: 12),
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          studentName,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.poppins(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w800,
-                            color: _OpportunityPalette.textPrimary,
-                            height: 1.15,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          opportunityTitle,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.poppins(
-                            fontSize: 12.5,
-                            height: 1.35,
-                            color: _OpportunityPalette.textSecondary,
-                          ),
-                        ),
-                      ],
+                    child: _AppWideActionButton(
+                      label: l10n.uiProfile,
+                      icon: Icons.person_outline_rounded,
+                      background: _OpportunityPalette.primarySoft,
+                      foreground: _OpportunityPalette.primary,
+                      onTap: onTapProfile,
                     ),
                   ),
-                  const SizedBox(width: 10),
-                  _HeaderIconButton(icon: Icons.close_rounded, onTap: onClose),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: _OpportunityPalette.surfaceMuted,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: _OpportunityPalette.border),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: _DetailStat(
-                        label: l10n.uiStatus,
-                        value: statusLabel,
-                        icon: Icons.flag_outlined,
-                      ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _AppWideActionButton(
+                      label: l10n.uiMessage,
+                      icon: Icons.chat_bubble_outline_rounded,
+                      background: AppColors.current.secondarySoft,
+                      foreground: CompanyDashboardPalette.secondaryDark,
+                      onTap: onTapMessage,
                     ),
-                    const _DetailDivider(),
-                    Expanded(
-                      child: _DetailStat(
-                        label: l10n.uiApplied,
-                        value: appliedDateLabel,
-                        icon: Icons.event_available_rounded,
-                      ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _AppWideActionButton(
+                      label: l10n.uiViewCv,
+                      icon: Icons.description_outlined,
+                      background: AppColors.current.accentSoft,
+                      foreground: _OpportunityPalette.accent,
+                      onTap: onTapCv,
                     ),
-                    const _DetailDivider(),
-                    Expanded(
-                      child: _DetailStat(
-                        label: 'CV',
-                        value: hasCv ? 'Available' : l10n.uiNotProvided,
-                        icon: Icons.description_outlined,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
-              _SectionTitle(l10n.uiApplicationDetails),
-              const SizedBox(height: 10),
-              _ApplicantDetailCard(
-                rows: [
-                  _ApplicantDetailRowData(
-                    icon: Icons.person_outline_rounded,
-                    label: l10n.uiApplicant,
-                    value: studentName,
-                  ),
-                  _ApplicantDetailRowData(
-                    icon: Icons.flag_outlined,
-                    label: l10n.uiStatus,
-                    value: statusLabel,
-                  ),
-                  _ApplicantDetailRowData(
-                    icon: Icons.event_available_outlined,
-                    label: l10n.uiApplied,
-                    value: appliedDateLabel,
-                  ),
-                  _ApplicantDetailRowData(
-                    icon: Icons.description_outlined,
-                    label: 'CV',
-                    value: hasCv ? 'Available' : l10n.uiNotProvided,
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
-              _SectionTitle(l10n.uiOpportunityDetails),
-              const SizedBox(height: 10),
-              _ApplicantDetailCard(
-                rows: [
-                  _ApplicantDetailRowData(
-                    icon: OpportunityType.icon(opportunity.type),
-                    label: l10n.uiType,
-                    value: OpportunityType.label(opportunity.type, l10n),
-                  ),
-                  _ApplicantDetailRowData(
-                    icon: Icons.work_outline_rounded,
-                    label: l10n.uiOpportunity,
-                    value: opportunityTitle,
-                  ),
-                  _ApplicantDetailRowData(
-                    icon: Icons.location_on_outlined,
-                    label: l10n.uiLocation,
-                    value: opportunityLocation,
-                  ),
-                  _ApplicantDetailRowData(
-                    icon: opportunityStatus == 'open'
-                        ? Icons.check_circle_outline_rounded
-                        : Icons.lock_outline_rounded,
-                    label: l10n.uiStatus,
-                    value: opportunityStatus == 'open'
-                        ? l10n.uiOpen
-                        : l10n.uiClosed,
-                  ),
-                ],
+              const SizedBox(height: 14),
+              _AppDecisionPanel(
+                status: application.status,
+                isBusy: isBusy,
+                onApprove: onApprove,
+                onReject: onReject,
+                l10n: l10n,
               ),
             ],
           ),
         );
       },
-    );
-  }
-}
-
-class _ApplicantDetailRowData {
-  final IconData icon;
-  final String label;
-  final String value;
-
-  const _ApplicantDetailRowData({
-    required this.icon,
-    required this.label,
-    required this.value,
-  });
-}
-
-class _ApplicantDetailCard extends StatelessWidget {
-  final List<_ApplicantDetailRowData> rows;
-
-  const _ApplicantDetailCard({required this.rows});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: _OpportunityPalette.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: _OpportunityPalette.border),
-      ),
-      child: Column(
-        children: [
-          for (var index = 0; index < rows.length; index++) ...[
-            _ApplicantDetailRow(row: rows[index]),
-            if (index != rows.length - 1)
-              Divider(height: 18, color: _OpportunityPalette.border),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-class _ApplicantDetailRow extends StatelessWidget {
-  final _ApplicantDetailRowData row;
-
-  const _ApplicantDetailRow({required this.row});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(row.icon, size: 17, color: _OpportunityPalette.textSecondary),
-        const SizedBox(width: 10),
-        Expanded(
-          child: Text(
-            row.label,
-            style: GoogleFonts.poppins(
-              fontSize: 12,
-              color: _OpportunityPalette.textMuted,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          flex: 2,
-          child: Text(
-            row.value,
-            textAlign: TextAlign.right,
-            style: GoogleFonts.poppins(
-              fontSize: 12.5,
-              color: _OpportunityPalette.textPrimary,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ),
-      ],
     );
   }
 }
@@ -3213,6 +3450,434 @@ class _EmptyState extends StatelessWidget {
                 ),
               ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _AppSheetHeaderBar extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final VoidCallback onClose;
+
+  const _AppSheetHeaderBar({
+    required this.title,
+    required this.subtitle,
+    required this.onClose,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          height: 34,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Container(
+                width: 42,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: _OpportunityPalette.border,
+                  borderRadius: BorderRadius.circular(999),
+                ),
+              ),
+              Align(
+                alignment: Alignment.centerRight,
+                child: Material(
+                  color: _OpportunityPalette.surfaceMuted,
+                  borderRadius: BorderRadius.circular(12),
+                  child: InkWell(
+                    onTap: onClose,
+                    borderRadius: BorderRadius.circular(12),
+                    child: SizedBox(
+                      width: 34,
+                      height: 34,
+                      child: Icon(
+                        Icons.close_rounded,
+                        size: 18,
+                        color: _OpportunityPalette.textSecondary,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          title,
+          style: GoogleFonts.poppins(
+            fontSize: 20,
+            fontWeight: FontWeight.w800,
+            color: _OpportunityPalette.textPrimary,
+            height: 1.12,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          subtitle,
+          style: GoogleFonts.poppins(
+            fontSize: 12.5,
+            height: 1.45,
+            color: _OpportunityPalette.textSecondary,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _AppDetailHeroCard extends StatelessWidget {
+  final String studentName;
+  final String opportunityTitle;
+  final String? appliedLabel;
+  final String? relativeAppliedLabel;
+  final String typeLabel;
+  final _OpportunityTone tone;
+  final String status;
+  final String studentId;
+  final VoidCallback? onTapProfile;
+  final AppLocalizations l10n;
+
+  const _AppDetailHeroCard({
+    required this.studentName,
+    required this.opportunityTitle,
+    required this.appliedLabel,
+    required this.relativeAppliedLabel,
+    required this.typeLabel,
+    required this.tone,
+    required this.status,
+    required this.studentId,
+    required this.l10n,
+    this.onTapProfile,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final appliedText = relativeAppliedLabel ?? appliedLabel;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTapProfile,
+        borderRadius: BorderRadius.circular(20),
+        child: Ink(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: _OpportunityPalette.surface,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: _OpportunityPalette.border),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      ProfileAvatar(
+                        radius: 30,
+                        userId: studentId,
+                        fallbackName: studentName,
+                        role: 'student',
+                      ),
+                      Positioned(
+                        right: -2,
+                        bottom: -2,
+                        child: Container(
+                          width: 18,
+                          height: 18,
+                          decoration: BoxDecoration(
+                            color: tone.foreground,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: _OpportunityPalette.surface,
+                              width: 2,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          studentName,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.poppins(
+                            fontSize: 19,
+                            fontWeight: FontWeight.w800,
+                            color: _OpportunityPalette.textPrimary,
+                            height: 1.15,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          opportunityTitle,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.poppins(
+                            fontSize: 12.5,
+                            height: 1.35,
+                            color: _OpportunityPalette.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  ApplicationStatusBadge(status: status, fontSize: 10.5),
+                ],
+              ),
+              const SizedBox(height: 14),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  _SoftPill(
+                    label: typeLabel.toUpperCase(),
+                    background: tone.background,
+                    foreground: tone.foreground,
+                  ),
+                  if (appliedText != null)
+                    _MetaChip(
+                      label: l10n.uiAppliedAppliedtext(appliedText),
+                    ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _AppWideActionButton extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final Color background;
+  final Color foreground;
+  final VoidCallback onTap;
+
+  const _AppWideActionButton({
+    required this.label,
+    required this.icon,
+    required this.background,
+    required this.foreground,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: background,
+      borderRadius: BorderRadius.circular(14),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(14),
+        child: Container(
+          height: 54,
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: foreground.withValues(alpha: 0.16)),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 18, color: foreground),
+              const SizedBox(height: 5),
+              Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: GoogleFonts.poppins(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w800,
+                  color: foreground,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _AppDecisionPanel extends StatelessWidget {
+  final String status;
+  final bool isBusy;
+  final VoidCallback? onApprove;
+  final VoidCallback? onReject;
+  final AppLocalizations l10n;
+
+  const _AppDecisionPanel({
+    required this.status,
+    required this.isBusy,
+    required this.l10n,
+    this.onApprove,
+    this.onReject,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final normalizedStatus = ApplicationStatus.parse(status);
+    final tone = switch (normalizedStatus) {
+      ApplicationStatus.accepted => _OpportunityPalette.success,
+      ApplicationStatus.rejected => _OpportunityPalette.error,
+      ApplicationStatus.withdrawn => _OpportunityPalette.textMuted,
+      _ => _OpportunityPalette.accent,
+    };
+    final icon = switch (normalizedStatus) {
+      ApplicationStatus.accepted => Icons.verified_outlined,
+      ApplicationStatus.rejected => Icons.block_outlined,
+      ApplicationStatus.withdrawn => Icons.undo_outlined,
+      _ => Icons.rate_review_outlined,
+    };
+    final title = switch (normalizedStatus) {
+      ApplicationStatus.accepted => l10n.uiCandidateApproved,
+      ApplicationStatus.rejected => l10n.uiCandidateRejected,
+      ApplicationStatus.withdrawn => l10n.uiApplicationWithdrawn,
+      _ => l10n.uiReadyForDecision,
+    };
+    final message = switch (normalizedStatus) {
+      ApplicationStatus.accepted =>
+        l10n.uiThisApplicationIsApprovedUseMessageOrCvReviewForNextSteps,
+      ApplicationStatus.rejected =>
+        l10n.uiThisApplicationIsRejectedTheProfileAndCvRemainAvailableForReference,
+      ApplicationStatus.withdrawn =>
+        l10n.uiThisApplicationHasBeenWithdrawnByTheCandidate,
+      _ => l10n.uiApproveTheCandidateToMoveThemForwardOrRejectIfTheFitIsNotRight,
+    };
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: tone.withValues(alpha: 0.07),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: tone.withValues(alpha: 0.16)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: tone.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, size: 20, color: tone),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                        color: _OpportunityPalette.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      message,
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        height: 1.45,
+                        color: _OpportunityPalette.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          if (normalizedStatus == ApplicationStatus.pending) ...[
+            const SizedBox(height: 14),
+            Row(
+              children: [
+                Expanded(
+                  child: _AppDecisionButton(
+                    label: isBusy ? l10n.uiWorking : l10n.uiApprove,
+                    icon: Icons.check_rounded,
+                    background: _OpportunityPalette.success,
+                    onTap: isBusy ? null : onApprove,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _AppDecisionButton(
+                    label: isBusy ? l10n.uiWorking : l10n.uiReject,
+                    icon: Icons.close_rounded,
+                    background: _OpportunityPalette.error,
+                    onTap: isBusy ? null : onReject,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _AppDecisionButton extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final Color background;
+  final VoidCallback? onTap;
+
+  const _AppDecisionButton({
+    required this.label,
+    required this.icon,
+    required this.background,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 46,
+      child: ElevatedButton.icon(
+        onPressed: onTap,
+        icon: Icon(icon, size: 17),
+        label: Text(
+          label,
+          overflow: TextOverflow.ellipsis,
+          style: GoogleFonts.poppins(
+            fontSize: 12,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: background,
+          foregroundColor: Colors.white,
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
       ),
     );
