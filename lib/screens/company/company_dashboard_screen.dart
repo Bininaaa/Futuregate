@@ -96,6 +96,23 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
     await _loadDashboard();
   }
 
+  Future<void> _openApplicationDetails(
+    BuildContext context,
+    ApplicationModel application, {
+    OpportunityModel? opportunity,
+  }) async {
+    await ApplicationsScreen.showApplicationDetailsSheet(
+      context,
+      application: application,
+      opportunity: opportunity,
+      provider: context.read<CompanyProvider>(),
+    );
+    if (!mounted) {
+      return;
+    }
+    await _loadDashboard();
+  }
+
   int _intStat(Map<String, dynamic> stats, String key, int fallback) {
     final value = stats[key];
     if (value is int) return value;
@@ -1283,8 +1300,11 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
         borderRadius: BorderRadius.circular(26),
         child: InkWell(
           borderRadius: BorderRadius.circular(26),
-          onTap: () =>
-              _openApplications(context, applicationId: application.id),
+          onTap: () => _openApplicationDetails(
+            context,
+            application,
+            opportunity: opportunity,
+          ),
           child: Ink(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(26),

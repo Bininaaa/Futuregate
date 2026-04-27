@@ -46,8 +46,86 @@ class ApplicationsScreen extends StatefulWidget {
     this.embedded = false,
   });
 
+  static Future<void> showApplicationDetailsSheet(
+    BuildContext context, {
+    required ApplicationModel application,
+    OpportunityModel? opportunity,
+    required CompanyProvider provider,
+  }) {
+    return Navigator.of(context).push(
+      PageRouteBuilder<void>(
+        opaque: false,
+        barrierColor: Colors.transparent,
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            _ApplicationDetailsSheetHost(
+              application: application,
+              opportunity: opportunity,
+              provider: provider,
+            ),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+            child,
+      ),
+    );
+  }
+
   @override
   State<ApplicationsScreen> createState() => _ApplicationsScreenState();
+}
+
+class _ApplicationDetailsSheetHost extends StatefulWidget {
+  final ApplicationModel application;
+  final OpportunityModel? opportunity;
+  final CompanyProvider provider;
+
+  const _ApplicationDetailsSheetHost({
+    required this.application,
+    required this.opportunity,
+    required this.provider,
+  });
+
+  @override
+  State<_ApplicationDetailsSheetHost> createState() =>
+      _ApplicationDetailsSheetHostState();
+}
+
+class _ApplicationDetailsSheetHostState
+    extends State<_ApplicationDetailsSheetHost> {
+  final GlobalKey<_ApplicationsScreenState> _screenKey =
+      GlobalKey<_ApplicationsScreenState>();
+  bool _opened = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _openSheet());
+  }
+
+  Future<void> _openSheet() async {
+    if (!mounted || _opened) {
+      return;
+    }
+
+    _opened = true;
+    final state = _screenKey.currentState;
+    if (state != null) {
+      await state._showApplicationDetailsSheet(
+        _ApplicationListItem(
+          application: widget.application,
+          opportunity: widget.opportunity,
+        ),
+        widget.provider,
+      );
+    }
+
+    if (mounted) {
+      Navigator.of(context).maybePop();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Offstage(child: ApplicationsScreen(key: _screenKey, embedded: true));
+  }
 }
 
 enum _ApplicationStatusFilter { all, pending, approved, rejected }
