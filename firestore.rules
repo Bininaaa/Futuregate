@@ -1522,7 +1522,10 @@ service cloud.firestore {
         );
 
       allow delete: if isAdmin() ||
-          (isStudent() && resource.data.submittedBy == request.auth.uid);
+          (
+            signedIn() &&
+            resource.data.submittedBy == request.auth.uid
+          );
     }
 
     match /projectIdeaInteractions/{interactionId} {

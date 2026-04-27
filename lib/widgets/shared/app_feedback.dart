@@ -177,6 +177,7 @@ class AppAlert extends StatelessWidget {
         );
     final effectiveIcon = icon ?? variant.icon;
     final hasTitle = (title ?? '').trim().isNotEmpty;
+    final centerSimpleMessage = !hasTitle && action == null && trailing == null;
 
     return Container(
       width: double.infinity,
@@ -198,7 +199,9 @@ class AppAlert extends StatelessWidget {
         ],
       ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: centerSimpleMessage
+            ? CrossAxisAlignment.center
+            : CrossAxisAlignment.start,
         children: <Widget>[
           if (showIcon) ...<Widget>[
             Container(

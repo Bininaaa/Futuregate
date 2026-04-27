@@ -331,8 +331,12 @@ class ProjectIdeaProvider extends ChangeNotifier {
   Future<String?> deleteProjectIdea(String id) async {
     try {
       await _service.deleteProjectIdea(id);
-      _approvedIdeas.removeWhere((idea) => idea.id == id);
-      _myIdeas.removeWhere((idea) => idea.id == id);
+      _approvedIdeas = _approvedIdeas
+          .where((idea) => idea.id != id)
+          .toList(growable: false);
+      _myIdeas = _myIdeas
+          .where((idea) => idea.id != id)
+          .toList(growable: false);
       notifyListeners();
       return null;
     } catch (e) {

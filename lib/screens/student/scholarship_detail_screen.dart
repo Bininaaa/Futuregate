@@ -562,16 +562,26 @@ class ScholarshipDetailScreen extends StatelessWidget {
                     padding: const EdgeInsets.fromLTRB(16, 10, 16, 6),
                     child: Row(
                       children: [
-                        _TopBarIconButton(
-                          icon: Icons.arrow_back_ios_new_rounded,
-                          onTap: () => Navigator.of(context).maybePop(),
+                        IconButton(
+                          onPressed: () => Navigator.of(context).maybePop(),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(
+                            minWidth: 40,
+                            minHeight: 40,
+                          ),
+                          icon: Icon(
+                            Icons.arrow_back_ios_new_rounded,
+                            color: _P.textPrimary,
+                            size: 24,
+                          ),
                         ),
+                        const SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            'Scholarship Hub',
-                            textAlign: TextAlign.center,
+                            'Scholarship',
+                            textAlign: TextAlign.left,
                             style: AppTypography.product(
-                              fontSize: 22,
+                              fontSize: 19,
                               fontWeight: FontWeight.w800,
                               color: _P.primary,
                             ),
