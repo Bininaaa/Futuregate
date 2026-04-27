@@ -118,6 +118,9 @@ function normalizeApplicationStatus(value) {
   if (normalized === "rejected") {
     return "rejected";
   }
+  if (normalized === "withdrawn") {
+    return "withdrawn";
+  }
   return "pending";
 }
 
@@ -1979,7 +1982,12 @@ async function handleCompanyDeleteOpportunity(request, env, opportunityId) {
     { field: "companyId", op: "EQUAL", value: auth.user.uid },
   ]);
 
-  if (applications.length > 0) {
+  const pendingApplications = applications.filter(
+    (application) =>
+      normalizeApplicationStatus(application?.data?.status) === "pending",
+  );
+
+  if (pendingApplications.length > 0) {
     await firestoreUpdate(env, "opportunities", opportunityId, {
       status: "closed",
     });
@@ -1989,6 +1997,7 @@ async function handleCompanyDeleteOpportunity(request, env, opportunityId) {
       deleted: false,
       closedInsteadOfDeleted: true,
       applicationsCount: applications.length,
+      pendingApplicationsCount: pendingApplications.length,
     });
   }
 
@@ -1998,6 +2007,7 @@ async function handleCompanyDeleteOpportunity(request, env, opportunityId) {
 
   const writes = [
     ...savedRefs.map((item) => ({ delete: item.ref })),
+    ...applications.map((item) => ({ delete: item.ref })),
     { delete: `opportunities/${opportunityId}` },
   ];
 
@@ -2008,6 +2018,7 @@ async function handleCompanyDeleteOpportunity(request, env, opportunityId) {
     deleted: true,
     closedInsteadOfDeleted: false,
     savedReferencesDeleted: savedRefs.length,
+    applicationsDeleted: applications.length,
   });
 }
 

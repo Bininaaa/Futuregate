@@ -827,7 +827,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
             ),
           ),
           content: Text(
-            'Delete "${opportunity.title}"? If it already has applications, it will be closed instead so history is preserved.',
+            'Delete "${opportunity.title}"? If it has pending applications, it will be closed instead so students can still be reviewed.',
             style: GoogleFonts.poppins(
               fontSize: 13,
               color: _OpportunityPalette.textSecondary,
@@ -886,7 +886,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
 
     context.showAppSnackBar(
       wasClosed == true
-          ? _l10n.uiOpportunityClosedBecauseApplicationsAlreadyExist
+          ? 'Opportunity closed because pending applications still need review.'
           : _l10n.uiOpportunityDeleted,
       title: wasClosed == true
           ? _l10n.uiOpportunityClosed
