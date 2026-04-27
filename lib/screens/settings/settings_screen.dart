@@ -518,6 +518,41 @@ class SettingsScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 18),
+          SettingsSectionHeading(
+            title: l10n.supportTitle,
+            subtitle: l10n.supportSubtitle,
+          ),
+          const SizedBox(height: 10),
+          SettingsPanel(
+            child: Column(
+              children: [
+                SettingsListRow(
+                  icon: Icons.help_outline_rounded,
+                  iconColor: SettingsFlowPalette.secondary,
+                  title: l10n.helpCenterTitle,
+                  subtitle: l10n.helpCenterSubtitle,
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const HelpCenterScreen()),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                SettingsListRow(
+                  icon: Icons.info_outline_rounded,
+                  iconColor: SettingsFlowPalette.primaryDark,
+                  title: l10n.aboutFutureGateTitle,
+                  subtitle: l10n.aboutFutureGateSubtitle,
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const AboutFutureGateScreen(),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 18),
           SettingsPanel(
             padding: const EdgeInsets.all(10),
             color: SettingsFlowPalette.dangerTint,

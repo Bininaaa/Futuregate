@@ -514,7 +514,7 @@ class CompanyWorkspaceActionButton extends StatelessWidget {
     return Tooltip(
       message: tooltip,
       child: Material(
-        color: CompanyDashboardPalette.surfaceMuted,
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(18),
         child: InkWell(
           onTap: onTap,
