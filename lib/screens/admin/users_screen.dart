@@ -1387,7 +1387,7 @@ class _UsersScreenState extends State<UsersScreen> {
     }
 
     final companyPostingFuture = user.role == 'company'
-        ? _loadAdminCompanyOpportunities(user.uid)
+        ? loadAdminCompanyOpportunities(user.uid)
         : null;
 
     showModalBottomSheet(
@@ -1617,7 +1617,7 @@ class _UsersScreenState extends State<UsersScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
-      builder: (_) => _AdminCompanyOpportunitiesSheet(
+      builder: (_) => AdminCompanyOpportunitiesSheet(
         companyId: user.uid,
         companyName: _companyDisplayName(user),
       ),
@@ -2372,15 +2372,16 @@ class _AdminDetailSectionTitle extends StatelessWidget {
   }
 }
 
-Future<List<OpportunityModel>> _loadAdminCompanyOpportunities(
+Future<List<OpportunityModel>> loadAdminCompanyOpportunities(
   String companyId,
 ) async {
   final service = CompanyService();
   return service.getCompanyOpportunities(companyId);
 }
 
-class _AdminCompanyOpportunitiesSheet extends StatefulWidget {
-  const _AdminCompanyOpportunitiesSheet({
+class AdminCompanyOpportunitiesSheet extends StatefulWidget {
+  const AdminCompanyOpportunitiesSheet({
+    super.key,
     required this.companyId,
     required this.companyName,
   });
@@ -2389,12 +2390,12 @@ class _AdminCompanyOpportunitiesSheet extends StatefulWidget {
   final String companyName;
 
   @override
-  State<_AdminCompanyOpportunitiesSheet> createState() =>
+  State<AdminCompanyOpportunitiesSheet> createState() =>
       _AdminCompanyOpportunitiesSheetState();
 }
 
 class _AdminCompanyOpportunitiesSheetState
-    extends State<_AdminCompanyOpportunitiesSheet> {
+    extends State<AdminCompanyOpportunitiesSheet> {
   late Future<List<OpportunityModel>> _overviewFuture;
 
   @override
@@ -2404,7 +2405,7 @@ class _AdminCompanyOpportunitiesSheetState
   }
 
   Future<List<OpportunityModel>> _loadOverview() {
-    return _loadAdminCompanyOpportunities(widget.companyId);
+    return loadAdminCompanyOpportunities(widget.companyId);
   }
 
   void _retry() {

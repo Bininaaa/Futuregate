@@ -10,8 +10,10 @@ import '../../models/user_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/admin_provider.dart';
 import '../../providers/notification_provider.dart';
+import '../../services/document_access_service.dart';
 import '../../theme/app_typography.dart';
 import '../../utils/admin_palette.dart';
+import '../../utils/document_launch_helper.dart';
 import '../../utils/display_text.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/admin/admin_activity_preview_sheet.dart';
@@ -19,6 +21,7 @@ import '../../widgets/admin/admin_ui.dart';
 import '../../widgets/admin_charts.dart';
 import '../../widgets/opportunity_type_badge.dart';
 import '../../widgets/profile_avatar.dart';
+import '../../widgets/shared/app_feedback.dart';
 import '../../widgets/shared/app_loading.dart';
 import '../../widgets/stat_card.dart';
 import '../notifications_screen.dart';
@@ -50,6 +53,8 @@ class AdminDashboardScreen extends StatefulWidget {
 }
 
 class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
+  final DocumentAccessService _documentAccessService = DocumentAccessService();
+
   @override
   void initState() {
     super.initState();
@@ -531,6 +536,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       return;
     }
 
+    if (user.role == 'company') {
+      _showRecentCompanyDetails(user);
+      return;
+    }
+
     final l10n = AppLocalizations.of(context)!;
     showModalBottomSheet<void>(
       context: context,
@@ -612,6 +622,979 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         ),
       ),
     );
+  }
+
+  void _showRecentCompanyDetails(UserModel user) {
+    final companyPostingFuture = loadAdminCompanyOpportunities(user.uid);
+
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      builder: (sheetContext) => DraggableScrollableSheet(
+        initialChildSize: 0.76,
+        minChildSize: 0.45,
+        maxChildSize: 0.94,
+        expand: false,
+        builder: (context, scrollController) {
+          final l10n = AppLocalizations.of(context)!;
+          final provider = context.watch<AdminProvider>();
+          final liveUser = _currentDashboardUser(provider, user.uid) ?? user;
+
+          return ClipRRect(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+            child: Material(
+              color: AdminPalette.background,
+              child: ListView(
+                controller: scrollController,
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+                children: [
+                  const _SheetHandle(),
+                  const SizedBox(height: 16),
+                  _buildCompanyProfileHeader(liveUser),
+                  const SizedBox(height: 18),
+                  AdminSectionHeader(
+                    eyebrow: l10n.uiProfile,
+                    title: l10n.uiUserDetails,
+                    subtitle: l10n
+                        .uiReviewContactInfoAccountStatusAndRoleSpecificDetailsInOneCleanProfileView,
+                  ),
+                  const SizedBox(height: 12),
+                  _buildDashboardDetailRow(
+                    Icons.email_outlined,
+                    l10n.uiEmail,
+                    liveUser.email,
+                    singleLineValue: true,
+                  ),
+                  _buildDashboardOptionalDetailRow(
+                    Icons.phone_outlined,
+                    l10n.uiPhone,
+                    liveUser.phone,
+                    l10n.uiNotProvided,
+                  ),
+                  _buildDashboardOptionalDetailRow(
+                    Icons.location_on_outlined,
+                    l10n.uiLocation,
+                    liveUser.location,
+                    l10n.uiNotProvided,
+                  ),
+                  _buildDashboardOptionalDetailRow(
+                    Icons.business_outlined,
+                    l10n.uiCompanyName,
+                    liveUser.companyName,
+                    l10n.uiNotProvided,
+                  ),
+                  _buildDashboardDetailRow(
+                    Icons.verified_user_outlined,
+                    l10n.uiApprovalStatus,
+                    _approvalDisplayLabel(liveUser.normalizedApprovalStatus),
+                  ),
+                  _buildCompanyModerationPanel(liveUser, provider),
+                  _buildDashboardOptionalDetailRow(
+                    Icons.category_outlined,
+                    l10n.uiSector,
+                    liveUser.sector,
+                    l10n.uiNotProvided,
+                  ),
+                  _buildDashboardOptionalDetailRow(
+                    Icons.language_outlined,
+                    l10n.uiWebsite,
+                    liveUser.website,
+                    l10n.uiNotProvided,
+                  ),
+                  if ((liveUser.description ?? '').trim().isNotEmpty)
+                    _buildDashboardDetailRow(
+                      Icons.description_outlined,
+                      l10n.uiDescription,
+                      liveUser.description!.trim(),
+                    ),
+                  _buildCompanyOpportunitiesSection(
+                    liveUser,
+                    future: companyPostingFuture,
+                  ),
+                  const SizedBox(height: 6),
+                  _buildCompanyCommercialRegisterSummary(liveUser),
+                  if (liveUser.bio?.isNotEmpty == true)
+                    _buildDashboardDetailRow(
+                      Icons.person_outline_rounded,
+                      l10n.uiBio,
+                      liveUser.bio!,
+                    ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildCompanyProfileHeader(UserModel user) {
+    final l10n = AppLocalizations.of(context)!;
+    final roleLabel = _roleDisplayLabel(user.role);
+    final approvalLabel = _approvalDisplayLabel(user.normalizedApprovalStatus);
+    final chips = <Widget>[
+      AdminPill(
+        label: roleLabel,
+        color: Colors.white,
+        icon: _roleIcon(user.role),
+      ),
+      AdminPill(
+        label: approvalLabel,
+        color: Colors.white,
+        icon: _approvalDisplayIcon(user.normalizedApprovalStatus),
+      ),
+      AdminPill(
+        label: user.isActive ? l10n.uiActive : l10n.uiBlocked,
+        color: Colors.white,
+        icon: user.isActive
+            ? Icons.check_circle_outline_rounded
+            : Icons.block_outlined,
+      ),
+    ];
+
+    return AdminSurface(
+      radius: 24,
+      padding: const EdgeInsets.fromLTRB(18, 20, 18, 18),
+      gradient: AdminPalette.heroGradient(_roleColor(user.role)),
+      border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
+      child: Column(
+        children: [
+          Text(
+            l10n.uiProfileOverview,
+            style: AppTypography.product(
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 0.8,
+              color: Colors.white70,
+            ),
+          ),
+          const SizedBox(height: 12),
+          _buildOverlayAvatar(user: user, radius: 42),
+          const SizedBox(height: 14),
+          Text(
+            user.fullName,
+            textAlign: TextAlign.center,
+            style: AppTypography.product(
+              fontSize: 22,
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            l10n.uiReviewIdentityStatusAndSubmittedInformationInOnePlace,
+            textAlign: TextAlign.center,
+            style: AppTypography.product(
+              fontSize: 12.8,
+              color: Colors.white70,
+              height: 1.45,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            alignment: WrapAlignment.center,
+            spacing: 8,
+            runSpacing: 8,
+            children: chips,
+          ),
+          const SizedBox(height: 12),
+          _buildDashboardSingleLineText(
+            user.email,
+            textAlign: TextAlign.center,
+            style: AppTypography.product(fontSize: 13, color: Colors.white70),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOverlayAvatar({
+    required UserModel user,
+    required double radius,
+    bool compact = false,
+  }) {
+    final shellPadding = compact ? 3.5 : 5.0;
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: AdminPalette.isDark
+            ? AdminPalette.surfaceElevated.withValues(alpha: 0.96)
+            : Colors.white.withValues(alpha: 0.96),
+        border: Border.all(
+          color: AdminPalette.isDark
+              ? AdminPalette.border.withValues(alpha: 0.82)
+              : Colors.white.withValues(alpha: 0.18),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF0F172A).withValues(alpha: 0.12),
+            blurRadius: 22,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(shellPadding),
+        child: ProfileAvatar(user: user, radius: radius),
+      ),
+    );
+  }
+
+  UserModel? _currentDashboardUser(AdminProvider provider, String uid) {
+    for (final candidate in provider.rawUsers) {
+      if (candidate.uid == uid) {
+        return candidate;
+      }
+    }
+    return null;
+  }
+
+  Widget _buildCompanyOpportunitiesSection(
+    UserModel user, {
+    required Future<List<OpportunityModel>> future,
+  }) {
+    return FutureBuilder<List<OpportunityModel>>(
+      future: future,
+      builder: (context, snapshot) {
+        final opportunities = snapshot.data ?? const <OpportunityModel>[];
+        final l10n = AppLocalizations.of(context)!;
+        final summaryLabel = switch (snapshot.connectionState) {
+          ConnectionState.waiting => l10n.uiLoadingOpportunities,
+          _ when snapshot.hasError => l10n.uiOpportunitiesUnavailable,
+          _ when opportunities.isEmpty => l10n.uiNoOpportunitiesPostedYet,
+          _ when opportunities.length == 1 =>
+            '1 ${l10n.uiOpportunities.toLowerCase()}',
+          _ => '${opportunities.length} ${l10n.uiOpportunities.toLowerCase()}',
+        };
+
+        return AdminSurface(
+          margin: const EdgeInsets.only(bottom: 10),
+          padding: const EdgeInsets.all(16),
+          radius: 20,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              AdminSectionHeader(title: l10n.uiPostedOpportunities),
+              const SizedBox(height: 14),
+              Text(
+                summaryLabel,
+                style: AppTypography.product(
+                  fontSize: 12.5,
+                  height: 1.5,
+                  color: AdminPalette.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                child: _buildDocumentButton(
+                  label: l10n.uiViewOpportunities,
+                  icon: Icons.work_outline_rounded,
+                  onPressed: () => _showCompanyPostedOpportunitiesSheet(user),
+                  color: AdminPalette.secondary,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _showCompanyPostedOpportunitiesSheet(UserModel user) {
+    return showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      builder: (_) => AdminCompanyOpportunitiesSheet(
+        companyId: user.uid,
+        companyName: _companyDisplayName(user),
+      ),
+    );
+  }
+
+  Widget _buildCompanyCommercialRegisterSummary(UserModel user) {
+    final l10n = AppLocalizations.of(context)!;
+    final uploadedAt = user.commercialRegisterUploadedAt;
+    final uploadedAtLabel = uploadedAt == null
+        ? l10n.uiNotProvided
+        : DateFormat('MMM d, yyyy').format(uploadedAt.toDate());
+    final typeLabel = user.commercialRegisterIsPdf
+        ? 'PDF'
+        : user.commercialRegisterIsImage
+        ? 'Image'
+        : 'Document';
+
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(bottom: 14),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AdminPalette.accent.withValues(alpha: 0.06),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AdminPalette.accent.withValues(alpha: 0.16)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: AdminPalette.accent.withValues(alpha: 0.12),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  user.commercialRegisterIsPdf
+                      ? Icons.picture_as_pdf_outlined
+                      : Icons.description_outlined,
+                  color: AdminPalette.accent,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.uiCommercialRegister,
+                      style: AppTypography.product(
+                        fontSize: 14.5,
+                        fontWeight: FontWeight.w800,
+                        color: AdminPalette.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      user.hasCommercialRegister
+                          ? '$typeLabel - ${l10n.uiUploadedUploadedatlabel(uploadedAtLabel)}'
+                          : l10n.uiCommercialRegisterMissing,
+                      style: AppTypography.product(
+                        fontSize: 12,
+                        color: user.hasCommercialRegister
+                            ? AdminPalette.textSecondary
+                            : AdminPalette.danger,
+                        fontWeight: user.hasCommercialRegister
+                            ? FontWeight.w500
+                            : FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          if (user.hasCommercialRegister) ...[
+            const SizedBox(height: 12),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AdminPalette.surface,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: AdminPalette.border.withValues(alpha: 0.7),
+                ),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.verified_outlined,
+                    color: AdminPalette.success,
+                    size: 18,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      user.commercialRegisterFileName.isNotEmpty
+                          ? user.commercialRegisterFileName
+                          : l10n.uiCommercialRegisterUploaded,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTypography.product(
+                        fontSize: 12.5,
+                        color: AdminPalette.textPrimary,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final buttons = [
+                  FilledButton.icon(
+                    onPressed: () => _openCommercialRegister(user.uid),
+                    icon: const Icon(Icons.visibility_outlined, size: 18),
+                    label: Text('${l10n.uiView} ${l10n.uiCommercialRegister}'),
+                    style: FilledButton.styleFrom(
+                      backgroundColor: AdminPalette.accent,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 14,
+                        horizontal: 14,
+                      ),
+                    ),
+                  ),
+                  OutlinedButton.icon(
+                    onPressed: () =>
+                        _openCommercialRegister(user.uid, download: true),
+                    icon: const Icon(Icons.download_outlined, size: 18),
+                    label: Text(
+                      '${l10n.uiDownload} ${l10n.uiCommercialRegister}',
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AdminPalette.accent,
+                      side: BorderSide(
+                        color: AdminPalette.accent.withValues(alpha: 0.24),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 14,
+                        horizontal: 14,
+                      ),
+                    ),
+                  ),
+                ];
+
+                if (constraints.maxWidth < 440) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      buttons[0],
+                      const SizedBox(height: 10),
+                      buttons[1],
+                    ],
+                  );
+                }
+
+                return Row(
+                  children: [
+                    Expanded(child: buttons[0]),
+                    const SizedBox(width: 10),
+                    Expanded(child: buttons[1]),
+                  ],
+                );
+              },
+            ),
+          ] else ...[
+            const SizedBox(height: 10),
+            Text(
+              l10n.uiCommercialRegisterMissing,
+              style: AppTypography.product(
+                fontSize: 12,
+                color: AdminPalette.danger,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCompanyModerationPanel(UserModel user, AdminProvider provider) {
+    final l10n = AppLocalizations.of(context)!;
+    final buttons = <Widget>[
+      if (!user.isCompanyApproved)
+        _buildDocumentButton(
+          label: l10n.uiApproveCompany,
+          icon: Icons.verified_rounded,
+          onPressed: () =>
+              _showCompanyApprovalDialog(user, provider, 'approved'),
+          color: AdminPalette.success,
+        ),
+      if (!user.isCompanyRejected)
+        _buildDocumentButton(
+          label: l10n.uiRejectCompany,
+          icon: Icons.gpp_bad_outlined,
+          onPressed: () =>
+              _showCompanyApprovalDialog(user, provider, 'rejected'),
+          color: AdminPalette.danger,
+          outlined: true,
+        ),
+    ];
+
+    if (buttons.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return AdminSurface(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
+      radius: 18,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l10n.uiCompanyReview,
+            style: AppTypography.product(
+              fontSize: 13.5,
+              fontWeight: FontWeight.w700,
+              color: AdminPalette.textPrimary,
+            ),
+          ),
+          const SizedBox(height: 12),
+          _buildAdaptiveActionGroup(buttons),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDocumentButton({
+    required String label,
+    required IconData icon,
+    required VoidCallback? onPressed,
+    required Color color,
+    bool outlined = false,
+  }) {
+    if (outlined) {
+      return OutlinedButton.icon(
+        onPressed: onPressed,
+        icon: Icon(icon, size: 18),
+        label: Text(label),
+        style: OutlinedButton.styleFrom(
+          foregroundColor: color,
+          side: BorderSide(color: color.withValues(alpha: 0.24)),
+          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 14),
+        ),
+      );
+    }
+
+    return FilledButton.icon(
+      onPressed: onPressed,
+      icon: Icon(icon, size: 18),
+      label: Text(label),
+      style: FilledButton.styleFrom(
+        backgroundColor: color,
+        foregroundColor: Colors.white,
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 14),
+      ),
+    );
+  }
+
+  Widget _buildAdaptiveActionGroup(List<Widget> buttons) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (buttons.isEmpty) {
+          return const SizedBox.shrink();
+        }
+
+        if (buttons.length == 1) {
+          return SizedBox(width: double.infinity, child: buttons.first);
+        }
+
+        if (constraints.maxWidth < 440) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              for (var index = 0; index < buttons.length; index++) ...[
+                buttons[index],
+                if (index < buttons.length - 1) const SizedBox(height: 10),
+              ],
+            ],
+          );
+        }
+
+        return Row(
+          children: [
+            for (var index = 0; index < buttons.length; index++) ...[
+              Expanded(child: buttons[index]),
+              if (index < buttons.length - 1) const SizedBox(width: 10),
+            ],
+          ],
+        );
+      },
+    );
+  }
+
+  void _showCompanyApprovalDialog(
+    UserModel user,
+    AdminProvider provider,
+    String nextStatus,
+  ) {
+    final l10n = AppLocalizations.of(context)!;
+    final companyLabel = user.companyName?.trim().isNotEmpty == true
+        ? user.companyName!.trim()
+        : user.fullName;
+    final actionLabel = switch (nextStatus) {
+      'approved' => l10n.uiApproveCompany,
+      'rejected' => l10n.uiRejectCompany,
+      _ => l10n.uiMarkPendingReview,
+    };
+    final actionColor = switch (nextStatus) {
+      'approved' => AdminPalette.success,
+      'rejected' => AdminPalette.danger,
+      _ => AdminPalette.warning,
+    };
+    final actionIcon = switch (nextStatus) {
+      'approved' => Icons.verified_rounded,
+      'rejected' => Icons.gpp_bad_outlined,
+      _ => Icons.pending_actions_rounded,
+    };
+    final message = switch (nextStatus) {
+      'approved' => l10n.uiApproveCompanyMessage,
+      'rejected' => l10n.uiRejectCompanyMessage,
+      _ => l10n.uiMarkPendingCompanyMessage,
+    };
+
+    showDialog(
+      context: context,
+      barrierColor: const Color(0xFF0F172A).withValues(alpha: 0.4),
+      builder: (ctx) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 420),
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: AdminPalette.surface,
+              borderRadius: BorderRadius.circular(28),
+              border: Border.all(color: actionColor.withValues(alpha: 0.16)),
+              boxShadow: AdminPalette.softShadow,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 50,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        color: actionColor.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Icon(actionIcon, color: actionColor, size: 24),
+                    ),
+                    const Spacer(),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AdminPalette.surfaceMuted,
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                      child: Text(
+                        l10n.uiCompanyModeration,
+                        style: AppTypography.product(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: AdminPalette.textMuted,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  actionLabel,
+                  style: AppTypography.product(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
+                    color: AdminPalette.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  message,
+                  style: AppTypography.product(
+                    fontSize: 13,
+                    height: 1.5,
+                    color: AdminPalette.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: 14),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: AdminPalette.surfaceMuted,
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(
+                      color: AdminPalette.border.withValues(alpha: 0.92),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 38,
+                        height: 38,
+                        decoration: BoxDecoration(
+                          color: actionColor.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Icon(actionIcon, color: actionColor, size: 18),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              l10n.uiSelectedCompany,
+                              style: AppTypography.product(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                color: AdminPalette.textMuted,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              companyLabel,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: AppTypography.product(
+                                fontSize: 13.5,
+                                fontWeight: FontWeight.w700,
+                                color: AdminPalette.textPrimary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 18),
+                _buildAdaptiveActionGroup([
+                  _buildDocumentButton(
+                    label: l10n.cancelLabel,
+                    icon: Icons.close_rounded,
+                    onPressed: () => Navigator.pop(ctx),
+                    color: AdminPalette.textMuted,
+                    outlined: true,
+                  ),
+                  _buildDocumentButton(
+                    label: switch (nextStatus) {
+                      'approved' => l10n.uiApprove,
+                      'rejected' => l10n.uiReject,
+                      _ => l10n.uiPending,
+                    },
+                    icon: actionIcon,
+                    onPressed: () async {
+                      Navigator.pop(ctx);
+                      final error = await provider.updateCompanyApprovalStatus(
+                        user.uid,
+                        nextStatus,
+                      );
+                      if (!mounted || error == null || !context.mounted) {
+                        return;
+                      }
+                      context.showAppSnackBar(
+                        error,
+                        title: l10n.updateUnavailableTitle,
+                        type: AppFeedbackType.error,
+                      );
+                    },
+                    color: actionColor,
+                  ),
+                ]),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _openCommercialRegister(
+    String companyId, {
+    bool download = false,
+  }) async {
+    final l10n = AppLocalizations.of(context)!;
+    try {
+      final document = await _documentAccessService
+          .getCompanyCommercialRegister(companyId: companyId);
+      if (!mounted) return;
+      await DocumentLaunchHelper.openSecureDocument(
+        context,
+        document: document,
+        download: download,
+        requirePdf: false,
+        notPdfMessage: l10n.uiThisDocumentIsNotAValidPdfFile,
+        notPdfTitle: l10n.uiPreviewUnavailable,
+        unavailableMessage: l10n.uiCouldNotOpenTheDocumentRightNow,
+        unavailableTitle: l10n.uiDocumentUnavailable,
+      );
+    } catch (error) {
+      if (!mounted) return;
+      context.showAppSnackBar(
+        _documentErrorMessage(error, l10n),
+        title: l10n.uiDocumentUnavailable,
+        type: AppFeedbackType.error,
+      );
+    }
+  }
+
+  String _documentErrorMessage(Object error, AppLocalizations l10n) {
+    final message = error.toString();
+    if (message.contains('permission') || message.contains('403')) {
+      return l10n.uiDocumentPermissionDenied;
+    }
+    if (message.contains('404') || message.contains('not found')) {
+      return l10n.uiRequestedDocumentNoLongerAvailable;
+    }
+
+    return l10n.uiCouldNotOpenTheDocumentRightNow;
+  }
+
+  Widget _buildDashboardOptionalDetailRow(
+    IconData icon,
+    String label,
+    String? value,
+    String placeholder,
+  ) {
+    final trimmedValue = (value ?? '').trim();
+
+    return _buildDashboardDetailRow(
+      icon,
+      label,
+      trimmedValue.isNotEmpty ? trimmedValue : placeholder,
+      mutedValue: trimmedValue.isEmpty,
+    );
+  }
+
+  Widget _buildDashboardDetailRow(
+    IconData icon,
+    String label,
+    String value, {
+    bool mutedValue = false,
+    bool singleLineValue = false,
+  }) {
+    final valueStyle = AppTypography.product(
+      fontSize: mutedValue ? 13.2 : 14,
+      height: 1.4,
+      color: mutedValue ? AdminPalette.textMuted : AdminPalette.textPrimary,
+      fontWeight: mutedValue ? FontWeight.w500 : FontWeight.w600,
+    );
+
+    return AdminSurface(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(14),
+      radius: 18,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: AdminPalette.primarySoft,
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Icon(icon, size: 20, color: AdminPalette.primary),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: AppTypography.product(
+                    fontSize: 11.5,
+                    color: AdminPalette.textMuted,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                singleLineValue
+                    ? _buildDashboardSingleLineText(value, style: valueStyle)
+                    : Text(value, style: valueStyle),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDashboardSingleLineText(
+    String value, {
+    required TextStyle style,
+    TextAlign textAlign = TextAlign.start,
+  }) {
+    final alignment = switch (textAlign) {
+      TextAlign.center => Alignment.center,
+      TextAlign.right => Alignment.centerRight,
+      TextAlign.end => Alignment.centerRight,
+      _ => Alignment.centerLeft,
+    };
+
+    return SizedBox(
+      width: double.infinity,
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        alignment: alignment,
+        child: Text(
+          value,
+          maxLines: 1,
+          softWrap: false,
+          overflow: TextOverflow.visible,
+          textAlign: textAlign,
+          style: style,
+        ),
+      ),
+    );
+  }
+
+  String _companyDisplayName(UserModel user) {
+    final companyName = (user.companyName ?? '').trim();
+    if (companyName.isNotEmpty) {
+      return companyName;
+    }
+
+    return user.fullName.trim().isEmpty ? user.email : user.fullName;
+  }
+
+  String _roleDisplayLabel(String role) {
+    return DisplayText.capitalizeLeadingLabel(role);
+  }
+
+  IconData _roleIcon(String role) {
+    return switch (role) {
+      'student' => Icons.school_outlined,
+      'company' => Icons.business_outlined,
+      'admin' => Icons.admin_panel_settings_outlined,
+      _ => Icons.person_outline_rounded,
+    };
+  }
+
+  String _approvalDisplayLabel(String status) {
+    final l10n = AppLocalizations.of(context)!;
+    final normalized = status.trim().toLowerCase();
+    return switch (normalized) {
+      'pending' => l10n.uiPendingReview,
+      'rejected' => l10n.uiRejected,
+      _ => l10n.uiApproved,
+    };
+  }
+
+  IconData _approvalDisplayIcon(String status) {
+    final normalized = status.trim().toLowerCase();
+
+    return switch (normalized) {
+      'pending' => Icons.pending_actions_rounded,
+      'rejected' => Icons.gpp_bad_outlined,
+      _ => Icons.verified_rounded,
+    };
   }
 
   void _openRecentOpportunity(Map<String, dynamic> opportunity) {
