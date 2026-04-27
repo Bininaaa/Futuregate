@@ -568,46 +568,27 @@ class ScholarshipDetailScreen extends StatelessWidget {
                         ),
                         Expanded(
                           child: Text(
-                            'Scholarship',
+                            'Scholarship Hub',
                             textAlign: TextAlign.center,
                             style: AppTypography.product(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                              color: _P.textPrimary,
+                              fontSize: 22,
+                              fontWeight: FontWeight.w800,
+                              color: _P.primary,
                             ),
                           ),
                         ),
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            _TopBarIconButton(
-                              icon: isSaved
-                                  ? Icons.bookmark_rounded
-                                  : Icons.bookmark_outline_rounded,
-                              onTap:
-                                  currentUserId.isEmpty ||
-                                      savedProvider.isLoading
-                                  ? null
-                                  : () => _toggleSavedScholarship(context),
-                              iconColor: isSaved ? _P.primary : _P.textPrimary,
-                              fillColor: isSaved
-                                  ? _P.primary.withValues(alpha: 0.08)
-                                  : _P.surface,
-                            ),
-                            const SizedBox(width: 8),
-                            _TopBarIconButton(
-                              icon: hasLink
-                                  ? Icons.open_in_new_rounded
-                                  : Icons.link_off_rounded,
-                              onTap: hasLink ? () => _openLink(context) : null,
-                              iconColor: hasLink
-                                  ? _P.primary
-                                  : _P.textSecondary,
-                              fillColor: hasLink
-                                  ? _P.primary.withValues(alpha: 0.08)
-                                  : _P.surface,
-                            ),
-                          ],
+                        _TopBarIconButton(
+                          icon: isSaved
+                              ? Icons.bookmark_rounded
+                              : Icons.bookmark_outline_rounded,
+                          onTap:
+                              currentUserId.isEmpty || savedProvider.isLoading
+                              ? null
+                              : () => _toggleSavedScholarship(context),
+                          iconColor: isSaved ? _P.primary : _P.textPrimary,
+                          fillColor: isSaved
+                              ? _P.primary.withValues(alpha: 0.08)
+                              : _P.surface,
                         ),
                       ],
                     ),

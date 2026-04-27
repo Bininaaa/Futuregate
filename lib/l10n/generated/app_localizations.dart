@@ -11732,7 +11732,7 @@ abstract class AppLocalizations {
   /// notifFilterUnread
   ///
   /// In en, this message translates to:
-  /// **'Unread'**
+  /// **'Needs attention'**
   String get notifFilterUnread;
 
   /// notifFilterApplications
@@ -12542,7 +12542,7 @@ abstract class AppLocalizations {
   /// No description provided for @uiUnread.
   ///
   /// In en, this message translates to:
-  /// **'Unread'**
+  /// **'Needs attention'**
   String get uiUnread;
 
   /// No description provided for @uiProjects.

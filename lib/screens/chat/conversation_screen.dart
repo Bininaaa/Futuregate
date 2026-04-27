@@ -134,22 +134,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
     });
   }
 
-  void _insertEmoji(String emoji) {
-    final selection = _messageController.selection;
-    final text = _messageController.text;
-    final start = selection.isValid ? selection.start : text.length;
-    final end = selection.isValid ? selection.end : text.length;
-    final normalizedStart = start.clamp(0, text.length).toInt();
-    final normalizedEnd = end.clamp(0, text.length).toInt();
-    final nextText = text.replaceRange(normalizedStart, normalizedEnd, emoji);
-    final nextOffset = normalizedStart + emoji.length;
-
-    _messageController.value = TextEditingValue(
-      text: nextText,
-      selection: TextSelection.collapsed(offset: nextOffset),
-    );
-  }
-
+  // ignore: unused_element
   Future<void> _showEmojiPicker() async {
     final emojis = const <String>[
       '👍',
@@ -237,7 +222,23 @@ class _ConversationScreenState extends State<ConversationScreen> {
     );
 
     if (selected != null) {
-      _insertEmoji(selected);
+      final selection = _messageController.selection;
+      final text = _messageController.text;
+      final start = selection.isValid ? selection.start : text.length;
+      final end = selection.isValid ? selection.end : text.length;
+      final normalizedStart = start.clamp(0, text.length).toInt();
+      final normalizedEnd = end.clamp(0, text.length).toInt();
+      final nextText = text.replaceRange(
+        normalizedStart,
+        normalizedEnd,
+        selected,
+      );
+      final nextOffset = normalizedStart + selected.length;
+
+      _messageController.value = TextEditingValue(
+        text: nextText,
+        selection: TextSelection.collapsed(offset: nextOffset),
+      );
     }
   }
 
@@ -807,7 +808,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                         onRemoveAttachment: () {
                           setState(() => _pendingAttachment = null);
                         },
-                        onEmojiTap: _showEmojiPicker,
+                        onEmojiTap: () {},
                         onAiFormalize: () => _handleAiTask('formal'),
                         onAiCorrect: () => _handleAiTask('correct'),
                         onAiTranslate: _showTranslateSheet,

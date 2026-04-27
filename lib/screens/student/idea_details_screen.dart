@@ -152,39 +152,37 @@ class IdeaDetailsScreen extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  AppPrimaryButton(
-                    theme: _theme,
-                    label: isOwner
-                        ? (idea.canOwnerEdit
-                              ? AppLocalizations.of(context)!.ideaEditLabel
-                              : AppLocalizations.of(context)!.ideaManageLabel)
-                        : (idea.isJoinedByCurrentUser
-                              ? AppLocalizations.of(
-                                  context,
-                                )!.ideaInterestedLabel
-                              : AppLocalizations.of(
-                                  context,
-                                )!.ideaImInterestedLabel),
-                    icon: isOwner
-                        ? (idea.canOwnerEdit
-                              ? Icons.edit_rounded
-                              : Icons.tune_rounded)
-                        : idea.isJoinedByCurrentUser
-                        ? Icons.check_circle_rounded
-                        : Icons.people_outline_rounded,
-                    onPressed: () {
-                      if (isOwner) {
-                        _openEdit(context, idea);
-                        return;
-                      }
-                      _toggleInteraction(
-                        context,
-                        idea,
-                        ProjectIdeaInteractionType.interest,
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 10),
+                  if (!isOwner || idea.canOwnerEdit) ...<Widget>[
+                    AppPrimaryButton(
+                      theme: _theme,
+                      label: isOwner
+                          ? AppLocalizations.of(context)!.ideaEditLabel
+                          : (idea.isJoinedByCurrentUser
+                                ? AppLocalizations.of(
+                                    context,
+                                  )!.ideaInterestedLabel
+                                : AppLocalizations.of(
+                                    context,
+                                  )!.ideaImInterestedLabel),
+                      icon: isOwner
+                          ? Icons.edit_rounded
+                          : idea.isJoinedByCurrentUser
+                          ? Icons.check_circle_rounded
+                          : Icons.people_outline_rounded,
+                      onPressed: () {
+                        if (isOwner) {
+                          _openEdit(context, idea);
+                          return;
+                        }
+                        _toggleInteraction(
+                          context,
+                          idea,
+                          ProjectIdeaInteractionType.interest,
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                  ],
                   Row(
                     children: <Widget>[
                       if (showLeadingSecondaryAction) ...<Widget>[

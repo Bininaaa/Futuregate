@@ -8,7 +8,6 @@ import '../../providers/project_idea_provider.dart';
 import '../../services/project_idea_service.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/ideas/idea_cards.dart';
-import '../../widgets/ideas/idea_metrics_row.dart';
 import '../../widgets/ideas/innovation_hub_theme.dart';
 import '../../widgets/ideas/my_ideas_toggle.dart';
 import '../../widgets/shared/app_feedback.dart';
@@ -202,7 +201,7 @@ class _ProjectIdeasScreenState extends State<ProjectIdeasScreen> {
                                   onCreateTap: _openCreateIdea,
                                   onIdeaTap: _openIdeaDetails,
                                   onEditTap: _openEditIdea,
-                                  onManageTeamTap: _showManageTeamSheet,
+                                  onDeleteTap: _confirmDeleteIdea,
                                 ),
                         ),
                       ),
@@ -504,73 +503,60 @@ class _ProjectIdeasScreenState extends State<ProjectIdeasScreen> {
     );
   }
 
-  void _showManageTeamSheet(ProjectIdeaModel idea) {
-    showModalBottomSheet<void>(
+  Future<void> _confirmDeleteIdea(ProjectIdeaModel idea) async {
+    final confirmed = await showDialog<bool>(
       context: context,
-      backgroundColor: Colors.transparent,
-      builder: (_) => Container(
-        padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
-        decoration: BoxDecoration(
-          color: InnovationHubPalette.surface,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: InnovationHubPalette.surface,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: Text(
+          AppLocalizations.of(context)!.uiDeleteProjectIdea,
+          style: InnovationHubTypography.section(size: 18),
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: Container(
-                width: 46,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: InnovationHubPalette.border,
-                  borderRadius: BorderRadius.circular(999),
-                ),
+        content: Text(
+          AppLocalizations.of(context)!.uiDeleteItemConfirm(idea.title),
+          style: InnovationHubTypography.body(size: 13.5),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(AppLocalizations.of(context)!.cancelLabel),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: const Color(0xFFD92D45),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
               ),
             ),
-            const SizedBox(height: 16),
-            Text(idea.title, style: InnovationHubTypography.section(size: 18)),
-            const SizedBox(height: 8),
-            IdeaMetricsRow(interestedCount: idea.interestedCount),
-            if (idea.displayTeamNeeded.isNotEmpty) ...[
-              const SizedBox(height: 14),
-              Text(
-                AppLocalizations.of(context)!.uiOpenRoles,
-                style: InnovationHubTypography.label(
-                  color: InnovationHubPalette.textSecondary,
-                  size: 12,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 6,
-                runSpacing: 6,
-                children: idea.displayTeamNeeded
-                    .map((role) => _SheetChip(label: role))
-                    .toList(),
-              ),
-            ],
-            if (idea.displaySkills.isNotEmpty) ...[
-              const SizedBox(height: 14),
-              Text(
-                AppLocalizations.of(context)!.uiSkills,
-                style: InnovationHubTypography.label(
-                  color: InnovationHubPalette.textSecondary,
-                  size: 12,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 6,
-                runSpacing: 6,
-                children: idea.displaySkills
-                    .map((skill) => _SheetChip(label: skill))
-                    .toList(),
-              ),
-            ],
-          ],
-        ),
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: Text(AppLocalizations.of(context)!.uiDelete),
+          ),
+        ],
       ),
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    final error = await context.read<ProjectIdeaProvider>().deleteProjectIdea(
+      idea.id,
+    );
+    if (!mounted) return;
+
+    if (error != null) {
+      context.showAppSnackBar(
+        error,
+        title: AppLocalizations.of(context)!.uiDeleteUnavailable,
+        type: AppFeedbackType.error,
+      );
+      return;
+    }
+
+    context.showAppSnackBar(
+      'Idea deleted successfully.',
+      type: AppFeedbackType.success,
     );
   }
 }
@@ -665,7 +651,7 @@ class _MyIdeasSection extends StatelessWidget {
   final VoidCallback onCreateTap;
   final ValueChanged<ProjectIdeaModel> onIdeaTap;
   final ValueChanged<ProjectIdeaModel> onEditTap;
-  final ValueChanged<ProjectIdeaModel> onManageTeamTap;
+  final ValueChanged<ProjectIdeaModel> onDeleteTap;
 
   const _MyIdeasSection({
     super.key,
@@ -674,7 +660,7 @@ class _MyIdeasSection extends StatelessWidget {
     required this.onCreateTap,
     required this.onIdeaTap,
     required this.onEditTap,
-    required this.onManageTeamTap,
+    required this.onDeleteTap,
   });
 
   @override
@@ -717,7 +703,7 @@ class _MyIdeasSection extends StatelessWidget {
               idea: idea,
               onView: () => onIdeaTap(idea),
               onEdit: idea.canOwnerEdit ? () => onEditTap(idea) : null,
-              onManageTeam: () => onManageTeamTap(idea),
+              onDelete: () => onDeleteTap(idea),
             ),
           ),
         ),
@@ -822,30 +808,6 @@ class _StatCard extends StatelessWidget {
           const SizedBox(height: 4),
           Text(label, style: InnovationHubTypography.body(size: 12)),
         ],
-      ),
-    );
-  }
-}
-
-class _SheetChip extends StatelessWidget {
-  final String label;
-
-  const _SheetChip({required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-      decoration: BoxDecoration(
-        color: InnovationHubPalette.cardTint,
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Text(
-        label,
-        style: InnovationHubTypography.label(
-          color: InnovationHubPalette.textPrimary,
-          size: 11,
-        ),
       ),
     );
   }

@@ -337,13 +337,13 @@ class IdeaWorkspaceCard extends StatelessWidget {
   final ProjectIdeaModel idea;
   final VoidCallback onView;
   final VoidCallback? onEdit;
-  final VoidCallback onManageTeam;
+  final VoidCallback onDelete;
 
   const IdeaWorkspaceCard({
     super.key,
     required this.idea,
     required this.onView,
-    required this.onManageTeam,
+    required this.onDelete,
     this.onEdit,
   });
 
@@ -465,8 +465,9 @@ class IdeaWorkspaceCard extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: _ActionChipButton(
-                  label: AppLocalizations.of(context)!.uiTeam,
-                  onTap: onManageTeam,
+                  label: AppLocalizations.of(context)!.uiDelete,
+                  onTap: onDelete,
+                  destructive: true,
                 ),
               ),
             ],
@@ -481,20 +482,26 @@ class _ActionChipButton extends StatelessWidget {
   final String label;
   final VoidCallback? onTap;
   final bool filled;
+  final bool destructive;
 
   const _ActionChipButton({
     required this.label,
     this.onTap,
     this.filled = false,
+    this.destructive = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    final backgroundColor = filled
+    final backgroundColor = destructive
+        ? const Color(0xFFFFEEF1)
+        : filled
         ? InnovationHubPalette.primary
         : InnovationHubPalette.cardTint;
     final foregroundColor = filled
         ? Colors.white
+        : destructive
+        ? const Color(0xFFD92D45)
         : InnovationHubPalette.textPrimary;
 
     return Material(
@@ -511,7 +518,11 @@ class _ActionChipButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             border: filled
                 ? null
-                : Border.all(color: InnovationHubPalette.border),
+                : Border.all(
+                    color: destructive
+                        ? const Color(0xFFF4B6C0)
+                        : InnovationHubPalette.border,
+                  ),
           ),
           child: Text(
             DisplayText.capitalizeDisplayValue(label),

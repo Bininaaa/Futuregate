@@ -6651,7 +6651,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notifFilterNewContent => 'New content';
 
   @override
-  String get notifFilterUnread => 'Unread';
+  String get notifFilterUnread => 'Needs attention';
 
   @override
   String get notifFilterApplications => 'Applications';
@@ -7073,7 +7073,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get uiInbox => 'Inbox';
 
   @override
-  String get uiUnread => 'Unread';
+  String get uiUnread => 'Needs attention';
 
   @override
   String get uiProjects => 'Projects';

@@ -3254,7 +3254,7 @@
   "@notifFilterNewContent": {
     "description": "notifFilterNewContent"
   },
-  "notifFilterUnread": "Unread",
+  "notifFilterUnread": "Needs attention",
   "@notifFilterUnread": {
     "description": "notifFilterUnread"
   },
@@ -3754,7 +3754,7 @@
   "uiGoodAfternoon": "Good afternoon",
   "uiGoodEvening": "Good evening",
   "uiInbox": "Inbox",
-  "uiUnread": "Unread",
+  "uiUnread": "Needs attention",
   "uiProjects": "Projects",
   "uiAllScholarships": "All Scholarships",
   "uiFullyFunded": "Fully Funded",

@@ -1,6 +1,5 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../l10n/generated/app_localizations.dart';
 import 'chat_formatters.dart';
@@ -103,6 +102,12 @@ class _ChatInputBarState extends State<ChatInputBar> {
     if (mounted) {
       setState(() {});
     }
+  }
+
+  void _openSystemKeyboard() {
+    _messageFocusNode.requestFocus();
+    SystemChannels.textInput.invokeMethod<void>('TextInput.show');
+    onEmojiTap();
   }
 
   @override
@@ -241,7 +246,7 @@ class _ChatInputBarState extends State<ChatInputBar> {
                   Expanded(
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 160),
-                      padding: const EdgeInsets.symmetric(horizontal: 14),
+                      clipBehavior: Clip.antiAlias,
                       decoration: BoxDecoration(
                         color: ChatThemePalette.surfaceMuted,
                         borderRadius: BorderRadius.circular(22),
@@ -252,51 +257,55 @@ class _ChatInputBarState extends State<ChatInputBar> {
                           width: _messageFocusNode.hasFocus ? 1.4 : 1,
                         ),
                       ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: TextField(
-                              controller: controller,
-                              focusNode: _messageFocusNode,
-                              minLines: 1,
-                              maxLines: 5,
-                              textCapitalization: TextCapitalization.sentences,
-                              textInputAction: TextInputAction.newline,
-                              style: ChatThemeStyles.body().copyWith(
-                                fontSize: 13.5,
-                              ),
-                              decoration: InputDecoration(
-                                hintText: isEditing
-                                    ? 'Edit your message...'
-                                    : 'Message...',
-                                hintStyle: ChatThemeStyles.body(
-                                  ChatThemePalette.textSecondary,
-                                ).copyWith(fontSize: 13.5),
-                                border: InputBorder.none,
-                                enabledBorder: InputBorder.none,
-                                focusedBorder: InputBorder.none,
-                                disabledBorder: InputBorder.none,
-                                errorBorder: InputBorder.none,
-                                focusedErrorBorder: InputBorder.none,
-                                contentPadding: const EdgeInsets.symmetric(
-                                  vertical: 10,
-                                ),
-                              ),
-                              onSubmitted: (_) => onSend(),
+                      child: TextField(
+                        controller: controller,
+                        focusNode: _messageFocusNode,
+                        minLines: 1,
+                        maxLines: 5,
+                        textCapitalization: TextCapitalization.sentences,
+                        textInputAction: TextInputAction.newline,
+                        style: ChatThemeStyles.body().copyWith(fontSize: 13.5),
+                        decoration: InputDecoration(
+                          hintText: isEditing
+                              ? 'Edit your message...'
+                              : 'Message...',
+                          hintStyle: ChatThemeStyles.body(
+                            ChatThemePalette.textSecondary,
+                          ).copyWith(fontSize: 13.5),
+                          border: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          disabledBorder: InputBorder.none,
+                          errorBorder: InputBorder.none,
+                          focusedErrorBorder: InputBorder.none,
+                          filled: false,
+                          isDense: true,
+                          contentPadding: const EdgeInsets.fromLTRB(
+                            14,
+                            12,
+                            4,
+                            12,
+                          ),
+                          suffixIcon: IconButton(
+                            tooltip: 'Emoji keyboard',
+                            onPressed: _openSystemKeyboard,
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(
+                              minWidth: 38,
+                              minHeight: 38,
+                            ),
+                            icon: Icon(
+                              Icons.sentiment_satisfied_alt_outlined,
+                              color: ChatThemePalette.textSecondary,
+                              size: 22,
                             ),
                           ),
-                          GestureDetector(
-                            onTap: onEmojiTap,
-                            child: Padding(
-                              padding: EdgeInsets.only(left: 4),
-                              child: Icon(
-                                Icons.sentiment_satisfied_alt_outlined,
-                                color: ChatThemePalette.textSecondary,
-                                size: 22,
-                              ),
-                            ),
+                          suffixIconConstraints: const BoxConstraints(
+                            minWidth: 42,
+                            minHeight: 38,
                           ),
-                        ],
+                        ),
+                        onSubmitted: (_) => onSend(),
                       ),
                     ),
                   ),

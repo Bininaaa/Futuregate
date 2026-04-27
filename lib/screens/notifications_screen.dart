@@ -155,35 +155,38 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               children: [
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                  child: SettingsPanel(
-                    padding: const EdgeInsets.all(18),
-                    child: SettingsAdaptiveHeader(
-                      leading: Container(
-                        width: 58,
-                        height: 58,
-                        decoration: BoxDecoration(
-                          gradient: SettingsFlowPalette.primaryGradient,
-                          borderRadius: SettingsFlowTheme.radius(20),
-                        ),
-                        child: const Icon(
-                          Icons.notifications_active_outlined,
-                          color: Colors.white,
-                          size: 28,
-                        ),
-                      ),
-                      content: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            summaryTitle,
-                            style: SettingsFlowTheme.sectionTitle(),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: SettingsPanel(
+                      padding: const EdgeInsets.all(18),
+                      child: SettingsAdaptiveHeader(
+                        leading: Container(
+                          width: 58,
+                          height: 58,
+                          decoration: BoxDecoration(
+                            gradient: SettingsFlowPalette.primaryGradient,
+                            borderRadius: SettingsFlowTheme.radius(20),
                           ),
-                          const SizedBox(height: 4),
-                          Text(
-                            summaryMessage,
-                            style: SettingsFlowTheme.caption(),
+                          child: const Icon(
+                            Icons.notifications_active_outlined,
+                            color: Colors.white,
+                            size: 28,
                           ),
-                        ],
+                        ),
+                        content: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              summaryTitle,
+                              style: SettingsFlowTheme.sectionTitle(),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              summaryMessage,
+                              style: SettingsFlowTheme.caption(),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -685,12 +688,12 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     switch (_selectedFilter) {
       case _NotificationFilter.all:
         return provider.unreadCount > 0
-            ? '${provider.unreadCount} unread updates'
+            ? '${provider.unreadCount} updates needing attention'
             : l10n.notifAllCaughtUp;
       case _NotificationFilter.unread:
         return visibleCount > 0
-            ? '$visibleCount unread notifications'
-            : 'No unread notifications';
+            ? '$visibleCount updates needing attention'
+            : 'No updates need attention';
       case _NotificationFilter.applications:
         return visibleCount == 1
             ? '1 application update'
@@ -776,7 +779,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       case _NotificationFilter.all:
         return 'No notifications right now';
       case _NotificationFilter.unread:
-        return 'No unread notifications';
+        return 'No updates need attention';
       case _NotificationFilter.applications:
         return 'No application updates';
       case _NotificationFilter.messages:
