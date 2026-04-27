@@ -1300,10 +1300,9 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
         borderRadius: BorderRadius.circular(26),
         child: InkWell(
           borderRadius: BorderRadius.circular(26),
-          onTap: () => _openApplicationDetails(
+          onTap: () => _openApplications(
             context,
-            application,
-            opportunity: opportunity,
+            applicationId: application.id,
           ),
           child: Ink(
             decoration: BoxDecoration(
