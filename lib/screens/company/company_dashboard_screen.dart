@@ -107,6 +107,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
       opportunity: opportunity,
       provider: context.read<CompanyProvider>(),
     );
+
     if (!mounted) {
       return;
     }
@@ -1300,9 +1301,10 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
         borderRadius: BorderRadius.circular(26),
         child: InkWell(
           borderRadius: BorderRadius.circular(26),
-          onTap: () => _openApplications(
+          onTap: () => _openApplicationDetails(
             context,
-            applicationId: application.id,
+            application,
+            opportunity: opportunity,
           ),
           child: Ink(
             decoration: BoxDecoration(
