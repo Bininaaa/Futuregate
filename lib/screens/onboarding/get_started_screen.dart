@@ -10,7 +10,6 @@ import '../../services/app_intro_preferences_service.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_typography.dart';
 import '../../widgets/shared/app_logo.dart';
-import '../auth/login_screen.dart';
 import '../auth/role_chooser_screen.dart';
 import '../auth_wrapper.dart';
 
@@ -175,7 +174,7 @@ class _GetStartedScreenState extends State<GetStartedScreen> {
     if (!mounted) {
       return;
     }
-    _replaceWith(const LoginScreen());
+    _replaceWith(const AuthWrapper());
   }
 
   Future<void> _continueToApp() async {

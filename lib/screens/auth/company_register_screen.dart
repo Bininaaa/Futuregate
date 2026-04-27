@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+
+import '../auth_wrapper.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:provider/provider.dart';
 import '../../l10n/generated/app_localizations.dart';
@@ -95,7 +97,10 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
         type: AppFeedbackType.error,
       );
     } else {
-      Navigator.of(context).popUntil((route) => route.isFirst);
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute<void>(builder: (_) => const AuthWrapper()),
+        (route) => false,
+      );
     }
   }
 
@@ -581,8 +586,10 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
                 fontWeight: FontWeight.bold,
               ),
               recognizer: TapGestureRecognizer()
-                ..onTap = () =>
-                    Navigator.of(context).popUntil((route) => route.isFirst),
+                ..onTap = () => Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute<void>(builder: (_) => const AuthWrapper()),
+                  (route) => false,
+                ),
             ),
           ],
         ),
