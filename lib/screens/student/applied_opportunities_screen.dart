@@ -489,12 +489,13 @@ class _AppliedCompactSummary extends StatelessWidget {
                 runSpacing: spacing,
                 children: [
                   SizedBox(
-                    width: tileWidth,
+                    width: constraints.maxWidth,
                     child: _AppliedMiniStat(
                       label: AppLocalizations.of(context)!.uiTotal,
                       value: '$total',
                       color: StudentOpportunityHubPalette.primary,
                       icon: Icons.layers_rounded,
+                      wide: true,
                     ),
                   ),
                   SizedBox(
@@ -548,19 +549,21 @@ class _AppliedMiniStat extends StatelessWidget {
   final String value;
   final Color color;
   final IconData icon;
+  final bool wide;
 
   const _AppliedMiniStat({
     required this.label,
     required this.value,
     required this.color,
     required this.icon,
+    this.wide = false,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      constraints: const BoxConstraints(minHeight: 82),
-      padding: const EdgeInsets.fromLTRB(10, 9, 10, 9),
+      constraints: BoxConstraints(minHeight: wide ? 68 : 82),
+      padding: EdgeInsets.fromLTRB(10, wide ? 8 : 9, 10, wide ? 8 : 9),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -582,54 +585,90 @@ class _AppliedMiniStat extends StatelessWidget {
           ),
         ],
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 24,
-                height: 24,
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.11),
-                  borderRadius: BorderRadius.circular(8),
+      child: wide
+          ? Row(
+              children: [
+                Container(
+                  width: 24,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.11),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(icon, size: 14, color: color),
                 ),
-                child: Icon(icon, size: 14, color: color),
-              ),
-              const Spacer(),
-              Container(
-                width: 6,
-                height: 6,
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.88),
-                  shape: BoxShape.circle,
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.poppins(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                      color: StudentOpportunityHubPalette.textSecondary,
+                    ),
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Text(
-            value,
-            style: GoogleFonts.poppins(
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-              color: StudentOpportunityHubPalette.textPrimary,
+                const SizedBox(width: 10),
+                Text(
+                  value,
+                  style: GoogleFonts.poppins(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: StudentOpportunityHubPalette.textPrimary,
+                  ),
+                ),
+              ],
+            )
+          : Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 24,
+                      height: 24,
+                      decoration: BoxDecoration(
+                        color: color.withValues(alpha: 0.11),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Icon(icon, size: 14, color: color),
+                    ),
+                    const Spacer(),
+                    Container(
+                      width: 6,
+                      height: 6,
+                      decoration: BoxDecoration(
+                        color: color.withValues(alpha: 0.88),
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  value,
+                  style: GoogleFonts.poppins(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: StudentOpportunityHubPalette.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.poppins(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                    color: StudentOpportunityHubPalette.textSecondary,
+                  ),
+                ),
+              ],
             ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: GoogleFonts.poppins(
-              fontSize: 10,
-              fontWeight: FontWeight.w600,
-              color: StudentOpportunityHubPalette.textSecondary,
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

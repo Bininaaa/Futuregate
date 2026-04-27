@@ -797,6 +797,55 @@ async function getExistingNotificationsByEventKey(env, eventKey) {
   ]);
 }
 
+async function markNotificationsReadByEventKey(env, eventKey) {
+  const normalizedEventKey = trim(eventKey);
+  if (!normalizedEventKey) {
+    return { markedRead: 0 };
+  }
+
+  try {
+    const notifications = await getExistingNotificationsByEventKey(
+      env,
+      normalizedEventKey,
+    );
+    const unreadNotifications = notifications.filter(
+      (item) => trim(item?.id) && item?.data?.isRead !== true,
+    );
+
+    if (unreadNotifications.length === 0) {
+      return { markedRead: 0 };
+    }
+
+    const results = await firestoreBatchWrite(
+      env,
+      unreadNotifications.map((item) => ({
+        update: {
+          path: `notifications/${trim(item.id)}`,
+          data: { isRead: true },
+          mask: ["isRead"],
+          currentDocument: { exists: true },
+        },
+      })),
+    );
+
+    const markedRead = results.filter((result) => result?.ok).length;
+    const failed = Math.max(0, unreadNotifications.length - markedRead);
+    if (failed > 0) {
+      console.warn(
+        `[markNotificationsReadByEventKey:${normalizedEventKey}] ${failed} notification update(s) failed`,
+      );
+    }
+
+    return { markedRead, failed };
+  } catch (error) {
+    console.warn(
+      `[markNotificationsReadByEventKey:${normalizedEventKey}] failed`,
+      error,
+    );
+    return { markedRead: 0, failed: 1 };
+  }
+}
+
 function uniqueTrimmedStrings(values) {
   const seen = new Set();
   const result = [];
@@ -3356,6 +3405,10 @@ async function handleNotifyApplicationStatusChanged(request, env) {
   const statusLabel = status === "accepted" ? "Approved" : "Rejected";
   const notificationType = status === "rejected" ? "rejected" : "application";
   const actorTokens = collectRecipientTokens(auth.profile);
+  const pendingNotificationsRead = await markNotificationsReadByEventKey(
+    env,
+    `application-submitted:${applicationId}`,
+  );
 
   const result = await notifyRecipients(env, [studentDoc], {
     title: `Application ${statusLabel}`,
@@ -3371,7 +3424,10 @@ async function handleNotifyApplicationStatusChanged(request, env) {
     logLabel: `[notifyApplicationStatusChanged:${applicationId}:${status}]`,
   });
 
-  return json(result);
+  return json({
+    ...result,
+    pendingNotificationsMarkedRead: pendingNotificationsRead.markedRead,
+  });
 }
 
 async function handleNotifyCompanyRegistration(request, env) {
@@ -3459,6 +3515,10 @@ async function handleNotifyCompanyApprovalStatusChanged(request, env) {
   }
 
   const approved = status === "approved";
+  const pendingNotificationsRead = await markNotificationsReadByEventKey(
+    env,
+    `company-registration:${companyId}`,
+  );
   const result = await notifyRecipients(env, [companyDoc], {
     title: approved ? "Company Account Approved" : "Company Account Rejected",
     message: approved
@@ -3475,7 +3535,10 @@ async function handleNotifyCompanyApprovalStatusChanged(request, env) {
     logLabel: `[notifyCompanyApproval:${companyId}:${status}]`,
   });
 
-  return json(result);
+  return json({
+    ...result,
+    pendingNotificationsMarkedRead: pendingNotificationsRead.markedRead,
+  });
 }
 
 async function handleNotifyProjectIdeaSubmitted(request, env) {
@@ -3924,6 +3987,10 @@ async function handleNotifyIdeaStatusChanged(request, env) {
   const statusLabel = status === "approved" ? "Approved" : "Rejected";
   const ideaTitle = trim(idea.title) || "your idea";
   const actorTokens = collectRecipientTokens(auth.profile);
+  const pendingNotificationsRead = await markNotificationsReadByEventKey(
+    env,
+    `project-idea-submitted:${ideaId}`,
+  );
 
   const result = await notifyRecipients(env, [ownerDoc], {
     title: `Project Idea ${statusLabel}`,
@@ -3937,7 +4004,10 @@ async function handleNotifyIdeaStatusChanged(request, env) {
     logLabel: `[notifyIdeaStatusChanged:${ideaId}:${status}]`,
   });
 
-  return json(result);
+  return json({
+    ...result,
+    pendingNotificationsMarkedRead: pendingNotificationsRead.markedRead,
+  });
 }
 
 async function handleNotifyChatMessage(request, env) {

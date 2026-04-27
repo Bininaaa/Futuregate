@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../l10n/generated/app_localizations.dart';
 import '../../models/user_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/company_provider.dart';
@@ -19,6 +20,7 @@ import '../../widgets/shared/app_loading.dart';
 import '../settings/about_futuregate_screen.dart';
 import '../settings/help_center_screen.dart';
 import '../settings/logout_confirmation_sheet.dart';
+import '../settings/security_privacy_screen.dart';
 import '../settings/settings_flow_theme.dart';
 import '../settings/settings_flow_widgets.dart';
 
@@ -48,7 +50,9 @@ class CompanyProfileScreen extends StatelessWidget {
     return AppShellBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        appBar: const _CompanySettingsAppBar(title: 'Company Profile'),
+        appBar: _CompanySettingsAppBar(
+          title: AppLocalizations.of(context)!.companyProfileTitle,
+        ),
         body: Stack(
           children: [
             const Positioned(
@@ -791,14 +795,16 @@ class CompanyProfileScreen extends StatelessWidget {
   }
 
   Widget _buildQuickLinks(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return SettingsPanel(
       child: Column(
         children: [
           SettingsListRow(
             icon: Icons.edit_outlined,
             iconColor: CompanyDashboardPalette.primary,
-            title: 'Edit Company Profile',
-            subtitle: 'Refresh your story, contact details, and assets',
+            title: l10n.editCompanyProfileTitle,
+            subtitle: l10n.editCompanyProfileSubtitle,
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(
@@ -808,10 +814,21 @@ class CompanyProfileScreen extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           SettingsListRow(
+            icon: Icons.lock_outline_rounded,
+            iconColor: SettingsFlowPalette.warning,
+            title: l10n.securityPrivacyTitle,
+            subtitle: l10n.securityPrivacySubtitle,
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const SecurityPrivacyScreen()),
+            ),
+          ),
+          const SizedBox(height: 10),
+          SettingsListRow(
             icon: Icons.help_outline_rounded,
             iconColor: CompanyDashboardPalette.accent,
-            title: 'Help Center',
-            subtitle: 'Support, FAQs, and contact options',
+            title: l10n.helpCenterTitle,
+            subtitle: l10n.helpCenterSubtitle,
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const HelpCenterScreen()),
@@ -821,8 +838,8 @@ class CompanyProfileScreen extends StatelessWidget {
           SettingsListRow(
             icon: Icons.info_outline_rounded,
             iconColor: CompanyDashboardPalette.info,
-            title: 'About FutureGate',
-            subtitle: 'Platform mission and version details',
+            title: l10n.aboutFutureGateTitle,
+            subtitle: l10n.aboutFutureGateSubtitle,
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const AboutFutureGateScreen()),
@@ -832,8 +849,8 @@ class CompanyProfileScreen extends StatelessWidget {
           SettingsListRow(
             icon: Icons.logout_rounded,
             iconColor: SettingsFlowPalette.error,
-            title: 'Sign out',
-            subtitle: 'Sign out of the company workspace',
+            title: l10n.signOutTitle,
+            subtitle: l10n.signOutSubtitle,
             destructive: true,
             compact: true,
             onTap: () => showLogoutConfirmationSheet(context),
@@ -974,7 +991,9 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
     return AppShellBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        appBar: const _CompanySettingsAppBar(title: 'Edit profile'),
+        appBar: _CompanySettingsAppBar(
+          title: AppLocalizations.of(context)!.editCompanyProfileTitle,
+        ),
         bottomNavigationBar: SafeArea(
           top: false,
           child: Container(

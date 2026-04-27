@@ -10,6 +10,7 @@ import '../../providers/auth_provider.dart';
 import '../../providers/company_provider.dart';
 import '../../providers/notification_provider.dart';
 import '../../theme/app_colors.dart';
+import '../../utils/application_status.dart';
 import '../../utils/company_dashboard_palette.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
@@ -311,6 +312,8 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
           error: provider.applicationsError,
           onClose: () => Navigator.pop(sheetContext),
           appliedDateLabel: _applicationDateLabel,
+          onApplicationTap: (application) =>
+              _showApplicantDetails(opportunity, application),
         );
       },
     );
@@ -318,6 +321,29 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
       return;
     }
     await _loadCompanyData();
+  }
+
+  Future<void> _showApplicantDetails(
+    OpportunityModel opportunity,
+    ApplicationModel application,
+  ) {
+    return showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      backgroundColor: Colors.transparent,
+      barrierColor: Colors.black.withValues(
+        alpha: AppColors.isDark ? 0.62 : 0.38,
+      ),
+      builder: (sheetContext) {
+        return _ApplicantDetailsSheet(
+          opportunity: opportunity,
+          application: application,
+          appliedDateLabel: _applicationDateLabel(application),
+          onClose: () => Navigator.pop(sheetContext),
+        );
+      },
+    );
   }
 
   List<ApplicationModel> _applicationsForOpportunity(
@@ -380,6 +406,17 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
     }
 
     await _loadCompanyData();
+    if (!mounted) {
+      return;
+    }
+
+    context.showAppSnackBar(
+      nextStatus == 'closed'
+          ? 'This opportunity has been closed. Students can no longer apply, but existing applications stay available for review.'
+          : 'This opportunity is open again and can receive new applications.',
+      title: nextStatus == 'closed' ? 'Opportunity closed' : 'Opportunity reopened',
+      type: AppFeedbackType.success,
+    );
   }
 
   Future<void> _deleteOpportunity(OpportunityModel opportunity) async {
@@ -605,6 +642,16 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
                         ),
                       ],
                     ),
+                    if (effectiveStatus == 'closed') ...[
+                      const SizedBox(height: 12),
+                      _InlineBanner(
+                        icon: Icons.lock_outline_rounded,
+                        title: 'Opportunity closed',
+                        message:
+                            'This opportunity has been closed. Students can no longer apply, but existing applications stay available for review.',
+                        color: _OpportunityPalette.warning,
+                      ),
+                    ],
                     const SizedBox(height: 16),
                     Container(
                       padding: const EdgeInsets.symmetric(
@@ -1739,30 +1786,34 @@ class _InlineBanner extends StatelessWidget {
   final IconData icon;
   final String title;
   final String message;
+  final Color? color;
 
   const _InlineBanner({
     required this.icon,
     required this.title,
     required this.message,
+    this.color,
   });
 
   @override
   Widget build(BuildContext context) {
+    final accentColor = color ?? _OpportunityPalette.error;
+
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: _OpportunityPalette.error.withValues(
+        color: accentColor.withValues(
           alpha: AppColors.isDark ? 0.14 : 0.08,
         ),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: _OpportunityPalette.error.withValues(alpha: 0.18),
+          color: accentColor.withValues(alpha: 0.18),
         ),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 16, color: _OpportunityPalette.error),
+          Icon(icon, size: 16, color: accentColor),
           const SizedBox(width: 10),
           Expanded(
             child: Column(
@@ -1799,6 +1850,7 @@ class _ApplicantsSheet extends StatelessWidget {
   final String? error;
   final VoidCallback onClose;
   final String Function(ApplicationModel application) appliedDateLabel;
+  final ValueChanged<ApplicationModel> onApplicationTap;
 
   const _ApplicantsSheet({
     required this.opportunity,
@@ -1806,6 +1858,7 @@ class _ApplicantsSheet extends StatelessWidget {
     required this.error,
     required this.onClose,
     required this.appliedDateLabel,
+    required this.onApplicationTap,
   });
 
   @override
@@ -1913,12 +1966,300 @@ class _ApplicantsSheet extends StatelessWidget {
                   (application) => _ApplicantListTile(
                     application: application,
                     appliedDateLabel: appliedDateLabel(application),
+                    onTap: () => onApplicationTap(application),
                   ),
                 ),
             ],
           ),
         );
       },
+    );
+  }
+}
+
+class _ApplicantDetailsSheet extends StatelessWidget {
+  final OpportunityModel opportunity;
+  final ApplicationModel application;
+  final String appliedDateLabel;
+  final VoidCallback onClose;
+
+  const _ApplicantDetailsSheet({
+    required this.opportunity,
+    required this.application,
+    required this.appliedDateLabel,
+    required this.onClose,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final studentName = application.studentName.trim().isEmpty
+        ? 'Student'
+        : application.studentName.trim();
+    final statusLabel = ApplicationStatus.label(application.status, l10n);
+    final opportunityStatus = opportunity.effectiveStatus();
+    final hasCv = application.cvId.trim().isNotEmpty;
+    final opportunityTitle = opportunity.title.trim().isEmpty
+        ? l10n.uiUntitledOpportunity
+        : opportunity.title.trim();
+    final opportunityLocation = opportunity.location.trim().isEmpty
+        ? l10n.uiLocationNotSpecified
+        : opportunity.location.trim();
+
+    return DraggableScrollableSheet(
+      initialChildSize: 0.68,
+      minChildSize: 0.42,
+      maxChildSize: 0.9,
+      expand: false,
+      builder: (context, scrollController) {
+        return Container(
+          clipBehavior: Clip.antiAlias,
+          decoration: BoxDecoration(
+            color: _OpportunityPalette.surface,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.16),
+                blurRadius: 30,
+                offset: const Offset(0, -8),
+              ),
+            ],
+          ),
+          child: ListView(
+            controller: scrollController,
+            padding: const EdgeInsets.fromLTRB(18, 10, 18, 24),
+            children: [
+              Center(
+                child: Container(
+                  width: 38,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: _OpportunityPalette.border,
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ProfileAvatar(
+                    radius: 28,
+                    userId: application.studentId,
+                    fallbackName: studentName,
+                    role: 'student',
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          studentName,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.poppins(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w800,
+                            color: _OpportunityPalette.textPrimary,
+                            height: 1.15,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          opportunityTitle,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.poppins(
+                            fontSize: 12.5,
+                            height: 1.35,
+                            color: _OpportunityPalette.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  _HeaderIconButton(icon: Icons.close_rounded, onTap: onClose),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: _OpportunityPalette.surfaceMuted,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: _OpportunityPalette.border),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: _DetailStat(
+                        label: l10n.uiStatus,
+                        value: statusLabel,
+                        icon: Icons.flag_outlined,
+                      ),
+                    ),
+                    const _DetailDivider(),
+                    Expanded(
+                      child: _DetailStat(
+                        label: l10n.uiApplied,
+                        value: appliedDateLabel,
+                        icon: Icons.event_available_rounded,
+                      ),
+                    ),
+                    const _DetailDivider(),
+                    Expanded(
+                      child: _DetailStat(
+                        label: 'CV',
+                        value: hasCv ? 'Available' : l10n.uiNotProvided,
+                        icon: Icons.description_outlined,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+              _SectionTitle(l10n.uiApplicationDetails),
+              const SizedBox(height: 10),
+              _ApplicantDetailCard(
+                rows: [
+                  _ApplicantDetailRowData(
+                    icon: Icons.person_outline_rounded,
+                    label: l10n.uiApplicant,
+                    value: studentName,
+                  ),
+                  _ApplicantDetailRowData(
+                    icon: Icons.flag_outlined,
+                    label: l10n.uiStatus,
+                    value: statusLabel,
+                  ),
+                  _ApplicantDetailRowData(
+                    icon: Icons.event_available_outlined,
+                    label: l10n.uiApplied,
+                    value: appliedDateLabel,
+                  ),
+                  _ApplicantDetailRowData(
+                    icon: Icons.description_outlined,
+                    label: 'CV',
+                    value: hasCv ? 'Available' : l10n.uiNotProvided,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              _SectionTitle(l10n.uiOpportunityDetails),
+              const SizedBox(height: 10),
+              _ApplicantDetailCard(
+                rows: [
+                  _ApplicantDetailRowData(
+                    icon: OpportunityType.icon(opportunity.type),
+                    label: l10n.uiType,
+                    value: OpportunityType.label(opportunity.type, l10n),
+                  ),
+                  _ApplicantDetailRowData(
+                    icon: Icons.work_outline_rounded,
+                    label: l10n.uiOpportunity,
+                    value: opportunityTitle,
+                  ),
+                  _ApplicantDetailRowData(
+                    icon: Icons.location_on_outlined,
+                    label: l10n.uiLocation,
+                    value: opportunityLocation,
+                  ),
+                  _ApplicantDetailRowData(
+                    icon: opportunityStatus == 'open'
+                        ? Icons.check_circle_outline_rounded
+                        : Icons.lock_outline_rounded,
+                    label: l10n.uiStatus,
+                    value: opportunityStatus == 'open'
+                        ? l10n.uiOpen
+                        : l10n.uiClosed,
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _ApplicantDetailRowData {
+  final IconData icon;
+  final String label;
+  final String value;
+
+  const _ApplicantDetailRowData({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
+}
+
+class _ApplicantDetailCard extends StatelessWidget {
+  final List<_ApplicantDetailRowData> rows;
+
+  const _ApplicantDetailCard({required this.rows});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: _OpportunityPalette.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: _OpportunityPalette.border),
+      ),
+      child: Column(
+        children: [
+          for (var index = 0; index < rows.length; index++) ...[
+            _ApplicantDetailRow(row: rows[index]),
+            if (index != rows.length - 1)
+              Divider(height: 18, color: _OpportunityPalette.border),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _ApplicantDetailRow extends StatelessWidget {
+  final _ApplicantDetailRowData row;
+
+  const _ApplicantDetailRow({required this.row});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(row.icon, size: 17, color: _OpportunityPalette.textSecondary),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Text(
+            row.label,
+            style: GoogleFonts.poppins(
+              fontSize: 12,
+              color: _OpportunityPalette.textMuted,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          flex: 2,
+          child: Text(
+            row.value,
+            textAlign: TextAlign.right,
+            style: GoogleFonts.poppins(
+              fontSize: 12.5,
+              color: _OpportunityPalette.textPrimary,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -1980,10 +2321,12 @@ class _NoApplicantsState extends StatelessWidget {
 class _ApplicantListTile extends StatelessWidget {
   final ApplicationModel application;
   final String appliedDateLabel;
+  final VoidCallback onTap;
 
   const _ApplicantListTile({
     required this.application,
     required this.appliedDateLabel,
+    required this.onTap,
   });
 
   @override
@@ -1991,83 +2334,108 @@ class _ApplicantListTile extends StatelessWidget {
     final studentName = application.studentName.trim().isEmpty
         ? 'Student'
         : application.studentName.trim();
+    final l10n = AppLocalizations.of(context)!;
+    final statusLabel = ApplicationStatus.label(application.status, l10n);
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: _OpportunityPalette.surface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: _OpportunityPalette.border),
-      ),
-      child: Row(
-        children: [
-          ProfileAvatar(
-            radius: 22,
-            userId: application.studentId,
-            fallbackName: studentName,
-            role: 'student',
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  studentName,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.poppins(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: _OpportunityPalette.textPrimary,
+    return Semantics(
+      button: true,
+      label:
+          '$studentName, $statusLabel. $appliedDateLabel. ${l10n.uiOpenDetails}',
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 10),
+        child: Material(
+          color: _OpportunityPalette.surface,
+          borderRadius: BorderRadius.circular(14),
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(14),
+            child: Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: _OpportunityPalette.border),
+              ),
+              child: Row(
+                children: [
+                  ProfileAvatar(
+                    radius: 22,
+                    userId: application.studentId,
+                    fallbackName: studentName,
+                    role: 'student',
                   ),
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.event_available_rounded,
-                      size: 12,
-                      color: _OpportunityPalette.textMuted,
-                    ),
-                    const SizedBox(width: 4),
-                    Flexible(
-                      child: Text(
-                        appliedDateLabel,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.poppins(
-                          fontSize: 11,
-                          color: _OpportunityPalette.textMuted,
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          studentName,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.poppins(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: _OpportunityPalette.textPrimary,
+                          ),
                         ),
-                      ),
-                    ),
-                    if (application.cvId.trim().isNotEmpty) ...[
-                      _InlineDot(),
-                      Icon(
-                        Icons.description_outlined,
-                        size: 12,
-                        color: _OpportunityPalette.textMuted,
-                      ),
-                      const SizedBox(width: 3),
-                      Text(
-                        'CV',
-                        style: GoogleFonts.poppins(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                          color: _OpportunityPalette.textMuted,
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.event_available_rounded,
+                              size: 12,
+                              color: _OpportunityPalette.textMuted,
+                            ),
+                            const SizedBox(width: 4),
+                            Flexible(
+                              child: Text(
+                                appliedDateLabel,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.poppins(
+                                  fontSize: 11,
+                                  color: _OpportunityPalette.textMuted,
+                                ),
+                              ),
+                            ),
+                            if (application.cvId.trim().isNotEmpty) ...[
+                              _InlineDot(),
+                              Icon(
+                                Icons.description_outlined,
+                                size: 12,
+                                color: _OpportunityPalette.textMuted,
+                              ),
+                              const SizedBox(width: 3),
+                              Text(
+                                'CV',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  color: _OpportunityPalette.textMuted,
+                                ),
+                              ),
+                            ],
+                          ],
                         ),
-                      ),
-                    ],
-                  ],
-                ),
-              ],
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  ApplicationStatusBadge(
+                    status: application.status,
+                    fontSize: 10,
+                  ),
+                  const SizedBox(width: 6),
+                  Icon(
+                    Icons.chevron_right_rounded,
+                    size: 20,
+                    color: _OpportunityPalette.textMuted,
+                  ),
+                ],
+              ),
             ),
           ),
-          const SizedBox(width: 10),
-          ApplicationStatusBadge(status: application.status, fontSize: 10),
-        ],
+        ),
       ),
     );
   }

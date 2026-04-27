@@ -862,109 +862,114 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
   }) {
     return AdminSurface(
       radius: 22,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _buildTrainingThumbnail(training),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildTrainingThumbnail(training),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: Text(
-                        training.title,
-                        style: AppTypography.product(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            training.title,
+                            style: AppTypography.product(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
                         ),
+                        if (isBusy)
+                          const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      training.authors.isNotEmpty
+                          ? training.authors.join(', ')
+                          : training.provider,
+                      style: AppTypography.product(
+                        color: AdminPalette.textSecondary,
+                        fontSize: 13,
                       ),
                     ),
-                    if (isBusy)
-                      const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        _AdminChip(
+                          label: training.type.toUpperCase(),
+                          color: AdminPalette.danger,
+                        ),
+                        if (training.domain.trim().isNotEmpty)
+                          _AdminChip(
+                            label: training.domain,
+                            color: AdminPalette.activity,
+                          ),
+                        if (training.isFeatured)
+                          _AdminChip(
+                            label: _l10n.uiFeatured,
+                            color: Colors.amber.shade800,
+                          ),
+                      ],
+                    ),
                   ],
                 ),
-                const SizedBox(height: 6),
-                Text(
-                  training.authors.isNotEmpty
-                      ? training.authors.join(', ')
-                      : training.provider,
-                  style: AppTypography.product(
-                    color: AdminPalette.textSecondary,
-                    fontSize: 13,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
-                    _AdminChip(
-                      label: training.type.toUpperCase(),
-                      color: AdminPalette.danger,
-                    ),
-                    if (training.domain.trim().isNotEmpty)
-                      _AdminChip(
-                        label: training.domain,
-                        color: AdminPalette.activity,
-                      ),
-                    if (training.isFeatured)
-                      _AdminChip(
-                        label: _l10n.uiFeatured,
-                        color: Colors.amber.shade800,
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                _buildInlineActionRow([
-                  OutlinedButton.icon(
-                    onPressed: isBusy ? null : () => _toggleFeatured(training),
-                    icon: Icon(
-                      training.isFeatured
-                          ? Icons.star_outline_rounded
-                          : Icons.star_rounded,
-                      size: 15,
-                    ),
-                    label: Text(
-                      training.isFeatured ? _l10n.uiUnfeature : _l10n.uiFeature,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    style: _inlineActionStyle(AdminPalette.textPrimary),
-                  ),
-                  OutlinedButton.icon(
-                    onPressed: isBusy || training.displayLink.trim().isEmpty
-                        ? null
-                        : () => _openLink(training.displayLink),
-                    icon: const Icon(Icons.open_in_new, size: 15),
-                    label: Text(
-                      AppLocalizations.of(context)!.uiOpen,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    style: _inlineActionStyle(AdminPalette.textPrimary),
-                  ),
-                  OutlinedButton.icon(
-                    onPressed: isBusy ? null : () => _deleteTraining(training),
-                    icon: const Icon(Icons.delete_outline, size: 15),
-                    label: Text(
-                      AppLocalizations.of(context)!.uiDelete,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    style: _inlineActionStyle(AdminPalette.danger),
-                  ),
-                ]),
-              ],
-            ),
+              ),
+            ],
           ),
+          const SizedBox(height: 12),
+          _buildInlineActionRow([
+            OutlinedButton.icon(
+              onPressed: isBusy ? null : () => _toggleFeatured(training),
+              icon: Icon(
+                training.isFeatured
+                    ? Icons.star_outline_rounded
+                    : Icons.star_rounded,
+                size: 15,
+              ),
+              label: Text(
+                training.isFeatured ? _l10n.uiUnfeature : _l10n.uiFeature,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              style: _inlineActionStyle(AdminPalette.textPrimary),
+            ),
+            OutlinedButton.icon(
+              onPressed: isBusy || training.displayLink.trim().isEmpty
+                  ? null
+                  : () => _openLink(training.displayLink),
+              icon: const Icon(Icons.open_in_new, size: 15),
+              label: Text(
+                AppLocalizations.of(context)!.uiOpen,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              style: _inlineActionStyle(AdminPalette.textPrimary),
+            ),
+            OutlinedButton.icon(
+              onPressed: isBusy ? null : () => _deleteTraining(training),
+              icon: const Icon(Icons.delete_outline, size: 15),
+              label: Text(
+                AppLocalizations.of(context)!.uiDelete,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              style: _inlineActionStyle(AdminPalette.danger),
+            ),
+          ]),
         ],
       ),
     );

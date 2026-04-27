@@ -8,6 +8,7 @@ import '../../widgets/app_shell_background.dart';
 import '../../widgets/company/company_workspace_shell.dart';
 import '../../widgets/shared/app_animated_tab_body.dart';
 import '../notifications_screen.dart';
+import '../settings/security_privacy_screen.dart';
 import '../settings/settings_screen.dart';
 import 'applications_screen.dart';
 import 'chat_list_screen.dart';
@@ -142,7 +143,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   );
                 },
                 onSettingsTap: _currentIndex == 0
-                    ? () => _selectIndex(4)
+                    ? () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const SecurityPrivacyScreen(),
+                          ),
+                        );
+                      }
                     : null,
               ),
               Expanded(

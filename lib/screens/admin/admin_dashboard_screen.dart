@@ -446,6 +446,85 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     );
   }
 
+  void _openUserManagementProfile(UserModel user) {
+    final roleFilter = user.role.trim().isEmpty ? 'all' : user.role;
+    final companyApprovalFilter = roleFilter == 'company'
+        ? user.normalizedApprovalStatus
+        : 'all';
+
+    if (widget.onOpenUsers != null) {
+      AdminHomeNavigation.switchToUsers(
+        context,
+        targetId: user.uid,
+        roleFilter: roleFilter,
+        companyApprovalFilter: companyApprovalFilter,
+      );
+      return;
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => Scaffold(
+          backgroundColor: AdminPalette.background,
+          appBar: AppBar(
+            title: Text(AppLocalizations.of(context)!.uiUserManagement),
+            backgroundColor: AdminPalette.surface,
+            foregroundColor: AdminPalette.textPrimary,
+          ),
+          body: SafeArea(
+            child: UsersScreen(
+              initialRoleFilter: roleFilter,
+              initialCompanyApprovalFilter: companyApprovalFilter,
+              initialTargetId: user.uid,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _openCompanyManagementProfile({
+    required String companyId,
+    String approvalFilter = 'all',
+  }) {
+    final normalizedCompanyId = companyId.trim();
+    if (normalizedCompanyId.isEmpty) {
+      return;
+    }
+
+    if (widget.onOpenUsers != null) {
+      AdminHomeNavigation.switchToUsers(
+        context,
+        targetId: normalizedCompanyId,
+        roleFilter: 'company',
+        companyApprovalFilter: approvalFilter,
+      );
+      return;
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => Scaffold(
+          backgroundColor: AdminPalette.background,
+          appBar: AppBar(
+            title: Text(AppLocalizations.of(context)!.uiUserManagement),
+            backgroundColor: AdminPalette.surface,
+            foregroundColor: AdminPalette.textPrimary,
+          ),
+          body: SafeArea(
+            child: UsersScreen(
+              initialRoleFilter: 'company',
+              initialCompanyApprovalFilter: approvalFilter,
+              initialTargetId: normalizedCompanyId,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   void _openRecentUser(UserModel user) {
     if (user.role == 'student') {
       showAdminStudentProfileSheet(context, user: user);
@@ -522,14 +601,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                 child: FilledButton.icon(
                   onPressed: () {
                     Navigator.pop(sheetContext);
-                    AdminHomeNavigation.switchToUsers(
-                      context,
-                      targetId: user.uid,
-                      roleFilter: user.role,
-                      companyApprovalFilter: user.role == 'company'
-                          ? user.approvalStatus
-                          : 'all',
-                    );
+                    _openUserManagementProfile(user);
                   },
                   icon: const Icon(Icons.open_in_new_rounded),
                   label: Text(l10n.uiOpen),
@@ -546,9 +618,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     final l10n = AppLocalizations.of(context)!;
     final model = OpportunityModel.fromMap(opportunity);
     final typeColor = OpportunityType.color(model.type);
+    final companyId = model.companyId.trim();
+    final canOpenCompanyProfile = companyId.isNotEmpty && !model.isAdminPosted;
     final canEdit =
-        model.companyId.trim() ==
-        (context.read<AuthProvider>().userModel?.uid.trim() ?? '');
+        companyId == (context.read<AuthProvider>().userModel?.uid.trim() ?? '');
 
     showModalBottomSheet<void>(
       context: context,
@@ -644,6 +717,20 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               ),
             ],
             const SizedBox(height: 14),
+            if (canOpenCompanyProfile) ...[
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: () {
+                    Navigator.pop(sheetContext);
+                    _openCompanyManagementProfile(companyId: companyId);
+                  },
+                  icon: const Icon(Icons.business_outlined, size: 18),
+                  label: Text(l10n.uiCompanyProfile),
+                ),
+              ),
+              const SizedBox(height: 10),
+            ],
             Row(
               children: [
                 Expanded(
@@ -1706,7 +1793,9 @@ class _RecentUsersCard extends StatelessWidget {
                                               user.fullName.trim().isNotEmpty
                                                   ? user.fullName
                                                   : (user.companyName ?? ''),
-                                              maxLines: 1,
+                                              maxLines: user.role == 'company'
+                                                  ? 2
+                                                  : 1,
                                               overflow: TextOverflow.ellipsis,
                                               style: AppTypography.product(
                                                 fontSize: 14.2,
@@ -1727,7 +1816,7 @@ class _RecentUsersCard extends StatelessWidget {
                                     const SizedBox(height: 5),
                                     Text(
                                       email,
-                                      maxLines: 1,
+                                      maxLines: user.role == 'company' ? 2 : 1,
                                       overflow: TextOverflow.ellipsis,
                                       style: AppTypography.product(
                                         fontSize: 11.8,
@@ -1878,7 +1967,7 @@ class _RecentOpportunitiesCard extends StatelessWidget {
                                   companyName.isNotEmpty
                                       ? companyName
                                       : l10n.uiCompanyNameNotAdded,
-                                  maxLines: 1,
+                                  maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                   style: AppTypography.product(
                                     fontSize: 11.8,

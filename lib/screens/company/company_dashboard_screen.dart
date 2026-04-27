@@ -198,45 +198,6 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
         .trim();
   }
 
-  String _growthRateLabel(List<ApplicationModel> applications) {
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final currentStart = today.subtract(const Duration(days: 6));
-    final previousStart = today.subtract(const Duration(days: 13));
-    final previousEnd = today.subtract(const Duration(days: 7));
-
-    int currentCount = 0;
-    int previousCount = 0;
-
-    for (final application in applications) {
-      final appliedAt = application.appliedAt?.toDate();
-      if (appliedAt == null) {
-        continue;
-      }
-
-      final day = DateTime(appliedAt.year, appliedAt.month, appliedAt.day);
-      if (!day.isBefore(currentStart) && !day.isAfter(today)) {
-        currentCount++;
-      } else if (!day.isBefore(previousStart) && !day.isAfter(previousEnd)) {
-        previousCount++;
-      }
-    }
-
-    if (previousCount == 0) {
-      return currentCount == 0 ? '0%' : _l10n.uiGrowthNew;
-    }
-
-    final rate = ((currentCount - previousCount) / previousCount) * 100;
-    if (rate.abs() < 0.05) {
-      return '0%';
-    }
-
-    final hasFraction =
-        (rate.abs() - rate.abs().truncateToDouble()).abs() > 0.05;
-    final prefix = rate > 0 ? '+' : '';
-    return '$prefix${rate.toStringAsFixed(hasFraction ? 1 : 0)}%';
-  }
-
   @override
   Widget build(BuildContext context) {
     final user = context.watch<AuthProvider>().userModel;
@@ -309,7 +270,6 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
     final chartPoints = _chartPoints(provider.applications, chartDays);
     final chartLabels = chartDays.map(_weekdayLabel).toList();
     final expiringSoonCount = _expiringSoonCount(provider.opportunities);
-    final growthRateLabel = _growthRateLabel(provider.applications);
 
     final isInitialLoading =
         provider.dashboardLoading &&
@@ -391,7 +351,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
             _buildHero(
               context,
               activeJobPosts: activeJobPosts,
-              growthRateLabel: growthRateLabel,
+              pendingApplications: pendingApplications,
             ),
             if (provider.dashboardError != null) ...[
               const SizedBox(height: 14),
@@ -620,7 +580,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
   Widget _buildHero(
     BuildContext context, {
     required int activeJobPosts,
-    required String growthRateLabel,
+    required int pendingApplications,
   }) {
     return Container(
       width: double.infinity,
@@ -705,8 +665,8 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
                     color: Colors.white.withValues(alpha: 0.16),
                   ),
                   _buildHeroStat(
-                    label: _l10n.uiGrowthRate,
-                    value: growthRateLabel,
+                    label: _l10n.uiPendingApps.toUpperCase(),
+                    value: '$pendingApplications',
                   ),
                 ],
               ),

@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../l10n/generated/app_localizations.dart';
 import '../../models/admin_application_item_model.dart';
@@ -1433,7 +1432,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               if (pendingAppCount > 0)
                 '$pendingAppCount ${l10n.uiPending.toLowerCase()}',
             ]),
-            footer: _buildResponsiveActionGroup(footerButtons),
+            footer: _buildResponsiveActionGroup(footerButtons, fullWidth: true),
             trailing: _buildCardActionRow([
               if (canEditOpportunity)
                 _buildCompactCardAction(
@@ -1736,7 +1735,10 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               l10n.uiAdded,
               scholarshipModel.createdAt,
             ),
-            footer: _buildResponsiveActionGroup(scholarshipFooterButtons),
+            footer: _buildResponsiveActionGroup(
+              scholarshipFooterButtons,
+              fullWidth: true,
+            ),
             trailing: _buildCardActionRow([
               _buildCompactCardAction(
                 icon: Icons.edit_outlined,
@@ -2579,31 +2581,41 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     );
   }
 
-  Widget _buildResponsiveActionGroup(List<Widget> buttons) {
+  Widget _buildResponsiveActionGroup(
+    List<Widget> buttons, {
+    bool fullWidth = false,
+  }) {
     if (buttons.isEmpty) {
       return const SizedBox.shrink();
     }
 
-    if (buttons.length == 1) {
-      return Align(alignment: Alignment.centerLeft, child: buttons.first);
+    if (fullWidth) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          for (var index = 0; index < buttons.length; index++) ...[
+            buttons[index],
+            if (index < buttons.length - 1) const SizedBox(height: 8),
+          ],
+        ],
+      );
     }
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        if (constraints.maxWidth < 360) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              for (var index = 0; index < buttons.length; index++) ...[
-                buttons[index],
-                if (index < buttons.length - 1) const SizedBox(height: 8),
-              ],
-            ],
-          );
-        }
+    if (buttons.length == 1) {
+      return SizedBox(width: double.infinity, child: buttons.first);
+    }
 
-        return Wrap(spacing: 8, runSpacing: 8, children: buttons);
-      },
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          for (var index = 0; index < buttons.length; index++) ...[
+            buttons[index],
+            if (index < buttons.length - 1) const SizedBox(width: 8),
+          ],
+        ],
+      ),
     );
   }
 
@@ -4890,11 +4902,13 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
   }
 
   Future<void> _openExternalLink(String url) async {
-    final uri = Uri.tryParse(url.trim());
-    if (uri == null) {
-      return;
-    }
-    await launchUrl(uri, mode: LaunchMode.externalApplication);
+    final l10n = AppLocalizations.of(context)!;
+    await DocumentLaunchHelper.openUrl(
+      context,
+      url: url,
+      unavailableMessage: l10n.uiWeCouldNotOpenThisLinkRightNow,
+      unavailableTitle: l10n.uiExternalLink,
+    );
   }
 
   Widget _buildCvSection(String title, List<String> items) {
